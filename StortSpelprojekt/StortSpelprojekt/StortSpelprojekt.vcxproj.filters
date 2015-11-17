@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="State Machine">
+      <UniqueIdentifier>{e9f4f8e1-b7ff-4685-8914-ad8d7b557f8b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Game.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Menu.cpp">
+      <Filter>State Machine</Filter>
+    </ClCompile>
+    <ClCompile Include="Options.cpp">
+      <Filter>State Machine</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>State Machine</Filter>
+    </ClCompile>
+    <ClCompile Include="Splash.cpp">
+      <Filter>State Machine</Filter>
+    </ClCompile>
+    <ClCompile Include="StateMachine.cpp">
+      <Filter>State Machine</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Game.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Menu.h">
+      <Filter>State Machine</Filter>
+    </ClInclude>
+    <ClInclude Include="Options.h">
+      <Filter>State Machine</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>State Machine</Filter>
+    </ClInclude>
+    <ClInclude Include="Splash.h">
+      <Filter>State Machine</Filter>
+    </ClInclude>
+    <ClInclude Include="StateMachine.h">
+      <Filter>State Machine</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
