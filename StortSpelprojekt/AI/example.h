@@ -1,11 +1,11 @@
 #ifndef EXAMPLE_H
 #define EXAMPLE_H
 
-#define SYSTEM_EXPORT __declspec(dllexport)
+#define AI_EXPORT __declspec(dllexport)
 
-namespace System
+namespace AI
 {
-	class SYSTEM_EXPORT Example 
+	class AI_EXPORT Example 
 	{
 	private:
 		int _value;

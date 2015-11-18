@@ -1,14 +1,14 @@
 #include "example.h"
 
-namespace System
+namespace AI
 {
-	Example::Example(int value) 
+	Example::Example(int value)
 	{
 		_value = value;
 	}
 
 	int Example::GetValue()const
-	{
-		return _value;
+	{ 
+		return _value; 
 	}
 }

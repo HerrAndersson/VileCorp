@@ -1,11 +1,11 @@
 #ifndef EXAMPLE_H
 #define EXAMPLE_H
 
-#define SYSTEM_EXPORT __declspec(dllexport)
+#define RENDERER_EXPORT __declspec(dllexport)
 
-namespace System
+namespace Renderer
 {
-	class SYSTEM_EXPORT Example 
+	class RENDERER_EXPORT Example 
 	{
 	private:
 		int _value;
