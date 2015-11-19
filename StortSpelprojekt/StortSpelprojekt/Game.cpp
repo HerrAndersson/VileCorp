@@ -30,10 +30,10 @@ int Game::Run()
 	{ 
 		if (i == 1)
 		{
-			System::WindowSettings settings(800, 50, false, false, true);
+			System::WindowSettings settings(1280, 720, false, false, true);
 			_window->ResizeWindow(settings);
-			//Resize rendertarget etc
-			i = 0;
+			//Resize rendertarget etc here
+			//Ex. Renderer::ResizeBuffers();
 		}
 	};
 
