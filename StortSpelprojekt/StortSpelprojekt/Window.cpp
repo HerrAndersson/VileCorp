@@ -3,14 +3,11 @@ namespace System
 {
 	Window::Window() {}
 
-	Window::Window(LPCSTR applicationName, HINSTANCE hinstance, bool fullscreen, bool showCursor, int windowWidth, int windowHeight)
+	Window::Window(LPCSTR applicationName, HINSTANCE hinstance, WindowSettings settings)
 	{
 		_applicationName = applicationName;
 		_hinstance = hinstance;
-		_fullscreen = fullscreen;
-		_showCursor = showCursor;
-		_windowWidth = windowWidth;
-		_windowHeight = windowHeight;
+		_settings = settings;
 
 		InitializeWindow();
 	}
@@ -24,7 +21,7 @@ namespace System
 	{
 		ShowCursor(true);
 
-		if (_fullscreen)
+		if (_settings._fullscreen)
 		{
 			ChangeDisplaySettings(NULL, 0);
 		}
@@ -40,11 +37,9 @@ namespace System
 
 	void Window::InitializeWindow()
 	{
-		//windowHandle = this;
+		windowHandle = this;
 
 		int posX, posY;
-
-		//_hinstance = GetModuleHandle(NULL);
 
 		//Setup the windows class with default settings.
 		WNDCLASSEX wc;
@@ -67,10 +62,10 @@ namespace System
 		int screenHeight = GetSystemMetrics(SM_CYSCREEN);
 
 		//Setup the screen settings depending on whether it is running in full screen or in windowed mode.
-		if (_fullscreen)
+		if (_settings._fullscreen)
 		{
-			_windowHeight = screenHeight;
-			_windowWidth = screenWidth;
+			_settings._height = screenHeight;
+			_settings._width = screenWidth;
 
 			//If full screen set the screen to maximum size of the users desktop and 32bit.
 			DEVMODE dmScreenSettings;
@@ -89,11 +84,11 @@ namespace System
 		else //If windowed
 		{
 			//Place the window in the middle of the screen.
-			posX = (screenWidth - _windowWidth) / 2;
-			posY = (screenHeight - _windowHeight) / 2;
+			posX = (screenWidth - _settings._width) / 2;
+			posY = (screenHeight - _settings._height) / 2;
 		}
 
-		RECT rc = { 0, 0, _windowWidth, _windowHeight };
+		RECT rc = { 0, 0, _settings._height, _settings._width };
 		AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
 
 		_hwnd = CreateWindowEx(WS_EX_APPWINDOW, _applicationName, _applicationName,
@@ -105,14 +100,13 @@ namespace System
 		SetFocus(_hwnd);
 
 		SetCursorPos(screenWidth / 2, screenHeight / 2);
-		ShowCursor(_showCursor);
+		ShowCursor(_settings._showCursor);
 	}
 
-	void Window::Run()
+	bool Window::Run()
 	{
 		MSG msg;
-		bool result;
-		bool done = false;
+		bool result = true;
 
 		ZeroMemory(&msg, sizeof(MSG));
 
@@ -121,6 +115,75 @@ namespace System
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
+
+		if (msg.message == WM_QUIT)
+		{
+			result = false;
+		}
+		return result;
+	}
+
+	void Window::ResizeWindow(WindowSettings settings)
+	{
+		_settings = settings;
+		int screenWidth = GetSystemMetrics(SM_CXSCREEN);
+		int screenHeight = GetSystemMetrics(SM_CYSCREEN);
+		int posX = 0;
+		int posY = 0;
+
+		LONG style = GetWindowLong(_hwnd, GWL_STYLE);
+		_style = style;
+		LONG exStyle = GetWindowLong(_hwnd, GWL_EXSTYLE);
+		_exStyle = exStyle;
+
+		RECT rect = { 0, 0, _settings._width, _settings._height };
+
+		if (_settings._borderless || _settings._fullscreen)
+		{
+			style &= ~(WS_CAPTION | WS_THICKFRAME | WS_MINIMIZE | WS_MAXIMIZE | WS_SYSMENU);
+			SetWindowLong(_hwnd, GWL_STYLE, style);
+
+			exStyle &= ~(WS_EX_DLGMODALFRAME | WS_EX_CLIENTEDGE | WS_EX_STATICEDGE);
+			SetWindowLong(_hwnd, GWL_EXSTYLE, exStyle);
+
+			AdjustWindowRect(&rect, WS_POPUP, FALSE);
+		}
+		else
+		{
+			SetWindowLong(_hwnd, GWL_STYLE, _style);
+			SetWindowLong(_hwnd, GWL_EXSTYLE, _exStyle);
+
+			AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, FALSE);
+		}
+
+		if (!_settings._fullscreen)
+		{
+			posX = (screenWidth - _settings._width) / 2;
+			posY = (screenHeight - _settings._height) / 2;
+
+			SetWindowPos(_hwnd, NULL, posX, posY, rect.right - rect.left, rect.bottom - rect.top, SWP_FRAMECHANGED |SWP_NOOWNERZORDER | SWP_NOZORDER);
+		}
+		else
+		{
+			_settings._width = GetSystemMetrics(SM_CXSCREEN);
+			_settings._height = GetSystemMetrics(SM_CYSCREEN);
+
+			SetWindowLong(_hwnd, GWL_EXSTYLE, WS_POPUP);
+			SetWindowPos(_hwnd, HWND_TOP, posX, posY, _settings._width, _settings._height, SWP_FRAMECHANGED);
+
+			SetWindowPos(_hwnd, HWND_TOP, 0, 0, _settings._width, _settings._height, SWP_FRAMECHANGED | SWP_SHOWWINDOW);
+		}
+
+		SetForegroundWindow(_hwnd);
+		SetFocus(_hwnd);
+
+		SetCursorPos(screenWidth / 2, screenHeight / 2);
+		ShowCursor(_settings._showCursor);
+	}
+
+	HWND Window::GetHWND()
+	{
+		return _hwnd;
 	}
 
 	LRESULT CALLBACK Window::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam)
@@ -132,6 +195,11 @@ namespace System
 	{
 		switch (umessage)
 		{
+		case WM_QUIT:
+		{
+			PostQuitMessage(0);
+			return 0;
+		}
 		case WM_DESTROY:
 		{
 			PostQuitMessage(0);

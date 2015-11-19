@@ -4,31 +4,51 @@
 
 namespace System
 {
+	struct SYSTEM_EXPORT WindowSettings
+	{
+		int _width = 400;
+		int _height = 300;
+		bool _fullscreen = false;
+		bool _borderless = false;
+		bool _showCursor = true;
+
+		WindowSettings() {};
+
+		WindowSettings(int width, int height, bool fullscreen, bool borderless, bool showCursor)
+		{
+			_width = width;
+			_height = height;
+			_fullscreen = fullscreen;
+			_borderless = borderless;
+			_showCursor = showCursor;
+		}
+	};
 	class SYSTEM_EXPORT Window
 	{
 
 	private:
 
-		LPCSTR		_applicationName;
-		HINSTANCE	_hinstance;
-		HWND		_hwnd;
-
-		bool _fullscreen;
-		bool _showCursor;
-
-		int _windowWidth;
-		int _windowHeight;
+		LPCSTR			_applicationName;
+		HINSTANCE		_hinstance;
+		HWND			_hwnd;
+		WindowSettings	_settings;
 
 		void InitializeWindow();
 		void ShutdownWindow();
 
+		LONG _style;
+		LONG _exStyle;
+
 	public:
 
 		Window();
-		Window(LPCSTR applicationName, HINSTANCE hinstance, bool fullscreen = false, bool showCursor = true, int windowWidth = 1000, int windowHeight = 800);
+		Window(LPCSTR applicationName, HINSTANCE hinstance, WindowSettings settings);
 		virtual ~Window();
 
-		void Run();
+		bool Run();
+		void ResizeWindow(WindowSettings settings);
+
+		HWND GetHWND();
 
 		LRESULT CALLBACK MessageHandler(HWND, UINT, WPARAM, LPARAM);
 	};

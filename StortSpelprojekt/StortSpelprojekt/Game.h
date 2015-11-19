@@ -9,7 +9,7 @@ class Game
 private:
 
 	StateMachine		 _SM;
-	System::Window		 _window;
+	System::Window*		 _window;
 
 public:
 
