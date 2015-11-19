@@ -34,6 +34,7 @@ int Game::Run()
 			_window->ResizeWindow(settings);
 			//Resize rendertarget etc here
 			//Ex. Renderer::ResizeBuffers();
+			i = 0;
 		}
 	};
 
