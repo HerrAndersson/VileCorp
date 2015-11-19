@@ -3,27 +3,15 @@
 #define _STDAFX__H
 
 #include <windows.h>
-#include <D3D11.h>
-#include <d3dCompiler.h>
-
 #include <string>
 #include <vector>
-#include <map>
 #include <fstream>
-#include <DirectXMath.h>
-#include <directxcolors.h>
-
-#include <dinput.h>
-#include <windowsx.h>
 
 
 #define SAFE_RELEASE(x) if( x ) { (x)->Release(); (x) = nullptr; }
 #define SAFE_DELETE(x) if( x ) { delete(x); (x) = nullptr; }
 #define SAFE_DELETE_ARRAY(x) if( x ) { delete[](x); (x) = nullptr; }
 #define IF_HR(hr) if(FAILED(hr)) { return hr;}
-#define PI (3.14159265358979323846f)
-
-#pragma comment(lib, "d3d11.lib")
 
 //////////////////////////////////////////////////////////////////////////
 // to find memory leaks

@@ -14,11 +14,16 @@ HRESULT Game::Initialize(HINSTANCE hInstance, int nCmdShow)
 	HRESULT hr = S_OK;
 
 	_SM.Initialize();
+	_window = System::Window("A", hInstance);
 
 	return hr;
 }
 
 int Game::Run()
 {
-	return 1;
+	while (true) 
+	{
+		_window.Run();
+	};
+	return 0;
 }
