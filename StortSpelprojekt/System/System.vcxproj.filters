@@ -19,6 +19,9 @@
     <ClCompile Include="InputDevice.cpp">
       <Filter>System</Filter>
     </ClCompile>
+    <ClCompile Include="..\StortSpelprojekt\Window.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -31,6 +34,9 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="InputDevice.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="..\StortSpelprojekt\Window.h">
       <Filter>System</Filter>
     </ClInclude>
   </ItemGroup>
