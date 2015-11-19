@@ -19,7 +19,7 @@
     <ClCompile Include="InputDevice.cpp">
       <Filter>System</Filter>
     </ClCompile>
-    <ClCompile Include="..\StortSpelprojekt\Window.cpp">
+    <ClCompile Include="Window.cpp">
       <Filter>System</Filter>
     </ClCompile>
   </ItemGroup>
@@ -36,7 +36,7 @@
     <ClInclude Include="InputDevice.h">
       <Filter>System</Filter>
     </ClInclude>
-    <ClInclude Include="..\StortSpelprojekt\Window.h">
+    <ClInclude Include="Window.h">
       <Filter>System</Filter>
     </ClInclude>
   </ItemGroup>
