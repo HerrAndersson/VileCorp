@@ -6,7 +6,11 @@
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
     <Filter Include="System">
+<<<<<<< HEAD
+      <UniqueIdentifier>{503e69f1-c9a2-45b3-bece-243acb202ea9}</UniqueIdentifier>
+=======
       <UniqueIdentifier>{4e907e30-88ab-4047-8657-f059fe8de18f}</UniqueIdentifier>
+>>>>>>> T7-Input-Class
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -16,7 +20,11 @@
     <ClCompile Include="example.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+<<<<<<< HEAD
+    <ClCompile Include="..\StortSpelprojekt\Window.cpp">
+=======
     <ClCompile Include="InputDevice.cpp">
+>>>>>>> T7-Input-Class
       <Filter>System</Filter>
     </ClCompile>
   </ItemGroup>
@@ -30,7 +38,11 @@
     <ClInclude Include="example.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+<<<<<<< HEAD
+    <ClInclude Include="..\StortSpelprojekt\Window.h">
+=======
     <ClInclude Include="InputDevice.h">
+>>>>>>> T7-Input-Class
       <Filter>System</Filter>
     </ClInclude>
   </ItemGroup>
