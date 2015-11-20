@@ -1,17 +1,35 @@
 #include "ObjectHandler.h"
 
+ObjectHandler ObjectHandler::GetAll(Type type)
+{
+	ObjectHandler objectsOfSameType;
 
+	for (int i = 0; i < _size; i++)
+	{
+		if (_gameObjects.at(i)->GetType() == type)
+		{
+			objectsOfSameType.Add(_gameObjects[i]);
+		}
+	}
 
-
+	return objectsOfSameType;
+}
 
 ObjectHandler::ObjectHandler()
 {
 	_size = 0;
 }
 
-ObjectHandler::~ObjectHandler() 
-{
+ObjectHandler::~ObjectHandler()
+{}
 
+ObjectHandler& ObjectHandler::operator+=(const ObjectHandler& rhs)
+{
+	for (int i = 0; i < rhs.GetSize(); i++)
+	{
+		this->Add(rhs._gameObjects[i]);
+	}
+	return *this;
 }
 
 int ObjectHandler::GetSize() const
@@ -19,27 +37,7 @@ int ObjectHandler::GetSize() const
 	return _size;
 }
 
-bool ObjectHandler::Collision()
-{
-	//TODO implement stuff
-	return false;
-}
 
-std::vector<RenderObject*> ObjectHandler::GetRenderObjects() const
-{
-	std::vector<RenderObject*> renderObjects;
-
-	for (int i = 0; i < _size; i++)
-	{
-		//If the object has a Renderobject and is visible
-		if (_gameObjects[i]->GetRenderObject() != nullptr && _gameObjects[i]->IsVisible())
-		{
-			renderObjects.push_back(_gameObjects[i]->GetRenderObject());
-		}
-	}
-
-	return renderObjects;
-}
 
 void ObjectHandler::Add(GameObject * gameObject)
 {
@@ -107,38 +105,21 @@ GameObject* ObjectHandler::Find(int index)
 	return gameObject;
 }
 
-ObjectHandler ObjectHandler::GetAll(Type type)
+std::vector<RenderObject*> ObjectHandler::GetRenderObjects() const
 {
-	ObjectHandler objectsOfSameType;
+	std::vector<RenderObject*> renderObjects;
 
 	for (int i = 0; i < _size; i++)
 	{
-		if (_gameObjects.at(i)->GetType() == type)
+		//If the object has a Renderobject and is visible
+		if (_gameObjects[i]->GetRenderObject() != nullptr && _gameObjects[i]->IsVisible())
 		{
-			objectsOfSameType.Add(_gameObjects[i]);
+			renderObjects.push_back(_gameObjects[i]->GetRenderObject());
 		}
 	}
 
-	return objectsOfSameType;
+	return renderObjects;
 }
-
-int ObjectHandler::GetIndex(GameObject* gameObject)
-{
-	int pos = -1;
-
-	for (int i = 0; i < _size; i++)
-	{
-		if (_gameObjects[i]->GetID() == gameObject->GetID())
-		{
-			pos = i;
-			break;
-		}
-	}
-
-	return pos;
-}
-
-
 
 void ObjectHandler::Update()
 {
