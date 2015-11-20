@@ -41,7 +41,6 @@ namespace System
 
 	public:
 
-		Window();
 		Window(LPCSTR applicationName, HINSTANCE hinstance, WindowSettings settings);
 		virtual ~Window();
 

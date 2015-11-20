@@ -1,13 +1,15 @@
 #include "Window.h"
 namespace System
 {
-	Window::Window() {}
-
 	Window::Window(LPCSTR applicationName, HINSTANCE hinstance, WindowSettings settings)
 	{
 		_applicationName = applicationName;
 		_hinstance = hinstance;
 		_settings = settings;
+
+		//Will be set on resize anyway, but not setting them here gives warnings
+		_exStyle = 0;
+		_style = 0;
 
 		InitializeWindow();
 	}
