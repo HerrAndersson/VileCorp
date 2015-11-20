@@ -30,7 +30,9 @@ struct RenderObject
 //	string _parent;
 //};
 
-enum Type {UNIT, STRUCTURE, TILE, TRAP };
+//Preliminary solution
+enum Type {UNIT, STRUCTURE, TILE, TRAP, TRIGGER };
+
 class GameObject
 {
 protected:
