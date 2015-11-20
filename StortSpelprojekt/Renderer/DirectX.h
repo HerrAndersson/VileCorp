@@ -1,8 +1,7 @@
 #ifndef DIRECTX_H
 #define DIRECTX_H
 
-#define RENDERER_EXPORT
-
+#define RENDERER_EXPORT __declspec(dllexport)
 
 #include <d3d11.h>
 #include <d3dcompiler.h>
@@ -14,9 +13,10 @@
 
 namespace Renderer
 {
-	class DirectX
+	class RENDERER_EXPORT DirectX
 	{
 	private:
+
 		IDXGISwapChain*				_swapChain;
 		ID3D11Device*				_device;
 		ID3D11DeviceContext*		_deviceContext;
@@ -27,16 +27,18 @@ namespace Renderer
 		ID3D11Texture2D*			_depthBuffer;
 		ID3D11DepthStencilView*		_depthView;
 
-		ID3D11RasterizerState*		_rasterizerState;
-
+		ID3D11RasterizerState*		_rasterizerStateBack;
+		ID3D11RasterizerState*		_rasterizerStateFront;
 
 	public:
+
 		DirectX(HWND hwnd, int screenWidth, int screenHeight);
 		~DirectX();
 
-		ID3D11Device* getDevice();
-		ID3D11DeviceContext* getDeviceContext();
+		ID3D11Device* GetDevice();
+		ID3D11DeviceContext* GetDeviceContext();
 
+		void ResizeResources(HWND hwnd, int windowWidth, int windowHeight);
 	};
 }
 

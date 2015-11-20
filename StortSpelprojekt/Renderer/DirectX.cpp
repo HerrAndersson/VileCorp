@@ -76,7 +76,7 @@ namespace Renderer
 
 		hResult = _device->CreateTexture2D(&depthBufferDesc, NULL, &_depthBuffer);
 		if (FAILED(hResult))
-			throw std::runtime_error("D3DManager: Error creating depth buffer");
+			throw std::runtime_error("DirectX: Error creating depth buffer");
 
 		/*
 		Depth stencil view
@@ -89,7 +89,7 @@ namespace Renderer
 
 		hResult = _device->CreateDepthStencilView(_depthBuffer, &depthStencilViewDesc, &_depthView);
 		if (FAILED(hResult))
-			throw std::runtime_error("D3DManager: Error creating depth stencil view");
+			throw std::runtime_error("DirectX: Error creating depth stencil view");
 
 		/*
 		Rasterizer setup
@@ -108,11 +108,18 @@ namespace Renderer
 		rasterDesc.SlopeScaledDepthBias = 0.0f;
 
 		/*
-		Create rasterizer state
+		Create rasterizer states
 		*/
-		hResult = _device->CreateRasterizerState(&rasterDesc, &_rasterizerState);
+		hResult = _device->CreateRasterizerState(&rasterDesc, &_rasterizerStateBack);
 		if (FAILED(hResult))
 			throw std::runtime_error("DirectX: Error creating rasterizer state");
+
+		rasterDesc.CullMode = D3D11_CULL_FRONT;
+
+		hResult = _device->CreateRasterizerState(&rasterDesc, &_rasterizerStateFront);
+		if (FAILED(hResult))
+			throw std::runtime_error("DirectX: Error creating rasterizer state");
+
 
 		/*
 		Set up viewport
@@ -129,7 +136,7 @@ namespace Renderer
 		*/
 		//_deviceContext->OMSetDepthStencilState(dsDepthEnable, 1);
 		_deviceContext->OMSetRenderTargets(1, &_renderTargetView, NULL);
-		_deviceContext->RSSetState(_rasterizerState);
+		_deviceContext->RSSetState(_rasterizerStateBack);
 		_deviceContext->RSSetViewports(1, &_viewport);
 	}
 
@@ -146,14 +153,53 @@ namespace Renderer
 		_depthView->Release();
 	}
 
-	ID3D11Device* DirectX::getDevice()
+	ID3D11Device* DirectX::GetDevice()
 	{
 		return _device;
 	}
 
-	ID3D11DeviceContext* DirectX::getDeviceContext()
+	ID3D11DeviceContext* DirectX::GetDeviceContext()
 	{
 		return _deviceContext;
 	}
 
+	void DirectX::ResizeResources(HWND hwnd, int windowWidth, int windowHeight)
+	{
+		if (_swapChain)
+		{
+			HRESULT hr;
+			_deviceContext->OMSetRenderTargets(0, 0, 0);
+			_renderTargetView->Release();
+
+			//Preserve the existing buffer count and format. Automatically choose the width and height to match the client rect for HWNDs.
+			hr = _swapChain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
+			if (FAILED(hr))
+				throw std::runtime_error("DirectX::ResizeResources: Error resizing buffers");
+
+			//Get buffer
+			ID3D11Texture2D* pBuffer;
+			hr = _swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&pBuffer);
+			if (FAILED(hr))
+				throw std::runtime_error("DirectX::ResizeResources: Error getting the buffer from the swapchain");
+
+			//Create the new renderTargetView.
+			hr = _device->CreateRenderTargetView(pBuffer, NULL, &_renderTargetView);
+			if (FAILED(hr))
+				throw std::runtime_error("DirectX::ResizeResources: Error creating the renderTargetView");
+
+			pBuffer->Release();
+
+			_deviceContext->OMSetRenderTargets(1, &_renderTargetView, NULL);
+
+			//Set up the new viewport.
+			D3D11_VIEWPORT vp;
+			vp.Width = (FLOAT)windowWidth;
+			vp.Height = (FLOAT)windowHeight;
+			vp.MinDepth = 0.0f;
+			vp.MaxDepth = 1.0f;
+			vp.TopLeftX = 0;
+			vp.TopLeftY = 0;
+			_deviceContext->RSSetViewports(1, &vp);
+		}
+	}
 }
