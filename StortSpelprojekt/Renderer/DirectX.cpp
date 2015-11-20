@@ -134,7 +134,6 @@ namespace Renderer
 		/*
 		Set context data
 		*/
-		//_deviceContext->OMSetDepthStencilState(dsDepthEnable, 1);
 		_deviceContext->OMSetRenderTargets(1, &_renderTargetView, NULL);
 		_deviceContext->RSSetState(_rasterizerStateBack);
 		_deviceContext->RSSetViewports(1, &_viewport);
