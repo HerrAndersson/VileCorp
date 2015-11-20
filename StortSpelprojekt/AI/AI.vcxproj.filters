@@ -13,7 +13,7 @@
     <ClCompile Include="example.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\Documents\Visual Studio 2015\Projects\Tilemap\Tilemap\Tilemap.cpp">
+    <ClCompile Include="Tilemap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -27,7 +27,7 @@
     <ClInclude Include="example.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\Documents\Visual Studio 2015\Projects\Tilemap\Tilemap\Tilemap.h">
+    <ClInclude Include="Tilemap.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
