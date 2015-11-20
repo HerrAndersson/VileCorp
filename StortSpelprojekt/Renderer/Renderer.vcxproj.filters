@@ -5,6 +5,9 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
+    <Filter Include="Fonts">
+      <UniqueIdentifier>{142156a3-20c4-4a5a-86d5-5fec7883191f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -12,6 +15,9 @@
     </ClCompile>
     <ClCompile Include="example.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Fonts.cpp">
+      <Filter>Fonts</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -23,6 +29,9 @@
     </ClInclude>
     <ClInclude Include="example.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Fonts.h">
+      <Filter>Fonts</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
