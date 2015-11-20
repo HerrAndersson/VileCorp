@@ -13,6 +13,9 @@
     <ClCompile Include="example.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\Documents\Visual Studio 2015\Projects\Tilemap\Tilemap\Tilemap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -22,6 +25,9 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="example.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Documents\Visual Studio 2015\Projects\Tilemap\Tilemap\Tilemap.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
