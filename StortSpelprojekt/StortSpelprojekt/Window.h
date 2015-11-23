@@ -49,6 +49,8 @@ namespace System
 
 		HWND GetHWND();
 
+		WindowSettings GetWindowSettings();
+
 		LRESULT CALLBACK MessageHandler(HWND, UINT, WPARAM, LPARAM);
 	};
 

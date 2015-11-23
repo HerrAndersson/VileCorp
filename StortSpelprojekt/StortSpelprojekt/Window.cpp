@@ -7,11 +7,13 @@ namespace System
 		_hinstance = hinstance;
 		_settings = settings;
 
-		//Will be set on resize anyway, but not setting them here gives warnings
-		_exStyle = 0;
 		_style = 0;
+		_exStyle = 0;
 
 		InitializeWindow();
+
+		_style = GetWindowLong(_hwnd, GWL_STYLE);
+		_exStyle = GetWindowLong(_hwnd, GWL_EXSTYLE);
 	}
 
 	Window::~Window()
@@ -91,10 +93,10 @@ namespace System
 		}
 
 		RECT rc = { 0, 0, _settings._height, _settings._width };
-		AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
+		AdjustWindowRect(&rc, (WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX), FALSE);
 
 		_hwnd = CreateWindowEx(WS_EX_APPWINDOW, _applicationName, _applicationName,
-			WS_OVERLAPPEDWINDOW | CW_USEDEFAULT | CW_USEDEFAULT,
+			(WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX) | CW_USEDEFAULT | CW_USEDEFAULT,
 			posX, posY, rc.right - rc.left, rc.bottom - rc.top, NULL, NULL, _hinstance, NULL);
 
 		ShowWindow(_hwnd, SW_SHOW);
@@ -130,18 +132,15 @@ namespace System
 		_settings = settings;
 		int screenWidth = GetSystemMetrics(SM_CXSCREEN);
 		int screenHeight = GetSystemMetrics(SM_CYSCREEN);
-		int posX = 0;
-		int posY = 0;
-
-		LONG style = GetWindowLong(_hwnd, GWL_STYLE);
-		_style = style;
-		LONG exStyle = GetWindowLong(_hwnd, GWL_EXSTYLE);
-		_exStyle = exStyle;
 
 		RECT rect = { 0, 0, _settings._width, _settings._height };
 
+		//Removes borders around window and sets the window style to borderless
 		if (_settings._borderless || _settings._fullscreen)
 		{
+			LONG style = _style;
+			LONG exStyle = _exStyle;
+
 			style &= ~(WS_CAPTION | WS_THICKFRAME | WS_MINIMIZE | WS_MAXIMIZE | WS_SYSMENU);
 			SetWindowLong(_hwnd, GWL_STYLE, style);
 
@@ -150,14 +149,17 @@ namespace System
 
 			AdjustWindowRect(&rect, WS_POPUP, FALSE);
 		}
-		else
+		else //Sets the default style of the window, windowed with borders 
 		{
 			SetWindowLong(_hwnd, GWL_STYLE, _style);
 			SetWindowLong(_hwnd, GWL_EXSTYLE, _exStyle);
 
-			AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, FALSE);
+			AdjustWindowRect(&rect, (WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX), FALSE);
 		}
 
+		//Sets window size and position
+		int posX = 0;
+		int posY = 0;
 		if (!_settings._fullscreen)
 		{
 			posX = (screenWidth - _settings._width) / 2;
@@ -170,10 +172,7 @@ namespace System
 			_settings._width = GetSystemMetrics(SM_CXSCREEN);
 			_settings._height = GetSystemMetrics(SM_CYSCREEN);
 
-			SetWindowLong(_hwnd, GWL_EXSTYLE, WS_POPUP);
-			SetWindowPos(_hwnd, HWND_TOP, posX, posY, _settings._width, _settings._height, SWP_FRAMECHANGED);
-
-			SetWindowPos(_hwnd, HWND_TOP, 0, 0, _settings._width, _settings._height, SWP_FRAMECHANGED | SWP_SHOWWINDOW);
+			SetWindowPos(_hwnd, NULL, posX, posY, _settings._width, _settings._height, SWP_FRAMECHANGED | SWP_SHOWWINDOW);
 		}
 
 		SetForegroundWindow(_hwnd);
@@ -186,6 +185,11 @@ namespace System
 	HWND Window::GetHWND()
 	{
 		return _hwnd;
+	}
+
+	WindowSettings Window::GetWindowSettings()
+	{
+		return _settings;
 	}
 
 	LRESULT CALLBACK Window::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam)
@@ -212,6 +216,7 @@ namespace System
 			PostQuitMessage(0);
 			return 0;
 		}
+
 		default:
 		{
 			return windowHandle->MessageHandler(hwnd, umessage, wparam, lparam);

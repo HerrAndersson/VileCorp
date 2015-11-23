@@ -26,15 +26,24 @@ HRESULT Game::Initialize(HINSTANCE hInstance, int nCmdShow)
 int Game::Run()
 {
 	int i = 1;
-	while (_window->Run()) 
-	{ 
-		if (i == 1)
+	while (_window->Run())
+	{
+		if (GetAsyncKeyState(VK_LEFT) != 0)
 		{
 			System::WindowSettings settings(1280, 720, false, false, true);
 			_window->ResizeWindow(settings);
-			//Resize rendertarget etc here
-			//Ex. Renderer::ResizeBuffers();
-			i = 0;
+		}
+
+		if (GetAsyncKeyState(VK_RIGHT) != 0)
+		{
+			System::WindowSettings settings(1280, 720, true, false, true);
+			_window->ResizeWindow(settings);
+		}
+
+		if (GetAsyncKeyState(VK_UP) != 0)
+		{
+			System::WindowSettings settings(1280, 720, false, true, true);
+			_window->ResizeWindow(settings);
 		}
 	};
 
