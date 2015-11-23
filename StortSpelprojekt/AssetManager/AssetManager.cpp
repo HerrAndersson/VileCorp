@@ -29,7 +29,7 @@ AssetManager::~AssetManager()
 //Looks through the Models folder and creates an empty RenderObject for each entry
 void AssetManager::SetupRenderObjectList()
 {
-	GetFilenamesInDirectory("../Assets/Models", ".bin", *modelFiles);
+	GetFilenamesInDirectory("/Assets/Models", ".bin", *modelFiles);
 	for (int i = 0; i < modelFiles->size(); i++)
 	{
 		RenderObject* renderObject = ScanModel(modelFiles->at(i));
