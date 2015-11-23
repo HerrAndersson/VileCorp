@@ -16,7 +16,7 @@ struct MainHeader {
 
 struct MeshHeader
 {
-	int nameLength, numberPoints, numberNormals, numberCoords, numberFaces, subMeshID, numberPointLights, numberSpotLights;
+	int nameLength, numberOfVertices, subMeshID, numberPointLights, numberSpotLights;
 };
 
 struct MatHeader {
@@ -85,6 +85,7 @@ struct RenderObject
 	Texture* specularTexture = nullptr;
 	string diffFile, specFile; //TODO remove - Fredrik
 	vector<Mesh> meshes;
+	vector<int> toMesh;
 };
 
 static void splitStringToVector(string input, vector<string> &output, string delimiter) {
@@ -107,7 +108,7 @@ static bool GetFilenamesInDirectory(char* folder, char* extension, vector<string
 	int extLen = strlen(extension);
 	char buf[MAX_PATH];
 	sprintf_s(buf, sizeof(buf), "%s\\*", folder);
-	dhandle = FindFirstFile(buf, &fdata);
+	dhandle = FindFirstFile((LPCTSTR)buf, &fdata);
 	printf(extension);
 	printf(" files found in ");
 	printf(folder);
@@ -116,10 +117,10 @@ static bool GetFilenamesInDirectory(char* folder, char* extension, vector<string
 	{
 		if (FindNextFile(dhandle, &fdata))
 		{
-			if (strcmp(&fdata.cFileName[strlen(fdata.cFileName) - extLen], extension) == 0)
+			if (strcmp((const char*)&fdata.cFileName[strlen((const char*)fdata.cFileName) - extLen], extension) == 0)
 			{
-				listToFill.push_back(fdata.cFileName);
-				printf(fdata.cFileName);
+				listToFill.push_back((const char*)fdata.cFileName);
+				printf((const char*)fdata.cFileName);
 				printf("\n");
 			}
 		}
@@ -151,14 +152,14 @@ static bool GetFilenamesInDirectory(char* folder, char* extension, vector<string
 class ASSET_MANAGER_EXPORT AssetManager
 {
 private:
-	int meshFormatVersion = 22;
-	ifstream infile;
+	int meshFormatVersion = 23;
+	ifstream* infile;
 	ID3D11Device* device;
 
-	vector<string> modelFiles;
+	vector<string>* modelFiles;
 
-	vector<RenderObject*> renderObjects;
-	vector<RenderObject*> renderObjectsToFlush;
+	vector<RenderObject*>* renderObjects;
+	vector<RenderObject*>* renderObjectsToFlush;
 
 //	vector<ID3D11ShaderResourceView*> textures;
 //	vector<ID3D11ShaderResourceView*> texturesToFlush;
@@ -166,10 +167,8 @@ private:
 	void LoadModel(string file_path, RenderObject* renderObject);
 	void Flush();
 	RenderObject* ScanModel(string file_path);
-	ID3D11Buffer* CreateVertexBuffer(vector<Point> *points, vector<XMFLOAT3> *normals, vector<XMFLOAT2> *UVs, vector<XMINT3> *vertexIndices, int skeleton);
+	ID3D11Buffer* CreateVertexBuffer(vector<Vertex> *vertices, int skeleton);
 	void SetupRenderObjectList();
-
-	RenderObject cube;
 
 public:
 	AssetManager(ID3D11Device* device);
