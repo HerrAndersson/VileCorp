@@ -19,73 +19,45 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Game.cpp" />
-    <ClCompile Include="GameObject.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="Menu.cpp" />
-    <ClCompile Include="ObjectHandler.cpp" />
-    <ClCompile Include="Options.cpp" />
-    <ClCompile Include="Scene.cpp" />
-    <ClCompile Include="Splash.cpp" />
-    <ClCompile Include="StateMachine.cpp" />
+    <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="AssetManager.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Game.h" />
-    <ClInclude Include="GameObject.h" />
-    <ClInclude Include="Menu.h" />
-    <ClInclude Include="ObjectHandler.h" />
-    <ClInclude Include="Options.h" />
-    <ClInclude Include="Scene.h" />
-    <ClInclude Include="Splash.h" />
-    <ClInclude Include="StateMachine.h" />
     <ClInclude Include="stdafx.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\AI\AI.vcxproj">
-      <Project>{421e96a2-ee6c-4a2b-be4d-fd57303e7497}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\AssetManager\AssetManager.vcxproj">
-      <Project>{12d08945-3be4-48f7-86c9-093ab5610dfb}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\Renderer\Renderer.vcxproj">
-      <Project>{af2fa019-4cd5-41e4-bd38-ab00e366c9a1}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\System\System.vcxproj">
-      <Project>{1a48944a-4d63-4549-9560-d04bf1393ff2}</Project>
-    </ProjectReference>
+    <ClInclude Include="AssetManager.h" />
+    <ClInclude Include="targetver.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{EC1FCE9E-9382-463B-A119-666180E146D6}</ProjectGuid>
-    <Keyword>Win32Proj</Keyword>
-    <RootNamespace>StortSpelprojekt</RootNamespace>
+    <ProjectGuid>{12D08945-3BE4-48F7-86C9-093AB5610DFB}</ProjectGuid>
+    <RootNamespace>AssetManager</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.10240.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -106,87 +78,64 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)../Output/Bin/x86/$(Configuration)/</OutDir>
     <IntDir>$(SolutionDir)../Output/Obj/x86/$(Configuration)/$(ProjectName)/</IntDir>
-    <TargetName>$(ProjectName)D</TargetName>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LinkIncremental>true</LinkIncremental>
-    <IntDir>$(SolutionDir)../Output/Obj/x86/$(Configuration)/$(ProjectName)/</IntDir>
-    <OutDir>$(SolutionDir)../Output/Bin/x86/$(Configuration)/</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)../Output/Bin/x86/$(Configuration)/</OutDir>
+    <IntDir>$(SolutionDir)../Output/Obj/x86/$(Configuration)/$(ProjectName)/</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)../Output/Bin/x86/$(Configuration)/</OutDir>
     <IntDir>$(SolutionDir)../Output/Obj/x86/$(Configuration)/$(ProjectName)/</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LinkIncremental>false</LinkIncremental>
-    <IntDir>$(SolutionDir)../Output/Obj/x86/$(Configuration)/$(ProjectName)/</IntDir>
     <OutDir>$(SolutionDir)../Output/Bin/x86/$(Configuration)/</OutDir>
+    <IntDir>$(SolutionDir)../Output/Obj/x86/$(Configuration)/$(ProjectName)/</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../System;../Renderer;../AI;../AssetManager;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../System;../Renderer;../AI;../AssetManager;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../System;../Renderer;../AI;../AssetManager;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../System;../Renderer;../AI;../AssetManager;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
