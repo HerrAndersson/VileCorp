@@ -6,6 +6,17 @@ namespace Renderer
 	{
 		HRESULT hResult;
 
+		_deferredRenderTargetViews = new ID3D11RenderTargetView*[_R_TARGETS];
+		_deferredShaderResourceViews = new ID3D11ShaderResourceView*[_R_TARGETS];
+		ID3D11Texture2D** textureArray = new ID3D11Texture2D*[_R_TARGETS];
+
+		// Initialize render targets
+		for (int i = 0; i < _R_TARGETS; i++)
+		{
+			_deferredRenderTargetViews[i] = nullptr;
+			_deferredShaderResourceViews[i] = nullptr;
+		}
+
 		/*
 		Describe the swap chain
 		*/
@@ -42,6 +53,33 @@ namespace Renderer
 			throw std::runtime_error("DirectX: Error creating swap chain");
 
 		/*
+		Setup texture desctiption
+		*/
+		D3D11_TEXTURE2D_DESC textureDesc;
+		ZeroMemory(&textureDesc, sizeof(textureDesc));
+
+		textureDesc.Width = screenWidth;
+		textureDesc.Height = screenHeight;
+		textureDesc.MipLevels = 1;
+		textureDesc.ArraySize = 1;
+		textureDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+		textureDesc.SampleDesc.Count = 1;
+		textureDesc.Usage = D3D11_USAGE_DEFAULT;
+		textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+		textureDesc.CPUAccessFlags = 0;
+		textureDesc.MiscFlags = 0;
+
+		/*
+		Create the textures
+		*/
+		for (int i = 0; i < _R_TARGETS; i++)
+		{
+			hResult = _device->CreateTexture2D(&textureDesc, NULL, &textureArray[i]);
+			if (FAILED(hResult))
+				throw std::runtime_error("DirectX: Error creating textyre");
+		}
+
+		/*
 		Get back buffer pointer and get render target view with it
 		*/
 		ID3D11Texture2D* backBufferPointer;
@@ -49,12 +87,48 @@ namespace Renderer
 		if (FAILED(hResult))
 			throw std::runtime_error("DirectX: Could not get swap chain pointer");
 
-		hResult = _device->CreateRenderTargetView(backBufferPointer, NULL, &_renderTargetView);
+		hResult = _device->CreateRenderTargetView(backBufferPointer, NULL, &_mainRenderTargetView);
 		if (FAILED(hResult))
 			throw std::runtime_error("DirectX: Error creating render target view ");
 
+		for (int i = 0; i < _R_TARGETS; i++)
+		{
+			hResult = _device->CreateRenderTargetView(textureArray[i], NULL, &_deferredRenderTargetViews[i]);
+			if (FAILED(hResult))
+				throw std::runtime_error("DirectX: Error creating render target views ");
+		}
+
 		backBufferPointer->Release();
 		backBufferPointer = nullptr;
+
+		/* 
+		Setup the description of the shader resource view.
+		*/
+		D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
+
+		shaderResourceViewDesc.Format = textureDesc.Format;
+		shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+		shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
+		shaderResourceViewDesc.Texture2D.MipLevels = 1;
+
+		/*
+		Create shader resource views
+		*/
+		for (int i = 0; i < _R_TARGETS; i++)
+		{
+			hResult = _device->CreateShaderResourceView(textureArray[i], NULL, &_deferredShaderResourceViews[i]);
+			if (FAILED(hResult))
+				throw std::runtime_error("DirectX: Error creating shaderResource views ");
+		}
+
+		/* 
+		Release textures
+		*/
+		for (int i = 0; i < _R_TARGETS; i++) 
+		{ 
+			textureArray[i]->Release(); 
+		}
+		delete[] textureArray;
 
 		/*
 		Depth buffer
@@ -134,7 +208,7 @@ namespace Renderer
 		/*
 		Set context data
 		*/
-		_deviceContext->OMSetRenderTargets(1, &_renderTargetView, NULL);
+		_deviceContext->OMSetRenderTargets(1, &_mainRenderTargetView, NULL);
 		_deviceContext->RSSetState(_rasterizerStateBack);
 		_deviceContext->RSSetViewports(1, &_viewport);
 	}
@@ -147,7 +221,15 @@ namespace Renderer
 		_swapChain->Release();
 		_device->Release();
 		_deviceContext->Release();
-		_renderTargetView->Release();
+		_mainRenderTargetView->Release();
+		_mainShaderResourceView->Release();
+		for (int i = 0; i < _R_TARGETS; i++)
+		{
+			_deferredRenderTargetViews[i]->Release();
+			_deferredShaderResourceViews[i]->Release();
+		}
+		delete[] _deferredRenderTargetViews;
+		delete[] _deferredShaderResourceViews;
 		_depthBuffer->Release();
 		_depthView->Release();
 	}
@@ -168,7 +250,7 @@ namespace Renderer
 		{
 			HRESULT hr;
 			_deviceContext->OMSetRenderTargets(0, 0, 0);
-			_renderTargetView->Release();
+			_mainRenderTargetView->Release();
 
 			//Preserve the existing buffer count and format. Automatically choose the width and height to match the client rect for HWNDs.
 			hr = _swapChain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
@@ -182,13 +264,13 @@ namespace Renderer
 				throw std::runtime_error("DirectX::ResizeResources: Error getting the buffer from the swapchain");
 
 			//Create the new renderTargetView.
-			hr = _device->CreateRenderTargetView(pBuffer, NULL, &_renderTargetView);
+			hr = _device->CreateRenderTargetView(pBuffer, NULL, &_mainRenderTargetView);
 			if (FAILED(hr))
 				throw std::runtime_error("DirectX::ResizeResources: Error creating the renderTargetView");
 
 			pBuffer->Release();
 
-			_deviceContext->OMSetRenderTargets(1, &_renderTargetView, NULL);
+			_deviceContext->OMSetRenderTargets(1, &_mainRenderTargetView, NULL);
 
 			//Set up the new viewport.
 			D3D11_VIEWPORT vp;
