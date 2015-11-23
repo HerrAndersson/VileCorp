@@ -41,7 +41,6 @@ namespace System
 
 	public:
 
-		Window();
 		Window(LPCSTR applicationName, HINSTANCE hinstance, WindowSettings settings);
 		virtual ~Window();
 
@@ -49,6 +48,8 @@ namespace System
 		void ResizeWindow(WindowSettings settings);
 
 		HWND GetHWND();
+
+		WindowSettings GetWindowSettings();
 
 		LRESULT CALLBACK MessageHandler(HWND, UINT, WPARAM, LPARAM);
 	};
