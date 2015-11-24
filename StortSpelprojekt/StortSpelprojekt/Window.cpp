@@ -25,7 +25,7 @@ namespace System
 	{
 		ShowCursor(true);
 
-		if (_settings._fullscreen)
+		if (_settings._flags & WindowSettings::FULLSCREEN)
 		{
 			ChangeDisplaySettings(NULL, 0);
 		}
@@ -66,7 +66,7 @@ namespace System
 		int screenHeight = GetSystemMetrics(SM_CYSCREEN);
 
 		//Setup the screen settings depending on whether it is running in full screen or in windowed mode.
-		if (_settings._fullscreen)
+		if (_settings._flags & WindowSettings::FULLSCREEN)
 		{
 			_settings._height = screenHeight;
 			_settings._width = screenWidth;
@@ -104,7 +104,7 @@ namespace System
 		SetFocus(_hwnd);
 
 		SetCursorPos(screenWidth / 2, screenHeight / 2);
-		ShowCursor(_settings._showCursor);
+		ShowCursor(_settings._flags & WindowSettings::SHOW_CURSOR);
 	}
 
 	bool Window::Run()
@@ -136,7 +136,8 @@ namespace System
 		RECT rect = { 0, 0, _settings._width, _settings._height };
 
 		//Removes borders around window and sets the window style to borderless
-		if (_settings._borderless || _settings._fullscreen)
+		if (_settings._flags & WindowSettings::BORDERLESS ||
+			_settings._flags & WindowSettings::FULLSCREEN)
 		{
 			LONG style = _style;
 			LONG exStyle = _exStyle;
@@ -160,7 +161,7 @@ namespace System
 		//Sets window size and position
 		int posX = 0;
 		int posY = 0;
-		if (!_settings._fullscreen)
+		if (!(_settings._flags & WindowSettings::FULLSCREEN))
 		{
 			posX = (screenWidth - _settings._width) / 2;
 			posY = (screenHeight - _settings._height) / 2;
@@ -171,7 +172,7 @@ namespace System
 		{
 			_settings._width = GetSystemMetrics(SM_CXSCREEN);
 			_settings._height = GetSystemMetrics(SM_CYSCREEN);
-
+			ChangeDisplaySettings(nullptr, CDS_FULLSCREEN);
 			SetWindowPos(_hwnd, NULL, posX, posY, _settings._width, _settings._height, SWP_FRAMECHANGED | SWP_SHOWWINDOW);
 		}
 
@@ -179,7 +180,7 @@ namespace System
 		SetFocus(_hwnd);
 
 		SetCursorPos(screenWidth / 2, screenHeight / 2);
-		ShowCursor(_settings._showCursor);
+		ShowCursor(_settings._flags & WindowSettings::SHOW_CURSOR);
 	}
 
 	HWND Window::GetHWND()

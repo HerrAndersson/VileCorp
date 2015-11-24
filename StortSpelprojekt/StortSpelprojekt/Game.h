@@ -15,10 +15,8 @@ private:
 
 public:
 
-	Game();
+	Game(HINSTANCE hInstance, int nCmdShow);
 	~Game();
-
-	HRESULT Initialize(HINSTANCE hInstance, int nCmdShow);
 
 	int Run();
 };
