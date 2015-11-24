@@ -24,7 +24,7 @@ int Game::Run()
 		if (GetAsyncKeyState(VK_LEFT) != 0)
 		{
 			//Windowed mode
-			System::WindowSettings settings(1280, 720, false, false, true);
+			System::WindowSettings settings(1280, 720, System::WindowSettings::SHOW_CURSOR);
 			_window->ResizeWindow(settings);
 			_renderModule->ResizeResources(_window->GetHWND(), settings._width, settings._height);
 		}
@@ -32,7 +32,7 @@ int Game::Run()
 		if (GetAsyncKeyState(VK_RIGHT) != 0)
 		{
 			//Fullscreen
-			System::WindowSettings settings(1920, 1080, true, false, true);
+			System::WindowSettings settings(1920, 1080, System::WindowSettings::SHOW_CURSOR | System::WindowSettings::FULLSCREEN);
 			_window->ResizeWindow(settings);
 			_renderModule->ResizeResources(_window->GetHWND(), settings._width, settings._height);
 		}
@@ -40,7 +40,7 @@ int Game::Run()
 		if (GetAsyncKeyState(VK_UP) != 0)
 		{
 			//Borderless windowed
-			System::WindowSettings settings(567, 765, false, true, true);
+			System::WindowSettings settings(567, 765, System::WindowSettings::SHOW_CURSOR | System::WindowSettings::BORDERLESS);
 			_window->ResizeWindow(settings);
 			_renderModule->ResizeResources(_window->GetHWND(), settings._width, settings._height);
 		}
