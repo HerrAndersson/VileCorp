@@ -2,7 +2,7 @@
 
 namespace Renderer
 {
-	DirectX::DirectX(HWND hwnd, int screenWidth = 1024, int screenHeight = 768)
+	DirectX::DirectX(HWND hwnd, int screenWidth, int screenHeight)
 	{
 		HRESULT hResult;
 
