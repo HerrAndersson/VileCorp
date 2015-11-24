@@ -36,7 +36,7 @@ namespace Renderer
 		swapChainDesc.SampleDesc.Count = 1;
 		swapChainDesc.SampleDesc.Quality = 0;
 
-		swapChainDesc.Windowed = false;
+		swapChainDesc.Windowed = true;
 
 		swapChainDesc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
 		swapChainDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
@@ -76,7 +76,7 @@ namespace Renderer
 		{
 			hResult = _device->CreateTexture2D(&textureDesc, NULL, &textureArray[i]);
 			if (FAILED(hResult))
-				throw std::runtime_error("DirectX: Error creating textyre");
+				throw std::runtime_error("DirectX: Error creating texture");
 		}
 
 		/*
@@ -105,6 +105,7 @@ namespace Renderer
 		Setup the description of the shader resource view.
 		*/
 		D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
+		ZeroMemory(&shaderResourceViewDesc, sizeof(shaderResourceViewDesc));
 
 		shaderResourceViewDesc.Format = textureDesc.Format;
 		shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
@@ -114,9 +115,18 @@ namespace Renderer
 		/*
 		Create shader resource views
 		*/
+		//ID3D11Texture2D* t = nullptr;
+		//hResult = _device->CreateTexture2D(&textureDesc, NULL, &t);
+		//if (FAILED(hResult))
+		//	throw std::runtime_error("DirectX: Error creating texture");
+
+		//hResult = _device->CreateShaderResourceView(t, &shaderResourceViewDesc, &_mainShaderResourceView);
+		//if (FAILED(hResult))
+		//	throw std::runtime_error("DirectX: Error creating shaderResource views ");
+
 		for (int i = 0; i < _R_TARGETS; i++)
 		{
-			hResult = _device->CreateShaderResourceView(textureArray[i], NULL, &_deferredShaderResourceViews[i]);
+			hResult = _device->CreateShaderResourceView(textureArray[i], &shaderResourceViewDesc, &_deferredShaderResourceViews[i]);
 			if (FAILED(hResult))
 				throw std::runtime_error("DirectX: Error creating shaderResource views ");
 		}
@@ -129,6 +139,7 @@ namespace Renderer
 			textureArray[i]->Release(); 
 		}
 		delete[] textureArray;
+		//t->Release();
 
 		/*
 		Depth buffer
@@ -156,6 +167,7 @@ namespace Renderer
 		Depth stencil view
 		*/
 		D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
+		ZeroMemory(&depthStencilViewDesc, sizeof(depthStencilViewDesc));
 
 		depthStencilViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
 		depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
@@ -169,6 +181,7 @@ namespace Renderer
 		Rasterizer setup
 		*/
 		D3D11_RASTERIZER_DESC rasterDesc;
+		ZeroMemory(&rasterDesc, sizeof(rasterDesc));
 
 		rasterDesc.AntialiasedLineEnable = false;
 		rasterDesc.CullMode = D3D11_CULL_BACK;
@@ -222,7 +235,7 @@ namespace Renderer
 		_device->Release();
 		_deviceContext->Release();
 		_mainRenderTargetView->Release();
-		_mainShaderResourceView->Release();
+		//_mainShaderResourceView->Release();
 		for (int i = 0; i < _R_TARGETS; i++)
 		{
 			_deferredRenderTargetViews[i]->Release();
@@ -251,6 +264,14 @@ namespace Renderer
 			HRESULT hr;
 			_deviceContext->OMSetRenderTargets(0, 0, 0);
 			_mainRenderTargetView->Release();
+
+			DXGI_MODE_DESC modeDesc;
+			ZeroMemory(&modeDesc, sizeof(modeDesc));
+			modeDesc.Width = windowWidth;
+			modeDesc.Height = windowHeight;
+			modeDesc.Format = DXGI_FORMAT_UNKNOWN;
+
+			_swapChain->ResizeTarget(&modeDesc);
 
 			//Preserve the existing buffer count and format. Automatically choose the width and height to match the client rect for HWNDs.
 			hr = _swapChain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
@@ -281,6 +302,25 @@ namespace Renderer
 			vp.TopLeftX = 0;
 			vp.TopLeftY = 0;
 			_deviceContext->RSSetViewports(1, &vp);
+
+			_viewport = vp;
 		}
+	}
+
+	void DirectX::BeginScene(float red, float green, float blue, float alpha)
+	{
+		float color[] = { red, green, blue, alpha };
+
+		/*deviceContext->OMSetDepthStencilState(dsDepthEnable, 1);*/
+		_deviceContext->OMSetRenderTargets(1, &_mainRenderTargetView, _depthView);
+		//_deviceContext->RSSetState(rsBackCulling);
+		_deviceContext->RSSetViewports(1, &_viewport);
+		_deviceContext->ClearRenderTargetView(_mainRenderTargetView, color);
+		_deviceContext->ClearDepthStencilView(_depthView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+	}
+
+	void DirectX::EndScene()
+	{
+		_swapChain->Present(0, 0);
 	}
 }

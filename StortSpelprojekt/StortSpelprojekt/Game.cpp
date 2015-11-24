@@ -4,12 +4,9 @@ Game::Game() {}
 
 Game::~Game() 
 {
-	Release();
-
 	delete _window;
+	delete _renderModule;
 }
-
-void Game::Release() {}
 
 HRESULT Game::Initialize(HINSTANCE hInstance, int nCmdShow)
 {
@@ -20,32 +17,44 @@ HRESULT Game::Initialize(HINSTANCE hInstance, int nCmdShow)
 	System::WindowSettings settings;
 	_window = new System::Window("A", hInstance, settings);
 
+	_renderModule = new Renderer::RenderModule(_window->GetHWND(), settings._width, settings._height);
+
+
 	return hr;
 }
 
 int Game::Run()
 {
-	int i = 1;
 	while (_window->Run())
 	{
 		if (GetAsyncKeyState(VK_LEFT) != 0)
 		{
-			System::WindowSettings settings(1280, 720, false, false, true);
+			System::WindowSettings settings(1280*4, 720*4, false, false, true);
 			_window->ResizeWindow(settings);
+			_renderModule->ResizeResources(_window->GetHWND(), settings._width, settings._height);
 		}
 
 		if (GetAsyncKeyState(VK_RIGHT) != 0)
 		{
-			System::WindowSettings settings(1280, 720, true, false, true);
+			//Fullscreen
+			System::WindowSettings settings(1920, 1080, true, false, true);
 			_window->ResizeWindow(settings);
+			_renderModule->ResizeResources(_window->GetHWND(), settings._width, settings._height);
 		}
 
 		if (GetAsyncKeyState(VK_UP) != 0)
 		{
-			System::WindowSettings settings(1280, 720, false, true, true);
+			System::WindowSettings settings(567, 765, false, true, true);
 			_window->ResizeWindow(settings);
+			_renderModule->ResizeResources(_window->GetHWND(), settings._width, settings._height);
 		}
+
+
+		_renderModule->BeginScene(1, 1, 0, 1);
+		_renderModule->Render();
+		_renderModule->EndScene();
+
 	};
 
-	return 1;
+	return 0;
 }

@@ -92,7 +92,7 @@ namespace System
 			posY = (screenHeight - _settings._height) / 2;
 		}
 
-		RECT rc = { 0, 0, _settings._height, _settings._width };
+		RECT rc = { 0, 0, _settings._width, _settings._height };
 		AdjustWindowRect(&rc, (WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX), FALSE);
 
 		_hwnd = CreateWindowEx(WS_EX_APPWINDOW, _applicationName, _applicationName,

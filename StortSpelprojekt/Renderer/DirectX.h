@@ -49,6 +49,9 @@ namespace Renderer
 		ID3D11DeviceContext* GetDeviceContext();
 
 		void ResizeResources(HWND hwnd, int windowWidth, int windowHeight);
+
+		void BeginScene(float red, float green, float blue, float alpha);
+		void EndScene();
 	};
 }
 

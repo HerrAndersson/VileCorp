@@ -6,8 +6,8 @@ namespace System
 {
 	struct SYSTEM_EXPORT WindowSettings
 	{
-		int _width = 400;
-		int _height = 300;
+		int _width = 1280;
+		int _height = 720;
 		bool _fullscreen = false;
 		bool _borderless = false;
 		bool _showCursor = true;
