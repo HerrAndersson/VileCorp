@@ -1,26 +1,20 @@
 #include "Game.h"
-#include "example.h"
 
 int WINAPI wWinMain(HINSTANCE _hInstance, HINSTANCE _hPrevInstance, LPWSTR _lpCmdLine, int _nCmdShow)
 {
+	int result = 0;
 
-
-	System::Example* example = new System::Example(5);
-	int testVar = example->GetValue();
-	delete example;
-
-	myInitMemoryCheck();
-	int rv = 0;
-
-	Game game;
-
-	rv = game.Initialize(_hInstance, _nCmdShow);
-	if (FAILED(rv))
+	try
 	{
-		return rv;
+		myInitMemoryCheck();
+		
+		Game game(_hInstance, _nCmdShow);
+		result = game.Run();
 	}
-
-	rv = game.Run();
-
-	return rv;
+	catch (const std::exception& e)
+	{
+		MessageBoxA(NULL, e.what(), "Error", MB_ICONERROR | MB_OK);
+		result = 1;
+	}
+	return result;
 }
