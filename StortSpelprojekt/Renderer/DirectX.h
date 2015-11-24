@@ -29,7 +29,7 @@ namespace Renderer
 
 		ID3D11RenderTargetView*		_mainRenderTargetView;
 		ID3D11RenderTargetView**	_deferredRenderTargetViews;
-		ID3D11ShaderResourceView*	_mainShaderResourceView;
+		ID3D11ShaderResourceView*	_mainShaderResourceView; //Possibly not needed /Sebastian
 		ID3D11ShaderResourceView**	_deferredShaderResourceViews;
 		D3D11_VIEWPORT				_viewport;
 
@@ -47,6 +47,10 @@ namespace Renderer
 
 		ID3D11Device* GetDevice();
 		ID3D11DeviceContext* GetDeviceContext();
+
+		void ClearShaderResources();
+		void ClearGeometryPassRTVs(float r, float g, float b, float a);
+		void SetGeometryPassRTVs();
 
 		void ResizeResources(HWND hwnd, int windowWidth, int windowHeight);
 

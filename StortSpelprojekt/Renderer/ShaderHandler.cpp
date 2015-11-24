@@ -21,6 +21,15 @@ namespace Renderer
 
 		_defaultVS = static_cast<ID3D11VertexShader*>(CreateShader(device, L"../Renderer/Shaders/DefaultVS.hlsl", VERTEX_SHADER, inputDesc, numElements));
 		_defaultPS = static_cast<ID3D11PixelShader*>(CreateShader(device, L"../Renderer/Shaders/DefaultPS.hlsl", PIXEL_SHADER));
+
+		/*
+		GEOMETRY PASS INITS
+		*/
+		/*TODO Sebastian 25/11
+		_geoPassVS = static_cast<ID3D11VertexShader*>(CreateShader(device, L"../Renderer/Shaders/[insert name here].hlsl, VERTEX_SHADER, inputDesc, numElements));
+		_geoPassGS = 
+		_geoPassPS =
+		*/
 	}
 
 	ShaderHandler::~ShaderHandler()
@@ -179,5 +188,16 @@ namespace Renderer
 
 		deviceContext->VSSetShader(_defaultVS, NULL, 0);
 		deviceContext->PSSetShader(_defaultPS, NULL, 0);
+	}
+
+	void ShaderHandler::SetGeometryPassShaders(ID3D11DeviceContext * deviceContext)
+	{
+		// Set vertex layout
+		deviceContext->IASetInputLayout(_geoPassLayout);
+
+		// Set shaders
+		deviceContext->VSSetShader(_geoPassVS, nullptr, 0);
+		deviceContext->GSSetShader(_geoPassGS, nullptr, 0);
+		deviceContext->PSSetShader(_geoPassPS, nullptr, 0);
 	}
 }

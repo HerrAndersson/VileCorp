@@ -219,11 +219,9 @@ namespace Renderer
 		_viewport.TopLeftY = 0.0f;
 
 		/*
-		Set context data
+		Set context data 
 		*/
-		_deviceContext->OMSetRenderTargets(1, &_mainRenderTargetView, NULL);
 		_deviceContext->RSSetState(_rasterizerStateBack);
-		_deviceContext->RSSetViewports(1, &_viewport);
 	}
 
 	DirectX::~DirectX()
@@ -255,6 +253,40 @@ namespace Renderer
 	ID3D11DeviceContext* DirectX::GetDeviceContext()
 	{
 		return _deviceContext;
+	}
+
+	void DirectX::ClearShaderResources()
+	{
+		ID3D11ShaderResourceView** nullArray = new ID3D11ShaderResourceView*[_R_TARGETS];
+		for (int i = 0; i < _R_TARGETS; i++)
+		{
+			nullArray[i] = nullptr;
+		}
+
+		_deviceContext->PSSetShaderResources(0, _R_TARGETS, nullArray);
+
+		//Not sure if this crashes /Sebastian
+		delete[] nullArray;
+	}
+
+	void DirectX::ClearGeometryPassRTVs(float r, float g, float b, float a)
+	{
+		float clearColor[] = { r, g, b, a };
+
+		for (int i = 0; i < _R_TARGETS; i++)
+		{
+			_deviceContext->ClearRenderTargetView(_deferredRenderTargetViews[i], clearColor);
+		}
+
+		/*
+		Clear depth stencil view
+		*/
+		_deviceContext->ClearDepthStencilView(_depthView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0, 0);
+	}
+
+	void DirectX::SetGeometryPassRTVs()
+	{
+		_deviceContext->OMSetRenderTargets(_R_TARGETS, _deferredRenderTargetViews, _depthView);
 	}
 
 	void DirectX::ResizeResources(HWND hwnd, int windowWidth, int windowHeight)
