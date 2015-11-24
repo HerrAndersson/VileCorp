@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include "GameObject.h"
+#include "Tilemap.h"
 
 /*
 ObjectHandler
@@ -21,6 +22,7 @@ class ObjectHandler
 private:
 	int _size;
 	std::vector<GameObject*> _gameObjects;
+	Tilemap* _tilemap;
 	
 	ObjectHandler GetAll(Type type);
 
@@ -32,7 +34,7 @@ public:
 
 	int GetSize() const;
 
-	void Add(GameObject* gameObject);
+	bool Add(GameObject* gameObject);
 	bool Remove(short ID);
 	void Clear();
 
@@ -40,6 +42,10 @@ public:
 	GameObject* Find(int index);
 
 	std::vector<RenderObject*> GetRenderObjects() const;
+
+	Tilemap* GetTileMap() const;
+	void SetTileMap(Tilemap* tilemap);
+
 
 	//Update gamelogic of all objects
 	void Update();

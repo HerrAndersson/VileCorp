@@ -31,10 +31,16 @@
     <ClCompile Include="StateMachine.cpp">
       <Filter>State Machine</Filter>
     </ClCompile>
+    <ClCompile Include="ObjectHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="GameObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ObjectHandler.cpp">
+    <ClCompile Include="Tile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tilemap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -60,10 +66,16 @@
     <ClInclude Include="StateMachine.h">
       <Filter>State Machine</Filter>
     </ClInclude>
+    <ClInclude Include="ObjectHandler.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
     <ClInclude Include="GameObject.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="ObjectHandler.h">
+    <ClInclude Include="Tile.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tilemap.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -39,17 +39,32 @@ int ObjectHandler::GetSize() const
 
 
 
-void ObjectHandler::Add(GameObject * gameObject)
+bool ObjectHandler::Add(GameObject * gameObject)
 {
-	_gameObjects.push_back(gameObject);
-	_size++;
+	bool exist = false;
+
+	for (int i = 0; i < _size && !exist; i++)
+	{
+		if (_gameObjects[i] == gameObject)
+		{
+			exist = true;
+		}
+	}
+
+	if (!exist)
+	{
+		_gameObjects.push_back(gameObject);
+		_size++;
+	}
+
+	return exist;
 }
 
 bool ObjectHandler::Remove(short ID)
 {
 	bool removed = false;
 
-	for (int i = 0; i < _size; i++)
+	for (int i = 0; i < _size && !removed; i++)
 	{
 		if (_gameObjects[i]->GetID() == ID)
 		{
@@ -119,6 +134,16 @@ std::vector<RenderObject*> ObjectHandler::GetRenderObjects() const
 	}
 
 	return renderObjects;
+}
+
+Tilemap * ObjectHandler::GetTileMap() const
+{
+	return _tilemap;
+}
+
+void ObjectHandler::SetTileMap(Tilemap * tilemap)
+{
+	_tilemap = tilemap;
 }
 
 void ObjectHandler::Update()

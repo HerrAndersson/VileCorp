@@ -13,9 +13,6 @@
     <ClCompile Include="example.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Tilemap.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -25,9 +22,6 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="example.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Tilemap.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

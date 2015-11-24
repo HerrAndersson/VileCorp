@@ -38,9 +38,9 @@ class GameObject
 protected:
 	unsigned short _ID;
 	Vec3 _position;
-	Vec3 _direction;
+	//Vec3 _direction;
 	Type _type;
-	bool _visible;
+	bool _visible; // OBS
 	RenderObject* _renderObject;
 
 public:
@@ -52,9 +52,6 @@ public:
 	//TODO change Vec3 to XMVECTOR or other vectorclass
 	Vec3 GetPosition();
 	void SetPosition(Vec3 position);
-	
-	Vec3 GetDirection();
-	void SetDirection(Vec3 direction);
 
 	Type GetType() const;
 
