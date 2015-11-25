@@ -8,6 +8,7 @@ class Tile : public GameObject
 {
 private:
 	TileType _tiletype;
+	int _size;
 	std::vector<GameObject*> _objectsOnTile;
 
 public:
@@ -17,8 +18,11 @@ public:
 
 	TileType GetTileType() const;
 	void SetTileType(TileType tiletype);
+
+	bool ConnectGameObject(GameObject* trap);
+	bool DisconnectGameObject(short ID);
 	   
-	void Update();
+	void Update(); // TODO: Objektinteraktion ska delvis skötas här Zache/Aron
 
 	void Release();
 };
