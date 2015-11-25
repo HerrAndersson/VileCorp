@@ -240,6 +240,7 @@ namespace Renderer
 
 		//Not sure if this crashes /Sebastian
 		delete[] nullArray;
+		nullArray = nullptr;
 	}
 
 	void DirectX::ClearGeometryPassRTVs(float r, float g, float b, float a)
@@ -251,14 +252,16 @@ namespace Renderer
 			_deviceContext->ClearRenderTargetView(_deferredRenderTargetViews[i], clearColor);
 		}
 
-
-		//Clear depth stencil view
-		_deviceContext->ClearDepthStencilView(_depthView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0, 0);
 	}
 
 	void DirectX::SetGeometryPassRTVs()
 	{
 		_deviceContext->OMSetRenderTargets(_R_TARGETS, _deferredRenderTargetViews, _depthView);
+	}
+
+	void DirectX::SetLightPassRTVs()
+	{
+		_deviceContext->OMSetRenderTargets(1, &_mainRenderTargetView, _depthView);
 	}
 
 	void DirectX::ResizeResources(HWND hwnd, int windowWidth, int windowHeight)
@@ -315,12 +318,18 @@ namespace Renderer
 	{
 		float color[] = { red, green, blue, alpha };
 
-		/*deviceContext->OMSetDepthStencilState(dsDepthEnable, 1);*/
+		/*deviceContext->OMSetDepthStencilState(dsDepthEnable, 1);
 		_deviceContext->OMSetRenderTargets(1, &_mainRenderTargetView, _depthView);
 		//_deviceContext->RSSetState(rsBackCulling);
-		_deviceContext->RSSetViewports(1, &_viewport);
+		_deviceContext->RSSetViewports(1, &_viewport);*/
+
+		//Clear main RTV
 		_deviceContext->ClearRenderTargetView(_mainRenderTargetView, color);
-		_deviceContext->ClearDepthStencilView(_depthView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+		//Clear depth stencil view
+		_deviceContext->ClearDepthStencilView(_depthView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0, 0);
+
+		//ClearShaderResources();
+		ClearGeometryPassRTVs(red, green, blue, alpha);
 	}
 
 	void DirectX::EndScene()

@@ -35,11 +35,10 @@ namespace Renderer
 		~RenderModule();
 
 		void ResizeResources(HWND hwnd, int windowWidth, int windowHeight);
-
+		void SetResources();
+		void SetShaderStage(int stage);
 		void BeginScene(float red, float green, float blue, float alpha);
-
 		void Render();
-
 		void EndScene();
 	};
 }

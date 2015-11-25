@@ -19,17 +19,50 @@ namespace Renderer
 
 		int numElements = sizeof(inputDesc) / sizeof(inputDesc[0]);
 
-		_defaultVS = static_cast<ID3D11VertexShader*>(CreateShader(device, L"../Renderer/Shaders/DefaultVS.hlsl", VERTEX_SHADER, inputDesc, numElements));
-		_defaultPS = static_cast<ID3D11PixelShader*>(CreateShader(device, L"../Renderer/Shaders/DefaultPS.hlsl", PIXEL_SHADER));
+		_defaultVS = static_cast<ID3D11VertexShader*>(CreateShader(device, L"../Renderer/Shaders/DefaultVS.hlsl", VERTEX_SHADER, inputDesc, numElements, _layoutPosUvNorm));
+		_defaultPS = static_cast<ID3D11PixelShader*>(CreateShader(device, L"../Renderer/Shaders/DefaultPS.hlsl", PIXEL_SHADER, inputDesc));
 
 		/*
-		GEOMETRY PASS INITS
+		GEOMETRY pass init
 		*/
-		/*TODO Sebastian 25/11
-		_geoPassVS = static_cast<ID3D11VertexShader*>(CreateShader(device, L"../Renderer/Shaders/[insert name here].hlsl, VERTEX_SHADER, inputDesc, numElements));
-		_geoPassGS = 
-		_geoPassPS =
+		_geoPassVS = static_cast<ID3D11VertexShader*>(CreateShader(device, L"../Renderer/Shaders/GeoVS.hlsl", VERTEX_SHADER, inputDesc, numElements, _layoutPosUvNorm));
+		_geoPassPS = static_cast<ID3D11PixelShader*>(CreateShader(device, L"../Renderer/Shaders/GeoPS.hlsl", PIXEL_SHADER, inputDesc));
+
+		/*
+		LIGHT pass init
 		*/
+		/*D3D11_INPUT_ELEMENT_DESC lightInputDesc[] = {
+			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+		};
+
+		numElements = sizeof(lightInputDesc) / sizeof(lightInputDesc[0]);*/
+
+		_geoPassVS = static_cast<ID3D11VertexShader*>(CreateShader(device, L"../Renderer/Shaders/LightVS.hlsl", VERTEX_SHADER, inputDesc, numElements, _layoutPosUvNorm));
+		_geoPassPS = static_cast<ID3D11PixelShader*>(CreateShader(device, L"../Renderer/Shaders/LightPS.hlsl", PIXEL_SHADER, inputDesc));
+		
+
+		/*
+		Create samplers
+		*/
+		D3D11_SAMPLER_DESC sampDesc;
+
+		// sampler description
+		sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+		sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+		sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+		sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+		sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+		sampDesc.MipLODBias = 0;
+		sampDesc.MaxAnisotropy = 1;
+		sampDesc.MinLOD = 0;
+		sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+		HRESULT hResult = device->CreateSamplerState(&sampDesc, &_sampler);
+		if (FAILED(hResult))
+		{
+			throw std::runtime_error("ShaderHandler::ShaderHandler -Error creating sampler");
+		}
 	}
 
 	ShaderHandler::~ShaderHandler()
@@ -39,7 +72,7 @@ namespace Renderer
 		_defaultPS->Release();
 	}
 
-	ID3D11DeviceChild* ShaderHandler::CreateShader(ID3D11Device* device, LPCWSTR fileName, ShaderType type, D3D11_INPUT_ELEMENT_DESC* inputDesc, int inputDescSize)
+	ID3D11DeviceChild* ShaderHandler::CreateShader(ID3D11Device* device, LPCWSTR fileName, ShaderType type, D3D11_INPUT_ELEMENT_DESC* inputDesc, int inputDescSize, ID3D11InputLayout* layout)
 	{
 		HRESULT result;
 		ID3D10Blob* errorMessage = nullptr;
@@ -97,10 +130,13 @@ namespace Renderer
 					throw std::runtime_error("ShaderHandler::CreateShader-VERTEX_SHADER: Shader file not found.");
 				}
 
-				result = device->CreateInputLayout(inputDesc, inputDescSize, shaderBuffer->GetBufferPointer(), shaderBuffer->GetBufferSize(), &_layoutPosUvNorm);
-				if (FAILED(result))
+				if (!layout)
 				{
-					throw std::runtime_error("ShaderHandler::CreateShader-VERTEX_SHADER: Error creating input layout.");
+					result = device->CreateInputLayout(inputDesc, inputDescSize, shaderBuffer->GetBufferPointer(), shaderBuffer->GetBufferSize(), &layout);
+					if (FAILED(result))
+					{
+						throw std::runtime_error("ShaderHandler::CreateShader-VERTEX_SHADER: Error creating input layout.");
+					}
 				}
 
 				break;
@@ -186,18 +222,42 @@ namespace Renderer
 	{
 		deviceContext->IASetInputLayout(_layoutPosUvNorm);
 
-		deviceContext->VSSetShader(_defaultVS, NULL, 0);
-		deviceContext->PSSetShader(_defaultPS, NULL, 0);
+		deviceContext->VSSetShader(_defaultVS, nullptr, 0);
+		deviceContext->HSSetShader(nullptr, nullptr, 0);
+		deviceContext->GSSetShader(nullptr, nullptr, 0);
+		deviceContext->DSSetShader(nullptr, nullptr, 0);
+		deviceContext->PSSetShader(_defaultPS, nullptr, 0);
+		deviceContext->CSSetShader(nullptr, nullptr, 0);
 	}
 
 	void ShaderHandler::SetGeometryPassShaders(ID3D11DeviceContext * deviceContext)
 	{
 		// Set vertex layout
-		deviceContext->IASetInputLayout(_geoPassLayout);
+		deviceContext->IASetInputLayout(_layoutPosUvNorm);
 
 		// Set shaders
 		deviceContext->VSSetShader(_geoPassVS, nullptr, 0);
-		deviceContext->GSSetShader(_geoPassGS, nullptr, 0);
+		deviceContext->HSSetShader(nullptr, nullptr, 0);
+		deviceContext->GSSetShader(nullptr , nullptr, 0);
+		deviceContext->DSSetShader(nullptr, nullptr, 0);
 		deviceContext->PSSetShader(_geoPassPS, nullptr, 0);
+		deviceContext->CSSetShader(nullptr, nullptr, 0);
+	}
+
+	void ShaderHandler::SetLightPassShaders(ID3D11DeviceContext * deviceContext)
+	{
+		//Set vertex layout
+		deviceContext->IASetInputLayout(_layoutLightPass);
+
+		//Set shaders
+		deviceContext->VSSetShader(_lightPassVS, nullptr, 0);
+		deviceContext->HSSetShader(nullptr, nullptr, 0);
+		deviceContext->GSSetShader(nullptr, nullptr, 0);
+		deviceContext->DSSetShader(nullptr, nullptr, 0);
+		deviceContext->PSSetShader(_lightPassPS, nullptr, 0);
+		deviceContext->CSSetShader(nullptr, nullptr, 0);
+
+		//Set sampler
+		deviceContext->PSSetSamplers(0, 1, &_sampler);
 	}
 }

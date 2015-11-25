@@ -47,6 +47,41 @@ namespace Renderer
 
 	}
 
+	RenderModule::~RenderModule()
+	{
+		delete _d3d;
+		delete _shaderHandler;
+	}
+
+	void RenderModule::ResizeResources(HWND hwnd, int windowWidth, int windowHeight)
+	{
+		_d3d->ResizeResources(hwnd, windowWidth, windowHeight);
+	}
+
+	void RenderModule::SetResources()
+	{
+		/*
+		This is where we update our per frame buffer and set similar resources
+		*/
+	}
+
+	void RenderModule::SetShaderStage(int stage)
+	{
+		switch(stage)
+		{
+		case 0:
+			_d3d->SetGeometryPassRTVs();
+			break;
+		case 1:
+			_d3d->SetLightPassRTVs();
+		};
+	}
+
+	void RenderModule::BeginScene(float red, float green, float blue, float alpha)
+	{
+		_d3d->BeginScene(red, green, blue, alpha);
+	}
+
 	void RenderModule::Render()
 	{
 		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
@@ -60,24 +95,8 @@ namespace Renderer
 		deviceContext->Draw(vertexSize * 3, 0);
 	}
 
-	RenderModule::~RenderModule()
-	{
-		delete _d3d;
-		delete _shaderHandler;
-	}
-
-	void RenderModule::BeginScene(float red, float green, float blue, float alpha)
-	{
-		_d3d->BeginScene(red, green, blue, alpha);
-	}
-
 	void RenderModule::EndScene()
 	{
 		_d3d->EndScene();
-	}
-
-	void RenderModule::ResizeResources(HWND hwnd, int windowWidth, int windowHeight)
-	{
-		_d3d->ResizeResources(hwnd, windowWidth, windowHeight);
 	}
 }

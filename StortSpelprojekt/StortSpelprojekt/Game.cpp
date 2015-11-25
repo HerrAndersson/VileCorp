@@ -47,6 +47,9 @@ int Game::Run()
 
 
 		_renderModule->BeginScene(0.0f, 1.0f, 1.0f, 1);
+		_renderModule->SetShaderStage(0);
+		_renderModule->Render();
+		_renderModule->SetShaderStage(1);
 		_renderModule->Render();
 		_renderModule->EndScene();
 
