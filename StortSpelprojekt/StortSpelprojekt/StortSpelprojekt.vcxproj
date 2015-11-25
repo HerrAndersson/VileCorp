@@ -30,6 +30,9 @@
     <ClCompile Include="StateMachine.cpp" />
     <ClCompile Include="Tile.cpp" />
     <ClCompile Include="Tilemap.cpp" />
+    <ClCompile Include="Trap.cpp" />
+    <ClCompile Include="Trigger.cpp" />
+    <ClCompile Include="Unit.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h" />
@@ -43,6 +46,9 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Tile.h" />
     <ClInclude Include="Tilemap.h" />
+    <ClInclude Include="Trap.h" />
+    <ClInclude Include="Trigger.h" />
+    <ClInclude Include="Unit.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AI\AI.vcxproj">
