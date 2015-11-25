@@ -33,5 +33,11 @@
     <ClInclude Include="Fonts.h">
       <Filter>Fonts</Filter>
     </ClInclude>
+    <ClInclude Include="CCollectionLoader.h">
+      <Filter>Fonts</Filter>
+    </ClInclude>
+    <ClInclude Include="CFontEnum.h">
+      <Filter>Fonts</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -24,6 +24,8 @@
     <ClCompile Include="Fonts.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CCollectionLoader.h" />
+    <ClInclude Include="CFontEnum.h" />
     <ClInclude Include="example.h" />
     <ClInclude Include="Fonts.h" />
     <ClInclude Include="stdafx.h" />
