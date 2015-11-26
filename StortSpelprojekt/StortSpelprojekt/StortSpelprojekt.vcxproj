@@ -19,8 +19,14 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AnimationComponent.cpp" />
+    <ClCompile Include="Component.cpp" />
+    <ClCompile Include="ComponentList.cpp" />
+    <ClCompile Include="DamageComponent.cpp" />
+    <ClCompile Include="FOVComponent.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="GameObjectComp.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Menu.cpp" />
     <ClCompile Include="ObjectHandler.cpp" />
@@ -35,8 +41,14 @@
     <ClCompile Include="Unit.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AnimationComponent.h" />
+    <ClInclude Include="Component.h" />
+    <ClInclude Include="ComponentList.h" />
+    <ClInclude Include="DamageComponent.h" />
+    <ClInclude Include="FOVComponent.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="GameObjectComp.h" />
     <ClInclude Include="Menu.h" />
     <ClInclude Include="ObjectHandler.h" />
     <ClInclude Include="Options.h" />
