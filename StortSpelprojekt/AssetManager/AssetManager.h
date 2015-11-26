@@ -7,6 +7,8 @@
 #include <vector>
 #include <DirectXMath.h>
 #include <fstream>
+#include <Windows.h>
+
 using namespace std;
 using namespace DirectX;
 
@@ -53,18 +55,18 @@ struct PointLight
 
 struct SpotLight
 {
-	float pos[3], col[3], intensity, angle, direction[3], dropoff;
+	float pos[3], col[3], intensity, angle, direction[3];
 };
 
 struct Mesh
 {
 	~Mesh() {
-		vertexBuffer->Release();
 		pointLights.clear();
+		spotLights.clear();
 	}
 	string name;
 	ID3D11Buffer* vertexBuffer;
-	int vertexBufferSize;
+	int vertexBufferSize, toMesh;
 	vector<PointLight> pointLights;
 	vector<SpotLight> spotLights;
 };
@@ -85,7 +87,6 @@ struct RenderObject
 	Texture* specularTexture = nullptr;
 	string diffFile, specFile; //TODO remove - Fredrik
 	vector<Mesh> meshes;
-	vector<int> toMesh;
 };
 
 static void splitStringToVector(string input, vector<string> &output, string delimiter) {
@@ -103,43 +104,22 @@ static void splitStringToVector(string input, vector<string> &output, string del
 
 static bool GetFilenamesInDirectory(char* folder, char* extension, vector<string> &listToFill)
 {
-	WIN32_FIND_DATA fdata;
-	HANDLE dhandle;
-	int extLen = strlen(extension);
-	char buf[MAX_PATH];
-	sprintf_s(buf, sizeof(buf), "%s\\*", folder);
-	dhandle = FindFirstFile((LPCTSTR)buf, &fdata);
-	printf(extension);
-	printf(" files found in ");
-	printf(folder);
-	printf(":\n");
-	while (true)
-	{
-		if (FindNextFile(dhandle, &fdata))
-		{
-			if (strcmp((const char*)&fdata.cFileName[strlen((const char*)fdata.cFileName) - extLen], extension) == 0)
+	ofstream testout;
+	string search_path = folder;
+	search_path.append("*");
+	search_path.append(extension);
+	WIN32_FIND_DATA fd;
+	HANDLE hFind = FindFirstFile(search_path.c_str(), &fd);
+	if (hFind != INVALID_HANDLE_VALUE) {
+		do {
+			if (!(fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
 			{
-				listToFill.push_back((const char*)fdata.cFileName);
-				printf((const char*)fdata.cFileName);
-				printf("\n");
+				string path = fd.cFileName;
+				listToFill.push_back(folder + path);
 			}
-		}
-		else
-		{
-			if (GetLastError() == ERROR_NO_MORE_FILES)
-			{
-				break;
-			}
-			else
-			{
-				FindClose(dhandle);
-				return false;
-			}
-		}
+		} while (FindNextFile(hFind, &fd));
+		FindClose(hFind);
 	}
-
-	FindClose(dhandle);
-	printf("\n\n");
 	return true;
 }
 
@@ -161,8 +141,8 @@ private:
 	vector<RenderObject*>* renderObjects;
 	vector<RenderObject*>* renderObjectsToFlush;
 
-//	vector<ID3D11ShaderResourceView*> textures;
-//	vector<ID3D11ShaderResourceView*> texturesToFlush;
+	//	vector<ID3D11ShaderResourceView*> textures;
+	//	vector<ID3D11ShaderResourceView*> texturesToFlush;
 
 	void LoadModel(string file_path, RenderObject* renderObject);
 	void Flush();

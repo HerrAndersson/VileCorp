@@ -5,6 +5,9 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
+    <Filter Include="Fonts">
+      <UniqueIdentifier>{142156a3-20c4-4a5a-86d5-5fec7883191f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -13,14 +16,8 @@
     <ClCompile Include="example.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DirectX.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderModule.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ShaderHandler.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Fonts.cpp">
+      <Filter>Fonts</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -33,14 +30,14 @@
     <ClInclude Include="example.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="DirectX.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="Fonts.h">
+      <Filter>Fonts</Filter>
     </ClInclude>
-    <ClInclude Include="RenderModule.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="CCollectionLoader.h">
+      <Filter>Fonts</Filter>
     </ClInclude>
-    <ClInclude Include="ShaderHandler.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="CFontEnum.h">
+      <Filter>Fonts</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
