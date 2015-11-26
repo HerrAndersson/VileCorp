@@ -17,8 +17,10 @@ AssetManager::AssetManager(ID3D11Device* device)
 
 AssetManager::~AssetManager()
 {
-	//	for (ID3D11ShaderResourceView* t : textures) t->Release();
-	//	textures.clear();
+	for (Texture* texture : *textures)
+		if(texture->loaded)
+			texture->data->Release();
+	textures->clear();
 
 	for (uint i = 0; i < renderObjects->size(); i++)
 	{
@@ -50,6 +52,8 @@ void AssetManager::DecrementUsers(Texture* texture)
 void AssetManager::UnloadModel(int index, bool force)
 {
 	RenderObject* renderObject = renderObjects->at(index);
+	if (!renderObject->meshLoaded)
+		return;
 	if (force)
 	{
 		for (auto m : renderObject->meshes)
