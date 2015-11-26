@@ -6,21 +6,21 @@ namespace System
 {
 	struct SYSTEM_EXPORT WindowSettings
 	{
-		int _width = 400;
-		int _height = 300;
-		bool _fullscreen = false;
-		bool _borderless = false;
-		bool _showCursor = true;
+		enum
+		{
+			FULLSCREEN	= 1,
+			BORDERLESS	= 2,
+			SHOW_CURSOR	= 4
+		};
+		int _width;
+		int _height;
+		int _flags;
 
-		WindowSettings() {};
-
-		WindowSettings(int width, int height, bool fullscreen, bool borderless, bool showCursor)
+		WindowSettings(int width = 1280, int height = 720, int flags = SHOW_CURSOR)
 		{
 			_width = width;
 			_height = height;
-			_fullscreen = fullscreen;
-			_borderless = borderless;
-			_showCursor = showCursor;
+			_flags = flags;
 		}
 	};
 	class SYSTEM_EXPORT Window
