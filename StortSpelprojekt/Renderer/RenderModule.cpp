@@ -8,27 +8,38 @@ namespace Renderer
 		_shaderHandler = new ShaderHandler(_d3d->GetDevice());
 		_shaderHandler->SetDefaultShaders(_d3d->GetDeviceContext());
 
+		float left = -1.0f;
+		float right = 1.0f;
+		float top = 1.0f;
+		float bottom = -1.0f;
 
-
-
-
-		//TEMP!
-		Vertex vertices[] =
+		ScreenQuadVertex quad[] = 
 		{
+			//First triangle
 			{
-				0.0f, 0.5f, 0.0f,
-				1.0f, 0.0f,
-			1.0f, 1.0f, 0.0f
+				left, top, 0.0f,
+				0.0f, 0.0f
 			},
 			{
-				0.45f, -0.5, 0.0f,
-				1.0f, 1.0f,
-			1.0f, 1.0f, 0.0f
+				right, bottom, 0.0f,
+				1.0f, 1.0f
 			},
 			{
-				-0.45f, -0.5f, 0.0f,
-				1.0f, 0.0f,
-			1.0f, 1.0f, 0.0f
+				left, bottom, 0.0f,
+				0.0f, 1.0f
+			},
+			//Second triangle
+			{
+				left, top, 0.0f,
+				0.0f, 0.0f
+			},
+			{
+				right, top, 0.0f,
+				1.0f, 0.0f
+			},
+			{
+				right, bottom, 0.0f,
+				1.0f, 1.0f
 			}
 		};
 
@@ -36,15 +47,44 @@ namespace Renderer
 		ZeroMemory(&bufferDesc, sizeof(bufferDesc));
 		bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 		bufferDesc.Usage = D3D11_USAGE_DEFAULT;
-		bufferDesc.ByteWidth = sizeof(Vertex) * 3;
+		bufferDesc.ByteWidth = sizeof(ScreenQuadVertex) * 6;
 
 		D3D11_SUBRESOURCE_DATA data;
-		data.pSysMem = vertices;
-		HRESULT result = _d3d->GetDevice()->CreateBuffer(&bufferDesc, &data, &vertexBuffer);
+		data.pSysMem = quad;
+		HRESULT result = _d3d->GetDevice()->CreateBuffer(&bufferDesc, &data, &_screenQuad);
+		
 
-		if (FAILED(result))
-			throw std::runtime_error("Failed to create vertexBuffer");
+		//TEMP!
+		Vertex vertices[] =
+		{
+			{
+				0.0f, 0.5f, 0.0f,
+				1.0f, 0.0f,
+				1.0f, 1.0f, 0.0f
+			},
+			{
+				0.45f, -0.5, 0.0f,
+				1.0f, 1.0f,
+				1.0f, 1.0f, 0.0f
+			},
+			{
+				-0.45f, -0.5f, 0.0f,
+				1.0f, 0.0f,
+				1.0f, 1.0f, 0.0f
+			}
+		};
+		D3D11_BUFFER_DESC bufferDescTriangle;
+		ZeroMemory(&bufferDescTriangle, sizeof(bufferDescTriangle));
+		bufferDescTriangle.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+		bufferDescTriangle.Usage = D3D11_USAGE_DEFAULT;
+		bufferDescTriangle.ByteWidth = sizeof(Vertex) * 3;
 
+		D3D11_SUBRESOURCE_DATA dataTriangle;
+		dataTriangle.pSysMem = vertices;
+		HRESULT resultTriangle = _d3d->GetDevice()->CreateBuffer(&bufferDescTriangle, &dataTriangle, &_vertexBuffer);
+
+		if (FAILED(resultTriangle))
+			throw std::runtime_error("Failed to create vertexBufferTriangle");
 	}
 
 	RenderModule::~RenderModule()
@@ -70,10 +110,17 @@ namespace Renderer
 		switch(stage)
 		{
 		case 0:
+		{
 			_d3d->SetGeometryPassRTVs();
+			_shaderHandler->SetGeometryPassShaders(_d3d->GetDeviceContext());
 			break;
+		}
 		case 1:
+		{
 			_d3d->SetLightPassRTVs();
+			_shaderHandler->SetLightPassShaders(_d3d->GetDeviceContext());
+			break;
+		}
 		};
 	}
 
@@ -89,10 +136,23 @@ namespace Renderer
 		UINT32 vertexSize = sizeof(Vertex);
 		UINT32 offset = 0;
 
-		deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &vertexSize, &offset);
+		deviceContext->IASetVertexBuffers(0, 1, &_vertexBuffer, &vertexSize, &offset);
 		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		deviceContext->Draw(vertexSize * 3, 0);
+		deviceContext->Draw(3, 0);
+	}
+
+	void RenderModule::RenderLightQuad()
+	{
+		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
+
+		UINT32 vertexSize = sizeof(ScreenQuadVertex);
+		UINT32 offset = 0;
+
+		deviceContext->IASetVertexBuffers(0, 1, &_screenQuad, &vertexSize, &offset);
+		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		deviceContext->Draw(6, 0);
 	}
 
 	void RenderModule::EndScene()

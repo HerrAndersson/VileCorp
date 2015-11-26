@@ -2,30 +2,35 @@
 #define SHADERHANDLER_H
 #include <d3d11.h>
 
+#include "stdafx.h"
+
 namespace Renderer
 {
 	class ShaderHandler
 	{
 	private:
+		struct VertexShaderData
+		{
+			ID3D11VertexShader* _vertexShader;
+			ID3D11InputLayout* _inputLayout;
 
-		enum ShaderType 
-		{ 
-			VERTEX_SHADER, 
-			HULL_SHADER, 
-			GEOMETRY_SHADER, 
-			DOMAIN_SHADER, 
-			PIXEL_SHADER,
-			COMPUTE_SHADER
+			VertexShaderData(ID3D11VertexShader* vertexShader, ID3D11InputLayout* inputLayout)
+			{
+				_vertexShader = vertexShader;
+				_inputLayout = inputLayout;
+			}
+
+			~VertexShaderData()
+			{
+				SAFE_RELEASE(_vertexShader);
+				SAFE_RELEASE(_inputLayout);
+			}
 		};
 
-		//Layouts
-		ID3D11InputLayout*		_layoutPosUvNorm;
-		ID3D11InputLayout*		_layoutLightPass;
-
 		//Vertex shaders
-		ID3D11VertexShader*		_defaultVS;
-		ID3D11VertexShader*		_geoPassVS;
-		ID3D11VertexShader*		_lightPassVS;
+		VertexShaderData*		_defaultVS;
+		VertexShaderData*		_geoPassVS;
+		VertexShaderData*		_lightPassVS;
 
 		//Pixel shaders
 		ID3D11PixelShader*		_defaultPS;
@@ -33,10 +38,15 @@ namespace Renderer
 		ID3D11PixelShader*		_lightPassPS;
 
 		//Samplers
-		ID3D11SamplerState*		_sampler;
+		ID3D11SamplerState*		_samplerWRAP;
 
+		VertexShaderData* CreateVertexShader(ID3D11Device* device, LPCWSTR fileName, D3D11_INPUT_ELEMENT_DESC* inputDesc, int inputDescSize);
 
-		ID3D11DeviceChild* CreateShader(ID3D11Device* device, LPCWSTR fileName, ShaderType type, D3D11_INPUT_ELEMENT_DESC* inputDesc = nullptr, int inputDescSize = -1, ID3D11InputLayout* layout = nullptr);
+		ID3D11HullShader* CreateHullShader(ID3D11Device* device, LPCWSTR fileName);
+		ID3D11GeometryShader* CreateGeometryShader(ID3D11Device* device, LPCWSTR fileName);
+		ID3D11DomainShader* CreateDomainShader(ID3D11Device* device, LPCWSTR fileName);
+		ID3D11PixelShader* CreatePixelShader(ID3D11Device* device, LPCWSTR fileName);
+		ID3D11ComputeShader* CreateComputeShader(ID3D11Device* device, LPCWSTR fileName);
 
 	public:
 

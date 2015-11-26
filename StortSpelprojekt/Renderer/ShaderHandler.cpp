@@ -10,41 +10,8 @@ namespace Renderer
 {
 	ShaderHandler::ShaderHandler(ID3D11Device* device)
 	{
-		D3D11_INPUT_ELEMENT_DESC inputDesc[] =
-		{
-			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		};
 
-		int numElements = sizeof(inputDesc) / sizeof(inputDesc[0]);
-
-		_defaultVS = static_cast<ID3D11VertexShader*>(CreateShader(device, L"../Renderer/Shaders/DefaultVS.hlsl", VERTEX_SHADER, inputDesc, numElements, _layoutPosUvNorm));
-		_defaultPS = static_cast<ID3D11PixelShader*>(CreateShader(device, L"../Renderer/Shaders/DefaultPS.hlsl", PIXEL_SHADER, inputDesc));
-
-		/*
-		GEOMETRY pass init
-		*/
-		_geoPassVS = static_cast<ID3D11VertexShader*>(CreateShader(device, L"../Renderer/Shaders/GeoVS.hlsl", VERTEX_SHADER, inputDesc, numElements, _layoutPosUvNorm));
-		_geoPassPS = static_cast<ID3D11PixelShader*>(CreateShader(device, L"../Renderer/Shaders/GeoPS.hlsl", PIXEL_SHADER, inputDesc));
-
-		/*
-		LIGHT pass init
-		*/
-		/*D3D11_INPUT_ELEMENT_DESC lightInputDesc[] = {
-			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 }
-		};
-
-		numElements = sizeof(lightInputDesc) / sizeof(lightInputDesc[0]);*/
-
-		_geoPassVS = static_cast<ID3D11VertexShader*>(CreateShader(device, L"../Renderer/Shaders/LightVS.hlsl", VERTEX_SHADER, inputDesc, numElements, _layoutPosUvNorm));
-		_geoPassPS = static_cast<ID3D11PixelShader*>(CreateShader(device, L"../Renderer/Shaders/LightPS.hlsl", PIXEL_SHADER, inputDesc));
-		
-
-		/*
-		Create samplers
-		*/
+		//Create samplers
 		D3D11_SAMPLER_DESC sampDesc;
 
 		// sampler description
@@ -58,171 +25,248 @@ namespace Renderer
 		sampDesc.MinLOD = 0;
 		sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
-		HRESULT hResult = device->CreateSamplerState(&sampDesc, &_sampler);
+		HRESULT hResult = device->CreateSamplerState(&sampDesc, &_samplerWRAP);
 		if (FAILED(hResult))
 		{
-			throw std::runtime_error("ShaderHandler::ShaderHandler -Error creating sampler");
+			throw std::runtime_error("ShaderHandler::ShaderHandler: Error creating WRAP sampler");
 		}
+
+		D3D11_INPUT_ELEMENT_DESC inputDesc[] =
+		{
+			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		};
+
+		int numElements = sizeof(inputDesc) / sizeof(inputDesc[0]);
+
+		_defaultVS = CreateVertexShader(device, L"../Renderer/Shaders/DefaultVS.hlsl", inputDesc, numElements);
+		_defaultPS = CreatePixelShader(device, L"../Renderer/Shaders/DefaultPS.hlsl");
+
+		//GEOMETRY pass init
+		_geoPassVS = CreateVertexShader(device, L"../Renderer/Shaders/GeoVS.hlsl", inputDesc, numElements);
+		_geoPassPS = CreatePixelShader(device, L"../Renderer/Shaders/GeoPS.hlsl");
+
+		//LIGHT pass init
+		D3D11_INPUT_ELEMENT_DESC lightInputDesc[] =
+		{
+			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+		};
+
+		numElements = sizeof(lightInputDesc) / sizeof(lightInputDesc[0]);
+
+		_lightPassVS = CreateVertexShader(device, L"../Renderer/Shaders/LightVS.hlsl", lightInputDesc, numElements);
+		_lightPassPS = CreatePixelShader(device, L"../Renderer/Shaders/LightPS.hlsl");
 	}
 
 	ShaderHandler::~ShaderHandler()
 	{
-		int i = 0;
-		_defaultVS->Release();
-		_defaultPS->Release();
+		delete _defaultVS;
+		SAFE_RELEASE(_defaultPS);
+		delete _geoPassVS;
+		SAFE_RELEASE(_geoPassPS);
+		delete _lightPassVS;
+		SAFE_RELEASE(_lightPassPS);
 	}
 
-	ID3D11DeviceChild* ShaderHandler::CreateShader(ID3D11Device* device, LPCWSTR fileName, ShaderType type, D3D11_INPUT_ELEMENT_DESC* inputDesc, int inputDescSize, ID3D11InputLayout* layout)
+	ShaderHandler::VertexShaderData* ShaderHandler::CreateVertexShader(ID3D11Device* device, LPCWSTR fileName, D3D11_INPUT_ELEMENT_DESC* inputDesc, int inputDescSize)
 	{
 		HRESULT result;
-		ID3D10Blob* errorMessage = nullptr;
-		ID3D10Blob* shaderBuffer = nullptr;
-		LPCSTR shaderVersion = "";
-		ID3D11DeviceChild* shader = nullptr;
+		ID3DBlob* errorMessage = nullptr;
+		ID3DBlob* shaderBuffer = nullptr;
+		ID3D11VertexShader* vertexShader = nullptr;
+		ID3D11InputLayout* inputLayout = nullptr;
 
-		switch (type)
-		{
-			case Renderer::ShaderHandler::VERTEX_SHADER:
-				shaderVersion = "vs_5_0";
-				break;
-			case Renderer::ShaderHandler::HULL_SHADER:
-				shaderVersion = "hs_5_0";
-				break;
-			case Renderer::ShaderHandler::GEOMETRY_SHADER:
-				shaderVersion = "gs_5_0";
-				break;
-			case Renderer::ShaderHandler::DOMAIN_SHADER:
-				shaderVersion = "ds_5_0";
-				break;
-			case Renderer::ShaderHandler::PIXEL_SHADER:
-				shaderVersion = "ps_5_0";
-				break;
-			case Renderer::ShaderHandler::COMPUTE_SHADER:
-				shaderVersion = "cs_5_0";
-				break;
-			default:
-				break;
-		}
-
-		result = D3DCompileFromFile(fileName, NULL, NULL, "main", shaderVersion, D3D10_SHADER_ENABLE_STRICTNESS, 0, &shaderBuffer, &errorMessage);
+		result = D3DCompileFromFile(fileName, NULL, NULL, "main", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, &shaderBuffer, &errorMessage);
 		if (FAILED(result))
 		{
 			if (errorMessage)
 			{
-				throw std::runtime_error("ShaderHandler::CreateShader: " + std::string(static_cast<const char*>(errorMessage->GetBufferPointer()), errorMessage->GetBufferSize()));
+				throw std::runtime_error("ShaderHandler::CreateVertexShader: " + std::string(static_cast<const char*>(errorMessage->GetBufferPointer()), errorMessage->GetBufferSize()));
 			}
 			else
 			{
-				throw std::runtime_error("ShaderHandler::CreateShader: Shader file not found");
+				throw std::runtime_error("ShaderHandler::CreateVertexShader: Shader file not found");
 			}
 		}
 
-		switch (type)
+		result = device->CreateVertexShader(shaderBuffer->GetBufferPointer(), shaderBuffer->GetBufferSize(), NULL, &vertexShader);
+		if (FAILED(result))
 		{
-			case Renderer::ShaderHandler::VERTEX_SHADER:
-			{
-				ID3D11VertexShader* vertexShader = nullptr;
-				result = device->CreateVertexShader(shaderBuffer->GetBufferPointer(), shaderBuffer->GetBufferSize(), NULL, &vertexShader);
-				shader = vertexShader;
-
-				if (FAILED(result))
-				{
-					throw std::runtime_error("ShaderHandler::CreateShader-VERTEX_SHADER: Shader file not found.");
-				}
-
-				if (!layout)
-				{
-					result = device->CreateInputLayout(inputDesc, inputDescSize, shaderBuffer->GetBufferPointer(), shaderBuffer->GetBufferSize(), &layout);
-					if (FAILED(result))
-					{
-						throw std::runtime_error("ShaderHandler::CreateShader-VERTEX_SHADER: Error creating input layout.");
-					}
-				}
-
-				break;
-			}
-			case Renderer::ShaderHandler::HULL_SHADER:
-			{
-				ID3D11HullShader* hullShader = nullptr;
-				result = device->CreateHullShader(shaderBuffer->GetBufferPointer(), shaderBuffer->GetBufferSize(), NULL, &hullShader);
-				shader = hullShader;
-
-				if (FAILED(result))
-				{
-					throw std::runtime_error("ShaderHandler::CreateShader-HULL_SHADER: Shader file not found.");
-				}
-
-				break;
-			}
-			case Renderer::ShaderHandler::GEOMETRY_SHADER:
-			{
-				ID3D11GeometryShader* geometryShader = nullptr;
-				result = device->CreateGeometryShader(shaderBuffer->GetBufferPointer(), shaderBuffer->GetBufferSize(), NULL, &geometryShader);
-				shader = geometryShader;
-
-				if (FAILED(result))
-				{
-					throw std::runtime_error("ShaderHandler::CreateShader-GEOMETRY_SHADER: Shader file not found.");
-				}
-
-				break;
-			}
-			case Renderer::ShaderHandler::DOMAIN_SHADER:
-			{
-				ID3D11DomainShader* domainShader = nullptr;
-				result = device->CreateDomainShader(shaderBuffer->GetBufferPointer(), shaderBuffer->GetBufferSize(), NULL, &domainShader);
-				shader = domainShader;
-
-				if (FAILED(result))
-				{
-					throw std::runtime_error("ShaderHandler::CreateShader-DOMAIN_SHADER: Shader file not found.");
-				}
-				break;
-			}
-			case Renderer::ShaderHandler::PIXEL_SHADER:
-			{
-				ID3D11PixelShader* pixelShader = nullptr;
-				result = device->CreatePixelShader(shaderBuffer->GetBufferPointer(), shaderBuffer->GetBufferSize(), NULL, &pixelShader);
-				shader = pixelShader;
-
-				if (FAILED(result))
-				{
-					throw std::runtime_error("ShaderHandler::CreateShader-PIXEL_SHADER: Shader file not found.");
-				}
-				break;
-			}
-			case Renderer::ShaderHandler::COMPUTE_SHADER:
-			{
-				ID3D11ComputeShader* computeShader = nullptr;
-				result = device->CreateComputeShader(shaderBuffer->GetBufferPointer(), shaderBuffer->GetBufferSize(), NULL, &computeShader);
-				shader = computeShader;
-
-				if (FAILED(result))
-				{
-					throw std::runtime_error("ShaderHandler::CreateShader-COMPUTE_SHADER: Shader file not found.");
-				}
-				break;
-			}
-			default:
-			{
-				break;
-			}
+			throw std::runtime_error("ShaderHandler::CreateVertexShader: Shader file not found.");
 		}
 
-
-		if (shaderBuffer)
+		result = device->CreateInputLayout(inputDesc, inputDescSize, shaderBuffer->GetBufferPointer(), shaderBuffer->GetBufferSize(), &inputLayout);
+		if (FAILED(result))
 		{
-			shaderBuffer->Release();
+			throw std::runtime_error("ShaderHandler::CreateVertexShader: Error creating input layout.");
+		}
+		return new VertexShaderData(vertexShader, inputLayout);
+	}
+
+	ID3D11HullShader* ShaderHandler::CreateHullShader(ID3D11Device* device, LPCWSTR fileName)
+	{
+		HRESULT result;
+		ID3DBlob* errorMessage = nullptr;
+		ID3DBlob* shaderBuffer = nullptr;
+		ID3D11HullShader* hullShader = nullptr;
+
+		result = D3DCompileFromFile(fileName, NULL, NULL, "main", "hs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, &shaderBuffer, &errorMessage);
+		if (FAILED(result))
+		{
+			if (errorMessage)
+			{
+				throw std::runtime_error("ShaderHandler::CreateHullShader: " + std::string(static_cast<const char*>(errorMessage->GetBufferPointer()), errorMessage->GetBufferSize()));
+			}
+			else
+			{
+				throw std::runtime_error("ShaderHandler::CreateHullShader: Shader file not found");
+			}
+		}
+		
+		result = device->CreateHullShader(shaderBuffer->GetBufferPointer(), shaderBuffer->GetBufferSize(), NULL, &hullShader);
+		if (FAILED(result))
+		{
+			throw std::runtime_error("ShaderHandler::CreateHullShader: Shader file not found.");
 		}
 
-		return shader;
+		SAFE_RELEASE(errorMessage);
+		SAFE_RELEASE(shaderBuffer);
+
+		return hullShader;
+	}
+
+	ID3D11GeometryShader* ShaderHandler::CreateGeometryShader(ID3D11Device* device, LPCWSTR fileName)
+	{
+		HRESULT result;
+		ID3DBlob* errorMessage = nullptr;
+		ID3DBlob* shaderBuffer = nullptr;
+		ID3D11GeometryShader* geometryShader = nullptr;
+
+		result = D3DCompileFromFile(fileName, NULL, NULL, "main", "gs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, &shaderBuffer, &errorMessage);
+		if (FAILED(result))
+		{
+			if (errorMessage)
+			{
+				throw std::runtime_error("ShaderHandler::CreateGeometryShader: " + std::string(static_cast<const char*>(errorMessage->GetBufferPointer()), errorMessage->GetBufferSize()));
+			}
+			else
+			{
+				throw std::runtime_error("ShaderHandler::CreateGeometryShader: Shader file not found");
+			}
+		}
+		
+		result = device->CreateGeometryShader(shaderBuffer->GetBufferPointer(), shaderBuffer->GetBufferSize(), NULL, &geometryShader);
+		if (FAILED(result))
+		{
+			throw std::runtime_error("ShaderHandler::CreateGeometryShader: Shader file not found.");
+		}
+
+		SAFE_RELEASE(errorMessage);
+		SAFE_RELEASE(shaderBuffer);
+
+		return geometryShader;
+	}
+	ID3D11DomainShader* ShaderHandler::CreateDomainShader(ID3D11Device* device, LPCWSTR fileName)
+	{
+		HRESULT result;
+		ID3DBlob* errorMessage = nullptr;
+		ID3DBlob* shaderBuffer = nullptr;
+		ID3D11DomainShader* domainShader = nullptr;
+
+		result = D3DCompileFromFile(fileName, NULL, NULL, "main", "ds_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, &shaderBuffer, &errorMessage);
+		if (FAILED(result))
+		{
+			if (errorMessage)
+			{
+				throw std::runtime_error("ShaderHandler::CreateDomainShader: " + std::string(static_cast<const char*>(errorMessage->GetBufferPointer()), errorMessage->GetBufferSize()));
+			}
+			else
+			{
+				throw std::runtime_error("ShaderHandler::CreateDomainShader: Shader file not found");
+			}
+		}
+
+		result = device->CreateDomainShader(shaderBuffer->GetBufferPointer(), shaderBuffer->GetBufferSize(), NULL, &domainShader);
+		if (FAILED(result))
+		{
+			throw std::runtime_error("ShaderHandler::CreateDomainShader: Shader file not found.");
+		}
+
+		SAFE_RELEASE(errorMessage);
+		SAFE_RELEASE(shaderBuffer);
+
+		return domainShader;
+	}
+	ID3D11PixelShader* ShaderHandler::CreatePixelShader(ID3D11Device* device, LPCWSTR fileName)
+	{
+		HRESULT result;
+		ID3DBlob* errorMessage = nullptr;
+		ID3DBlob* shaderBuffer = nullptr;
+		ID3D11PixelShader* pixelShader = nullptr;
+
+		result = D3DCompileFromFile(fileName, NULL, NULL, "main", "ps_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, &shaderBuffer, &errorMessage);
+		if (FAILED(result))
+		{
+			if (errorMessage)
+			{
+				throw std::runtime_error("ShaderHandler::CreatePixelShader: " + std::string(static_cast<const char*>(errorMessage->GetBufferPointer()), errorMessage->GetBufferSize()));
+			}
+			else
+			{
+				throw std::runtime_error("ShaderHandler::CreatePixelShader: Shader file not found");
+			}
+		}
+
+		result = device->CreatePixelShader(shaderBuffer->GetBufferPointer(), shaderBuffer->GetBufferSize(), NULL, &pixelShader);
+		if (FAILED(result))
+		{
+			throw std::runtime_error("ShaderHandler::CreatePixelShader: Shader file not found.");
+		}
+
+		SAFE_RELEASE(errorMessage);
+		SAFE_RELEASE(shaderBuffer);
+
+		return pixelShader;
+	}
+	ID3D11ComputeShader* ShaderHandler::CreateComputeShader(ID3D11Device* device, LPCWSTR fileName)
+	{
+		HRESULT result;
+		ID3DBlob* errorMessage = nullptr;
+		ID3DBlob* shaderBuffer = nullptr;
+		ID3D11ComputeShader* computeShader = nullptr;
+
+		result = D3DCompileFromFile(fileName, NULL, NULL, "main", "cs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, &shaderBuffer, &errorMessage);
+		if (FAILED(result))
+		{
+			if (errorMessage)
+			{
+				throw std::runtime_error("ShaderHandler::CreateComputeShader: " + std::string(static_cast<const char*>(errorMessage->GetBufferPointer()), errorMessage->GetBufferSize()));
+			}
+			else
+			{
+				throw std::runtime_error("ShaderHandler::CreateComputeShader: Shader file not found");
+			}
+		}
+
+		result = device->CreateComputeShader(shaderBuffer->GetBufferPointer(), shaderBuffer->GetBufferSize(), NULL, &computeShader);
+		if (FAILED(result))
+		{
+			throw std::runtime_error("ShaderHandler::CreateComputeShader: Shader file not found.");
+		}
+
+		SAFE_RELEASE(errorMessage);
+		SAFE_RELEASE(shaderBuffer);
+
+		return computeShader;
 	}
 
 	void ShaderHandler::SetDefaultShaders(ID3D11DeviceContext* deviceContext)
 	{
-		deviceContext->IASetInputLayout(_layoutPosUvNorm);
+		deviceContext->IASetInputLayout(_defaultVS->_inputLayout);
 
-		deviceContext->VSSetShader(_defaultVS, nullptr, 0);
+		deviceContext->VSSetShader(_defaultVS->_vertexShader, nullptr, 0);
 		deviceContext->HSSetShader(nullptr, nullptr, 0);
 		deviceContext->GSSetShader(nullptr, nullptr, 0);
 		deviceContext->DSSetShader(nullptr, nullptr, 0);
@@ -233,10 +277,10 @@ namespace Renderer
 	void ShaderHandler::SetGeometryPassShaders(ID3D11DeviceContext * deviceContext)
 	{
 		// Set vertex layout
-		deviceContext->IASetInputLayout(_layoutPosUvNorm);
+		deviceContext->IASetInputLayout(_geoPassVS->_inputLayout);
 
 		// Set shaders
-		deviceContext->VSSetShader(_geoPassVS, nullptr, 0);
+		deviceContext->VSSetShader(_geoPassVS->_vertexShader, nullptr, 0);
 		deviceContext->HSSetShader(nullptr, nullptr, 0);
 		deviceContext->GSSetShader(nullptr , nullptr, 0);
 		deviceContext->DSSetShader(nullptr, nullptr, 0);
@@ -247,10 +291,10 @@ namespace Renderer
 	void ShaderHandler::SetLightPassShaders(ID3D11DeviceContext * deviceContext)
 	{
 		//Set vertex layout
-		deviceContext->IASetInputLayout(_layoutLightPass);
+		deviceContext->IASetInputLayout(_lightPassVS->_inputLayout);
 
 		//Set shaders
-		deviceContext->VSSetShader(_lightPassVS, nullptr, 0);
+		deviceContext->VSSetShader(_lightPassVS->_vertexShader, nullptr, 0);
 		deviceContext->HSSetShader(nullptr, nullptr, 0);
 		deviceContext->GSSetShader(nullptr, nullptr, 0);
 		deviceContext->DSSetShader(nullptr, nullptr, 0);
@@ -258,6 +302,6 @@ namespace Renderer
 		deviceContext->CSSetShader(nullptr, nullptr, 0);
 
 		//Set sampler
-		deviceContext->PSSetSamplers(0, 1, &_sampler);
+		deviceContext->PSSetSamplers(0, 1, &_samplerWRAP);
 	}
 }

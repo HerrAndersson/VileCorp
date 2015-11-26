@@ -50,7 +50,7 @@ int Game::Run()
 		_renderModule->SetShaderStage(0);
 		_renderModule->Render();
 		_renderModule->SetShaderStage(1);
-		_renderModule->Render();
+		_renderModule->RenderLightQuad();
 		_renderModule->EndScene();
 
 	}

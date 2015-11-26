@@ -12,12 +12,17 @@ namespace Renderer
 	{
 	private:
 
+		struct ScreenQuadVertex
+		{
+			float x, y, z;
+			float u, v;
+		};
+
+
 		DirectX* _d3d;
 		ShaderHandler* _shaderHandler;
 
-
-
-
+		ID3D11Buffer* _screenQuad;
 
 		//TEMP!
 		struct Vertex
@@ -26,8 +31,7 @@ namespace Renderer
 			float u, v;
 			float nx, ny, nz;
 		};
-		ID3D11Buffer* vertexBuffer;
-
+		ID3D11Buffer* _vertexBuffer;
 
 	public:
 
@@ -39,6 +43,7 @@ namespace Renderer
 		void SetShaderStage(int stage);
 		void BeginScene(float red, float green, float blue, float alpha);
 		void Render();
+		void RenderLightQuad();
 		void EndScene();
 	};
 }

@@ -7,3 +7,5 @@
 
 // Windows Header Files:
 #include <windows.h>
+
+#define SAFE_RELEASE(x) if( x ) { (x)->Release(); (x) = nullptr; }
