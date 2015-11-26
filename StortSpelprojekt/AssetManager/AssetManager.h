@@ -1,6 +1,7 @@
 #ifndef ASSET_MANAGER
 #define ASSET_MANAGER
 #define ASSET_MANAGER_EXPORT __declspec(dllexport)
+#define uint unsigned int
 
 #include <d3d11.h>
 #include <string>

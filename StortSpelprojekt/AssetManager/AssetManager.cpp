@@ -20,7 +20,7 @@ AssetManager::~AssetManager()
 	//	for (ID3D11ShaderResourceView* t : textures) t->Release();
 	//	textures.clear();
 
-	for (int i = 0; i < renderObjects->size(); i++)
+	for (uint i = 0; i < renderObjects->size(); i++)
 	{
 		UnloadModel(i, true);
 		delete renderObjects->at(i);
@@ -32,7 +32,7 @@ AssetManager::~AssetManager()
 void AssetManager::SetupRenderObjectList()
 {
 	GetFilenamesInDirectory("../../Output/Bin/x86/Debug/Assets/Models/", ".bin", *modelFiles);//TODO should be relative to executable - Fredrik
-	for (int i = 0; i < modelFiles->size(); i++)
+	for (uint i = 0; i < modelFiles->size(); i++)
 	{
 		RenderObject* renderObject = ScanModel(modelFiles->at(i));
 		renderObjects->push_back(renderObject);
@@ -105,7 +105,7 @@ void AssetManager::LoadModel(string file_path, RenderObject* renderObject) {
 	Mesh* mesh;
 	vector<Vertex> vertices;
 
-	for (int i = 0; i < renderObject->meshes.size(); i++) {
+	for (uint i = 0; i < renderObject->meshes.size(); i++) {
 		mesh = &renderObject->meshes[i];
 		infile->seekg(mesh->toMesh);
 		vertices.resize(mesh->vertexBufferSize);
@@ -143,7 +143,8 @@ RenderObject* AssetManager::ScanModel(string file_path)
 	MainHeader mainHeader;
 	infile->read((char*)&mainHeader, sizeof(MainHeader));
 	mainHeader.meshCount++;
-
+	if (mainHeader.version != meshFormatVersion)
+		throw std::runtime_error("Incorrect fileversion");
 	for (int i = 0; i < mainHeader.meshCount; i++)
 	{
 		Mesh mesh;
