@@ -26,8 +26,7 @@ float4 main(VS_OUT input) : SV_TARGET
 	normal.w = 0.f;
 	normal = normalize(normal);
 
-	float3 finalColor = { 0.0f, 0.0f, 0.0f };
 	float3 finalAmbient = diffuse.xyz;
 
-	return float4(finalColor, diffuse.a);
+	return float4(finalAmbient, diffuse.a);
 }

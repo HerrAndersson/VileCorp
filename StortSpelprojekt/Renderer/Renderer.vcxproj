@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Deferred.cpp" />
     <ClCompile Include="DirectX.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="example.cpp" />
@@ -26,6 +27,7 @@
     <ClCompile Include="ShaderHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Deferred.h" />
     <ClInclude Include="DirectX.h" />
     <ClInclude Include="example.h" />
     <ClInclude Include="RenderModule.h" />
