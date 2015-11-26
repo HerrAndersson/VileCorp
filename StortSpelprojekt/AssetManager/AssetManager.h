@@ -7,7 +7,6 @@
 #include <vector>
 #include <DirectXMath.h>
 #include <fstream>
-#include <Windows.h>
 
 using namespace std;
 using namespace DirectX;
