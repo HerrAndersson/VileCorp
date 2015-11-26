@@ -33,7 +33,11 @@ AssetManager::~AssetManager()
 //Looks through the Models folder and creates an empty RenderObject for each entry
 void AssetManager::SetupRenderObjectList()
 {
-	GetFilenamesInDirectory("../../Output/Bin/x86/Debug/Assets/Models/", ".bin", *modelFiles);//TODO should be relative to executable - Fredrik
+#ifdef _DEBUG
+	GetFilenamesInDirectory("../../Output/Bin/x86/Debug/Assets/Models/", ".bin", *modelFiles);
+#else
+	GetFilenamesInDirectory("/Assets/Models/", ".bin", *modelFiles);
+#endif
 	for (uint i = 0; i < modelFiles->size(); i++)
 	{
 		RenderObject* renderObject = ScanModel(modelFiles->at(i));
