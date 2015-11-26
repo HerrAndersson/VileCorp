@@ -24,7 +24,7 @@ INFORMATION ABOUT LICENSE CAN BE FOUND HERE: http://fw1.codeplex.com/license
 
 namespace Renderer
 {
-	class RENDERER_EXPORT Fonts
+	__declspec(align(16))class RENDERER_EXPORT Fonts
 	{
 	private:
 		IFW1Factory*		_factory;
