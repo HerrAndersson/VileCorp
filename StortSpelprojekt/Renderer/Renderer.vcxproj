@@ -20,9 +20,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Deferred.cpp" />
+    <ClCompile Include="DirectX.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="example.cpp" />
     <ClCompile Include="Fonts.cpp" />
+    <ClCompile Include="RenderModule.cpp" />
+    <ClCompile Include="ShaderHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CCollectionLoader.h" />

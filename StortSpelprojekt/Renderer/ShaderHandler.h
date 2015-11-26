@@ -56,7 +56,6 @@ namespace Renderer
 		void SetDefaultShaders(ID3D11DeviceContext* deviceContext);
 		void SetGeometryPassShaders(ID3D11DeviceContext* deviceContext);
 		void SetLightPassShaders(ID3D11DeviceContext* deviceContext);
-		//void SetShadowMapShaders() etc
 	};
 }
 

@@ -1,8 +1,6 @@
 #ifndef DIRECTX_H
 #define DIRECTX_H
 
-#define RENDERER_EXPORT __declspec(dllexport)
-
 #include <d3d11.h>
 #include <d3dcompiler.h>
 #include <DirectXMath.h>
@@ -14,7 +12,7 @@
 
 namespace Renderer
 {
-	class RENDERER_EXPORT DirectX
+	class DirectX
 	{
 	private:
 

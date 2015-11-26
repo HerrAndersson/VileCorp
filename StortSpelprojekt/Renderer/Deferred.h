@@ -6,9 +6,7 @@
 #include <string>
 #include <fstream>
 
-#define RENDERER_EXPORT __declspec(dllexport)
-
-class RENDERER_EXPORT Deferred
+class Deferred
 {
 
 private:
