@@ -9,16 +9,12 @@ If the object doesn't need a _renderObject, set it to nullptr.
 If the object has a renderObject but is out of sight _visibility will be false.
 */
 
+// TODO: Behöver spara världsmatriser
+
 //placeholder
 struct Vec3
 {
 	float _posX, _posY, _posZ;
-};
-
-//placeholder
-struct RenderObject
-{
-	//Matrices, shaderinfo, buffers and stuff. Structure will probably be in the renderengine
 };
 
 //Preliminary solution  - Zache/Marcus
@@ -32,7 +28,7 @@ protected:
 	//Vec3 _direction;
 	Type _type;
 	bool _visible; // OBS
-	RenderObject* _renderObject;
+	int _renderObjectID;
 
 public:
 	GameObject();
@@ -49,7 +45,8 @@ public:
 	bool IsVisible() const;
 	void SetVisability(bool visible);
 
-	RenderObject* GetRenderObject() const;
+	void SetRenderObjectID(int renderObjectID);
+	int GetRenderObjectID() const;
 
 	//Update object gamelogic
 	void virtual Update() = 0;
