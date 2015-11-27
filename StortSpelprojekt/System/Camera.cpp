@@ -23,7 +23,7 @@ namespace System
 
 		_view				= DirectX::XMMatrixLookAtLH(vPos, vFor, vUp);
 		_proj				= DirectX::XMMatrixPerspectiveFovLH(_fieldOfView, _aspectRatio, _nearClip, _farClip);
-		_ortho				= DirectX::XMMatrixOrthographicLH(width, height, _nearClip, _farClip);
+		_ortho				= DirectX::XMMatrixOrthographicLH((float)width, (float)height, _nearClip, _farClip);
 		_baseView			= DirectX::XMMatrixLookAtLH(DirectX::XMVectorNegate(vFor), vFor, vUp);
 	}
 

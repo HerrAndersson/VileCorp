@@ -4,9 +4,12 @@
 #define SYSTEM_EXPORT __declspec(dllexport)
 #include <DirectXMath.h>
 
+//Disable warning about DirectX  FLOAT3/MATRIX
+#pragma warning( disable: 4251 )
+
 namespace System
 {
-	__declspec(align(16)) class Camera
+	__declspec(align(16)) class SYSTEM_EXPORT Camera
 	{
 	private:
 		DirectX::XMFLOAT3	_position;
