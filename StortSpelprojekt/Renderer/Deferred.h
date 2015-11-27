@@ -17,7 +17,6 @@ private:
 	int textureWidth;
 	int textureHeight;
 
-	ID3D11Texture2D*			 _renderTargetTextureArray[BUFFER_COUNT];
 	ID3D11RenderTargetView*		 _renderTargetViewArray[BUFFER_COUNT];
 	ID3D11ShaderResourceView*	 _shaderResourceViewArray[BUFFER_COUNT];
 	ID3D11Texture2D*			 _depthStencilBuffer;

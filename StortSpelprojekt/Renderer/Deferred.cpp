@@ -21,7 +21,6 @@ Deferred::~Deferred()
 	{
 		SAFE_RELEASE(_shaderResourceViewArray[i]);
 		SAFE_RELEASE(_renderTargetViewArray[i]);
-		SAFE_RELEASE(_renderTargetTextureArray[i]);
 	}
 }
 
@@ -42,6 +41,8 @@ void Deferred::InitializeBuffers(ID3D11Device* device)
 	textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
 	textureDesc.CPUAccessFlags = 0;
 	textureDesc.MiscFlags = 0;
+
+	ID3D11Texture2D*			 _renderTargetTextureArray[BUFFER_COUNT];
 
 	//Create the render target textures
 	for (int i = 0; i < BUFFER_COUNT; i++)
@@ -132,6 +133,11 @@ void Deferred::InitializeBuffers(ID3D11Device* device)
 	_viewport.TopLeftX = 0.0f;
 	_viewport.TopLeftY = 0.0f;
 
+	for (int i = 0; i < BUFFER_COUNT; i++)
+	{
+		SAFE_RELEASE(_renderTargetTextureArray[i]);
+	}
+
 }
 
 void Deferred::SetRenderTargets(ID3D11DeviceContext* deviceContext)
@@ -168,7 +174,6 @@ void Deferred::ResizeRenderTargets(ID3D11Device* device, int textureWidth, int t
 	{
 		SAFE_RELEASE(_shaderResourceViewArray[i]);
 		SAFE_RELEASE(_renderTargetViewArray[i]);
-		SAFE_RELEASE(_renderTargetTextureArray[i]);
 	}
 
 	InitializeBuffers(device);
