@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include "GameObject.h"
+#include "Tilemap.h"
 
 /*
 ObjectHandler
@@ -16,13 +17,21 @@ Finds an object and return its vector index
 Returns all objects of a certain Type (i.e. Traps) as a seperate objectHandler
 */
 
+// TODO: Objecthandler bör hantera rendering
+// TODO: Söka via ID behövs antagligen inte
+
+
 class ObjectHandler
 {
 private:
 	int _size;
 	std::vector<GameObject*> _gameObjects;
+	Tilemap* _tilemap;
 	
 	ObjectHandler GetAll(Type type);
+
+	//AssetManager* _ asdf
+	//Renderer* _asdf2
 
 public:
 	ObjectHandler();
@@ -32,14 +41,18 @@ public:
 
 	int GetSize() const;
 
-	void Add(GameObject* gameObject);
+	bool Add(GameObject* gameObject);
 	bool Remove(short ID);
 	void Clear();
 
 	GameObject* Find(short ID);
 	GameObject* Find(int index);
 
-	std::vector<RenderObject*> GetRenderObjects() const;
+	//std::vector<RenderObject*> GetRenderObjects() const;
+
+	Tilemap* GetTileMap() const;
+	void SetTileMap(Tilemap* tilemap);
+
 
 	//Update gamelogic of all objects
 	void Update();

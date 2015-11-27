@@ -18,7 +18,7 @@ INFORMATION ABOUT LICENSE CAN BE FOUND HERE: http://fw1.codeplex.com/license
 #include "CCollectionLoader.h"
 
 //dll
-#include "FW1FontWrapper.h"
+#include "FW/FW1FontWrapper.h"
 //Lib
 #pragma comment(lib, "FW1FontWrapper.lib")
 

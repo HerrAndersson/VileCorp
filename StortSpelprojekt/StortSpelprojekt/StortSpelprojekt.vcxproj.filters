@@ -8,6 +8,12 @@
     <Filter Include="State Machine">
       <UniqueIdentifier>{e9f4f8e1-b7ff-4685-8914-ad8d7b557f8b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game objects">
+      <UniqueIdentifier>{b078b56f-9a98-4aa6-94a2-044052c99393}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Components">
+      <UniqueIdentifier>{8bd057cc-df94-4b59-b009-4a00943be2ef}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game.cpp">
@@ -31,11 +37,44 @@
     <ClCompile Include="StateMachine.cpp">
       <Filter>State Machine</Filter>
     </ClCompile>
-    <ClCompile Include="GameObject.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ObjectHandler.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tilemap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>Game objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Tile.cpp">
+      <Filter>Game objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Trap.cpp">
+      <Filter>Game objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Trigger.cpp">
+      <Filter>Game objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Unit.cpp">
+      <Filter>Game objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Component.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="DamageComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentList.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObjectComp.cpp">
+      <Filter>Game objects</Filter>
+    </ClCompile>
+    <ClCompile Include="FOVComponent.cpp">
+      <Filter>Components</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -60,11 +99,44 @@
     <ClInclude Include="StateMachine.h">
       <Filter>State Machine</Filter>
     </ClInclude>
-    <ClInclude Include="GameObject.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="ObjectHandler.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tilemap.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>Game objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Tile.h">
+      <Filter>Game objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Trap.h">
+      <Filter>Game objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Trigger.h">
+      <Filter>Game objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Unit.h">
+      <Filter>Game objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Component.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="DamageComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentList.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObjectComp.h">
+      <Filter>Game objects</Filter>
+    </ClInclude>
+    <ClInclude Include="FOVComponent.h">
+      <Filter>Components</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

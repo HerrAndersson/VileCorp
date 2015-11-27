@@ -39,17 +39,32 @@ int ObjectHandler::GetSize() const
 
 
 
-void ObjectHandler::Add(GameObject * gameObject)
+bool ObjectHandler::Add(GameObject * gameObject)
 {
-	_gameObjects.push_back(gameObject);
-	_size++;
+	bool exist = false;
+
+	for (int i = 0; i < _size && !exist; i++)
+	{
+		if (_gameObjects[i] == gameObject)
+		{
+			exist = true;
+		}
+	}
+
+	if (!exist)
+	{
+		_gameObjects.push_back(gameObject);
+		_size++;
+	}
+
+	return exist;
 }
 
 bool ObjectHandler::Remove(short ID)
 {
 	bool removed = false;
 
-	for (int i = 0; i < _size; i++)
+	for (int i = 0; i < _size && !removed; i++)
 	{
 		if (_gameObjects[i]->GetID() == ID)
 		{
@@ -105,20 +120,30 @@ GameObject* ObjectHandler::Find(int index)
 	return gameObject;
 }
 
-std::vector<RenderObject*> ObjectHandler::GetRenderObjects() const
+//std::vector<RenderObject*> ObjectHandler::GetRenderObjects() const
+//{
+//	std::vector<RenderObject*> renderObjects;
+//
+//	for (int i = 0; i < _size; i++)
+//	{
+//		//If the object has a Renderobject and is visible
+//		if (_gameObjects[i]->GetRenderObject() != nullptr && _gameObjects[i]->IsVisible())
+//		{
+//			renderObjects.push_back(_gameObjects[i]->GetRenderObject());
+//		}
+//	}
+//
+//	return renderObjects;
+//}
+
+Tilemap * ObjectHandler::GetTileMap() const
 {
-	std::vector<RenderObject*> renderObjects;
+	return _tilemap;
+}
 
-	for (int i = 0; i < _size; i++)
-	{
-		//If the object has a Renderobject and is visible
-		if (_gameObjects[i]->GetRenderObject() != nullptr && _gameObjects[i]->IsVisible())
-		{
-			renderObjects.push_back(_gameObjects[i]->GetRenderObject());
-		}
-	}
-
-	return renderObjects;
+void ObjectHandler::SetTileMap(Tilemap * tilemap)
+{
+	_tilemap = tilemap;
 }
 
 void ObjectHandler::Update()
