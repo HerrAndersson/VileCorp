@@ -21,9 +21,6 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Fonts.cpp">
-      <Filter>Fonts</Filter>
-    </ClCompile>
     <ClCompile Include="Deferred.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -38,19 +35,11 @@
     </ClCompile>
     <ClCompile Include="DirectX.cpp" />
     <ClCompile Include="RenderModule.cpp" />
+    <ClCompile Include="Fonts.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="Fonts.h">
-      <Filter>Fonts</Filter>
-    </ClInclude>
-    <ClInclude Include="CCollectionLoader.h">
-      <Filter>Fonts</Filter>
-    </ClInclude>
-    <ClInclude Include="CFontEnum.h">
-      <Filter>Fonts</Filter>
-    </ClInclude>
     <ClInclude Include="ShaderHandler.h">
       <Filter>Source Files</Filter>
     </ClInclude>
@@ -66,6 +55,10 @@
     <ClInclude Include="RenderModule.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="Fonts.h" />
+    <ClInclude Include="CFontEnum.h" />
+    <ClInclude Include="CCollectionLoader.h" />
+    <ClInclude Include="FW\FW1FontWrapper.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Fonts">
@@ -77,5 +70,8 @@
     <Filter Include="Source Files">
       <UniqueIdentifier>{fc3d02d2-1d00-4cf8-81be-544b84541c6d}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="FW\x86\FW1FontWrapper.lib" />
   </ItemGroup>
 </Project>

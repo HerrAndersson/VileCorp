@@ -1,23 +1,19 @@
 //Handles the walkable and non-walkable tiles
 //Aron and Victor worked on this
 
-//TODO Check the copy constructor to make sure it's correct. It's been a while since I did my last copy constructor :P. Aron
-
 #ifndef TILEMAP_H
 #define TILEMAP_H
 
+#include "Tile.h"
+
 class Tilemap
 {
-public:
-	enum TileType{Walkable, Unwalkable};
-
 private:
 	int _height;
 	int _width;
 	
-	TileType** _map;
+	Tile** _map;
 
-public:
 	bool IsValid(int x, int z) const;
 	
 public:
@@ -33,5 +29,7 @@ public:
 	int SizeOfTileMap() const;
 	int GetHeight() const;
 	int GetWidth() const;
+
+	std::vector<GameObject*> GetTilePointers() const; // More thinking
 };
 #endif
