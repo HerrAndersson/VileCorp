@@ -4,7 +4,7 @@
 #define SYSTEM_EXPORT __declspec(dllexport)
 #include <DirectXMath.h>
 
-namespace Renderer
+namespace System
 {
 	__declspec(align(16)) class Camera
 	{
@@ -26,10 +26,9 @@ namespace Renderer
 		DirectX::XMMATRIX	_baseView;
 
 	public:
-		Camera();
+		Camera(float nearClip, float farClip, int width, int height);
 		~Camera();
 
-		void Initialize(float nearClip, float farClip, int width, int height);
 		void Update();
 
 		DirectX::XMFLOAT3 GetPosition()const;
@@ -37,15 +36,12 @@ namespace Renderer
 		DirectX::XMFLOAT3 GetRotation()const;
 		void SetRotation(DirectX::XMFLOAT3 rotation);
 
-
-		DirectX::XMMATRIX GetViewMatrix()const;
-		DirectX::XMMATRIX GetProjectionMatrix()const;
-		//Get View-matrix multiplied with Projection-matrix. Can be used with Model space->world coordinates.
-		DirectX::XMMATRIX GetViewProjectionMatrix()const;
+		DirectX::XMMATRIX* GetViewMatrix();
+		DirectX::XMMATRIX* GetProjectionMatrix();
 		//OrthoMatrix is commonly used for anything 2D. Commonly used in the "projection slot".
-		DirectX::XMMATRIX GetOrthoMatrix()const;
+		DirectX::XMMATRIX* GetOrthoMatrix();
 		//BaseViewMatrix is used for 2D HUD. Commonly used in the "view slot".
-		DirectX::XMMATRIX GetBaseViewMatrix()const;
+		DirectX::XMMATRIX* GetBaseViewMatrix();
 	};
 }
 

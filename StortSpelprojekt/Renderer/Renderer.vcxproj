@@ -19,13 +19,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="example.cpp" />
     <ClCompile Include="Fonts.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Camera.h" />
     <ClInclude Include="CCollectionLoader.h" />
     <ClInclude Include="CFontEnum.h" />
     <ClInclude Include="example.h" />
