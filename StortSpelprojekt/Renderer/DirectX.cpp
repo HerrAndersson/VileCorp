@@ -74,38 +74,6 @@ namespace Renderer
 		shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
 		shaderResourceViewDesc.Texture2D.MipLevels = 1;
 
-		//Depth buffer
-		D3D11_TEXTURE2D_DESC depthBufferDesc;
-		ZeroMemory(&depthBufferDesc, sizeof(depthBufferDesc));
-
-		depthBufferDesc.Width = screenWidth;
-		depthBufferDesc.Height = screenHeight;
-		depthBufferDesc.MipLevels = 1;
-		depthBufferDesc.ArraySize = 1;
-		depthBufferDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-		depthBufferDesc.SampleDesc.Count = 1;
-		depthBufferDesc.SampleDesc.Quality = 0;
-		depthBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-		depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-		depthBufferDesc.CPUAccessFlags = 0;
-		depthBufferDesc.MiscFlags = 0;
-
-		hResult = _device->CreateTexture2D(&depthBufferDesc, NULL, &_depthStencilBuffer);
-		if (FAILED(hResult))
-			throw std::runtime_error("DirectX: Error creating depth buffer");
-
-		//Depth stencil view
-		D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
-		ZeroMemory(&depthStencilViewDesc, sizeof(depthStencilViewDesc));
-
-		depthStencilViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-		depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-		depthStencilViewDesc.Texture2D.MipSlice = 0;
-
-		hResult = _device->CreateDepthStencilView(_depthStencilBuffer, &depthStencilViewDesc, &_depthStencilView);
-		if (FAILED(hResult))
-			throw std::runtime_error("DirectX: Error creating depth stencil view");
-
 		//Rasterizer setup
 		D3D11_RASTERIZER_DESC rasterDesc;
 		ZeroMemory(&rasterDesc, sizeof(rasterDesc));
@@ -155,9 +123,6 @@ namespace Renderer
 		_deviceContext->Release();
 		_renderTargetView->Release();
 
-		_depthStencilBuffer->Release();
-		_depthStencilView->Release();
-
 		delete _deferredShader;
 	}
 
@@ -198,7 +163,7 @@ namespace Renderer
 
 	void DirectX::SetLightPassRTVs()
 	{
-		_deviceContext->OMSetRenderTargets(1, &_renderTargetView, _depthStencilView);
+		_deviceContext->OMSetRenderTargets(1, &_renderTargetView, nullptr);
 
 		int count = 0;
 		ID3D11ShaderResourceView** b = _deferredShader->GetShaderResourceViews(count);
@@ -259,15 +224,13 @@ namespace Renderer
 	{
 		float color[] = { red, green, blue, alpha };
 
-		/*deviceContext->OMSetDepthStencilState(dsDepthEnable, 1);
-		_deviceContext->OMSetRenderTargets(1, &_mainRenderTargetView, _depthView);
-		//_deviceContext->RSSetState(rsBackCulling);
-		_deviceContext->RSSetViewports(1, &_viewport);*/
+		//deviceContext->OMSetDepthStencilState(dsDepthEnable, 1);
+		//_deviceContext->OMSetRenderTargets(1, &_mainRenderTargetView, _depthView);
+		_deviceContext->RSSetState(_rasterizerStateBack);
+		//_deviceContext->RSSetViewports(1, &_viewport);
 
 		//Clear main RTV
 		_deviceContext->ClearRenderTargetView(_renderTargetView, color);
-		//Clear depth stencil view
-		_deviceContext->ClearDepthStencilView(_depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0, 0);
 
 		//ClearShaderResources();
 		ClearGeometryPassRTVs(red, green, blue, alpha);

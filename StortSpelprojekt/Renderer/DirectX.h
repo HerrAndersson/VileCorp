@@ -29,11 +29,6 @@ namespace Renderer
 		D3D11_VIEWPORT				_viewport;
 		Deferred*                   _deferredShader;
 
-		ID3D11DepthStencilView*     _depthStencilView;
-		ID3D11Texture2D*			_depthStencilBuffer;
-		ID3D11DepthStencilState*	_depthStencilState;
-	
-
 		ID3D11RasterizerState*		_rasterizerStateBack;
 		ID3D11RasterizerState*		_rasterizerStateFront;
 
