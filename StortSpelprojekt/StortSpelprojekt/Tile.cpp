@@ -5,15 +5,12 @@
 
 Tile::Tile()
 {
-	_size = 0;
-	_objectsOnTile = std::vector<GameObject*>(5);
 }
 
 Tile::Tile(TileType tiletype)
 {
-	_size = 0;
+	//_size = 0;
 	_tiletype = tiletype;
-	_objectsOnTile = std::vector<GameObject*>(5);
 }
 
 Tile::~Tile() 
@@ -33,17 +30,13 @@ bool Tile::ConnectGameObject(GameObject * trap)
 {
 	bool exist = false;
 
-	for (int i = 0; i < _size; i++)
+	if (_objectsOnTile[2] == trap)
 	{
-		if (_objectsOnTile[i] == trap)
-		{
 			exist = true;
-		}
 	}
-
-	if (!exist)
+	else
 	{
-		_objectsOnTile.push_back(trap);
+		_objectsOnTile[2] = trap;
 	}
 
 	return exist;
@@ -53,19 +46,12 @@ bool Tile::DisconnectGameObject(short ID)
 {
 	bool removed = false;
 
-	for (int i = 0; i < _size; i++)
+	for (int i = 0; i < OBJECT_CAPACITY; i++)
 	{
 		if (_objectsOnTile[i]->GetID() == ID)
 		{
-			// Decrease size of vector
-			_size--;
-
-			// Replace pointer with the last pointer int the vector
-			_objectsOnTile[i] = _objectsOnTile[_size];
-
-			// Remove pointer value to avoid various problems
-			_objectsOnTile.pop_back();
-
+			delete _objectsOnTile[i];
+			_objectsOnTile[i] = nullptr;
 			removed = true;
 		}
 	}
@@ -81,5 +67,17 @@ void Tile::Update()
 void Tile::Release()
 {
 	// TODO: The soo what question - Kryztof Wnuk
-	_objectsOnTile.clear();
+	//_objectsOnTile.clear();
+}
+
+GameObject* Tile::GetGameObject(int index) const
+{
+	if (index < 0 || index > 3)
+	{
+		return nullptr;
+	}
+	else
+	{
+		return _objectsOnTile[index];
+	}
 }

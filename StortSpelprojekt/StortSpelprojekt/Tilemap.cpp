@@ -74,7 +74,7 @@ void Tilemap::ChangeTileState(int x, int z, TileType type)
 		_map[x][z].SetTileType(type);
 	}
 }
-bool Tilemap::IsTileOccupied(int x, int z) const
+bool Tilemap::IsTileOccupied(int x, int z) const	
 {
 	if (IsValid(x, z))
 	{
@@ -108,4 +108,9 @@ int Tilemap::GetHeight() const
 int Tilemap::GetWidth() const
 {
 	return _width;
+}
+
+GameObject* Tilemap::GetObjectOnTile(int x, int z, int index) const
+{
+	return _map[x][z].GetGameObject(index);
 }

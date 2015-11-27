@@ -33,7 +33,7 @@ bool GameObject::IsVisible() const
 	return _visible;
 }
 
-void GameObject::SetVisability(bool visible)
+void GameObject::SetVisibility(bool visible)
 {
 	_visible = visible;
 }

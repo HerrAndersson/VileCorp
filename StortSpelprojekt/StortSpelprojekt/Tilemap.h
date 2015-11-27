@@ -30,6 +30,6 @@ public:
 	int GetHeight() const;
 	int GetWidth() const;
 
-	std::vector<GameObject*> GetTilePointers() const; // More thinking
+	GameObject* GetObjectOnTile(int x, int z, int index) const; // More thinking
 };
 #endif
