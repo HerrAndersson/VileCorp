@@ -140,6 +140,7 @@ void Deferred::SetRenderTargets(ID3D11DeviceContext* deviceContext)
 	deviceContext->OMSetRenderTargets(BUFFER_COUNT, _renderTargetViewArray, _depthStencilView);
 	deviceContext->RSSetViewports(1, &_viewport);
 }
+
 void Deferred::ClearRenderTargets(ID3D11DeviceContext* deviceContext, float r, float g, float b, float a)
 {
 	float color[4] = { r, g, b, a };
@@ -153,6 +154,24 @@ void Deferred::ClearRenderTargets(ID3D11DeviceContext* deviceContext, float r, f
 	deviceContext->ClearDepthStencilView(_depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
 	return;
+}
+
+void Deferred::ResizeRenderTargets(ID3D11Device* device, int textureWidth, int textureHeight)
+{
+	this->textureWidth = textureWidth;
+	this->textureHeight = textureHeight;
+
+	SAFE_RELEASE(_depthStencilView);
+	SAFE_RELEASE(_depthStencilBuffer);
+
+	for (int i = 0; i < BUFFER_COUNT; i++)
+	{
+		SAFE_RELEASE(_shaderResourceViewArray[i]);
+		SAFE_RELEASE(_renderTargetViewArray[i]);
+		SAFE_RELEASE(_renderTargetTextureArray[i]);
+	}
+
+	InitializeBuffers(device);
 }
 
 ID3D11ShaderResourceView** Deferred::GetShaderResourceViews(int& count)

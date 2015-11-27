@@ -34,7 +34,7 @@ public:
 	void SetRenderTargets(ID3D11DeviceContext* deviceContext);
 	void ClearRenderTargets(ID3D11DeviceContext* deviceContext, float r, float g, float b, float a);
 
-	//TODO: Resize buffers on window resize! /Jonas
+	void ResizeRenderTargets(ID3D11Device* device, int textureWidth, int textureHeight);
 
 	ID3D11ShaderResourceView** GetShaderResourceViews(int& count);
 };

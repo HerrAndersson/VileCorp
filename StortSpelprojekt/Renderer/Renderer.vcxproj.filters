@@ -66,6 +66,7 @@
     <ClInclude Include="RenderModule.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="FW\FW1FontWrapper.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Fonts">
@@ -77,5 +78,13 @@
     <Filter Include="Source Files">
       <UniqueIdentifier>{fc3d02d2-1d00-4cf8-81be-544b84541c6d}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="FW\x64\FW1FontWrapper.dll" />
+    <None Include="FW\x86\FW1FontWrapper.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="FW\x64\FW1FontWrapper.lib" />
+    <Library Include="FW\x86\FW1FontWrapper.lib" />
   </ItemGroup>
 </Project>

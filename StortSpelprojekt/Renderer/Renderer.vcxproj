@@ -34,6 +34,7 @@
     <ClInclude Include="DirectX.h" />
     <ClInclude Include="example.h" />
     <ClInclude Include="Fonts.h" />
+    <ClInclude Include="FW\FW1FontWrapper.h" />
     <ClInclude Include="RenderModule.h" />
     <ClInclude Include="ShaderHandler.h" />
     <ClInclude Include="stdafx.h" />
@@ -72,6 +73,14 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="FW\x64\FW1FontWrapper.dll" />
+    <None Include="FW\x86\FW1FontWrapper.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="FW\x64\FW1FontWrapper.lib" />
+    <Library Include="FW\x86\FW1FontWrapper.lib" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{AF2FA019-4CD5-41E4-BD38-AB00E366C9A1}</ProjectGuid>

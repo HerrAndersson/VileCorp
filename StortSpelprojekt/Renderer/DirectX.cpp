@@ -217,6 +217,8 @@ namespace Renderer
 			_deviceContext->RSSetViewports(1, &vp);
 
 			_viewport = vp;
+
+			_deferredShader->ResizeRenderTargets(_device, windowWidth, windowHeight);
 		}
 	}
 
