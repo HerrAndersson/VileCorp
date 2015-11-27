@@ -13,12 +13,22 @@ short GameObject::GetID() const
 	return _ID;
 }
 
-Vec3 GameObject::GetPosition()
+XMMATRIX GameObject::GetModelMatrix()
+{
+	return XMMatrixAffineTransformation(
+		XMLoadFloat3(&_scale),
+		XMLoadFloat3(&XMFLOAT3(0, 0, 0)),
+		XMQuaternionRotationRollPitchYaw(_direction.x, _direction.y, _direction.z),
+		XMLoadFloat3(&_position)
+		);
+}
+
+XMFLOAT3 GameObject::GetPosition()
 {
 	return _position;
 }
 
-void GameObject::SetPosition(Vec3 position)
+void GameObject::SetPosition(XMFLOAT3 position)
 {
 	_position = position;
 }

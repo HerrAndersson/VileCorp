@@ -1,5 +1,7 @@
 #pragma once
 #include <vector>
+#include "RenderModule.h"
+
 #include "GameObject.h"
 #include "Tilemap.h"
 
@@ -18,7 +20,7 @@ Returns all objects of a certain Type (i.e. Traps) as a seperate objectHandler
 */
 
 // TODO: Objecthandler bör hantera rendering
-// TODO: Söka via ID behövs antagligen inte
+
 
 
 class ObjectHandler
@@ -30,11 +32,11 @@ private:
 	
 	ObjectHandler GetAll(Type type);
 
-	//AssetManager* _ asdf
-	//Renderer* _asdf2
+	Renderer::RenderModule* _renderModule;
 
 public:
-	ObjectHandler();
+	ObjectHandler() {}; // TODO: Fix - Zache
+	ObjectHandler(Renderer::RenderModule* renderModule);
 	~ObjectHandler();
 
 	ObjectHandler& operator+=(const ObjectHandler& rhs);
@@ -44,11 +46,9 @@ public:
 	bool Add(GameObject* gameObject);
 	bool Remove(short ID);
 	void Clear();
-
-	GameObject* Find(short ID);
+	 
+	GameObject* Find(short ID); // TODO: Söka via ID behövs antagligen inte
 	GameObject* Find(int index);
-
-	//std::vector<RenderObject*> GetRenderObjects() const;
 
 	Tilemap* GetTileMap() const;
 	void SetTileMap(Tilemap* tilemap);

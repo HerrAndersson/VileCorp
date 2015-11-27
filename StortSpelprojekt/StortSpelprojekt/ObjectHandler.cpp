@@ -15,9 +15,11 @@ ObjectHandler ObjectHandler::GetAll(Type type)
 	return objectsOfSameType;
 }
 
-ObjectHandler::ObjectHandler()
+ObjectHandler::ObjectHandler(Renderer::RenderModule* renderModule)
 {
 	_size = 0;
+
+	_renderModule = renderModule;
 }
 
 ObjectHandler::~ObjectHandler()
@@ -152,11 +154,8 @@ void ObjectHandler::Update()
 	for (int i = 0; i < _size; i++)
 	{
 		_gameObjects[i]->Update();
+		_renderModule->Render(/*_gameObjects[i]->GetRenderObjectID(), _gameObjects[i]->GetModelMatrix()*/);
 	}
-
-	//TODO check for relevant collision between objects using GetAll(Type) (i.e All thiefs vs all traps (some culling may be required))
-
-
 }
 
 void ObjectHandler::Release()

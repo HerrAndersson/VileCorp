@@ -1,4 +1,5 @@
 #pragma once
+#include <DirectXMath.h>
 
 /*
 GameObject class
@@ -9,23 +10,19 @@ If the object doesn't need a _renderObject, set it to nullptr.
 If the object has a renderObject but is out of sight _visibility will be false.
 */
 
-// TODO: Behöver spara världsmatriser
-
-//placeholder
-struct Vec3
-{
-	float _posX, _posY, _posZ;
-};
-
 //Preliminary solution  - Zache/Marcus
 enum Type {UNIT, STRUCTURE, TILE, TRAP, TRIGGER };
+
+using namespace DirectX;
 
 class GameObject
 {
 protected:
 	unsigned short _ID;
-	Vec3 _position;
-	//Vec3 _direction;
+	XMFLOAT3 _position;
+	XMFLOAT3 _direction;
+	XMFLOAT3 _scale;
+
 	Type _type;
 	bool _visible; // OBS
 	int _renderObjectID;
@@ -36,9 +33,10 @@ public:
 
 	short GetID() const;
 
-	//TODO change Vec3 to XMVECTOR or other vectorclass - Zache/Marcus
-	Vec3 GetPosition();
-	void SetPosition(Vec3 position);
+	XMMATRIX GetModelMatrix();
+
+	XMFLOAT3 GetPosition();
+	void SetPosition(XMFLOAT3 position);
 
 	Type GetType() const;
 
