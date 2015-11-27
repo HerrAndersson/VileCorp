@@ -14,89 +14,92 @@ using namespace std;
 using namespace DirectX;
 
 struct MainHeader {
-	int version, meshCount;
+	int _version, _meshCount;
 };
 
 struct MeshHeader
 {
-	int nameLength, numberOfVertices, subMeshID, numberPointLights, numberSpotLights;
+	int _nameLength, _numberOfVertices, _subMeshID, _numberPointLights, _numberSpotLights;
 };
 
 struct MatHeader {
-	int diffuseNameLength, specularNameLength;
+	int _diffuseNameLength, _specularNameLength;
 };
 
 struct Point
 {
-	XMFLOAT3 position;
-	int boneIndices[4];
-	float boneWeights[4];
+	XMFLOAT3 _position;
+	int _boneIndices[4];
+	float _boneWeights[4];
 };
 
 struct WeightedVertex
 {
-	XMFLOAT3 position;
-	XMFLOAT3 normal;
-	XMFLOAT2 uv;
-	int boneIndices[4];
-	float boneWeights[4];
+	XMFLOAT3 _position;
+	XMFLOAT3 _normal;
+	XMFLOAT2 _uv;
+	int _boneIndices[4];
+	float _boneWeights[4];
 };
 
 struct Vertex
 {
-	XMFLOAT3 position;
-	XMFLOAT3 normal;
-	XMFLOAT2 uv;
+	XMFLOAT3 _position;
+	XMFLOAT3 _normal;
+	XMFLOAT2 _uv;
 };
 
 struct PointLight
 {
-	float pos[3], col[3], intensity;
+	float _pos[3], _col[3], _intensity;
 };
 
 struct SpotLight
 {
-	float pos[3], col[3], intensity, angle, direction[3];
+	float _pos[3], _col[3], _intensity, _angle, _direction[3];
 };
 
 struct Mesh
 {
-	~Mesh() {
-		pointLights.clear();
-		spotLights.clear();
+	~Mesh()
+	{
+		_pointLights.clear();
+		_spotLights.clear();
 	}
-	string name;
-	ID3D11Buffer* vertexBuffer;
-	int vertexBufferSize, toMesh;
-	vector<PointLight> pointLights;
-	vector<SpotLight> spotLights;
+	string _name;
+	ID3D11Buffer* _vertexBuffer;
+	int _vertexBufferSize, _toMesh;
+	vector<PointLight> _pointLights;
+	vector<SpotLight> _spotLights;
 };
 
 struct Texture
 {
 	HRESULT LoadTexture(ID3D11Device* device);
-	bool loaded = false;
-	short activeUsers = 0;
-	wstring filename;
-	ID3D11ShaderResourceView* data = nullptr;
+	bool _loaded = false;
+	short _activeUsers = 0;
+	wstring _filename;
+	ID3D11ShaderResourceView* _data = nullptr;
 };
 
 struct RenderObject
 {
-	bool meshLoaded, toUnload;
-	short skeleton = -1;
-	float diffuse[4], specular[4];
-	Texture* diffuseTexture = nullptr;
-	Texture* specularTexture = nullptr;
-	vector<Mesh> meshes;
+	bool _meshLoaded, _toUnload;
+	short _skeleton = -1;
+	float _diffuse[4], _specular[4];
+	Texture* _diffuseTexture = nullptr;
+	Texture* _specularTexture = nullptr;
+	vector<Mesh> _meshes;
 };
 
 static void splitStringToVector(string input, vector<string> &output, string delimiter) {
 	size_t pos = 0;
 	string token;
-	while ((pos = input.find(delimiter)) != string::npos) {
+	while ((pos = input.find(delimiter)) != string::npos)
+	{
 		token = input.substr(0, pos);
-		if (!token.empty()) {
+		if (!token.empty())
+		{
 			output.push_back(token);
 		}
 		input.erase(0, pos + delimiter.length());
@@ -112,7 +115,8 @@ static bool GetFilenamesInDirectory(char* folder, char* extension, vector<string
 	search_path.append(extension);
 	WIN32_FIND_DATA fd;
 	HANDLE hFind = FindFirstFile(search_path.c_str(), &fd);
-	if (hFind != INVALID_HANDLE_VALUE) {
+	if (hFind != INVALID_HANDLE_VALUE)
+	{
 		do {
 			if (!(fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
 			{
@@ -134,17 +138,17 @@ static bool GetFilenamesInDirectory(char* folder, char* extension, vector<string
 class ASSET_MANAGER_EXPORT AssetManager
 {
 private:
-	int meshFormatVersion = 23;
-	ifstream* infile;
-	ID3D11Device* device;
+	int _meshFormatVersion = 23;
+	ifstream* _infile;
+	ID3D11Device* _device;
 
-	vector<string>* modelFiles;
+	vector<string>* _modelFiles;
 
-	vector<RenderObject*>* renderObjects;
-	vector<RenderObject*>* renderObjectsToFlush;
+	vector<RenderObject*>* _renderObjects;
+	vector<RenderObject*>* _renderObjectsToFlush;
 
-	vector<Texture*>* textures;
-	vector<Texture*>* texturesToFlush;
+	vector<Texture*>* _textures;
+	vector<Texture*>* _texturesToFlush;
 
 	void LoadModel(string file_path, RenderObject* renderObject);
 	void Flush();
