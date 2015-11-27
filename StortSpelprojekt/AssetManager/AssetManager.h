@@ -1,13 +1,14 @@
 #ifndef ASSET_MANAGER
 #define ASSET_MANAGER
 #define ASSET_MANAGER_EXPORT __declspec(dllexport)
+#define uint unsigned int
 
 #include <d3d11.h>
 #include <string>
 #include <vector>
 #include <DirectXMath.h>
 #include <fstream>
-#include <Windows.h>
+#include "WICTextureLoader.h"
 
 using namespace std;
 using namespace DirectX;
@@ -71,21 +72,22 @@ struct Mesh
 	vector<SpotLight> spotLights;
 };
 
-struct Texture //TODO implement - Fredrik
+struct Texture
 {
-	bool loaded, toUnload;
-	string diffFile;
-	ID3D11ShaderResourceView* diffuseTexture = nullptr;
+	void LoadTexture(ID3D11Device* device);
+	bool loaded = false;
+	short activeUsers = 0;
+	wstring filename;
+	ID3D11ShaderResourceView* data = nullptr;
 };
 
 struct RenderObject
 {
 	bool meshLoaded, toUnload;
-	int skeleton = -1;
+	short skeleton = -1;
 	float diffuse[4], specular[4];
 	Texture* diffuseTexture = nullptr;
 	Texture* specularTexture = nullptr;
-	string diffFile, specFile; //TODO remove - Fredrik
 	vector<Mesh> meshes;
 };
 
@@ -141,12 +143,14 @@ private:
 	vector<RenderObject*>* renderObjects;
 	vector<RenderObject*>* renderObjectsToFlush;
 
-	//	vector<ID3D11ShaderResourceView*> textures;
-	//	vector<ID3D11ShaderResourceView*> texturesToFlush;
+	vector<Texture*>* textures;
+	vector<Texture*>* texturesToFlush;
 
 	void LoadModel(string file_path, RenderObject* renderObject);
 	void Flush();
 	RenderObject* ScanModel(string file_path);
+	Texture* ScanTexture(string filename);
+	void DecrementUsers(Texture* texture);
 	ID3D11Buffer* CreateVertexBuffer(vector<Vertex> *vertices, int skeleton);
 	void SetupRenderObjectList();
 
