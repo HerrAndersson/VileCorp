@@ -74,7 +74,7 @@ struct Mesh
 
 struct Texture
 {
-	void LoadTexture(ID3D11Device* device);
+	HRESULT LoadTexture(ID3D11Device* device);
 	bool loaded = false;
 	short activeUsers = 0;
 	wstring filename;

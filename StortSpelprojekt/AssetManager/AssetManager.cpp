@@ -97,20 +97,22 @@ void AssetManager::Flush()
 	texturesToFlush->clear();
 }
 
-void Texture::LoadTexture(ID3D11Device* device)
+HRESULT Texture::LoadTexture(ID3D11Device* device)
 {
+	HRESULT res;
 	if (!loaded)
 	{
 #ifdef _DEBUG
 		filename.insert(0, L"../../Output/Bin/x86/Debug/Assets/Textures/");
-		DirectX::CreateWICTextureFromFile(device, filename.c_str(), nullptr, &data, 0);
+		res = DirectX::CreateWICTextureFromFile(device, filename.c_str(), nullptr, &data, 0);
 #else
 		filename.insert(0, L"Assets/Textures/");
-		DirectX::CreateWICTextureFromFile(device, filename.c_str(), nullptr, &data, 0);
+		res = DirectX::CreateWICTextureFromFile(device, filename.c_str(), nullptr, &data, 0);
 #endif
 		loaded = true;
+		activeUsers++;
 	}
-	activeUsers++;
+	return res;
 }
 
 //Loads a model to the GPU
@@ -129,9 +131,17 @@ void AssetManager::LoadModel(string file_path, RenderObject* renderObject) {
 	}
 
 	if (renderObject->diffuseTexture != nullptr)
-		renderObject->diffuseTexture->LoadTexture(device);
+		if (renderObject->diffuseTexture->LoadTexture(device) == E_OUTOFMEMORY)
+		{
+			Flush();
+			renderObject->diffuseTexture->LoadTexture(device);//TODO handle if still out of memory - Fredrik
+		}
 	if (renderObject->specularTexture != nullptr)
-		renderObject->specularTexture->LoadTexture(device);
+		if(renderObject->specularTexture->LoadTexture(device) == E_OUTOFMEMORY)
+		{
+			Flush();
+			renderObject->specularTexture->LoadTexture(device);//TODO handle if still out of memory - Fredrik
+		}
 
 	infile->close();
 }
@@ -235,14 +245,14 @@ ID3D11Buffer* AssetManager::CreateVertexBuffer(vector<Vertex> *vertices, int ske
 	HRESULT result = device->CreateBuffer(&vbDESC, &vertexData, &vertexBuffer);
 	if (result == E_OUTOFMEMORY) {
 		Flush();
-		result = device->CreateBuffer(&vbDESC, &vertexData, &vertexBuffer); // TODO handle if still out of memory - Fredrik
+		result = device->CreateBuffer(&vbDESC, &vertexData, &vertexBuffer);//TODO handle if still out of memory - Fredrik
 	}
 
 	return vertexBuffer;
 }
 
 //How AssetManager interfaces with the renderer. Don't save the return, request it anew everytime unless you are certain the model won't be unloaded
-//currently two objects exist. 0 = cube, 1 = cube with arms
+//currently two objects exist. 0 = man 1 = cube, 2 = cube with cubes
 RenderObject* AssetManager::GetRenderObject(int index)
 {
 	RenderObject* renderObject = renderObjects->at(index);
