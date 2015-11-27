@@ -8,6 +8,7 @@
 #include <vector>
 #include <DirectXMath.h>
 #include <fstream>
+#include "WICTextureLoader.h"
 
 using namespace std;
 using namespace DirectX;
@@ -73,10 +74,10 @@ struct Mesh
 
 struct Texture
 {
-	void LoadTexture();
+	void LoadTexture(ID3D11Device* device);
 	bool loaded = false;
 	short activeUsers = 0;
-	string filename;
+	wstring filename;
 	ID3D11ShaderResourceView* data = nullptr;
 };
 

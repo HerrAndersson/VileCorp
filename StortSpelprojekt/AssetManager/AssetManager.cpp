@@ -33,7 +33,11 @@ AssetManager::~AssetManager()
 //Looks through the Models folder and creates an empty RenderObject for each entry
 void AssetManager::SetupRenderObjectList()
 {
-	GetFilenamesInDirectory("../../Output/Bin/x86/Debug/Assets/Models/", ".bin", *modelFiles);//TODO should be relative to executable - Fredrik
+#ifdef _DEBUG
+	GetFilenamesInDirectory("../../Output/Bin/x86/Debug/Assets/Models/", ".bin", *modelFiles);
+#else
+	GetFilenamesInDirectory("Assets/Models/", ".bin", *modelFiles);
+#endif
 	for (uint i = 0; i < modelFiles->size(); i++)
 	{
 		RenderObject* renderObject = ScanModel(modelFiles->at(i));
@@ -93,11 +97,18 @@ void AssetManager::Flush()
 	texturesToFlush->clear();
 }
 
-void Texture::LoadTexture()
+void Texture::LoadTexture(ID3D11Device* device)
 {
 	if (!loaded)
 	{
-		//TODO implement loading - Fredrik
+#ifdef _DEBUG
+		string str = "../../Output/Bin/x86/Debug/Assets/Textures/";
+		filename.insert(0, wstring(str.begin(), str.end()));
+		DirectX::CreateWICTextureFromFile(device, filename.c_str(), nullptr, &data, 0);
+#else
+		DirectX::CreateWICTextureFromFile(device, "Assets/Textures/" + filename.c_str(), nullptr, &data, 0);
+#endif
+		loaded = true;
 	}
 	activeUsers++;
 }
@@ -118,9 +129,9 @@ void AssetManager::LoadModel(string file_path, RenderObject* renderObject) {
 	}
 
 	if (renderObject->diffuseTexture != nullptr)
-		renderObject->diffuseTexture->LoadTexture();
+		renderObject->diffuseTexture->LoadTexture(device);
 	if (renderObject->specularTexture != nullptr)
-		renderObject->specularTexture->LoadTexture();
+		renderObject->specularTexture->LoadTexture(device);
 
 	infile->close();
 }
@@ -129,11 +140,12 @@ Texture* AssetManager::ScanTexture(string filename)
 {
 	for (Texture* texture : *textures)
 	{
-		if (!strcmp(texture->filename.data(), filename.data()))
+		string str = string(texture->filename.begin(), texture->filename.end());
+		if (!strcmp(str.data(), filename.data()))
 			return texture;
 	}
 	Texture* texture = new Texture;
-	texture->filename = filename;
+	texture->filename = wstring(filename.begin(), filename.end());
 	textures->push_back(texture);
 	return texture;
 }
@@ -148,7 +160,7 @@ RenderObject* AssetManager::ScanModel(string file_path)
 	infile->read((char*)&mainHeader, sizeof(MainHeader));
 	mainHeader.meshCount++;
 	if (mainHeader.version != meshFormatVersion)
-		throw std::runtime_error("Incorrect fileversion");
+		throw std::runtime_error("Failed to load " + file_path + ":\nIncorrect fileversion");
 	for (int i = 0; i < mainHeader.meshCount; i++)
 	{
 		Mesh mesh;
