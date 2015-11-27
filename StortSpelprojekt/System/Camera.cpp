@@ -45,6 +45,13 @@ namespace System
 		_view = DirectX::XMMatrixLookAtLH(vPos, DirectX::XMVectorAdd(vPos, vFor), vUp);
 	}
 
+	void Camera::Resize(int width, int height)
+	{
+		_aspectRatio = (float)width / (float)height;
+		_proj = DirectX::XMMatrixPerspectiveFovLH(_fieldOfView, _aspectRatio, _nearClip, _farClip);
+		_ortho = DirectX::XMMatrixOrthographicLH((float)width, (float)height, _nearClip, _farClip);
+	}
+
 	DirectX::XMFLOAT3 Camera::GetPosition()const
 	{
 		return _position;

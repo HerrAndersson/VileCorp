@@ -33,6 +33,7 @@ namespace System
 		~Camera();
 
 		void Update();
+		void Resize(int width, int height);
 
 		DirectX::XMFLOAT3 GetPosition()const;
 		void SetPosition(DirectX::XMFLOAT3 position);
