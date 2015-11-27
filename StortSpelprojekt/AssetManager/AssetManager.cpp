@@ -102,11 +102,11 @@ void Texture::LoadTexture(ID3D11Device* device)
 	if (!loaded)
 	{
 #ifdef _DEBUG
-		string str = "../../Output/Bin/x86/Debug/Assets/Textures/";
-		filename.insert(0, wstring(str.begin(), str.end()));
+		filename.insert(0, L"../../Output/Bin/x86/Debug/Assets/Textures/");
 		DirectX::CreateWICTextureFromFile(device, filename.c_str(), nullptr, &data, 0);
 #else
-		DirectX::CreateWICTextureFromFile(device, "Assets/Textures/" + filename.c_str(), nullptr, &data, 0);
+		filename.insert(0, L"Assets/Textures/");
+		DirectX::CreateWICTextureFromFile(device, filename.c_str(), nullptr, &data, 0);
 #endif
 		loaded = true;
 	}
