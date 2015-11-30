@@ -18,7 +18,7 @@ struct Vec3
 };
 
 //Preliminary solution  - Zache/Marcus
-enum Type {UNIT, STRUCTURE, TILE, TRAP, TRIGGER };
+enum Type {UNIT, WALL, FLOOR, TRAP, TRIGGER, LOOT };
 
 class GameObject
 {
@@ -43,7 +43,7 @@ public:
 	Type GetType() const;
 
 	bool IsVisible() const;
-	void SetVisability(bool visible);
+	void SetVisibility(bool visible);
 
 	void SetRenderObjectID(int renderObjectID);
 	int GetRenderObjectID() const;

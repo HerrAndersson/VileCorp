@@ -46,9 +46,6 @@
     <ClCompile Include="GameObject.cpp">
       <Filter>Game objects</Filter>
     </ClCompile>
-    <ClCompile Include="Tile.cpp">
-      <Filter>Game objects</Filter>
-    </ClCompile>
     <ClCompile Include="Trap.cpp">
       <Filter>Game objects</Filter>
     </ClCompile>
@@ -106,9 +103,6 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="GameObject.h">
-      <Filter>Game objects</Filter>
-    </ClInclude>
-    <ClInclude Include="Tile.h">
       <Filter>Game objects</Filter>
     </ClInclude>
     <ClInclude Include="Trap.h">
