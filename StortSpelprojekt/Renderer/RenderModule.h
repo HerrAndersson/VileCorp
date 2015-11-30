@@ -45,6 +45,8 @@ namespace Renderer
 		void Render();
 		void RenderLightQuad();
 		void EndScene();
+
+		ID3D11Device* GetDevice() const;
 	};
 }
 

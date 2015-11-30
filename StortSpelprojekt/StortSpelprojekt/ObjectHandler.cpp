@@ -20,8 +20,16 @@ ObjectHandler::ObjectHandler()
 	_size = 0;
 }
 
+ObjectHandler::ObjectHandler(ID3D11Device* device)
+{
+	_size = 0;
+	_assetManager = new AssetManager(device);
+}
+
 ObjectHandler::~ObjectHandler()
-{}
+{
+	delete _assetManager;
+}
 
 ObjectHandler& ObjectHandler::operator+=(const ObjectHandler& rhs)
 {
