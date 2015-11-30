@@ -1,8 +1,8 @@
-#include "DirectX.h"
+#include "DirectXHandler.h"
 
 namespace Renderer
 {
-	DirectX::DirectX(HWND hwnd, int screenWidth, int screenHeight)
+	DirectXHandler::DirectXHandler(HWND hwnd, int screenWidth, int screenHeight)
 	{
 		HRESULT hResult;
 
@@ -35,7 +35,7 @@ namespace Renderer
 		hResult = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, 0,
 			&featLvl, 1, D3D11_SDK_VERSION, &swapChainDesc, &_swapChain, &_device, NULL, &_deviceContext);
 		if (FAILED(hResult))
-			throw std::runtime_error("DirectX: Error creating swap chain");
+			throw std::runtime_error("DirectXHandler: Error creating swap chain");
 
 		//Setup texture desctiption
 		D3D11_TEXTURE2D_DESC textureDesc;
@@ -56,11 +56,11 @@ namespace Renderer
 		ID3D11Texture2D* backBufferPointer;
 		hResult = _swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&backBufferPointer);
 		if (FAILED(hResult))
-			throw std::runtime_error("DirectX: Could not get swap chain pointer");
+			throw std::runtime_error("DirectXHandler: Could not get swap chain pointer");
 
 		hResult = _device->CreateRenderTargetView(backBufferPointer, NULL, &_renderTargetView);
 		if (FAILED(hResult))
-			throw std::runtime_error("DirectX: Error creating render target view ");
+			throw std::runtime_error("DirectXHandler: Error creating render target view ");
 
 		backBufferPointer->Release();
 		backBufferPointer = nullptr;
@@ -92,13 +92,13 @@ namespace Renderer
 		//Create rasterizer states
 		hResult = _device->CreateRasterizerState(&rasterDesc, &_rasterizerStateBack);
 		if (FAILED(hResult))
-			throw std::runtime_error("DirectX: Error creating rasterizer state");
+			throw std::runtime_error("DirectXHandler: Error creating rasterizer state");
 
 		rasterDesc.CullMode = D3D11_CULL_FRONT;
 
 		hResult = _device->CreateRasterizerState(&rasterDesc, &_rasterizerStateFront);
 		if (FAILED(hResult))
-			throw std::runtime_error("DirectX: Error creating rasterizer state");
+			throw std::runtime_error("DirectXHandler: Error creating rasterizer state");
 
 		//Set up viewport
 		_viewport.Width = (float)screenWidth;
@@ -114,7 +114,7 @@ namespace Renderer
 		_deviceContext->RSSetState(_rasterizerStateBack);
 	}
 
-	DirectX::~DirectX()
+	DirectXHandler::~DirectXHandler()
 	{
 		_swapChain->SetFullscreenState(false, NULL);
 
@@ -126,17 +126,17 @@ namespace Renderer
 		delete _deferredShader;
 	}
 
-	ID3D11Device* DirectX::GetDevice()
+	ID3D11Device* DirectXHandler::GetDevice()
 	{
 		return _device;
 	}
 
-	ID3D11DeviceContext* DirectX::GetDeviceContext()
+	ID3D11DeviceContext* DirectXHandler::GetDeviceContext()
 	{
 		return _deviceContext;
 	}
 
-	void DirectX::ClearShaderResources()
+	void DirectXHandler::ClearShaderResources()
 	{
 		ID3D11ShaderResourceView** nullArray = new ID3D11ShaderResourceView*[_R_TARGETS];
 		for (int i = 0; i < _R_TARGETS; i++)
@@ -151,17 +151,17 @@ namespace Renderer
 		nullArray = nullptr;
 	}
 
-	void DirectX::ClearGeometryPassRTVs(float r, float g, float b, float a)
+	void DirectXHandler::ClearGeometryPassRTVs(float r, float g, float b, float a)
 	{
 		_deferredShader->ClearRenderTargets(_deviceContext, r, g, b, a);
 	}
 
-	void DirectX::SetGeometryPassRTVs()
+	void DirectXHandler::SetGeometryPassRTVs()
 	{
 		_deferredShader->SetRenderTargets(_deviceContext);
 	}
 
-	void DirectX::SetLightPassRTVs()
+	void DirectXHandler::SetLightPassRTVs()
 	{
 		_deviceContext->OMSetRenderTargets(1, &_renderTargetView, nullptr);
 
@@ -170,7 +170,7 @@ namespace Renderer
 		_deviceContext->PSSetShaderResources(0, count, b);
 	}
 
-	void DirectX::ResizeResources(HWND hwnd, int windowWidth, int windowHeight)
+	void DirectXHandler::ResizeResources(HWND hwnd, int windowWidth, int windowHeight)
 	{
 		if (_swapChain)
 		{
@@ -189,18 +189,18 @@ namespace Renderer
 			//Preserve the existing buffer count and format. Automatically choose the width and height to match the client rect for HWNDs.
 			hr = _swapChain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
 			if (FAILED(hr))
-				throw std::runtime_error("DirectX::ResizeResources: Error resizing buffers");
+				throw std::runtime_error("DirectXHandler::ResizeResources: Error resizing buffers");
 
 			//Get buffer
 			ID3D11Texture2D* pBuffer;
 			hr = _swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&pBuffer);
 			if (FAILED(hr))
-				throw std::runtime_error("DirectX::ResizeResources: Error getting the buffer from the swapchain");
+				throw std::runtime_error("DirectXHandler::ResizeResources: Error getting the buffer from the swapchain");
 
 			//Create the new renderTargetView.
 			hr = _device->CreateRenderTargetView(pBuffer, NULL, &_renderTargetView);
 			if (FAILED(hr))
-				throw std::runtime_error("DirectX::ResizeResources: Error creating the renderTargetView");
+				throw std::runtime_error("DirectXHandler::ResizeResources: Error creating the renderTargetView");
 
 			pBuffer->Release();
 
@@ -222,7 +222,7 @@ namespace Renderer
 		}
 	}
 
-	void DirectX::BeginScene(float red, float green, float blue, float alpha)
+	void DirectXHandler::BeginScene(float red, float green, float blue, float alpha)
 	{
 		float color[] = { red, green, blue, alpha };
 
@@ -238,7 +238,7 @@ namespace Renderer
 		ClearGeometryPassRTVs(red, green, blue, alpha);
 	}
 
-	void DirectX::EndScene()
+	void DirectXHandler::EndScene()
 	{
 		_swapChain->Present(0, 0);
 	}

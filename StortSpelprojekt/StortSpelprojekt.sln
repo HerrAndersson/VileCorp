@@ -13,13 +13,13 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "System", "System\System.vcxproj", "{1A48944A-4D63-4549-9560-D04BF1393FF2}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Renderer", "Renderer\Renderer.vcxproj", "{AF2FA019-4CD5-41E4-BD38-AB00E366C9A1}"
-	ProjectSection(ProjectDependencies) = postProject
-		{12D08945-3BE4-48F7-86C9-093AB5610DFB} = {12D08945-3BE4-48F7-86C9-093AB5610DFB}
-	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AI", "AI\AI.vcxproj", "{421E96A2-EE6C-4A2B-BE4D-FD57303E7497}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AssetManager", "AssetManager\AssetManager.vcxproj", "{12D08945-3BE4-48F7-86C9-093AB5610DFB}"
+	ProjectSection(ProjectDependencies) = postProject
+		{AF2FA019-4CD5-41E4-BD38-AB00E366C9A1} = {AF2FA019-4CD5-41E4-BD38-AB00E366C9A1}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,10 +1,12 @@
 #include "RenderModule.h"
 
+using namespace DirectX;
+
 namespace Renderer
 {
 	RenderModule::RenderModule(HWND hwnd, int screenWidth, int screenHeight)
 	{
-		_d3d = new DirectX(hwnd, screenWidth, screenHeight);
+		_d3d = new DirectXHandler(hwnd, screenWidth, screenHeight);
 		_shaderHandler = new ShaderHandler(_d3d->GetDevice());
 		_shaderHandler->SetDefaultShaders(_d3d->GetDeviceContext());
 
@@ -98,24 +100,78 @@ namespace Renderer
 		_d3d->ResizeResources(hwnd, windowWidth, windowHeight);
 	}
 
-	void RenderModule::SetResources()
+	bool RenderModule::SetResourcesPerFrame(DirectX::XMMATRIX* view, DirectX::XMMATRIX* projection)
 	{
-		/*
-		This is where we update our per frame buffer and set similar resources
-		*/
-	}
+		HRESULT result;
+		D3D11_MAPPED_SUBRESOURCE mappedResource;
+		MatrixBufferPerFrame* dataPtr;
+		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
 
-	void RenderModule::SetShaderStage(int stage)
+		//View,Projection
+		XMMATRIX viewMatrixC, projectionMatrixC;
+
+		viewMatrixC = XMMatrixTranspose(*view);
+		projectionMatrixC = XMMatrixTranspose(*projection);
+
+		result = deviceContext->Map(_matrixBufferPerFrame, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+		if (FAILED(result))
+		{
+			return false;
+		}
+
+		dataPtr = (MatrixBufferPerFrame*)mappedResource.pData;
+
+		dataPtr->viewMatrix = viewMatrixC;
+		dataPtr->projectionMatrix = projectionMatrixC;
+
+		deviceContext->Unmap(_matrixBufferPerFrame, 0);
+
+		deviceContext->VSSetConstantBuffers(0, 1, &_matrixBufferPerFrame);
+
+	}
+	/*bool RenderModule::SetResourcesPerObject(DirectX::XMMATRIX* model, ID3D11ShaderResourceView* diffuse, ID3D11ShaderResourceView* specular)
+	{
+		HRESULT result;
+		D3D11_MAPPED_SUBRESOURCE mappedResource;
+		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
+
+		UINT32 vertexSize;
+		vertexSize = sizeof(Vertex);
+
+		UINT32 offset = 0;
+
+		deviceContext->IASetVertexBuffers(0, 1, &renderObject->model->vertexBuffer, &vertexSize, &offset);
+		deviceContext->PSSetShaderResources(1, 1, &renderObject->diffuseTexture);
+		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		XMMATRIX worldMatrixC;
+		worldMatrixC = XMMatrixTranspose(worldMatrix);
+
+		result = deviceContext->Map(matrixBufferPerObject, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+		if (FAILED(result)) { return false; }
+
+		MatrixBufferPerObject* dataPtr = (MatrixBufferPerObject*)mappedResource.pData;
+
+		dataPtr->world = worldMatrixC;
+		dataPtr->colorModifier = colorModifier;
+
+		deviceContext->Unmap(matrixBufferPerObject, 0);
+
+		deviceContext->VSSetConstantBuffers(0, 1, &matrixBufferPerObject);
+		return true;
+	}*/
+
+	void RenderModule::SetShaderStage(ShaderStage stage)
 	{
 		switch(stage)
 		{
-		case 0:
+		case GEO_PASS:
 		{
 			_d3d->SetGeometryPassRTVs();
 			_shaderHandler->SetGeometryPassShaders(_d3d->GetDeviceContext());
 			break;
 		}
-		case 1:
+		case LIGHT_PASS:
 		{
 			_d3d->SetLightPassRTVs();
 			_shaderHandler->SetLightPassShaders(_d3d->GetDeviceContext());

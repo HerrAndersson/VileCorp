@@ -1,5 +1,5 @@
-#ifndef DIRECTX_H
-#define DIRECTX_H
+#ifndef DIRECTXHANDLER_H
+#define DIRECTXHANDLER_H
 
 #include <d3d11.h>
 #include <d3dcompiler.h>
@@ -12,7 +12,7 @@
 
 namespace Renderer
 {
-	class DirectX
+	class DirectXHandler
 	{
 	private:
 
@@ -35,8 +35,8 @@ namespace Renderer
 	public:
 		const int _R_TARGETS = 3;
 
-		DirectX(HWND hwnd, int screenWidth, int screenHeight);
-		~DirectX();
+		DirectXHandler(HWND hwnd, int screenWidth, int screenHeight);
+		~DirectXHandler();
 
 		ID3D11Device* GetDevice();
 		ID3D11DeviceContext* GetDeviceContext();

@@ -9,11 +9,13 @@
 #include <DirectXMath.h>
 #include <fstream>
 #include "WICTextureLoader.h"
+#include "RenderUtils.h"
 
 using namespace std;
 using namespace DirectX;
 
-struct MainHeader {
+struct MainHeader 
+{
 	int version, meshCount;
 };
 
@@ -22,7 +24,8 @@ struct MeshHeader
 	int nameLength, numberOfVertices, subMeshID, numberPointLights, numberSpotLights;
 };
 
-struct MatHeader {
+struct MatHeader 
+{
 	int diffuseNameLength, specularNameLength;
 };
 
@@ -31,64 +34,6 @@ struct Point
 	XMFLOAT3 position;
 	int boneIndices[4];
 	float boneWeights[4];
-};
-
-struct WeightedVertex
-{
-	XMFLOAT3 position;
-	XMFLOAT3 normal;
-	XMFLOAT2 uv;
-	int boneIndices[4];
-	float boneWeights[4];
-};
-
-struct Vertex
-{
-	XMFLOAT3 position;
-	XMFLOAT3 normal;
-	XMFLOAT2 uv;
-};
-
-struct PointLight
-{
-	float pos[3], col[3], intensity;
-};
-
-struct SpotLight
-{
-	float pos[3], col[3], intensity, angle, direction[3];
-};
-
-struct Mesh
-{
-	~Mesh() {
-		pointLights.clear();
-		spotLights.clear();
-	}
-	string name;
-	ID3D11Buffer* vertexBuffer;
-	int vertexBufferSize, toMesh;
-	vector<PointLight> pointLights;
-	vector<SpotLight> spotLights;
-};
-
-struct Texture
-{
-	void LoadTexture(ID3D11Device* device);
-	bool loaded = false;
-	short activeUsers = 0;
-	wstring filename;
-	ID3D11ShaderResourceView* data = nullptr;
-};
-
-struct RenderObject
-{
-	bool meshLoaded, toUnload;
-	short skeleton = -1;
-	float diffuse[4], specular[4];
-	Texture* diffuseTexture = nullptr;
-	Texture* specularTexture = nullptr;
-	vector<Mesh> meshes;
 };
 
 static void splitStringToVector(string input, vector<string> &output, string delimiter) {
