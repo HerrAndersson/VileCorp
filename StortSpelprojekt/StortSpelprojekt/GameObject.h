@@ -9,28 +9,15 @@ If the object doesn't need a _renderObject, set it to nullptr.
 If the object has a renderObject but is out of sight _visibility will be false.
 */
 
+// TODO: Behöver spara världsmatriser
+
 //placeholder
 struct Vec3
 {
 	float _posX, _posY, _posZ;
 };
 
-//placeholder
-struct RenderObject
-{
-	//Matrices, shaderinfo, buffers and stuff. Structure will probably be in the renderengine
-};
-
-
-
-//TODO look into static casting to find out what part of the objecthiearchy the object lies in
-//struct Type
-//{
-//	string _name;
-//	string _parent;
-//};
-
-//Preliminary solution
+//Preliminary solution  - Zache/Marcus
 enum Type {UNIT, STRUCTURE, TILE, TRAP, TRIGGER };
 
 class GameObject
@@ -38,10 +25,10 @@ class GameObject
 protected:
 	unsigned short _ID;
 	Vec3 _position;
-	Vec3 _direction;
+	//Vec3 _direction;
 	Type _type;
-	bool _visible;
-	RenderObject* _renderObject;
+	bool _visible; // OBS
+	int _renderObjectID;
 
 public:
 	GameObject();
@@ -49,19 +36,17 @@ public:
 
 	short GetID() const;
 
-	//TODO change Vec3 to XMVECTOR or other vectorclass
+	//TODO change Vec3 to XMVECTOR or other vectorclass - Zache/Marcus
 	Vec3 GetPosition();
 	void SetPosition(Vec3 position);
-	
-	Vec3 GetDirection();
-	void SetDirection(Vec3 direction);
 
 	Type GetType() const;
 
 	bool IsVisible() const;
 	void SetVisability(bool visible);
 
-	RenderObject* GetRenderObject() const;
+	void SetRenderObjectID(int renderObjectID);
+	int GetRenderObjectID() const;
 
 	//Update object gamelogic
 	void virtual Update() = 0;

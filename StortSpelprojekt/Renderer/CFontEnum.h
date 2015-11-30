@@ -9,7 +9,7 @@ FW1FONTWRAPPER. ALL CREDITS BELONG TO HIM. EXACT CODE DETAILS: http://fw1.codepl
 */
 
 //dll
-#include "FW1FontWrapper.h"
+#include "FW/FW1FontWrapper.h"
 //Lib
 #pragma comment(lib, "FW1FontWrapper.lib")
 

@@ -18,13 +18,13 @@ INFORMATION ABOUT LICENSE CAN BE FOUND HERE: http://fw1.codeplex.com/license
 #include "CCollectionLoader.h"
 
 //dll
-#include "FW1FontWrapper.h"
+#include "FW/FW1FontWrapper.h"
 //Lib
 #pragma comment(lib, "FW1FontWrapper.lib")
 
 namespace Renderer
 {
-	class RENDERER_EXPORT Fonts
+	__declspec(align(16))class RENDERER_EXPORT Fonts
 	{
 	private:
 		IFW1Factory*		_factory;
