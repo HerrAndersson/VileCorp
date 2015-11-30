@@ -10,6 +10,14 @@ INFORMATION ABOUT LICENSE CAN BE FOUND HERE: http://fw1.codeplex.com/license
 
 */
 
+/*
+
+	HOW THIS CLASS WORKS:
+	INITIALIZE ONE FONT OBJECT WITH 1 FONT. IF YOU ADD MORE STRINGS
+	IT WILL USE THAT FONT. SO ONE OBJECT PER FONT.
+
+*/
+
 #define RENDERER_EXPORT __declspec(dllexport)
 #include <d3d11.h>
 #include "stdafx.h"

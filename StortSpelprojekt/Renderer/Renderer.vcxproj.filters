@@ -35,7 +35,9 @@
     </ClCompile>
     <ClCompile Include="DirectX.cpp" />
     <ClCompile Include="RenderModule.cpp" />
-    <ClCompile Include="Fonts.cpp" />
+    <ClCompile Include="Fonts.cpp">
+      <Filter>Fonts</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -55,10 +57,12 @@
     <ClInclude Include="RenderModule.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="Fonts.h" />
     <ClInclude Include="CFontEnum.h" />
     <ClInclude Include="CCollectionLoader.h" />
     <ClInclude Include="FW\FW1FontWrapper.h" />
+    <ClInclude Include="Fonts.h">
+      <Filter>Fonts</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Fonts">

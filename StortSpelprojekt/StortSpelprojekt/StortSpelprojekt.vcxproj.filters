@@ -76,6 +76,9 @@
     <ClCompile Include="FOVComponent.cpp">
       <Filter>Components</Filter>
     </ClCompile>
+    <ClCompile Include="UIHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -137,6 +140,9 @@
     </ClInclude>
     <ClInclude Include="FOVComponent.h">
       <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="UIHandler.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
