@@ -136,21 +136,6 @@ namespace Renderer
 		return _deviceContext;
 	}
 
-	void DirectXHandler::ClearShaderResources()
-	{
-		ID3D11ShaderResourceView** nullArray = new ID3D11ShaderResourceView*[_R_TARGETS];
-		for (int i = 0; i < _R_TARGETS; i++)
-		{
-			nullArray[i] = nullptr;
-		}
-
-		_deviceContext->PSSetShaderResources(0, _R_TARGETS, nullArray);
-
-		//Not sure if this crashes /Sebastian
-		delete[] nullArray;
-		nullArray = nullptr;
-	}
-
 	void DirectXHandler::ClearGeometryPassRTVs(float r, float g, float b, float a)
 	{
 		_deferredShader->ClearRenderTargets(_deviceContext, r, g, b, a);
