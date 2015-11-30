@@ -11,7 +11,12 @@ class Deferred
 
 private:
 
-	//Diffuse, Normal, Position, WorldPosition
+	/* Render target views
+	[0] = Diffuse Color
+	[1] = Normal
+	[2] = Position
+	[3] = World Position
+	*/
 	static const int BUFFER_COUNT = 4;
 
 	int textureWidth;

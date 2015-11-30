@@ -136,21 +136,6 @@ namespace Renderer
 		return _deviceContext;
 	}
 
-	void DirectX::ClearShaderResources()
-	{
-		ID3D11ShaderResourceView** nullArray = new ID3D11ShaderResourceView*[_R_TARGETS];
-		for (int i = 0; i < _R_TARGETS; i++)
-		{
-			nullArray[i] = nullptr;
-		}
-
-		_deviceContext->PSSetShaderResources(0, _R_TARGETS, nullArray);
-
-		//Not sure if this crashes /Sebastian
-		delete[] nullArray;
-		nullArray = nullptr;
-	}
-
 	void DirectX::ClearGeometryPassRTVs(float r, float g, float b, float a)
 	{
 		_deferredShader->ClearRenderTargets(_deviceContext, r, g, b, a);
@@ -226,15 +211,12 @@ namespace Renderer
 	{
 		float color[] = { red, green, blue, alpha };
 
-		//deviceContext->OMSetDepthStencilState(dsDepthEnable, 1);
-		//_deviceContext->OMSetRenderTargets(1, &_mainRenderTargetView, _depthView);
 		_deviceContext->RSSetState(_rasterizerStateBack);
-		//_deviceContext->RSSetViewports(1, &_viewport);
 
 		//Clear main RTV
 		_deviceContext->ClearRenderTargetView(_renderTargetView, color);
 
-		//ClearShaderResources();
+		//Clear deferred RTVs
 		ClearGeometryPassRTVs(red, green, blue, alpha);
 	}
 

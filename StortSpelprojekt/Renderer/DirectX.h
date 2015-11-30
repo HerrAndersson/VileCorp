@@ -16,12 +16,6 @@ namespace Renderer
 	{
 	private:
 
-		/* Render target views
-		[0] = Color
-		[1] = Normals
-		[2] = World Pos
-		Sebastian*/
-
 		IDXGISwapChain*				_swapChain;
 		ID3D11Device*			    _device;
 		ID3D11DeviceContext*		_deviceContext;
@@ -33,7 +27,6 @@ namespace Renderer
 		ID3D11RasterizerState*		_rasterizerStateFront;
 
 	public:
-		const int _R_TARGETS = 3;
 
 		DirectX(HWND hwnd, int screenWidth, int screenHeight);
 		~DirectX();
@@ -41,7 +34,6 @@ namespace Renderer
 		ID3D11Device* GetDevice();
 		ID3D11DeviceContext* GetDeviceContext();
 
-		void ClearShaderResources();
 		void ClearGeometryPassRTVs(float r, float g, float b, float a);
 		void SetGeometryPassRTVs();
 		void SetLightPassRTVs();
