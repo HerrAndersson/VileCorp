@@ -92,6 +92,19 @@ struct RenderObject
 	vector<Mesh> _meshes;
 };
 
+struct LevelHeader
+{
+	int _version, _tileGridSizeX, _tileGridSizeY, _nrOfGameObjects;
+};
+
+struct GameObjectData
+{
+	int _posX, _posZ;
+	float _rotY;
+	int _tileType;
+	bool _walkable;
+};
+
 static void splitStringToVector(string input, vector<string> &output, string delimiter) {
 	size_t pos = 0;
 	string token;
@@ -143,6 +156,7 @@ private:
 	ID3D11Device* _device;
 
 	vector<string>* _modelFiles;
+	vector<string>* _levelFileNames;
 
 	vector<RenderObject*>* _renderObjects;
 	vector<RenderObject*>* _renderObjectsToFlush;
@@ -157,12 +171,15 @@ private:
 	void DecrementUsers(Texture* texture);
 	ID3D11Buffer* CreateVertexBuffer(vector<Vertex> *vertices, int skeleton);
 	void SetupRenderObjectList();
+	void SetupLevelFileNameList();
 
 public:
 	AssetManager(ID3D11Device* device);
 	~AssetManager();
 	RenderObject* GetRenderObject(int index);
 	void UnloadModel(int index, bool force);
+	void ParseLevel(int index, vector<GameObjectData> &gameObjects, int &dimX, int &dimY);
+	
 };
 
 

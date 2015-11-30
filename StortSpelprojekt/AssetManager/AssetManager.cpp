@@ -11,8 +11,10 @@ AssetManager::AssetManager(ID3D11Device* device)
 	this->_renderObjectsToFlush = new vector<RenderObject*>;
 	this->_textures = new vector<Texture*>;
 	this->_texturesToFlush = new vector<Texture*>;
+	_levelFileNames = new vector<string>;
 
 	SetupRenderObjectList();
+	SetupLevelFileNameList();
 }
 
 AssetManager::~AssetManager()
@@ -73,6 +75,43 @@ void AssetManager::UnloadModel(int index, bool force)
 		_renderObjectsToFlush->push_back(renderObject);
 		renderObject->_toUnload = true;
 	}
+}
+
+void AssetManager::ParseLevel(int index, vector<GameObjectData> &gameObjects, int &dimX, int &dimY)
+{
+	LevelHeader lvlHead;
+
+	infile->open(_levelFileNames->at(index).c_str(), ifstream::binary);
+	if (!infile->is_open())
+	{
+		return;
+	}
+
+	infile->read((char*)&lvlHead, sizeof(LevelHeader));
+	dimX = lvlHead._tileGridSizeX;
+	dimY = lvlHead._tileGridSizeY;
+
+	gameObjects.resize(lvlHead._nrOfGameObjects);
+	infile->read((char*)gameObjects.data(), sizeof(GameObjectData) * lvlHead._nrOfGameObjects);
+
+	//infile->open(file_path.c_str(), ifstream::binary);
+	//if (!infile->is_open())
+	//{
+	//	return;
+	//}
+
+	//infile->seekg(mesh->toMesh);
+	//vertices.resize(mesh->vertexBufferSize);
+	//infile->read((char*)vertices.data(), mesh->vertexBufferSize*sizeof(Vertex));
+}
+
+void AssetManager::SetupLevelFileNameList()
+{
+#ifdef _DEBUG
+	GetFilenamesInDirectory("../../Output/Bin/x86/Debug/Assets/Levels/", ".lvl", *_levelFileNames);
+#else
+	GetFilenamesInDirectory("Assets/Levels/", ".lvl", *_levelFileNames);
+#endif
 }
 
 //Unloads all Assets waiting to be unloaded
