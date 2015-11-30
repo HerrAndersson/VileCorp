@@ -4,6 +4,7 @@
 AssetManager::AssetManager(ID3D11Device* device)
 {
 
+<<<<<<< HEAD
 	this->_device = device;
 	this->_infile = new ifstream;
 	this->_modelFiles = new vector<string>;
@@ -11,7 +12,16 @@ AssetManager::AssetManager(ID3D11Device* device)
 	this->_renderObjectsToFlush = new vector<RenderObject*>;
 	this->_textures = new vector<Texture*>;
 	this->_texturesToFlush = new vector<Texture*>;
+=======
+	this->device = device;
+	this->infile = new ifstream;
+	this->modelFiles = new vector<string>;
+	this->renderObjects = new vector<RenderObject*>;
+	this->renderObjectsToFlush = new vector<RenderObject*>;
+	this->textures = new vector<Texture*>;
+	this->texturesToFlush = new vector<Texture*>;
 	_levelFileNames = new vector<string>;
+>>>>>>> Import of level now works! What we lack: tilemap connection and render object list/connection
 
 	SetupRenderObjectList();
 	SetupLevelFileNameList();
@@ -81,18 +91,18 @@ void AssetManager::ParseLevel(int index, vector<GameObjectData> &gameObjects, in
 {
 	LevelHeader lvlHead;
 
-	_infile->open(_levelFileNames->at(index).c_str(), ifstream::binary);
-	if (!_infile->is_open())
+	infile->open(_levelFileNames->at(index).c_str(), ifstream::binary);
+	if (!infile->is_open())
 	{
 		return;
 	}
 
-	_infile->read((char*)&lvlHead, sizeof(LevelHeader));
+	infile->read((char*)&lvlHead, sizeof(LevelHeader));
 	dimX = lvlHead._tileGridSizeX;
 	dimY = lvlHead._tileGridSizeY;
 
 	gameObjects.resize(lvlHead._nrOfGameObjects);
-	_infile->read((char*)gameObjects.data(), sizeof(GameObjectData) * lvlHead._nrOfGameObjects);
+	infile->read((char*)gameObjects.data(), sizeof(GameObjectData) * lvlHead._nrOfGameObjects);
 
 	//infile->open(file_path.c_str(), ifstream::binary);
 	//if (!infile->is_open())
