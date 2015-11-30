@@ -126,6 +126,11 @@ namespace AI
 		_start = pos;
 	}
 
+	void AStar::SetGoalPosition(Vec2D pos)
+	{
+		_goal = pos;
+	}
+
 	Vec2D * AStar::GetPath() const
 	{
 		return _path;

@@ -1,5 +1,3 @@
-
-
 #include "Tilemap.h"
 
 bool Tilemap::IsValid(int x, int z) const
@@ -19,7 +17,7 @@ Tilemap::Tilemap()
 
 		for (int j = 0; j < _height; j++)
 		{
-			_map[i][j] = Tile(WALKABLE);
+			_map[i][j] = Tile();
 		}
 	}
 }
@@ -37,7 +35,7 @@ Tilemap::Tilemap(int width, int height)
 
 			for (int j = 0; j < _height; j++)
 			{
-				_map[i][j] = Tile(WALKABLE);
+				_map[i][j] = Tile();
 			}
 		}
 	}
@@ -67,35 +65,109 @@ Tilemap::~Tilemap()
 	delete[] _map;
 }
 
-void Tilemap::ChangeTileState(int x, int z, TileType type)
+bool Tilemap::AddObjectToTile(int x, int z, GameObject * obj)
 {
+	bool result = false;
 	if (IsValid(x, z))
 	{
-		_map[x][z].SetTileType(type);
+		switch (obj->GetType())
+		{
+		case FLOOR:
+		case WALL:
+			_map[x][z]._objectsOnTile[0] = obj;
+			result = true;
+			break;
+		case UNIT:
+			if (_map[x][z]._objectsOnTile[1] == nullptr)
+			{
+				_map[x][z]._objectsOnTile[1] = obj;
+				result = true;
+			}
+			else if(_map[x][z]._objectsOnTile[2] == nullptr)
+			{
+				_map[x][z]._objectsOnTile[2] = obj;
+				result = true;
+			}
+			break;
+		case TRAP:
+		case LOOT:
+			if (_map[x][z]._objectsOnTile[3] == nullptr)
+			{
+				_map[x][z]._objectsOnTile[3] = obj;
+				result = true;
+			}
+			break;
+		case TRIGGER:
+			if (_map[x][z]._objectsOnTile[4] == nullptr)
+			{
+				_map[x][z]._objectsOnTile[4] = obj;
+				result = true;
+			}
+			break;
+		default:
+			break;
+		}
 	}
+	return result;
 }
-bool Tilemap::IsTileOccupied(int x, int z) const	
+
+bool Tilemap::RemoveObjectFromTile(int x, int z, GameObject * obj)
 {
+	bool result = false;
 	if (IsValid(x, z))
 	{
-		return _map[x][z].GetTileType() == UNWALKABLE;
+		switch (obj->GetType())
+		{
+		case FLOOR:
+		case WALL:
+			if (_map[x][z]._objectsOnTile[1]->GetID() == obj->GetID())
+			{
+				_map[x][z]._objectsOnTile[1] = nullptr;
+				result = true;
+			}
+			break;
+		case UNIT:
+			if (_map[x][z]._objectsOnTile[1]->GetID() == obj->GetID())
+			{
+				_map[x][z]._objectsOnTile[1] = nullptr;
+				result = true;
+			}
+			else if (_map[x][z]._objectsOnTile[2]->GetID() == obj->GetID())
+			{
+				_map[x][z]._objectsOnTile[2] = nullptr;
+				result = true;
+			}
+			break;
+		case TRAP:
+		case LOOT:
+			if (_map[x][z]._objectsOnTile[3]->GetID() == obj->GetID())
+			{
+				_map[x][z]._objectsOnTile[3] = nullptr;
+				result = true;
+			}
+			break;
+		case TRIGGER:
+			if (_map[x][z]._objectsOnTile[4]->GetID() == obj->GetID())
+			{
+				_map[x][z]._objectsOnTile[4] = nullptr;
+				result = true;
+			}
+			break;
+		default:
+			break;
+		}
 	}
-	else
-	{
-		return false;
-	}
+	return result;
 }
-TileType Tilemap::GetTileType(int x, int z) const
+
+void Tilemap::ClearTile(int x, int z)
 {
-	if (IsValid(x, z))
+	for (int i = 0; i < Tile::OBJECT_CAPACITY; i++)
 	{
-		return _map[x][z].GetTileType();
-	}
-	else
-	{
-		return UNWALKABLE;
+		_map[x][z]._objectsOnTile[i] = nullptr;
 	}
 }
+
 
 int Tilemap::SizeOfTileMap() const
 {
@@ -112,5 +184,67 @@ int Tilemap::GetWidth() const
 
 GameObject* Tilemap::GetObjectOnTile(int x, int z, int index) const
 {
-	return _map[x][z].GetGameObject(index);
+	return _map[x][z]._objectsOnTile[index];
+}
+
+bool Tilemap::IsWallOnTile(int x, int z) const
+{
+	if (_map[x][z]._objectsOnTile[0] == nullptr)
+	{
+		return false;
+	}
+	else
+	{
+		return  _map[x][z]._objectsOnTile[0]->GetType() == WALL;
+	}
+}
+
+int Tilemap::UnitsOnTile(int x, int z) const
+{
+	int result = 0;
+	if (_map[x][z]._objectsOnTile[1] != nullptr && _map[x][z]._objectsOnTile[1]->GetType() == UNIT)
+	{
+		result++;
+	}
+	if (_map[x][z]._objectsOnTile[2] != nullptr && _map[x][z]._objectsOnTile[2]->GetType() == UNIT)
+	{
+		result++;
+	}
+	return result;
+}
+
+bool Tilemap::IsTrapOnTile(int x, int z) const
+{
+	if (_map[x][z]._objectsOnTile[3] == nullptr)
+	{
+		return false;
+	}
+	else
+	{
+		return  _map[x][z]._objectsOnTile[3]->GetType() == TRAP;
+	}
+}
+
+bool Tilemap::IsTriggerOnTile(int x, int z) const
+{
+	if (_map[x][z]._objectsOnTile[4] == nullptr)
+	{
+		return false;
+	}
+	else
+	{
+		return  _map[x][z]._objectsOnTile[4]->GetType() == TRIGGER;
+	}
+}
+
+bool Tilemap::IsObjectiveOnTile(int x, int z) const
+{
+	if (_map[x][z]._objectsOnTile[3] == nullptr)
+	{
+		return false;
+	}
+	else
+	{
+		return  _map[x][z]._objectsOnTile[3]->GetType() == LOOT;
+	}
 }

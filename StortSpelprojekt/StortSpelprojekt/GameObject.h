@@ -22,7 +22,7 @@ struct RenderObject
 };
 
 //Preliminary solution  - Zache/Marcus
-enum Type {UNIT, STRUCTURE, TILE, TRAP, TRIGGER, LOOT };
+enum Type {UNIT, WALL, FLOOR, TRAP, TRIGGER, LOOT };
 
 class GameObject
 {

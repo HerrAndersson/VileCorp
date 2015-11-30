@@ -5,59 +5,16 @@
 
 Tile::Tile()
 {
-}
-
-Tile::Tile(TileType tiletype)
-{
-	//_size = 0;
-	_tiletype = tiletype;
+	for (int i = 0; i < OBJECT_CAPACITY; i++)
+	{
+		_objectsOnTile[i] = nullptr;
+	}
 }
 
 Tile::~Tile() 
 {}
 
-TileType Tile::GetTileType() const
-{
-	return _tiletype;
-}
 
-void Tile::SetTileType(TileType tiletype)
-{
-	_tiletype = tiletype;
-}
-
-bool Tile::ConnectGameObject(GameObject * trap)
-{
-	bool exist = false;
-
-	if (_objectsOnTile[2] == trap)
-	{
-			exist = true;
-	}
-	else
-	{
-		_objectsOnTile[2] = trap;
-	}
-
-	return exist;
-}
-
-bool Tile::DisconnectGameObject(short ID)
-{
-	bool removed = false;
-
-	for (int i = 0; i < OBJECT_CAPACITY; i++)
-	{
-		if (_objectsOnTile[i]->GetID() == ID)
-		{
-			delete _objectsOnTile[i];
-			_objectsOnTile[i] = nullptr;
-			removed = true;
-		}
-	}
-
-	return removed;
-}
 
 void Tile::Update()
 {
@@ -80,4 +37,29 @@ GameObject* Tile::GetGameObject(int index) const
 	{
 		return _objectsOnTile[index];
 	}
+}
+
+bool Tile::IsWall() const
+{
+	return _objectsOnTile[0]->GetType()== WALL;
+}
+
+int Tile::UnitsOnTile() const
+{
+	return _objectsOnTile[0]->GetType() == UNIT;
+}
+
+bool Tile::IsTrapOnTile() const
+{
+	return _objectsOnTile[0]->GetType() == TRAP;
+}
+
+bool Tile::IsTriggerOnTile() const
+{
+	return _objectsOnTile[0]->GetType() == TRIGGER;
+}
+
+bool Tile::IsObjectiveOnTile() const
+{
+	return _objectsOnTile[0]->GetType() == LOOT;
 }

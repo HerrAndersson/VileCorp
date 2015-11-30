@@ -125,6 +125,7 @@ namespace AI
 		virtual ~AStar();
 		void SetTileCost(Vec2D pos, int cost = 1);
 		void SetStartPosition(Vec2D pos);
+		void SetGoalPosition(Vec2D pos);
 		Vec2D* GetPath() const;
 		int GetPathLength() const;
 		void cleanMap();
