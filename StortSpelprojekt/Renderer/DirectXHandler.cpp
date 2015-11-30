@@ -226,15 +226,12 @@ namespace Renderer
 	{
 		float color[] = { red, green, blue, alpha };
 
-		//deviceContext->OMSetDepthStencilState(dsDepthEnable, 1);
-		//_deviceContext->OMSetRenderTargets(1, &_mainRenderTargetView, _depthView);
 		_deviceContext->RSSetState(_rasterizerStateBack);
-		//_deviceContext->RSSetViewports(1, &_viewport);
 
 		//Clear main RTV
 		_deviceContext->ClearRenderTargetView(_renderTargetView, color);
 
-		//ClearShaderResources();
+		//Clear deferred RTVs
 		ClearGeometryPassRTVs(red, green, blue, alpha);
 	}
 
