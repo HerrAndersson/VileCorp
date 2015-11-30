@@ -120,7 +120,7 @@ void AssetManager::Flush()
 	for (RenderObject* renderObject : *_renderObjectsToFlush)
 		if (renderObject->_toUnload)
 		{
-			for (auto m : renderObject->_meshes)
+			for (Mesh m : renderObject->_meshes)
 				m._vertexBuffer->Release();
 			renderObject->_toUnload = false;
 			if (renderObject->_diffuseTexture != nullptr)
@@ -130,7 +130,7 @@ void AssetManager::Flush()
 		}
 	_renderObjectsToFlush->clear();
 
-	for (Texture* texture : *_textures)
+	for (Texture* texture : *_texturesToFlush)
 		if (!texture->_activeUsers)
 			texture->_data->Release();
 	_texturesToFlush->clear();
