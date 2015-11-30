@@ -116,6 +116,7 @@ namespace Renderer
 		result = deviceContext->Map(_matrixBufferPerFrame, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 		if (FAILED(result))
 		{
+			//TODO: Throw an exception //Mattias
 			return false;
 		}
 
@@ -127,39 +128,45 @@ namespace Renderer
 		deviceContext->Unmap(_matrixBufferPerFrame, 0);
 
 		deviceContext->VSSetConstantBuffers(0, 1, &_matrixBufferPerFrame);
-
+		return true;
 	}
-	/*bool RenderModule::SetResourcesPerObject(DirectX::XMMATRIX* model, ID3D11ShaderResourceView* diffuse, ID3D11ShaderResourceView* specular)
+	bool RenderModule::SetResourcesPerObject(XMMATRIX* world, ID3D11ShaderResourceView* diffuse, ID3D11ShaderResourceView* specular)
 	{
 		HRESULT result;
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
 		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
 
-		UINT32 vertexSize;
-		vertexSize = sizeof(Vertex);
-
 		UINT32 offset = 0;
 
-		deviceContext->IASetVertexBuffers(0, 1, &renderObject->model->vertexBuffer, &vertexSize, &offset);
-		deviceContext->PSSetShaderResources(1, 1, &renderObject->diffuseTexture);
-		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		deviceContext->PSSetShaderResources(0, 1, &diffuse);
+		deviceContext->PSSetShaderResources(1, 1, &specular);
 
 		XMMATRIX worldMatrixC;
-		worldMatrixC = XMMatrixTranspose(worldMatrix);
+		worldMatrixC = XMMatrixTranspose(*world);
 
-		result = deviceContext->Map(matrixBufferPerObject, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+		result = deviceContext->Map(_matrixBufferPerObject, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 		if (FAILED(result)) { return false; }
 
 		MatrixBufferPerObject* dataPtr = (MatrixBufferPerObject*)mappedResource.pData;
 
 		dataPtr->world = worldMatrixC;
-		dataPtr->colorModifier = colorModifier;
 
-		deviceContext->Unmap(matrixBufferPerObject, 0);
+		deviceContext->Unmap(_matrixBufferPerObject, 0);
 
-		deviceContext->VSSetConstantBuffers(0, 1, &matrixBufferPerObject);
+		deviceContext->VSSetConstantBuffers(0, 1, &_matrixBufferPerObject);
 		return true;
-	}*/
+	}
+
+	void RenderModule::SetResourcesPerMesh(ID3D11Buffer* vertexBuffer, int vertexSize)
+	{
+		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
+
+		UINT32 offset = 0;
+		UINT32 vs = vertexSize;
+
+		deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &vs, &offset);
+		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	}
 
 	void RenderModule::SetShaderStage(ShaderStage stage)
 	{
