@@ -54,39 +54,6 @@ namespace Renderer
 		D3D11_SUBRESOURCE_DATA data;
 		data.pSysMem = quad;
 		HRESULT result = _d3d->GetDevice()->CreateBuffer(&bufferDesc, &data, &_screenQuad);
-		
-
-		//TEMP!
-		Vertex vertices[] =
-		{
-			{
-				0.0f, 0.5f, 0.0f,
-				1.0f, 0.0f,
-				1.0f, 1.0f, 0.0f
-			},
-			{
-				0.45f, -0.5, 0.0f,
-				1.0f, 1.0f,
-				1.0f, 1.0f, 0.0f
-			},
-			{
-				-0.45f, -0.5f, 0.0f,
-				1.0f, 0.0f,
-				1.0f, 1.0f, 0.0f
-			}
-		};
-		D3D11_BUFFER_DESC bufferDescTriangle;
-		ZeroMemory(&bufferDescTriangle, sizeof(bufferDescTriangle));
-		bufferDescTriangle.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-		bufferDescTriangle.Usage = D3D11_USAGE_DEFAULT;
-		bufferDescTriangle.ByteWidth = sizeof(Vertex) * 3;
-
-		D3D11_SUBRESOURCE_DATA dataTriangle;
-		dataTriangle.pSysMem = vertices;
-		HRESULT resultTriangle = _d3d->GetDevice()->CreateBuffer(&bufferDescTriangle, &dataTriangle, &_vertexBuffer);
-
-		if (FAILED(resultTriangle))
-			throw std::runtime_error("Failed to create vertexBufferTriangle");
 	}
 
 	RenderModule::~RenderModule()
@@ -130,6 +97,7 @@ namespace Renderer
 		deviceContext->VSSetConstantBuffers(0, 1, &_matrixBufferPerFrame);
 		return true;
 	}
+
 	bool RenderModule::SetResourcesPerObject(XMMATRIX* world, ID3D11ShaderResourceView* diffuse, ID3D11ShaderResourceView* specular)
 	{
 		HRESULT result;
@@ -192,17 +160,17 @@ namespace Renderer
 		_d3d->BeginScene(red, green, blue, alpha);
 	}
 
-	void RenderModule::Render()
+	void RenderModule::Render(DirectX::XMMATRIX* world, RenderObject* renderObject)
 	{
 		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
 
-		UINT32 vertexSize = sizeof(Vertex);
-		UINT32 offset = 0;
+		SetResourcesPerObject(world, renderObject->diffuseTexture->data, renderObject->specularTexture->data);
 
-		deviceContext->IASetVertexBuffers(0, 1, &_vertexBuffer, &vertexSize, &offset);
-		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-		deviceContext->Draw(3, 0);
+		for (auto mesh : renderObject->meshes)
+		{
+			SetResourcesPerMesh(mesh.vertexBuffer, sizeof(Vertex));
+			deviceContext->Draw(mesh.vertexBufferSize, 0);
+		}
 	}
 
 	void RenderModule::RenderLightQuad()
