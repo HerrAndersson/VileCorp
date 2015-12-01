@@ -7,6 +7,7 @@
 #include "Camera.h"
 #include "AssetManager.h"
 #include "Trap.h"
+#include "ObjectHandler.h"
 
 class Game
 {
@@ -16,7 +17,7 @@ private:
 	System::Window*				_window;
 	Renderer::RenderModule*		_renderModule;
 	System::Camera*				_camera;
-	ObjectHandler* _objectHandler;
+	ObjectHandler*				_objectHandler;
 
 	//Resizing window, directx resources, camera
 	void ResizeResources(System::WindowSettings settings);
