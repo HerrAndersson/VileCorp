@@ -54,11 +54,6 @@ DirectX::XMFLOAT3 GameObject::GetScale() const
 	return _scale;
 }
 
-DirectX::XMMATRIX GameObject::GetObjectMatrix() const
-{
-	return _objectMatrix;
-}
-
 void GameObject::SetPosition(const DirectX::XMFLOAT3 & position)
 {
 	_position = position;

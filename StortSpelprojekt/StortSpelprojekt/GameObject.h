@@ -42,7 +42,7 @@ public:
 	DirectX::XMFLOAT3 GetPosition() const;
 	DirectX::XMFLOAT3 GetRotation() const;
 	DirectX::XMFLOAT3 GetScale() const;
-	DirectX::XMMATRIX GetObjectMatrix()const;
+	DirectX::XMMATRIX GetMatrix()const;
 
 	void SetPosition(const DirectX::XMFLOAT3& position);
 	void SetRotation(const DirectX::XMFLOAT3& rotation);
@@ -59,5 +59,7 @@ public:
 
 	//Update object gamelogic
 	void virtual Update() = 0;
+
+	void virtual Release() = 0;
 };
 
