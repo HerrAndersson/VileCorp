@@ -47,6 +47,7 @@ namespace Renderer
 		void EndScene();
 
 		ID3D11Device* GetDevice() const;
+		ID3D11DeviceContext* GetDeviceContext() const;
 	};
 }
 

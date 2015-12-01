@@ -9,7 +9,8 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	_window = new System::Window("Amazing game", hInstance, settings);
 
 	_renderModule = new Renderer::RenderModule(_window->GetHWND(), settings._width, settings._height);
-	_UI = new UIHandler(_renderModule->)
+	_UI = new UIHandler(_renderModule->GetDevice());
+	_UI->AddFont(L"Arial", DirectX::XMFLOAT2(0, 0), 52.0f, 0xff0099ff, L"HELLO? IS IT ME YOU'RE LOOKING FOR?");
 	
 	_objectHandler = new ObjectHandler(_renderModule->GetDevice());
 }
@@ -57,9 +58,6 @@ void Game::Update()
 	vi vill hämta objekten
 
 	*/
-
-
-
 }
 
 void Game::Render()
@@ -69,6 +67,7 @@ void Game::Render()
 	_renderModule->Render();
 	_renderModule->SetShaderStage(1);
 	_renderModule->RenderLightQuad();
+	_UI->Render(_renderModule->GetDeviceContext());
 	_renderModule->EndScene();
 }
 

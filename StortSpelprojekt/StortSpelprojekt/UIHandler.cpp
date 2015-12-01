@@ -3,6 +3,7 @@
 UIHandler::UIHandler(ID3D11Device* device)
 {
 	_device = device;
+	_textId = 0;
 }
 
 UIHandler::~UIHandler()
@@ -21,20 +22,28 @@ void UIHandler::Update()
 
 int UIHandler::AddFont(const WCHAR* fontName, DirectX::XMFLOAT2 position, float fontSize, UINT32 color, const WCHAR* text)
 {
-	for (auto i : _fonts)
+	if (_textId == 0) //if first element
 	{
-		//if filepaths are not equal.
-		if (0 != wcscmp(i.filePath, fontName))
+		_fonts.push_back(FontInfo(fontName, position, fontSize, color, text, _textId, false, _device));
+	}
+	else
+	{
+		for (auto i : _fonts)
 		{
-			//Then create a new font.
-			_fonts.push_back(FontInfo(fontName, position, fontSize, color, text, _textId, false, _device));
-		}
-		else
-		{
-			//If filepaths are equal. Then we shall create a string inside that font.
-			i.AddText(position, fontSize, color, text, _textId);
+			//if filepaths are not equal.
+			if (0 != wcscmp(i.filePath, fontName))
+			{
+				//Then create a new font.
+				_fonts.push_back(FontInfo(fontName, position, fontSize, color, text, _textId, false, _device));
+			}
+			else
+			{
+				//If filepaths are equal. Then we shall create a string inside that font.
+				i.AddText(position, fontSize, color, text, _textId);
+			}
 		}
 	}
+	
 	
 	return _textId++;
 }

@@ -163,4 +163,8 @@ namespace Renderer
 	{
 		return _d3d->GetDevice();
 	}
+	ID3D11DeviceContext* RenderModule::GetDeviceContext() const
+	{
+		return _d3d->GetDeviceContext();
+	}
 }
