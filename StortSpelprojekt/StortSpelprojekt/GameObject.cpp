@@ -3,13 +3,17 @@
 
 
 GameObject::GameObject()
-{}
+{
+}
 
-GameObject::GameObject(unsigned short ID, Vec3 position, RenderObject * renderObject)
+GameObject::GameObject(unsigned short ID, XMFLOAT3 position, int renderObjectID)
 {
 	_ID = ID;
 	_position = position;
-	_renderObject = renderObject;
+	_direction = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	_scale = XMFLOAT3(1.0f, 1.0f, 1.0f);
+	_visible = true;
+	_renderObjectID = renderObjectID;
 }
 
 GameObject::~GameObject()
@@ -50,7 +54,7 @@ bool GameObject::IsVisible() const
 	return _visible;
 }
 
-void GameObject::SetVisibility(bool visible)
+void GameObject::SetVisability(bool visible)
 {
 	_visible = visible;
 }
