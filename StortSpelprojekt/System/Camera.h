@@ -1,7 +1,7 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#define SYSTEM_EXPORT __declspec(dllexport)
+#define CAMERA_EXPORT __declspec(dllexport)
 #include <DirectXMath.h>
 
 //Disable warning about DirectX  FLOAT3/MATRIX
@@ -9,7 +9,7 @@
 
 namespace System
 {
-	__declspec(align(16)) class SYSTEM_EXPORT Camera
+	class CAMERA_EXPORT Camera
 	{
 	private:
 		DirectX::XMFLOAT3	_position;
@@ -29,7 +29,8 @@ namespace System
 		DirectX::XMMATRIX	_baseView;
 
 	public:
-		Camera(float nearClip, float farClip, int width, int height);
+
+		Camera(float nearClip, float farClip, float fov, int width, int height);
 		~Camera();
 
 		void Update();
@@ -46,6 +47,11 @@ namespace System
 		DirectX::XMMATRIX* GetOrthoMatrix();
 		//BaseViewMatrix is used for 2D HUD. Commonly used in the "view slot".
 		DirectX::XMMATRIX* GetBaseViewMatrix();
+
+		//Overloading these guarantees 16B alignment of XMMATRIX
+		void* operator new(size_t i);
+		void operator delete(void* p);
+
 	};
 }
 
