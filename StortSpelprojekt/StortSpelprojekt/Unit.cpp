@@ -43,17 +43,38 @@ Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	_aStar = new AI::AStar(_tileMap->GetWidth(), _tileMap->GetHeight(), _tilePosition, {0,0}, AI::AStar::OCTILE);		//TODO: Find the unit's goal --Victor
 
 	//Scan tilemap for floor layout and objectives
+	CheckAllTiles();
+}
+
+
+Unit::~Unit()
+{
+	delete _aStar;
+}
+
+
+/*
+	NOT IMPLEMENTED
+	Checks tiles that are visible to the unit
+*/
+void Unit::CheckVisibleTiles()
+{
+
+}
+
+void Unit::CheckAllTiles()
+{
 	for (int i = 0; i < _tileMap->GetWidth(); i++)
 	{
 		for (int j = 0; j < _tileMap->GetHeight(); j++)
 		{
 			if (_tileMap->IsObjectiveOnTile(i, j))
 			{
-				_aStar->SetGoalPosition({i, j});
+				_aStar->SetGoalPosition({i, j});			//TODO: Make a proper decision in case of multiple goals --Victor
 			}
 			if (_tileMap->IsWallOnTile(i, j))
 			{
-				_aStar->SetTileCost({i, j}, -1);						//TODO: More thorough check depending on objects in the tile --Victor
+				_aStar->SetTileCost({i, j}, -1);
 			}
 			else
 			{
@@ -61,15 +82,28 @@ Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 			}
 		}
 	}
+}
+
+/*
+	Checks pathfinding for an array of tiles leading to the goal.
+	Cleaning the map is not fully implemented, which means changing paths midway won't work.
+*/
+void Unit::CalculatePath()
+{
 	_aStar->FindPath();
 	_path = _aStar->GetPath();
 	_pathLength = _aStar->GetPathLength();
 }
 
-
-Unit::~Unit()
+/*
+	Calculate path to a predetermined goal
+*/
+void Unit::CalculatePath(AI::Vec2D goal)
 {
-	delete _aStar;
+	_aStar->SetGoalPosition(goal);
+	_aStar->FindPath();
+	_path = _aStar->GetPath();
+	_pathLength = _aStar->GetPathLength();
 }
 
 /*

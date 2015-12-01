@@ -18,6 +18,10 @@ public:
 	Unit(int x, int z, const Tilemap* tileMap);
 	Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject* renderObject, const Tilemap* tileMap);
 	~Unit();
+	void CheckVisibleTiles();
+	void CheckAllTiles();
+	void CalculatePath();
+	void CalculatePath(AI::Vec2D goal);
 	void Move();
 	void Update();
 	void Release();
