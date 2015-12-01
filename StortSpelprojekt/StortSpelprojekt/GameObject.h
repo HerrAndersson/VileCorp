@@ -42,12 +42,14 @@ public:
 	DirectX::XMFLOAT3 GetPosition() const;
 	DirectX::XMFLOAT3 GetRotation() const;
 	DirectX::XMFLOAT3 GetScale() const;
+	DirectX::XMMATRIX GetObjectMatrix()const;
 
 	void SetPosition(const DirectX::XMFLOAT3& position);
 	void SetRotation(const DirectX::XMFLOAT3& rotation);
 	void SetScale(const DirectX::XMFLOAT3& scale);
 
-
+	AI::Vec2D GetTilePosition()const;
+	void SetTilePosition(AI::Vec2D pos);
 	Type GetType() const;
 
 	bool IsVisible() const;
@@ -57,8 +59,5 @@ public:
 
 	//Update object gamelogic
 	void virtual Update() = 0;
-
-	//Release object resources
-	void virtual Release() = 0;
 };
 

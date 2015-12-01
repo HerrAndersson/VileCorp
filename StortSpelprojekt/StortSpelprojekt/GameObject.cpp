@@ -48,6 +48,11 @@ DirectX::XMFLOAT3 GameObject::GetScale() const
 	return _scale;
 }
 
+DirectX::XMMATRIX GameObject::GetObjectMatrix() const
+{
+	return _objectMatrix;
+}
+
 void GameObject::SetPosition(const DirectX::XMFLOAT3 & position)
 {
 	_position = position;
@@ -64,6 +69,16 @@ void GameObject::SetScale(const DirectX::XMFLOAT3 & scale)
 {
 	_scale = scale;
 	CalculateMatrix();
+}
+
+AI::Vec2D GameObject::GetTilePosition() const
+{
+	return _tilePosition;
+}
+
+void GameObject::SetTilePosition(AI::Vec2D pos)
+{
+	_tilePosition = _tilePosition;
 }
 
 Type GameObject::GetType() const

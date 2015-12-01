@@ -1,7 +1,6 @@
 #pragma once
 #include <cmath>
 #include <algorithm>
-#include <vector>
 #include "Heap.h"
 #include "AIUtil.h"
 
@@ -20,13 +19,13 @@ namespace AI
 		const double SQRT2 = 1.41421356;								//used for diagonals. Placing a constant means no root-calculations.
 		const Vec2D NEIGHBOUR_OFFSETS[8] = {{-1, 0},{1, 0},{0, -1},{0, 1},{-1, -1},{1, -1},{-1, 1},{1, 1}};	//Straight moves in 0-3, diagonal in 4-7
 
-																											/*
-																											Different heuristic used for estimating the distance to the goal
-																											MANHATTAN: No diagonal movement
-																											CHEBYSHEV: Diagonal movement has a cost of 1
-																											OCTILE: Diagonal movement has a cost of ?2
-																											EUCLIDEAN: Calculates the distance in a straight line to the goal.
-																											*/
+		/*
+		Different heuristic used for estimating the distance to the goal
+		MANHATTAN: No diagonal movement
+		CHEBYSHEV: Diagonal movement has a cost of 1
+		OCTILE: Diagonal movement costs sqrt(2)
+		EUCLIDEAN: Calculates the distance in a straight line to the goal.
+		*/
 		enum Heuristic
 		{
 			MANHATTAN, CHEBYSHEV, OCTILE, EUCLIDEAN
