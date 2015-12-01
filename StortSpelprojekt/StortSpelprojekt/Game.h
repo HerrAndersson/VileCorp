@@ -5,6 +5,9 @@
 #include "Window.h"
 #include "RenderModule.h"
 #include "UIHandler.h"
+#include "ObjectHandler.h"
+
+#include "Trap.h"
 
 class Game
 {
@@ -15,6 +18,11 @@ private:
 	Renderer::RenderModule* _renderModule;
 
 	UIHandler*				_UI;
+	ObjectHandler* _objectHandler;
+
+	void HandleInput();
+	void Update();
+	void Render();
 
 public:
 

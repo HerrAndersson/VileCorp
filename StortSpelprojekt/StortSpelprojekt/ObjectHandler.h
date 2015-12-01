@@ -2,6 +2,7 @@
 #include <vector>
 #include "GameObject.h"
 #include "Tilemap.h"
+#include "AssetManager.h"
 
 /*
 ObjectHandler
@@ -30,11 +31,11 @@ private:
 	
 	ObjectHandler GetAll(Type type);
 
-	//AssetManager* _ asdf
-	//Renderer* _asdf2
+	AssetManager* _assetManager;
 
 public:
 	ObjectHandler();
+	ObjectHandler(ID3D11Device* device);
 	~ObjectHandler();
 
 	ObjectHandler& operator+=(const ObjectHandler& rhs);
