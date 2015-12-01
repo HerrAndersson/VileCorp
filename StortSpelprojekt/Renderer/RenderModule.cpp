@@ -54,12 +54,44 @@ namespace Renderer
 		D3D11_SUBRESOURCE_DATA data;
 		data.pSysMem = quad;
 		HRESULT result = _d3d->GetDevice()->CreateBuffer(&bufferDesc, &data, &_screenQuad);
+
+		InitializeConstantBuffers();
 	}
 
 	RenderModule::~RenderModule()
 	{
 		delete _d3d;
 		delete _shaderHandler;
+		SAFE_RELEASE(_screenQuad);
+		SAFE_RELEASE(_matrixBufferPerObject);
+		SAFE_RELEASE(_matrixBufferPerFrame);
+	}
+
+	void RenderModule::InitializeConstantBuffers()
+	{
+		D3D11_BUFFER_DESC matrixBufferDesc;
+		HRESULT result;
+		ID3D11Device* device = _d3d->GetDevice();
+
+		matrixBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+		matrixBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+		matrixBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+		matrixBufferDesc.MiscFlags = 0;
+		matrixBufferDesc.StructureByteStride = 0;
+
+		matrixBufferDesc.ByteWidth = sizeof(MatrixBufferPerObject);
+		result = device->CreateBuffer(&matrixBufferDesc, NULL, &_matrixBufferPerObject);
+		if (FAILED(result))
+		{
+			throw std::runtime_error("RenderModule::InitializeConstantBuffers: Failed to create MatrixBufferPerObject");
+		}
+
+		matrixBufferDesc.ByteWidth = sizeof(MatrixBufferPerFrame);
+		result = device->CreateBuffer(&matrixBufferDesc, NULL, &_matrixBufferPerFrame);
+		if (FAILED(result))
+		{
+			throw std::runtime_error("RenderModule::InitializeConstantBuffers: Failed to create MatrixBufferPerFrame");
+		}
 	}
 
 	void RenderModule::ResizeResources(HWND hwnd, int windowWidth, int windowHeight)
@@ -121,7 +153,7 @@ namespace Renderer
 
 		deviceContext->Unmap(_matrixBufferPerObject, 0);
 
-		deviceContext->VSSetConstantBuffers(0, 1, &_matrixBufferPerObject);
+		deviceContext->VSSetConstantBuffers(1, 1, &_matrixBufferPerObject);
 		return true;
 	}
 
@@ -164,11 +196,34 @@ namespace Renderer
 	{
 		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
 
-		SetResourcesPerObject(world, renderObject->diffuseTexture->data, renderObject->specularTexture->data);
+		ID3D11ShaderResourceView* diffuseData = nullptr;
+		ID3D11ShaderResourceView* specularData = nullptr;
 
+		Texture* diffuse = renderObject->diffuseTexture;
+		Texture* specular = renderObject->specularTexture;
+
+		if (diffuse)
+		{
+			diffuseData = diffuse->data;
+		}
+
+		if (specular)
+		{
+			specularData = specular->data;
+		}
+
+		SetResourcesPerObject(world, diffuseData, specularData);
+
+		int vertexSize = sizeof(Vertex);
+
+		if (renderObject->skeleton != -1)
+		{
+			vertexSize = sizeof(WeightedVertex);
+		}
+		
 		for (auto mesh : renderObject->meshes)
 		{
-			SetResourcesPerMesh(mesh.vertexBuffer, sizeof(Vertex));
+			SetResourcesPerMesh(mesh.vertexBuffer, vertexSize);
 			deviceContext->Draw(mesh.vertexBufferSize, 0);
 		}
 	}

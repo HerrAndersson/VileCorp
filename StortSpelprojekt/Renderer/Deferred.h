@@ -26,6 +26,10 @@ private:
 	ID3D11ShaderResourceView*	 _shaderResourceViewArray[BUFFER_COUNT];
 	ID3D11Texture2D*			 _depthStencilBuffer;
 	ID3D11DepthStencilView*		 _depthStencilView;
+
+	ID3D11DepthStencilState*	_depthEnable;
+	ID3D11DepthStencilState*	_depthDisable;
+
 	D3D11_VIEWPORT				 _viewport;
 
 	void InitializeBuffers(ID3D11Device* device);

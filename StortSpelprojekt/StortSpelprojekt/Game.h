@@ -19,6 +19,11 @@ private:
 	System::Camera*				_camera;
 	ObjectHandler*				_objectHandler;
 
+	//Temp //Mattias
+	AssetManager* _tempAssetManager;
+	RenderObject* _tempTestRenderObject;
+	float stepValue;
+
 	//Resizing window, directx resources, camera
 	void ResizeResources(System::WindowSettings settings);
 	void HandleInput();

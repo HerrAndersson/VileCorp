@@ -40,6 +40,8 @@ namespace Renderer
 
 		ID3D11Buffer* _screenQuad;
 
+		void InitializeConstantBuffers();
+
 		bool SetResourcesPerObject(DirectX::XMMATRIX* world, ID3D11ShaderResourceView* diffuse, ID3D11ShaderResourceView* specular);
 		void SetResourcesPerMesh(ID3D11Buffer* vertexBuffer, int vertexSize);
 

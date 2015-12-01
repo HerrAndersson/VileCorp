@@ -92,13 +92,17 @@ namespace Renderer
 		//Create rasterizer states
 		hResult = _device->CreateRasterizerState(&rasterDesc, &_rasterizerStateBack);
 		if (FAILED(hResult))
+		{
 			throw std::runtime_error("DirectXHandler: Error creating rasterizer state");
+		}
 
 		rasterDesc.CullMode = D3D11_CULL_FRONT;
 
 		hResult = _device->CreateRasterizerState(&rasterDesc, &_rasterizerStateFront);
 		if (FAILED(hResult))
+		{
 			throw std::runtime_error("DirectXHandler: Error creating rasterizer state");
+		}
 
 		//Set up viewport
 		_viewport.Width = (float)screenWidth;
@@ -108,10 +112,44 @@ namespace Renderer
 		_viewport.TopLeftX = 0.0f;
 		_viewport.TopLeftY = 0.0f;
 
+
+
+		//Init depth stencil states
+		D3D11_DEPTH_STENCIL_DESC depthStencilDesc;
+		ZeroMemory(&depthStencilDesc, sizeof(depthStencilDesc));
+
+		depthStencilDesc.DepthEnable = true;
+		depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+		depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
+		depthStencilDesc.StencilEnable = true;
+		depthStencilDesc.StencilReadMask = 0xFF;
+		depthStencilDesc.StencilWriteMask = 0xFF;
+		depthStencilDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+		depthStencilDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
+		depthStencilDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+		depthStencilDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+		depthStencilDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+		depthStencilDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_DECR;
+		depthStencilDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+		depthStencilDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+
+		//Create depth enable
+		hResult = _device->CreateDepthStencilState(&depthStencilDesc, &_depthEnable);
+		if (FAILED(hResult))
+			throw std::runtime_error("DirectXHandler: Error creating depth stencil ENABLE");
+
+		depthStencilDesc.DepthEnable = false;
+
+		//Create depth disable
+		hResult = _device->CreateDepthStencilState(&depthStencilDesc, &_depthDisable);
+		if (FAILED(hResult))
+			throw std::runtime_error("DirectXHandler: Error creating depth stencil DISABLE");
+
 		_deferredShader = new Deferred(_device, screenWidth, screenHeight);
 
 		//Set context data 
 		_deviceContext->RSSetState(_rasterizerStateBack);
+		_deviceContext->OMSetDepthStencilState(_depthEnable, 1);
 	}
 
 	DirectXHandler::~DirectXHandler()
@@ -143,12 +181,16 @@ namespace Renderer
 
 	void DirectXHandler::SetGeometryPassRTVs()
 	{
+		_deviceContext->OMSetDepthStencilState(_depthEnable, 1);
 		_deferredShader->SetRenderTargets(_deviceContext);
+		_deviceContext->RSSetState(_rasterizerStateBack);
 	}
 
 	void DirectXHandler::SetLightPassRTVs()
 	{
+		_deviceContext->OMSetDepthStencilState(_depthDisable, 1);
 		_deviceContext->OMSetRenderTargets(1, &_renderTargetView, nullptr);
+		_deviceContext->RSSetState(_rasterizerStateBack);
 
 		int count = 0;
 		ID3D11ShaderResourceView** b = _deferredShader->GetShaderResourceViews(count);

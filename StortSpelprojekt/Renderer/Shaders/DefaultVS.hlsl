@@ -1,36 +1,34 @@
-//cbuffer matrixBufferPerObject : register(b0)
-//{
-//	matrix worldMatrix;
-//	float3 colorModifier;
-//};
-//
-//cbuffer matrixBufferPerFrame : register(b1)
-//{
-//	matrix viewMatrix;
-//	matrix projectionMatrix;
-//	float3 camPos;
-//};
+cbuffer matrixBufferPerFrame : register(b0)
+{
+	matrix viewMatrix;
+	matrix projectionMatrix;
+};
+
+cbuffer matrixBufferPerObject : register(b1)
+{
+	matrix worldMatrix;
+};
 
 struct vertexInputType
 {
-	float4 position		: POSITION;
-	float2 tex			: TEXCOORD0;
-	float3 normal		: NORMAL;
+	float3 pos : POSITION;
+	float3 normal : NORMAL;
+	float2 uv : TEXCOORD;
 };
 
 struct vertexOutput
 {
-	float4 position		: SV_POSITION0;
-	float2 tex			: TEXCOORD0;
+	float4 pos		: SV_POSITION0;
 	float3 normal		: NORMAL;
+	float2 uv			: TEXCOORD0;
 };
 
 vertexOutput main(vertexInputType input)
 {
 	vertexOutput output;
 
-	output.position = input.position;
-	output.tex = input.tex;
+	output.pos = float4(input.pos, 1.0f);
+	output.uv = input.uv;
 	output.normal = input.normal;
 
 	return output;

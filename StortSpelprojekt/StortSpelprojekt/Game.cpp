@@ -12,8 +12,14 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	_renderModule = new Renderer::RenderModule(_window->GetHWND(), settings._width, settings._height);
 
 	_camera = new System::Camera(0.1f, 1000.0f, DirectX::XM_PIDIV2, settings._width, settings._height);
+	_camera->SetPosition(XMFLOAT3(0, 0, -3));
 	
-	_objectHandler = new ObjectHandler(_renderModule->GetDevice());
+	//_objectHandler = new ObjectHandler(_renderModule->GetDevice());
+	
+	_tempAssetManager = new AssetManager(_renderModule->GetDevice());
+	
+	_tempTestRenderObject = _tempAssetManager->GetRenderObject(1);
+	stepValue = 0.0f;
 }
 
 Game::~Game() 
@@ -21,7 +27,8 @@ Game::~Game()
 	delete _window;
 	delete _renderModule;
 	delete _camera;
-	delete _objectHandler;
+	//delete _objectHandler;
+	delete _tempAssetManager;
 }
 void Game::ResizeResources(System::WindowSettings settings)
 {
@@ -64,15 +71,18 @@ void Game::Update()
 
 	*/
 
-	_renderModule->SetResourcesPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
+	
 }
 
 void Game::Render()
 {
+	stepValue += 0.001f;
+	XMMATRIX i = XMMatrixRotationRollPitchYaw(stepValue, XM_PIDIV2, 0);
 	_renderModule->BeginScene(0.0f, 1.0f, 1.0f, 1);
+	_renderModule->SetResourcesPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
 
 	_renderModule->SetShaderStage(Renderer::RenderModule::GEO_PASS);
-	//_renderModule->Render();
+	_renderModule->Render(&i, _tempTestRenderObject);
 
 	_renderModule->SetShaderStage(Renderer::RenderModule::LIGHT_PASS);
 	_renderModule->RenderLightQuad();
