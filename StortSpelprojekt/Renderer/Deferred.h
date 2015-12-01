@@ -11,13 +11,17 @@ class Deferred
 
 private:
 
-	//Diffuse, Normal, Position, WorldPosition
+	/* Render target views
+	[0] = Diffuse Color
+	[1] = Normal
+	[2] = Position
+	[3] = World Position
+	*/
 	static const int BUFFER_COUNT = 4;
 
 	int textureWidth;
 	int textureHeight;
 
-	ID3D11Texture2D*			 _renderTargetTextureArray[BUFFER_COUNT];
 	ID3D11RenderTargetView*		 _renderTargetViewArray[BUFFER_COUNT];
 	ID3D11ShaderResourceView*	 _shaderResourceViewArray[BUFFER_COUNT];
 	ID3D11Texture2D*			 _depthStencilBuffer;
@@ -34,7 +38,7 @@ public:
 	void SetRenderTargets(ID3D11DeviceContext* deviceContext);
 	void ClearRenderTargets(ID3D11DeviceContext* deviceContext, float r, float g, float b, float a);
 
-	//TODO: Resize buffers on window resize! /Jonas
+	void ResizeRenderTargets(ID3D11Device* device, int textureWidth, int textureHeight);
 
 	ID3D11ShaderResourceView** GetShaderResourceViews(int& count);
 };

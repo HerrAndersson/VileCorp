@@ -5,6 +5,13 @@
 GameObject::GameObject()
 {}
 
+GameObject::GameObject(unsigned short ID, Vec3 position, RenderObject * renderObject)
+{
+	_ID = ID;
+	_position = position;
+	_renderObject = renderObject;
+}
+
 GameObject::~GameObject()
 {}
 
@@ -43,7 +50,7 @@ bool GameObject::IsVisible() const
 	return _visible;
 }
 
-void GameObject::SetVisability(bool visible)
+void GameObject::SetVisibility(bool visible)
 {
 	_visible = visible;
 }

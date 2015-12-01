@@ -33,8 +33,8 @@
     <ClCompile Include="ShaderHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DirectX.cpp" />
     <ClCompile Include="RenderModule.cpp" />
+    <ClCompile Include="DirectXHandler.cpp" />
     <ClCompile Include="Fonts.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -46,19 +46,21 @@
     <ClInclude Include="Deferred.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="DirectX.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="example.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="RenderModule.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="FW\FW1FontWrapper.h" />
+    <ClInclude Include="DirectXHandler.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
     <ClInclude Include="Fonts.h" />
     <ClInclude Include="CFontEnum.h" />
     <ClInclude Include="CCollectionLoader.h" />
     <ClInclude Include="FW\FW1FontWrapper.h" />
+    <ClInclude Include="RenderUtils.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Fonts">
@@ -72,6 +74,11 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <None Include="FW\x64\FW1FontWrapper.dll" />
+    <None Include="FW\x86\FW1FontWrapper.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="FW\x64\FW1FontWrapper.lib" />
     <Library Include="FW\x86\FW1FontWrapper.lib" />
   </ItemGroup>
 </Project>

@@ -136,7 +136,6 @@ namespace Renderer
 
 		return hullShader;
 	}
-
 	ID3D11GeometryShader* ShaderHandler::CreateGeometryShader(ID3D11Device* device, LPCWSTR fileName)
 	{
 		HRESULT result;

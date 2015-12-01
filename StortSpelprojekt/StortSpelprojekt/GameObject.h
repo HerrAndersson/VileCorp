@@ -10,8 +10,15 @@ If the object doesn't need a _renderObject, set it to nullptr.
 If the object has a renderObject but is out of sight _visibility will be false.
 */
 
+	Vec3& operator=(const Vec3& comp)
+	{
+		_posX = comp._posX;
+		_posY = comp._posY;
+		_posZ = comp._posZ;
+		return *this;
+	}
 //Preliminary solution  - Zache/Marcus
-enum Type {UNIT, STRUCTURE, TILE, TRAP, TRIGGER };
+enum Type {UNIT, WALL, FLOOR, TRAP, TRIGGER, LOOT };
 
 using namespace DirectX;
 
@@ -29,7 +36,8 @@ protected:
 
 public:
 	GameObject();
-	GameObject(unsigned short ID, XMFLOAT3 position, int renderObjectID);
+	//Type might not be necessary, depending on whether subclasses can correspond to one type or many.
+	GameObject(unsigned short ID, Vec3 position, Type type, RenderObject* renderObject);
 	~GameObject();
 
 	short GetID() const;
@@ -42,7 +50,7 @@ public:
 	Type GetType() const;
 
 	bool IsVisible() const;
-	void SetVisability(bool visible);
+	void SetVisibility(bool visible);
 
 	void SetRenderObjectID(int renderObjectID);
 	int GetRenderObjectID() const;

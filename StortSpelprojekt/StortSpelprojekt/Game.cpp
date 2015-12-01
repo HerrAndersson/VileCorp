@@ -9,8 +9,6 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	_window = new System::Window("Amazing game", hInstance, settings);
 
 	_renderModule = new Renderer::RenderModule(_window->GetHWND(), settings._width, settings._height);
-	
-	_objectHandler = new ObjectHandler(_renderModule->GetDevice());
 }
 
 Game::~Game() 
@@ -64,9 +62,9 @@ void Game::Update()
 void Game::Render()
 {
 	_renderModule->BeginScene(0.0f, 1.0f, 1.0f, 1);
-	_renderModule->SetShaderStage(0);
+		_renderModule->SetShaderStage(Renderer::RenderModule::GEO_PASS);
 	_renderModule->Render();
-	_renderModule->SetShaderStage(1);
+		_renderModule->SetShaderStage(Renderer::RenderModule::LIGHT_PASS);
 	_renderModule->RenderLightQuad();
 	_renderModule->EndScene();
 }
