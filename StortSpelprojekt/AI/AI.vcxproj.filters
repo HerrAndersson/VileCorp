@@ -36,5 +36,8 @@
     <ClInclude Include="AStar.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="AIUtil.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

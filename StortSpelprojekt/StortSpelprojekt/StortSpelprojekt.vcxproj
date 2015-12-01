@@ -19,14 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AnimationComponent.cpp" />
-    <ClCompile Include="Component.cpp" />
-    <ClCompile Include="ComponentList.cpp" />
-    <ClCompile Include="DamageComponent.cpp" />
-    <ClCompile Include="FOVComponent.cpp" />
+    <ClCompile Include="Architecture.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObject.cpp" />
-    <ClCompile Include="GameObjectComp.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Menu.cpp" />
     <ClCompile Include="ObjectHandler.cpp" />
@@ -40,14 +35,9 @@
     <ClCompile Include="Unit.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AnimationComponent.h" />
-    <ClInclude Include="Component.h" />
-    <ClInclude Include="ComponentList.h" />
-    <ClInclude Include="DamageComponent.h" />
-    <ClInclude Include="FOVComponent.h" />
+    <ClInclude Include="Architecture.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameObject.h" />
-    <ClInclude Include="GameObjectComp.h" />
     <ClInclude Include="Menu.h" />
     <ClInclude Include="ObjectHandler.h" />
     <ClInclude Include="Options.h" />
@@ -78,14 +68,14 @@
     <ProjectGuid>{EC1FCE9E-9382-463B-A119-666180E146D6}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>StortSpelprojekt</RootNamespace>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.10240.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>

@@ -140,6 +140,7 @@
     <ClCompile Include="example.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AIUtil.h" />
     <ClInclude Include="AStar.h" />
     <ClInclude Include="example.h" />
     <ClInclude Include="Heap.h" />
