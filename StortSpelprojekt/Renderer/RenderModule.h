@@ -59,6 +59,8 @@ namespace Renderer
 		void Render(DirectX::XMMATRIX* world, RenderObject* renderObject);
 		void RenderLightQuad();
 		void EndScene();
+
+		ID3D11Device* GetDevice() const;
 	};
 }
 

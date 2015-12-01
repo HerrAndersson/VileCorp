@@ -190,4 +190,9 @@ namespace Renderer
 	{
 		_d3d->EndScene();
 	}
+
+	ID3D11Device* RenderModule::GetDevice() const
+	{
+		return _d3d->GetDevice();
+	}
 }
