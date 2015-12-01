@@ -32,10 +32,10 @@ VS_OUT main(VS_IN input)
 {
 	VS_OUT output = (VS_OUT)0;
 
-	float4 pos = mul(worldMatrix, float4(input.pos, 1.0f));
+	float4 pos = mul(float4(input.pos, 1.0f), worldMatrix);
 	output.worldPos = pos;
-	//pos = mul(viewMatrix, pos);
-	//pos = mul(projectionMatrix, pos);
+	pos = mul(pos, viewMatrix);
+	pos = mul(pos, projectionMatrix);
 
 	output.pos = pos;
 

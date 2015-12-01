@@ -18,8 +18,8 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	
 	_tempAssetManager = new AssetManager(_renderModule->GetDevice());
 	
-	_tempTestRenderObject = _tempAssetManager->GetRenderObject(1);
-	stepValue = 0.0f;
+	_tempTestRenderObject = _tempAssetManager->GetRenderObject(3);
+	stepValue = 1.0f;
 }
 
 Game::~Game() 
@@ -76,8 +76,10 @@ void Game::Update()
 
 void Game::Render()
 {
-	stepValue += 0.001f;
-	XMMATRIX i = XMMatrixRotationRollPitchYaw(stepValue, XM_PIDIV2, 0);
+	stepValue += 0.01f;
+
+	_camera->SetPosition(XMFLOAT3(0, 3 * -sin(stepValue), -3));
+	XMMATRIX i = XMMatrixRotationRollPitchYaw(-stepValue, 0, 0);
 	_renderModule->BeginScene(0.0f, 1.0f, 1.0f, 1);
 	_renderModule->SetResourcesPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
 
