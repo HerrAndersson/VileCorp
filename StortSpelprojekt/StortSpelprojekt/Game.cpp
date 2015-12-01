@@ -11,6 +11,8 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	_renderModule = new Renderer::RenderModule(_window->GetHWND(), settings._width, settings._height);
 	
 	_objectHandler = new ObjectHandler(_renderModule->GetDevice());
+
+	timer = System::Timer();
 }
 
 Game::~Game() 
@@ -75,15 +77,15 @@ int Game::Run()
 {
 	while (_window->Run())
 	{
-		HandleInput();
-		Update();
-		Render();
+		timer.Update();
+		if (timer.GetFrameTime() >= MS_PER_FRAME)
+		{
+			HandleInput();
+			Update();
+			Render();
 
-
-
-
-
-
+			timer.Reset();
+		}
 	}
 
 	return 0;
