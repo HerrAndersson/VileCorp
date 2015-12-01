@@ -39,6 +39,7 @@ public:
 	short GetID() const;
 
 	//TODO change Vec3 to XMVECTOR or other vectorclass - Zache/Marcus
+	DirectX::XMMATRIX GetMatrix()const;
 	DirectX::XMFLOAT3 GetPosition() const;
 	DirectX::XMFLOAT3 GetRotation() const;
 	DirectX::XMFLOAT3 GetScale() const;

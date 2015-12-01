@@ -20,23 +20,23 @@ int ObjectHandler::GetSize() const
 	return _size;
 }
 
-GameObject* ObjectHandler::Add(Type type, int renderObjectID, XMFLOAT3 position = XMFLOAT3(0.0f, 0.0f, 0.0f))
+GameObject* ObjectHandler::Add(Type type, int renderObjectID, XMFLOAT3 position = XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3 rotation = XMFLOAT3(0.0f, 0.0f, 0.0f))
 {
 	GameObject* object = nullptr;
 
 	switch (type)
 	{
 	case UNIT:
-		_gameObjects.push_back((GameObject*)new Unit(_idCounter++, position, renderObjectID));
+		_gameObjects.push_back((GameObject*)new Unit(_idCounter++, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(renderObjectID), _tilemap));
 		_size++;
 		break;
-	case STRUCTURE:
-		break;
-	case TILE:
-		break;
 	case TRAP:
+		_gameObjects.push_back((GameObject*)new Trap(_idCounter++, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(renderObjectID)));
+		_size++;
 		break;
 	case TRIGGER:
+		_gameObjects.push_back((GameObject*)new Trigger(_idCounter++, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(renderObjectID)));
+		_size++;
 		break;
 	default:
 		break;
@@ -124,12 +124,14 @@ RenderList ObjectHandler::GetAll(int renderObjectID)
 {
 	RenderList list;
 
+	
+
 	list._renderObject = _assetManager->GetRenderObject(renderObjectID);
 	for (int i = 0; i < _size; i++)
 	{
-		if (_gameObjects.at(i)->GetRenderObjectID() == renderObjectID)
+		if (_gameObjects.at(i)->GetRenderObject() == _assetManager->GetRenderObject(renderObjectID))
 		{
-			list.modelMatrices.push_back(_gameObjects[i]->GetModelMatrix());
+			list.modelMatrices.push_back(_gameObjects[i]->GetMatrix());
 		}
 	}
 

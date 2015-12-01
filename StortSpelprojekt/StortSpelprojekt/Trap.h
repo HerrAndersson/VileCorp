@@ -8,5 +8,7 @@ public:
 	~Trap();
 
 	void Activate(); // TODO - Zache/Aron
+	void Update();
+	void Release();
 };
 

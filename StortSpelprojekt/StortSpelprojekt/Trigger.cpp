@@ -67,3 +67,11 @@ void Trigger::ActivateTraps()
 		_traps[i]->Activate();
 	}
 }
+
+void Trigger::Update()
+{
+}
+
+void Trigger::Release()
+{
+}

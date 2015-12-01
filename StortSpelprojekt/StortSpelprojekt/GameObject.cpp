@@ -33,6 +33,11 @@ short GameObject::GetID() const
 	return _ID;
 }
 
+DirectX::XMMATRIX GameObject::GetMatrix() const
+{
+	return _objectMatrix;
+}
+
 DirectX::XMFLOAT3 GameObject::GetPosition() const
 {
 	return _position;
