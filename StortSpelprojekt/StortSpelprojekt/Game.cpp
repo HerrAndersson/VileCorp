@@ -9,6 +9,7 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	_window = new System::Window("Amazing game", hInstance, settings);
 
 	_renderModule = new Renderer::RenderModule(_window->GetHWND(), settings._width, settings._height);
+	_UI = new UIHandler(_renderModule->)
 }
 
 Game::~Game() 
@@ -52,7 +53,6 @@ int Game::Run()
 		_renderModule->SetShaderStage(1);
 		_renderModule->RenderLightQuad();
 		_renderModule->EndScene();
-
 	}
 
 	return 0;

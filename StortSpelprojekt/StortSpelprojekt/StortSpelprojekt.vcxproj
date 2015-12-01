@@ -134,6 +134,7 @@
     <OutDir>$(SolutionDir)../Output/Bin/x86/$(Configuration)/</OutDir>
     <IntDir>$(SolutionDir)../Output/Obj/x86/$(Configuration)/$(ProjectName)/</IntDir>
     <TargetName>$(ProjectName)D</TargetName>
+    <LibraryPath>../Renderer/FW/x86/;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -144,6 +145,7 @@
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)../Output/Bin/x86/$(Configuration)/</OutDir>
     <IntDir>$(SolutionDir)../Output/Obj/x86/$(Configuration)/$(ProjectName)/</IntDir>
+    <LibraryPath>../Renderer/FW/x86/;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>

@@ -7,10 +7,10 @@
 
 #include "Fonts.h"
 
-class UIHandler
+__declspec(align(16))class UIHandler
 {
 private:
-	struct TextInfo
+	__declspec(align(16))struct TextInfo
 	{
 		DirectX::XMFLOAT2		position;
 		float					fontSize;
@@ -27,7 +27,7 @@ private:
 			textId		= textId_;
 		}
 	};
-	struct FontInfo
+	__declspec(align(16))struct FontInfo
 	{
 		const WCHAR*			filePath;
 		std::vector<TextInfo>	text;
