@@ -29,6 +29,7 @@ protected:
 
 public:
 	GameObject();
+	GameObject(unsigned short ID, XMFLOAT3 position, int renderObjectID);
 	~GameObject();
 
 	short GetID() const;
@@ -47,7 +48,7 @@ public:
 	int GetRenderObjectID() const;
 
 	//Update object gamelogic
-	void virtual Update() = 0;
+	void virtual Update();
 
 	//Release object resources
 	void virtual Release() = 0;
