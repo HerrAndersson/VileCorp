@@ -3,22 +3,26 @@
 
 AssetManager::AssetManager(ID3D11Device* device)
 {
-	this->device = device;
-	SetupRenderObjectList();
 
+	this->device = device;
 	this->infile = new ifstream;
 	this->modelFiles = new vector<string>;
 	this->renderObjects = new vector<RenderObject*>;
 	this->renderObjectsToFlush = new vector<RenderObject*>;
+	this->textures = new vector<Texture*>;
+	this->texturesToFlush = new vector<Texture*>;
 
+	SetupRenderObjectList();
 }
 
 AssetManager::~AssetManager()
 {
-//	for (ID3D11ShaderResourceView* t : textures) t->Release();
-//	textures.clear();
+	for (Texture* texture : *textures)
+		if(texture->loaded)
+			texture->data->Release();
+	textures->clear();
 
-	for (int i = 0; i < renderObjects->size(); i++)
+	for (uint i = 0; i < renderObjects->size(); i++)
 	{
 		UnloadModel(i, true);
 		delete renderObjects->at(i);
@@ -29,23 +33,40 @@ AssetManager::~AssetManager()
 //Looks through the Models folder and creates an empty RenderObject for each entry
 void AssetManager::SetupRenderObjectList()
 {
-	GetFilenamesInDirectory("/Assets/Models", ".bin", *modelFiles);
-	for (int i = 0; i < modelFiles->size(); i++)
+#ifdef _DEBUG
+	GetFilenamesInDirectory("../../Output/Bin/x86/Debug/Assets/Models/", ".bin", *modelFiles);
+#else
+	GetFilenamesInDirectory("Assets/Models/", ".bin", *modelFiles);
+#endif
+	for (uint i = 0; i < modelFiles->size(); i++)
 	{
 		RenderObject* renderObject = ScanModel(modelFiles->at(i));
 		renderObjects->push_back(renderObject);
 	}
 }
 
+void AssetManager::DecrementUsers(Texture* texture)
+{
+	texture->activeUsers--;
+	if (!texture->activeUsers)
+		texturesToFlush->push_back(texture);
+}
+
 //Marks a model for unloading if running out of memory. Set force to true to unload now
 void AssetManager::UnloadModel(int index, bool force)
 {
 	RenderObject* renderObject = renderObjects->at(index);
+	if (!renderObject->meshLoaded)
+		return;
 	if (force)
 	{
 		for (auto m : renderObject->meshes)
 			m.vertexBuffer->Release();
 		renderObject->toUnload = false;
+		if (renderObject->diffuseTexture != nullptr)
+			DecrementUsers(renderObject->diffuseTexture);
+		if (renderObject->specularTexture != nullptr)
+			DecrementUsers(renderObject->specularTexture);
 	}
 	else
 	{
@@ -54,7 +75,7 @@ void AssetManager::UnloadModel(int index, bool force)
 	}
 }
 
-//Unloads all models waiting to be unloaded
+//Unloads all Assets waiting to be unloaded
 void AssetManager::Flush()
 {
 	for (RenderObject* renderObject : *renderObjectsToFlush)
@@ -63,34 +84,70 @@ void AssetManager::Flush()
 			for (auto m : renderObject->meshes)
 				m.vertexBuffer->Release();
 			renderObject->toUnload = false;
+			if (renderObject->diffuseTexture != nullptr)
+				DecrementUsers(renderObject->diffuseTexture);
+			if (renderObject->specularTexture != nullptr)
+				DecrementUsers(renderObject->specularTexture);
 		}
 	renderObjectsToFlush->clear();
+
+	for (Texture* texture : *textures)
+		if (!texture->activeUsers)
+			texture->data->Release();
+	texturesToFlush->clear();
+}
+
+void Texture::LoadTexture(ID3D11Device* device)
+{
+	if (!loaded)
+	{
+#ifdef _DEBUG
+		string str = "../../Output/Bin/x86/Debug/Assets/Textures/";
+		filename.insert(0, wstring(str.begin(), str.end()));
+		DirectX::CreateWICTextureFromFile(device, filename.c_str(), nullptr, &data, 0);
+#else
+		DirectX::CreateWICTextureFromFile(device, "Assets/Textures/" + filename.c_str(), nullptr, &data, 0);
+#endif
+		loaded = true;
+	}
+	activeUsers++;
 }
 
 //Loads a model to the GPU
 void AssetManager::LoadModel(string file_path, RenderObject* renderObject) {
 	infile->open(file_path.c_str(), ifstream::binary);
 	if (!infile->is_open()) { return; }
-
-	MainHeader mainHeader;
-	infile->read((char*)&mainHeader, sizeof(MainHeader));
-	infile->seekg(mainHeader.meshCount * 4);
+	Mesh* mesh;
 	vector<Vertex> vertices;
 
-	for (int i = 0; i < mainHeader.meshCount; i++) {
-		MeshHeader meshHeader;
-		infile->read((char*)&meshHeader, sizeof(MeshHeader));
-
-		renderObject->meshes[i].name.resize(meshHeader.nameLength);
-		vertices.resize(meshHeader.numberOfVertices);
-
-		infile->seekg(meshHeader.nameLength);
-		infile->read((char*)vertices.data(), meshHeader.numberOfVertices*sizeof(Vertex));
-
-		renderObject->meshes[i].vertexBufferSize = vertices.size();
-		renderObject->meshes[i].vertexBuffer = CreateVertexBuffer(&vertices, renderObject->skeleton);
+	for (uint i = 0; i < renderObject->meshes.size(); i++) {
+		mesh = &renderObject->meshes[i];
+		infile->seekg(mesh->toMesh);
+		vertices.resize(mesh->vertexBufferSize);
+		infile->read((char*)vertices.data(), mesh->vertexBufferSize*sizeof(Vertex));
+		mesh->vertexBuffer = CreateVertexBuffer(&vertices, renderObject->skeleton);
 	}
+
+	if (renderObject->diffuseTexture != nullptr)
+		renderObject->diffuseTexture->LoadTexture(device);
+	if (renderObject->specularTexture != nullptr)
+		renderObject->specularTexture->LoadTexture(device);
+
 	infile->close();
+}
+
+Texture* AssetManager::ScanTexture(string filename)
+{
+	for (Texture* texture : *textures)
+	{
+		string str = string(texture->filename.begin(), texture->filename.end());
+		if (!strcmp(str.data(), filename.data()))
+			return texture;
+	}
+	Texture* texture = new Texture;
+	texture->filename = wstring(filename.begin(), filename.end());
+	textures->push_back(texture);
+	return texture;
 }
 
 //Creates a RenderObject for the specified model without loading it
@@ -98,21 +155,19 @@ RenderObject* AssetManager::ScanModel(string file_path)
 {
 	RenderObject* renderObject = new RenderObject;
 	infile->open(file_path.c_str(), ifstream::binary);
-	if (!infile->is_open())
-	{
-		return renderObject;
-	}
-
+	if (!infile->is_open()) { return renderObject; }
 	MainHeader mainHeader;
 	infile->read((char*)&mainHeader, sizeof(MainHeader));
-	renderObject->toMesh.resize(mainHeader.meshCount);
-
+	mainHeader.meshCount++;
+	if (mainHeader.version != meshFormatVersion)
+		throw std::runtime_error("Failed to load " + file_path + ":\nIncorrect fileversion");
 	for (int i = 0; i < mainHeader.meshCount; i++)
 	{
 		Mesh mesh;
-		infile->read((char*)renderObject->toMesh[i], 4);
+		infile->read((char*)&mesh.toMesh, 4);
 		renderObject->meshes.push_back(mesh);
 	}
+
 	for (int i = 0; i < mainHeader.meshCount; i++)
 	{
 		MeshHeader meshHeader;
@@ -121,7 +176,7 @@ RenderObject* AssetManager::ScanModel(string file_path)
 		renderObject->meshes[i].name.resize(meshHeader.nameLength);
 
 		infile->read((char*)renderObject->meshes[i].name.data(), meshHeader.nameLength);
-		infile->seekg(meshHeader.numberOfVertices*sizeof(Vertex));
+		infile->seekg(meshHeader.numberOfVertices*sizeof(Vertex), ios::cur);
 
 		if (meshHeader.numberPointLights)
 		{
@@ -136,15 +191,21 @@ RenderObject* AssetManager::ScanModel(string file_path)
 		}
 		renderObject->meshes[i].vertexBufferSize = meshHeader.numberOfVertices;
 	}
-
 	MatHeader matHeader;
 	infile->read((char*)&matHeader, sizeof(MatHeader));
-	renderObject->diffFile.resize(matHeader.diffuseNameLength);
-	renderObject->specFile.resize(matHeader.specularNameLength);
 	infile->read((char*)&renderObject->diffuse, 16);
 	infile->read((char*)&renderObject->specular, 16);
-	infile->read((char*)renderObject->diffFile.data(), matHeader.diffuseNameLength);
-	infile->read((char*)renderObject->diffFile.data(), matHeader.diffuseNameLength);
+
+	string diffFile, specFile;
+	diffFile.resize(matHeader.diffuseNameLength);
+	specFile.resize(matHeader.specularNameLength);
+	infile->read((char*)diffFile.data(), matHeader.diffuseNameLength);
+	infile->read((char*)specFile.data(), matHeader.specularNameLength);
+
+	if (matHeader.diffuseNameLength)
+		renderObject->diffuseTexture = ScanTexture(diffFile);
+	if (matHeader.specularNameLength)
+		renderObject->specularTexture = ScanTexture(specFile);
 
 	infile->close();
 
@@ -153,7 +214,6 @@ RenderObject* AssetManager::ScanModel(string file_path)
 	return renderObject;
 }
 
-//Unpacks an indexed mesh and sends it to the GPU, returning the resulting buffer. Will not remain in this state TODO Either proper indexbuffering or keep unpacked models as files and load them directly - Fredrik
 ID3D11Buffer* AssetManager::CreateVertexBuffer(vector<Vertex> *vertices, int skeleton)
 {
 	D3D11_BUFFER_DESC vbDESC;
@@ -182,6 +242,7 @@ ID3D11Buffer* AssetManager::CreateVertexBuffer(vector<Vertex> *vertices, int ske
 }
 
 //How AssetManager interfaces with the renderer. Don't save the return, request it anew everytime unless you are certain the model won't be unloaded
+//currently two objects exist. 0 = cube, 1 = cube with arms
 RenderObject* AssetManager::GetRenderObject(int index)
 {
 	RenderObject* renderObject = renderObjects->at(index);

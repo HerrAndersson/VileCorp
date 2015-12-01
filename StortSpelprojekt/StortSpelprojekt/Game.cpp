@@ -1,51 +1,59 @@
-#include"Game.h"
+#include "Game.h"
+#include <stdexcept>
 
-Game::Game() {}
-
-Game::~Game() 
+Game::Game(HINSTANCE hInstance, int nCmdShow)
 {
-	Release();
-
-	delete _window;
-}
-
-void Game::Release() {}
-
-HRESULT Game::Initialize(HINSTANCE hInstance, int nCmdShow)
-{
-	HRESULT hr = S_OK;
-
 	_SM.Initialize();
 
 	System::WindowSettings settings;
-	_window = new System::Window("A", hInstance, settings);
+	_window = new System::Window("Amazing game", hInstance, settings);
 
-	return hr;
+	_renderModule = new Renderer::RenderModule(_window->GetHWND(), settings._width, settings._height);
+}
+
+Game::~Game() 
+{	
+	delete _window;
+	delete _renderModule;
 }
 
 int Game::Run()
 {
-	int i = 1;
 	while (_window->Run())
 	{
 		if (GetAsyncKeyState(VK_LEFT) != 0)
 		{
-			System::WindowSettings settings(1280, 720, false, false, true);
+			//Windowed mode
+			System::WindowSettings settings(1280, 720, System::WindowSettings::SHOW_CURSOR);
 			_window->ResizeWindow(settings);
+			_renderModule->ResizeResources(_window->GetHWND(), settings._width, settings._height);
 		}
 
 		if (GetAsyncKeyState(VK_RIGHT) != 0)
 		{
-			System::WindowSettings settings(1280, 720, true, false, true);
+			//Fullscreen
+			System::WindowSettings settings(1920, 1080, System::WindowSettings::SHOW_CURSOR | System::WindowSettings::FULLSCREEN);
 			_window->ResizeWindow(settings);
+			_renderModule->ResizeResources(_window->GetHWND(), settings._width, settings._height);
 		}
 
 		if (GetAsyncKeyState(VK_UP) != 0)
 		{
-			System::WindowSettings settings(1280, 720, false, true, true);
+			//Borderless windowed
+			System::WindowSettings settings(567, 765, System::WindowSettings::SHOW_CURSOR | System::WindowSettings::BORDERLESS);
 			_window->ResizeWindow(settings);
+			_renderModule->ResizeResources(_window->GetHWND(), settings._width, settings._height);
 		}
-	};
 
-	return 1;
+
+		_renderModule->BeginScene(0.0f, 1.0f, 1.0f, 1);
+		_renderModule->SetShaderStage(Renderer::RenderModule::GEO_PASS);
+		_renderModule->Render();
+		_renderModule->SetShaderStage(Renderer::RenderModule::LIGHT_PASS);
+		_renderModule->RenderLightQuad();
+		_renderModule->EndScene();
+
+	}
+
+	return 0;
 }

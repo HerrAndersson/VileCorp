@@ -45,7 +45,12 @@ void GameObject::SetVisibility(bool visible)
 	_visible = visible;
 }
 
-RenderObject * GameObject::GetRenderObject() const
+void GameObject::SetRenderObjectID(int renderObjectID)
 {
-	return _renderObject;
+	_renderObjectID = renderObjectID;
+}
+
+int GameObject::GetRenderObjectID() const
+{
+	return _renderObjectID;
 }

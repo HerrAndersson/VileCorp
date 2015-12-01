@@ -143,12 +143,17 @@ namespace AI
 
 	void AStar::cleanMap()
 	{
+		delete[] _path;
+		_path = nullptr;
+		_pathLength = 0;
 		for (__int16 i = 0; i < _width; i++)
 		{
-			_grid[i] = new Node[_height];
 			for (__int16 j = 0; j < _height; j++)
 			{
 				_grid[i][j]._open = 0;
+				_grid[i][j]._gCost = 0;
+				_grid[i][j]._hCost = 0;
+				_grid[i][j]._parent = nullptr;
 			}
 		}
 		_openQueue.~Heap();
@@ -171,14 +176,18 @@ namespace AI
 			for (int i = 0; i < 8 && (_heuristicType != MANHATTAN || i < 4); i++)		//Manhattan skips diagonals 
 			{
 				Vec2D checkedPos = currentPos + NEIGHBOUR_OFFSETS[i];
-				if (IsPositionValid(checkedPos) && _grid[checkedPos._x][checkedPos._y]._open != 2 &&											//checks for borders and already visited
-					_grid[checkedPos._x][currentPos._y]._tileCost >= 0 && _grid[currentPos._x][checkedPos._y]._tileCost >= 0)					//checks for corners
+				if (IsPositionValid(checkedPos) && _grid[checkedPos._x][checkedPos._y]._open != 2 && _grid[checkedPos._x][checkedPos._y]._tileCost >= 0 &&	 //checks for borders and already visited
+					_grid[checkedPos._x][currentPos._y]._tileCost >= 0 && _grid[currentPos._x][checkedPos._y]._tileCost >= 0)								//checks for corners
 				{
-					CalculateHCost(currentPos);											//As the program works now, h must be calculated before g.
+					CalculateHCost(checkedPos);											//As the program works now, h must be calculated before g.
 					CalculateGCost(currentPos, checkedPos);
 				}
 			}
 			currentPos = _openQueue.removeMin()._position;
+			while (_grid[currentPos._x][currentPos._y]._open == 2)
+			{
+				currentPos = _openQueue.removeMin()._position;
+			}
 			_grid[currentPos._x][currentPos._y]._open = 2;
 		}
 		while (currentPos != _start)													//traces the route back to start
@@ -194,5 +203,6 @@ namespace AI
 			_path[c++] = currentPos;
 			currentPos = _grid[currentPos._x][currentPos._y]._parent->_position;
 		}
+		_path[c++] = currentPos;
 	}
 }

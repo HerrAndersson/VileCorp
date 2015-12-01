@@ -120,21 +120,21 @@ GameObject* ObjectHandler::Find(int index)
 	return gameObject;
 }
 
-std::vector<RenderObject*> ObjectHandler::GetRenderObjects() const
-{
-	std::vector<RenderObject*> renderObjects;
-
-	for (int i = 0; i < _size; i++)
-	{
-		//If the object has a Renderobject and is visible
-		if (_gameObjects[i]->GetRenderObject() != nullptr && _gameObjects[i]->IsVisible())
-		{
-			renderObjects.push_back(_gameObjects[i]->GetRenderObject());
-		}
-	}
-
-	return renderObjects;
-}
+//std::vector<RenderObject*> ObjectHandler::GetRenderObjects() const
+//{
+//	std::vector<RenderObject*> renderObjects;
+//
+//	for (int i = 0; i < _size; i++)
+//	{
+//		//If the object has a Renderobject and is visible
+//		if (_gameObjects[i]->GetRenderObject() != nullptr && _gameObjects[i]->IsVisible())
+//		{
+//			renderObjects.push_back(_gameObjects[i]->GetRenderObject());
+//		}
+//	}
+//
+//	return renderObjects;
+//}
 
 Tilemap * ObjectHandler::GetTileMap() const
 {
