@@ -1,5 +1,5 @@
-#ifndef DIRECTX_H
-#define DIRECTX_H
+#ifndef DIRECTXHANDLER_H
+#define DIRECTXHANDLER_H
 
 #include <d3d11.h>
 #include <d3dcompiler.h>
@@ -12,15 +12,9 @@
 
 namespace Renderer
 {
-	class DirectX
+	class DirectXHandler
 	{
 	private:
-
-		/* Render target views
-		[0] = Color
-		[1] = Normals
-		[2] = World Pos
-		Sebastian*/
 
 		IDXGISwapChain*				_swapChain;
 		ID3D11Device*			    _device;
@@ -29,24 +23,20 @@ namespace Renderer
 		D3D11_VIEWPORT				_viewport;
 		Deferred*                   _deferredShader;
 
-		ID3D11DepthStencilView*     _depthStencilView;
-		ID3D11Texture2D*			_depthStencilBuffer;
-		ID3D11DepthStencilState*	_depthStencilState;
-	
+		ID3D11DepthStencilState*	_depthEnable;
+		ID3D11DepthStencilState*	_depthDisable;
 
 		ID3D11RasterizerState*		_rasterizerStateBack;
 		ID3D11RasterizerState*		_rasterizerStateFront;
 
 	public:
-		const int _R_TARGETS = 3;
 
-		DirectX(HWND hwnd, int screenWidth, int screenHeight);
-		~DirectX();
+		DirectXHandler(HWND hwnd, int screenWidth, int screenHeight);
+		~DirectXHandler();
 
 		ID3D11Device* GetDevice();
 		ID3D11DeviceContext* GetDeviceContext();
 
-		void ClearShaderResources();
 		void ClearGeometryPassRTVs(float r, float g, float b, float a);
 		void SetGeometryPassRTVs();
 		void SetLightPassRTVs();
