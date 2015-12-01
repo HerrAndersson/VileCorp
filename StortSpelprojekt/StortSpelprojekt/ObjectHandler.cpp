@@ -1,63 +1,51 @@
 #include "ObjectHandler.h"
 
-ObjectHandler ObjectHandler::GetAll(Type type)
-{
-	ObjectHandler objectsOfSameType;
 
-	for (int i = 0; i < _size; i++)
-	{
-		if (_gameObjects.at(i)->GetType() == type)
-		{
-			objectsOfSameType.Add(_gameObjects[i]);
-		}
-	}
 
-	return objectsOfSameType;
-}
-
-ObjectHandler::ObjectHandler()
+ObjectHandler::ObjectHandler(ID3D11Device* device)
 {
 	_size = 0;
+	_idCounter = 0;
+	_assetManager = new AssetManager(device);
+	_tilemap = nullptr;
 }
 
 ObjectHandler::~ObjectHandler()
-{}
-
-ObjectHandler& ObjectHandler::operator+=(const ObjectHandler& rhs)
 {
-	for (int i = 0; i < rhs.GetSize(); i++)
-	{
-		this->Add(rhs._gameObjects[i]);
-	}
-	return *this;
+	Clear();
+	delete _assetManager;
+	delete _tilemap;
 }
+
 
 int ObjectHandler::GetSize() const
 {
 	return _size;
 }
 
-
-
-bool ObjectHandler::Add(GameObject * gameObject)
+GameObject* ObjectHandler::Add(Type type, int renderObjectID, XMFLOAT3 position = XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3 rotation = XMFLOAT3(0.0f, 0.0f, 0.0f))
 {
-	bool exist = false;
+	GameObject* object = nullptr;
 
-	for (int i = 0; i < _size && !exist; i++)
+	switch (type)
 	{
-		if (_gameObjects[i] == gameObject)
-		{
-			exist = true;
-		}
-	}
-
-	if (!exist)
-	{
-		_gameObjects.push_back(gameObject);
+	case UNIT:
+		_gameObjects.push_back((GameObject*)new Unit(_idCounter++, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(renderObjectID), _tilemap));
 		_size++;
+		break;
+	case TRAP:
+		_gameObjects.push_back((GameObject*)new Trap(_idCounter++, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(renderObjectID)));
+		_size++;
+		break;
+	case TRIGGER:
+		_gameObjects.push_back((GameObject*)new Trigger(_idCounter++, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(renderObjectID)));
+		_size++;
+		break;
+	default:
+		break;
 	}
 
-	return exist;
+	return object;
 }
 
 bool ObjectHandler::Remove(short ID)
@@ -89,7 +77,9 @@ bool ObjectHandler::Remove(short ID)
 
 void ObjectHandler::Clear()
 {
+
 	_gameObjects.clear();
+	_idCounter = 0;
 }
 
 GameObject* ObjectHandler::Find(short ID)
@@ -120,6 +110,38 @@ GameObject* ObjectHandler::Find(int index)
 	return gameObject;
 }
 
+vector<GameObject*> ObjectHandler::GetAll(Type type)
+{
+	vector<GameObject*> list;
+	for (int i = 0; i < _size; i++)
+	{
+		if (_gameObjects.at(i)->GetType() == type)
+		{
+			list.push_back(_gameObjects[i]);
+		}
+	}
+
+	return list;;
+}
+
+RenderList ObjectHandler::GetAll(int renderObjectID)
+{
+	RenderList list;
+
+	
+
+	list._renderObject = _assetManager->GetRenderObject(renderObjectID);
+	for (int i = 0; i < _size; i++)
+	{
+		if (_gameObjects.at(i)->GetRenderObject() == _assetManager->GetRenderObject(renderObjectID))
+		{
+			list.modelMatrices.push_back(_gameObjects[i]->GetMatrix());
+		}
+	}
+
+	return list;
+}
+
 //std::vector<RenderObject*> ObjectHandler::GetRenderObjects() const
 //{
 //	std::vector<RenderObject*> renderObjects;
@@ -146,17 +168,19 @@ void ObjectHandler::SetTileMap(Tilemap * tilemap)
 	_tilemap = tilemap;
 }
 
+bool ObjectHandler::LoadLevel(string filename)
+{
+	return false;
+}
+
 void ObjectHandler::Update()
 {
 	//Update all objects gamelogic
 	for (int i = 0; i < _size; i++)
 	{
 		_gameObjects[i]->Update();
+		//_renderModule->Render(/*_gameObjects[i]->GetRenderObjectID(), _gameObjects[i]->GetModelMatrix()*/);
 	}
-
-	//TODO check for relevant collision between objects using GetAll(Type) (i.e All thiefs vs all traps (some culling may be required))
-
-
 }
 
 void ObjectHandler::Release()
@@ -165,4 +189,6 @@ void ObjectHandler::Release()
 	{
 		_gameObjects[i]->Release();
 	}
+
+
 }

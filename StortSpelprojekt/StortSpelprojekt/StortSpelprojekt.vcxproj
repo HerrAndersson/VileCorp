@@ -29,6 +29,7 @@
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Splash.cpp" />
     <ClCompile Include="StateMachine.cpp" />
+    <ClCompile Include="Tile.cpp" />
     <ClCompile Include="Tilemap.cpp" />
     <ClCompile Include="Trap.cpp" />
     <ClCompile Include="Trigger.cpp" />
@@ -45,6 +46,7 @@
     <ClInclude Include="Splash.h" />
     <ClInclude Include="StateMachine.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="Tile.h" />
     <ClInclude Include="Tilemap.h" />
     <ClInclude Include="Trap.h" />
     <ClInclude Include="Trigger.h" />
@@ -68,14 +70,14 @@
     <ProjectGuid>{EC1FCE9E-9382-463B-A119-666180E146D6}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>StortSpelprojekt</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.10240.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -88,7 +90,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>

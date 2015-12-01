@@ -54,7 +54,6 @@ namespace Renderer
 		D3D11_SUBRESOURCE_DATA data;
 		data.pSysMem = quad;
 		HRESULT result = _d3d->GetDevice()->CreateBuffer(&bufferDesc, &data, &_screenQuad);
-		
 
 		//TEMP!
 		Vertex vertices[] =
@@ -221,5 +220,10 @@ namespace Renderer
 	void RenderModule::EndScene()
 	{
 		_d3d->EndScene();
+	}
+
+	ID3D11Device* RenderModule::GetDevice() const
+	{
+		return _d3d->GetDevice();
 	}
 }

@@ -16,6 +16,7 @@ public:
 	bool ConnectTrap(Trap* trap);
 	bool DisconnectTrap(short ID);
 	void ActivateTraps();
-
+	void Update();
+	void Release();
 };
 

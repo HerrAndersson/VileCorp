@@ -14,3 +14,11 @@ Trap::~Trap()
 
 void Trap::Activate()
 {}
+
+void Trap::Update()
+{
+}
+
+void Trap::Release()
+{
+}

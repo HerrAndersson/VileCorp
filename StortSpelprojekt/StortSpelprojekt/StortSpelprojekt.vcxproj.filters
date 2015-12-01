@@ -55,6 +55,9 @@
     <ClCompile Include="Architecture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Tile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -99,5 +102,6 @@
     <ClInclude Include="Architecture.h">
       <Filter>Game objects</Filter>
     </ClInclude>
+    <ClInclude Include="Tile.h" />
   </ItemGroup>
 </Project>
