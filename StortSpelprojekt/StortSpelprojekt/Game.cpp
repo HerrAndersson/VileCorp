@@ -15,7 +15,8 @@ Game::~Game()
 {	
 	delete _window;
 	delete _renderModule;
-	delete _objectHandler;
+	//TODO remove comments when the objectHandler is initialized
+	//delete _objectHandler;
 }
 
 void Game::HandleInput()

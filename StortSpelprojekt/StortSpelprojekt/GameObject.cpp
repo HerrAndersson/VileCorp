@@ -16,7 +16,8 @@ GameObject::GameObject(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::X
 }
 
 GameObject::~GameObject()
-{}
+{
+}
 
 void GameObject::CalculateMatrix()
 {

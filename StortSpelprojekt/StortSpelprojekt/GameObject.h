@@ -60,6 +60,6 @@ public:
 	void virtual Update() = 0;
 
 	//Release object resources
-	void virtual Release() = 0;
+	void virtual Release()= 0;
 };
 
