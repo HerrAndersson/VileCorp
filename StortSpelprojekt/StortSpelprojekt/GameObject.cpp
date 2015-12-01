@@ -5,6 +5,13 @@
 GameObject::GameObject()
 {}
 
+GameObject::GameObject(unsigned short ID, Vec3 position, RenderObject * renderObject)
+{
+	_ID = ID;
+	_position = position;
+	_renderObject = renderObject;
+}
+
 GameObject::~GameObject()
 {}
 

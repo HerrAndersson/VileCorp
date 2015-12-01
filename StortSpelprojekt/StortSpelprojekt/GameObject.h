@@ -13,6 +13,13 @@ If the object has a renderObject but is out of sight _visibility will be false.
 struct Vec3
 {
 	float _posX, _posY, _posZ;
+	Vec3& operator=(const Vec3& comp)
+	{
+		_posX = comp._posX;
+		_posY = comp._posY;
+		_posZ = comp._posZ;
+		return *this;
+	}
 };
 
 //placeholder
@@ -36,6 +43,8 @@ protected:
 
 public:
 	GameObject();
+	//Type might not be necessary, depending on whether subclasses can correspond to one type or many.
+	GameObject(unsigned short ID, Vec3 position, Type type, RenderObject* renderObject);
 	~GameObject();
 
 	short GetID() const;

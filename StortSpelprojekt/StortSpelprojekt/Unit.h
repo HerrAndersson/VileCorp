@@ -16,6 +16,7 @@ private:
 public:
 	Unit();
 	Unit(int x, int z, const Tilemap* tileMap);
+	Unit(unsigned short ID, Vec3 position, Type type, RenderObject * renderObject);
 	~Unit();
 	void Move();
 	void Update();
