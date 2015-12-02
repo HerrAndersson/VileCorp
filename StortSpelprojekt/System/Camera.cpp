@@ -2,11 +2,11 @@
 
 namespace System
 {
-	Camera::Camera(float nearClip, float farClip, int width, int height)
+	Camera::Camera(float nearClip, float farClip, float fov, int width, int height)
 	{
 		_nearClip			= nearClip; //0.5f;
 		_farClip			= farClip; // 1000.0f;
-		_fieldOfView		= DirectX::XM_PIDIV4;
+		_fieldOfView		= fov;
 		_aspectRatio		= (float)width / (float)height;
 
 		_position			= DirectX::XMFLOAT3(0, 0, 0);
@@ -60,6 +60,7 @@ namespace System
 	void Camera::SetPosition(DirectX::XMFLOAT3 position)
 	{
 		_position = position;
+		Update();
 	}
 
 	DirectX::XMFLOAT3 Camera::GetRotation()const
@@ -70,6 +71,7 @@ namespace System
 	void Camera::SetRotation(DirectX::XMFLOAT3 rotation)
 	{
 		_rotation = rotation;
+		Update();
 	}
 
 	DirectX::XMMATRIX* Camera::GetViewMatrix()
@@ -89,4 +91,13 @@ namespace System
 		return &_baseView;
 	}
 
+	void* Camera::operator new(size_t i)
+	{
+		return _mm_malloc(i, 16);
+	}
+
+		void Camera::operator delete(void* p)
+	{
+		_mm_free(p);
+	}
 }

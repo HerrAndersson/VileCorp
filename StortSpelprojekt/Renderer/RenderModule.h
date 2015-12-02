@@ -35,28 +35,15 @@ namespace Renderer
 		ID3D11Buffer* _matrixBufferPerObject;
 		ID3D11Buffer* _matrixBufferPerFrame;
 
-
 		DirectXHandler* _d3d;
 		ShaderHandler* _shaderHandler;
 
 		ID3D11Buffer* _screenQuad;
 
+		void InitializeConstantBuffers();
 
-
-		//TEMP!
-		struct Vertex
-		{
-			float x, y, z;
-			float u, v;
-			float nx, ny, nz;
-		};
-		ID3D11Buffer* _vertexBuffer;
-
-
-		bool SetResourcesPerFrame(DirectX::XMMATRIX* view, DirectX::XMMATRIX* projection);
-		bool SetResourcesPerObject(DirectX::XMMATRIX* world, ID3D11ShaderResourceView* diffuse, ID3D11ShaderResourceView* specular);
+		void SetResourcesPerObject(DirectX::XMMATRIX* world, ID3D11ShaderResourceView* diffuse, ID3D11ShaderResourceView* specular);
 		void SetResourcesPerMesh(ID3D11Buffer* vertexBuffer, int vertexSize);
-
 
 	public:
 
@@ -67,11 +54,11 @@ namespace Renderer
 
 		void ResizeResources(HWND hwnd, int windowWidth, int windowHeight);
 
-
+		void SetResourcesPerFrame(DirectX::XMMATRIX* view, DirectX::XMMATRIX* projection);
 		void SetShaderStage(ShaderStage stage);
 
 		void BeginScene(float red, float green, float blue, float alpha);
-		void Render();
+		void Render(DirectX::XMMATRIX* world, RenderObject* renderObject);
 		void RenderLightQuad();
 		void EndScene();
 

@@ -4,19 +4,23 @@
 #include "StateMachine.h"
 #include "Window.h"
 #include "RenderModule.h"
-#include "ObjectHandler.h"
-
+#include "Camera.h"
+#include "AssetManager.h"
 #include "Trap.h"
+#include "ObjectHandler.h"
 
 class Game
 {
 private:
 
-	StateMachine		 _SM;
-	System::Window*		 _window;
-	Renderer::RenderModule* _renderModule;
-	ObjectHandler* _objectHandler;
+	StateMachine				_SM;
+	System::Window*				_window;
+	Renderer::RenderModule*		_renderModule;
+	System::Camera*				_camera;
+	ObjectHandler*				_objectHandler;
 
+	//Resizing window, directx resources, camera
+	void ResizeResources(System::WindowSettings settings);
 	void HandleInput();
 	void Update();
 	void Render();
