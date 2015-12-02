@@ -107,7 +107,7 @@ void Unit::CalculatePath(AI::Vec2D goal)
 }
 
 /*
-	Moves the unit to the tile it's aimning for and selects a new walking direction.
+	Moves the unit to the tile it's aiming for and selects a new walking direction.
 	This should NOT update every frame. It only updates when the unit reaches a new tile. 
 */
 void Unit::Move()
@@ -116,7 +116,7 @@ void Unit::Move()
 
 	AI::Vec2D nextTile = _path[--_pathLength];
 	_direction = {nextTile._x, nextTile._y};
-	_direction -= _tilePosition;
+	_direction -= _tilePosition;						//Note: This is not normalized. Diagonals will have length 2.
 }
 
 void Unit::Update()
