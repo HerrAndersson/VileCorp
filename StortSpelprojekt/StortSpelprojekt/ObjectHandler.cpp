@@ -56,6 +56,7 @@ GameObject* ObjectHandler::Add(Type type, int renderObjectID, XMFLOAT3 position 
 		_size++;
 		break;
 	default:
+		object = new Trap(2, XMFLOAT3(2.0f, 2.0f, 2.0f), XMFLOAT3(2.0f, 2.0f, 2.0f), AI::Vec2D(2, 2), TRAP, _assetManager->GetRenderObject(0));
 		break;
 	}
 
@@ -135,19 +136,19 @@ vector<GameObject*> ObjectHandler::GetAll(Type type)
 		}
 	}
 
-	return list;;
-}
-
+	return list;
+}//TODO make it so that it returns a vector of renderlists to improve performance /Markus
 RenderList ObjectHandler::GetAll(int renderObjectID)
 {
 	RenderList list;
 
 	list._renderObject = _assetManager->GetRenderObject(renderObjectID);
+	list.modelMatrices.resize(_size);
 	for (int i = 0; i < _size; i++)
 	{
 		if (_gameObjects.at(i)->GetRenderObject() == _assetManager->GetRenderObject(renderObjectID))
-		{
-			list.modelMatrices.push_back(_gameObjects[i]->GetMatrix());
+		{	
+			list.modelMatrices[i] = _gameObjects[i]->GetMatrix();
 		}
 	}
 

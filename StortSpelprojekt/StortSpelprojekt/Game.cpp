@@ -75,11 +75,27 @@ void Game::Render()
 	_renderModule->SetResourcesPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
 	_renderModule->SetShaderStage(Renderer::RenderModule::GEO_PASS);
 
-		_renderModule->SetShaderStage(Renderer::RenderModule::LIGHT_PASS);
 
-	//_renderModule->Render(&i, _tempTestRenderObject);
+
+	RenderList renderList = _objectHandler->GetAll(0);
+	
+	
+	//_renderModule->Render(&_objectHandler->GetAll(TRAP).at(0)->GetMatrix(), renderList._renderObject);
+	//_renderModule->Render(&_objectHandler->GetAll(TRAP).at(1)->GetMatrix(), renderList._renderObject);
+
+	//TODO: Will make nestled later /Texxarne
+	for (int j = 0; j < renderList.modelMatrices.size(); j++)
+	{
+		_renderModule->Render(&renderList.modelMatrices[j], renderList._renderObject);
+	}
+	
+
+
+	
 
 	_renderModule->SetShaderStage(Renderer::RenderModule::LIGHT_PASS);
+
+
 	_renderModule->RenderLightQuad();
 	_renderModule->EndScene();
 }
@@ -88,17 +104,16 @@ int Game::Run()
 {
 	//Needs a Tilemap in the objectHandler /Markus
 	_objectHandler->Add(TRAP, 0, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
+	_objectHandler->Add(TRAP, 0, XMFLOAT3(0.5f, -1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
+	
+
+
 
 	while (_window->Run())
 	{
 		HandleInput();
 		Update();
 		Render();
-
-
-
-
-
 
 	}
 

@@ -140,7 +140,7 @@ namespace Renderer
 		deviceContext->PSSetShaderResources(1, 1, &specular);
 
 		XMMATRIX worldMatrixC;
-		worldMatrixC = XMMatrixTranspose(*world);
+		worldMatrixC = *world;
 
 		result = deviceContext->Map(_matrixBufferPerObject, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 		if (FAILED(result))
