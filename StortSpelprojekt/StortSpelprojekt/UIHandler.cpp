@@ -28,32 +28,54 @@ int UIHandler::AddFont(const WCHAR* fontName, DirectX::XMFLOAT2 position, float 
 	}
 	else
 	{
+		int found = -1;
+		int incr = 0;
 		for (auto i : _fonts)
 		{
-			//if filepaths are not equal.
-			if (0 != wcscmp(i.filePath, fontName))
+			//if filepaths are equal.
+			if (0 == wcscmp(i.filePath, fontName))
 			{
-				//Then create a new font.
-				_fonts.push_back(FontInfo(fontName, position, fontSize, color, text, _textId, false, _device));
+				found = incr;
 			}
-			else
-			{
-				//If filepaths are equal. Then we shall create a string inside that font.
-				i.AddText(position, fontSize, color, text, _textId);
-			}
+			incr++;
+		}
+		//if no previous font found. Create a new font.
+		if (found == -1)
+		{
+			//Then create a new font.
+			_fonts.push_back(FontInfo(fontName, position, fontSize, color, text, _textId, false, _device));
+		}
+		else
+		{
+			//If filepaths are equal. Then we shall create a string inside that font.
+			_fonts.at(found).AddText(position, fontSize, color, text, _textId);	
 		}
 	}
-	
 	
 	return _textId++;
 }
 
 int UIHandler::AddCustomFont(const WCHAR* fontName, DirectX::XMFLOAT2 position, float fontSize, UINT32 color, const WCHAR* text)
 {
-	for (auto i : _fonts)
+	if (_textId == 0) //if first element
 	{
-		//if filepaths are not equal.
-		if (0 != wcscmp(i.filePath, fontName))
+		_fonts.push_back(FontInfo(fontName, position, fontSize, color, text, _textId, true, _device));
+	}
+	else
+	{
+		int found = -1;
+		int incr = 0;
+		for (auto i : _fonts)
+		{
+			//if filepaths are equal.
+			if (0 == wcscmp(i.filePath, fontName))
+			{
+				found = incr;
+			}
+			incr++;
+		}
+		//if no previous font found. Create a new font.
+		if (found == -1)
 		{
 			//Then create a new font.
 			_fonts.push_back(FontInfo(fontName, position, fontSize, color, text, _textId, true, _device));
@@ -61,7 +83,7 @@ int UIHandler::AddCustomFont(const WCHAR* fontName, DirectX::XMFLOAT2 position, 
 		else
 		{
 			//If filepaths are equal. Then we shall create a string inside that font.
-			i.AddText(position, fontSize, color, text, _textId);
+			_fonts.at(found).AddText(position, fontSize, color, text, _textId);
 		}
 	}
 

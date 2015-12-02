@@ -6,22 +6,22 @@
 #include "RenderModule.h"
 #include "UIHandler.h"
 #include "ObjectHandler.h"
+#include "InitVar.h"
 
 #include "Trap.h"
 
 class Game
 {
 private:
-
-	StateMachine			_SM;
 	System::Window*			_window;
 	Renderer::RenderModule* _renderModule;
 
+	ObjectHandler*			_objectHandler;
 	UIHandler*				_UI;
-	ObjectHandler* _objectHandler;
+	StateMachine*			_SM;
 
 	void HandleInput();
-	void Update();
+	void Update(float deltaTime);
 	void Render();
 
 public:

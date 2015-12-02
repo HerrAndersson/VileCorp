@@ -3,16 +3,18 @@
 
 Game::Game(HINSTANCE hInstance, int nCmdShow)
 {
-	_SM.Initialize();
-
 	System::WindowSettings settings;
 	_window = new System::Window("Amazing game", hInstance, settings);
 
 	_renderModule = new Renderer::RenderModule(_window->GetHWND(), settings._width, settings._height);
-	_UI = new UIHandler(_renderModule->GetDevice());
-	_UI->AddFont(L"Arial", DirectX::XMFLOAT2(0, 0), 52.0f, 0xff0099ff, L"HELLO? IS IT ME YOU'RE LOOKING FOR?");
-	
 	_objectHandler = new ObjectHandler(_renderModule->GetDevice());
+	_UI = new UIHandler(_renderModule->GetDevice());
+
+	//Initialize Variables
+	InitVar initVar;
+	initVar.objectHandler	= _objectHandler;
+	initVar.uiHandler		= _UI;
+	_SM = new StateMachine(initVar);
 }
 
 Game::~Game() 
@@ -20,6 +22,8 @@ Game::~Game()
 	delete _window;
 	delete _renderModule;
 	delete _objectHandler;
+	delete _UI;
+	delete _SM;
 }
 
 void Game::HandleInput()
@@ -49,7 +53,7 @@ void Game::HandleInput()
 	}
 }
 
-void Game::Update()
+void Game::Update(float deltaTime)
 {
 	/*
 	Object handler update
@@ -58,6 +62,9 @@ void Game::Update()
 	vi vill hämta objekten
 
 	*/
+
+	_UI->Update();
+	_SM->Update(deltaTime);
 }
 
 void Game::Render()
@@ -73,16 +80,12 @@ void Game::Render()
 
 int Game::Run()
 {
+	float deltaTime = 0; //someone create this.
 	while (_window->Run())
 	{
 		HandleInput();
-		Update();
+		Update(deltaTime);
 		Render();
-
-
-
-
-
 	}
 
 	return 0;

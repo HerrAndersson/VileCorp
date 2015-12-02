@@ -22,18 +22,6 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Menu.cpp">
-      <Filter>State Machine</Filter>
-    </ClCompile>
-    <ClCompile Include="Options.cpp">
-      <Filter>State Machine</Filter>
-    </ClCompile>
-    <ClCompile Include="Scene.cpp">
-      <Filter>State Machine</Filter>
-    </ClCompile>
-    <ClCompile Include="Splash.cpp">
-      <Filter>State Machine</Filter>
-    </ClCompile>
     <ClCompile Include="StateMachine.cpp">
       <Filter>State Machine</Filter>
     </ClCompile>
@@ -76,6 +64,21 @@
     <ClCompile Include="UIHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MenuState.cpp">
+      <Filter>State Machine</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayState.cpp">
+      <Filter>State Machine</Filter>
+    </ClCompile>
+    <ClCompile Include="SplashState.cpp">
+      <Filter>State Machine</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseState.cpp">
+      <Filter>State Machine</Filter>
+    </ClCompile>
+    <ClCompile Include="OptionsState.cpp">
+      <Filter>State Machine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -83,18 +86,6 @@
     </ClInclude>
     <ClInclude Include="stdafx.h">
       <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Menu.h">
-      <Filter>State Machine</Filter>
-    </ClInclude>
-    <ClInclude Include="Options.h">
-      <Filter>State Machine</Filter>
-    </ClInclude>
-    <ClInclude Include="Scene.h">
-      <Filter>State Machine</Filter>
-    </ClInclude>
-    <ClInclude Include="Splash.h">
-      <Filter>State Machine</Filter>
     </ClInclude>
     <ClInclude Include="StateMachine.h">
       <Filter>State Machine</Filter>
@@ -136,6 +127,24 @@
       <Filter>Components</Filter>
     </ClInclude>
     <ClInclude Include="UIHandler.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MenuState.h">
+      <Filter>State Machine</Filter>
+    </ClInclude>
+    <ClInclude Include="OptionsState.h">
+      <Filter>State Machine</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayState.h">
+      <Filter>State Machine</Filter>
+    </ClInclude>
+    <ClInclude Include="SplashState.h">
+      <Filter>State Machine</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseState.h">
+      <Filter>State Machine</Filter>
+    </ClInclude>
+    <ClInclude Include="InitVar.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

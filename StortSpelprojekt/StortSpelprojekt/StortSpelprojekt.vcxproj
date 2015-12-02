@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AnimationComponent.cpp" />
+    <ClCompile Include="BaseState.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="ComponentList.cpp" />
     <ClCompile Include="DamageComponent.cpp" />
@@ -28,11 +29,11 @@
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GameObjectComp.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Menu.cpp" />
+    <ClCompile Include="MenuState.cpp" />
     <ClCompile Include="ObjectHandler.cpp" />
-    <ClCompile Include="Options.cpp" />
-    <ClCompile Include="Scene.cpp" />
-    <ClCompile Include="Splash.cpp" />
+    <ClCompile Include="OptionsState.cpp" />
+    <ClCompile Include="PlayState.cpp" />
+    <ClCompile Include="SplashState.cpp" />
     <ClCompile Include="StateMachine.cpp" />
     <ClCompile Include="Tilemap.cpp" />
     <ClCompile Include="Trap.cpp" />
@@ -42,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AnimationComponent.h" />
+    <ClInclude Include="BaseState.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="ComponentList.h" />
     <ClInclude Include="DamageComponent.h" />
@@ -49,11 +51,12 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameObjectComp.h" />
-    <ClInclude Include="Menu.h" />
+    <ClInclude Include="InitVar.h" />
+    <ClInclude Include="MenuState.h" />
     <ClInclude Include="ObjectHandler.h" />
-    <ClInclude Include="Options.h" />
-    <ClInclude Include="Scene.h" />
-    <ClInclude Include="Splash.h" />
+    <ClInclude Include="OptionsState.h" />
+    <ClInclude Include="PlayState.h" />
+    <ClInclude Include="SplashState.h" />
     <ClInclude Include="StateMachine.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Tilemap.h" />
