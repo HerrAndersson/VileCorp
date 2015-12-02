@@ -1,5 +1,11 @@
 #pragma once
 #include "GameObject.h"
+
+/*
+	This should cover any game object that doesn't do anything besides existing.
+	Typical examples would be walls, floors and immovable intruder objectives
+	--Victor
+*/
 class Architecture : public GameObject
 {
 	Architecture();
