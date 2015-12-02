@@ -4,149 +4,204 @@
 AssetManager::AssetManager(ID3D11Device* device)
 {
 
-	this->device = device;
-	this->infile = new ifstream;
-	this->modelFiles = new vector<string>;
-	this->renderObjects = new vector<RenderObject*>;
-	this->renderObjectsToFlush = new vector<RenderObject*>;
-	this->textures = new vector<Texture*>;
-	this->texturesToFlush = new vector<Texture*>;
+	this->_device = device;
+	this->_infile = new ifstream;
+	this->_modelFiles = new vector<string>;
+	this->_renderObjects = new vector<RenderObject*>;
+	this->_renderObjectsToFlush = new vector<RenderObject*>;
+	this->_textures = new vector<Texture*>;
+	this->_texturesToFlush = new vector<Texture*>;
+	_levelFileNames = new vector<string>;
 
 	SetupRenderObjectList();
+	SetupLevelFileNameList();
 }
 
 AssetManager::~AssetManager()
 {
-	for (Texture* texture : *textures)
-		if(texture->loaded)
-			texture->data->Release();
-	textures->clear();
+	for (Texture* texture : *_textures)
+		if(texture->_loaded)
+			texture->_data->Release();
+	_textures->clear();
 
-	for (uint i = 0; i < renderObjects->size(); i++)
+	for (uint i = 0; i < _renderObjects->size(); i++)
 	{
 		UnloadModel(i, true);
-		delete renderObjects->at(i);
+		delete _renderObjects->at(i);
 	}
-	renderObjects->clear();
+	_renderObjects->clear();
 }
 
 //Looks through the Models folder and creates an empty RenderObject for each entry
 void AssetManager::SetupRenderObjectList()
 {
 #ifdef _DEBUG
-	GetFilenamesInDirectory("../../Output/Bin/x86/Debug/Assets/Models/", ".bin", *modelFiles);
+	GetFilenamesInDirectory("../../Output/Bin/x86/Debug/Assets/Models/", ".bin", *_modelFiles);
 #else
 	GetFilenamesInDirectory("Assets/Models/", ".bin", *modelFiles);
 #endif
-	for (uint i = 0; i < modelFiles->size(); i++)
+	for (uint i = 0; i < _modelFiles->size(); i++)
 	{
-		RenderObject* renderObject = ScanModel(modelFiles->at(i));
-		renderObjects->push_back(renderObject);
+		RenderObject* renderObject = ScanModel(_modelFiles->at(i));
+		_renderObjects->push_back(renderObject);
 	}
 }
 
 void AssetManager::DecrementUsers(Texture* texture)
 {
-	texture->activeUsers--;
-	if (!texture->activeUsers)
-		texturesToFlush->push_back(texture);
+	texture->_activeUsers--;
+	if (!texture->_activeUsers)
+		_texturesToFlush->push_back(texture);
 }
 
 //Marks a model for unloading if running out of memory. Set force to true to unload now
 void AssetManager::UnloadModel(int index, bool force)
 {
-	RenderObject* renderObject = renderObjects->at(index);
-	if (!renderObject->meshLoaded)
+	RenderObject* renderObject = _renderObjects->at(index);
+	if (!renderObject->_meshLoaded)
 		return;
 	if (force)
 	{
-		for (auto m : renderObject->meshes)
-			m.vertexBuffer->Release();
-		renderObject->toUnload = false;
-		if (renderObject->diffuseTexture != nullptr)
-			DecrementUsers(renderObject->diffuseTexture);
-		if (renderObject->specularTexture != nullptr)
-			DecrementUsers(renderObject->specularTexture);
+		for (auto m : renderObject->_meshes)
+			m._vertexBuffer->Release();
+		renderObject->_toUnload = false;
+		if (renderObject->_diffuseTexture != nullptr)
+			DecrementUsers(renderObject->_diffuseTexture);
+		if (renderObject->_specularTexture != nullptr)
+			DecrementUsers(renderObject->_specularTexture);
 	}
 	else
 	{
-		renderObjectsToFlush->push_back(renderObject);
-		renderObject->toUnload = true;
+		_renderObjectsToFlush->push_back(renderObject);
+		renderObject->_toUnload = true;
 	}
+}
+
+void AssetManager::ParseLevel(int index, vector<GameObjectData> &gameObjects, int &dimX, int &dimY)
+{
+	LevelHeader lvlHead;
+
+	_infile->open(_levelFileNames->at(index).c_str(), ifstream::binary);
+	if (!_infile->is_open())
+	{
+		return;
+	}
+
+	_infile->read((char*)&lvlHead, sizeof(LevelHeader));
+	dimX = lvlHead._tileGridSizeX;
+	dimY = lvlHead._tileGridSizeY;
+
+	gameObjects.resize(lvlHead._nrOfGameObjects);
+	_infile->read((char*)gameObjects.data(), sizeof(GameObjectData) * lvlHead._nrOfGameObjects);
+
+	//infile->open(file_path.c_str(), ifstream::binary);
+	//if (!infile->is_open())
+	//{
+	//	return;
+	//}
+
+	//infile->seekg(mesh->toMesh);
+	//vertices.resize(mesh->vertexBufferSize);
+	//infile->read((char*)vertices.data(), mesh->vertexBufferSize*sizeof(Vertex));
+}
+
+void AssetManager::SetupLevelFileNameList()
+{
+#ifdef _DEBUG
+	GetFilenamesInDirectory("../../Output/Bin/x86/Debug/Assets/Levels/", ".lvl", *_levelFileNames);
+#else
+	GetFilenamesInDirectory("Assets/Levels/", ".lvl", *_levelFileNames);
+#endif
 }
 
 //Unloads all Assets waiting to be unloaded
 void AssetManager::Flush()
 {
-	for (RenderObject* renderObject : *renderObjectsToFlush)
-		if (renderObject->toUnload)
+	for (RenderObject* renderObject : *_renderObjectsToFlush)
+		if (renderObject->_toUnload)
 		{
-			for (auto m : renderObject->meshes)
-				m.vertexBuffer->Release();
-			renderObject->toUnload = false;
-			if (renderObject->diffuseTexture != nullptr)
-				DecrementUsers(renderObject->diffuseTexture);
-			if (renderObject->specularTexture != nullptr)
-				DecrementUsers(renderObject->specularTexture);
+			for (auto m : renderObject->_meshes)
+				m._vertexBuffer->Release();
+			renderObject->_toUnload = false;
+			if (renderObject->_diffuseTexture != nullptr)
+				DecrementUsers(renderObject->_diffuseTexture);
+			if (renderObject->_specularTexture != nullptr)
+				DecrementUsers(renderObject->_specularTexture);
 		}
-	renderObjectsToFlush->clear();
+	_renderObjectsToFlush->clear();
 
-	for (Texture* texture : *textures)
-		if (!texture->activeUsers)
-			texture->data->Release();
-	texturesToFlush->clear();
+	for (Texture* texture : *_textures)
+		if (!texture->_activeUsers)
+			texture->_data->Release();
+	_texturesToFlush->clear();
 }
 
-void Texture::LoadTexture(ID3D11Device* device)
+HRESULT Texture::LoadTexture(ID3D11Device* device)
 {
-	if (!loaded)
+	HRESULT res;
+	if (!_loaded)
 	{
 #ifdef _DEBUG
-		string str = "../../Output/Bin/x86/Debug/Assets/Textures/";
-		filename.insert(0, wstring(str.begin(), str.end()));
-		DirectX::CreateWICTextureFromFile(device, filename.c_str(), nullptr, &data, 0);
+		_filename.insert(0, L"../../Output/Bin/x86/Debug/Assets/Textures/");
+		res = DirectX::CreateWICTextureFromFile(device, _filename.c_str(), nullptr, &_data, 0);
 #else
-		DirectX::CreateWICTextureFromFile(device, "Assets/Textures/" + filename.c_str(), nullptr, &data, 0);
+		_filename.insert(0, L"Assets/Textures/");
+		res = DirectX::CreateWICTextureFromFile(device, _filename.c_str(), nullptr, &_data, 0);
 #endif
-		loaded = true;
+		_loaded = true;
+		_activeUsers++;
 	}
-	activeUsers++;
+	return res;
 }
 
 //Loads a model to the GPU
 void AssetManager::LoadModel(string file_path, RenderObject* renderObject) {
-	infile->open(file_path.c_str(), ifstream::binary);
-	if (!infile->is_open()) { return; }
+	_infile->open(file_path.c_str(), ifstream::binary);
+
+	if (!_infile->is_open())
+	{
+		return;
+	}
+
 	Mesh* mesh;
 	vector<Vertex> vertices;
 
-	for (uint i = 0; i < renderObject->meshes.size(); i++) {
-		mesh = &renderObject->meshes[i];
-		infile->seekg(mesh->toMesh);
-		vertices.resize(mesh->vertexBufferSize);
-		infile->read((char*)vertices.data(), mesh->vertexBufferSize*sizeof(Vertex));
-		mesh->vertexBuffer = CreateVertexBuffer(&vertices, renderObject->skeleton);
+	for (uint i = 0; i < renderObject->_meshes.size(); i++)
+	{
+		mesh = &renderObject->_meshes[i];
+		_infile->seekg(mesh->_toMesh);
+		vertices.resize(mesh->_vertexBufferSize);
+		_infile->read((char*)vertices.data(), mesh->_vertexBufferSize*sizeof(Vertex));
+		mesh->_vertexBuffer = CreateVertexBuffer(&vertices, renderObject->_skeleton);
 	}
 
-	if (renderObject->diffuseTexture != nullptr)
-		renderObject->diffuseTexture->LoadTexture(device);
-	if (renderObject->specularTexture != nullptr)
-		renderObject->specularTexture->LoadTexture(device);
+	if (renderObject->_diffuseTexture != nullptr)
+		if (renderObject->_diffuseTexture->LoadTexture(_device) == E_OUTOFMEMORY)
+		{
+			Flush();
+			renderObject->_diffuseTexture->LoadTexture(_device);//TODO handle if still out of memory - Fredrik
+		}
+	if (renderObject->_specularTexture != nullptr)
+		if(renderObject->_specularTexture->LoadTexture(_device) == E_OUTOFMEMORY)
+		{
+			Flush();
+			renderObject->_specularTexture->LoadTexture(_device);//TODO handle if still out of memory - Fredrik
+		}
 
-	infile->close();
+	_infile->close();
 }
 
 Texture* AssetManager::ScanTexture(string filename)
 {
-	for (Texture* texture : *textures)
+	for (Texture* texture : *_textures)
 	{
-		string str = string(texture->filename.begin(), texture->filename.end());
+		string str = string(texture->_filename.begin(), texture->_filename.end());
 		if (!strcmp(str.data(), filename.data()))
 			return texture;
 	}
 	Texture* texture = new Texture;
-	texture->filename = wstring(filename.begin(), filename.end());
-	textures->push_back(texture);
+	texture->_filename = wstring(filename.begin(), filename.end());
+	_textures->push_back(texture);
 	return texture;
 }
 
@@ -154,62 +209,67 @@ Texture* AssetManager::ScanTexture(string filename)
 RenderObject* AssetManager::ScanModel(string file_path)
 {
 	RenderObject* renderObject = new RenderObject;
-	infile->open(file_path.c_str(), ifstream::binary);
-	if (!infile->is_open()) { return renderObject; }
+	_infile->open(file_path.c_str(), ifstream::binary);
+
+	if (!_infile->is_open())
+	{
+		return renderObject;
+	}
+
 	MainHeader mainHeader;
-	infile->read((char*)&mainHeader, sizeof(MainHeader));
-	mainHeader.meshCount++;
-	if (mainHeader.version != meshFormatVersion)
+	_infile->read((char*)&mainHeader, sizeof(MainHeader));
+	mainHeader._meshCount++;
+	if (mainHeader._version != _meshFormatVersion)
 		throw std::runtime_error("Failed to load " + file_path + ":\nIncorrect fileversion");
-	for (int i = 0; i < mainHeader.meshCount; i++)
+	for (int i = 0; i < mainHeader._meshCount; i++)
 	{
 		Mesh mesh;
-		infile->read((char*)&mesh.toMesh, 4);
-		renderObject->meshes.push_back(mesh);
+		_infile->read((char*)&mesh._toMesh, 4);
+		renderObject->_meshes.push_back(mesh);
 	}
 
-	for (int i = 0; i < mainHeader.meshCount; i++)
+	for (int i = 0; i < mainHeader._meshCount; i++)
 	{
 		MeshHeader meshHeader;
-		infile->read((char*)&meshHeader, sizeof(MeshHeader));
+		_infile->read((char*)&meshHeader, sizeof(MeshHeader));
 
-		renderObject->meshes[i].name.resize(meshHeader.nameLength);
+		renderObject->_meshes[i]._name.resize(meshHeader._nameLength);
 
-		infile->read((char*)renderObject->meshes[i].name.data(), meshHeader.nameLength);
-		infile->seekg(meshHeader.numberOfVertices*sizeof(Vertex), ios::cur);
+		_infile->read((char*)renderObject->_meshes[i]._name.data(), meshHeader._nameLength);
+		_infile->seekg(meshHeader._numberOfVertices*sizeof(Vertex), ios::cur);
 
-		if (meshHeader.numberPointLights)
+		if (meshHeader._numberPointLights)
 		{
-			renderObject->meshes[i].pointLights.resize(sizeof(PointLight)*meshHeader.numberPointLights);
-			infile->read((char*)renderObject->meshes[i].pointLights.data(), sizeof(PointLight)*meshHeader.numberPointLights);
+			renderObject->_meshes[i]._pointLights.resize(sizeof(PointLight)*meshHeader._numberPointLights);
+			_infile->read((char*)renderObject->_meshes[i]._pointLights.data(), sizeof(PointLight)*meshHeader._numberPointLights);
 		}
 
-		if (meshHeader.numberSpotLights)
+		if (meshHeader._numberSpotLights)
 		{
-			renderObject->meshes[i].spotLights.resize(sizeof(SpotLight)*meshHeader.numberSpotLights);
-			infile->read((char*)renderObject->meshes[i].spotLights.data(), sizeof(SpotLight)*meshHeader.numberSpotLights);
+			renderObject->_meshes[i]._spotLights.resize(sizeof(SpotLight)*meshHeader._numberSpotLights);
+			_infile->read((char*)renderObject->_meshes[i]._spotLights.data(), sizeof(SpotLight)*meshHeader._numberSpotLights);
 		}
-		renderObject->meshes[i].vertexBufferSize = meshHeader.numberOfVertices;
+		renderObject->_meshes[i]._vertexBufferSize = meshHeader._numberOfVertices;
 	}
 	MatHeader matHeader;
-	infile->read((char*)&matHeader, sizeof(MatHeader));
-	infile->read((char*)&renderObject->diffuse, 16);
-	infile->read((char*)&renderObject->specular, 16);
+	_infile->read((char*)&matHeader, sizeof(MatHeader));
+	_infile->read((char*)&renderObject->_diffuse, 16);
+	_infile->read((char*)&renderObject->_specular, 16);
 
 	string diffFile, specFile;
-	diffFile.resize(matHeader.diffuseNameLength);
-	specFile.resize(matHeader.specularNameLength);
-	infile->read((char*)diffFile.data(), matHeader.diffuseNameLength);
-	infile->read((char*)specFile.data(), matHeader.specularNameLength);
+	diffFile.resize(matHeader._diffuseNameLength);
+	specFile.resize(matHeader._specularNameLength);
+	_infile->read((char*)diffFile.data(), matHeader._diffuseNameLength);
+	_infile->read((char*)specFile.data(), matHeader._specularNameLength);
 
-	if (matHeader.diffuseNameLength)
-		renderObject->diffuseTexture = ScanTexture(diffFile);
-	if (matHeader.specularNameLength)
-		renderObject->specularTexture = ScanTexture(specFile);
+	if (matHeader._diffuseNameLength)
+		renderObject->_diffuseTexture = ScanTexture(diffFile);
+	if (matHeader._specularNameLength)
+		renderObject->_specularTexture = ScanTexture(specFile);
 
-	infile->close();
+	_infile->close();
 
-	renderObject->meshLoaded = false;
+	renderObject->_meshLoaded = false;
 
 	return renderObject;
 }
@@ -232,23 +292,24 @@ ID3D11Buffer* AssetManager::CreateVertexBuffer(vector<Vertex> *vertices, int ske
 
 	ID3D11Buffer* vertexBuffer;
 
-	HRESULT result = device->CreateBuffer(&vbDESC, &vertexData, &vertexBuffer);
-	if (result == E_OUTOFMEMORY) {
+	HRESULT result = _device->CreateBuffer(&vbDESC, &vertexData, &vertexBuffer);
+	if (result == E_OUTOFMEMORY)
+	{
 		Flush();
-		result = device->CreateBuffer(&vbDESC, &vertexData, &vertexBuffer); // TODO handle if still out of memory - Fredrik
+		result = _device->CreateBuffer(&vbDESC, &vertexData, &vertexBuffer);//TODO handle if still out of memory - Fredrik
 	}
 
 	return vertexBuffer;
 }
 
 //How AssetManager interfaces with the renderer. Don't save the return, request it anew everytime unless you are certain the model won't be unloaded
-//currently two objects exist. 0 = cube, 1 = cube with arms
+//currently two objects exist. 0 = man 1 = cube, 2 = cube with cubes
 RenderObject* AssetManager::GetRenderObject(int index)
 {
-	RenderObject* renderObject = renderObjects->at(index);
-	if (!renderObject->meshLoaded)
-		LoadModel(modelFiles->at(index), renderObject);
-	else if (renderObject->toUnload)
-		renderObject->toUnload = false;
+	RenderObject* renderObject = _renderObjects->at(index);
+	if (!renderObject->_meshLoaded)
+		LoadModel(_modelFiles->at(index), renderObject);
+	else if (renderObject->_toUnload)
+		renderObject->_toUnload = false;
 	return renderObject;
 }

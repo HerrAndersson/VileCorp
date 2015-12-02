@@ -15,33 +15,47 @@ using namespace std;
 using namespace DirectX;
 
 struct MainHeader 
-{
-	int version, meshCount;
+	int _version, _meshCount;
 };
 
 struct MeshHeader
 {
-	int nameLength, numberOfVertices, subMeshID, numberPointLights, numberSpotLights;
+	int _nameLength, _numberOfVertices, _subMeshID, _numberPointLights, _numberSpotLights;
 };
 
-struct MatHeader 
-{
-	int diffuseNameLength, specularNameLength;
+struct MatHeader {
+	int _diffuseNameLength, _specularNameLength;
 };
 
 struct Point
 {
-	XMFLOAT3 position;
-	int boneIndices[4];
-	float boneWeights[4];
+	XMFLOAT3 _position;
+	int _boneIndices[4];
+	float _boneWeights[4];
+};
+
+
+struct LevelHeader
+{
+	int _version, _tileGridSizeX, _tileGridSizeY, _nrOfGameObjects;
+};
+
+struct GameObjectData
+{
+	int _posX, _posZ;
+	float _rotY;
+	int _tileType;
+	bool _walkable;
 };
 
 static void splitStringToVector(string input, vector<string> &output, string delimiter) {
 	size_t pos = 0;
 	string token;
-	while ((pos = input.find(delimiter)) != string::npos) {
+	while ((pos = input.find(delimiter)) != string::npos)
+	{
 		token = input.substr(0, pos);
-		if (!token.empty()) {
+		if (!token.empty())
+		{
 			output.push_back(token);
 		}
 		input.erase(0, pos + delimiter.length());
@@ -57,7 +71,8 @@ static bool GetFilenamesInDirectory(char* folder, char* extension, vector<string
 	search_path.append(extension);
 	WIN32_FIND_DATA fd;
 	HANDLE hFind = FindFirstFile(search_path.c_str(), &fd);
-	if (hFind != INVALID_HANDLE_VALUE) {
+	if (hFind != INVALID_HANDLE_VALUE)
+	{
 		do {
 			if (!(fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
 			{
@@ -79,17 +94,18 @@ static bool GetFilenamesInDirectory(char* folder, char* extension, vector<string
 class ASSET_MANAGER_EXPORT AssetManager
 {
 private:
-	int meshFormatVersion = 23;
-	ifstream* infile;
-	ID3D11Device* device;
+	int _meshFormatVersion = 23;
+	ifstream* _infile;
+	ID3D11Device* _device;
 
-	vector<string>* modelFiles;
+	vector<string>* _modelFiles;
+	vector<string>* _levelFileNames;
 
-	vector<RenderObject*>* renderObjects;
-	vector<RenderObject*>* renderObjectsToFlush;
+	vector<RenderObject*>* _renderObjects;
+	vector<RenderObject*>* _renderObjectsToFlush;
 
-	vector<Texture*>* textures;
-	vector<Texture*>* texturesToFlush;
+	vector<Texture*>* _textures;
+	vector<Texture*>* _texturesToFlush;
 
 	void LoadModel(string file_path, RenderObject* renderObject);
 	void Flush();
@@ -98,12 +114,15 @@ private:
 	void DecrementUsers(Texture* texture);
 	ID3D11Buffer* CreateVertexBuffer(vector<Vertex> *vertices, int skeleton);
 	void SetupRenderObjectList();
+	void SetupLevelFileNameList();
 
 public:
 	AssetManager(ID3D11Device* device);
 	~AssetManager();
 	RenderObject* GetRenderObject(int index);
 	void UnloadModel(int index, bool force);
+	void ParseLevel(int index, vector<GameObjectData> &gameObjects, int &dimX, int &dimY);
+	
 };
 
 
