@@ -255,8 +255,14 @@ Texture* AssetManager::ScanTexture(string filename)
 }
 
 //Creates a RenderObject for the specified model without loading it
-RenderObject* AssetManager::ScanModel(string file_path)
+RenderObject* AssetManager::ScanModel(string fileName)
 {
+#ifdef _DEBUG
+	string file_path = "../../Output/Bin/x86/Debug/Assets/Models/";
+#else
+	string file_path = "Assets/Models/";
+#endif
+	file_path.append(fileName);
 	RenderObject* renderObject = new RenderObject;
 	_infile->open(file_path.c_str(), ifstream::binary);
 
