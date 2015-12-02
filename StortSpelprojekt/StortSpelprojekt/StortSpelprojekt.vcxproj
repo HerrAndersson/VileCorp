@@ -19,14 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AnimationComponent.cpp" />
-    <ClCompile Include="Component.cpp" />
-    <ClCompile Include="ComponentList.cpp" />
-    <ClCompile Include="DamageComponent.cpp" />
-    <ClCompile Include="FOVComponent.cpp" />
+    <ClCompile Include="Architecture.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObject.cpp" />
-    <ClCompile Include="GameObjectComp.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Menu.cpp" />
     <ClCompile Include="ObjectHandler.cpp" />
@@ -41,14 +36,9 @@
     <ClCompile Include="Unit.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AnimationComponent.h" />
-    <ClInclude Include="Component.h" />
-    <ClInclude Include="ComponentList.h" />
-    <ClInclude Include="DamageComponent.h" />
-    <ClInclude Include="FOVComponent.h" />
+    <ClInclude Include="Architecture.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameObject.h" />
-    <ClInclude Include="GameObjectComp.h" />
     <ClInclude Include="Menu.h" />
     <ClInclude Include="ObjectHandler.h" />
     <ClInclude Include="Options.h" />
@@ -100,7 +90,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>

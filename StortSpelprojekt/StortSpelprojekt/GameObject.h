@@ -1,4 +1,7 @@
 #pragma once
+#include <DirectXMath.h>
+#include "RenderUtils.h"
+#include "AIUtil.h"
 
 /*
 GameObject class
@@ -9,49 +12,54 @@ If the object doesn't need a _renderObject, set it to nullptr.
 If the object has a renderObject but is out of sight _visibility will be false.
 */
 
-// TODO: Behöver spara världsmatriser
-
-//placeholder
-struct Vec3
-{
-	float _posX, _posY, _posZ;
-};
-
-//Preliminary solution  - Zache/Marcus
-enum Type {UNIT, STRUCTURE, TILE, TRAP, TRIGGER };
+enum Type {UNIT, WALL, FLOOR, TRAP, TRIGGER, LOOT };
 
 class GameObject
 {
 protected:
 	unsigned short _ID;
-	Vec3 _position;
-	//Vec3 _direction;
+	DirectX::XMMATRIX _objectMatrix;
+	DirectX::XMFLOAT3 _position;
+	DirectX::XMFLOAT3 _rotation;
+	DirectX::XMFLOAT3 _scale;
+	AI::Vec2D _tilePosition;
+	//Vec2i _direction;
 	Type _type;
 	bool _visible; // OBS
-	int _renderObjectID;
+	RenderObject* _renderObject;
+
+	void CalculateMatrix();
 
 public:
 	GameObject();
+	//Type might not be necessary, depending on whether subclasses can correspond to one type or many.
+	GameObject(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject* renderObject);
 	~GameObject();
 
 	short GetID() const;
 
 	//TODO change Vec3 to XMVECTOR or other vectorclass - Zache/Marcus
-	Vec3 GetPosition();
-	void SetPosition(Vec3 position);
+	DirectX::XMFLOAT3 GetPosition() const;
+	DirectX::XMFLOAT3 GetRotation() const;
+	DirectX::XMFLOAT3 GetScale() const;
+	DirectX::XMMATRIX GetMatrix()const;
 
+	void SetPosition(const DirectX::XMFLOAT3& position);
+	void SetRotation(const DirectX::XMFLOAT3& rotation);
+	void SetScale(const DirectX::XMFLOAT3& scale);
+
+	AI::Vec2D GetTilePosition()const;
+	void SetTilePosition(AI::Vec2D pos);
 	Type GetType() const;
 
 	bool IsVisible() const;
-	void SetVisability(bool visible);
+	void SetVisibility(bool visible);
 
-	void SetRenderObjectID(int renderObjectID);
-	int GetRenderObjectID() const;
+	RenderObject* GetRenderObject() const;
 
 	//Update object gamelogic
 	void virtual Update() = 0;
 
-	//Release object resources
 	void virtual Release() = 0;
 };
 

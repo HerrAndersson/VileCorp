@@ -54,8 +54,8 @@ namespace Renderer
 
 
 		bool SetResourcesPerFrame(DirectX::XMMATRIX* view, DirectX::XMMATRIX* projection);
-		//bool SetResourcesPerObject(GameObject* object);
-		void SetResourcesPerMesh(Mesh* vertexBuffer);
+		bool SetResourcesPerObject(DirectX::XMMATRIX* world, ID3D11ShaderResourceView* diffuse, ID3D11ShaderResourceView* specular);
+		void SetResourcesPerMesh(ID3D11Buffer* vertexBuffer, int vertexSize);
 
 
 	public:
@@ -74,6 +74,8 @@ namespace Renderer
 		void Render();
 		void RenderLightQuad();
 		void EndScene();
+
+		ID3D11Device* GetDevice() const;
 	};
 }
 
