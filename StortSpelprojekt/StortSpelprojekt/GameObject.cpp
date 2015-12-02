@@ -79,7 +79,7 @@ AI::Vec2D GameObject::GetTilePosition() const
 
 void GameObject::SetTilePosition(AI::Vec2D pos)
 {
-	_tilePosition = _tilePosition;
+	_tilePosition = pos;
 }
 
 Type GameObject::GetType() const

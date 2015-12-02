@@ -44,6 +44,8 @@ namespace AI
 				_hCost = -1.0f;
 				_gCost = -1.0f;
 				_open = 0;
+				_parent = nullptr;
+				_tileCost = 0;
 			}
 			Node(__int16 x, __int16 y, float h = -1.0f)
 			{
@@ -51,6 +53,8 @@ namespace AI
 				_hCost = h;
 				_gCost = -1.0f;
 				_open = 0;
+				_parent = nullptr;
+				_tileCost = 0;
 			}
 			~Node()
 			{}
