@@ -21,9 +21,8 @@ Finds an object and return its vector index
 Returns all objects of a certain Type (i.e. Traps) as a seperate objectHandler
 */
 
-// TODO: Objecthandler bör hantera rendering
-// TODO: Söka via ID behövs antagligen inte
 
+//A struct containing 1 renderobject and all the gameobjects matrices that uses said renderobject
 struct RenderList
 {
 	RenderObject* _renderObject;
@@ -41,19 +40,23 @@ private:
 	AssetManager* _assetManager;
 
 public:
-	ObjectHandler() {}; // TODO: Fix - Zache
+	ObjectHandler();
 	ObjectHandler(ID3D11Device* device);
 	~ObjectHandler();
 
 	int GetSize() const;
 
+	//Add a gameobject
 	GameObject* Add(Type type, int renderObjectID, XMFLOAT3 position, XMFLOAT3 rotation);
 	bool Remove(short ID);
 	void Clear();
-	 
-	GameObject* Find(short ID); // TODO: Söka via ID behövs antagligen inte
+	
+
+	GameObject* Find(short ID);
 	GameObject* Find(int index);
+	//Returns a vector containing all gameobjects with the same type
 	vector<GameObject*> GetAll(Type type);
+	//Returns a list of a renderobject and matrices for all objects using the renderobject
 	RenderList GetAll(int renderObjectID);
 
 

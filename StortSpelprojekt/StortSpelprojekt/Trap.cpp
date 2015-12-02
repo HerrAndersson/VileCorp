@@ -21,4 +21,5 @@ void Trap::Update()
 
 void Trap::Release()
 {
+	_renderObject = nullptr;
 }

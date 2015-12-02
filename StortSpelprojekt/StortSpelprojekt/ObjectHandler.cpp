@@ -2,6 +2,14 @@
 
 
 
+ObjectHandler::ObjectHandler()
+{
+	_size = 0;
+	_idCounter = 0;
+	_assetManager = nullptr;
+	_tilemap = nullptr;
+}
+
 ObjectHandler::ObjectHandler(ID3D11Device* device)
 {
 	_size = 0;
@@ -12,6 +20,7 @@ ObjectHandler::ObjectHandler(ID3D11Device* device)
 
 ObjectHandler::~ObjectHandler()
 {
+	Release();
 	Clear();
 	delete _assetManager;
 	delete _tilemap;
@@ -77,9 +86,9 @@ bool ObjectHandler::Remove(short ID)
 
 void ObjectHandler::Clear()
 {
-
 	_gameObjects.clear();
 	_idCounter = 0;
+	_size = 0;
 }
 
 GameObject* ObjectHandler::Find(short ID)
@@ -128,8 +137,6 @@ RenderList ObjectHandler::GetAll(int renderObjectID)
 {
 	RenderList list;
 
-	
-
 	list._renderObject = _assetManager->GetRenderObject(renderObjectID);
 	for (int i = 0; i < _size; i++)
 	{
@@ -141,22 +148,6 @@ RenderList ObjectHandler::GetAll(int renderObjectID)
 
 	return list;
 }
-
-//std::vector<RenderObject*> ObjectHandler::GetRenderObjects() const
-//{
-//	std::vector<RenderObject*> renderObjects;
-//
-//	for (int i = 0; i < _size; i++)
-//	{
-//		//If the object has a Renderobject and is visible
-//		if (_gameObjects[i]->GetRenderObject() != nullptr && _gameObjects[i]->IsVisible())
-//		{
-//			renderObjects.push_back(_gameObjects[i]->GetRenderObject());
-//		}
-//	}
-//
-//	return renderObjects;
-//}
 
 Tilemap * ObjectHandler::GetTileMap() const
 {
@@ -179,7 +170,6 @@ void ObjectHandler::Update()
 	for (int i = 0; i < _size; i++)
 	{
 		_gameObjects[i]->Update();
-		//_renderModule->Render(/*_gameObjects[i]->GetRenderObjectID(), _gameObjects[i]->GetModelMatrix()*/);
 	}
 }
 
@@ -189,6 +179,4 @@ void ObjectHandler::Release()
 	{
 		_gameObjects[i]->Release();
 	}
-
-
 }

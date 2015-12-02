@@ -4,11 +4,15 @@
 Game::Game(HINSTANCE hInstance, int nCmdShow)
 {
 	_SM.Initialize();
+	
 
 	System::WindowSettings settings;
 	_window = new System::Window("Amazing game", hInstance, settings);
 
 	_renderModule = new Renderer::RenderModule(_window->GetHWND(), settings._width, settings._height);
+
+
+	_objectHandler = new ObjectHandler(_renderModule->GetDevice());
 }
 
 Game::~Game() 
@@ -63,7 +67,7 @@ void Game::Update()
 void Game::Render()
 {
 	_renderModule->BeginScene(0.0f, 1.0f, 1.0f, 1);
-		_renderModule->SetShaderStage(Renderer::RenderModule::GEO_PASS);
+	_renderModule->SetShaderStage(Renderer::RenderModule::GEO_PASS);
 	_renderModule->Render();
 		_renderModule->SetShaderStage(Renderer::RenderModule::LIGHT_PASS);
 	_renderModule->RenderLightQuad();
@@ -72,6 +76,9 @@ void Game::Render()
 
 int Game::Run()
 {
+	//Needs a Tilemap in the objectHandler /Markus
+	_objectHandler->Add(TRAP, 0, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
+
 	while (_window->Run())
 	{
 		HandleInput();
