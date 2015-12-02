@@ -34,6 +34,25 @@ AssetManager::~AssetManager()
 		delete _renderObjects->at(i);
 	}
 	_renderObjects->clear();
+	delete _infile;
+	_modelFiles->clear();
+	delete _modelFiles;
+	delete _renderObjects;
+	_renderObjectsToFlush->clear();
+	delete _renderObjectsToFlush;
+	delete _textures;
+	_texturesToFlush->clear();
+	delete _texturesToFlush;
+	_levelFileNames->clear();
+	delete _levelFileNames;
+	for (Tileset set : *_tilesets)
+	{
+		set.deco.clear();
+		set.floors.clear();
+		set.walls.clear();
+	}
+	_tilesets->clear();
+	delete _tilesets;
 }
 
 //Looks through the Models folder and creates an empty RenderObject for each entry
