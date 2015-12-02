@@ -39,15 +39,20 @@ GameObject* ObjectHandler::Add(Type type, int renderObjectID, XMFLOAT3 position 
 	switch (type)
 	{
 	case UNIT:
-		_gameObjects.push_back((GameObject*)new Unit(_idCounter++, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(renderObjectID), _tilemap));
+		//TODO Tileposition parameters are temporary
+		object = new Unit(_idCounter++, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(renderObjectID), _tilemap);
+		_gameObjects.push_back(object);
 		_size++;
+		_tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
 		break;
 	case TRAP:
-		_gameObjects.push_back((GameObject*)new Trap(_idCounter++, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(renderObjectID)));
+		object = new Trap(_idCounter++, position, rotation, AI::Vec2D(1,1), type, _assetManager->GetRenderObject(renderObjectID));
+		_gameObjects.push_back(object);
 		_size++;
 		break;
 	case TRIGGER:
-		_gameObjects.push_back((GameObject*)new Trigger(_idCounter++, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(renderObjectID)));
+		object = new Trigger(_idCounter++, position, rotation, AI::Vec2D(1,1), type, _assetManager->GetRenderObject(renderObjectID));
+		_gameObjects.push_back(object);
 		_size++;
 		break;
 	default:

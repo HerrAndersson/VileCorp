@@ -22,7 +22,7 @@ Returns all objects of a certain Type (i.e. Traps) as a seperate objectHandler
 */
 
 
-//A struct containing 1 renderobject and all the gameobjects matrices that uses said renderobject
+//A struct containing 1 renderobject and all the gameobjects' matrices that uses said renderobject
 struct RenderList
 {
 	RenderObject* _renderObject;
