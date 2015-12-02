@@ -15,6 +15,7 @@ using namespace std;
 using namespace DirectX;
 
 struct MainHeader 
+{
 	int _version, _meshCount;
 };
 
@@ -23,17 +24,10 @@ struct MeshHeader
 	int _nameLength, _numberOfVertices, _subMeshID, _numberPointLights, _numberSpotLights;
 };
 
-struct MatHeader {
+struct MatHeader 
+{
 	int _diffuseNameLength, _specularNameLength;
 };
-
-struct Point
-{
-	XMFLOAT3 _position;
-	int _boneIndices[4];
-	float _boneWeights[4];
-};
-
 
 struct LevelHeader
 {
