@@ -15,6 +15,9 @@ AssetManager::AssetManager(ID3D11Device* device)
 	_tilesets = new vector<Tileset>;
 
 	SetupTilesets();
+#ifdef _DEBUG
+	ActivateTileset("default");
+#endif
 	SetupLevelFileNameList();
 }
 
@@ -45,7 +48,7 @@ void AssetManager::SetupRenderObjectList(Tileset* tileset)
 
 	for (string str : tileset->floors) _modelFiles->push_back(str);
 	for (string str : tileset->walls) _modelFiles->push_back(str);
-	for (string str : tileset->floors) _modelFiles->push_back(str);
+	for (string str : tileset->deco) _modelFiles->push_back(str);
 
 	for (uint i = 0; i < _modelFiles->size(); i++)
 	{
