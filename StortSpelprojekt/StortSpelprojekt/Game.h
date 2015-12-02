@@ -18,16 +18,11 @@ private:
 
 	StateMachine				_SM;
 	System::Window*				_window;
-	Renderer::RenderModule*		_renderModule;
+	Renderer::RenderModule*			_renderModule;
 	System::Camera*				_camera;
 	ObjectHandler*				_objectHandler;
 
 	System::Timer timer;
-
-	//Temp //Mattias
-	AssetManager* _tempAssetManager;
-	RenderObject* _tempTestRenderObject;
-	float stepValue;
 
 	//Resizing window, directx resources, camera
 	void ResizeResources(System::WindowSettings settings);

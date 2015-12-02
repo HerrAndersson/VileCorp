@@ -112,8 +112,6 @@ namespace Renderer
 		_viewport.TopLeftX = 0.0f;
 		_viewport.TopLeftY = 0.0f;
 
-
-
 		//Init depth stencil states
 		D3D11_DEPTH_STENCIL_DESC depthStencilDesc;
 		ZeroMemory(&depthStencilDesc, sizeof(depthStencilDesc));
@@ -148,8 +146,9 @@ namespace Renderer
 		_deferredShader = new Deferred(_device, screenWidth, screenHeight);
 
 		//Set context data 
-		_deviceContext->RSSetState(_rasterizerStateBack);
+		_deviceContext->RSSetState(_rasterizerStateFront);
 		_deviceContext->OMSetDepthStencilState(_depthEnable, 1);
+		_deviceContext->RSSetViewports(1, &_viewport);
 	}
 
 	DirectXHandler::~DirectXHandler()
@@ -188,9 +187,9 @@ namespace Renderer
 
 	void DirectXHandler::SetLightPassRTVs()
 	{
-		_deviceContext->OMSetDepthStencilState(_depthDisable, 1);
 		_deviceContext->OMSetRenderTargets(1, &_renderTargetView, nullptr);
 		_deviceContext->RSSetState(_rasterizerStateBack);
+		_deviceContext->OMSetDepthStencilState(_depthDisable, 1);
 
 		int count = 0;
 		ID3D11ShaderResourceView** b = _deferredShader->GetShaderResourceViews(count);
@@ -241,9 +240,9 @@ namespace Renderer
 			vp.MaxDepth = 1.0f;
 			vp.TopLeftX = 0;
 			vp.TopLeftY = 0;
-			_deviceContext->RSSetViewports(1, &vp);
-
 			_viewport = vp;
+
+			_deviceContext->RSSetViewports(1, &_viewport);
 
 			_deferredShader->ResizeRenderTargets(_device, windowWidth, windowHeight);
 		}

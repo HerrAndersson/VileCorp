@@ -60,6 +60,7 @@ namespace System
 	void Camera::SetPosition(DirectX::XMFLOAT3 position)
 	{
 		_position = position;
+		Update();
 	}
 
 	DirectX::XMFLOAT3 Camera::GetRotation()const
@@ -70,6 +71,7 @@ namespace System
 	void Camera::SetRotation(DirectX::XMFLOAT3 rotation)
 	{
 		_rotation = rotation;
+		Update();
 	}
 
 	DirectX::XMMATRIX* Camera::GetViewMatrix()
