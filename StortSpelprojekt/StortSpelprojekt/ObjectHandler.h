@@ -1,6 +1,9 @@
 #pragma once
 #include <vector>
 #include "GameObject.h"
+#include "Unit.h"
+#include "Trap.h"
+#include "Trigger.h"
 #include "Tilemap.h"
 #include "AssetManager.h"
 
@@ -21,38 +24,43 @@ Returns all objects of a certain Type (i.e. Traps) as a seperate objectHandler
 // TODO: Objecthandler bör hantera rendering
 // TODO: Söka via ID behövs antagligen inte
 
+struct RenderList
+{
+	RenderObject* _renderObject;
+	vector<XMMATRIX> modelMatrices;
+};
 
 class ObjectHandler
 {
 private:
 	int _size;
 	std::vector<GameObject*> _gameObjects;
+	short _idCounter;
 	Tilemap* _tilemap;
-	
-	ObjectHandler GetAll(Type type);
 
 	AssetManager* _assetManager;
 
 public:
-	ObjectHandler();
+	ObjectHandler() {}; // TODO: Fix - Zache
 	ObjectHandler(ID3D11Device* device);
 	~ObjectHandler();
 
-	ObjectHandler& operator+=(const ObjectHandler& rhs);
-
 	int GetSize() const;
 
-	bool Add(GameObject* gameObject);
+	GameObject* Add(Type type, int renderObjectID, XMFLOAT3 position, XMFLOAT3 rotation);
 	bool Remove(short ID);
 	void Clear();
-
-	GameObject* Find(short ID);
+	 
+	GameObject* Find(short ID); // TODO: Söka via ID behövs antagligen inte
 	GameObject* Find(int index);
+	vector<GameObject*> GetAll(Type type);
+	RenderList GetAll(int renderObjectID);
 
-	//std::vector<RenderObject*> GetRenderObjects() const;
 
 	Tilemap* GetTileMap() const;
 	void SetTileMap(Tilemap* tilemap);
+
+	bool LoadLevel(string filename);
 
 
 	//Update gamelogic of all objects

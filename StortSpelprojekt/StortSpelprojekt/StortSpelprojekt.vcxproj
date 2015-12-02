@@ -19,15 +19,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AnimationComponent.cpp" />
+    <ClCompile Include="Architecture.cpp" />
     <ClCompile Include="BaseState.cpp" />
-    <ClCompile Include="Component.cpp" />
-    <ClCompile Include="ComponentList.cpp" />
-    <ClCompile Include="DamageComponent.cpp" />
-    <ClCompile Include="FOVComponent.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObject.cpp" />
-    <ClCompile Include="GameObjectComp.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MenuState.cpp" />
     <ClCompile Include="ObjectHandler.cpp" />
@@ -35,6 +30,7 @@
     <ClCompile Include="PlayState.cpp" />
     <ClCompile Include="SplashState.cpp" />
     <ClCompile Include="StateMachine.cpp" />
+    <ClCompile Include="Tile.cpp" />
     <ClCompile Include="Tilemap.cpp" />
     <ClCompile Include="Trap.cpp" />
     <ClCompile Include="Trigger.cpp" />
@@ -42,15 +38,10 @@
     <ClCompile Include="Unit.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AnimationComponent.h" />
+    <ClInclude Include="Architecture.h" />
     <ClInclude Include="BaseState.h" />
-    <ClInclude Include="Component.h" />
-    <ClInclude Include="ComponentList.h" />
-    <ClInclude Include="DamageComponent.h" />
-    <ClInclude Include="FOVComponent.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameObject.h" />
-    <ClInclude Include="GameObjectComp.h" />
     <ClInclude Include="InitVar.h" />
     <ClInclude Include="MenuState.h" />
     <ClInclude Include="ObjectHandler.h" />
@@ -59,6 +50,7 @@
     <ClInclude Include="SplashState.h" />
     <ClInclude Include="StateMachine.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="Tile.h" />
     <ClInclude Include="Tilemap.h" />
     <ClInclude Include="Trap.h" />
     <ClInclude Include="Trigger.h" />
@@ -103,7 +95,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>

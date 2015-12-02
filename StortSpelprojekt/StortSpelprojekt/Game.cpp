@@ -7,7 +7,6 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	_window = new System::Window("Amazing game", hInstance, settings);
 
 	_renderModule = new Renderer::RenderModule(_window->GetHWND(), settings._width, settings._height);
-	_objectHandler = new ObjectHandler(_renderModule->GetDevice());
 	_UI = new UIHandler(_renderModule->GetDevice());
 
 	//Initialize Variables
@@ -21,7 +20,8 @@ Game::~Game()
 {	
 	delete _window;
 	delete _renderModule;
-	delete _objectHandler;
+	//TODO remove comments when the objectHandler is initialized
+	//delete _objectHandler;
 	delete _UI;
 	delete _SM;
 }
@@ -70,9 +70,9 @@ void Game::Update(float deltaTime)
 void Game::Render()
 {
 	_renderModule->BeginScene(0.0f, 1.0f, 1.0f, 1);
-	_renderModule->SetShaderStage(0);
+		_renderModule->SetShaderStage(Renderer::RenderModule::GEO_PASS);
 	_renderModule->Render();
-	_renderModule->SetShaderStage(1);
+		_renderModule->SetShaderStage(Renderer::RenderModule::LIGHT_PASS);
 	_renderModule->RenderLightQuad();
 	_UI->Render(_renderModule->GetDeviceContext());
 	_renderModule->EndScene();
