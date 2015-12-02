@@ -10,6 +10,7 @@
 #include "Trap.h"
 #include "Timer.h"
 #include "ObjectHandler.h"
+#include "InputDevice.h"
 
 class Game
 {
@@ -22,7 +23,8 @@ private:
 	System::Camera*				_camera;
 	ObjectHandler*				_objectHandler;
 
-	System::Timer timer;
+	System::Timer _timer;
+	System::InputDevice _inputDevice;
 
 	//Resizing window, directx resources, camera
 	void ResizeResources(System::WindowSettings settings);

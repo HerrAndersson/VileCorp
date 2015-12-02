@@ -100,4 +100,25 @@ namespace System
 	{
 		_mm_free(p);
 	}
+
+	DirectX::XMFLOAT3 Camera::GetMovementVelocity() const
+	{
+		return _movementVelocity;
+	}
+
+	void Camera::SetMovementVelocity(DirectX::XMFLOAT3 val)
+	{
+		_movementVelocity = val;
+	}
+
+	DirectX::XMFLOAT3 Camera::GetRotationVelocity() const
+	{
+		return _rotationVelocity;
+	}
+
+	void Camera::SetRotationVelocity(DirectX::XMFLOAT3 val)
+	{
+		_rotationVelocity = val;
+	}
+
 }

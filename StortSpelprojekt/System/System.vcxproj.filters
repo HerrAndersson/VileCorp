@@ -45,8 +45,10 @@
     <ClInclude Include="Window.h">
       <Filter>System</Filter>
     </ClInclude>
-    <ClInclude Include="Camera.h" />
     <ClInclude Include="Timer.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

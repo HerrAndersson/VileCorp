@@ -18,6 +18,9 @@ namespace System
 		DirectX::XMFLOAT3	_forward;
 		DirectX::XMFLOAT3	_rotation;
 
+		DirectX::XMFLOAT3	_movementVelocity;
+		DirectX::XMFLOAT3	_rotationVelocity;
+
 		float				_nearClip;
 		float				_farClip;
 		float				_fieldOfView;
@@ -41,6 +44,8 @@ namespace System
 		DirectX::XMFLOAT3 GetRotation()const;
 		void SetRotation(DirectX::XMFLOAT3 rotation);
 
+
+
 		DirectX::XMMATRIX* GetViewMatrix();
 		DirectX::XMMATRIX* GetProjectionMatrix();
 		//OrthoMatrix is commonly used for anything 2D. Commonly used in the "projection slot".
@@ -52,6 +57,10 @@ namespace System
 		void* operator new(size_t i);
 		void operator delete(void* p);
 
+		DirectX::XMFLOAT3 GetMovementVelocity() const;
+		void SetMovementVelocity(DirectX::XMFLOAT3 val);
+		DirectX::XMFLOAT3 GetRotationVelocity() const;
+		void SetRotationVelocity(DirectX::XMFLOAT3 val);
 	};
 }
 
