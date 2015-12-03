@@ -174,8 +174,17 @@ void ObjectHandler::SetTileMap(Tilemap * tilemap)
 	_tilemap = tilemap;
 }
 
-bool ObjectHandler::LoadLevel(string filename)
+bool ObjectHandler::LoadLevel(int lvlIndex)
 {
+	int dimX, dimY;
+	vector<GameObjectData> gameObjectData;
+	_assetManager->ParseLevel(lvlIndex, gameObjectData, dimX, dimY);
+
+	for (auto i : gameObjectData)
+	{
+		Add((Type)i._tileType, i._tileType, DirectX::XMFLOAT3(i._posX, 0, i._posZ), DirectX::XMFLOAT3(0, i._rotY, 0));
+		
+	}
 	return false;
 }
 

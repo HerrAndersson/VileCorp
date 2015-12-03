@@ -172,6 +172,7 @@ void AssetManager::ParseLevel(int index, vector<GameObjectData> &gameObjects, in
 	gameObjects.resize(lvlHead._nrOfGameObjects);
 	_infile->read((char*)gameObjects.data(), sizeof(GameObjectData) * lvlHead._nrOfGameObjects);
 
+	_infile->close();
 	//infile->open(file_path.c_str(), ifstream::binary);
 	//if (!infile->is_open())
 	//{

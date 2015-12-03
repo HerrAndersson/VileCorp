@@ -15,7 +15,9 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	initVar.objectHandler	= _objectHandler;
 
 	_camera = new System::Camera(0.1f, 1000.0f, DirectX::XM_PIDIV2, settings._width, settings._height);
-	_camera->SetPosition(XMFLOAT3(0, 0, -3));
+	_camera->SetPosition(XMFLOAT3(0, 10, -5));
+	_camera->SetRotation(XMFLOAT3(0.5, 0, 0));
+	
 	
 	_objectHandler = new ObjectHandler(_renderModule->GetDevice());
 	initVar.uiHandler		= _UI;
@@ -86,21 +88,23 @@ void Game::Render()
 
 
 
-	RenderList renderList = _objectHandler->GetAll(0);
+	//RenderList renderList = _objectHandler->GetAll(0);
 	
 	
 	//_renderModule->Render(&_objectHandler->GetAll(TRAP).at(0)->GetMatrix(), renderList._renderObject);
 	//_renderModule->Render(&_objectHandler->GetAll(TRAP).at(1)->GetMatrix(), renderList._renderObject);
 
 	//TODO: Will make nestled later /Texxarne
-	for (int j = 0; j < renderList.modelMatrices.size(); j++)
+	//for (int j = 0; j < renderList.modelMatrices.size(); j++)
+	//{
+	//	_renderModule->Render(&renderList.modelMatrices[j], renderList._renderObject);
+	//}
+	
+	std::vector<GameObject*>* gameObjects = _objectHandler->GetGameObjects();
+	for (auto i : *gameObjects)
 	{
-		_renderModule->Render(&renderList.modelMatrices[j], renderList._renderObject);
+		_renderModule->Render(&i->GetMatrix(), i->GetRenderObject());
 	}
-	
-
-
-	
 
 	_renderModule->SetShaderStage(Renderer::RenderModule::LIGHT_PASS);
 
@@ -114,9 +118,12 @@ int Game::Run()
 {
 	float deltaTime = 0; //someone create this.
 	//Needs a Tilemap in the objectHandler /Markus
-	_objectHandler->Add(TRAP, 0, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
-	_objectHandler->Add(TRAP, 0, XMFLOAT3(0.5f, -1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
-	
+	//_objectHandler->Add(TRAP, 0, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
+
+	//_objectHandler->Add(TRAP, 0, XMFLOAT3(0.5f, -1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
+	_objectHandler->LoadLevel(2);
+
+
 
 
 
