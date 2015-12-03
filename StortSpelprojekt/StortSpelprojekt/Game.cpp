@@ -83,7 +83,7 @@ void Game::HandleInput()
 	XMFLOAT3 position = _camera->GetPosition();
 	XMFLOAT3 right(0, 0, 0);
 	bool isMoving = false;
-	float v = 0.01f;
+	float v = 0.1f;
 	if (GetAsyncKeyState('W'))
 	{
 		forward = _camera->GetForwardVector();
