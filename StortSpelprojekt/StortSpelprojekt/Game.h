@@ -10,6 +10,7 @@
 #include "AssetManager.h"
 #include "InitVar.h"
 #include "Trap.h"
+#include "InputDevice.h"
 
 class Game
 {
@@ -20,6 +21,8 @@ private:
 	System::Camera*				_camera;
 	ObjectHandler*				_objectHandler;
 	UIHandler*					_UI;
+
+	System::InputDevice*		_input;
 
 	//Resizing window, directx resources, camera
 	void ResizeResources(System::WindowSettings settings);

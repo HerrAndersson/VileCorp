@@ -12,7 +12,7 @@ namespace System
 		POINT _deltaPos;
 	};
 
-	__declspec(align(16))class SYSTEM_EXPORT InputDevice
+	class SYSTEM_EXPORT InputDevice
 	{
 	private:
 		MouseCoord	_mouseCoord;
@@ -21,8 +21,11 @@ namespace System
 		bool _current[KEYCODECAP];
 		bool _last[KEYCODECAP];
 
+		HWND _hwnd;
+
 	public:
-		InputDevice();
+
+		InputDevice(HWND hwnd);
 		~InputDevice();
 
 		void Update();

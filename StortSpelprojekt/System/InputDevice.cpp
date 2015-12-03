@@ -2,7 +2,7 @@
 
 namespace System
 {
-	InputDevice::InputDevice()
+	InputDevice::InputDevice(HWND hwnd)
 	{
 		for (int i = 0; i < KEYCODECAP; i++)
 		{
@@ -14,6 +14,8 @@ namespace System
 		_mouseCoord._pos.y = 0;
 		_mouseCoord._deltaPos.x = 0;
 		_mouseCoord._deltaPos.y = 0;
+
+		_hwnd = hwnd;
 	}
 	InputDevice::~InputDevice()
 	{}
@@ -29,6 +31,14 @@ namespace System
 		{
 			_last[i] = _current[i];	
 			_current[i] = GetAsyncKeyState(i) ? 1:0 & 0x0800;
+		}
+
+		RECT rect;
+		GetWindowRect(_hwnd, &rect);
+		if (GetFocus() == _hwnd)
+		{
+			//Sets mouse position to the middle of the window
+			SetCursorPos(rect.left + (rect.right - rect.left) / 2, rect.top + (rect.bottom - rect.top) / 2);
 		}
 	}
 

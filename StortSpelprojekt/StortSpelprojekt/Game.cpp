@@ -20,6 +20,8 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	_objectHandler = new ObjectHandler(_renderModule->GetDevice());
 	initVar.uiHandler		= _UI;
 	_SM = new StateMachine(initVar);
+
+	_input = new System::InputDevice(_window->GetHWND());
 }
 
 Game::~Game() 
@@ -31,6 +33,7 @@ Game::~Game()
 	//delete _objectHandler;
 	delete _UI;
 	delete _SM;
+	delete _input;
 }
 void Game::ResizeResources(System::WindowSettings settings)
 {
@@ -72,7 +75,7 @@ void Game::Update(float deltaTime)
 	vi vill hämta objekten
 
 	*/
-
+	_input->Update();
 	_UI->Update();
 	_SM->Update(deltaTime);
 }
