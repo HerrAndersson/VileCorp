@@ -101,7 +101,6 @@ struct GameObjectData
 	int _posX, _posZ;
 	float _rotY;
 	int _tileType;
-	bool _walkable;
 };
 
 static void splitStringToVector(string input, vector<string> &output, string delimiter) {

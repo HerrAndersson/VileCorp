@@ -15,7 +15,8 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	initVar.objectHandler	= _objectHandler;
 
 	_camera = new System::Camera(0.1f, 1000.0f, DirectX::XM_PIDIV2, settings._width, settings._height);
-	_camera->SetPosition(XMFLOAT3(0, 0, -20));
+	_camera->SetPosition(XMFLOAT3(0, 10, -5));
+	_camera->SetRotation(XMFLOAT3(0.5, 0, 0));
 	
 	
 	_objectHandler = new ObjectHandler(_renderModule->GetDevice());
@@ -119,7 +120,7 @@ int Game::Run()
 	//_objectHandler->Add(TRAP, 0, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
 
 	//_objectHandler->Add(TRAP, 0, XMFLOAT3(0.5f, -1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
-	_objectHandler->LoadLevel(0);
+	_objectHandler->LoadLevel(2);
 
 
 
