@@ -29,7 +29,7 @@ void GameObject::CalculateMatrix()
 		);
 }
 
-short GameObject::GetID() const
+unsigned short GameObject::GetID() const
 {
 	return _ID;
 }
