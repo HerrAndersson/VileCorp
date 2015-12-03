@@ -1,5 +1,7 @@
 #include "Camera.h"
 
+using namespace DirectX;
+
 namespace System
 {
 	Camera::Camera(float nearClip, float farClip, float fov, int width, int height)
@@ -12,8 +14,10 @@ namespace System
 		_position = DirectX::XMFLOAT3(0, 0, 0);
 		_right = DirectX::XMFLOAT3(1, 0, 0);
 		_up = DirectX::XMFLOAT3(0, 1, 0);
+		_rotatedForward = DirectX::XMFLOAT3(0, 0, 1);
 		_forward = DirectX::XMFLOAT3(0, 0, 1);
 		_rotation = DirectX::XMFLOAT3(0, 0, 0);
+		
 
 		//Prepare vectors for Matrix initialization
 		DirectX::XMVECTOR vPos, vFor, vUp;
@@ -32,17 +36,24 @@ namespace System
 
 	void Camera::Update()
 	{
-		DirectX::XMMATRIX rotation = DirectX::XMMatrixRotationRollPitchYaw(_rotation.x, _rotation.y, _rotation.z);
+		XMMATRIX rotationMatrix;
 
-		XMStoreFloat3(&_right, DirectX::XMVector3TransformNormal(XMLoadFloat3(&_right), rotation));
-		XMStoreFloat3(&_up, DirectX::XMVector3TransformNormal(XMLoadFloat3(&_up), rotation));
-		XMStoreFloat3(&_forward, DirectX::XMVector3TransformNormal(XMLoadFloat3(&_forward), rotation));
+		XMVECTOR up = XMLoadFloat3(&_up);
+		XMVECTOR pos = XMLoadFloat3(&_position);
+		XMVECTOR forward = XMLoadFloat3(&_forward);
+		XMVECTOR right = XMLoadFloat3(&_right);
 
-		DirectX::XMVECTOR vPos, vFor, vUp;
-		vPos = DirectX::XMLoadFloat3(&_position);
-		vFor = DirectX::XMLoadFloat3(&_forward);
-		vUp = DirectX::XMLoadFloat3(&_up);
-		_view = DirectX::XMMatrixLookAtLH(vPos, DirectX::XMVectorAdd(vPos, vFor), vUp);
+		rotationMatrix = XMMatrixRotationRollPitchYaw(XMConvertToRadians(_rotation.x), XMConvertToRadians(_rotation.y), 0);
+
+		forward = XMVector3TransformCoord(forward, rotationMatrix);
+		XMStoreFloat3(&_rotatedForward, forward);
+
+		up = XMVector3TransformCoord(up, rotationMatrix);
+
+		right = XMVector3TransformCoord(right, rotationMatrix);
+		XMStoreFloat3(&_rotatedRight, right);
+
+		_view = XMMatrixLookAtLH(pos, pos + forward, up);
 	}
 
 	void Camera::Resize(int width, int height)
@@ -89,6 +100,16 @@ namespace System
 	DirectX::XMMATRIX* Camera::GetBaseViewMatrix()
 	{
 		return &_baseView;
+	}
+
+	DirectX::XMFLOAT3 Camera::GetForwardVector() const
+	{
+		return _rotatedForward;
+	}
+
+	DirectX::XMFLOAT3 Camera::GetRightVector() const
+	{
+		return _rotatedRight;
 	}
 
 	void* Camera::operator new(size_t i)
