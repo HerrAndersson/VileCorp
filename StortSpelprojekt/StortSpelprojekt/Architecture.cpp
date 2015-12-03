@@ -10,3 +10,13 @@ Architecture::Architecture(unsigned short ID, DirectX::XMFLOAT3 position, Direct
 
 }
 Architecture::~Architecture(){}
+
+void Architecture::Update()
+{
+
+}
+
+void Architecture::Release()
+{
+
+}

@@ -7,7 +7,7 @@ ObjectHandler::ObjectHandler()
 	_size = 0;
 	_idCounter = 0;
 	_assetManager = nullptr;
-	_tilemap = nullptr;
+	_tilemap = new Tilemap();
 }
 
 ObjectHandler::ObjectHandler(ID3D11Device* device)
@@ -15,7 +15,7 @@ ObjectHandler::ObjectHandler(ID3D11Device* device)
 	_size = 0;
 	_idCounter = 0;
 	_assetManager = new AssetManager(device);
-	_tilemap = nullptr;
+	_tilemap = new Tilemap();
 }
 
 ObjectHandler::~ObjectHandler()
@@ -38,6 +38,13 @@ GameObject* ObjectHandler::Add(Type type, int renderObjectID, XMFLOAT3 position 
 
 	switch (type)
 	{
+	case FLOOR:
+	case WALL:
+		object = new Architecture(_idCounter++, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(renderObjectID), _tilemap);
+		_gameObjects.push_back(object);
+		_size++;
+		_tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
+		break;
 	case UNIT:
 		//TODO Tileposition parameters are temporary
 		object = new Unit(_idCounter++, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(renderObjectID), _tilemap);
@@ -49,14 +56,16 @@ GameObject* ObjectHandler::Add(Type type, int renderObjectID, XMFLOAT3 position 
 		object = new Trap(_idCounter++, position, rotation, AI::Vec2D(1,1), type, _assetManager->GetRenderObject(renderObjectID));
 		_gameObjects.push_back(object);
 		_size++;
+		_tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
 		break;
 	case TRIGGER:
 		object = new Trigger(_idCounter++, position, rotation, AI::Vec2D(1,1), type, _assetManager->GetRenderObject(renderObjectID));
 		_gameObjects.push_back(object);
 		_size++;
+		_tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
 		break;
 	default:
-		object = new Trap(2, XMFLOAT3(2.0f, 2.0f, 2.0f), XMFLOAT3(2.0f, 2.0f, 2.0f), AI::Vec2D(2, 2), TRAP, _assetManager->GetRenderObject(0));
+		
 		break;
 	}
 

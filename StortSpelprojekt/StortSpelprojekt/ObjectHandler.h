@@ -3,6 +3,7 @@
 #include "GameObject.h"
 #include "Unit.h"
 #include "Trap.h"
+#include "Architecture.h"
 #include "Trigger.h"
 #include "Tilemap.h"
 #include "AssetManager.h"
