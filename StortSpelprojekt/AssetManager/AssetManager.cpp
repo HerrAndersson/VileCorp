@@ -387,3 +387,11 @@ RenderObject* AssetManager::GetRenderObject(int index)
 		renderObject->_toUnload = false;
 	return renderObject;
 }
+
+ID3D11ShaderResourceView* AssetManager::GetTexture(string filename)
+{
+	Texture* texture = ScanTexture(filename);
+	texture->LoadTexture(_device);
+	texture->_activeUsers++;
+	return texture->_data;
+}
