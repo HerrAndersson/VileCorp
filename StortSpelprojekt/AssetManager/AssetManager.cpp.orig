@@ -4,20 +4,26 @@
 AssetManager::AssetManager(ID3D11Device* device)
 {
 
-	_device = device;
-	_infile = new ifstream;
-	_modelFiles = new vector<string>;
-	_renderObjects = new vector<RenderObject*>;
-	_renderObjectsToFlush = new vector<RenderObject*>;
-	_textures = new vector<Texture*>;
-	_texturesToFlush = new vector<Texture*>;
+<<<<<<< HEAD
+	this->_device = device;
+	this->_infile = new ifstream;
+	this->_modelFiles = new vector<string>;
+	this->_renderObjects = new vector<RenderObject*>;
+	this->_renderObjectsToFlush = new vector<RenderObject*>;
+	this->_textures = new vector<Texture*>;
+	this->_texturesToFlush = new vector<Texture*>;
+=======
+	this->device = device;
+	this->infile = new ifstream;
+	this->modelFiles = new vector<string>;
+	this->renderObjects = new vector<RenderObject*>;
+	this->renderObjectsToFlush = new vector<RenderObject*>;
+	this->textures = new vector<Texture*>;
+	this->texturesToFlush = new vector<Texture*>;
 	_levelFileNames = new vector<string>;
-	_tilesets = new vector<Tileset>;
+>>>>>>> Import of level now works! What we lack: tilemap connection and render object list/connection
 
-	SetupTilesets();
-#ifdef _DEBUG
-	ActivateTileset("default");
-#endif
+	SetupRenderObjectList();
 	SetupLevelFileNameList();
 }
 
@@ -34,82 +40,20 @@ AssetManager::~AssetManager()
 		delete _renderObjects->at(i);
 	}
 	_renderObjects->clear();
-	delete _infile;
-	_modelFiles->clear();
-	delete _modelFiles;
-	delete _renderObjects;
-	_renderObjectsToFlush->clear();
-	delete _renderObjectsToFlush;
-	delete _textures;
-	_texturesToFlush->clear();
-	delete _texturesToFlush;
-	_levelFileNames->clear();
-	delete _levelFileNames;
-	for (Tileset set : *_tilesets)
-	{
-		set.deco.clear();
-		set.floors.clear();
-		set.walls.clear();
-	}
-	_tilesets->clear();
-	delete _tilesets;
 }
 
 //Looks through the Models folder and creates an empty RenderObject for each entry
-void AssetManager::SetupRenderObjectList(Tileset* tileset)
+void AssetManager::SetupRenderObjectList()
 {
-
-//#ifdef _DEBUG
-//	GetFilenamesInDirectory("../../Output/Bin/x86/Debug/Assets/Models/", ".bin", *_modelFiles);
-//#else
-//	GetFilenamesInDirectory("Assets/Models/", ".bin", *modelFiles);
-//#endif
-
-	for (string str : tileset->floors) _modelFiles->push_back(str);
-	for (string str : tileset->walls) _modelFiles->push_back(str);
-	for (string str : tileset->deco) _modelFiles->push_back(str);
-
+#ifdef _DEBUG
+	GetFilenamesInDirectory("../../Output/Bin/x86/Debug/Assets/Models/", ".bin", *_modelFiles);
+#else
+	GetFilenamesInDirectory("Assets/Models/", ".bin", *modelFiles);
+#endif
 	for (uint i = 0; i < _modelFiles->size(); i++)
 	{
 		RenderObject* renderObject = ScanModel(_modelFiles->at(i));
 		_renderObjects->push_back(renderObject);
-	}
-}
-
-void AssetManager::SetupLevelFileNameList()
-{
-#ifdef _DEBUG
-	GetFilenamesInDirectory("../../Output/Bin/x86/Debug/Assets/Levels/", ".lvl", *_levelFileNames);
-#else
-	GetFilenamesInDirectory("Assets/Levels/", ".lvl", *_levelFileNames);
-#endif
-}
-
-void AssetManager::SetupTilesets()
-{
-	vector<string> tilesetFileNames;
-#ifdef _DEBUG
-	GetFilenamesInDirectory("../../Output/Bin/x86/Debug/Assets/Tilesets/", ".json", tilesetFileNames);
-#else
-	GetFilenamesInDirectory("Assets/Tilesets/", ".json", tilesetFileNames);
-#endif
-
-	TilesetHandler handler;
-	handler.tilesets = _tilesets;
-	string buffer;
-	Reader reader;
-	for (string set : tilesetFileNames)
-	{
-		_infile->open(set, ios::in | ios::ate);
-		int size = _infile->tellg();
-		_infile->seekg(0);
-
-		buffer.resize(size);
-		_infile->read((char*)buffer.data(), size);
-		_infile->close();
-
-		StringStream ss(&buffer[0]);
-		reader.Parse(ss, handler);
 	}
 }
 
@@ -118,17 +62,6 @@ void AssetManager::DecrementUsers(Texture* texture)
 	texture->_activeUsers--;
 	if (!texture->_activeUsers)
 		_texturesToFlush->push_back(texture);
-}
-
-bool AssetManager::ActivateTileset(string name)
-{
-	for(Tileset set : *_tilesets)
-		if (!strcmp(name.c_str(), set.name.c_str()))
-		{
-			SetupRenderObjectList(&set);
-			return true;
-		}
-	return false;
 }
 
 //Marks a model for unloading if running out of memory. Set force to true to unload now
@@ -158,18 +91,18 @@ void AssetManager::ParseLevel(int index, vector<GameObjectData> &gameObjects, in
 {
 	LevelHeader lvlHead;
 
-	_infile->open(_levelFileNames->at(index).c_str(), ifstream::binary);
-	if (!_infile->is_open())
+	infile->open(_levelFileNames->at(index).c_str(), ifstream::binary);
+	if (!infile->is_open())
 	{
 		return;
 	}
 
-	_infile->read((char*)&lvlHead, sizeof(LevelHeader));
+	infile->read((char*)&lvlHead, sizeof(LevelHeader));
 	dimX = lvlHead._tileGridSizeX;
 	dimY = lvlHead._tileGridSizeY;
 
 	gameObjects.resize(lvlHead._nrOfGameObjects);
-	_infile->read((char*)gameObjects.data(), sizeof(GameObjectData) * lvlHead._nrOfGameObjects);
+	infile->read((char*)gameObjects.data(), sizeof(GameObjectData) * lvlHead._nrOfGameObjects);
 
 	//infile->open(file_path.c_str(), ifstream::binary);
 	//if (!infile->is_open())
@@ -182,13 +115,22 @@ void AssetManager::ParseLevel(int index, vector<GameObjectData> &gameObjects, in
 	//infile->read((char*)vertices.data(), mesh->vertexBufferSize*sizeof(Vertex));
 }
 
+void AssetManager::SetupLevelFileNameList()
+{
+#ifdef _DEBUG
+	GetFilenamesInDirectory("../../Output/Bin/x86/Debug/Assets/Levels/", ".lvl", *_levelFileNames);
+#else
+	GetFilenamesInDirectory("Assets/Levels/", ".lvl", *_levelFileNames);
+#endif
+}
+
 //Unloads all Assets waiting to be unloaded
 void AssetManager::Flush()
 {
 	for (RenderObject* renderObject : *_renderObjectsToFlush)
 		if (renderObject->_toUnload)
 		{
-			for (Mesh m : renderObject->_meshes)
+			for (auto m : renderObject->_meshes)
 				m._vertexBuffer->Release();
 			renderObject->_toUnload = false;
 			if (renderObject->_diffuseTexture != nullptr)
@@ -198,7 +140,7 @@ void AssetManager::Flush()
 		}
 	_renderObjectsToFlush->clear();
 
-	for (Texture* texture : *_texturesToFlush)
+	for (Texture* texture : *_textures)
 		if (!texture->_activeUsers)
 			texture->_data->Release();
 	_texturesToFlush->clear();
@@ -217,8 +159,8 @@ HRESULT Texture::LoadTexture(ID3D11Device* device)
 		res = DirectX::CreateWICTextureFromFile(device, _filename.c_str(), nullptr, &_data, 0);
 #endif
 		_loaded = true;
+		_activeUsers++;
 	}
-	activeUsers++;
 	return res;
 }
 
@@ -274,14 +216,8 @@ Texture* AssetManager::ScanTexture(string filename)
 }
 
 //Creates a RenderObject for the specified model without loading it
-RenderObject* AssetManager::ScanModel(string fileName)
+RenderObject* AssetManager::ScanModel(string file_path)
 {
-#ifdef _DEBUG
-	string file_path = "../../Output/Bin/x86/Debug/Assets/Models/";
-#else
-	string file_path = "Assets/Models/";
-#endif
-	file_path.append(fileName);
 	RenderObject* renderObject = new RenderObject;
 	_infile->open(file_path.c_str(), ifstream::binary);
 
@@ -377,6 +313,7 @@ ID3D11Buffer* AssetManager::CreateVertexBuffer(vector<Vertex> *vertices, int ske
 }
 
 //How AssetManager interfaces with the renderer. Don't save the return, request it anew everytime unless you are certain the model won't be unloaded
+//currently two objects exist. 0 = man 1 = cube, 2 = cube with cubes
 RenderObject* AssetManager::GetRenderObject(int index)
 {
 	RenderObject* renderObject = _renderObjects->at(index);
@@ -385,11 +322,4 @@ RenderObject* AssetManager::GetRenderObject(int index)
 	else if (renderObject->_toUnload)
 		renderObject->_toUnload = false;
 	return renderObject;
-}
-
-ID3D11ShaderResourceView* AssetManager::GetTexture(string filename)
-{
-	Texture* texture = ScanTexture(filename);
-	texture->LoadTexture(_device);
-	return texture->_data;
 }
