@@ -7,7 +7,7 @@ ObjectHandler::ObjectHandler()
 	_size = 0;
 	_idCounter = 0;
 	_assetManager = nullptr;
-	_tilemap = new Tilemap();
+	_tilemap =  nullptr;
 }
 
 ObjectHandler::ObjectHandler(ID3D11Device* device)
@@ -15,7 +15,7 @@ ObjectHandler::ObjectHandler(ID3D11Device* device)
 	_size = 0;
 	_idCounter = 0;
 	_assetManager = new AssetManager(device);
-	_tilemap = new Tilemap();
+	_tilemap = nullptr;
 }
 
 ObjectHandler::~ObjectHandler()
@@ -40,6 +40,7 @@ GameObject* ObjectHandler::Add(Type type, int renderObjectID, XMFLOAT3 position 
 	{
 	case FLOOR:
 	case WALL:
+	case LOOT:
 		object = new Architecture(_idCounter++, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(renderObjectID));
 		_gameObjects.push_back(object);
 		_size++;
@@ -180,6 +181,8 @@ bool ObjectHandler::LoadLevel(int lvlIndex)
 	vector<GameObjectData> gameObjectData;
 	_assetManager->ParseLevel(lvlIndex, gameObjectData, dimX, dimY);
 
+	_tilemap = new Tilemap(dimX, dimY);
+
 	for (auto i : gameObjectData)
 	{
 		Add((Type)i._tileType, i._tileType, DirectX::XMFLOAT3(i._posX, 0, i._posZ), DirectX::XMFLOAT3(0, i._rotY, 0));
@@ -188,12 +191,37 @@ bool ObjectHandler::LoadLevel(int lvlIndex)
 	return false;
 }
 
+void ObjectHandler::InitPathfinding()
+{
+	for (int i = 0; i < _size; i++)
+	{
+		if (_gameObjects[i]->GetType() == UNIT)																	//Handle unit movement
+		{
+			Unit* unit = dynamic_cast<Unit*>(_gameObjects[i]);
+			unit->CheckAllTiles();
+			unit->CalculatePath();
+		}
+	}
+}
+
 void ObjectHandler::Update()
 {
 	//Update all objects gamelogic
 	for (int i = 0; i < _size; i++)
 	{
 		_gameObjects[i]->Update();
+		if (_gameObjects[i]->GetType() == UNIT)																	//Handle unit movement
+		{
+			float xOffset = abs(_gameObjects[i]->GetPosition().x - _gameObjects[i]->GetTilePosition()._x);
+			float zOffset = abs(_gameObjects[i]->GetPosition().z - _gameObjects[i]->GetTilePosition()._y);
+			if (xOffset > 0.98 || zOffset > 0.98 )																//If unit is on a new tile	
+			{
+				Unit* unit = dynamic_cast<Unit*>(_gameObjects[i]);
+				_tilemap->RemoveObjectFromTile(_gameObjects[i]->GetTilePosition()._x, _gameObjects[i]->GetTilePosition()._y, unit);
+				unit->Move();
+				_tilemap->AddObjectToTile(_gameObjects[i]->GetTilePosition()._x, _gameObjects[i]->GetTilePosition()._y, unit);
+			}
+		}
 	}
 }
 

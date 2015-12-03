@@ -69,6 +69,7 @@ public:
 
 	bool LoadLevel(int lvlIndex);
 
+	void InitPathfinding();
 
 	//Update gamelogic of all objects
 	void Update();

@@ -43,7 +43,7 @@ Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	_aStar = new AI::AStar(_tileMap->GetWidth(), _tileMap->GetHeight(), _tilePosition, {0,0}, AI::AStar::OCTILE);		//TODO: Find the unit's goal --Victor
 
 	//Scan tilemap for floor layout and objectives
-	CheckAllTiles();
+	//CheckAllTiles();
 }
 
 
@@ -71,8 +71,9 @@ void Unit::CheckAllTiles()
 			if (_tileMap->IsObjectiveOnTile(i, j))
 			{
 				_aStar->SetGoalPosition({i, j});			//TODO: Make a proper decision in case of multiple goals --Victor
+				_aStar->SetTileCost({ i, j }, 1);
 			}
-			if (_tileMap->IsWallOnTile(i, j))
+ 			if (_tileMap->IsWallOnTile(i, j))
 			{
 				_aStar->SetTileCost({i, j}, -1);
 			}
@@ -92,7 +93,10 @@ void Unit::CalculatePath()
 {
 	_aStar->FindPath();
 	_path = _aStar->GetPath();
-	_pathLength = _aStar->GetPathLength();
+	_pathLength = _aStar->GetPathLength() -1;
+	AI::Vec2D nextTile = _path[--_pathLength];
+	_direction = { nextTile._x, nextTile._y };
+	_direction -= _tilePosition;
 }
 
 /*
@@ -100,29 +104,50 @@ void Unit::CalculatePath()
 */
 void Unit::CalculatePath(AI::Vec2D goal)
 {
+	_goalTilePosition = goal;
+	_aStar->cleanMap();
+	_aStar->SetStartPosition(_tilePosition);
 	_aStar->SetGoalPosition(goal);
 	_aStar->FindPath();
 	_path = _aStar->GetPath();
 	_pathLength = _aStar->GetPathLength();
+	AI::Vec2D nextTile = _path[--_pathLength];
+	_direction = { nextTile._x, nextTile._y };
+	_direction -= _tilePosition;
 }
 
 /*
-	Moves the unit to the tile it's aimning for and selects a new walking direction.
+	Moves the unit to the tile it's aiming for and selects a new walking direction.
 	This should NOT update every frame. It only updates when the unit reaches a new tile. 
 */
 void Unit::Move()
 {
-	_tilePosition += _direction;
+	if (_pathLength > 0)
+	{
+		_tilePosition += _direction;
 
-	AI::Vec2D nextTile = _path[--_pathLength];
-	_direction = {nextTile._x, nextTile._y};
-	_direction -= _tilePosition;
+		AI::Vec2D nextTile = _path[--_pathLength];
+		_direction = { nextTile._x, nextTile._y };
+		_direction -= _tilePosition;
+	}
 }
 
 void Unit::Update()
 {
-	//Move();
-	//TODO: update map within line of sight.
+	if (_pathLength > 0)
+	{
+		if (_direction._x == 0 || _direction._y == 0)		//Right angle movement
+		{
+			_position.x += MOVE_SPEED * _direction._x;
+			_position.z += MOVE_SPEED * _direction._y;
+		}
+		else												//Diagonal movement
+		{
+			_position.x += AI::SQRT2 * 0.5f * MOVE_SPEED * _direction._x;
+			_position.z += AI::SQRT2 * 0.5f *MOVE_SPEED * _direction._y;
+		}
+		CalculateMatrix();
+	}
 }
 
 void Unit::Release()

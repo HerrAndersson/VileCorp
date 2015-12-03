@@ -15,8 +15,8 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	initVar.objectHandler	= _objectHandler;
 
 	_camera = new System::Camera(0.1f, 1000.0f, DirectX::XM_PIDIV2, settings._width, settings._height);
-	_camera->SetPosition(XMFLOAT3(0, 10, -5));
-	_camera->SetRotation(XMFLOAT3(0.5, 0, 0));
+	_camera->SetPosition(XMFLOAT3(0, 10, 0));
+	_camera->SetRotation(XMFLOAT3(1, 0, 0));
 	
 	
 	_objectHandler = new ObjectHandler(_renderModule->GetDevice());
@@ -78,6 +78,7 @@ void Game::Update(float deltaTime)
 	_UI->Update();
 	_UI->OnResize(_window->GetWindowSettings());
 	_SM->Update(deltaTime);
+	_objectHandler->Update();
 }
 
 void Game::Render()
@@ -124,7 +125,7 @@ int Game::Run()
 	_objectHandler->LoadLevel(2);
 
 
-
+	_objectHandler->InitPathfinding();
 
 
 	while (_window->Run())

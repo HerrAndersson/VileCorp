@@ -4,6 +4,8 @@
 #include "AStar.h"
 class Unit : public GameObject
 {
+public:
+	const float MOVE_SPEED = 0.02f;
 private:
 	AI::AStar* _aStar;
 	//AI::Vec2D _unitTilePosition;				//replaced by _tilePosition in GameObject
