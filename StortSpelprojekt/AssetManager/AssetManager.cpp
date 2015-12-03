@@ -223,7 +223,13 @@ HRESULT Texture::LoadTexture(ID3D11Device* device)
 }
 
 //Loads a model to the GPU
-void AssetManager::LoadModel(string file_path, RenderObject* renderObject) {
+void AssetManager::LoadModel(string fileName, RenderObject* renderObject) {
+#ifdef _DEBUG
+	string file_path = "../../Output/Bin/x86/Debug/Assets/Models/";
+#else
+	string file_path = "Assets/Models/";
+#endif
+	file_path.append(fileName);
 	_infile->open(file_path.c_str(), ifstream::binary);
 
 	if (!_infile->is_open())
