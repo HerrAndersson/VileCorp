@@ -97,7 +97,7 @@ void AssetManager::SetupTilesets()
 	TilesetHandler handler;
 	handler.tilesets = _tilesets;
 	string buffer;
-	Reader reader;
+	rapidjson::Reader reader;
 	for (string set : tilesetFileNames)
 	{
 		_infile->open(set, ios::in | ios::ate);
@@ -108,7 +108,7 @@ void AssetManager::SetupTilesets()
 		_infile->read((char*)buffer.data(), size);
 		_infile->close();
 
-		StringStream ss(&buffer[0]);
+		rapidjson::StringStream ss(&buffer[0]);
 		reader.Parse(ss, handler);
 	}
 }
@@ -218,7 +218,7 @@ HRESULT Texture::LoadTexture(ID3D11Device* device)
 #endif
 		_loaded = true;
 	}
-	activeUsers++;
+	_activeUsers++;
 	return res;
 }
 

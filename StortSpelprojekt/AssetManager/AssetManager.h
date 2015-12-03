@@ -14,7 +14,6 @@
 
 using namespace std;
 using namespace DirectX;
-using namespace rapidjson;
 
 struct Tileset
 {
@@ -38,7 +37,7 @@ struct TilesetHandler
 	bool Int64(int64_t i) { return true; }
 	bool Uint64(uint64_t u) { return true; }
 	bool Double(double d) { return true; }
-	bool String(const char* str, SizeType length, bool copy) {
+	bool String(const char* str, rapidjson::SizeType length, bool copy) {
 		if (nameNext)
 		{
 			tileset->name = str;
@@ -55,7 +54,7 @@ struct TilesetHandler
 		tileset = &tilesets->back();
 		return true;
 	}
-	bool Key(const char* str, SizeType length, bool copy) {
+	bool Key(const char* str, rapidjson::SizeType length, bool copy) {
 		if (!strcmp("name", str))
 			nameNext = true;
 		else if (!strcmp("floors", str))
@@ -72,9 +71,9 @@ struct TilesetHandler
 		}
 		return true;
 	}
-	bool EndObject(SizeType memberCount) { return true; }
+	bool EndObject(rapidjson::SizeType memberCount) { return true; }
 	bool StartArray() { return true; }
-	bool EndArray(SizeType elementCount) { return true; }
+	bool EndArray(rapidjson::SizeType elementCount) { return true; }
 };
 
 struct MainHeader 
