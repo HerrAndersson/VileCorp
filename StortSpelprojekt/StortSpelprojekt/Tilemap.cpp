@@ -169,7 +169,7 @@ void Tilemap::ClearTile(int x, int z)
 }
 
 
-int Tilemap::SizeOfTileMap() const
+int Tilemap::GetNrOfTiles() const
 {
 	return _height*_width;
 }
@@ -247,4 +247,16 @@ bool Tilemap::IsObjectiveOnTile(int x, int z) const
 	{
 		return  _map[x][z]._objectsOnTile[3]->GetType() == LOOT;
 	}
+}
+
+bool Tilemap::IsTypeOnTile(int x, int z, Type type) const
+{
+	for (int i = 0; i < Tile::OBJECT_CAPACITY; i++)
+	{
+		if (_map[x][z]._objectsOnTile[i]->GetType() == type)
+		{
+			return true;
+		}
+	}
+	return false;
 }

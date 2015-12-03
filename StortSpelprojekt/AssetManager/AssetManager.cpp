@@ -142,6 +142,7 @@ void AssetManager::UnloadModel(int index, bool force)
 		for (auto m : renderObject->_meshes)
 			m._vertexBuffer->Release();
 		renderObject->_toUnload = false;
+		renderObject->_meshLoaded = false;
 		if (renderObject->_diffuseTexture != nullptr)
 			DecrementUsers(renderObject->_diffuseTexture);
 		if (renderObject->_specularTexture != nullptr)
@@ -191,6 +192,7 @@ void AssetManager::Flush()
 			for (Mesh m : renderObject->_meshes)
 				m._vertexBuffer->Release();
 			renderObject->_toUnload = false;
+			renderObject->_meshLoaded = false;
 			if (renderObject->_diffuseTexture != nullptr)
 				DecrementUsers(renderObject->_diffuseTexture);
 			if (renderObject->_specularTexture != nullptr)
@@ -206,7 +208,7 @@ void AssetManager::Flush()
 
 HRESULT Texture::LoadTexture(ID3D11Device* device)
 {
-	HRESULT res;
+	HRESULT res = S_OK;
 	if (!_loaded)
 	{
 #ifdef _DEBUG
@@ -223,7 +225,13 @@ HRESULT Texture::LoadTexture(ID3D11Device* device)
 }
 
 //Loads a model to the GPU
-void AssetManager::LoadModel(string file_path, RenderObject* renderObject) {
+void AssetManager::LoadModel(string fileName, RenderObject* renderObject) {
+#ifdef _DEBUG
+	string file_path = "../../Output/Bin/x86/Debug/Assets/Models/";
+#else
+	string file_path = "Assets/Models/";
+#endif
+	file_path.append(fileName);
 	_infile->open(file_path.c_str(), ifstream::binary);
 
 	if (!_infile->is_open())
@@ -257,6 +265,7 @@ void AssetManager::LoadModel(string file_path, RenderObject* renderObject) {
 		}
 
 	_infile->close();
+	renderObject->_meshLoaded = true;
 }
 
 Texture* AssetManager::ScanTexture(string filename)

@@ -68,4 +68,5 @@ struct RenderObject
 	Texture* _diffuseTexture = nullptr;
 	Texture* _specularTexture = nullptr;
 	std::vector<Mesh> _meshes;
+	~RenderObject() { _meshes.clear(); }
 };
