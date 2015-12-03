@@ -14,8 +14,10 @@ namespace System
 	private:
 		DirectX::XMFLOAT3	_position;
 		DirectX::XMFLOAT3	_right;
+		DirectX::XMFLOAT3	_rotatedRight;
 		DirectX::XMFLOAT3	_up;
 		DirectX::XMFLOAT3	_forward;
+		DirectX::XMFLOAT3	_rotatedForward;
 		DirectX::XMFLOAT3	_rotation;
 
 		float				_nearClip;
@@ -47,6 +49,9 @@ namespace System
 		DirectX::XMMATRIX* GetOrthoMatrix();
 		//BaseViewMatrix is used for 2D HUD. Commonly used in the "view slot".
 		DirectX::XMMATRIX* GetBaseViewMatrix();
+
+		DirectX::XMFLOAT3 GetForwardVector() const;
+		DirectX::XMFLOAT3 GetRightVector() const;
 
 		//Overloading these guarantees 16B alignment of XMMATRIX
 		void* operator new(size_t i);
