@@ -181,6 +181,9 @@ bool ObjectHandler::LoadLevel(int lvlIndex)
 	vector<GameObjectData> gameObjectData;
 	_assetManager->ParseLevel(lvlIndex, gameObjectData, dimX, dimY);
 
+	_gameObjects.clear();
+
+	delete _tilemap;
 	_tilemap = new Tilemap(dimX, dimY);
 
 	for (auto i : gameObjectData)
@@ -230,5 +233,6 @@ void ObjectHandler::Release()
 	for (int i = 0; i < _size; i++)
 	{
 		_gameObjects[i]->Release();
+		delete _gameObjects[i];
 	}
 }

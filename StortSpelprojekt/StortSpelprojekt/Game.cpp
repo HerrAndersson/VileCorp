@@ -16,8 +16,8 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	initVar.objectHandler	= _objectHandler;
 
 	_camera = new System::Camera(0.1f, 1000.0f, DirectX::XM_PIDIV2, settings._width, settings._height);
-	_camera->SetPosition(XMFLOAT3(0, 10, 0));
-	_camera->SetRotation(XMFLOAT3(1, 0, 0));
+	_camera->SetPosition(XMFLOAT3(3, 10, 0));
+	_camera->SetRotation(XMFLOAT3(60, 0, 0));
 
 	_timer = System::Timer();
 	
@@ -33,6 +33,7 @@ Game::~Game()
 	delete _window;
 	delete _renderModule;
 	delete _camera;
+	delete _objectHandler;
 	//TODO remove comments when the objectHandler is initialized
 	//delete _objectHandler;
 	delete _UI;

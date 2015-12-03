@@ -15,6 +15,7 @@ AssetManager::AssetManager(ID3D11Device* device)
 	_tilesets = new vector<Tileset>;
 
 	SetupTilesets();
+	SetupTilesets();
 #ifdef _DEBUG
 	ActivateTileset("default");
 #endif
@@ -24,8 +25,11 @@ AssetManager::AssetManager(ID3D11Device* device)
 AssetManager::~AssetManager()
 {
 	for (Texture* texture : *_textures)
-		if(texture->_loaded)
+		if (texture->_loaded)
+		{
 			texture->_data->Release();
+			delete texture;
+		}
 	_textures->clear();
 
 	for (uint i = 0; i < _renderObjects->size(); i++)
