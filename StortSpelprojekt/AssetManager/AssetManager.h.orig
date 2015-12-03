@@ -9,75 +9,11 @@
 #include <DirectXMath.h>
 #include <fstream>
 #include "WICTextureLoader.h"
-#include "RenderUtils.h"
-#include "rapidjson\reader.h"
 
 using namespace std;
 using namespace DirectX;
 
-struct Tileset
-{
-	string name;
-	vector<string> floors;
-	vector<string> walls;
-	vector<string> deco;
-};
-
-struct TilesetHandler
-{
-	vector<Tileset>* tilesets;
-	Tileset* tileset;
-	vector<string>* cur;
-	bool nameNext = false;
-
-	bool Null() { return true; }
-	bool Bool(bool b) { return true; }
-	bool Int(int i) { return true; }
-	bool Uint(unsigned u) { return true; }
-	bool Int64(int64_t i) { return true; }
-	bool Uint64(uint64_t u) { return true; }
-	bool Double(double d) { return true; }
-	bool String(const char* str, rapidjson::SizeType length, bool copy) {
-		if (nameNext)
-		{
-			tileset->name = str;
-			nameNext = false;
-		}
-		else
-			cur->push_back(str);
-		return true;
-	}
-	bool StartObject()
-	{
-		Tileset newTileset;
-		tilesets->push_back(newTileset);
-		tileset = &tilesets->back();
-		return true;
-	}
-	bool Key(const char* str, rapidjson::SizeType length, bool copy) {
-		if (!strcmp("name", str))
-			nameNext = true;
-		else if (!strcmp("floors", str))
-		{
-			cur = &tileset->floors;
-		}
-		else if (!strcmp("walls", str))
-		{
-			cur = &tileset->walls;
-		}
-		else if (!strcmp("deco", str))
-		{
-			cur = &tileset->deco;
-		}
-		return true;
-	}
-	bool EndObject(rapidjson::SizeType memberCount) { return true; }
-	bool StartArray() { return true; }
-	bool EndArray(rapidjson::SizeType elementCount) { return true; }
-};
-
-struct MainHeader 
-{
+struct MainHeader {
 	int _version, _meshCount;
 };
 
@@ -86,9 +22,74 @@ struct MeshHeader
 	int _nameLength, _numberOfVertices, _subMeshID, _numberPointLights, _numberSpotLights;
 };
 
-struct MatHeader 
-{
+struct MatHeader {
 	int _diffuseNameLength, _specularNameLength;
+};
+
+struct Point
+{
+	XMFLOAT3 _position;
+	int _boneIndices[4];
+	float _boneWeights[4];
+};
+
+struct WeightedVertex
+{
+	XMFLOAT3 _position;
+	XMFLOAT3 _normal;
+	XMFLOAT2 _uv;
+	int _boneIndices[4];
+	float _boneWeights[4];
+};
+
+struct Vertex
+{
+	XMFLOAT3 _position;
+	XMFLOAT3 _normal;
+	XMFLOAT2 _uv;
+};
+
+struct PointLight
+{
+	float _pos[3], _col[3], _intensity;
+};
+
+struct SpotLight
+{
+	float _pos[3], _col[3], _intensity, _angle, _direction[3];
+};
+
+struct Mesh
+{
+	~Mesh()
+	{
+		_pointLights.clear();
+		_spotLights.clear();
+	}
+	string _name;
+	ID3D11Buffer* _vertexBuffer;
+	int _vertexBufferSize, _toMesh;
+	vector<PointLight> _pointLights;
+	vector<SpotLight> _spotLights;
+};
+
+struct Texture
+{
+	HRESULT LoadTexture(ID3D11Device* device);
+	bool _loaded = false;
+	short _activeUsers = 0;
+	wstring _filename;
+	ID3D11ShaderResourceView* _data = nullptr;
+};
+
+struct RenderObject
+{
+	bool _meshLoaded, _toUnload;
+	short _skeleton = -1;
+	float _diffuse[4], _specular[4];
+	Texture* _diffuseTexture = nullptr;
+	Texture* _specularTexture = nullptr;
+	vector<Mesh> _meshes;
 };
 
 struct LevelHeader
@@ -154,9 +155,12 @@ private:
 	ifstream* _infile;
 	ID3D11Device* _device;
 
+<<<<<<< HEAD
 	vector<string>* _modelFiles;
+=======
+	vector<string>* modelFiles;
 	vector<string>* _levelFileNames;
-	vector<Tileset>* _tilesets;
+>>>>>>> Import of level now works! What we lack: tilemap connection and render object list/connection
 
 	vector<RenderObject*>* _renderObjects;
 	vector<RenderObject*>* _renderObjectsToFlush;
@@ -170,17 +174,15 @@ private:
 	Texture* ScanTexture(string filename);
 	void DecrementUsers(Texture* texture);
 	ID3D11Buffer* CreateVertexBuffer(vector<Vertex> *vertices, int skeleton);
-	void SetupRenderObjectList(Tileset* tileset);
+	void SetupRenderObjectList();
 	void SetupLevelFileNameList();
-	void SetupTilesets();
+
 public:
 	AssetManager(ID3D11Device* device);
 	~AssetManager();
 	RenderObject* GetRenderObject(int index);
 	void UnloadModel(int index, bool force);
 	void ParseLevel(int index, vector<GameObjectData> &gameObjects, int &dimX, int &dimY);
-	bool ActivateTileset(string name);
-	ID3D11ShaderResourceView* GetTexture(string filename);
 	
 };
 
