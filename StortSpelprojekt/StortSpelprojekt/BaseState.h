@@ -12,7 +12,7 @@ enum State
 	EXITSTATE,
 };
 
-__declspec(align(16))class BaseState
+class BaseState
 {
 private:
 	State					_newStateRequest;
@@ -30,15 +30,6 @@ public:
 
 	State GetNewStateRequest()const;
 
-	void* operator new(size_t i)
-	{
-		return _mm_malloc(i,16);
-	}
-
-		void operator delete(void* p)
-	{
-		_mm_free(p);
-	}
 };
 
 #endif

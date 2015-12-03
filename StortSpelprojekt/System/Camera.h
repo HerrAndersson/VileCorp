@@ -9,7 +9,7 @@
 
 namespace System
 {
-	class CAMERA_EXPORT Camera
+	class SYSTEM_EXPORT Camera
 	{
 	private:
 		DirectX::XMFLOAT3	_position;

@@ -39,7 +39,7 @@ void GameObject::CalculateMatrix()
 
 }
 
-short GameObject::GetID() const
+unsigned short GameObject::GetID() const
 {
 	return _ID;
 }
@@ -111,4 +111,14 @@ void GameObject::SetVisibility(bool visible)
 RenderObject * GameObject::GetRenderObject() const
 {
 	return _renderObject;
+}
+
+void* GameObject::operator new(size_t i)
+{
+	return _mm_malloc(i, 16);
+}
+
+void GameObject::operator delete(void* p)
+{
+	_mm_free(p);
 }

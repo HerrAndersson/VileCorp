@@ -10,19 +10,19 @@ StateMachine::StateMachine(InitVar initVar)
 		{
 		case SPLASHSTATE:
 		{
-			_baseState[i] = new SplashState(initVar);
+			_baseState.push_back(new SplashState(initVar));
 		}
 		case MENUSTATE:
 		{
-			_baseState[i] = new MenuState(initVar);
+			_baseState.push_back(new MenuState(initVar));
 		}
 		case PLAYSTATE:
 		{
-			_baseState[i] = new PlayState(initVar);
+			_baseState.push_back(new PlayState(initVar));
 		}
 		case OPTIONSSTATE:
 		{
-			_baseState[i] = new OptionsState(initVar);
+			_baseState.push_back(new OptionsState(initVar));
 		}
 		}
 	}
@@ -31,9 +31,9 @@ StateMachine::StateMachine(InitVar initVar)
 
 StateMachine::~StateMachine()
 {
-	for (int i = 0; i < State::EXITSTATE; i++)
+	for (auto s : _baseState)
 	{
-		delete _baseState[i];
+		delete s;
 	}
 }
 

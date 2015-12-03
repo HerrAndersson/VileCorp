@@ -3,7 +3,7 @@
 
 #include "BaseState.h"
 
-__declspec(align(16))class PlayState : public BaseState
+class PlayState : public BaseState
 {
 private:
 public:
