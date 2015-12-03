@@ -9,7 +9,7 @@
 
 namespace System
 {
-	__declspec(align(16)) class SYSTEM_EXPORT Camera
+	class SYSTEM_EXPORT Camera
 	{
 	private:
 		DirectX::XMFLOAT3	_position;
@@ -46,6 +46,10 @@ namespace System
 		DirectX::XMMATRIX* GetOrthoMatrix();
 		//BaseViewMatrix is used for 2D HUD. Commonly used in the "view slot".
 		DirectX::XMMATRIX* GetBaseViewMatrix();
+
+		//Overloading these guarantees 16B alignment of XMMATRIX
+		void* operator new(size_t i);
+		void operator delete(void* p);
 	};
 }
 
