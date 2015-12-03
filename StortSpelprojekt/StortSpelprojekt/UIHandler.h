@@ -7,10 +7,10 @@
 
 #include "Fonts.h"
 
-__declspec(align(16))class UIHandler
+class UIHandler
 {
 private:
-	__declspec(align(16))struct TextInfo
+	struct TextInfo
 	{
 		DirectX::XMFLOAT2		position;
 		float					fontSize;
@@ -27,7 +27,7 @@ private:
 			textId		= textId_;
 		}
 	};
-	__declspec(align(16))struct FontInfo
+	struct FontInfo
 	{
 		const WCHAR*			filePath;
 		std::vector<TextInfo>	text;
@@ -88,15 +88,6 @@ public:
 	//Remove an individual text
 	bool RemoveText(int id);
 
-	void* operator new(size_t i)
-	{
-		return _mm_malloc(i,16);
-	}
-
-		void operator delete(void* p)
-	{
-		_mm_free(p);
-	}
 };
 
 #endif

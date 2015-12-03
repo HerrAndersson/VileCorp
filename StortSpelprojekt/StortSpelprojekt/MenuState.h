@@ -3,7 +3,7 @@
 
 #include "BaseState.h"
 
-__declspec(align(16))class MenuState : public BaseState
+class MenuState : public BaseState
 {
 private:
 	UIHandler* _uiHandler;

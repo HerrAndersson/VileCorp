@@ -3,7 +3,7 @@
 
 #include "BaseState.h"
 
-__declspec(align(16))class SplashState : public BaseState
+class SplashState : public BaseState
 {
 private:
 public:

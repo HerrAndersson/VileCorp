@@ -3,7 +3,7 @@
 
 #include "BaseState.h"
 
-__declspec(align(16))class OptionsState : public BaseState
+class OptionsState : public BaseState
 {
 private:
 public:
