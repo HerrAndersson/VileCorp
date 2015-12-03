@@ -2,16 +2,25 @@
 
 
 
+ObjectHandler::ObjectHandler()
+{
+	_size = 0;
+	_idCounter = 0;
+	_assetManager = nullptr;
+	_tilemap = new Tilemap();
+}
+
 ObjectHandler::ObjectHandler(ID3D11Device* device)
 {
 	_size = 0;
 	_idCounter = 0;
 	_assetManager = new AssetManager(device);
-	_tilemap = nullptr;
+	_tilemap = new Tilemap();
 }
 
 ObjectHandler::~ObjectHandler()
 {
+	Release();
 	Clear();
 	delete _assetManager;
 	delete _tilemap;
@@ -29,19 +38,34 @@ GameObject* ObjectHandler::Add(Type type, int renderObjectID, XMFLOAT3 position 
 
 	switch (type)
 	{
-	case UNIT:
-		_gameObjects.push_back((GameObject*)new Unit(_idCounter++, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(renderObjectID), _tilemap));
+	case FLOOR:
+	case WALL:
+		object = new Architecture(_idCounter++, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(renderObjectID));
+		_gameObjects.push_back(object);
 		_size++;
+		_tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
+		break;
+	case UNIT:
+		//TODO Tileposition parameters are temporary
+		object = new Unit(_idCounter++, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(renderObjectID), _tilemap);
+		_gameObjects.push_back(object);
+		_size++;
+		_tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
 		break;
 	case TRAP:
-		_gameObjects.push_back((GameObject*)new Trap(_idCounter++, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(renderObjectID)));
+		object = new Trap(_idCounter++, position, rotation, AI::Vec2D(1,1), type, _assetManager->GetRenderObject(renderObjectID));
+		_gameObjects.push_back(object);
 		_size++;
+		_tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
 		break;
 	case TRIGGER:
-		_gameObjects.push_back((GameObject*)new Trigger(_idCounter++, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(renderObjectID)));
+		object = new Trigger(_idCounter++, position, rotation, AI::Vec2D(1,1), type, _assetManager->GetRenderObject(renderObjectID));
+		_gameObjects.push_back(object);
 		_size++;
+		_tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
 		break;
 	default:
+		
 		break;
 	}
 
@@ -77,9 +101,9 @@ bool ObjectHandler::Remove(short ID)
 
 void ObjectHandler::Clear()
 {
-
 	_gameObjects.clear();
 	_idCounter = 0;
+	_size = 0;
 }
 
 GameObject* ObjectHandler::Find(short ID)
@@ -121,42 +145,24 @@ vector<GameObject*> ObjectHandler::GetAll(Type type)
 		}
 	}
 
-	return list;;
-}
-
+	return list;
+}//TODO make it so that it returns a vector of renderlists to improve performance /Markus
 RenderList ObjectHandler::GetAll(int renderObjectID)
 {
 	RenderList list;
 
-	
-
 	list._renderObject = _assetManager->GetRenderObject(renderObjectID);
+	list.modelMatrices.resize(_size);
 	for (int i = 0; i < _size; i++)
 	{
 		if (_gameObjects.at(i)->GetRenderObject() == _assetManager->GetRenderObject(renderObjectID))
-		{
-			list.modelMatrices.push_back(_gameObjects[i]->GetMatrix());
+		{	
+			list.modelMatrices[i] = _gameObjects[i]->GetMatrix();
 		}
 	}
 
 	return list;
 }
-
-//std::vector<RenderObject*> ObjectHandler::GetRenderObjects() const
-//{
-//	std::vector<RenderObject*> renderObjects;
-//
-//	for (int i = 0; i < _size; i++)
-//	{
-//		//If the object has a Renderobject and is visible
-//		if (_gameObjects[i]->GetRenderObject() != nullptr && _gameObjects[i]->IsVisible())
-//		{
-//			renderObjects.push_back(_gameObjects[i]->GetRenderObject());
-//		}
-//	}
-//
-//	return renderObjects;
-//}
 
 Tilemap * ObjectHandler::GetTileMap() const
 {
@@ -179,7 +185,6 @@ void ObjectHandler::Update()
 	for (int i = 0; i < _size; i++)
 	{
 		_gameObjects[i]->Update();
-		//_renderModule->Render(/*_gameObjects[i]->GetRenderObjectID(), _gameObjects[i]->GetModelMatrix()*/);
 	}
 }
 
@@ -189,6 +194,4 @@ void ObjectHandler::Release()
 	{
 		_gameObjects[i]->Release();
 	}
-
-
 }

@@ -48,7 +48,7 @@ public:
 	bool RemoveObjectFromTile(int x, int z, GameObject* obj);
 	void ClearTile(int x, int z);
 	
-	int SizeOfTileMap() const;
+	int GetNrOfTiles() const;
 	int GetHeight() const;
 	int GetWidth() const;
 
@@ -58,5 +58,6 @@ public:
 	bool IsTrapOnTile(int x, int z)const;
 	bool IsTriggerOnTile(int x, int z) const;
 	bool IsObjectiveOnTile(int x, int z)const;
+	bool IsTypeOnTile(int x, int z, Type type)const;
 };
 #endif
