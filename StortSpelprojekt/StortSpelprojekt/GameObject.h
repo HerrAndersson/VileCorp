@@ -34,11 +34,10 @@ public:
 	GameObject();
 	//Type might not be necessary, depending on whether subclasses can correspond to one type or many.
 	GameObject(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject* renderObject);
-	~GameObject();
+	virtual ~GameObject();
 
-	short GetID() const;
+	unsigned short GetID() const;
 
-	//TODO change Vec3 to XMVECTOR or other vectorclass - Zache/Marcus
 	DirectX::XMFLOAT3 GetPosition() const;
 	DirectX::XMFLOAT3 GetRotation() const;
 	DirectX::XMFLOAT3 GetScale() const;
