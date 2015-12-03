@@ -59,12 +59,15 @@ public:
 	vector<GameObject*> GetAll(Type type);
 	//Returns a list of a renderobject and matrices for all objects using the renderobject
 	RenderList GetAll(int renderObjectID);
-
+	std::vector<GameObject*>* GetGameObjects()
+	{
+		return &_gameObjects;
+	};
 
 	Tilemap* GetTileMap() const;
 	void SetTileMap(Tilemap* tilemap);
 
-	bool LoadLevel(string filename);
+	bool LoadLevel(int lvlIndex);
 
 
 	//Update gamelogic of all objects
