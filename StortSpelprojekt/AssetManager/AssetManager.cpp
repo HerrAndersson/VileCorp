@@ -142,6 +142,7 @@ void AssetManager::UnloadModel(int index, bool force)
 		for (auto m : renderObject->_meshes)
 			m._vertexBuffer->Release();
 		renderObject->_toUnload = false;
+		renderObject->_meshLoaded = false;
 		if (renderObject->_diffuseTexture != nullptr)
 			DecrementUsers(renderObject->_diffuseTexture);
 		if (renderObject->_specularTexture != nullptr)
@@ -191,6 +192,7 @@ void AssetManager::Flush()
 			for (Mesh m : renderObject->_meshes)
 				m._vertexBuffer->Release();
 			renderObject->_toUnload = false;
+			renderObject->_meshLoaded = false;
 			if (renderObject->_diffuseTexture != nullptr)
 				DecrementUsers(renderObject->_diffuseTexture);
 			if (renderObject->_specularTexture != nullptr)
@@ -263,6 +265,7 @@ void AssetManager::LoadModel(string fileName, RenderObject* renderObject) {
 		}
 
 	_infile->close();
+	renderObject->_meshLoaded = true;
 }
 
 Texture* AssetManager::ScanTexture(string filename)
