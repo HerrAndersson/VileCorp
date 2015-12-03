@@ -17,7 +17,8 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	_camera = new System::Camera(0.1f, 1000.0f, DirectX::XM_PIDIV2, settings._width, settings._height);
 	_camera->SetPosition(XMFLOAT3(0, 10, -5));
 	_camera->SetRotation(XMFLOAT3(0.5, 0, 0));
-	
+
+	_timer = System::Timer();
 	
 	_objectHandler = new ObjectHandler(_renderModule->GetDevice());
 	initVar.uiHandler		= _UI;
@@ -126,12 +127,16 @@ int Game::Run()
 
 
 
-
 	while (_window->Run())
 	{
-		HandleInput();
-		Update(deltaTime);
-		Render();
+		_timer.Update();
+		if (_timer.GetFrameTime() >= MS_PER_FRAME)
+		{
+			HandleInput();
+			Update(deltaTime);
+			Render();
+			_timer.Reset();
+		}
 	}
 
 	return 0;
