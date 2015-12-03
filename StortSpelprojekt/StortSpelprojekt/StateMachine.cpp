@@ -11,18 +11,22 @@ StateMachine::StateMachine(InitVar initVar)
 		case SPLASHSTATE:
 		{
 			_baseState.push_back(new SplashState(initVar));
+			break;
 		}
 		case MENUSTATE:
 		{
 			_baseState.push_back(new MenuState(initVar));
+			break;
 		}
 		case PLAYSTATE:
 		{
 			_baseState.push_back(new PlayState(initVar));
+			break;
 		}
 		case OPTIONSSTATE:
 		{
 			_baseState.push_back(new OptionsState(initVar));
+			break;
 		}
 		}
 	}

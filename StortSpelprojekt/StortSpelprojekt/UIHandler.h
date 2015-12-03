@@ -6,6 +6,7 @@
 #include <DirectXMath.h>
 
 #include "Fonts.h"
+#include "Window.h"
 
 class UIHandler
 {
@@ -68,15 +69,16 @@ private:
 private:
 	std::vector<FontInfo>		_fonts;
 	int							_textId;
-
+	System::WindowSettings		_windowSettings;
 	ID3D11Device*				_device;
 
 public:
-	UIHandler(ID3D11Device* device);
+	UIHandler(ID3D11Device* device, System::WindowSettings windowSettings);
 	~UIHandler();
 
 	void Update();
 	void Render(ID3D11DeviceContext* _deviceContext);
+	void OnResize(System::WindowSettings windowSettings);
 	
 	//Adds a default font in the windows library.
 	int AddFont(const WCHAR* fontName, DirectX::XMFLOAT2 position, float fontSize, UINT32 color, const WCHAR* text);

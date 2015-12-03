@@ -7,7 +7,7 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	_window = new System::Window("Amazing game", hInstance, settings);
 
 	_renderModule = new Renderer::RenderModule(_window->GetHWND(), settings._width, settings._height);
-	_UI = new UIHandler(_renderModule->GetDevice());
+	_UI = new UIHandler(_renderModule->GetDevice(), _window->GetWindowSettings());
 
 	//Initialize Variables
 	InitVar initVar;
@@ -64,6 +64,7 @@ void Game::Update(float deltaTime)
 	*/
 
 	_UI->Update();
+	_UI->OnResize(_window->GetWindowSettings());
 	_SM->Update(deltaTime);
 }
 
