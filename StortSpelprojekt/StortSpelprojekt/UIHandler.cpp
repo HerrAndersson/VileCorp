@@ -21,11 +21,11 @@ void UIHandler::Update()
 {
 }
 
-int UIHandler::AddFont(const WCHAR* fontName, DirectX::XMFLOAT2 position, float fontSize, UINT32 color, const WCHAR* text)
+int UIHandler::AddFont(const WCHAR* filePath, const WCHAR* fontName, DirectX::XMFLOAT2 position, float fontSize, UINT32 color, std::wstring text)
 {
 	if (_textId == 0) //if first element
 	{
-		_fonts.push_back(FontInfo(fontName, position, fontSize, color, text, _textId, false, _device));
+		_fonts.push_back(FontInfo(filePath, fontName, position, fontSize, color, text, _textId, false, _device));
 	}
 	else
 	{
@@ -44,23 +44,23 @@ int UIHandler::AddFont(const WCHAR* fontName, DirectX::XMFLOAT2 position, float 
 		if (found == -1)
 		{
 			//Then create a new font.
-			_fonts.push_back(FontInfo(fontName, position, fontSize, color, text, _textId, false, _device));
+			_fonts.push_back(FontInfo(filePath, fontName, position, fontSize, color, text, _textId, false, _device));
 		}
 		else
 		{
 			//If filepaths are equal. Then we shall create a string inside that font.
-			_fonts.at(found).AddText(position, fontSize, color, text, _textId);	
+			_fonts.at(found).AddText(position, fontSize, color, text, _textId);
 		}
 	}
-	
+
 	return _textId++;
 }
 
-int UIHandler::AddCustomFont(const WCHAR* fontName, DirectX::XMFLOAT2 position, float fontSize, UINT32 color, const WCHAR* text)
+int UIHandler::AddCustomFont(const WCHAR* filePath, const WCHAR* fontName, DirectX::XMFLOAT2 position, float fontSize, UINT32 color, std::wstring text)
 {
 	if (_textId == 0) //if first element
 	{
-		_fonts.push_back(FontInfo(fontName, position, fontSize, color, text, _textId, true, _device));
+		_fonts.push_back(FontInfo(filePath, fontName, position, fontSize, color, text, _textId, true, _device));
 	}
 	else
 	{
@@ -79,7 +79,7 @@ int UIHandler::AddCustomFont(const WCHAR* fontName, DirectX::XMFLOAT2 position, 
 		if (found == -1)
 		{
 			//Then create a new font.
-			_fonts.push_back(FontInfo(fontName, position, fontSize, color, text, _textId, true, _device));
+			_fonts.push_back(FontInfo(filePath, fontName, position, fontSize, color, text, _textId, true, _device));
 		}
 		else
 		{
@@ -93,11 +93,13 @@ int UIHandler::AddCustomFont(const WCHAR* fontName, DirectX::XMFLOAT2 position, 
 
 void UIHandler::Render(ID3D11DeviceContext* _deviceContext)
 {
+	const WCHAR* wText;
 	for (auto i : _fonts)
 	{
 		for (auto j : i.text)
 		{
-			i.fontDevice.DrawString(_deviceContext, j.text, j.fontSize, j.position.x, j.position.y, j.color);
+			wText = j.text.c_str();
+			i.fontDevice.DrawString(_deviceContext, wText, j.text.size(), j.fontSize, j.position.x, j.position.y, j.color);
 		}
 	}
 }

@@ -50,7 +50,7 @@ namespace Renderer
 			const WCHAR*			fontText;
 		};
 
-		CustomFont*					_cFont;
+		CustomFont					_cFont;
 
 	public:
 		Fonts();
@@ -60,7 +60,7 @@ namespace Renderer
 		HRESULT Initialize(ID3D11Device* device, LPCWSTR fontName);
 		//Custom font
 		HRESULT Initialize(ID3D11Device* device, LPCWSTR fontName, LPCWSTR filePath);
-		HRESULT DrawString(ID3D11DeviceContext* device, const WCHAR* text, float fontSize, float x, float y, UINT32 color);
+		HRESULT DrawString(ID3D11DeviceContext* device, const WCHAR* text, int textSize, float fontSize, float x, float y, UINT32 color);
 	};
 }
 

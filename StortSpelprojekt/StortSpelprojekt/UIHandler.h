@@ -16,10 +16,10 @@ private:
 		DirectX::XMFLOAT2		position;
 		float					fontSize;
 		UINT32					color;
-		const WCHAR*			text;
+		std::wstring			text;
 		int						textId;
 
-		TextInfo(DirectX::XMFLOAT2 position_, float fontSize_, UINT32 color_, const WCHAR* text_, int textId_)
+		TextInfo(DirectX::XMFLOAT2 position_, float fontSize_, UINT32 color_, std::wstring text_, int textId_)
 		{
 			position	= position_;
 			fontSize	= fontSize_;
@@ -31,31 +31,34 @@ private:
 	struct FontInfo
 	{
 		const WCHAR*			filePath;
+		const WCHAR*			fontName;
 		std::vector<TextInfo>	text;
 		Renderer::Fonts			fontDevice;
 		FontInfo(
-			const WCHAR* fontPath_,
+			const WCHAR* filePath_,
+			const WCHAR* fontName_,
 			DirectX::XMFLOAT2 position_,
 			float fontSize_,
 			UINT32 color_,
-			const WCHAR* text_,
+			std::wstring text_,
 			int textId_,
 			bool custom_,
 			ID3D11Device* device_)
 		{
-			filePath = fontPath_;
+			filePath = filePath_;
+			fontName = fontName_;
 			text.push_back(TextInfo(position_, fontSize_, color_, text_, textId_));
 			//Setting up the fontDevice
 			if (!custom_)
 			{
-				fontDevice.Initialize(device_, fontPath_);
+				fontDevice.Initialize(device_, filePath_);
 			}
 			else
 			{
-				fontDevice.Initialize(device_, fontPath_, fontPath_);
+				fontDevice.Initialize(device_, fontName_, filePath_);
 			}
 		}
-		void AddText(DirectX::XMFLOAT2 position_, float fontSize_, UINT32 color_, const WCHAR* text_, int textId_)
+		void AddText(DirectX::XMFLOAT2 position_, float fontSize_, UINT32 color_, std::wstring text_, int textId_)
 		{
 			text.push_back(TextInfo(position_, fontSize_, color_, text_, textId_));
 		}
@@ -81,9 +84,9 @@ public:
 	void OnResize(System::WindowSettings windowSettings);
 	
 	//Adds a default font in the windows library.
-	int AddFont(const WCHAR* fontName, DirectX::XMFLOAT2 position, float fontSize, UINT32 color, const WCHAR* text);
+	int AddFont(const WCHAR* filePath, const WCHAR* fontName, DirectX::XMFLOAT2 position, float fontSize, UINT32 color, std::wstring text);
 	//Adds a custom font from a sourcedirectory folder.
-	int AddCustomFont(const WCHAR* filePath, DirectX::XMFLOAT2 position, float fontSize, UINT32 color, const WCHAR* text);
+	int AddCustomFont(const WCHAR* filePath, const WCHAR* fontName, DirectX::XMFLOAT2 position, float fontSize, UINT32 color, std::wstring text);
 
 	//Remove a font and all text below this font
 	bool RemoveFont(const WCHAR* filePathOrName);
