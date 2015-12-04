@@ -34,7 +34,7 @@ int UIHandler::AddFont(const WCHAR* filePath, const WCHAR* fontName, DirectX::XM
 		for (auto i : _fonts)
 		{
 			//if filepaths are equal.
-			if (0 == wcscmp(i.filePath, fontName))
+			if (0 == wcscmp(i.GetFilePath(), fontName))
 			{
 				found = incr;
 			}
@@ -69,7 +69,7 @@ int UIHandler::AddCustomFont(const WCHAR* filePath, const WCHAR* fontName, Direc
 		for (auto i : _fonts)
 		{
 			//if filepaths are equal.
-			if (0 == wcscmp(i.filePath, fontName))
+			if (0 == wcscmp(i.GetFilePath(), fontName))
 			{
 				found = incr;
 			}
@@ -93,14 +93,9 @@ int UIHandler::AddCustomFont(const WCHAR* filePath, const WCHAR* fontName, Direc
 
 void UIHandler::Render(ID3D11DeviceContext* _deviceContext)
 {
-	const WCHAR* wText;
 	for (auto i : _fonts)
 	{
-		for (auto j : i.text)
-		{
-			wText = j.text.c_str();
-			i.fontDevice.DrawString(_deviceContext, wText, j.text.size(), j.fontSize, j.position.x, j.position.y, j.color);
-		}
+		i.Render(_deviceContext);
 	}
 }
 
@@ -111,26 +106,18 @@ void UIHandler::OnResize(System::WindowSettings windowSettings)
 	scale.x = (float)windowSettings._width / (float)_windowSettings._width;
 	scale.y = (float)windowSettings._height / (float)_windowSettings._height;
 	
-	
-
-	
 	for (auto &i : _fonts)
 	{
-		for (auto &j : i.text)
-		{
-			//j.fontSize *= scale.x;
-		}
+		i.OnResize(scale.x);
 	}
-	
-
 }
 
-bool UIHandler::RemoveFont(const WCHAR* filePathOrName)
+bool UIHandler::RemoveFont(const WCHAR* filePath)
 {
 	bool rv = false;
 	for (auto i : _fonts)
 	{
-		if (0 != wcscmp(i.filePath, filePathOrName))
+		if (0 != wcscmp(i.GetFilePath(), filePath))
 		{
 			i.Release();
 			rv = true;
@@ -143,18 +130,14 @@ bool UIHandler::RemoveFont(const WCHAR* filePathOrName)
 bool UIHandler::RemoveText(int id)
 {
 	bool rv = false;
+	bool deleted = false;
 	int incr = 0;
 	for (auto i : _fonts)
 	{
-		incr = 0;
-		for (auto j : i.text)
+		deleted = i.RemoveText(id);
+		if (deleted)
 		{
-			if (j.textId == id)
-			{
-				i.text.erase(i.text.begin()+incr);
-				rv = true;
-			}
-			incr++;
+			rv = true;
 		}
 	}
 	return rv;

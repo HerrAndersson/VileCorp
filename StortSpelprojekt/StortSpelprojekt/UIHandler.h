@@ -7,68 +7,10 @@
 
 #include "Fonts.h"
 #include "Window.h"
+#include "FontInfo.h"
 
 class UIHandler
 {
-private:
-	struct TextInfo
-	{
-		DirectX::XMFLOAT2		position;
-		float					fontSize;
-		UINT32					color;
-		std::wstring			text;
-		int						textId;
-
-		TextInfo(DirectX::XMFLOAT2 position_, float fontSize_, UINT32 color_, std::wstring text_, int textId_)
-		{
-			position	= position_;
-			fontSize	= fontSize_;
-			color		= color_;
-			text		= text_;
-			textId		= textId_;
-		}
-	};
-	struct FontInfo
-	{
-		const WCHAR*			filePath;
-		const WCHAR*			fontName;
-		std::vector<TextInfo>	text;
-		Renderer::Fonts			fontDevice;
-		FontInfo(
-			const WCHAR* filePath_,
-			const WCHAR* fontName_,
-			DirectX::XMFLOAT2 position_,
-			float fontSize_,
-			UINT32 color_,
-			std::wstring text_,
-			int textId_,
-			bool custom_,
-			ID3D11Device* device_)
-		{
-			filePath = filePath_;
-			fontName = fontName_;
-			text.push_back(TextInfo(position_, fontSize_, color_, text_, textId_));
-			//Setting up the fontDevice
-			if (!custom_)
-			{
-				fontDevice.Initialize(device_, filePath_);
-			}
-			else
-			{
-				fontDevice.Initialize(device_, fontName_, filePath_);
-			}
-		}
-		void AddText(DirectX::XMFLOAT2 position_, float fontSize_, UINT32 color_, std::wstring text_, int textId_)
-		{
-			text.push_back(TextInfo(position_, fontSize_, color_, text_, textId_));
-		}
-		void Release()
-		{
-			text.clear();
-			//removes all allocated space.
-			std::vector<TextInfo>().swap(text);
-		}
-	};
 private:
 	std::vector<FontInfo>		_fonts;
 	int							_textId;
@@ -89,7 +31,7 @@ public:
 	int AddCustomFont(const WCHAR* filePath, const WCHAR* fontName, DirectX::XMFLOAT2 position, float fontSize, UINT32 color, std::wstring text);
 
 	//Remove a font and all text below this font
-	bool RemoveFont(const WCHAR* filePathOrName);
+	bool RemoveFont(const WCHAR* filePath);
 	//Remove an individual text
 	bool RemoveText(int id);
 
