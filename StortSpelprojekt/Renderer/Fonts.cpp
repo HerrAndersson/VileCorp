@@ -73,28 +73,28 @@ namespace Renderer
 	{
 		HRESULT hr = S_OK;
 
-		/*
+		
 		//if default font
-		if (_cFont == nullptr)
+		if (_cFont.writeFactory == nullptr)
 		{
 			_fontWrapper->DrawString(deviceContext, text, fontSize, x, y, color, FW1_RESTORESTATE);
 		}
 		//if custom font
 		else
-		{*/
+		{
 			//if anything in the font changed needs changing
 			if (_cFont.fontSize != fontSize || 0 != wcscmp(_cFont.fontText, text))
 			{
 				//For Fontsize
 				IDWriteTextFormat *textFormat;
 				hr = _cFont.writeFactory->CreateTextFormat(
-					L"LOL",
+					_cFont.fontName,
 					_cFont.fontCollection,
 					DWRITE_FONT_WEIGHT_NORMAL,
 					DWRITE_FONT_STYLE_NORMAL,
 					DWRITE_FONT_STRETCH_NORMAL,
 					fontSize,
-					L"loool",
+					_cFont.fontName,
 					&textFormat
 					);
 				IF_HR(hr);
@@ -116,7 +116,7 @@ namespace Renderer
 			}
 
 			_fontWrapper->DrawTextLayout(deviceContext, _cFont.textLayout, x, y, color, FW1_RESTORESTATE);
-		//}
+		}
 
 		return hr;
 	}

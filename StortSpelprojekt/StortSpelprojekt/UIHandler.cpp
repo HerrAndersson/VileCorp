@@ -21,11 +21,11 @@ void UIHandler::Update()
 {
 }
 
-int UIHandler::AddFont(const WCHAR* fontName, DirectX::XMFLOAT2 position, float fontSize, UINT32 color, std::wstring text)
+int UIHandler::AddFont(const WCHAR* filePath, const WCHAR* fontName, DirectX::XMFLOAT2 position, float fontSize, UINT32 color, std::wstring text)
 {
 	if (_textId == 0) //if first element
 	{
-		_fonts.push_back(FontInfo(fontName, position, fontSize, color, text, _textId, false, _device));
+		_fonts.push_back(FontInfo(filePath, fontName, position, fontSize, color, text, _textId, false, _device));
 	}
 	else
 	{
@@ -44,7 +44,7 @@ int UIHandler::AddFont(const WCHAR* fontName, DirectX::XMFLOAT2 position, float 
 		if (found == -1)
 		{
 			//Then create a new font.
-			_fonts.push_back(FontInfo(fontName, position, fontSize, color, text, _textId, false, _device));
+			_fonts.push_back(FontInfo(filePath, fontName, position, fontSize, color, text, _textId, false, _device));
 		}
 		else
 		{
@@ -52,15 +52,15 @@ int UIHandler::AddFont(const WCHAR* fontName, DirectX::XMFLOAT2 position, float 
 			_fonts.at(found).AddText(position, fontSize, color, text, _textId);
 		}
 	}
-	
+
 	return _textId++;
 }
 
-int UIHandler::AddCustomFont(const WCHAR* fontName, DirectX::XMFLOAT2 position, float fontSize, UINT32 color, std::wstring text)
+int UIHandler::AddCustomFont(const WCHAR* filePath, const WCHAR* fontName, DirectX::XMFLOAT2 position, float fontSize, UINT32 color, std::wstring text)
 {
 	if (_textId == 0) //if first element
 	{
-		_fonts.push_back(FontInfo(fontName, position, fontSize, color, text, _textId, true, _device));
+		_fonts.push_back(FontInfo(filePath, fontName, position, fontSize, color, text, _textId, true, _device));
 	}
 	else
 	{
@@ -79,7 +79,7 @@ int UIHandler::AddCustomFont(const WCHAR* fontName, DirectX::XMFLOAT2 position, 
 		if (found == -1)
 		{
 			//Then create a new font.
-			_fonts.push_back(FontInfo(fontName, position, fontSize, color, text, _textId, true, _device));
+			_fonts.push_back(FontInfo(filePath, fontName, position, fontSize, color, text, _textId, true, _device));
 		}
 		else
 		{
