@@ -129,6 +129,20 @@ void Unit::Move()
 		AI::Vec2D nextTile = _path[--_pathLength];
 		_direction = { nextTile._x, nextTile._y };
 		_direction -= _tilePosition;
+		if (_direction._x == 0)
+		{
+			_rotation.y =  DirectX::XM_PIDIV2 * (_direction._y + 1);
+			//_rotation.y = atan(_direction._y / _direction._x);
+		}
+		else if (_direction._x == -1)
+		{
+			_rotation.y = DirectX::XM_PIDIV2 + DirectX::XM_PIDIV4 * _direction._y;
+		}
+		else
+		{
+			_rotation.y = 3 * DirectX::XM_PIDIV2 - DirectX::XM_PIDIV4 * _direction._y;
+		}
+		CalculateMatrix();
 	}
 }
 
