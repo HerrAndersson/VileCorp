@@ -68,10 +68,12 @@ namespace Renderer
 	{
 		HRESULT hr = S_OK;
 
+		//if default font
 		if (_cFont == nullptr)
 		{
 			_fontWrapper->DrawString(deviceContext, text, fontSize, x, y, color, FW1_RESTORESTATE);
 		}
+		//if custom font
 		else
 		{
 			//if anything in the font changed needs changing

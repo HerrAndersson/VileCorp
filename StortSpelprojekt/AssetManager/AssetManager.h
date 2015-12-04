@@ -10,9 +10,71 @@
 #include <fstream>
 #include "WICTextureLoader.h"
 #include "RenderUtils.h"
+#include "rapidjson\reader.h"
 
 using namespace std;
 using namespace DirectX;
+
+struct Tileset
+{
+	string name;
+	vector<string> floors;
+	vector<string> walls;
+	vector<string> deco;
+};
+
+struct TilesetHandler
+{
+	vector<Tileset>* tilesets;
+	Tileset* tileset;
+	vector<string>* cur;
+	bool nameNext = false;
+
+	bool Null() { return true; }
+	bool Bool(bool b) { return true; }
+	bool Int(int i) { return true; }
+	bool Uint(unsigned u) { return true; }
+	bool Int64(int64_t i) { return true; }
+	bool Uint64(uint64_t u) { return true; }
+	bool Double(double d) { return true; }
+	bool String(const char* str, rapidjson::SizeType length, bool copy) {
+		if (nameNext)
+		{
+			tileset->name = str;
+			nameNext = false;
+		}
+		else
+			cur->push_back(str);
+		return true;
+	}
+	bool StartObject()
+	{
+		Tileset newTileset;
+		tilesets->push_back(newTileset);
+		tileset = &tilesets->back();
+		return true;
+	}
+	bool Key(const char* str, rapidjson::SizeType length, bool copy) {
+		if (!strcmp("name", str))
+			nameNext = true;
+		else if (!strcmp("floors", str))
+		{
+			cur = &tileset->floors;
+		}
+		else if (!strcmp("walls", str))
+		{
+			cur = &tileset->walls;
+		}
+		else if (!strcmp("deco", str))
+		{
+			cur = &tileset->deco;
+		}
+		return true;
+	}
+	bool EndObject(rapidjson::SizeType memberCount) { return true; }
+	bool StartArray() { return true; }
+	bool EndArray(rapidjson::SizeType elementCount) { return true; }
+};
 
 struct MainHeader 
 {
@@ -39,7 +101,6 @@ struct GameObjectData
 	int _posX, _posZ;
 	float _rotY;
 	int _tileType;
-	bool _walkable;
 };
 
 static void splitStringToVector(string input, vector<string> &output, string delimiter) {
@@ -94,6 +155,7 @@ private:
 
 	vector<string>* _modelFiles;
 	vector<string>* _levelFileNames;
+	vector<Tileset>* _tilesets;
 
 	vector<RenderObject*>* _renderObjects;
 	vector<RenderObject*>* _renderObjectsToFlush;
@@ -107,15 +169,17 @@ private:
 	Texture* ScanTexture(string filename);
 	void DecrementUsers(Texture* texture);
 	ID3D11Buffer* CreateVertexBuffer(vector<Vertex> *vertices, int skeleton);
-	void SetupRenderObjectList();
+	void SetupRenderObjectList(Tileset* tileset);
 	void SetupLevelFileNameList();
-
+	void SetupTilesets();
 public:
 	AssetManager(ID3D11Device* device);
 	~AssetManager();
 	RenderObject* GetRenderObject(int index);
 	void UnloadModel(int index, bool force);
 	void ParseLevel(int index, vector<GameObjectData> &gameObjects, int &dimX, int &dimY);
+	bool ActivateTileset(string name);
+	ID3D11ShaderResourceView* GetTexture(string filename);
 	
 };
 

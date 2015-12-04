@@ -2,25 +2,27 @@
 
 #include "stdafx.h"
 
+#include "InitVar.h"
+#include "BaseState.h"
+#include "SplashState.h"
+#include "MenuState.h"
+#include "PlayState.h"
+#include "OptionsState.h"
+#include <vector>
+
 class StateMachine
 {
 private:
-	enum State
-	{
-		SPLASHSTATE,
-		MENUSTATE,
-		PLAYSTATE,
-		OPTIONSSTATE,
-		EXITSTATE,
-	};
-	State _currentState;
+
+	State					_currentState;
+	std::vector<BaseState*>	_baseState;
+
+	void ProcessStateRequest();
 
 public:
-	StateMachine();
+
+	StateMachine(InitVar initVar);
 	~StateMachine();
 
-	void Initialize();
-	HRESULT Update();
-	void Render();
-
+	void Update(float deltaTime);
 };

@@ -86,11 +86,9 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="FW\x64\FW1FontWrapper.dll" />
     <None Include="FW\x86\FW1FontWrapper.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Library Include="FW\x64\FW1FontWrapper.lib" />
     <Library Include="FW\x86\FW1FontWrapper.lib" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

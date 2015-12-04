@@ -3,7 +3,6 @@
 
 namespace AI
 {
-
 	struct AI_EXPORT Vec2D
 	{
 		short _x, _y;
@@ -51,4 +50,7 @@ namespace AI
 				return *this;
 			}
 	};
+
+	const double SQRT2 = 1.41421356;								//used for diagonals. Placing a constant means no root-calculations.
+	const Vec2D NEIGHBOUR_OFFSETS[8] = { { -1, 0 },{ 1, 0 },{ 0, -1 },{ 0, 1 },{ -1, -1 },{ 1, -1 },{ -1, 1 },{ 1, 1 } };	//Straight moves in 0-3, diagonal in 4-7
 }

@@ -55,43 +55,43 @@ namespace Renderer
 		data.pSysMem = quad;
 		HRESULT result = _d3d->GetDevice()->CreateBuffer(&bufferDesc, &data, &_screenQuad);
 
-		//TEMP!
-		Vertex vertices[] =
-		{
-			{
-				0.0f, 0.5f, 0.0f,
-				1.0f, 0.0f,
-				1.0f, 1.0f, 0.0f
-			},
-			{
-				0.45f, -0.5, 0.0f,
-				1.0f, 1.0f,
-				1.0f, 1.0f, 0.0f
-			},
-			{
-				-0.45f, -0.5f, 0.0f,
-				1.0f, 0.0f,
-				1.0f, 1.0f, 0.0f
-			}
-		};
-		D3D11_BUFFER_DESC bufferDescTriangle;
-		ZeroMemory(&bufferDescTriangle, sizeof(bufferDescTriangle));
-		bufferDescTriangle.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-		bufferDescTriangle.Usage = D3D11_USAGE_DEFAULT;
-		bufferDescTriangle.ByteWidth = sizeof(Vertex) * 3;
-
-		D3D11_SUBRESOURCE_DATA dataTriangle;
-		dataTriangle.pSysMem = vertices;
-		HRESULT resultTriangle = _d3d->GetDevice()->CreateBuffer(&bufferDescTriangle, &dataTriangle, &_vertexBuffer);
-
-		if (FAILED(resultTriangle))
-			throw std::runtime_error("Failed to create vertexBufferTriangle");
+		InitializeConstantBuffers();
 	}
 
 	RenderModule::~RenderModule()
 	{
 		delete _d3d;
 		delete _shaderHandler;
+		SAFE_RELEASE(_screenQuad);
+		SAFE_RELEASE(_matrixBufferPerObject);
+		SAFE_RELEASE(_matrixBufferPerFrame);
+	}
+
+	void RenderModule::InitializeConstantBuffers()
+	{
+		D3D11_BUFFER_DESC matrixBufferDesc;
+		HRESULT result;
+		ID3D11Device* device = _d3d->GetDevice();
+
+		matrixBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+		matrixBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+		matrixBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+		matrixBufferDesc.MiscFlags = 0;
+		matrixBufferDesc.StructureByteStride = 0;
+
+		matrixBufferDesc.ByteWidth = sizeof(MatrixBufferPerObject);
+		result = device->CreateBuffer(&matrixBufferDesc, NULL, &_matrixBufferPerObject);
+		if (FAILED(result))
+		{
+			throw std::runtime_error("RenderModule::InitializeConstantBuffers: Failed to create MatrixBufferPerObject");
+		}
+
+		matrixBufferDesc.ByteWidth = sizeof(MatrixBufferPerFrame);
+		result = device->CreateBuffer(&matrixBufferDesc, NULL, &_matrixBufferPerFrame);
+		if (FAILED(result))
+		{
+			throw std::runtime_error("RenderModule::InitializeConstantBuffers: Failed to create MatrixBufferPerFrame");
+		}
 	}
 
 	void RenderModule::ResizeResources(HWND hwnd, int windowWidth, int windowHeight)
@@ -99,7 +99,7 @@ namespace Renderer
 		_d3d->ResizeResources(hwnd, windowWidth, windowHeight);
 	}
 
-	bool RenderModule::SetResourcesPerFrame(DirectX::XMMATRIX* view, DirectX::XMMATRIX* projection)
+	void RenderModule::SetResourcesPerFrame(DirectX::XMMATRIX* view, DirectX::XMMATRIX* projection)
 	{
 		HRESULT result;
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -115,8 +115,7 @@ namespace Renderer
 		result = deviceContext->Map(_matrixBufferPerFrame, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 		if (FAILED(result))
 		{
-			//TODO: Throw an exception //Mattias
-			return false;
+			throw std::runtime_error("RenderModule::SetResourcesPerFrame: Failed to Map _matrixBufferPerFrame");
 		}
 
 		dataPtr = (MatrixBufferPerFrame*)mappedResource.pData;
@@ -127,9 +126,9 @@ namespace Renderer
 		deviceContext->Unmap(_matrixBufferPerFrame, 0);
 
 		deviceContext->VSSetConstantBuffers(0, 1, &_matrixBufferPerFrame);
-		return true;
 	}
-	bool RenderModule::SetResourcesPerObject(XMMATRIX* world, ID3D11ShaderResourceView* diffuse, ID3D11ShaderResourceView* specular)
+
+	void RenderModule::SetResourcesPerObject(XMMATRIX* world, ID3D11ShaderResourceView* diffuse, ID3D11ShaderResourceView* specular)
 	{
 		HRESULT result;
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -141,10 +140,13 @@ namespace Renderer
 		deviceContext->PSSetShaderResources(1, 1, &specular);
 
 		XMMATRIX worldMatrixC;
-		worldMatrixC = XMMatrixTranspose(*world);
+		worldMatrixC = *world;
 
 		result = deviceContext->Map(_matrixBufferPerObject, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-		if (FAILED(result)) { return false; }
+		if (FAILED(result))
+		{
+			throw std::runtime_error("RenderModule::SetResourcesPerObject: Failed to Map _matrixBufferPerObject");
+		}
 
 		MatrixBufferPerObject* dataPtr = (MatrixBufferPerObject*)mappedResource.pData;
 
@@ -152,8 +154,7 @@ namespace Renderer
 
 		deviceContext->Unmap(_matrixBufferPerObject, 0);
 
-		deviceContext->VSSetConstantBuffers(0, 1, &_matrixBufferPerObject);
-		return true;
+		deviceContext->VSSetConstantBuffers(1, 1, &_matrixBufferPerObject);
 	}
 
 	void RenderModule::SetResourcesPerMesh(ID3D11Buffer* vertexBuffer, int vertexSize)
@@ -191,17 +192,40 @@ namespace Renderer
 		_d3d->BeginScene(red, green, blue, alpha);
 	}
 
-	void RenderModule::Render()
+	void RenderModule::Render(DirectX::XMMATRIX* world, RenderObject* renderObject)
 	{
 		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
 
-		UINT32 vertexSize = sizeof(Vertex);
-		UINT32 offset = 0;
+		ID3D11ShaderResourceView* diffuseData = nullptr;
+		ID3D11ShaderResourceView* specularData = nullptr;
 
-		deviceContext->IASetVertexBuffers(0, 1, &_vertexBuffer, &vertexSize, &offset);
-		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		Texture* diffuse = renderObject->_diffuseTexture;
+		Texture* specular = renderObject->_specularTexture;
 
-		deviceContext->Draw(3, 0);
+		if (diffuse)
+		{
+			diffuseData = diffuse->_data;
+		}
+
+		if (specular)
+		{
+			specularData = specular->_data;
+		}
+
+		SetResourcesPerObject(world, diffuseData, specularData);
+
+		int vertexSize = sizeof(Vertex);
+
+		if (renderObject->_skeleton != -1)
+		{
+			vertexSize = sizeof(WeightedVertex);
+		}
+		
+		for (auto mesh : renderObject->_meshes)
+		{
+			SetResourcesPerMesh(mesh._vertexBuffer, vertexSize);
+			deviceContext->Draw(mesh._vertexBufferSize, 0);
+		}
 	}
 
 	void RenderModule::RenderLightQuad()
@@ -225,5 +249,9 @@ namespace Renderer
 	ID3D11Device* RenderModule::GetDevice() const
 	{
 		return _d3d->GetDevice();
+	}
+	ID3D11DeviceContext* RenderModule::GetDeviceContext() const
+	{
+		return _d3d->GetDeviceContext();
 	}
 }

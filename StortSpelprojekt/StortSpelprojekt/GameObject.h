@@ -12,7 +12,7 @@ If the object doesn't need a _renderObject, set it to nullptr.
 If the object has a renderObject but is out of sight _visibility will be false.
 */
 
-enum Type {UNIT, WALL, FLOOR, TRAP, TRIGGER, LOOT };
+enum Type {UNIT, FLOOR, WALL, LOOT, TRAP, TRIGGER };
 
 class GameObject
 {
@@ -34,11 +34,10 @@ public:
 	GameObject();
 	//Type might not be necessary, depending on whether subclasses can correspond to one type or many.
 	GameObject(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject* renderObject);
-	~GameObject();
+	virtual ~GameObject();
 
-	short GetID() const;
+	unsigned short GetID() const;
 
-	//TODO change Vec3 to XMVECTOR or other vectorclass - Zache/Marcus
 	DirectX::XMFLOAT3 GetPosition() const;
 	DirectX::XMFLOAT3 GetRotation() const;
 	DirectX::XMFLOAT3 GetScale() const;
@@ -61,5 +60,9 @@ public:
 	void virtual Update() = 0;
 
 	void virtual Release() = 0;
+
+	//Overloading these guarantees 16B alignment of XMMATRIX
+	void* operator new(size_t i);
+	void operator delete(void* p);
 };
 

@@ -20,36 +20,39 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Architecture.cpp" />
+    <ClCompile Include="BaseState.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Menu.cpp" />
+    <ClCompile Include="MenuState.cpp" />
     <ClCompile Include="ObjectHandler.cpp" />
-    <ClCompile Include="Options.cpp" />
-    <ClCompile Include="Scene.cpp" />
-    <ClCompile Include="Splash.cpp" />
+    <ClCompile Include="OptionsState.cpp" />
+    <ClCompile Include="PlayState.cpp" />
+    <ClCompile Include="SplashState.cpp" />
     <ClCompile Include="StateMachine.cpp" />
-    <ClCompile Include="Tile.cpp" />
     <ClCompile Include="Tilemap.cpp" />
     <ClCompile Include="Trap.cpp" />
     <ClCompile Include="Trigger.cpp" />
+    <ClCompile Include="UIHandler.cpp" />
     <ClCompile Include="Unit.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Architecture.h" />
+    <ClInclude Include="BaseState.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameObject.h" />
-    <ClInclude Include="Menu.h" />
+    <ClInclude Include="InitVar.h" />
+    <ClInclude Include="MenuState.h" />
     <ClInclude Include="ObjectHandler.h" />
-    <ClInclude Include="Options.h" />
-    <ClInclude Include="Scene.h" />
-    <ClInclude Include="Splash.h" />
+    <ClInclude Include="OptionsState.h" />
+    <ClInclude Include="PlayState.h" />
+    <ClInclude Include="SplashState.h" />
     <ClInclude Include="StateMachine.h" />
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="Tile.h" />
     <ClInclude Include="Tilemap.h" />
     <ClInclude Include="Trap.h" />
     <ClInclude Include="Trigger.h" />
+    <ClInclude Include="UIHandler.h" />
     <ClInclude Include="Unit.h" />
   </ItemGroup>
   <ItemGroup>
@@ -122,6 +125,7 @@
     <OutDir>$(SolutionDir)../Output/Bin/x86/$(Configuration)/</OutDir>
     <IntDir>$(SolutionDir)../Output/Obj/x86/$(Configuration)/$(ProjectName)/</IntDir>
     <TargetName>$(ProjectName)D</TargetName>
+    <LibraryPath>../Renderer/FW/x86/;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -132,6 +136,7 @@
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)../Output/Bin/x86/$(Configuration)/</OutDir>
     <IntDir>$(SolutionDir)../Output/Obj/x86/$(Configuration)/$(ProjectName)/</IntDir>
+    <LibraryPath>../Renderer/FW/x86/;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>

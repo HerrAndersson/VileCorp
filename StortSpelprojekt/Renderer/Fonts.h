@@ -10,6 +10,14 @@ INFORMATION ABOUT LICENSE CAN BE FOUND HERE: http://fw1.codeplex.com/license
 
 */
 
+/*
+
+	HOW THIS CLASS WORKS:
+	INITIALIZE ONE FONT OBJECT WITH 1 FONT. IF YOU ADD MORE STRINGS
+	IT WILL USE THAT FONT. SO ONE OBJECT PER FONT.
+
+*/
+
 #define RENDERER_EXPORT __declspec(dllexport)
 #include <d3d11.h>
 #include "stdafx.h"
@@ -49,9 +57,9 @@ namespace Renderer
 		void Release();
 
 		//Default 
-		HRESULT Initialize(ID3D11Device* device, LPCWSTR font);
+		HRESULT Initialize(ID3D11Device* device, LPCWSTR fontName);
 		//Custom font
-		HRESULT Initialize(ID3D11Device* device, LPCWSTR font, LPCWSTR filePath);
+		HRESULT Initialize(ID3D11Device* device, LPCWSTR fontName, LPCWSTR filePath);
 		HRESULT DrawString(ID3D11DeviceContext* device, const WCHAR* text, float fontSize, float x, float y, UINT32 color);
 	};
 }

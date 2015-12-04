@@ -1,4 +1,5 @@
-Texture2D AssetTexture : register(t1);
+Texture2D diffuse : register(t0);
+Texture2D specular : register(t1);
 
 struct pixelInputType
 {

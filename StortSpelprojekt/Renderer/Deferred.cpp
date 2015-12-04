@@ -125,14 +125,6 @@ void Deferred::InitializeBuffers(ID3D11Device* device)
 		throw runtime_error("Error creating depth stencil view");
 	}
 
-	//Viewport for rendering
-	_viewport.Width = (float)textureWidth;
-	_viewport.Height = (float)textureHeight;
-	_viewport.MinDepth = 0.0f;
-	_viewport.MaxDepth = 1.0f;
-	_viewport.TopLeftX = 0.0f;
-	_viewport.TopLeftY = 0.0f;
-
 	for (int i = 0; i < BUFFER_COUNT; i++)
 	{
 		SAFE_RELEASE(_renderTargetTextureArray[i]);
@@ -144,7 +136,6 @@ void Deferred::SetRenderTargets(ID3D11DeviceContext* deviceContext)
 {
 	//Bind the render target view array and depth stencil buffer to the output render pipeline
 	deviceContext->OMSetRenderTargets(BUFFER_COUNT, _renderTargetViewArray, _depthStencilView);
-	deviceContext->RSSetViewports(1, &_viewport);
 }
 
 void Deferred::ClearRenderTargets(ID3D11DeviceContext* deviceContext, float r, float g, float b, float a)
