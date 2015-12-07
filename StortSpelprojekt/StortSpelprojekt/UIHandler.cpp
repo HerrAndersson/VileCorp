@@ -21,11 +21,11 @@ void UIHandler::Update()
 {
 }
 
-int UIHandler::AddFont(const WCHAR* fontName, DirectX::XMFLOAT2 position, float fontSize, UINT32 color, const WCHAR* text)
+int UIHandler::AddFont(const WCHAR* filePath, const WCHAR* fontName, DirectX::XMFLOAT2 position, float fontSize, UINT32 color, std::wstring text)
 {
 	if (_textId == 0) //if first element
 	{
-		_fonts.push_back(FontInfo(fontName, position, fontSize, color, text, _textId, false, _device));
+		_fonts.push_back(FontInfo(filePath, fontName, position, fontSize, color, text, _textId, false, _device));
 	}
 	else
 	{
@@ -34,7 +34,7 @@ int UIHandler::AddFont(const WCHAR* fontName, DirectX::XMFLOAT2 position, float 
 		for (auto i : _fonts)
 		{
 			//if filepaths are equal.
-			if (0 == wcscmp(i.filePath, fontName))
+			if (0 == wcscmp(i.GetFilePath(), fontName))
 			{
 				found = incr;
 			}
@@ -44,23 +44,23 @@ int UIHandler::AddFont(const WCHAR* fontName, DirectX::XMFLOAT2 position, float 
 		if (found == -1)
 		{
 			//Then create a new font.
-			_fonts.push_back(FontInfo(fontName, position, fontSize, color, text, _textId, false, _device));
+			_fonts.push_back(FontInfo(filePath, fontName, position, fontSize, color, text, _textId, false, _device));
 		}
 		else
 		{
 			//If filepaths are equal. Then we shall create a string inside that font.
-			_fonts.at(found).AddText(position, fontSize, color, text, _textId);	
+			_fonts.at(found).AddText(position, fontSize, color, text, _textId);
 		}
 	}
-	
+
 	return _textId++;
 }
 
-int UIHandler::AddCustomFont(const WCHAR* fontName, DirectX::XMFLOAT2 position, float fontSize, UINT32 color, const WCHAR* text)
+int UIHandler::AddCustomFont(const WCHAR* filePath, const WCHAR* fontName, DirectX::XMFLOAT2 position, float fontSize, UINT32 color, std::wstring text)
 {
 	if (_textId == 0) //if first element
 	{
-		_fonts.push_back(FontInfo(fontName, position, fontSize, color, text, _textId, true, _device));
+		_fonts.push_back(FontInfo(filePath, fontName, position, fontSize, color, text, _textId, true, _device));
 	}
 	else
 	{
@@ -69,7 +69,7 @@ int UIHandler::AddCustomFont(const WCHAR* fontName, DirectX::XMFLOAT2 position, 
 		for (auto i : _fonts)
 		{
 			//if filepaths are equal.
-			if (0 == wcscmp(i.filePath, fontName))
+			if (0 == wcscmp(i.GetFilePath(), fontName))
 			{
 				found = incr;
 			}
@@ -79,7 +79,7 @@ int UIHandler::AddCustomFont(const WCHAR* fontName, DirectX::XMFLOAT2 position, 
 		if (found == -1)
 		{
 			//Then create a new font.
-			_fonts.push_back(FontInfo(fontName, position, fontSize, color, text, _textId, true, _device));
+			_fonts.push_back(FontInfo(filePath, fontName, position, fontSize, color, text, _textId, true, _device));
 		}
 		else
 		{
@@ -95,10 +95,7 @@ void UIHandler::Render(ID3D11DeviceContext* _deviceContext)
 {
 	for (auto i : _fonts)
 	{
-		for (auto j : i.text)
-		{
-			i.fontDevice.DrawString(_deviceContext, j.text, j.fontSize, j.position.x, j.position.y, j.color);
-		}
+		i.Render(_deviceContext);
 	}
 }
 
@@ -109,26 +106,18 @@ void UIHandler::OnResize(System::WindowSettings windowSettings)
 	scale.x = (float)windowSettings._width / (float)_windowSettings._width;
 	scale.y = (float)windowSettings._height / (float)_windowSettings._height;
 	
-	
-
-	
 	for (auto &i : _fonts)
 	{
-		for (auto &j : i.text)
-		{
-			//j.fontSize *= scale.x;
-		}
+		i.OnResize(scale.x);
 	}
-	
-
 }
 
-bool UIHandler::RemoveFont(const WCHAR* filePathOrName)
+bool UIHandler::RemoveFont(const WCHAR* filePath)
 {
 	bool rv = false;
 	for (auto i : _fonts)
 	{
-		if (0 != wcscmp(i.filePath, filePathOrName))
+		if (0 != wcscmp(i.GetFilePath(), filePath))
 		{
 			i.Release();
 			rv = true;
@@ -141,18 +130,14 @@ bool UIHandler::RemoveFont(const WCHAR* filePathOrName)
 bool UIHandler::RemoveText(int id)
 {
 	bool rv = false;
+	bool deleted = false;
 	int incr = 0;
 	for (auto i : _fonts)
 	{
-		incr = 0;
-		for (auto j : i.text)
+		deleted = i.RemoveText(id);
+		if (deleted)
 		{
-			if (j.textId == id)
-			{
-				i.text.erase(i.text.begin()+incr);
-				rv = true;
-			}
-			incr++;
+			rv = true;
 		}
 	}
 	return rv;
