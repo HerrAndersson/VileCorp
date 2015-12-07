@@ -5,6 +5,8 @@
 Unit::Unit()
 {
 	_aStar = new AI::AStar();
+	_visibleTiles = nullptr;
+	_visionRadius = 0;
 }
 
 Unit::Unit(int x, int z, const Tilemap* tileMap)
@@ -39,6 +41,9 @@ Unit::Unit(int x, int z, const Tilemap* tileMap)
 Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject* renderObject, const Tilemap* tileMap)
 	: GameObject(ID, position, rotation, tilePosition, type, renderObject)
 {
+	_visionRadius = 3;
+	_visibleTiles = new AI::Vec2D[ (2 * _visionRadius) * (2 * _visionRadius)];
+
 	_tileMap = tileMap;
 	_aStar = new AI::AStar(_tileMap->GetWidth(), _tileMap->GetHeight(), _tilePosition, {0,0}, AI::AStar::OCTILE);		//TODO: Find the unit's goal --Victor
 
@@ -129,11 +134,11 @@ void Unit::Move()
 		_tilePosition += _direction;
 
 		AI::Vec2D nextTile = _path[--_pathLength];
-		_direction = { nextTile._x, nextTile._y };
+		_direction = {nextTile._x, nextTile._y};
 		_direction -= _tilePosition;
 		if (_direction._x == 0)
 		{
-			_rotation.y =  DirectX::XM_PIDIV2 * (_direction._y + 1);
+			_rotation.y = DirectX::XM_PIDIV2 * (_direction._y + 1);
 			//_rotation.y = atan(_direction._y / _direction._x);
 		}
 		else if (_direction._x == -1)
@@ -168,3 +173,20 @@ void Unit::Update()
 
 void Unit::Release()
 {}
+
+/*
+	Gathers the tiles which are visible to the unit.
+	The temporary solution is to check all tiles in radius.
+	Eventually, it should check a cone, with walls blocking the unit's vision.
+*/
+void Unit::FindVisibleTiles()
+{
+	for (int i = 0; i < 2 * _visionRadius + 1; i++)
+	{
+		for (int j = 0; j < 2 * _visionRadius + 1; j++)
+		{
+			_visibleTiles[i * (2 * _visionRadius + 1) + j] = AI::Vec2D(_tilePosition._x + i - _visionRadius, _tilePosition._y + i - _visionRadius);
+		}
+	}
+	
+}
