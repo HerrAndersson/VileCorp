@@ -16,6 +16,7 @@ Deferred::~Deferred()
 {
 	SAFE_RELEASE(_depthStencilView);
 	SAFE_RELEASE(_depthStencilBuffer);
+	SAFE_RELEASE(_depthShaderResourceView);
 
 	for (int i = 0; i < BUFFER_COUNT; i++)
 	{
@@ -124,6 +125,21 @@ void Deferred::InitializeBuffers(ID3D11Device* device)
 	{
 		throw runtime_error("Error creating depth stencil view");
 	}
+
+	//TODO
+	//ZeroMemory(&shaderResourceViewDesc, sizeof(shaderResourceViewDesc));
+	//shaderResourceViewDesc.Format = depthBufferDesc.Format;
+	//shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	//shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
+	//shaderResourceViewDesc.Texture2D.MipLevels = 1;
+
+	//result = device->CreateShaderResourceView(_depthStencilBuffer, &shaderResourceViewDesc, &_depthShaderResourceView);
+	//if (FAILED(result))
+	//{
+	//	throw runtime_error("Could not create Shadow map SRV");
+	//}
+
+
 
 	for (int i = 0; i < BUFFER_COUNT; i++)
 	{

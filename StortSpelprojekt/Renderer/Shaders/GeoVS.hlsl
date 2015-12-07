@@ -39,9 +39,8 @@ VS_OUT main(VS_IN input)
 
 	output.pos = pos;
 
+	output.normal = mul(input.normal, (float3x3)worldMatrix);
 
-
-	output.normal = input.normal;
 	output.uv = input.uv;
 	
 
