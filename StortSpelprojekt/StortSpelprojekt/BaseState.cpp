@@ -1,5 +1,7 @@
 #include "BaseState.h"
 
+State BaseState::_newStateRequest;
+
 BaseState::BaseState(InitVar initVar)
 {
 	_objectHandler		= initVar.objectHandler;
