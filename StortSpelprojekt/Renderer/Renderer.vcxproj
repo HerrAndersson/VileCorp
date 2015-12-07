@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Bitmap.cpp" />
     <ClCompile Include="Deferred.cpp" />
     <ClCompile Include="DirectXHandler.cpp" />
     <ClCompile Include="dllmain.cpp" />
@@ -27,12 +28,14 @@
     <ClCompile Include="ShaderHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Bitmap.h" />
     <ClInclude Include="CCollectionLoader.h" />
     <ClInclude Include="CFontEnum.h" />
     <ClInclude Include="DirectXHandler.h" />
     <ClInclude Include="Deferred.h" />
     <ClInclude Include="Fonts.h" />
     <ClInclude Include="FW\FW1FontWrapper.h" />
+    <ClInclude Include="Image.h" />
     <ClInclude Include="RenderModule.h" />
     <ClInclude Include="RenderUtils.h" />
     <ClInclude Include="ShaderHandler.h" />

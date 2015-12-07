@@ -228,6 +228,11 @@ namespace Renderer
 		}
 	}
 
+	void RenderModule::Render(Image* imageData)
+	{
+
+	}
+
 	void RenderModule::RenderLightQuad()
 	{
 		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();

@@ -7,13 +7,13 @@
 #include "ShaderHandler.h"
 #include <DirectXMath.h>
 #include "RenderUtils.h"
+#include "Image.h"
 
 namespace Renderer
 {
 	class RENDERER_EXPORT RenderModule
 	{
 	private:
-
 		struct ScreenQuadVertex
 		{
 			float x, y, z;
@@ -59,6 +59,7 @@ namespace Renderer
 
 		void BeginScene(float red, float green, float blue, float alpha);
 		void Render(DirectX::XMMATRIX* world, RenderObject* renderObject);
+		void Render(Image* imageData);
 		void RenderLightQuad();
 		void EndScene();
 

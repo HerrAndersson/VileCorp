@@ -2,9 +2,11 @@
 
 UIHandler::UIHandler(ID3D11Device* device, System::WindowSettings windowSettings)
 {
-	_device = device;
-	_textId = 0;
-	_windowSettings = windowSettings;
+	_device					= device;
+	_textId					= 0;
+	_windowSettings			= windowSettings;
+	_AM						= new AssetManager(device);
+	_textureId				= 0;
 }
 
 UIHandler::~UIHandler()
@@ -15,6 +17,7 @@ UIHandler::~UIHandler()
 	}
 	_fonts.clear();
 	std::vector<FontInfo>().swap(_fonts);
+	delete _AM;
 }
 
 void UIHandler::Update()
@@ -141,4 +144,18 @@ bool UIHandler::RemoveText(int id)
 		}
 	}
 	return rv;
+}
+
+int UIHandler::Add2DTexture(std::string filePath, DirectX::XMFLOAT2 position, DirectX::XMFLOAT2 size)
+{
+	_textures.push_back(Renderer::Image(position, size, _AM->GetTexture(filePath)));
+
+	return _textureId++;
+}
+
+int UIHandler::AddButton(std::string filePath, DirectX::XMFLOAT2 position, DirectX::XMFLOAT2 size)
+{
+	//Add2DTexture(filePath, position, size);
+
+	return 0;
 }
