@@ -15,10 +15,12 @@ enum State
 class BaseState
 {
 private:
-	State					_newStateRequest;
+	static State BaseState::_newStateRequest;
+
 protected:
 	ObjectHandler*		_objectHandler;
 	UIHandler*			_uiHandler;
+	
 	void ChangeState(State newState);
 public:
 	BaseState(InitVar initVar);
@@ -29,7 +31,6 @@ public:
 	virtual void OnStateExit() = 0;
 
 	State GetNewStateRequest()const;
-
 };
 
 #endif
