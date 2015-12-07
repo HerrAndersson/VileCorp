@@ -95,7 +95,7 @@ namespace AI
 		Vec2D* GetPath() const;
 		int GetPathLength() const;
 		void cleanMap();
-		void FindPath();
+		bool FindPath();
 	};
 
 }

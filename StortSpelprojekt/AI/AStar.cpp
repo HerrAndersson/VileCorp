@@ -165,7 +165,7 @@ namespace AI
 	TODO: Return the path as a sorted list
 	--Victor
 	*/
-	void AStar::FindPath()
+	bool AStar::FindPath()
 	{
 		_pathLength = 1;																//It's 1 because there's an offset in the loop later.
 		Vec2D currentPos = _start;
@@ -183,12 +183,19 @@ namespace AI
 					CalculateGCost(currentPos, checkedPos);
 				}
 			}
-			currentPos = _openQueue.removeMin()._position;
-			while (_grid[currentPos._x][currentPos._y]._open == 2)
+			if (_openQueue.size() <= 0)
+			{
+				return false;
+			}
+			else
 			{
 				currentPos = _openQueue.removeMin()._position;
+				while (_grid[currentPos._x][currentPos._y]._open == 2)
+				{
+					currentPos = _openQueue.removeMin()._position;
+				}
+				_grid[currentPos._x][currentPos._y]._open = 2;
 			}
-			_grid[currentPos._x][currentPos._y]._open = 2;
 		}
 		while (currentPos != _start)													//traces the route back to start
 		{
@@ -204,5 +211,6 @@ namespace AI
 			currentPos = _grid[currentPos._x][currentPos._y]._parent->_position;
 		}
 		_path[c++] = currentPos;
+		return true;
 	}
 }

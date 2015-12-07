@@ -108,12 +108,14 @@ void Unit::CalculatePath(AI::Vec2D goal)
 	_aStar->cleanMap();
 	_aStar->SetStartPosition(_tilePosition);
 	_aStar->SetGoalPosition(goal);
-	_aStar->FindPath();
-	_path = _aStar->GetPath();
-	_pathLength = _aStar->GetPathLength();
-	AI::Vec2D nextTile = _path[--_pathLength];
-	_direction = { nextTile._x, nextTile._y };
-	_direction -= _tilePosition;
+	if (_aStar->FindPath())
+	{
+		_path = _aStar->GetPath();
+		_pathLength = _aStar->GetPathLength();
+		AI::Vec2D nextTile = _path[--_pathLength];
+		_direction = {nextTile._x, nextTile._y};
+		_direction -= _tilePosition;
+	}
 }
 
 /*
@@ -129,6 +131,16 @@ void Unit::Move()
 		AI::Vec2D nextTile = _path[--_pathLength];
 		_direction = { nextTile._x, nextTile._y };
 		_direction -= _tilePosition;
+		if (_direction._x == 0 || _direction._y == 0)		//Right angle movement
+		{
+			_rotation.x = _direction._x;
+			_position.z =_direction._y;
+		}
+		else
+		{
+			_rotation.x = _direction._x;
+			_position.z = _direction._y;
+		}
 	}
 }
 
