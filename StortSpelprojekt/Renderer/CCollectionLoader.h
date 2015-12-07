@@ -71,7 +71,7 @@ class CCollectionLoader : public IDWriteFontCollectionLoader {
             *ppFontFileEnumerator = pEnum;
             
             pFontFile->Release();
-            
+
             return S_OK;
         }
     

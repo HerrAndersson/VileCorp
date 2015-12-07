@@ -178,7 +178,7 @@ int Game::Run()
 	//_objectHandler->Add(TRAP, 0, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
 
 	//_objectHandler->Add(TRAP, 0, XMFLOAT3(0.5f, -1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
-	_objectHandler->LoadLevel(2);
+	_objectHandler->LoadLevel(3);
 
 
 	_objectHandler->InitPathfinding();

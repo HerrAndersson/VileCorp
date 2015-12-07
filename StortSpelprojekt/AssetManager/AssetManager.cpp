@@ -15,7 +15,6 @@ AssetManager::AssetManager(ID3D11Device* device)
 	_tilesets = new vector<Tileset>;
 
 	SetupTilesets();
-	SetupTilesets();
 #ifdef _DEBUG
 	ActivateTileset("default");
 #endif
@@ -38,6 +37,7 @@ AssetManager::~AssetManager()
 		delete _renderObjects->at(i);
 	}
 	_renderObjects->clear();
+	_infile->clear();
 	delete _infile;
 	_modelFiles->clear();
 	delete _modelFiles;

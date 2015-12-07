@@ -33,7 +33,7 @@ void GameObject::CalculateMatrix()
 	//DO NOT TOUCH!!! //Haxxmaxxer
 	_objectMatrix = DirectX::XMMatrixTranspose(
 		DirectX::XMMatrixScalingFromVector(DirectX::XMLoadFloat3(&_scale)) * 
-		DirectX::XMMatrixRotationRollPitchYawFromVector(DirectX::XMQuaternionRotationRollPitchYaw(_rotation.x, _rotation.y, _rotation.z)) *
+		DirectX::XMMatrixRotationRollPitchYaw(_rotation.x, _rotation.y, _rotation.z) *
 		DirectX::XMMatrixTranslationFromVector(DirectX::XMLoadFloat3(&_position))
 		);
 
