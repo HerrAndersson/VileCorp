@@ -24,6 +24,8 @@
     <ClCompile Include="FontInfo.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="LevelEdit.cpp" />
+    <ClCompile Include="LevelEditState.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MenuState.cpp" />
     <ClCompile Include="ObjectHandler.cpp" />
@@ -44,6 +46,8 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="InitVar.h" />
+    <ClInclude Include="LevelEdit.h" />
+    <ClInclude Include="LevelEditState.h" />
     <ClInclude Include="MenuState.h" />
     <ClInclude Include="ObjectHandler.h" />
     <ClInclude Include="OptionsState.h" />

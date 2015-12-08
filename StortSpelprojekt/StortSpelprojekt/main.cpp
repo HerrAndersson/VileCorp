@@ -1,4 +1,5 @@
 #include "Game.h"
+#include "LevelEdit.h"
 
 int WINAPI wWinMain(HINSTANCE _hInstance, HINSTANCE _hPrevInstance, LPWSTR _lpCmdLine, int _nCmdShow)
 {
@@ -10,8 +11,12 @@ int WINAPI wWinMain(HINSTANCE _hInstance, HINSTANCE _hPrevInstance, LPWSTR _lpCm
 	{
 		myInitMemoryCheck();
 		
-		Game game(_hInstance, _nCmdShow);
-		result = game.Run();
+		//Game game(_hInstance, _nCmdShow);
+		//result = game.Run();
+		LevelEdit LevelEdit(_hInstance, _nCmdShow);
+		result = LevelEdit.Run();
+
+
 	}
 	catch (const std::exception& e)
 	{
