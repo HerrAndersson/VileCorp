@@ -216,7 +216,7 @@ namespace Renderer
 
 		int vertexSize = sizeof(Vertex);
 
-		if (renderObject->_skeleton != -1)
+		if (renderObject->_skeleton != 0)
 		{
 			vertexSize = sizeof(WeightedVertex);
 		}
