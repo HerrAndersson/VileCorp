@@ -134,13 +134,24 @@ void Game::Update(float deltaTime)
 	_UI->Update();
 	_UI->OnResize(_window->GetWindowSettings());
 	_SM->Update(deltaTime);
-	_objectHandler->Update();
+	_objectHandler->Update(deltaTime);
 }
 
 void Game::Render()
 {
 	_renderModule->BeginScene(0.0f, 1.0f, 1.0f, 1);
 	_renderModule->SetResourcesPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
+
+	_renderModule->SetShaderStage(Renderer::RenderModule::ANIM_PASS);
+	std::vector<GameObject*>* gameObjects = _objectHandler->GetGameObjects();
+	for (auto i : *gameObjects)
+	{
+		if (i->GetType() == UNIT)
+		{
+			_renderModule->Render(&i->GetMatrix(), i->GetRenderObject());
+		}
+	}
+
 	_renderModule->SetShaderStage(Renderer::RenderModule::GEO_PASS);
 
 
@@ -157,7 +168,6 @@ void Game::Render()
 	//	_renderModule->Render(&renderList.modelMatrices[j], renderList._renderObject);
 	//}
 	
-	std::vector<GameObject*>* gameObjects = _objectHandler->GetGameObjects();
 	for (auto i : *gameObjects)
 	{
 		_renderModule->Render(&i->GetMatrix(), i->GetRenderObject());

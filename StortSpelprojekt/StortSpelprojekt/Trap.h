@@ -8,7 +8,7 @@ public:
 	~Trap();
 
 	void Activate(); // TODO - Zache/Aron
-	void Update();
+	void Update(float deltaTime);
 	void Release();
 };
 

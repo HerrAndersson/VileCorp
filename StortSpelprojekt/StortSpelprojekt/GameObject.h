@@ -2,6 +2,7 @@
 #include <DirectXMath.h>
 #include "RenderUtils.h"
 #include "AIUtil.h"
+#include "Animation.h"
 
 /*
 GameObject class
@@ -27,6 +28,7 @@ protected:
 	Type _type;
 	bool _visible; // OBS
 	RenderObject* _renderObject;
+	Animation* _animation;
 
 	void CalculateMatrix();
 
@@ -57,7 +59,7 @@ public:
 	RenderObject* GetRenderObject() const;
 
 	//Update object gamelogic
-	void virtual Update() = 0;
+	void virtual Update(float deltaTime) = 0;
 
 	void virtual Release() = 0;
 

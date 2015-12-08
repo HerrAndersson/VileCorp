@@ -31,6 +31,7 @@ namespace Renderer
 		VertexShaderData*		_defaultVS;
 		VertexShaderData*		_geoPassVS;
 		VertexShaderData*		_lightPassVS;
+		VertexShaderData*		_animPassVS;
 
 		//Pixel shaders
 		ID3D11PixelShader*		_defaultPS;

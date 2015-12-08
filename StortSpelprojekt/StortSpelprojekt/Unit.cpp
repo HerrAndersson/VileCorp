@@ -146,7 +146,7 @@ void Unit::Move()
 	}
 }
 
-void Unit::Update()
+void Unit::Update(float deltaTime)
 {
 	if (_pathLength > 0)
 	{
@@ -162,6 +162,10 @@ void Unit::Update()
 		}
 		CalculateMatrix();
 	}
+
+	// Update animation for this specifik unit
+	_animTime += deltaTime;
+	//_animation->Update(_animTime);
 }
 
 void Unit::Release()

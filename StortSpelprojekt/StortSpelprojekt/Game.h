@@ -25,6 +25,7 @@ private:
 	ObjectHandler*				_objectHandler;
 	UIHandler*					_UI;
 	System::Timer				_timer;
+	Animation*					_animation;
 
 	System::InputDevice*		_input;
 

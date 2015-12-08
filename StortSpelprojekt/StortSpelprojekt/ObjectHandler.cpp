@@ -207,12 +207,12 @@ void ObjectHandler::InitPathfinding()
 	}
 }
 
-void ObjectHandler::Update()
+void ObjectHandler::Update(float deltaTime)
 {
 	//Update all objects gamelogic
 	for (int i = 0; i < _size; i++)
 	{
-		_gameObjects[i]->Update();
+		_gameObjects[i]->Update(deltaTime);
 		if (_gameObjects[i]->GetType() == UNIT)																	//Handle unit movement
 		{
 			float xOffset = abs(_gameObjects[i]->GetPosition().x - _gameObjects[i]->GetTilePosition()._x);

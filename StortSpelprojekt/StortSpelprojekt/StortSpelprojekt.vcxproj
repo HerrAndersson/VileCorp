@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Animation.cpp" />
     <ClCompile Include="Architecture.cpp" />
     <ClCompile Include="BaseState.cpp" />
     <ClCompile Include="FontInfo.cpp" />
@@ -38,6 +39,7 @@
     <ClCompile Include="Unit.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Animation.h" />
     <ClInclude Include="Architecture.h" />
     <ClInclude Include="BaseState.h" />
     <ClInclude Include="FontInfo.h" />

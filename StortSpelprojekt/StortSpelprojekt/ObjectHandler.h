@@ -72,7 +72,7 @@ public:
 	void InitPathfinding();
 
 	//Update gamelogic of all objects
-	void Update();
+	void Update(float deltaTime);
 	//Relase all object resources
 	void Release();
 };

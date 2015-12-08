@@ -47,7 +47,7 @@ namespace Renderer
 
 	public:
 
-		enum ShaderStage { GEO_PASS, LIGHT_PASS };
+		enum ShaderStage { GEO_PASS, LIGHT_PASS, ANIM_PASS };
 
 		RenderModule(HWND hwnd, int screenWidth, int screenHeight);
 		~RenderModule();
