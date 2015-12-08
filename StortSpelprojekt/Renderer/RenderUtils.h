@@ -6,10 +6,10 @@
 
 struct WeightedVertex
 {
+	short _boneIndices[4];
 	DirectX::XMFLOAT3 _position;
 	DirectX::XMFLOAT3 _normal;
 	DirectX::XMFLOAT2 _uv;
-	int _boneIndices[4];
 	float _boneWeights[4];
 };
 

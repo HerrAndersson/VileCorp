@@ -217,10 +217,8 @@ HRESULT Texture::LoadTexture(ID3D11Device* device)
 	if (!_loaded)
 	{
 #ifdef _DEBUG
-		_filename.insert(0, L"../../Output/Bin/x86/Debug/Assets/Textures/");
 		res = DirectX::CreateWICTextureFromFile(device, _filename.c_str(), nullptr, &_data, 0);
 #else
-		_filename.insert(0, L"Assets/Textures/");
 		res = DirectX::CreateWICTextureFromFile(device, _filename.c_str(), nullptr, &_data, 0);
 #endif
 		_loaded = true;
@@ -246,14 +244,23 @@ void AssetManager::LoadModel(string fileName, RenderObject* renderObject) {
 
 	Mesh* mesh;
 	vector<Vertex> vertices;
+	vector<WeightedVertex> weightedVertices;
 
 	for (uint i = 0; i < renderObject->_meshes.size(); i++)
 	{
 		mesh = &renderObject->_meshes[i];
 		_infile->seekg(mesh->_toMesh);
-		vertices.resize(mesh->_vertexBufferSize);
-		_infile->read((char*)vertices.data(), mesh->_vertexBufferSize*sizeof(Vertex));
-		mesh->_vertexBuffer = CreateVertexBuffer(&vertices, renderObject->_skeleton);
+		if(renderObject->_skeleton)
+		{
+			vertices.resize(mesh->_vertexBufferSize);
+			_infile->read((char*)vertices.data(), mesh->_vertexBufferSize*sizeof(WeightedVertex));
+		}
+		else
+		{
+			weightedVertices.resize(mesh->_vertexBufferSize);
+			_infile->read((char*)weightedVertices.data(), mesh->_vertexBufferSize*sizeof(Vertex));
+		}
+		mesh->_vertexBuffer = CreateVertexBuffer(&weightedVertices, &vertices, renderObject->_skeleton);
 	}
 
 	if (renderObject->_diffuseTexture != nullptr)
@@ -283,6 +290,11 @@ Texture* AssetManager::ScanTexture(string filename)
 	}
 	Texture* texture = new Texture;
 	texture->_filename = wstring(filename.begin(), filename.end());
+#ifdef _DEBUG
+	texture->_filename.insert(0, L"../../Output/Bin/x86/Debug/Assets/Textures/");
+#else
+	texture->_filename.insert(0, L"Assets/Textures/");
+#endif
 	_textures->push_back(texture);
 	return texture;
 }
@@ -309,6 +321,15 @@ RenderObject* AssetManager::ScanModel(string fileName)
 	mainHeader._meshCount++;
 	if (mainHeader._version != _meshFormatVersion)
 		throw std::runtime_error("Failed to load " + file_path + ":\nIncorrect fileversion");
+
+	int skeletonStringLength;
+	string skeletonFileName;
+	_infile->read((char*)&skeletonStringLength, 4);
+	skeletonFileName.resize(skeletonStringLength);
+	_infile->read((char*)skeletonFileName.data(), skeletonStringLength);
+
+	bool skeleton = strcmp(skeletonFileName.data(), "Unrigged") != 0;
+
 	for (int i = 0; i < mainHeader._meshCount; i++)
 	{
 		Mesh mesh;
@@ -324,7 +345,10 @@ RenderObject* AssetManager::ScanModel(string fileName)
 		renderObject->_meshes[i]._name.resize(meshHeader._nameLength);
 
 		_infile->read((char*)renderObject->_meshes[i]._name.data(), meshHeader._nameLength);
-		_infile->seekg(meshHeader._numberOfVertices*sizeof(Vertex), ios::cur);
+		if(skeleton)
+			_infile->seekg(meshHeader._numberOfVertices*sizeof(WeightedVertex), ios::cur);
+		else
+			_infile->seekg(meshHeader._numberOfVertices*sizeof(Vertex), ios::cur);
 
 		if (meshHeader._numberPointLights)
 		{
@@ -362,19 +386,24 @@ RenderObject* AssetManager::ScanModel(string fileName)
 	return renderObject;
 }
 
-ID3D11Buffer* AssetManager::CreateVertexBuffer(vector<Vertex> *vertices, int skeleton)
+ID3D11Buffer* AssetManager::CreateVertexBuffer(vector<WeightedVertex> *weightedVertices, vector<Vertex> *vertices, int skeleton)
 {
 	D3D11_BUFFER_DESC vbDESC;
 	vbDESC.Usage = D3D11_USAGE_DEFAULT;
-	vbDESC.ByteWidth = sizeof(Vertex)* vertices->size();
+	if(skeleton)
+		vbDESC.ByteWidth = sizeof(WeightedVertex)* vertices->size();
+	else
+		vbDESC.ByteWidth = sizeof(Vertex)* vertices->size();
 	vbDESC.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	vbDESC.CPUAccessFlags = 0;
 	vbDESC.MiscFlags = 0;
 	vbDESC.StructureByteStride = 0;
 
 	D3D11_SUBRESOURCE_DATA vertexData;
-
-	vertexData.pSysMem = vertices->data();
+	if(skeleton)
+		vertexData.pSysMem = weightedVertices->data();
+	else
+		vertexData.pSysMem = vertices->data();
 	vertexData.SysMemPitch = 0;
 	vertexData.SysMemSlicePitch = 0;
 

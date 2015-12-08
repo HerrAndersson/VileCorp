@@ -149,7 +149,7 @@ static bool GetFilenamesInDirectory(char* folder, char* extension, vector<string
 class ASSET_MANAGER_EXPORT AssetManager
 {
 private:
-	int _meshFormatVersion = 23;
+	int _meshFormatVersion = 24;
 	ifstream* _infile;
 	ID3D11Device* _device;
 
@@ -168,7 +168,7 @@ private:
 	RenderObject* ScanModel(string file_path);
 	Texture* ScanTexture(string filename);
 	void DecrementUsers(Texture* texture);
-	ID3D11Buffer* CreateVertexBuffer(vector<Vertex> *vertices, int skeleton);
+	ID3D11Buffer* CreateVertexBuffer(vector<WeightedVertex> *weightedVertices, vector<Vertex> *vertices, int skeleton);
 	void SetupRenderObjectList(Tileset* tileset);
 	void SetupLevelFileNameList();
 	void SetupTilesets();
