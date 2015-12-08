@@ -328,4 +328,21 @@ namespace Renderer
 		//Set sampler
 		deviceContext->PSSetSamplers(0, 1, &_samplerWRAP);
 	}
+
+	void ShaderHandler::SetAnimationPassShaders(ID3D11DeviceContext* deviceContext)
+	{
+		// Set vertex layout
+		deviceContext->IASetInputLayout(_animPassVS->_inputLayout);
+
+		// Set shaders
+		deviceContext->VSSetShader(_animPassVS->_vertexShader, nullptr, 0);
+		deviceContext->HSSetShader(nullptr, nullptr, 0);
+		deviceContext->GSSetShader(nullptr, nullptr, 0);
+		deviceContext->DSSetShader(nullptr, nullptr, 0);
+		deviceContext->PSSetShader(_geoPassPS, nullptr, 0);
+		deviceContext->CSSetShader(nullptr, nullptr, 0);
+
+		//Set sampler
+		deviceContext->PSSetSamplers(0, 1, &_samplerWRAP);
+	}
 }

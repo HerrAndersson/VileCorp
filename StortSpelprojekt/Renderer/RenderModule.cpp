@@ -175,7 +175,7 @@ namespace Renderer
 		case ANIM_PASS:
 		{
 			_d3d->SetGeometryPassRTVs();
-			_shaderHandler->SetGeometryPassShaders(_d3d->GetDeviceContext());
+			_shaderHandler->SetAnimationPassShaders(_d3d->GetDeviceContext());
 			break;
 		}
 		case GEO_PASS:
