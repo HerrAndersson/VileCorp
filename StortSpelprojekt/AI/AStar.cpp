@@ -10,26 +10,8 @@ namespace AI
 	//Calculates h based on the distance to the goal
 	void AStar::CalculateHCost(Vec2D pos)
 	{
-		__int16 a = abs(_goal._x - pos._x);						//horizontal distance to goal
-		__int16 b = abs(_goal._y - pos._y);						//vertical distance to goal
-		switch (_heuristicType)
-		{
-		case AStar::MANHATTAN:
-			_grid[pos._x][pos._y]._hCost = a + b;
-			break;
-		case AStar::CHEBYSHEV:
-			_grid[pos._x][pos._y]._hCost = std::min(a, b) + abs(a - b);
-			break;
-		case AStar::OCTILE:
-			_grid[pos._x][pos._y]._hCost = SQRT2 * std::min(a, b) + abs(a - b);
-			break;
-		case AStar::EUCLIDEAN:
-			_grid[pos._x][pos._y]._hCost = sqrt(a*a + b*b);
-			break;
-		default:
-			break;
-		}
-		_grid[pos._x][pos._y]._hCost *= _hWeight;
+		
+		_grid[pos._x][pos._y]._hCost = GetHeuristicDistance(pos, _goal) * _hWeight;
 	}
 
 	//calculates g by adding the preceding nodes g-cost to the current tilecost.
@@ -141,7 +123,32 @@ namespace AI
 		return _pathLength;
 	}
 
-	void AStar::cleanMap()
+	float AStar::GetHeuristicDistance(Vec2D start, Vec2D goal) const
+	{
+		float h = 0;
+		short x = abs(goal._x - start._x);						//horizontal distance to goal
+		short y = abs(goal._y - start._y);						//vertical distance to goal
+		switch (_heuristicType)
+		{
+		case AStar::MANHATTAN:
+			h = x + y;
+			break;
+		case AStar::CHEBYSHEV:
+			h = std::min(x, y) + abs(x - y);
+			break;
+		case AStar::OCTILE:
+			h = SQRT2 * std::min(x, y) + abs(x - y);
+			break;
+		case AStar::EUCLIDEAN:
+			h = sqrt(x * x + y * y);
+			break;
+		default:
+			break;
+		}
+		return h;
+	}
+
+	void AStar::CleanMap()
 	{
 		delete[] _path;
 		_path = nullptr;

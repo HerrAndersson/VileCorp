@@ -1,4 +1,4 @@
-#pragma once
+ #pragma once
 #define AI_EXPORT __declspec(dllexport)
 
 namespace AI

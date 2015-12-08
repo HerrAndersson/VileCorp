@@ -8,7 +8,6 @@ public:
 	const float MOVE_SPEED = 0.02f;
 private:
 	AI::AStar* _aStar;
-	//AI::Vec2D _unitTilePosition;				//replaced by _tilePosition in GameObject
 	AI::Vec2D _goalTilePosition;
 	AI::Vec2D* _path;
 	int _pathLength;
@@ -17,13 +16,14 @@ private:
 	float  _moveSpeed;
 
 	int _visionRadius;
+	int nrOfVisibleTiles;
 	AI::Vec2D* _visibleTiles;
 
 public:
 	Unit();
-	Unit(int x, int z, const Tilemap* tileMap);
 	Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject* renderObject, const Tilemap* tileMap);
 	~Unit();
+	void FindVisibleTiles();
 	void CheckVisibleTiles();
 	void CheckAllTiles();
 	void CalculatePath();
@@ -31,6 +31,5 @@ public:
 	void Move();
 	void Update();
 	void Release();
-	void FindVisibleTiles();
 };
 
