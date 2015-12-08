@@ -122,6 +122,28 @@ void LevelEdit::HandleInput()
 		}
 	}
 
+	if (GetAsyncKeyState(VK_OEM_COMMA) != 0)
+	{
+		temp = _objectHandler->Find(_selectedObj);
+		if (temp->GetType()  < 3)
+		{
+			XMFLOAT3 tempRot = temp->GetRotation();
+			temp->SetRotation(XMFLOAT3(tempRot.x, tempRot.y + (DirectX::XM_PI/2), tempRot.z));
+			Sleep(200);
+		}
+	}
+	if (GetAsyncKeyState(VK_OEM_PERIOD) != 0)
+	{
+		temp = _objectHandler->Find(_selectedObj);
+		if (temp->GetType()  < 3)
+		{
+			XMFLOAT3 tempRot = temp->GetRotation();
+			temp->SetRotation(XMFLOAT3(tempRot.x, tempRot.y - (DirectX::XM_PI / 2), tempRot.z));
+			Sleep(200);
+		}
+	}
+
+
 	//Camera mouse control
 	System::MouseCoord mouseCoord = _input->GetMouseCoord();
 	if (mouseCoord._deltaPos.x != 0 || mouseCoord._deltaPos.y != 0)
