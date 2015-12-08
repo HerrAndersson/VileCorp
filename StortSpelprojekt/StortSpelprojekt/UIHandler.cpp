@@ -148,7 +148,8 @@ bool UIHandler::RemoveText(int id)
 
 int UIHandler::Add2DTexture(std::string filePath, DirectX::XMFLOAT2 position, DirectX::XMFLOAT2 size)
 {
-	_textures.push_back(Renderer::Image(position, size, _AM->GetTexture(filePath)));
+	ID3D11ShaderResourceView* tex = _AM->GetTexture(filePath);
+	_textures.push_back(Renderer::HUDElement(position, size, tex));
 
 	return _textureId++;
 }
@@ -156,6 +157,12 @@ int UIHandler::Add2DTexture(std::string filePath, DirectX::XMFLOAT2 position, Di
 int UIHandler::AddButton(std::string filePath, DirectX::XMFLOAT2 position, DirectX::XMFLOAT2 size)
 {
 	//Add2DTexture(filePath, position, size);
-
+	//_textures
 	return 0;
 }
+
+std::vector<Renderer::HUDElement>* UIHandler::GetTextureData()
+{
+	return &_textures;
+}
+

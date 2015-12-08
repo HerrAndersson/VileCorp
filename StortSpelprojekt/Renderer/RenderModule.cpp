@@ -92,6 +92,14 @@ namespace Renderer
 		{
 			throw std::runtime_error("RenderModule::InitializeConstantBuffers: Failed to create MatrixBufferPerFrame");
 		}
+
+		//Matrix buffer HUD
+		matrixBufferDesc.ByteWidth = sizeof(DirectX::XMFLOAT4X4);
+		result = device->CreateBuffer(&matrixBufferDesc, NULL, &_matrixBufferHUD);
+		if (FAILED(result))
+		{
+			throw std::runtime_error("RenderModule::InitializeConstantBuffers: Failed to create matrixBufferHUD");
+		}
 	}
 
 	void RenderModule::ResizeResources(HWND hwnd, int windowWidth, int windowHeight)
@@ -184,6 +192,12 @@ namespace Renderer
 			_shaderHandler->SetLightPassShaders(_d3d->GetDeviceContext());
 			break;
 		}
+		case HUD_PASS:
+		{
+			_d3d->SetHUDPassRTVs();
+			_shaderHandler->SetHUDPassShaders(_d3d->GetDeviceContext());
+			break;
+		}
 		};
 	}
 
@@ -228,9 +242,30 @@ namespace Renderer
 		}
 	}
 
-	void RenderModule::Render(Image* imageData)
+	void RenderModule::Render(std::vector<HUDElement>* imageData)
 	{
+		D3D11_MAPPED_SUBRESOURCE mappedResource;
+		HRESULT result;
 
+		for (auto i : *imageData)
+		{
+			result = _d3d->GetDeviceContext()->Map(_matrixBufferHUD, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+			if (FAILED(result))
+			{
+				throw std::runtime_error("RenderModule::SetResourcesPerObject: Failed to Map _matrixBufferHUD");
+			}
+
+			MatrixBufferHud* dataPtr = (MatrixBufferHud*)mappedResource.pData;
+			dataPtr->model = *(i.GetModelMatrix());
+
+			_d3d->GetDeviceContext()->Unmap(_matrixBufferHUD, 0);
+
+			_d3d->GetDeviceContext()->VSSetConstantBuffers(0, 1, &_matrixBufferHUD);
+			ID3D11ShaderResourceView* tex = i.GetTexture();
+			_d3d->GetDeviceContext()->PSSetShaderResources(0, 1, &tex);
+
+			_d3d->GetDeviceContext()->Draw(6, 0);
+		}
 	}
 
 	void RenderModule::RenderLightQuad()

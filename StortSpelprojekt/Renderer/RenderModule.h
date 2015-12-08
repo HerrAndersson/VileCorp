@@ -7,7 +7,7 @@
 #include "ShaderHandler.h"
 #include <DirectXMath.h>
 #include "RenderUtils.h"
-#include "Image.h"
+#include "HUDElement.h"
 
 namespace Renderer
 {
@@ -32,6 +32,11 @@ namespace Renderer
 			DirectX::XMMATRIX projectionMatrix;
 		};
 
+		struct MatrixBufferHud
+		{
+			DirectX::XMMATRIX model;
+		};
+
 		ID3D11Buffer* _matrixBufferPerObject;
 		ID3D11Buffer* _matrixBufferPerFrame;
 
@@ -39,6 +44,7 @@ namespace Renderer
 		ShaderHandler* _shaderHandler;
 
 		ID3D11Buffer* _screenQuad;
+		ID3D11Buffer* _matrixBufferHUD;
 
 		void InitializeConstantBuffers();
 
@@ -47,7 +53,7 @@ namespace Renderer
 
 	public:
 
-		enum ShaderStage { GEO_PASS, LIGHT_PASS };
+		enum ShaderStage { GEO_PASS, LIGHT_PASS, HUD_PASS };
 
 		RenderModule(HWND hwnd, int screenWidth, int screenHeight);
 		~RenderModule();
@@ -59,7 +65,7 @@ namespace Renderer
 
 		void BeginScene(float red, float green, float blue, float alpha);
 		void Render(DirectX::XMMATRIX* world, RenderObject* renderObject);
-		void Render(Image* imageData);
+		void Render(std::vector<HUDElement>* imageData);
 		void RenderLightQuad();
 		void EndScene();
 

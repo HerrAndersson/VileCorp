@@ -9,18 +9,18 @@
 #include "Window.h"
 #include "FontInfo.h"
 #include "AssetManager.h"
-#include "Image.h"
+#include "HUDElement.h"
 
 class UIHandler
 {
 private:
-	std::vector<FontInfo>			_fonts;
-	int								_textId;
-	System::WindowSettings			_windowSettings;
-	ID3D11Device*					_device;
-	AssetManager*					_AM;
-	std::vector<Renderer::Image>	_textures;
-	int								_textureId;
+	std::vector<FontInfo>				_fonts;
+	int									_textId;
+	System::WindowSettings				_windowSettings;
+	ID3D11Device*						_device;
+	AssetManager*						_AM;
+	std::vector<Renderer::HUDElement>	_textures;
+	int									_textureId;
 	
 
 public:
@@ -44,6 +44,7 @@ public:
 
 	int Add2DTexture(std::string filePath, DirectX::XMFLOAT2 position, DirectX::XMFLOAT2 size);
 	int AddButton(std::string filePath, DirectX::XMFLOAT2 position, DirectX::XMFLOAT2 size);
+	std::vector<Renderer::HUDElement>* GetTextureData();
 };
 
 #endif

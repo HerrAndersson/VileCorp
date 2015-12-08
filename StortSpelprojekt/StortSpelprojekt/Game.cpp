@@ -165,14 +165,9 @@ void Game::Render()
 
 	_renderModule->SetShaderStage(Renderer::RenderModule::LIGHT_PASS);
 	_renderModule->RenderLightQuad();
-
-	/*
 	
-	_renderModule->Render(
-	
-	*/
-
-	//_renderModule->Render();
+	_renderModule->SetShaderStage(Renderer::RenderModule::HUD_PASS);
+	_renderModule->Render(_UI->GetTextureData());
 	_UI->Render(_renderModule->GetDeviceContext());
 	_renderModule->EndScene();
 }
