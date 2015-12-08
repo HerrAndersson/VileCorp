@@ -140,8 +140,8 @@ static bool GetFilenamesInDirectory(char* folder, char* extension, vector<string
 	return true;
 }
 
-//AssetManager keeps lists of all assets in the game(currently meshes), and loads them onto the GPU or memory when required.
-//RenderObjects are the interface by which the assetmanager provides models to the renderer. They contain at least one mesh, two colors for diffuse and specular respectively, two handles to textures(textures not yet in), an index to its skeleton and help variables.
+//AssetManager keeps lists of all assets in the game(currently meshes and textures), and loads them onto the GPU or memory when required.
+//RenderObjects are the interface by which the assetmanager provides models to the renderer. They contain at least one mesh, two colors for diffuse and specular respectively, two handles to textures, an pointer to its skeleton and various help variables.
 //Get buffers with:
 //assetManager->GetRenderObject(MY_OBJECT_RENDEROBJECT_INDEX)->meshes[SUBMESH_INDEX].vertexBuffer; Also on meshlevel lies the size of the buffer and any lights that may be present.
 //Call assetManager->UnLoad(MY_OBJECT_RENDEROBJECT_INDEX, false) if you think the mesh probably won't be needed again soon

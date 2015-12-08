@@ -252,13 +252,13 @@ void AssetManager::LoadModel(string fileName, RenderObject* renderObject) {
 		_infile->seekg(mesh->_toMesh);
 		if(renderObject->_skeleton)
 		{
-			vertices.resize(mesh->_vertexBufferSize);
-			_infile->read((char*)vertices.data(), mesh->_vertexBufferSize*sizeof(WeightedVertex));
+			weightedVertices.resize(mesh->_vertexBufferSize);
+			_infile->read((char*)weightedVertices.data(), mesh->_vertexBufferSize*sizeof(WeightedVertex));
 		}
 		else
 		{
-			weightedVertices.resize(mesh->_vertexBufferSize);
-			_infile->read((char*)weightedVertices.data(), mesh->_vertexBufferSize*sizeof(Vertex));
+			vertices.resize(mesh->_vertexBufferSize);
+			_infile->read((char*)vertices.data(), mesh->_vertexBufferSize*sizeof(Vertex));
 		}
 		mesh->_vertexBuffer = CreateVertexBuffer(&weightedVertices, &vertices, renderObject->_skeleton);
 	}

@@ -63,7 +63,7 @@ struct Texture
 struct RenderObject
 {
 	bool _meshLoaded, _toUnload;
-	short _skeleton = -1;
+	short _skeleton = 0;
 	float _diffuse[4], _specular[4];
 	Texture* _diffuseTexture = nullptr;
 	Texture* _specularTexture = nullptr;
