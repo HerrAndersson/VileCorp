@@ -3,10 +3,12 @@
 
 
 Unit::Unit()
+	: GameObject()
 {
 	_aStar = new AI::AStar();
 	_visibleTiles = nullptr;
 	_visionRadius = 0;
+	_goalTilePosition = {0,0};
 }
 
 Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject* renderObject, const Tilemap* tileMap)
@@ -15,7 +17,7 @@ Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	_visionRadius = 3;
 	_visibleTiles = new AI::Vec2D[ (2 * _visionRadius) * (2 * _visionRadius)];
 	nrOfVisibleTiles = 0;
-
+	_goalTilePosition = _tilePosition;
 	_tileMap = tileMap;
 	_aStar = new AI::AStar(_tileMap->GetWidth(), _tileMap->GetHeight(), _tilePosition, {0,0}, AI::AStar::OCTILE);		//TODO: Find the unit's goal --Victor
 
@@ -67,7 +69,7 @@ void Unit::CheckVisibleTiles()
 		{			
 			if (_visibleTiles[i] != _goalTilePosition)																		//Goal should be updated to chase unit
 			{
-				if (_visibleTiles[i]._x - _goalTilePosition._x > 1 || _visibleTiles[i]._y - _goalTilePosition._y > 1)		//Goal has moved more than one tile
+				if (abs(_visibleTiles[i]._x - _goalTilePosition._x) > 1 || abs(_visibleTiles[i]._y - _goalTilePosition._y) > 1)		//Goal has moved more than one tile
 				{
 					CalculatePath(_visibleTiles[i]);
 				}
@@ -93,11 +95,17 @@ void Unit::CheckAllTiles()
 	{
 		for (int j = 0; j < _tileMap->GetHeight(); j++)
 		{
+			//Handle objectives
 			if (_tileMap->IsObjectiveOnTile(i, j))
 			{
-				_aStar->SetGoalPosition({i, j});			//TODO: Make a proper decision in case of multiple goals --Victor
+				if (_tilePosition == _goalTilePosition || _aStar->GetHeuristicDistance(_tilePosition, {i, j}) < _aStar->GetHeuristicDistance(_tilePosition, _goalTilePosition))	//Choose the 'closest' objective
+				{
+					_goalTilePosition = {i, j};
+					_aStar->SetGoalPosition(_goalTilePosition);
+				}
 				_aStar->SetTileCost({ i, j }, 1);
 			}
+			//Handle walls
  			if (_tileMap->IsWallOnTile(i, j))
 			{
 				_aStar->SetTileCost({i, j}, -1);
@@ -116,12 +124,14 @@ void Unit::CheckAllTiles()
 */
 void Unit::CalculatePath()
 {
-	_aStar->FindPath();
-	_path = _aStar->GetPath();
-	_pathLength = _aStar->GetPathLength() -1;
-	AI::Vec2D nextTile = _path[--_pathLength];
-	_direction = { nextTile._x, nextTile._y };
-	_direction -= _tilePosition;
+	if (_aStar->FindPath())
+	{
+		_path = _aStar->GetPath();
+		_pathLength = _aStar->GetPathLength() - 1;
+		AI::Vec2D nextTile = _path[--_pathLength];
+		_direction = {nextTile._x, nextTile._y};
+		_direction -= _tilePosition;
+	}
 }
 
 /*

@@ -174,6 +174,10 @@ namespace AI
 	*/
 	bool AStar::FindPath()
 	{
+		if (_goal == _start)
+		{
+			return false;
+		}
 		_pathLength = 1;																//It's 1 because there's an offset in the loop later.
 		Vec2D currentPos = _start;
 		_grid[_start._x][_start._y]._open = 2;

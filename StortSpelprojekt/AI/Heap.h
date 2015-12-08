@@ -47,6 +47,7 @@ template<typename T>
 Heap<T>::~Heap()
 {
 	delete[] _tree;
+	_tree = nullptr;
 }
 
 template<typename T>
