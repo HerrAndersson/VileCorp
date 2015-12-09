@@ -5,6 +5,9 @@
 #include <DirectXMath.h>
 #include <d3d11.h>
 
+//Disable warning about DirectX  FLOAT3/MATRIX
+#pragma warning( disable: 4251 )
+
 namespace Renderer
 {
 	class __declspec(align(16), dllexport) HUDElement
