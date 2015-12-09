@@ -120,19 +120,19 @@ bool Tilemap::RemoveObjectFromTile(int x, int z, GameObject * obj)
 		{
 		case FLOOR:
 		case WALL:
-			if (_map[x][z]._objectsOnTile[1]->GetID() == obj->GetID())
+			if (_map[x][z]._objectsOnTile[0] != nullptr && _map[x][z]._objectsOnTile[0]->GetID() == obj->GetID())
 			{
-				_map[x][z]._objectsOnTile[1] = nullptr;
+				_map[x][z]._objectsOnTile[0] = nullptr;
 				result = true;
 			}
 			break;
 		case UNIT:
-			if (_map[x][z]._objectsOnTile[1]->GetID() == obj->GetID())
+			if (_map[x][z]._objectsOnTile[1] != nullptr && _map[x][z]._objectsOnTile[1]->GetID() == obj->GetID())
 			{
 				_map[x][z]._objectsOnTile[1] = nullptr;
 				result = true;
 			}
-			else if (_map[x][z]._objectsOnTile[2]->GetID() == obj->GetID())
+			else if (_map[x][z]._objectsOnTile[2] != nullptr && _map[x][z]._objectsOnTile[2]->GetID() == obj->GetID())
 			{
 				_map[x][z]._objectsOnTile[2] = nullptr;
 				result = true;
@@ -140,14 +140,14 @@ bool Tilemap::RemoveObjectFromTile(int x, int z, GameObject * obj)
 			break;
 		case TRAP:
 		case LOOT:
-			if (_map[x][z]._objectsOnTile[3]->GetID() == obj->GetID())
+			if (_map[x][z]._objectsOnTile[3] != nullptr &&  _map[x][z]._objectsOnTile[3]->GetID() == obj->GetID())
 			{
 				_map[x][z]._objectsOnTile[3] = nullptr;
 				result = true;
 			}
 			break;
 		case TRIGGER:
-			if (_map[x][z]._objectsOnTile[4]->GetID() == obj->GetID())
+			if (_map[x][z]._objectsOnTile[4] != nullptr && _map[x][z]._objectsOnTile[4]->GetID() == obj->GetID())
 			{
 				_map[x][z]._objectsOnTile[4] = nullptr;
 				result = true;

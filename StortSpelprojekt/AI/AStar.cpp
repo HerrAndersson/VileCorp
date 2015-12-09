@@ -131,16 +131,16 @@ namespace AI
 		switch (_heuristicType)
 		{
 		case AStar::MANHATTAN:
-			h = x + y;
+			h = (float)(x + y);
 			break;
 		case AStar::CHEBYSHEV:
-			h = std::min(x, y) + abs(x - y);
+			h = (float)(std::min(x, y) + abs(x - y));
 			break;
 		case AStar::OCTILE:
 			h = SQRT2 * std::min(x, y) + abs(x - y);
 			break;
 		case AStar::EUCLIDEAN:
-			h = sqrt(x * x + y * y);
+			h = (float)(sqrt(x * x + y * y));
 			break;
 		default:
 			break;
@@ -163,7 +163,7 @@ namespace AI
 				_grid[i][j]._parent = nullptr;
 			}
 		}
-		_openQueue.~Heap();
+		_openQueue.empty();
 		_openQueue = Heap<Node>();
 	}
 
@@ -178,7 +178,7 @@ namespace AI
 		{
 			return false;
 		}
-		_pathLength = 1;																//It's 1 because there's an offset in the loop later.
+		_pathLength = 0;																//It's 1 because there's an offset in the loop later.
 		Vec2D currentPos = _start;
 		_grid[_start._x][_start._y]._open = 2;
 
@@ -221,7 +221,7 @@ namespace AI
 			_path[c++] = currentPos;
 			currentPos = _grid[currentPos._x][currentPos._y]._parent->_position;
 		}
-		_path[c++] = currentPos;
+	//	_path[c++] = currentPos;														//Excluding start position since it should already be known
 		return true;
 	}
 }
