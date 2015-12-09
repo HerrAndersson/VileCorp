@@ -15,8 +15,6 @@ UIHandler::~UIHandler()
 	{
 		i.Release();
 	}
-	_fonts.clear();
-	std::vector<FontInfo>().swap(_fonts);
 	delete _AM;
 }
 

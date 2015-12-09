@@ -16,7 +16,8 @@ namespace Renderer
 		DirectX::XMMATRIX transform = DirectX::XMMatrixTranslation(_position.x, _position.y, 0);
 		DirectX::XMMATRIX scale = DirectX::XMMatrixScaling(_scale.x, _scale.y, 1);
 
-		_modelMatrix = DirectX::XMMatrixMultiply(transform, scale);
+		_modelMatrix = DirectX::XMMatrixMultiply(scale, transform);
+		_modelMatrix = DirectX::XMMatrixTranspose(_modelMatrix);
 	}
 
 	void HUDElement::SetPosition(DirectX::XMFLOAT2 position)

@@ -65,6 +65,7 @@ namespace Renderer
 		SAFE_RELEASE(_screenQuad);
 		SAFE_RELEASE(_matrixBufferPerObject);
 		SAFE_RELEASE(_matrixBufferPerFrame);
+		SAFE_RELEASE(_matrixBufferHUD);
 	}
 
 	void RenderModule::InitializeConstantBuffers()
