@@ -2,6 +2,7 @@
 #include "GameObject.h"
 #include "Tilemap.h"
 #include "AStar.h"
+#include <DirectXMath.h>
 class Unit : public GameObject
 {
 public:
@@ -18,6 +19,11 @@ private:
 
 	int _visionRadius;
 	AI::Vec2D* _visibleTiles;
+	int _nrOfVisibleTiles;
+
+	void ScanOctant(int depth, int octant, double &startSlope, double endSlope);
+	double GetSlope(double x1, double y1, double x2, double y2, bool invert);
+	int GetVisDistance(int x1, int y1, int x2, int y2);
 
 public:
 	Unit();
@@ -32,5 +38,6 @@ public:
 	void Update();
 	void Release();
 	void FindVisibleTiles();
+
 };
 
