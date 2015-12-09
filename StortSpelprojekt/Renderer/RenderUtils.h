@@ -39,16 +39,16 @@ struct Point
 
 struct Mesh
 {
-	~Mesh()
-	{
-		_pointLights.clear();
-		_spotLights.clear();
-	}
 	std::string _name;
 	ID3D11Buffer* _vertexBuffer;
 	int _vertexBufferSize, _toMesh;
 	std::vector<PointLight> _pointLights;
 	std::vector<SpotLight> _spotLights;
+	~Mesh()
+	{
+		_pointLights.clear();
+		_spotLights.clear();
+	}
 };
 
 struct Texture
@@ -68,5 +68,8 @@ struct RenderObject
 	Texture* _diffuseTexture = nullptr;
 	Texture* _specularTexture = nullptr;
 	std::vector<Mesh> _meshes;
-	~RenderObject() { _meshes.clear(); }
+	~RenderObject() 
+	{ 
+		_meshes.clear(); 
+	}
 };

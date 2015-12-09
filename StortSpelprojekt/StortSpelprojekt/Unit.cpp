@@ -105,7 +105,7 @@ void Unit::CalculatePath()
 void Unit::CalculatePath(AI::Vec2D goal)
 {
 	_goalTilePosition = goal;
-	_aStar->cleanMap();
+	_aStar->CleanMap();
 	_aStar->SetStartPosition(_tilePosition);
 	_aStar->SetGoalPosition(goal);
 	_aStar->FindPath();

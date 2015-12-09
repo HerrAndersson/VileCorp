@@ -1,5 +1,4 @@
-#ifndef FONTINFO_H
-#define FONTINFO_H
+#pragma once
 
 #include <vector>
 #include "Fonts.h"
@@ -10,19 +9,19 @@ class FontInfo
 private:
 	struct TextInfo
 	{
-		DirectX::XMFLOAT2		position;
-		float					fontSize;
-		UINT32					color;
-		std::wstring			text;
-		int						textId;
+		DirectX::XMFLOAT2		_position;
+		float					_fontSize;
+		UINT32					_color;
+		std::wstring			_text;
+		int						_textId;
 
-		TextInfo(DirectX::XMFLOAT2 position_, float fontSize_, UINT32 color_, std::wstring text_, int textId_)
+		TextInfo(DirectX::XMFLOAT2 position, float fontSize, UINT32 color, std::wstring text, int textId)
 		{
-			position = position_;
-			fontSize = fontSize_;
-			color = color_;
-			text = text_;
-			textId = textId_;
+			_position = position;
+			_fontSize = fontSize;
+			_color = color;
+			_text = text;
+			_textId = textId;
 		}
 	};
 	const WCHAR*			_filePath;
@@ -31,15 +30,15 @@ private:
 	Renderer::Fonts			_fontDevice;
 
 public:
-	FontInfo(const WCHAR* filePath_,
-		const WCHAR* fontName_,
-		DirectX::XMFLOAT2 position_,
-		float fontSize_,
-		UINT32 color_,
-		std::wstring text_,
-		int textId_,
-		bool custom_,
-		ID3D11Device* device_);
+	FontInfo(const WCHAR* filePath,
+		const WCHAR* fontName,
+		DirectX::XMFLOAT2 position,
+		float fontSize,
+		UINT32 color,
+		std::wstring text,
+		int textId,
+		bool custom,
+		ID3D11Device* device);
 	~FontInfo();
 
 	void Release();
@@ -52,5 +51,3 @@ public:
 	const WCHAR* GetFileName()const;
 
 };
-
-#endif

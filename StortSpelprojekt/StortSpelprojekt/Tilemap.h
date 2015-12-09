@@ -1,8 +1,7 @@
 //Handles the walkable and non-walkable tiles
 //Aron and Victor worked on this
 
-#ifndef TILEMAP_H
-#define TILEMAP_H
+#pragma once
 
 #include "GameObject.h"
 
@@ -60,4 +59,3 @@ public:
 	bool IsObjectiveOnTile(int x, int z)const;
 	bool IsTypeOnTile(int x, int z, Type type)const;
 };
-#endif

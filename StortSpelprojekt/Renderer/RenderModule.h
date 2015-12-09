@@ -1,5 +1,4 @@
-#ifndef RENDERMODULE_H
-#define RENDERMODULE_H
+#pragma once
 
 #define RENDERER_EXPORT __declspec(dllexport)
 
@@ -14,22 +13,23 @@ namespace Renderer
 	{
 	private:
 
+		// Any point of this? Isn't used... - Zache
 		struct ScreenQuadVertex
 		{
-			float x, y, z;
-			float u, v;
+			float _x, _y, _z;
+			float _u, _v;
 		};
 
 		//Constant buffers
 		struct MatrixBufferPerObject
 		{
-			DirectX::XMMATRIX world;
+			DirectX::XMMATRIX _world;
 		};
 
 		struct MatrixBufferPerFrame
 		{
-			DirectX::XMMATRIX viewMatrix;
-			DirectX::XMMATRIX projectionMatrix;
+			DirectX::XMMATRIX _viewMatrix;
+			DirectX::XMMATRIX _projectionMatrix;
 		};
 
 		ID3D11Buffer* _matrixBufferPerObject;
@@ -66,5 +66,3 @@ namespace Renderer
 		ID3D11DeviceContext* GetDeviceContext() const;
 	};
 }
-
-#endif

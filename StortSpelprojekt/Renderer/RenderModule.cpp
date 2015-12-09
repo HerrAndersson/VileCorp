@@ -120,8 +120,8 @@ namespace Renderer
 
 		dataPtr = (MatrixBufferPerFrame*)mappedResource.pData;
 
-		dataPtr->viewMatrix = viewMatrixC;
-		dataPtr->projectionMatrix = projectionMatrixC;
+		dataPtr->_viewMatrix = viewMatrixC;
+		dataPtr->_projectionMatrix = projectionMatrixC;
 
 		deviceContext->Unmap(_matrixBufferPerFrame, 0);
 
@@ -150,7 +150,7 @@ namespace Renderer
 
 		MatrixBufferPerObject* dataPtr = (MatrixBufferPerObject*)mappedResource.pData;
 
-		dataPtr->world = worldMatrixC;
+		dataPtr->_world = worldMatrixC;
 
 		deviceContext->Unmap(_matrixBufferPerObject, 0);
 

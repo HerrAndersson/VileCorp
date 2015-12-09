@@ -1,5 +1,4 @@
-#ifndef DIRECTXHANDLER_H
-#define DIRECTXHANDLER_H
+#pragma once
 
 #include <d3d11.h>
 #include <d3dcompiler.h>
@@ -47,5 +46,3 @@ namespace Renderer
 		void EndScene();
 	};
 }
-
-#endif

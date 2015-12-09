@@ -1,5 +1,4 @@
-#ifndef UIHANDLER_H
-#define UIHANDLER_H
+#pragma once
 
 #include <d3d11.h>
 #include <vector>
@@ -36,5 +35,3 @@ public:
 	bool RemoveText(int id);
 
 };
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef MENUSTATE_H
-#define MENUSTATE_H
+#pragma once
 
 #include "BaseState.h"
 
@@ -16,5 +15,3 @@ public:
 	void OnStateEnter();
 	void OnStateExit();
 };
-
-#endif

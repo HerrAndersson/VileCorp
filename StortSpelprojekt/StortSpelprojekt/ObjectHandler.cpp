@@ -21,7 +21,6 @@ ObjectHandler::ObjectHandler(ID3D11Device* device)
 ObjectHandler::~ObjectHandler()
 {
 	Release();
-	Clear();
 	delete _assetManager;
 	delete _tilemap;
 }
@@ -153,16 +152,21 @@ RenderList ObjectHandler::GetAll(int renderObjectID)
 	RenderList list;
 
 	list._renderObject = _assetManager->GetRenderObject(renderObjectID);
-	list.modelMatrices.resize(_size);
+	list._modelMatrices.resize(_size);
 	for (int i = 0; i < _size; i++)
 	{
 		if (_gameObjects.at(i)->GetRenderObject() == _assetManager->GetRenderObject(renderObjectID))
 		{	
-			list.modelMatrices[i] = _gameObjects[i]->GetMatrix();
+			list._modelMatrices[i] = _gameObjects[i]->GetMatrix();
 		}
 	}
 
 	return list;
+}
+
+std::vector<GameObject*>* ObjectHandler::GetGameObjects()
+{
+	return &_gameObjects;
 }
 
 Tilemap * ObjectHandler::GetTileMap() const
@@ -181,7 +185,7 @@ bool ObjectHandler::LoadLevel(int lvlIndex)
 	vector<GameObjectData> gameObjectData;
 	_assetManager->ParseLevel(lvlIndex, gameObjectData, dimX, dimY);
 
-	_gameObjects.clear();
+	Clear();
 
 	delete _tilemap;
 	_tilemap = new Tilemap(dimX, dimY);
@@ -189,7 +193,6 @@ bool ObjectHandler::LoadLevel(int lvlIndex)
 	for (auto i : gameObjectData)
 	{
 		Add((Type)i._tileType, i._tileType, DirectX::XMFLOAT3(i._posX, 0, i._posZ), DirectX::XMFLOAT3(0, i._rotY, 0));
-		
 	}
 	return false;
 }

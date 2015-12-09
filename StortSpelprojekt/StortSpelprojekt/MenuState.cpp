@@ -2,7 +2,7 @@
 
 MenuState::MenuState(InitVar initVar) : BaseState (initVar)
 {
-	_uiHandler = initVar.uiHandler;
+	_uiHandler = initVar._uiHandler;
 
 	//_uiHandler->AddFont(L"Arial", L"Arial", DirectX::XMFLOAT2(0, 200), 72.0f, 0xff0099ff, L"Demo");
 	
