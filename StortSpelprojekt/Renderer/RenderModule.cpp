@@ -99,7 +99,7 @@ namespace Renderer
 		_d3d->ResizeResources(hwnd, windowWidth, windowHeight);
 	}
 
-	void RenderModule::SetResourcesPerFrame(DirectX::XMMATRIX* view, DirectX::XMMATRIX* projection)
+	void RenderModule::SetDataPerFrame(DirectX::XMMATRIX* view, DirectX::XMMATRIX* projection)
 	{
 		HRESULT result;
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -115,7 +115,7 @@ namespace Renderer
 		result = deviceContext->Map(_matrixBufferPerFrame, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 		if (FAILED(result))
 		{
-			throw std::runtime_error("RenderModule::SetResourcesPerFrame: Failed to Map _matrixBufferPerFrame");
+			throw std::runtime_error("RenderModule::SetDataPerFrame: Failed to Map _matrixBufferPerFrame");
 		}
 
 		dataPtr = (MatrixBufferPerFrame*)mappedResource.pData;
@@ -128,7 +128,7 @@ namespace Renderer
 		deviceContext->VSSetConstantBuffers(0, 1, &_matrixBufferPerFrame);
 	}
 
-	void RenderModule::SetResourcesPerObject(XMMATRIX* world, ID3D11ShaderResourceView* diffuse, ID3D11ShaderResourceView* specular)
+	void RenderModule::SetDataPerObject(XMMATRIX* world, ID3D11ShaderResourceView* diffuse, ID3D11ShaderResourceView* specular)
 	{
 		HRESULT result;
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -145,7 +145,7 @@ namespace Renderer
 		result = deviceContext->Map(_matrixBufferPerObject, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 		if (FAILED(result))
 		{
-			throw std::runtime_error("RenderModule::SetResourcesPerObject: Failed to Map _matrixBufferPerObject");
+			throw std::runtime_error("RenderModule::SetDataPerObject: Failed to Map _matrixBufferPerObject");
 		}
 
 		MatrixBufferPerObject* dataPtr = (MatrixBufferPerObject*)mappedResource.pData;
@@ -212,7 +212,7 @@ namespace Renderer
 			specularData = specular->_data;
 		}
 
-		SetResourcesPerObject(world, diffuseData, specularData);
+		SetDataPerObject(world, diffuseData, specularData);
 
 		int vertexSize = sizeof(Vertex);
 

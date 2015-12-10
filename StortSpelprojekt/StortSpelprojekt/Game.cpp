@@ -34,8 +34,6 @@ Game::~Game()
 	delete _renderModule;
 	delete _camera;
 	delete _objectHandler;
-	//TODO remove comments when the objectHandler is initialized
-	//delete _objectHandler;
 	delete _UI;
 	delete _SM;
 	delete _input;
@@ -121,6 +119,8 @@ void Game::HandleInput()
 	
 }
 
+int frames = 0;
+
 void Game::Update(float deltaTime)
 {
 	/*
@@ -130,20 +130,27 @@ void Game::Update(float deltaTime)
 	vi vill hämta objekten
 
 	*/
+
+
+	//if (frames == 69)
+	//{
+	//	int p = 3;
+	//}
+
 	_input->Update();
 	_UI->Update();
 	_UI->OnResize(_window->GetWindowSettings());
 	_SM->Update(deltaTime);
 	_objectHandler->Update();
+
+	//frames++;
 }
 
 void Game::Render()
 {
 	_renderModule->BeginScene(0.0f, 1.0f, 1.0f, 1);
-	_renderModule->SetResourcesPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
+	_renderModule->SetDataPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
 	_renderModule->SetShaderStage(Renderer::RenderModule::GEO_PASS);
-
-
 
 	//RenderList renderList = _objectHandler->GetAll(0);
 	
@@ -166,6 +173,18 @@ void Game::Render()
 	_renderModule->SetShaderStage(Renderer::RenderModule::LIGHT_PASS);
 
 
+	/*for (all pointlights)
+	{
+		generate cubic shadowmap
+		render to accumulation buffer with cubic shadowmap
+	}
+
+	for (all directional lights)
+	{
+		generate shadowmap
+		render to accumulation buffer with shadowmap
+	}*/
+
 	_renderModule->RenderLightQuad();
 	_UI->Render(_renderModule->GetDeviceContext());
 	_renderModule->EndScene();
@@ -178,8 +197,7 @@ int Game::Run()
 	//_objectHandler->Add(TRAP, 0, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
 
 	//_objectHandler->Add(TRAP, 0, XMFLOAT3(0.5f, -1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
-	_objectHandler->LoadLevel(3);
-
+	_objectHandler->LoadLevel(4);
 
 	_objectHandler->InitPathfinding();
 

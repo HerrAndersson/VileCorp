@@ -17,6 +17,7 @@ enum Type {UNIT, FLOOR, WALL, LOOT, TRAP, TRIGGER };
 class GameObject
 {
 protected:
+
 	unsigned short _ID;
 	DirectX::XMMATRIX _objectMatrix;
 	DirectX::XMFLOAT3 _position;
@@ -31,6 +32,7 @@ protected:
 	void CalculateMatrix();
 
 public:
+
 	GameObject();
 	//Type might not be necessary, depending on whether subclasses can correspond to one type or many.
 	GameObject(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject* renderObject);

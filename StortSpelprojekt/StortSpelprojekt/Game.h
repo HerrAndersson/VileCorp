@@ -34,6 +34,11 @@ private:
 	void Update(float deltaTime);
 	void Render();
 
+
+
+
+	//TEMP!
+
 public:
 
 	Game(HINSTANCE hInstance, int nCmdShow);

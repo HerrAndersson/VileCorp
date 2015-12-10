@@ -15,7 +15,6 @@ Deferred::Deferred(ID3D11Device* device, int textureWidth, int textureHeight)
 Deferred::~Deferred()
 {
 	SAFE_RELEASE(_depthStencilView);
-	SAFE_RELEASE(_depthStencilBuffer);
 	SAFE_RELEASE(_depthShaderResourceView);
 
 	for (int i = 0; i < BUFFER_COUNT; i++)
@@ -43,7 +42,8 @@ void Deferred::InitializeBuffers(ID3D11Device* device)
 	textureDesc.CPUAccessFlags = 0;
 	textureDesc.MiscFlags = 0;
 
-	ID3D11Texture2D*			 _renderTargetTextureArray[BUFFER_COUNT];
+	ID3D11Texture2D* _renderTargetTextureArray[BUFFER_COUNT];
+	ID3D11Texture2D* _depthStencilBuffer;
 
 	//Create the render target textures
 	for (int i = 0; i < BUFFER_COUNT; i++)
@@ -97,11 +97,11 @@ void Deferred::InitializeBuffers(ID3D11Device* device)
 	depthBufferDesc.Height = textureHeight;
 	depthBufferDesc.MipLevels = 1;
 	depthBufferDesc.ArraySize = 1;
-	depthBufferDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthBufferDesc.Format = DXGI_FORMAT_R32_TYPELESS;
 	depthBufferDesc.SampleDesc.Count = 1;
 	depthBufferDesc.SampleDesc.Quality = 0;
 	depthBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
 	depthBufferDesc.CPUAccessFlags = 0;
 	depthBufferDesc.MiscFlags = 0;
 
@@ -115,7 +115,7 @@ void Deferred::InitializeBuffers(ID3D11Device* device)
 	//Stencil view description.
 	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
 	ZeroMemory(&depthStencilViewDesc, sizeof(depthStencilViewDesc));
-	depthStencilViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthStencilViewDesc.Format = DXGI_FORMAT_D32_FLOAT;
 	depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 	depthStencilViewDesc.Texture2D.MipSlice = 0;
 
@@ -126,18 +126,17 @@ void Deferred::InitializeBuffers(ID3D11Device* device)
 		throw runtime_error("Error creating depth stencil view");
 	}
 
-	//TODO
-	//ZeroMemory(&shaderResourceViewDesc, sizeof(shaderResourceViewDesc));
-	//shaderResourceViewDesc.Format = depthBufferDesc.Format;
-	//shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-	//shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
-	//shaderResourceViewDesc.Texture2D.MipLevels = 1;
+	ZeroMemory(&shaderResourceViewDesc, sizeof(shaderResourceViewDesc));
+	shaderResourceViewDesc.Format = DXGI_FORMAT_R32_FLOAT;
+	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
+	shaderResourceViewDesc.Texture2D.MipLevels = 1;
 
-	//result = device->CreateShaderResourceView(_depthStencilBuffer, &shaderResourceViewDesc, &_depthShaderResourceView);
-	//if (FAILED(result))
-	//{
-	//	throw runtime_error("Could not create Shadow map SRV");
-	//}
+	result = device->CreateShaderResourceView(_depthStencilBuffer, &shaderResourceViewDesc, &_depthShaderResourceView);
+	if (FAILED(result))
+	{
+		throw runtime_error("Could not create Shadow map SRV");
+	}
 
 
 
@@ -145,6 +144,7 @@ void Deferred::InitializeBuffers(ID3D11Device* device)
 	{
 		SAFE_RELEASE(_renderTargetTextureArray[i]);
 	}
+	SAFE_RELEASE(_depthStencilBuffer);
 
 }
 
@@ -165,8 +165,6 @@ void Deferred::ClearRenderTargets(ID3D11DeviceContext* deviceContext, float r, f
 	}
 
 	deviceContext->ClearDepthStencilView(_depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
-
-	return;
 }
 
 void Deferred::ResizeRenderTargets(ID3D11Device* device, int textureWidth, int textureHeight)
@@ -175,7 +173,6 @@ void Deferred::ResizeRenderTargets(ID3D11Device* device, int textureWidth, int t
 	this->textureHeight = textureHeight;
 
 	SAFE_RELEASE(_depthStencilView);
-	SAFE_RELEASE(_depthStencilBuffer);
 
 	for (int i = 0; i < BUFFER_COUNT; i++)
 	{
@@ -189,5 +186,6 @@ void Deferred::ResizeRenderTargets(ID3D11Device* device, int textureWidth, int t
 ID3D11ShaderResourceView** Deferred::GetShaderResourceViews(int& count)
 {
 	count = BUFFER_COUNT;
+	_shaderResourceViewArray[4] = _depthShaderResourceView;
 	return _shaderResourceViewArray;
 }

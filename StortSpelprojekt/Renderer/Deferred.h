@@ -16,15 +16,16 @@ private:
 	[1] = Normal
 	[2] = Position
 	[3] = World Position
+	[4] = Depth from view
 	*/
-	static const int BUFFER_COUNT = 4;
+	static const int BUFFER_COUNT = 5;
 
 	int textureWidth;
 	int textureHeight;
 
 	ID3D11RenderTargetView*		 _renderTargetViewArray[BUFFER_COUNT];
 	ID3D11ShaderResourceView*	 _shaderResourceViewArray[BUFFER_COUNT];
-	ID3D11Texture2D*			 _depthStencilBuffer;
+	
 	ID3D11DepthStencilView*		 _depthStencilView;
 	ID3D11ShaderResourceView*	 _depthShaderResourceView;
 
