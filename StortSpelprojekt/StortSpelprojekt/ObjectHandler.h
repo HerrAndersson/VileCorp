@@ -41,8 +41,7 @@ private:
 	AssetManager* _assetManager;
 
 public:
-	ObjectHandler();
-	ObjectHandler(ID3D11Device* device);
+	ObjectHandler(ID3D11Device* device, AssetManager* assetManager);
 	~ObjectHandler();
 
 	int GetSize() const;

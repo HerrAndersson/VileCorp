@@ -24,7 +24,7 @@ private:
 	
 
 public:
-	UIHandler(ID3D11Device* device, System::WindowSettings windowSettings);
+	UIHandler(ID3D11Device* device, System::WindowSettings windowSettings, AssetManager* assetManager);
 	~UIHandler();
 
 	void Update();

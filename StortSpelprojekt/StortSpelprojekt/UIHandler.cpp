@@ -1,12 +1,12 @@
 #include "UIHandler.h"
 
-UIHandler::UIHandler(ID3D11Device* device, System::WindowSettings windowSettings)
+UIHandler::UIHandler(ID3D11Device* device, System::WindowSettings windowSettings, AssetManager* assetManager)
 {
-	_device					= device;
-	_textId					= 0;
-	_windowSettings			= windowSettings;
-	_AM						= new AssetManager(device);
-	_textureId				= 0;
+	_device			= device;
+	_textId			= 0;
+	_windowSettings	= windowSettings;
+	_AM				= assetManager;
+	_textureId		= 0;
 }
 
 UIHandler::~UIHandler()
@@ -15,7 +15,6 @@ UIHandler::~UIHandler()
 	{
 		i.Release();
 	}
-	delete _AM;
 }
 
 void UIHandler::Update()
@@ -154,9 +153,9 @@ int UIHandler::Add2DTexture(std::string filePath, DirectX::XMFLOAT2 position, Di
 
 int UIHandler::AddButton(std::string filePath, DirectX::XMFLOAT2 position, DirectX::XMFLOAT2 size)
 {
-	//Add2DTexture(filePath, position, size);
-	//_textures
-	return 0;
+	int buttonId = Add2DTexture(filePath, position, size);
+
+	return buttonId;
 }
 
 std::vector<Renderer::HUDElement>* UIHandler::GetTextureData()

@@ -2,19 +2,11 @@
 
 
 
-ObjectHandler::ObjectHandler()
+ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager)
 {
 	_size = 0;
 	_idCounter = 0;
-	_assetManager = nullptr;
-	_tilemap =  nullptr;
-}
-
-ObjectHandler::ObjectHandler(ID3D11Device* device)
-{
-	_size = 0;
-	_idCounter = 0;
-	_assetManager = new AssetManager(device);
+	_assetManager = assetManager;
 	_tilemap = nullptr;
 }
 
@@ -22,7 +14,6 @@ ObjectHandler::~ObjectHandler()
 {
 	Release();
 	Clear();
-	delete _assetManager;
 	delete _tilemap;
 }
 
