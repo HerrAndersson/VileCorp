@@ -273,6 +273,14 @@ int LevelEdit::Run()
 	while (_window->Run())
 	{
 		_timer.Update();
+
+		if (_input->IsPressed(VK_ESCAPE))
+		{
+			return 0;
+
+		}
+
+
 		if (_timer.GetFrameTime() >= MS_PER_FRAME)
 		{
 			HandleInput();
