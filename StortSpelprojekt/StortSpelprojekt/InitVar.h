@@ -3,11 +3,13 @@
 
 #include "UIHandler.h"
 #include "ObjectHandler.h"
+#include "InputDevice.h"
 
 struct InitVar
 {
-	ObjectHandler*		objectHandler;
-	UIHandler*			uiHandler;
+	ObjectHandler*			_objectHandler;
+	UIHandler*				_uiHandler;
+	System::InputDevice*	_inputDevice;
 };
 
 #endif

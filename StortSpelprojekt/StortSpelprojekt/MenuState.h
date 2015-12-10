@@ -6,7 +6,7 @@
 class MenuState : public BaseState
 {
 private:
-	UIHandler* _uiHandler;
+
 
 public:
 	MenuState(InitVar initVar);

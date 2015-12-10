@@ -18,13 +18,14 @@ private:
 	static State BaseState::_newStateRequest;
 
 protected:
-	ObjectHandler*		_objectHandler;
-	UIHandler*			_uiHandler;
+	ObjectHandler*			_objectHandler;
+	UIHandler*				_uiHandler;
+	System::InputDevice*	_inputDevice;
 	
 	void ChangeState(State newState);
 public:
 	BaseState(InitVar initVar);
-	~BaseState();
+	virtual ~BaseState();
 
 	virtual void Update(float deltaTime) = 0;
 	virtual void OnStateEnter() = 0;
