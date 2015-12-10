@@ -386,6 +386,7 @@ void Unit::ScanOctant(int depth, int octant, double &startSlope, double endSlope
 	};
 }
 
+
 double Unit::GetSlope(double x1, double y1, double x2, double y2, bool invert)
 {
 	if (invert)
@@ -431,24 +432,61 @@ Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 
 Unit::~Unit()
 {
+	delete[] _visibleTiles;
 	delete _aStar;
+	_aStar = nullptr;
 }
 
 
 /*
 Gathers the tiles which are visible to the unit.
-The temporary solution is to check all tiles in radius.
-Eventually, it should check a cone, with walls blocking the unit's vision.
+Currently only checks if walls block vision (not traps or units)
+*/
+//void Unit::FindVisibleTiles()
+//{
+//	double startSlope = 1.0;
+//	_visibleTiles[0] = AI::Vec2D(this->GetTilePosition()._x, this->GetTilePosition()._y);
+//	_nrOfVisibleTiles = 1;
+//
+//	//If looking north, scan octant 1 and 2
+//	if (_direction._y == 1)
+//	{
+//		ScanOctant(1, 1, startSlope, 0.0);
+//		ScanOctant(1, 2, startSlope, 0.0);
+//	}
+//	//If looking east, scan octant 3 and 4
+//	else if (_direction._x == 1)
+//	{
+//		ScanOctant(1, 3, startSlope, 0.0);
+//		ScanOctant(1, 4, startSlope, 0.0);
+//	}
+//	//If looking south, scan octant 5 and 6
+//	else if (_direction._y == -1)
+//	{
+//		ScanOctant(1, 5, startSlope, 0.0);
+//		ScanOctant(1, 6, startSlope, 0.0);
+//	}
+//	//If looking west, scan octant 7 and 8
+//	else if (_direction._x == -1)
+//	{
+//		ScanOctant(1, 7, startSlope, 0.0);
+//		ScanOctant(1, 8, startSlope, 0.0);
+//	}
+//} 
+
+/*
+Gathers the tiles which are visible to the unit.
+Temporary solution until the proper vision cone is fixed.
 */
 void Unit::FindVisibleTiles()
 {
-	nrOfVisibleTiles = 0;
+	_nrOfVisibleTiles = 0;
 	short temp = _ID;
 	for (int i = 0; i < 2 * _visionRadius + 1; i++)
 	{
 		for (int j = 0; j < 2 * _visionRadius + 1; j++)
 		{
-			_visibleTiles[nrOfVisibleTiles++] = {_tilePosition._x + i - _visionRadius, _tilePosition._y + j - _visionRadius};
+			_visibleTiles[_nrOfVisibleTiles++] = {_tilePosition._x + i - _visionRadius, _tilePosition._y + j - _visionRadius};
 		}
 	}
 
@@ -459,26 +497,23 @@ void Unit::FindVisibleTiles()
 */
 void Unit::CheckVisibleTiles()
 {
-	for (int i = 0; i < nrOfVisibleTiles; i++)
+	for (int i = 0; i < _nrOfVisibleTiles; i++)
 	{
-		if (i != 24)			//Skip the tile unit is on
+		if (_tileMap->IsWallOnTile(_visibleTiles[i]._x, _visibleTiles[i]._y))
 		{
-			if (_tileMap->IsWallOnTile(_visibleTiles[i]._x, _visibleTiles[i]._y))
-			{
-				_aStar->SetTileCost(_visibleTiles[i], -1);
-			}
-			else if (_tileMap->IsTrapOnTile(_visibleTiles[i]._x, _visibleTiles[i]._y))											//TODO: Traps shouldn't be automatically visible --Victor
-			{
-				_aStar->SetTileCost(_visibleTiles[i], 10);
-			}
-			if (_ID == 100)									//Temporary solution to only use one of the units
-			{
-				if (_tileMap->IsTypeOnTile(_visibleTiles[i]._x, _visibleTiles[i]._y, UNIT) && _visibleTiles[i] != _goalTilePosition)	//Unit finds another unit
-				{
-					CalculatePath(_visibleTiles[i]);
-				}
-			}
+			_aStar->SetTileCost(_visibleTiles[i], -1);
 		}
+		else if (_tileMap->IsTrapOnTile(_visibleTiles[i]._x, _visibleTiles[i]._y))											//TODO: Traps shouldn't be automatically visible --Victor
+		{
+			_aStar->SetTileCost(_visibleTiles[i], 10);
+		}
+		//if (_ID == 100)									//Temporary solution to only use one of the units
+		//{
+		//	if (_tileMap->IsTypeOnTile(_visibleTiles[i]._x, _visibleTiles[i]._y, UNIT) && _visibleTiles[i] != _goalTilePosition)	//Unit finds another unit
+		//	{
+		//		CalculatePath(_visibleTiles[i]);
+		//	}
+		//}
 	}
 }
 
@@ -517,6 +552,9 @@ void Unit::CheckAllTiles()
 */
 void Unit::CalculatePath()
 {
+	_aStar->CleanMap();
+	_aStar->SetStartPosition(_tilePosition);
+	_aStar->SetGoalPosition(_goalTilePosition);
 	if (_aStar->FindPath())
 	{
 		_path = _aStar->GetPath();
@@ -540,8 +578,6 @@ void Unit::CalculatePath(AI::Vec2D goal)
 	{
 		_path = _aStar->GetPath();
 		_pathLength = _aStar->GetPathLength();
-	//	AI::Vec2D nextTile = _path[--_pathLength];
-	//	_direction = nextTile - _tilePosition;
 	}
 
 }
@@ -569,7 +605,7 @@ void Unit::Move()
 	_direction = nextTile - _tilePosition;
 	if (_direction._x == 0)
 	{
-		_rotation.y = DirectX::XM_PIDIV2 * (_direction._y + 1);
+ 		_rotation.y = DirectX::XM_PIDIV2 * (_direction._y + 1);
 		//_rotation.y = atan(_direction._y / _direction._x);
 	}
 	else if (_direction._x == -1)
@@ -585,6 +621,9 @@ void Unit::Move()
 
 void Unit::Update()
 {
+	if (_direction._x == 0)
+	{
+	}
 	if (_pathLength > 0)
 	{
 		if (_direction._x == 0 || _direction._y == 0)		//Right angle movement
@@ -599,43 +638,14 @@ void Unit::Update()
 		}
 		CalculateMatrix();
 	}
+	else
+	{
+		CheckAllTiles();
+		CalculatePath(_goalTilePosition);
+	}
 }
 
 void Unit::Release()
 {}
 
-/*
-	Gathers the tiles which are visible to the unit.
-	Currently only checks if walls block vision (not traps or units)
-*/
-void Unit::FindVisibleTiles()
-{
-	double startSlope = 1.0;
-	_visibleTiles[0] = AI::Vec2D(this->GetTilePosition()._x, this->GetTilePosition()._y);
-	_nrOfVisibleTiles = 1;
 
-	//If looking north, scan octant 1 and 2
-	if (_direction._y == 1)
-	{
-		ScanOctant(1, 1, startSlope, 0.0);
-		ScanOctant(1, 2, startSlope, 0.0);
-	}
-	//If looking east, scan octant 3 and 4
-	else if (_direction._x == 1)
-	{
-		ScanOctant(1, 3, startSlope, 0.0);
-		ScanOctant(1, 4, startSlope, 0.0);
-	}
-	//If looking south, scan octant 5 and 6
-	else if (_direction._y == -1)
-	{
-		ScanOctant(1, 5, startSlope, 0.0);
-		ScanOctant(1, 6, startSlope, 0.0);
-	}
-	//If looking west, scan octant 7 and 8
-	else if (_direction._x == -1)
-	{
-		ScanOctant(1, 7, startSlope, 0.0);
-		ScanOctant(1, 8, startSlope, 0.0);
-	}
-}

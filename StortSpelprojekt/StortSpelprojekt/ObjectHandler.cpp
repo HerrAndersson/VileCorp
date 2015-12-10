@@ -217,10 +217,10 @@ void ObjectHandler::Update()
 		{
 			float xOffset = abs(_gameObjects[i]->GetPosition().x - _gameObjects[i]->GetTilePosition()._x);
 			float zOffset = abs(_gameObjects[i]->GetPosition().z - _gameObjects[i]->GetTilePosition()._y);
-			if (xOffset > 0.98 || zOffset > 0.98 )																//If unit is on a new tile	
+			if (xOffset > 0.99 || zOffset > 0.99 )																//If unit is on a new tile	
 			{
 				Unit* unit = dynamic_cast<Unit*>(_gameObjects[i]);
-				_tilemap->RemoveObjectFromTile(_gameObjects[i]->GetTilePosition()._x, _gameObjects[i]->GetTilePosition()._y, unit);
+ 				_tilemap->RemoveObjectFromTile(_gameObjects[i]->GetTilePosition()._x, _gameObjects[i]->GetTilePosition()._y, unit);
 				unit->Move();
 				_tilemap->AddObjectToTile(_gameObjects[i]->GetTilePosition()._x, _gameObjects[i]->GetTilePosition()._y, unit);
 			}
