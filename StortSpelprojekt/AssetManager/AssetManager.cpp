@@ -27,8 +27,8 @@ AssetManager::~AssetManager()
 		if (texture->_loaded)
 		{
 			texture->_data->Release();
-			delete texture;
 		}
+		delete texture;
 	}
 	_textures->clear();
 
