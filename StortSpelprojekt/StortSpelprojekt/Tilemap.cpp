@@ -198,7 +198,7 @@ bool Tilemap::IsWallOnTile(int x, int z) const
 	}
 	else
 	{
-		return  _map[x][z]._objectsOnTile[0]->GetType() == WALL;
+		return  (_map[x][z]._objectsOnTile[0]->GetType() == WALL);
 	}
 }
 
