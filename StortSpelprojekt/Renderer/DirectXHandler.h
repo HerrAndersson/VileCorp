@@ -39,6 +39,7 @@ namespace Renderer
 		void ClearGeometryPassRTVs(float r, float g, float b, float a);
 		void SetGeometryPassRTVs();
 		void SetLightPassRTVs();
+		void SetHUDPassRTVs();
 
 		void ResizeResources(HWND hwnd, int windowWidth, int windowHeight);
 

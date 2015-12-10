@@ -206,6 +206,13 @@ namespace Renderer
 		_deviceContext->PSSetShaderResources(0, count, b);
 	}
 
+	void DirectXHandler::SetHUDPassRTVs()
+	{
+		_deviceContext->OMSetRenderTargets(1, &_renderTargetView, nullptr);
+		_deviceContext->RSSetState(_rasterizerStateBack);
+		_deviceContext->OMSetDepthStencilState(_depthDisable, 1);
+	}
+
 	void DirectXHandler::ResizeResources(HWND hwnd, int windowWidth, int windowHeight)
 	{
 		if (_swapChain)
