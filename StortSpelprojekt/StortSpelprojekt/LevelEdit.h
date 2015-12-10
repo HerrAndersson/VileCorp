@@ -45,6 +45,7 @@ public:
 
 	//temps
 	int _selectedObj;
-	bool _isDown;
+	int _tileMultiplier;
+	
 	int Run();
 };

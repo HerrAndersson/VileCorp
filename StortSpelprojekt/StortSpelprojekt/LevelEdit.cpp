@@ -28,6 +28,7 @@ LevelEdit::LevelEdit(HINSTANCE hInstance, int nCmdShow)
 	_input = new System::InputDevice(_window->GetHWND());
 
 	_selectedObj = 0;
+	_tileMultiplier = 1;
 }
 
 LevelEdit::~LevelEdit()
@@ -65,20 +66,37 @@ void LevelEdit::HandleInput()
 {
 	GameObject* temp;
 
-	
-
-	if (_input->IsPressed(VK_PRIOR))
+	//Tile select
+	if (_input->IsPressed(VK_ADD))
 	{
 		_selectedObj++;
 		
 	}
 
-	if (_input->IsPressed(VK_NEXT))
+	if (_input->IsPressed(VK_SUBTRACT))
 	{
 		if (_selectedObj != 0)
+		{
 			_selectedObj--;
+		}
+			
 	}
 
+	//Move tile greater distance per button press
+	if (_input->IsPressed(VK_PRIOR))
+	{
+		_tileMultiplier++;
+	}
+
+	if (_input->IsPressed(VK_NEXT))
+	{
+		if (_tileMultiplier != 1)
+		{
+			_tileMultiplier--;
+		}
+	}
+
+	//Translation and rotation controls
 	if (_input->IsPressed(VK_LEFT))
 	{
 
@@ -86,7 +104,7 @@ void LevelEdit::HandleInput()
 		if (temp->GetType() < 3)
 		{
 			XMFLOAT3 tempPos = temp->GetPosition();
-			temp->SetPosition(XMFLOAT3(tempPos.x - 1, tempPos.y, tempPos.z));
+			temp->SetPosition(XMFLOAT3(tempPos.x - 1 * _tileMultiplier, tempPos.y, tempPos.z));
 		}
 
 	}
@@ -97,7 +115,7 @@ void LevelEdit::HandleInput()
 		if (temp->GetType()  < 3)
 		{
 			XMFLOAT3 tempPos = temp->GetPosition();
-			temp->SetPosition(XMFLOAT3(tempPos.x +1, tempPos.y, tempPos.z));
+			temp->SetPosition(XMFLOAT3(tempPos.x + 1 * _tileMultiplier, tempPos.y, tempPos.z));
 		}
 	}
 
@@ -108,7 +126,7 @@ void LevelEdit::HandleInput()
 		if (temp->GetType()  < 3)
 		{
 			XMFLOAT3 tempPos = temp->GetPosition();
-			temp->SetPosition(XMFLOAT3(tempPos.x, tempPos.y, tempPos.z + 1));
+			temp->SetPosition(XMFLOAT3(tempPos.x, tempPos.y, tempPos.z + 1 * _tileMultiplier));
 		}
 	}
 
@@ -119,11 +137,11 @@ void LevelEdit::HandleInput()
 		if (temp->GetType()  < 3)
 		{
 			XMFLOAT3 tempPos = temp->GetPosition();
-			temp->SetPosition(XMFLOAT3(tempPos.x, tempPos.y, tempPos.z - 1));
+			temp->SetPosition(XMFLOAT3(tempPos.x, tempPos.y, tempPos.z - 1 * _tileMultiplier));
 		}
 	}
 
-	if (_input->IsPressed(VK_OEM_COMMA))
+	if (_input->IsPressed(0x5A))
 	{
 		temp = _objectHandler->Find(_selectedObj);
 		if (temp->GetType()  < 3)
@@ -132,7 +150,7 @@ void LevelEdit::HandleInput()
 			temp->SetRotation(XMFLOAT3(tempRot.x, tempRot.y + (DirectX::XM_PI/2), tempRot.z));
 		}
 	}
-	if (_input->IsPressed(VK_OEM_PERIOD))
+	if (_input->IsPressed(0x58))
 	{
 		temp = _objectHandler->Find(_selectedObj);
 		if (temp->GetType()  < 3)
