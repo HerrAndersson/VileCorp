@@ -140,8 +140,8 @@ static bool GetFilenamesInDirectory(char* folder, char* extension, vector<string
 	return true;
 }
 
-//AssetManager keeps lists of all assets in the game(currently meshes), and loads them onto the GPU or memory when required.
-//RenderObjects are the interface by which the assetmanager provides models to the renderer. They contain at least one mesh, two colors for diffuse and specular respectively, two handles to textures(textures not yet in), an index to its skeleton and help variables.
+//AssetManager keeps lists of all assets in the game(currently meshes and textures), and loads them onto the GPU or memory when required.
+//RenderObjects are the interface by which the assetmanager provides models to the renderer. They contain at least one mesh, two colors for diffuse and specular respectively, two handles to textures, an pointer to its skeleton and various help variables.
 //Get buffers with:
 //assetManager->GetRenderObject(MY_OBJECT_RENDEROBJECT_INDEX)->meshes[SUBMESH_INDEX].vertexBuffer; Also on meshlevel lies the size of the buffer and any lights that may be present.
 //Call assetManager->UnLoad(MY_OBJECT_RENDEROBJECT_INDEX, false) if you think the mesh probably won't be needed again soon
@@ -149,7 +149,7 @@ static bool GetFilenamesInDirectory(char* folder, char* extension, vector<string
 class ASSET_MANAGER_EXPORT AssetManager
 {
 private:
-	int _meshFormatVersion = 23;
+	int _meshFormatVersion = 24;
 	ifstream* _infile;
 	ID3D11Device* _device;
 
@@ -168,7 +168,7 @@ private:
 	RenderObject* ScanModel(string file_path);
 	Texture* ScanTexture(string filename);
 	void DecrementUsers(Texture* texture);
-	ID3D11Buffer* CreateVertexBuffer(vector<Vertex> *vertices, int skeleton);
+	ID3D11Buffer* CreateVertexBuffer(vector<WeightedVertex> *weightedVertices, vector<Vertex> *vertices, int skeleton);
 	void SetupRenderObjectList(Tileset* tileset);
 	void SetupLevelFileNameList();
 	void SetupTilesets();

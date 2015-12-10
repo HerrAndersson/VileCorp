@@ -6,10 +6,10 @@
 
 struct WeightedVertex
 {
+	short _boneIndices[4];
 	DirectX::XMFLOAT3 _position;
 	DirectX::XMFLOAT3 _normal;
 	DirectX::XMFLOAT2 _uv;
-	int _boneIndices[4];
 	float _boneWeights[4];
 };
 
@@ -63,7 +63,7 @@ struct Texture
 struct RenderObject
 {
 	bool _meshLoaded, _toUnload;
-	short _skeleton = -1;
+	short _skeleton = 0;
 	float _diffuse[4], _specular[4];
 	Texture* _diffuseTexture = nullptr;
 	Texture* _specularTexture = nullptr;
