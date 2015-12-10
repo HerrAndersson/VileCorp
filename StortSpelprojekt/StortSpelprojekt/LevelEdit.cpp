@@ -65,81 +65,80 @@ void LevelEdit::HandleInput()
 {
 	GameObject* temp;
 
-	if (GetAsyncKeyState(VK_ADD) & 0x8000)
+	
+
+	if (_input->IsPressed(VK_PRIOR))
 	{
 		_selectedObj++;
-		Sleep(200);
+		
 	}
 
-	if (GetAsyncKeyState(VK_SUBTRACT) & 0x8000)
+	if (_input->IsPressed(VK_NEXT))
 	{
 		if (_selectedObj != 0)
 			_selectedObj--;
-		Sleep(200);
 	}
 
-	if (GetAsyncKeyState(VK_LEFT) != 0)
+	if (_input->IsPressed(VK_LEFT))
 	{
 
 		temp = _objectHandler->Find(_selectedObj);
 		if (temp->GetType() < 3)
 		{
 			XMFLOAT3 tempPos = temp->GetPosition();
-			temp->SetPosition(XMFLOAT3(tempPos.x - 0.3, tempPos.y, tempPos.z));
+			temp->SetPosition(XMFLOAT3(tempPos.x - 1, tempPos.y, tempPos.z));
 		}
 
 	}
 
-	if (GetAsyncKeyState(VK_RIGHT) != 0)
+	if (_input->IsPressed(VK_RIGHT))
 	{
 		temp = _objectHandler->Find(_selectedObj);
 		if (temp->GetType()  < 3)
 		{
 			XMFLOAT3 tempPos = temp->GetPosition();
-			temp->SetPosition(XMFLOAT3(tempPos.x + 0.3, tempPos.y, tempPos.z));
+			temp->SetPosition(XMFLOAT3(tempPos.x +1, tempPos.y, tempPos.z));
 		}
 	}
 
-	if (GetAsyncKeyState(VK_UP) != 0)
+	if (_input->IsPressed(VK_UP))
 	{
 		temp = _objectHandler->Find(_selectedObj);
 
 		if (temp->GetType()  < 3)
 		{
 			XMFLOAT3 tempPos = temp->GetPosition();
-			temp->SetPosition(XMFLOAT3(tempPos.x, tempPos.y, tempPos.z + 0.3));
+			temp->SetPosition(XMFLOAT3(tempPos.x, tempPos.y, tempPos.z + 1));
 		}
 	}
 
 
-	if (GetAsyncKeyState(VK_DOWN) != 0)
+	if (_input->IsPressed(VK_DOWN))
 	{
 		temp = _objectHandler->Find(_selectedObj);
 		if (temp->GetType()  < 3)
 		{
 			XMFLOAT3 tempPos = temp->GetPosition();
-			temp->SetPosition(XMFLOAT3(tempPos.x, tempPos.y, tempPos.z - 0.3));
+			temp->SetPosition(XMFLOAT3(tempPos.x, tempPos.y, tempPos.z - 1));
 		}
 	}
 
-	if (GetAsyncKeyState(VK_OEM_COMMA) != 0)
+	if (_input->IsPressed(VK_OEM_COMMA))
 	{
 		temp = _objectHandler->Find(_selectedObj);
 		if (temp->GetType()  < 3)
 		{
 			XMFLOAT3 tempRot = temp->GetRotation();
 			temp->SetRotation(XMFLOAT3(tempRot.x, tempRot.y + (DirectX::XM_PI/2), tempRot.z));
-			Sleep(200);
 		}
 	}
-	if (GetAsyncKeyState(VK_OEM_PERIOD) != 0)
+	if (_input->IsPressed(VK_OEM_PERIOD))
 	{
 		temp = _objectHandler->Find(_selectedObj);
 		if (temp->GetType()  < 3)
 		{
 			XMFLOAT3 tempRot = temp->GetRotation();
 			temp->SetRotation(XMFLOAT3(tempRot.x, tempRot.y - (DirectX::XM_PI / 2), tempRot.z));
-			Sleep(200);
 		}
 	}
 
