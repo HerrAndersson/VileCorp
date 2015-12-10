@@ -250,13 +250,12 @@ HRESULT Texture::LoadTexture(ID3D11Device* device)
 	HRESULT res = S_OK;
 	if (!_loaded)
 	{
-#ifdef _DEBUG
-		_filename.insert(0, L"../../Output/Bin/x86/Debug/Assets/Textures/");
 		res = DirectX::CreateWICTextureFromFile(device, _filename.c_str(), nullptr, &_data, 0);
-#else
-		_filename.insert(0, L"Assets/Textures/");
-		res = DirectX::CreateWICTextureFromFile(device, _filename.c_str(), nullptr, &_data, 0);
-#endif
+		if (_data == nullptr)
+		{
+			string filenameString(_filename.begin(),_filename.end());
+			throw std::runtime_error("Texture " + filenameString + " not found");
+		}
 		_loaded = true;
 	}
 	_activeUsers++;
@@ -321,6 +320,11 @@ Texture* AssetManager::ScanTexture(string filename)
 	}
 	Texture* texture = new Texture;
 	texture->_filename = wstring(filename.begin(), filename.end());
+#ifdef _DEBUG
+	texture->_filename.insert(0, L"../../Output/Bin/x86/Debug/Assets/Textures/");
+#else
+	texture->_filename.insert(0, L"Assets/Textures/");
+#endif
 	_textures->push_back(texture);
 	return texture;
 }
