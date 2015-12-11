@@ -10,10 +10,166 @@ void Unit::ScanOctant(int depth, int octant, double &startSlope, double endSlope
 	int y = 0;
 	int unitPosX = this->GetTilePosition()._x;
 	int unitPosY = this->GetTilePosition()._y;
+	
+	bool leftToRight = true;
+	bool rowByRow = true;
+	int endSlopeCompOffset = 1;
+	int startSlopeOffset = 1;
+	AI::Vec2D prevTileVec = AI::Vec2D(0, 0);
+	AI::Vec2D endCornerVec = AI::Vec2D(0, 0);
+	AI::Vec2D startCornerVec = AI::Vec2D(0, 0);
 
 	switch (octant)
 	{
 	case 1:
+		leftToRight = true;
+		rowByRow = true;
+		//AI::Vec2D quadrant = { 1, 1 };
+		endSlopeCompOffset = 1;
+		startSlopeOffset = 1;
+		prevTileVec = AI::Vec2D(-1, 0);
+		endCornerVec = AI::Vec2D(-1, -1);
+		startCornerVec = AI::Vec2D(0, 0);
+
+		y = unitPosY + depth;
+
+		if (y < 0)
+		{
+			return;
+		}
+
+		x = unitPosX - (int)((startSlope * (double)depth));
+		if (x < 0)
+		{
+			x = 0;
+		}
+		break;
+
+	case 2:
+		leftToRight = false;
+		rowByRow = true;
+		endSlopeCompOffset = -1;
+		startSlopeOffset = -1;
+		prevTileVec = AI::Vec2D(1, 0);
+		endCornerVec = AI::Vec2D(-1, 1);
+		startCornerVec = AI::Vec2D(1, -1);
+
+		y = unitPosY + depth;
+
+		if (y > _tileMap->GetHeight())
+		{
+			return;
+		}
+
+		x = unitPosX + (int)((startSlope * (double)depth));
+		if (x >= _tileMap->GetWidth())
+		{
+			x = _tileMap->GetWidth() - 1;
+		}
+		break;
+		
+	case 3:
+
+		break;
+
+	case 4:
+
+		break;
+
+	case 5:
+
+		break;
+
+	case 6:
+
+		break;
+
+	case 7:
+
+		break;
+
+	case 8:
+
+		break;
+	};
+
+	//While within octant relevant scan area
+	while ((endSlopeCompOffset) * GetSlope(x, y, unitPosX, unitPosY, (!rowByRow)) >= endSlope)
+	{
+		if (GetVisDistance(x, y, unitPosX, unitPosY <= visRangeSqrd))
+		{
+			//Is there a wall on current tile
+			if (_tileMap->IsWallOnTile(x, y))
+			{
+				//If previous tile was in range and not a wall
+				if ((x >= 0 && y>= 0) && (x <= _tileMap->GetWidth && y <= _tileMap->GetHeight()))
+				{
+					if ((!_tileMap->IsWallOnTile(x + (prevTileVec._x), y + (prevTileVec._y))))
+					{
+						//Recurse and adjust depth
+						ScanOctant(depth + 1, octant, startSlope, 
+							GetSlope(x + (endCornerVec._x * 0.5), y + (endCornerVec._y * 0.5), unitPosX, unitPosX, !rowByRow));
+					}
+				}
+			}
+			//Current cell NOT blocked
+			else
+			{
+				//If previous tile was in range and a wall
+				if ((x >= 0 && y >= 0) && (x <= _tileMap->GetWidth && y <= _tileMap->GetHeight()))
+				{
+					if ((_tileMap->IsWallOnTile(x + (prevTileVec._x), y + (prevTileVec._y))))
+					{
+						startSlope = (startSlopeOffset)*GetSlope(x + (startCornerVec._x * 0.5), y + (startCornerVec._y * 0.5), unitPosX, unitPosY, !rowByRow);
+					}
+				}
+
+				//Add current tile to visible
+				_visibleTiles[_nrOfVisibleTiles] = AI::Vec2D(x, y);
+				_nrOfVisibleTiles++;
+			}
+		}
+
+		//If row by row, use x
+		if (rowByRow)
+		{
+			if (leftToRight)//If left to right, add to x
+				x++;
+			else//Else subtract x
+				x--;
+		}
+		else//Else use y 
+		{
+			if (leftToRight)//If left to right, add to y
+				y++;
+			else//Else subtract y
+				y--;
+		}
+	}
+	
+	if (rowByRow)//If row by row, use x
+	{
+		if (!leftToRight)//If NOT left to right, add to x
+			x++;
+		else//Else subtract x
+			x--;
+	}
+	else//Else use y
+	{
+		if (!leftToRight)//If NOT left to right, add to y
+			y++;
+		else//Else subtract y
+			y--;
+	}
+
+
+
+
+
+	switch (octant)
+	{
+	case 1:
+
 		y = unitPosY + depth;
 
 		if (y < 0)
@@ -66,13 +222,13 @@ void Unit::ScanOctant(int depth, int octant, double &startSlope, double endSlope
 			return;
 		}
 
-		x = unitPosX - (int)((startSlope * (double)depth));
+		x = unitPosX + (int)((startSlope * (double)depth));
 		if (x >= _tileMap->GetWidth())
 		{
 			x = _tileMap->GetWidth() - 1;
 		}
 
-		while (GetSlope(x, y, unitPosX, unitPosY, false) <= endSlope)
+		while (-GetSlope(x, y, unitPosX, unitPosY, false) >= endSlope)
 		{
 			if (GetVisDistance(x, y, unitPosX, unitPosY) <= visRangeSqrd)
 			{
@@ -80,9 +236,9 @@ void Unit::ScanOctant(int depth, int octant, double &startSlope, double endSlope
 				if (_tileMap->IsWallOnTile(x, y))
 				{
 					//Is there NOT a wall on next tile
-					if (x + 1 < _tileMap->GetWidth() && (_tileMap->IsWallOnTile(x + 1, y)))
+					if (x + 1 < _tileMap->GetWidth() && (!_tileMap->IsWallOnTile(x + 1, y)))
 					{
-						//Recurse and adjust depth and endSlope
+						//Recurse, adjust depth and endSlope
 						ScanOctant(depth + 1, octant, startSlope, GetSlope(x + 0.5, y - 0.5, unitPosX, unitPosY, false));
 					}
 				}
@@ -90,14 +246,14 @@ void Unit::ScanOctant(int depth, int octant, double &startSlope, double endSlope
 				else
 				{
 					//Is x within map width and is there a wall on next tile
-					if (x + 1 < _tileMap->GetWidth() && (!_tileMap->IsWallOnTile(x + 1, y)))//Previous tile in range AND blocked
+					if (x + 1 < _tileMap->GetWidth() && (_tileMap->IsWallOnTile(x + 1, y)))//Previous tile in range AND blocked
 					{
 						//Adjust start slope
 						startSlope = -GetSlope(x + 0.5, y + 0.5, unitPosX, unitPosY, false);
-
-						_visibleTiles[_nrOfVisibleTiles] = AI::Vec2D(x, y);
-						_nrOfVisibleTiles++;
 					}
+
+					_visibleTiles[_nrOfVisibleTiles] = AI::Vec2D(x, y);
+					_nrOfVisibleTiles++;
 				}
 			}
 			x--;
@@ -628,7 +784,7 @@ void Unit::FindVisibleTiles()
 	{
 		ScanOctant(1, 1, startSlope, 0.0);
 		startSlope = 1.0;
-		//ScanOctant(1, 2, startSlope, 0.0);
+		ScanOctant(1, 2, startSlope, 0.0);
 	}
 	//If looking east, scan octant 3 and 4
 	else if (_direction._x == 1)
