@@ -70,6 +70,15 @@ GameObject* ObjectHandler::Add(Type type, int renderObjectID, XMFLOAT3 position 
 		break;
 	}
 
+	if (object->GetRenderObject()->_isSkinned)
+	{
+		_animatedGameObjects.push_back(object);
+	}
+	else
+	{
+		_staticGameObjects.push_back(object);
+	}
+
 	return object;
 }
 
@@ -225,6 +234,11 @@ void ObjectHandler::Update(float deltaTime)
 				_tilemap->AddObjectToTile(_gameObjects[i]->GetTilePosition()._x, _gameObjects[i]->GetTilePosition()._y, unit);
 			}
 		}
+	}
+
+	for (GameObject* gameObject : _animatedGameObjects)
+	{
+		//gameObject->GetAnimation()->Update(deltaTime);
 	}
 }
 

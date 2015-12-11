@@ -8,22 +8,18 @@ cbuffer matrixBufferPerFrame : register(b0)
 	matrix projectionMatrix;
 };
 
-cbuffer matrixBufferPerObject : register(b1)
+cbuffer matrixBufferPerSkinnedObject : register(b1)
 {
 	matrix worldMatrix;
-};
-
-cbuffer Bones : register(b2)
-{
 	matrix bones[30];
 };
 
 struct VS_IN
 {
+	uint4 boneIndex		: BONEINDEX;
 	float3 pos			: POSITION;
 	float3 normal		: NORMAL;
 	float2 uv			: TEXCOORD;
-	uint4 boneIndex		: BONEINDEX;
 	float4 boneWeight	: BONEWEIGHT;
 };
 

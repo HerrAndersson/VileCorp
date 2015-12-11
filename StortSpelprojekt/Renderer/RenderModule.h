@@ -25,6 +25,12 @@ namespace Renderer
 		{
 			DirectX::XMMATRIX world;
 		};
+		
+		struct MatrixBufferPerSkinnedObject
+		{
+			DirectX::XMMATRIX world;
+			DirectX::XMFLOAT4X4 bones[30];
+		};
 
 		struct MatrixBufferPerFrame
 		{
@@ -33,6 +39,7 @@ namespace Renderer
 		};
 
 		ID3D11Buffer* _matrixBufferPerObject;
+		ID3D11Buffer* _matrixBufferPerSkinnedObject;
 		ID3D11Buffer* _matrixBufferPerFrame;
 
 		DirectXHandler* _d3d;
@@ -42,6 +49,7 @@ namespace Renderer
 
 		void InitializeConstantBuffers();
 
+		void SetResourcesPerObject(DirectX::XMMATRIX* world, ID3D11ShaderResourceView* diffuse, ID3D11ShaderResourceView* specular, std::vector<DirectX::XMFLOAT4X4>* extra);
 		void SetResourcesPerObject(DirectX::XMMATRIX* world, ID3D11ShaderResourceView* diffuse, ID3D11ShaderResourceView* specular);
 		void SetResourcesPerMesh(ID3D11Buffer* vertexBuffer, int vertexSize);
 
@@ -58,7 +66,7 @@ namespace Renderer
 		void SetShaderStage(ShaderStage stage);
 
 		void BeginScene(float red, float green, float blue, float alpha);
-		void Render(DirectX::XMMATRIX* world, RenderObject* renderObject);
+		void Render(DirectX::XMMATRIX* world, RenderObject* renderObject, std::vector<DirectX::XMFLOAT4X4>* extra = nullptr);
 		void RenderLightQuad();
 		void EndScene();
 

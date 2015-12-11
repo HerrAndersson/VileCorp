@@ -35,6 +35,8 @@ class ObjectHandler
 private:
 	int _size;
 	std::vector<GameObject*> _gameObjects;
+	std::vector<GameObject*> _animatedGameObjects;
+	std::vector<GameObject*> _staticGameObjects;
 	short _idCounter;
 	Tilemap* _tilemap;
 
@@ -62,6 +64,14 @@ public:
 	std::vector<GameObject*>* GetGameObjects()
 	{
 		return &_gameObjects;
+	};
+	std::vector<GameObject*>* GetAnimatedGameObjects()
+	{
+		return &_animatedGameObjects;
+	};
+	std::vector<GameObject*>* GetStaticGameObjects()
+	{
+		return &_staticGameObjects;
 	};
 
 	Tilemap* GetTileMap() const;

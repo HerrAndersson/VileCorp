@@ -24,7 +24,7 @@ struct BoneFrames
 
 struct Action
 {
-	std::vector<int> _frameTime;
+	std::vector<float> _frameTime;
 	std::vector<BoneFrames> _bones;
 };
 
@@ -37,7 +37,7 @@ struct Skeleton
 
 struct WeightedVertex
 {
-	short _boneIndices[4];
+	unsigned int _boneIndices[4];
 	DirectX::XMFLOAT3 _position;
 	DirectX::XMFLOAT3 _normal;
 	DirectX::XMFLOAT2 _uv;

@@ -142,33 +142,28 @@ void Game::Render()
 	_renderModule->BeginScene(0.0f, 1.0f, 1.0f, 1);
 	_renderModule->SetResourcesPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
 
+	std::vector<GameObject*>* animatedGameObjects = _objectHandler->GetAnimatedGameObjects();
+	std::vector<GameObject*>* staticGameObjects = _objectHandler->GetStaticGameObjects();
+
 	_renderModule->SetShaderStage(Renderer::RenderModule::ANIM_PASS);
-	std::vector<GameObject*>* gameObjects = _objectHandler->GetGameObjects();
-	for (auto i : *gameObjects)
+	for (auto i : *animatedGameObjects)
 	{
-		if (i->GetType() == UNIT)
-		{
-			_renderModule->Render(&i->GetMatrix(), i->GetRenderObject());
-		}
+		_renderModule->Render(&i->GetMatrix(), i->GetRenderObject(), i->GetAnimation()->GetTransforms());	
 	}
-
-	_renderModule->SetShaderStage(Renderer::RenderModule::GEO_PASS);
-
-
 
 	//RenderList renderList = _objectHandler->GetAll(0);
 	
 	
 	//_renderModule->Render(&_objectHandler->GetAll(TRAP).at(0)->GetMatrix(), renderList._renderObject);
 	//_renderModule->Render(&_objectHandler->GetAll(TRAP).at(1)->GetMatrix(), renderList._renderObject);
-
 	//TODO: Will make nestled later /Texxarne
 	//for (int j = 0; j < renderList.modelMatrices.size(); j++)
 	//{
 	//	_renderModule->Render(&renderList.modelMatrices[j], renderList._renderObject);
 	//}
 	
-	for (auto i : *gameObjects)
+	_renderModule->SetShaderStage(Renderer::RenderModule::GEO_PASS);
+	for (auto i : *staticGameObjects)
 	{
 		_renderModule->Render(&i->GetMatrix(), i->GetRenderObject());
 	}

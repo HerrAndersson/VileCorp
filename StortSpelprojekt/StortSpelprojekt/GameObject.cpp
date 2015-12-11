@@ -15,6 +15,10 @@ GameObject::GameObject(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::X
 	_type = type;
 	_renderObject = renderObject;
 	CalculateMatrix();
+	if (_renderObject->_isSkinned)
+	{
+		_animation = new Animation(_renderObject->_skeleton);
+	}
 }
 
 GameObject::~GameObject()
@@ -111,6 +115,11 @@ void GameObject::SetVisibility(bool visible)
 RenderObject * GameObject::GetRenderObject() const
 {
 	return _renderObject;
+}
+
+Animation * GameObject::GetAnimation() const
+{
+	return _animation;
 }
 
 void* GameObject::operator new(size_t i)

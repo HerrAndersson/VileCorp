@@ -28,7 +28,7 @@ protected:
 	Type _type;
 	bool _visible; // OBS
 	RenderObject* _renderObject;
-	Animation* _animation;
+	Animation* _animation = nullptr;
 
 	void CalculateMatrix();
 
@@ -57,6 +57,7 @@ public:
 	void SetVisibility(bool visible);
 
 	RenderObject* GetRenderObject() const;
+	Animation* GetAnimation() const;
 
 	//Update object gamelogic
 	void virtual Update(float deltaTime) = 0;

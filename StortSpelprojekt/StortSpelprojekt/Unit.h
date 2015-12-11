@@ -15,7 +15,6 @@ private:
 	const Tilemap* _tileMap;		//Pointer to the tileMap in objectHandler(?). Units should preferably have read-, but not write-access.
 	AI::Vec2D _direction;
 	float  _moveSpeed;
-	float _animTime;
 public:
 	Unit();
 	Unit(int x, int z, const Tilemap* tileMap);

@@ -315,7 +315,7 @@ RenderObject* AssetManager::ScanModel(string fileName)
 	_infile->read((char*)&mainHeader, sizeof(MainHeader));
 	mainHeader._meshCount++;
 	if (mainHeader._version != _meshFormatVersion)
-		throw std::runtime_error("Failed to load " + file_path + ":\nIncorrect fileversion");
+		throw runtime_error("Failed to load " + file_path + ":\nIncorrect fileversion");
 
 	int skeletonStringLength;
 	_infile->read((char*)&skeletonStringLength, 4);
@@ -323,11 +323,6 @@ RenderObject* AssetManager::ScanModel(string fileName)
 	_infile->read((char*)renderObject->_skeletonName.data(), skeletonStringLength);
 
 	renderObject->_isSkinned = strcmp(renderObject->_skeletonName.data(), "Unrigged") != 0;
-
-	if (renderObject->_isSkinned)
-	{
-		renderObject->_skeleton = LoadSkeleton(renderObject->_skeletonName);
-	}
 
 	for (int i = 0; i < mainHeader._meshCount; i++)
 	{
@@ -380,6 +375,11 @@ RenderObject* AssetManager::ScanModel(string fileName)
 
 	_infile->close();
 
+	if (renderObject->_isSkinned)
+	{
+		renderObject->_skeleton = LoadSkeleton(renderObject->_skeletonName);
+	}
+
 	renderObject->_meshLoaded = false;
 
 	return renderObject;
@@ -390,7 +390,7 @@ ID3D11Buffer* AssetManager::CreateVertexBuffer(vector<WeightedVertex> *weightedV
 	D3D11_BUFFER_DESC vbDESC;
 	vbDESC.Usage = D3D11_USAGE_DEFAULT;
 	if(skeleton)
-		vbDESC.ByteWidth = sizeof(WeightedVertex)* vertices->size();
+		vbDESC.ByteWidth = sizeof(WeightedVertex)* weightedVertices->size();
 	else
 		vbDESC.ByteWidth = sizeof(Vertex)* vertices->size();
 	vbDESC.BindFlags = D3D11_BIND_VERTEX_BUFFER;
@@ -468,7 +468,7 @@ Skeleton* AssetManager::LoadSkeleton(string filename)
 	_infile->read((char*)&header, sizeof(SkeletonHeader));
 	if (header._version != _animationFormatVersion)
 	{
-		throw std::runtime_error("Failed to load " + file_path + ":\nIncorrect fileversion");
+		throw runtime_error("Failed to load " + file_path + ":\nIncorrect fileversion");
 	}
 
 	vector<int> frameCountPerAction;

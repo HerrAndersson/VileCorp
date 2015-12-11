@@ -86,6 +86,13 @@ namespace Renderer
 			throw std::runtime_error("RenderModule::InitializeConstantBuffers: Failed to create MatrixBufferPerObject");
 		}
 
+		matrixBufferDesc.ByteWidth = sizeof(MatrixBufferPerSkinnedObject);
+		result = device->CreateBuffer(&matrixBufferDesc, NULL, &_matrixBufferPerSkinnedObject);
+		if (FAILED(result))
+		{
+			throw std::runtime_error("RenderModule::InitializeConstantBuffers: Failed to create MatrixBufferPerSkinnedObject");
+		}
+
 		matrixBufferDesc.ByteWidth = sizeof(MatrixBufferPerFrame);
 		result = device->CreateBuffer(&matrixBufferDesc, NULL, &_matrixBufferPerFrame);
 		if (FAILED(result))
@@ -128,6 +135,36 @@ namespace Renderer
 		deviceContext->VSSetConstantBuffers(0, 1, &_matrixBufferPerFrame);
 	}
 
+	void RenderModule::SetResourcesPerObject(XMMATRIX* world, ID3D11ShaderResourceView* diffuse, ID3D11ShaderResourceView* specular, std::vector<DirectX::XMFLOAT4X4>* extra)
+	{
+		HRESULT result;
+		D3D11_MAPPED_SUBRESOURCE mappedResource;
+		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
+
+		UINT32 offset = 0;
+
+		deviceContext->PSSetShaderResources(0, 1, &diffuse);
+		deviceContext->PSSetShaderResources(1, 1, &specular);
+
+		XMMATRIX worldMatrixC;
+		worldMatrixC = *world;
+
+		result = deviceContext->Map(_matrixBufferPerSkinnedObject, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+		if (FAILED(result))
+		{
+			throw std::runtime_error("RenderModule::SetResourcesPerObject: Failed to Map _matrixBufferPerObject");
+		}
+
+		MatrixBufferPerSkinnedObject* dataPtr = (MatrixBufferPerSkinnedObject*)mappedResource.pData;
+		dataPtr->world = worldMatrixC;
+		memcpy(&dataPtr->bones, extra->data(), sizeof(DirectX::XMFLOAT4X4) * extra->size());
+		
+
+		deviceContext->Unmap(_matrixBufferPerSkinnedObject, 0);
+
+		deviceContext->VSSetConstantBuffers(1, 1, &_matrixBufferPerSkinnedObject);
+	}
+
 	void RenderModule::SetResourcesPerObject(XMMATRIX* world, ID3D11ShaderResourceView* diffuse, ID3D11ShaderResourceView* specular)
 	{
 		HRESULT result;
@@ -148,9 +185,10 @@ namespace Renderer
 			throw std::runtime_error("RenderModule::SetResourcesPerObject: Failed to Map _matrixBufferPerObject");
 		}
 
-		MatrixBufferPerObject* dataPtr = (MatrixBufferPerObject*)mappedResource.pData;
 
+		MatrixBufferPerObject* dataPtr = (MatrixBufferPerObject*)mappedResource.pData;
 		dataPtr->world = worldMatrixC;
+		
 
 		deviceContext->Unmap(_matrixBufferPerObject, 0);
 
@@ -198,7 +236,7 @@ namespace Renderer
 		_d3d->BeginScene(red, green, blue, alpha);
 	}
 
-	void RenderModule::Render(DirectX::XMMATRIX* world, RenderObject* renderObject)
+	void RenderModule::Render(DirectX::XMMATRIX* world, RenderObject* renderObject, std::vector<DirectX::XMFLOAT4X4>* extra)
 	{
 		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
 
@@ -218,13 +256,18 @@ namespace Renderer
 			specularData = specular->_data;
 		}
 
-		SetResourcesPerObject(world, diffuseData, specularData);
 
-		int vertexSize = sizeof(Vertex);
+		int vertexSize;
 
-		if (renderObject->_isSkinned != 0)
+		if (renderObject->_isSkinned)
 		{
 			vertexSize = sizeof(WeightedVertex);
+			SetResourcesPerObject(world, diffuseData, specularData, extra);
+		}
+		else
+		{
+			vertexSize = sizeof(Vertex);
+			SetResourcesPerObject(world, diffuseData, specularData);
 		}
 		
 		for (auto mesh : renderObject->_meshes)
