@@ -1,79 +1,175 @@
-#include "Game.h"
+#include "LevelEdit.h"
 #include <stdexcept>
 #include <DirectXMath.h>
 #include <sstream>
 
-Game::Game(HINSTANCE hInstance, int nCmdShow)
+LevelEdit::LevelEdit(HINSTANCE hInstance, int nCmdShow)
 {
 	System::WindowSettings settings;
-	_window = new System::Window("Amazing game", hInstance, settings);
+	_window = new System::Window("Amazing LevelEditor", hInstance, settings);
 
 	_renderModule = new Renderer::RenderModule(_window->GetHWND(), settings._width, settings._height);
 	_UI = new UIHandler(_renderModule->GetDevice(), _window->GetWindowSettings());
 
 	//Initialize Variables
 	InitVar initVar;
-	initVar.objectHandler	= _objectHandler;
+	initVar.objectHandler = _objectHandler;
 
 	_camera = new System::Camera(0.1f, 1000.0f, DirectX::XM_PIDIV2, settings._width, settings._height);
 	_camera->SetPosition(XMFLOAT3(3, 10, 0));
 	_camera->SetRotation(XMFLOAT3(60, 0, 0));
 
 	_timer = System::Timer();
-	
+
 	_objectHandler = new ObjectHandler(_renderModule->GetDevice());
-	initVar.uiHandler		= _UI;
+	initVar.uiHandler = _UI;
 	_SM = new StateMachine(initVar);
 
 	_input = new System::InputDevice(_window->GetHWND());
 
-	//TEMP!
-	_spotlight = new Spotlight(0.1f, 1000.0f, XM_PIDIV4, 2048, 2048);
-	_spotlight->SetPositionAndRotation(XMFLOAT3(3, 1, 3), XMFLOAT3(0, 45, 0));
+	_selectedObj = 0;
+	_tileMultiplier = 1;
 }
 
-Game::~Game() 
-{	
+LevelEdit::~LevelEdit()
+{
 	delete _window;
 	delete _renderModule;
 	delete _camera;
 	delete _objectHandler;
+	//TODO remove comments when the objectHandler is initialized
+	//delete _objectHandler;
 	delete _UI;
 	delete _SM;
 	delete _input;
-	delete _spotlight;
 }
-void Game::ResizeResources(System::WindowSettings settings)
+void LevelEdit::ResizeResources(System::WindowSettings settings)
 {
 	_window->ResizeWindow(settings);
 	_renderModule->ResizeResources(_window->GetHWND(), settings._width, settings._height);
 	_camera->Resize(settings._width, settings._height);
 }
 
-void Game::HandleInput()
+
+void LevelEdit::LoadLevel()
 {
+	//load existing level.
+}
+
+void LevelEdit::InitNewLevel()
+{
+	//Init New level
+}
+
+void LevelEdit::ExportLevel()
+{
+	MessageBoxA(NULL, "Pretending To export", "Cool Exporter", MB_ICONERROR | MB_OK);
+}
+
+
+void LevelEdit::HandleInput()
+{
+	GameObject* temp;
+
+	//Tile select
+	if (_input->IsPressed(VK_ADD))
+	{
+		_selectedObj++;
+		
+	}
+
+	if (_input->IsPressed(VK_SUBTRACT))
+	{
+		if (_selectedObj != 0)
+		{
+			_selectedObj--;
+		}
+			
+	}
+
+	//Move tile greater distance per button press
+	if (_input->IsPressed(VK_PRIOR))
+	{
+		_tileMultiplier++;
+	}
+
+	if (_input->IsPressed(VK_NEXT))
+	{
+		if (_tileMultiplier != 1)
+		{
+			_tileMultiplier--;
+		}
+	}
+
+	//Translation and rotation controls
+	if (_input->IsPressed(VK_LEFT))
+	{
+
+		temp = _objectHandler->Find(_selectedObj);
+		if (temp->GetType() < 3)
+		{
+			XMFLOAT3 tempPos = temp->GetPosition();
+			temp->SetPosition(XMFLOAT3(tempPos.x - 1 * _tileMultiplier, tempPos.y, tempPos.z));
+		}
+
+	}
+
+	if (_input->IsPressed(VK_RIGHT))
+	{
+		temp = _objectHandler->Find(_selectedObj);
+		if (temp->GetType()  < 3)
+		{
+			XMFLOAT3 tempPos = temp->GetPosition();
+			temp->SetPosition(XMFLOAT3(tempPos.x + 1 * _tileMultiplier, tempPos.y, tempPos.z));
+		}
+	}
+
+	if (_input->IsPressed(VK_UP))
+	{
+		temp = _objectHandler->Find(_selectedObj);
+
+		if (temp->GetType()  < 3)
+		{
+			XMFLOAT3 tempPos = temp->GetPosition();
+			temp->SetPosition(XMFLOAT3(tempPos.x, tempPos.y, tempPos.z + 1 * _tileMultiplier));
+		}
+	}
+
+
+	if (_input->IsPressed(VK_DOWN))
+	{
+		temp = _objectHandler->Find(_selectedObj);
+		if (temp->GetType()  < 3)
+		{
+			XMFLOAT3 tempPos = temp->GetPosition();
+			temp->SetPosition(XMFLOAT3(tempPos.x, tempPos.y, tempPos.z - 1 * _tileMultiplier));
+		}
+	}
+
+	if (_input->IsPressed(0x5A))
+	{
+		temp = _objectHandler->Find(_selectedObj);
+		if (temp->GetType()  < 3)
+		{
+			XMFLOAT3 tempRot = temp->GetRotation();
+			temp->SetRotation(XMFLOAT3(tempRot.x, tempRot.y + (DirectX::XM_PI/2), tempRot.z));
+		}
+	}
+	if (_input->IsPressed(0x58))
+	{
+		temp = _objectHandler->Find(_selectedObj);
+		if (temp->GetType()  < 3)
+		{
+			XMFLOAT3 tempRot = temp->GetRotation();
+			temp->SetRotation(XMFLOAT3(tempRot.x, tempRot.y - (DirectX::XM_PI / 2), tempRot.z));
+		}
+	}
 	
-
-
-	if (GetAsyncKeyState(VK_LEFT) != 0)
+	if (_input->IsPressed(0x45))
 	{
-		//Windowed mode
-		System::WindowSettings settings(1280, 720, System::WindowSettings::SHOW_CURSOR);
-		ResizeResources(settings);
-	}
+	
+		ExportLevel();
 
-	if (GetAsyncKeyState(VK_RIGHT) != 0)
-	{
-		//Fullscreen
-		System::WindowSettings settings(1920, 1080, System::WindowSettings::SHOW_CURSOR | System::WindowSettings::FULLSCREEN);
-		ResizeResources(settings);
-	}
-
-	if (GetAsyncKeyState(VK_UP) != 0)
-	{
-		//Borderless windowed
-		System::WindowSettings settings(567, 765, System::WindowSettings::SHOW_CURSOR | System::WindowSettings::BORDERLESS);
-		ResizeResources(settings);
 	}
 
 	//Camera mouse control
@@ -124,19 +220,15 @@ void Game::HandleInput()
 		_camera->SetPosition(XMFLOAT3(position.x + (forward.x + right.x) * v, position.y + (forward.y + right.y) * v, position.z + (forward.z + right.z) * v));
 	}
 
-	
+
 }
 
-int frames = 0;
-
-void Game::Update(float deltaTime)
+void LevelEdit::Update(float deltaTime)
 {
 	/*
 	Object handler update
-
 	hämta från objecthander eller olika update functioner i objecthander
 	vi vill hämta objekten
-
 	*/
 
 	_input->Update();
@@ -146,15 +238,14 @@ void Game::Update(float deltaTime)
 	_objectHandler->Update();
 }
 
-void Game::Render()
+void LevelEdit::Render()
 {
 	_renderModule->BeginScene(0.0f, 1.0f, 1.0f, 1);
-	_renderModule->SetDataPerFrame(_spotlight->GetViewMatrix(), _spotlight->GetProjectionMatrix());
+	_renderModule->SetResourcesPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
 	_renderModule->SetShaderStage(Renderer::RenderModule::GEO_PASS);
 
+
 	//RenderList renderList = _objectHandler->GetAll(0);
-	
-	
 	//_renderModule->Render(&_objectHandler->GetAll(TRAP).at(0)->GetMatrix(), renderList._renderObject);
 	//_renderModule->Render(&_objectHandler->GetAll(TRAP).at(1)->GetMatrix(), renderList._renderObject);
 
@@ -163,76 +254,41 @@ void Game::Render()
 	//{
 	//	_renderModule->Render(&renderList.modelMatrices[j], renderList._renderObject);
 	//}
-	
-	std::vector<GameObject*>* gameObjects = _objectHandler->GetGameObjects();
 
+	std::vector<GameObject*>* gameObjects = _objectHandler->GetGameObjects();
 	for (auto i : *gameObjects)
 	{
 		_renderModule->Render(&i->GetMatrix(), i->GetRenderObject());
 	}
 
-
-	_renderModule->SetShaderStage(Renderer::RenderModule::LIGHT_ACCUMULATION_PASS);
-
-	_renderModule->SetShadowMapDataPerLight(_spotlight->GetViewMatrix(), _spotlight->GetProjectionMatrix());
-
-	for (auto i : *gameObjects)
-	{
-		_renderModule->RenderShadowMap(&i->GetMatrix(), i->GetRenderObject());
-	}
-	
-
 	_renderModule->SetShaderStage(Renderer::RenderModule::LIGHT_PASS);
 
 
-	/*for (all pointlights)
-	{
-		generate cubic shadowmap
-		render to accumulation buffer with cubic shadowmap
-	}
-
-	for (all directional lights)
-	{
-		generate shadowmap
-		render to accumulation buffer with shadowmap
-	}*/
-
 	_renderModule->RenderLightQuad();
+	_UI->Render(_renderModule->GetDeviceContext());
 	_renderModule->EndScene();
 }
 
-int Game::Run()
+int LevelEdit::Run()
 {
 	float deltaTime = 0; //someone create this.
-	//Needs a Tilemap in the objectHandler /Markus
-	//_objectHandler->Add(TRAP, 0, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
+						 //Needs a Tilemap in the objectHandler /Markus
+						 //_objectHandler->Add(TRAP, 0, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
+						 //_objectHandler->Add(TRAP, 0, XMFLOAT3(0.5f, -1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
 
-	//_objectHandler->Add(TRAP, 0, XMFLOAT3(0.5f, -1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
-	_objectHandler->LoadLevel(4);
+	_objectHandler->LoadLevel(3);
+
 
 	_objectHandler->InitPathfinding();
 
 	while (_window->Run())
 	{
-		//temp escape
-		if (_input->IsPressed(VK_ESCAPE))
-		{
-			return 0;
-		}
-
-
 		_timer.Update();
 		if (_timer.GetFrameTime() >= MS_PER_FRAME)
 		{
 			HandleInput();
 			Update(deltaTime);
-
 			Render();
-
-			string s = to_string(_timer.GetFrameTime()) + " " + to_string(_timer.GetFPS());
-
-			SetWindowText(_window->GetHWND(), s.c_str());
-
 			_timer.Reset();
 		}
 	}
