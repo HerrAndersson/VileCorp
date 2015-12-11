@@ -174,7 +174,7 @@ private:
 	void Flush();
 	RenderObject* ScanModel(string file_path);
 	Texture* ScanTexture(string filename);
-	void LoadSkeleton(string filename);
+	Skeleton* LoadSkeleton(string filename);
 	void DecrementUsers(Texture* texture);
 	ID3D11Buffer* CreateVertexBuffer(vector<WeightedVertex> *weightedVertices, vector<Vertex> *vertices, int skeleton);
 	void SetupRenderObjectList(Tileset* tileset);

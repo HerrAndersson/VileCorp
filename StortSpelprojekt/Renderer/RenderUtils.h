@@ -95,7 +95,8 @@ struct RenderObject
 {
 	bool _meshLoaded, _toUnload;
 	bool _isSkinned = false;
-	std::string _skeleton;
+	std::string _skeletonName;
+	Skeleton* _skeleton;
 	float _diffuse[4], _specular[4];
 	Texture* _diffuseTexture = nullptr;
 	Texture* _specularTexture = nullptr;

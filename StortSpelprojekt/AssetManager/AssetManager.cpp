@@ -13,6 +13,7 @@ AssetManager::AssetManager(ID3D11Device* device)
 	_texturesToFlush = new vector<Texture*>;
 	_levelFileNames = new vector<string>;
 	_tilesets = new vector<Tileset>;
+	_skeletons = new vector<Skeleton>;
 
 	SetupTilesets();
 #ifdef _DEBUG
@@ -29,25 +30,18 @@ AssetManager::~AssetManager()
 			texture->_data->Release();
 			delete texture;
 		}
-	_textures->clear();
 
 	for (uint i = 0; i < _renderObjects->size(); i++)
 	{
 		UnloadModel(i, true);
 		delete _renderObjects->at(i);
 	}
-	_renderObjects->clear();
-	_infile->clear();
 	delete _infile;
-	_modelFiles->clear();
 	delete _modelFiles;
 	delete _renderObjects;
-	_renderObjectsToFlush->clear();
 	delete _renderObjectsToFlush;
 	delete _textures;
-	_texturesToFlush->clear();
 	delete _texturesToFlush;
-	_levelFileNames->clear();
 	delete _levelFileNames;
 	for (Tileset set : *_tilesets)
 	{
@@ -57,6 +51,7 @@ AssetManager::~AssetManager()
 	}
 	_tilesets->clear();
 	delete _tilesets;
+	delete _skeletons;
 }
 
 //Looks through the Models folder and creates an empty RenderObject for each entry
@@ -323,16 +318,15 @@ RenderObject* AssetManager::ScanModel(string fileName)
 		throw std::runtime_error("Failed to load " + file_path + ":\nIncorrect fileversion");
 
 	int skeletonStringLength;
-	string skeletonFileName;
 	_infile->read((char*)&skeletonStringLength, 4);
-	skeletonFileName.resize(skeletonStringLength);
-	_infile->read((char*)skeletonFileName.data(), skeletonStringLength);
+	renderObject->_skeletonName.resize(skeletonStringLength);
+	_infile->read((char*)renderObject->_skeletonName.data(), skeletonStringLength);
 
-	renderObject->_isSkinned = strcmp(skeletonFileName.data(), "Unrigged") != 0;
+	renderObject->_isSkinned = strcmp(renderObject->_skeletonName.data(), "Unrigged") != 0;
 
 	if (renderObject->_isSkinned)
 	{
-		LoadSkeleton(skeletonFileName);
+		renderObject->_skeleton = LoadSkeleton(renderObject->_skeletonName);
 	}
 
 	for (int i = 0; i < mainHeader._meshCount; i++)
@@ -442,14 +436,14 @@ ID3D11ShaderResourceView* AssetManager::GetTexture(string filename)
 	return texture->_data;
 }
 
-void AssetManager::LoadSkeleton(string filename)
+Skeleton* AssetManager::LoadSkeleton(string filename)
 {
 
 	for (Skeleton skeleton : *_skeletons)
 	{
 		if (strcmp(skeleton._name.c_str(), filename.data()))
 		{
-			return;
+			return &skeleton;
 		}
 	}
 
@@ -464,10 +458,11 @@ void AssetManager::LoadSkeleton(string filename)
 
 	if (!_infile->is_open())
 	{
-		return;
+		throw runtime_error("Failed to open " + file_path);
 	}
 
 	Skeleton* skeleton = new Skeleton;
+	_skeletons->push_back(*skeleton);
 
 	SkeletonHeader header;
 	_infile->read((char*)&header, sizeof(SkeletonHeader));
@@ -498,4 +493,5 @@ void AssetManager::LoadSkeleton(string filename)
 	}
 
 	_infile->close();
+	return skeleton;
 }
