@@ -59,6 +59,18 @@ namespace Renderer
 
 		_lightPassVS = CreateVertexShader(device, L"../Renderer/Shaders/LightVS.hlsl", lightInputDesc, numElements);
 		_lightPassPS = CreatePixelShader(device, L"../Renderer/Shaders/LightPS.hlsl");
+
+		//Grid pass init
+		D3D11_INPUT_ELEMENT_DESC gridInputDesc[] =
+		{
+			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+		};
+
+		numElements = sizeof(gridInputDesc) / sizeof(gridInputDesc[0]);
+
+		_gridPassVS = CreateVertexShader(device, L"../Renderer/Shaders/GridVS.hlsl", gridInputDesc, numElements);
+		_gridPassPS = CreatePixelShader(device, L"../Renderer/Shaders/GridPS.hlsl");
 	}
 
 	ShaderHandler::~ShaderHandler()
@@ -69,6 +81,8 @@ namespace Renderer
 		SAFE_RELEASE(_geoPassPS);
 		delete _lightPassVS;
 		SAFE_RELEASE(_lightPassPS);
+		delete _gridPassVS;
+		SAFE_RELEASE(_gridPassPS);
 	}
 
 	ShaderHandler::VertexShaderData* ShaderHandler::CreateVertexShader(ID3D11Device* device, LPCWSTR fileName, D3D11_INPUT_ELEMENT_DESC* inputDesc, int inputDescSize)
@@ -305,6 +319,23 @@ namespace Renderer
 		deviceContext->GSSetShader(nullptr, nullptr, 0);
 		deviceContext->DSSetShader(nullptr, nullptr, 0);
 		deviceContext->PSSetShader(_lightPassPS, nullptr, 0);
+		deviceContext->CSSetShader(nullptr, nullptr, 0);
+
+		//Set sampler
+		deviceContext->PSSetSamplers(0, 1, &_samplerWRAP);
+	}
+
+	void ShaderHandler::SetGridPassShaders(ID3D11DeviceContext * deviceContext)
+	{
+		// Set vertex layout
+		deviceContext->IASetInputLayout(_gridPassVS->_inputLayout);
+
+		// Set shaders
+		deviceContext->VSSetShader(_gridPassVS->_vertexShader, nullptr, 0);
+		deviceContext->HSSetShader(nullptr, nullptr, 0);
+		deviceContext->GSSetShader(nullptr, nullptr, 0);
+		deviceContext->DSSetShader(nullptr, nullptr, 0);
+		deviceContext->PSSetShader(_gridPassPS, nullptr, 0);
 		deviceContext->CSSetShader(nullptr, nullptr, 0);
 
 		//Set sampler

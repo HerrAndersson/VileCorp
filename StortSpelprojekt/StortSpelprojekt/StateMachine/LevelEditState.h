@@ -1,11 +1,13 @@
-#ifndef LEVELEDITSTATE_H
-#define LEVELEDITSTATE_H
+#pragma once
 
 #include "BaseState.h"
+#include "../LevelEdit.h"
 
 class LevelEditState : public BaseState
 {
 private:
+	LevelEdit _levelEdit;
+	InitVar _initVar;
 public:
 	LevelEditState(InitVar initVar);
 	~LevelEditState();
@@ -14,5 +16,3 @@ public:
 	void OnStateEnter();
 	void OnStateExit();
 };
-
-#endif

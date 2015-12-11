@@ -165,7 +165,6 @@ namespace Renderer
 		UINT32 vs = vertexSize;
 
 		deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &vs, &offset);
-		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	}
 
 	void RenderModule::SetShaderStage(ShaderStage stage)
@@ -182,6 +181,12 @@ namespace Renderer
 		{
 			_d3d->SetLightPassRTVs();
 			_shaderHandler->SetLightPassShaders(_d3d->GetDeviceContext());
+			break;
+		}
+		case GRID_PASS:
+		{
+			_d3d->SetGridPassRTVs();
+			_shaderHandler->SetGridPassShaders(_d3d->GetDeviceContext());
 			break;
 		}
 		};
@@ -201,6 +206,8 @@ namespace Renderer
 
 		Texture* diffuse = renderObject->_diffuseTexture;
 		Texture* specular = renderObject->_specularTexture;
+
+		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		if (diffuse)
 		{
@@ -226,6 +233,20 @@ namespace Renderer
 			SetResourcesPerMesh(mesh._vertexBuffer, vertexSize);
 			deviceContext->Draw(mesh._vertexBufferSize, 0);
 		}
+	}
+
+	void RenderModule::RenderLineList(DirectX::XMMATRIX* world, ID3D11Buffer* lineList, int nrOfPoints, DirectX::XMFLOAT3 color)
+	{
+		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
+
+		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+
+		SetResourcesPerObject(world, nullptr, nullptr);
+
+		int pointSize = sizeof(XMFLOAT3);
+
+		SetResourcesPerMesh(lineList, pointSize);
+		deviceContext->Draw(nrOfPoints, 0);
 	}
 
 	void RenderModule::RenderLightQuad()

@@ -74,6 +74,10 @@ void Game::HandleInput()
 		System::WindowSettings settings(567, 765, System::WindowSettings::SHOW_CURSOR | System::WindowSettings::BORDERLESS);
 		ResizeResources(settings);
 	}
+	if (_input->IsPressed(VK_ESCAPE))
+	{
+		//TODO: Make a graceful exit.
+	}
 }
 
 void Game::Update(float deltaTime)

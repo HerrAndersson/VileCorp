@@ -47,7 +47,7 @@ namespace Renderer
 
 	public:
 
-		enum ShaderStage { GEO_PASS, LIGHT_PASS };
+		enum ShaderStage { GEO_PASS, LIGHT_PASS, GRID_PASS };
 
 		RenderModule(HWND hwnd, int screenWidth, int screenHeight);
 		~RenderModule();
@@ -59,6 +59,7 @@ namespace Renderer
 
 		void BeginScene(float red, float green, float blue, float alpha);
 		void Render(DirectX::XMMATRIX* world, RenderObject* renderObject);
+		void RenderLineList(DirectX::XMMATRIX* world, ID3D11Buffer* lineList, int nrOfPoints, DirectX::XMFLOAT3 color);
 		void RenderLightQuad();
 		void EndScene();
 

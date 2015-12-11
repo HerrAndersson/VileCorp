@@ -24,6 +24,7 @@
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameLogic.cpp" />
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="Grid.cpp" />
     <ClCompile Include="LevelEdit.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ObjectHandler.cpp" />
@@ -46,6 +47,7 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameLogic.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="Grid.h" />
     <ClInclude Include="LevelEdit.h" />
     <ClInclude Include="ObjectHandler.h" />
     <ClInclude Include="StateMachine\BaseState.h" />
