@@ -31,6 +31,8 @@ LevelEdit::LevelEdit(HINSTANCE hInstance, int nCmdShow)
 	_lastSelected = 0;
 	_tileMultiplier = 1;
 
+	_grid = new Grid(_renderModule->GetDevice(), 1, 10);
+
 	
 }
 
@@ -343,8 +345,16 @@ void LevelEdit::Render()
 		_renderModule->Render(&i->GetMatrix(), i->GetRenderObject());
 	}
 
-	_renderModule->SetShaderStage(Renderer::RenderModule::LIGHT_PASS);
+	_renderModule->SetShaderStage(Renderer::RenderModule::GRID_PASS);
 
+	std::vector<DirectX::XMMATRIX>* gridMatrices = _grid->GetGridMatrices();
+
+	for (auto &matrix : *gridMatrices)
+	{
+		_renderModule->RenderLineList(&matrix, _grid->GetLineBuffer(), 2, DirectX::XMFLOAT3(0.5, 0.5, 0.5));
+	}
+
+	_renderModule->SetShaderStage(Renderer::RenderModule::LIGHT_PASS);
 
 	_renderModule->RenderLightQuad();
 	_UI->Render(_renderModule->GetDeviceContext());

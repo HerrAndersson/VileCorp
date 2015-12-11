@@ -12,6 +12,7 @@
 #include "InitVar.h"
 #include "Trap.h"
 #include "InputDevice.h"
+#include "Grid.h"
 
 class LevelEdit
 {
@@ -27,6 +28,8 @@ private:
 	System::Timer				_timer;
 
 	System::InputDevice*		_input;
+
+	Grid*						_grid;
 
 	//Resizing window, directx resources, camera
 	void ResizeResources(System::WindowSettings settings);
