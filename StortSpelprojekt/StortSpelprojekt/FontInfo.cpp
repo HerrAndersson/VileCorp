@@ -44,14 +44,14 @@ void FontInfo::Render(ID3D11DeviceContext* deviceContext)
 	
 	for (auto j : _text)
 	{
-		wText = j.text.c_str();
-		_fontDevice.DrawString(deviceContext, wText, j.text.size(), j.fontSize, j.position.x, j.position.y, j.color);
+		wText = j._text.c_str();
+		_fontDevice.DrawString(deviceContext, wText, j._text.size(), j._fontSize, j._position.x, j._position.y, j._color);
 	}
 }
 
-void FontInfo::AddText(DirectX::XMFLOAT2 position_, float fontSize_, UINT32 color_, std::wstring text_, int textId_)
+void FontInfo::AddText(DirectX::XMFLOAT2 position, float fontSize, UINT32 color, std::wstring text, int textId)
 {
-	_text.push_back(TextInfo(position_, fontSize_, color_, text_, textId_));
+	_text.push_back(TextInfo(position, fontSize, color, text, textId));
 }
 
 void FontInfo::OnResize(float scale)
@@ -69,7 +69,7 @@ bool FontInfo::RemoveText(int id)
 
 	for (auto i : _text)
 	{
-		if (i.textId == id)
+		if (i._textId == id)
 		{
 			rv = true;
 		}

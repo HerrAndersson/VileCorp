@@ -6,7 +6,7 @@
 class Unit : public GameObject
 {
 public:
-	const float MOVE_SPEED = 0.02f;
+	const float MOVE_SPEED = 0.02f;				//Movement per frame
 private:
 	AI::AStar* _aStar;
 	AI::Vec2D _goalTilePosition;

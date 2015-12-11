@@ -26,29 +26,29 @@ namespace AI
 		}
 		Vec2D operator+(const Vec2D& comp)
 		{
-			return Vec2D{_x + comp._x, _y + comp._y};
+			return {_x + comp._x, _y + comp._y};
 		}
 		Vec2D operator-(const Vec2D& comp)
 		{
-			return Vec2D{_x - comp._x, _y - comp._y};
+			return {_x - comp._x, _y - comp._y};
 		}
 		void operator=(const Vec2D& comp)
 		{
 			_x = comp._x;
 			_y = comp._y;
 		}
-			Vec2D operator+=(const Vec2D& comp)
-			{
-				_x += comp._x;
-				_y += comp._y;
-				return *this;
-			}
-			Vec2D operator-=(const Vec2D& comp)
-			{
-				_x -= comp._x;
-				_y -= comp._y;
-				return *this;
-			}
+		Vec2D operator+=(const Vec2D& comp)
+		{
+			_x += comp._x;
+			_y += comp._y;
+			return *this;
+		}
+		Vec2D operator-=(const Vec2D& comp)
+		{
+			_x -= comp._x;
+			_y -= comp._y;
+			return *this;
+		}
 	};
 
 	const float SQRT2 = 1.41421356f;								//used for diagonals. Placing a constant means no root-calculations.
