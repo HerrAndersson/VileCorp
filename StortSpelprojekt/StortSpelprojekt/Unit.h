@@ -29,6 +29,9 @@ public:
 	Unit();
 	Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject* renderObject, const Tilemap* tileMap);
 	~Unit();
+	int getPathLength()const;
+	AI::Vec2D getGoal();
+	AI::Vec2D getDirection();
 	void FindVisibleTiles();
 	void CheckVisibleTiles();
 	void CheckAllTiles();

@@ -437,6 +437,22 @@ Unit::~Unit()
 	_aStar = nullptr;
 }
 
+int Unit::getPathLength() const
+{
+	return _pathLength;
+}
+
+AI::Vec2D Unit::getGoal()
+{
+	return _goalTilePosition;
+}
+
+AI::Vec2D Unit::getDirection()
+{
+	return _direction;
+}
+
+
 
 /*
 Gathers the tiles which are visible to the unit.
@@ -507,13 +523,13 @@ void Unit::CheckVisibleTiles()
 		{
 			_aStar->SetTileCost(_visibleTiles[i], 10);
 		}
-		//if (_ID == 100)									//Temporary solution to only use one of the units
-		//{
-		//	if (_tileMap->IsTypeOnTile(_visibleTiles[i]._x, _visibleTiles[i]._y, UNIT) && _visibleTiles[i] != _goalTilePosition)	//Unit finds another unit
-		//	{
-		//		CalculatePath(_visibleTiles[i]);
-		//	}
-		//}
+		if (_ID == 100)									//Temporary solution to only use one of the units
+		{
+			if (_tileMap->IsTypeOnTile(_visibleTiles[i]._x, _visibleTiles[i]._y, UNIT) && !(_visibleTiles[i] == _goalTilePosition || _visibleTiles[i] == _tilePosition))	//Unit finds another unit
+			{
+				CalculatePath(_visibleTiles[i]);
+			}
+		}
 	}
 }
 
@@ -522,7 +538,7 @@ void Unit::CheckAllTiles()
 	for (int i = 0; i < _tileMap->GetWidth(); i++)
 	{
 		for (int j = 0; j < _tileMap->GetHeight(); j++)
-		{
+		{ 
 			//Handle objectives
 			if (_tileMap->IsObjectiveOnTile(i, j))
 			{
@@ -547,25 +563,6 @@ void Unit::CheckAllTiles()
 }
 
 /*
-	Checks pathfinding for an array of tiles leading to the goal.
-	Cleaning the map is not fully implemented, which means changing paths midway won't work.
-*/
-void Unit::CalculatePath()
-{
-	_aStar->CleanMap();
-	_aStar->SetStartPosition(_tilePosition);
-	_aStar->SetGoalPosition(_goalTilePosition);
-	if (_aStar->FindPath())
-	{
-		_path = _aStar->GetPath();
-		_pathLength = _aStar->GetPathLength();
-		AI::Vec2D nextTile = _path[--_pathLength];
-		_direction = {nextTile._x, nextTile._y};
-		_direction -= _tilePosition;
-	}
-}
-
-/*
 	Calculate path to a predetermined goal
 */
 void Unit::CalculatePath(AI::Vec2D goal)
@@ -578,6 +575,11 @@ void Unit::CalculatePath(AI::Vec2D goal)
 	{
 		_path = _aStar->GetPath();
 		_pathLength = _aStar->GetPathLength();
+	}
+	else
+	{
+		_path = nullptr;
+		_pathLength = 0;
 	}
 
 }
