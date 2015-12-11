@@ -2,20 +2,7 @@
 
 MenuState::MenuState(InitVar initVar) : BaseState (initVar)
 {
-	_uiHandler = initVar.uiHandler;
 
-	//_uiHandler->AddFont(L"Arial", L"Arial", DirectX::XMFLOAT2(0, 200), 72.0f, 0xff0099ff, L"Demo");
-	
-	_uiHandler->AddCustomFont(L"../../Output/Bin/x86/Debug/Assets/Fonts/Calibri.ttf", L"Calibri", XMFLOAT2(0, 0), 32.0f, 0xff0099ff, L"gPLEASE!10");
-	_uiHandler->AddCustomFont(L"../../Output/Bin/x86/Debug/Assets/Fonts/impact.ttf", L"impact", XMFLOAT2(0, 100), 32.0f, 0xff0099ff, L"gPLEASE!10");
-	//Arial höger.
-	//Calibri vänster. g.
-
-
-	//_uiHandler->AddFont(L"Arial", DirectX::XMFLOAT2(0, 100), 32.0f, 0xff0099ff, L"Start Game");
-	//_uiHandler->AddFont(L"Arial", DirectX::XMFLOAT2(0, 200), 32.0f, 0xff0099ff, L"Options");
-	//_uiHandler->AddFont(L"Arial", DirectX::XMFLOAT2(0, 300), 32.0f, 0xff0099ff, L"Credits");
-	//_uiHandler->AddFont(L"Arial", DirectX::XMFLOAT2(0, 400), 32.0f, 0xff0099ff, L"Quit");
 }
 
 MenuState::~MenuState()
@@ -25,11 +12,34 @@ MenuState::~MenuState()
 
 void MenuState::Update(float deltaTime)
 {
+	if (_inputDevice->IsPressed(System::Input::LeftMouse))
+	{
+		//Get mouse coord
+		//Calculate mouse coord to screenspace
+		//Check collision with all the buttons
+		//Execute code for button
+		
+	}
 }
 
 void MenuState::OnStateEnter()
 {
-
+	_uiHandler->AddCustomFont(L"../../Output/Bin/x86/Debug/Assets/Fonts/Calibri.ttf", L"Calibri", XMFLOAT2(0, 0), 32.0f, 0xff0099ff, L"Continue");
+	_uiHandler->Add2DTexture("floor.png", DirectX::XMFLOAT2(-0.8f, -0.8f), DirectX::XMFLOAT2(0.2f, 0.2f));
+	_uiHandler->AddButton("floor.png", DirectX::XMFLOAT2(0.8f, -0.8f), DirectX::XMFLOAT2(0.2f, 0.2f));
+	
+	/*
+	_uiHandler->AddCustomFont(L"../../Output/Bin/x86/Debug/Assets/Fonts/Calibri.ttf", L"Calibri", XMFLOAT2(0, 100), 32.0f, 0xff0099ff, L"Start");
+	_uiHandler->AddCustomFont(L"../../Output/Bin/x86/Debug/Assets/Fonts/Calibri.ttf", L"Calibri", XMFLOAT2(0, 200), 32.0f, 0xff0099ff, L"Options");
+	_uiHandler->AddCustomFont(L"../../Output/Bin/x86/Debug/Assets/Fonts/Calibri.ttf", L"Calibri", XMFLOAT2(0, 300), 32.0f, 0xff0099ff, L"Credits");
+	_uiHandler->AddCustomFont(L"../../Output/Bin/x86/Debug/Assets/Fonts/Calibri.ttf", L"Calibri", XMFLOAT2(0, 400), 32.0f, 0xff0099ff, L"Exit");
+	*/
+	//_uiHandler->RemoveFont(L"../../Output/Bin/x86/Debug/Assets/Fonts/Calibri.ttf");
+	
+	/*
+	_uiHandler->Add2DImage(filepath, position, size);
+	_uiHandler->AddButton(filepath, position, size);
+	*/
 }
 
 void MenuState::OnStateExit()

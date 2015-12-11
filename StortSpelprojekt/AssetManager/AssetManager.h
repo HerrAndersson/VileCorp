@@ -17,18 +17,18 @@ using namespace DirectX;
 
 struct Tileset
 {
-	string name;
-	vector<string> floors;
-	vector<string> walls;
-	vector<string> deco;
+	string _name;
+	vector<string> _floors;
+	vector<string> _walls;
+	vector<string> _deco;
 };
 
 struct TilesetHandler
 {
-	vector<Tileset>* tilesets;
-	Tileset* tileset;
-	vector<string>* cur;
-	bool nameNext = false;
+	vector<Tileset>* _tilesets;
+	Tileset* _tileset;
+	vector<string>* _cur;
+	bool _nameNext = false;
 
 	bool Null() { return true; }
 	bool Bool(bool b) { return true; }
@@ -38,36 +38,36 @@ struct TilesetHandler
 	bool Uint64(uint64_t u) { return true; }
 	bool Double(double d) { return true; }
 	bool String(const char* str, rapidjson::SizeType length, bool copy) {
-		if (nameNext)
+		if (_nameNext)
 		{
-			tileset->name = str;
-			nameNext = false;
+			_tileset->_name = str;
+			_nameNext = false;
 		}
 		else
-			cur->push_back(str);
+			_cur->push_back(str);
 		return true;
 	}
 	bool StartObject()
 	{
 		Tileset newTileset;
-		tilesets->push_back(newTileset);
-		tileset = &tilesets->back();
+		_tilesets->push_back(newTileset);
+		_tileset = &_tilesets->back();
 		return true;
 	}
 	bool Key(const char* str, rapidjson::SizeType length, bool copy) {
 		if (!strcmp("name", str))
-			nameNext = true;
+			_nameNext = true;
 		else if (!strcmp("floors", str))
 		{
-			cur = &tileset->floors;
+			_cur = &_tileset->_floors;
 		}
 		else if (!strcmp("walls", str))
 		{
-			cur = &tileset->walls;
+			_cur = &_tileset->_walls;
 		}
 		else if (!strcmp("deco", str))
 		{
-			cur = &tileset->deco;
+			_cur = &_tileset->_deco;
 		}
 		return true;
 	}

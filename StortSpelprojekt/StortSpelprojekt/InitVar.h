@@ -1,13 +1,12 @@
-#ifndef INITVAR_H
-#define INITVAR_H
+#pragma once
 
 #include "UIHandler.h"
 #include "ObjectHandler.h"
+#include "InputDevice.h"
 
 struct InitVar
 {
-	ObjectHandler*		objectHandler;
-	UIHandler*			uiHandler;
+	ObjectHandler*		_objectHandler;
+	UIHandler*		_uiHandler;
+	System::InputDevice*	_inputDevice;
 };
-
-#endif

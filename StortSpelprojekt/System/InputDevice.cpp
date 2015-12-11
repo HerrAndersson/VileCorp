@@ -4,7 +4,7 @@ namespace System
 {
 	InputDevice::InputDevice(HWND hwnd)
 	{
-		for (int i = 0; i < KEYCODECAP; i++)
+		for (int i = 0; i < KEY_CODE_CAP; i++)
 		{
 			_current[i] = false;
 			_last[i] = false;
@@ -29,7 +29,7 @@ namespace System
 		_mouseCoord._deltaPos.x = _mouseCoord._pos.x - (rect.left + (rect.right - rect.left) / 2);
 		_mouseCoord._deltaPos.y = _mouseCoord._pos.y - (rect.top + (rect.bottom - rect.top) / 2);
 
-		for (int i = 1; i < KEYCODECAP; i++)
+		for (int i = 1; i < KEY_CODE_CAP; i++)
 		{
 			_last[i] = _current[i];	
 			_current[i] = GetAsyncKeyState(i) ? 1:0 & 0x0800;

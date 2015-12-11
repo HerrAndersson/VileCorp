@@ -141,7 +141,7 @@ namespace AI
 		return _pathLength;
 	}
 
-	void AStar::cleanMap()
+	void AStar::CleanMap()
 	{
 		delete[] _path;
 		_path = nullptr;

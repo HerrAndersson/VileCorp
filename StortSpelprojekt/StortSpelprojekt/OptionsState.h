@@ -1,5 +1,4 @@
-#ifndef OPTIONSSTATE_H
-#define OPTIONSSTATE_H
+#pragma once
 
 #include "BaseState.h"
 
@@ -15,5 +14,3 @@ public:
 	void OnStateExit();
 
 };
-
-#endif

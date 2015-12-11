@@ -13,14 +13,11 @@
 class StateMachine
 {
 private:
-
 	State					_currentState;
-	std::vector<BaseState*>	_baseState;
-
+	std::vector<BaseState*>	_baseStates;
 	void ProcessStateRequest();
 
 public:
-
 	StateMachine(InitVar initVar);
 	~StateMachine();
 
