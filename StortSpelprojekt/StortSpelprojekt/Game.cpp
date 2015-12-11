@@ -26,6 +26,10 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	_SM = new StateMachine(initVar);
 
 	_input = new System::InputDevice(_window->GetHWND());
+
+	//TEMP!
+	_spotlight = new Spotlight(0.1f, 1000.0f, XM_PIDIV4, 2048, 2048);
+	_spotlight->SetPositionAndRotation(XMFLOAT3(3, 1, 3), XMFLOAT3(0, 45, 0));
 }
 
 Game::~Game() 
@@ -37,6 +41,7 @@ Game::~Game()
 	delete _UI;
 	delete _SM;
 	delete _input;
+	delete _spotlight;
 }
 void Game::ResizeResources(System::WindowSettings settings)
 {
@@ -131,25 +136,17 @@ void Game::Update(float deltaTime)
 
 	*/
 
-
-	//if (frames == 69)
-	//{
-	//	int p = 3;
-	//}
-
 	_input->Update();
 	_UI->Update();
 	_UI->OnResize(_window->GetWindowSettings());
 	_SM->Update(deltaTime);
 	_objectHandler->Update();
-
-	//frames++;
 }
 
 void Game::Render()
 {
 	_renderModule->BeginScene(0.0f, 1.0f, 1.0f, 1);
-	_renderModule->SetDataPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
+	_renderModule->SetDataPerFrame(_spotlight->GetViewMatrix(), _spotlight->GetProjectionMatrix());
 	_renderModule->SetShaderStage(Renderer::RenderModule::GEO_PASS);
 
 	//RenderList renderList = _objectHandler->GetAll(0);
@@ -165,10 +162,22 @@ void Game::Render()
 	//}
 	
 	std::vector<GameObject*>* gameObjects = _objectHandler->GetGameObjects();
+
 	for (auto i : *gameObjects)
 	{
 		_renderModule->Render(&i->GetMatrix(), i->GetRenderObject());
 	}
+
+
+	_renderModule->SetShaderStage(Renderer::RenderModule::LIGHT_ACCUMULATION_PASS);
+
+	_renderModule->SetShadowMapDataPerLight(_spotlight->GetViewMatrix(), _spotlight->GetProjectionMatrix());
+
+	for (auto i : *gameObjects)
+	{
+		_renderModule->RenderShadowMap(&i->GetMatrix(), i->GetRenderObject());
+	}
+	
 
 	_renderModule->SetShaderStage(Renderer::RenderModule::LIGHT_PASS);
 
@@ -186,7 +195,6 @@ void Game::Render()
 	}*/
 
 	_renderModule->RenderLightQuad();
-	_UI->Render(_renderModule->GetDeviceContext());
 	_renderModule->EndScene();
 }
 
@@ -208,7 +216,13 @@ int Game::Run()
 		{
 			HandleInput();
 			Update(deltaTime);
+
 			Render();
+
+			string s = to_string(_timer.GetFrameTime()) + " " + to_string(_timer.GetFPS());
+
+			SetWindowText(_window->GetHWND(), s.c_str());
+
 			_timer.Reset();
 		}
 	}

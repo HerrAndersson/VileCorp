@@ -17,6 +17,7 @@ private:
 	[2] = Position
 	[3] = World Position
 	[4] = Depth from view
+	[5] = Shadow map / light accumulation - Set in SetLightPassRTVs.
 	*/
 	static const int BUFFER_COUNT = 5;
 
@@ -36,7 +37,7 @@ public:
 	Deferred(ID3D11Device* device, int textureWidth, int textureHeight);
 	virtual ~Deferred();
 
-	void SetRenderTargets(ID3D11DeviceContext* deviceContext);
+	int SetRenderTargets(ID3D11DeviceContext* deviceContext);
 	void ClearRenderTargets(ID3D11DeviceContext* deviceContext, float r, float g, float b, float a);
 
 	void ResizeRenderTargets(ID3D11Device* device, int textureWidth, int textureHeight);

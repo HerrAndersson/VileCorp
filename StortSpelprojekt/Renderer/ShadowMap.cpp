@@ -8,7 +8,7 @@ using namespace DirectX;
 namespace Renderer
 {
 
-	ShadowMap::ShadowMap(ID3D11Device* device, int dimensions, LPCWSTR vsFilename)
+	ShadowMap::ShadowMap(ID3D11Device* device, int dimensions)
 	{
 		this->dimensions = dimensions;
 
@@ -61,30 +61,6 @@ namespace Renderer
 		{
 			throw runtime_error("ShadowMap: Could not create Shadow map SRV");
 		}
-
-		///////////////////////////////////////////////////////// Vertex shader /////////////////////////////////////////////////////////
-		D3D11_INPUT_ELEMENT_DESC inputDesc[] =
-		{
-			{ "POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		};
-
-		hr = D3DCompileFromFile(vsFilename, NULL, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "vs_5_0", NULL, NULL, &pVS, &errorMessage);
-
-		if (FAILED(hr))
-		{
-			if (errorMessage)
-			{
-				throw runtime_error(string(static_cast<const char *>(errorMessage->GetBufferPointer()), errorMessage->GetBufferSize()));
-			}
-			else
-			{
-				throw runtime_error("ShadowMap: Shadow Vertex shader file missing");
-			}
-		}
-
-		device->CreateVertexShader(pVS->GetBufferPointer(), pVS->GetBufferSize(), nullptr, &_shadowVS);
-		hr = device->CreateInputLayout(inputDesc, ARRAYSIZE(inputDesc), pVS->GetBufferPointer(), pVS->GetBufferSize(), &_shadowInputLayout);
-		pVS->Release();
 
 		/////////////////////////////////////////////////////////// Buffers /////////////////////////////////////////////////////////////
 		D3D11_BUFFER_DESC matrixBufferDesc;
@@ -148,13 +124,7 @@ namespace Renderer
 		deviceContext->ClearDepthStencilView(_shadowDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 		deviceContext->OMSetRenderTargets(0, nullptr, _shadowDepthStencilView);
 		deviceContext->OMSetDepthStencilState(_shadowDepthStencilState, 1);
-		deviceContext->IASetInputLayout(_shadowInputLayout);
-		deviceContext->VSSetShader(_shadowVS, nullptr, 0);
 		deviceContext->RSSetViewports(1, &_shadowViewport);
-
-		//Unbind PS since it's not used
-		ID3D11PixelShader* nullPS = nullptr;
-		deviceContext->PSSetShader(nullPS, nullptr, 0);
 	}
 
 	void ShadowMap::SetDataPerObject(ID3D11DeviceContext* deviceContext, XMMATRIX* modelWorld)
@@ -162,7 +132,8 @@ namespace Renderer
 		HRESULT hr;
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
 
-		XMMATRIX tw = XMMatrixTranspose(*modelWorld);
+		//XMMATRIX tw = XMMatrixTranspose(*modelWorld);
+		XMMATRIX tw = *modelWorld;
 
 		hr = deviceContext->Map(_matrixBufferPerObject, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 
@@ -172,7 +143,7 @@ namespace Renderer
 
 		deviceContext->Unmap(_matrixBufferPerObject, 0);
 
-		deviceContext->VSSetConstantBuffers(0, 1, &_matrixBufferPerObject);
+		deviceContext->VSSetConstantBuffers(1, 1, &_matrixBufferPerObject);
 	}
 
 	void ShadowMap::SetDataPerFrame(ID3D11DeviceContext* deviceContext, XMMATRIX* lightView, XMMATRIX* lightProjection)
@@ -191,7 +162,7 @@ namespace Renderer
 		matrixDataBuffer->lightProjection = tp;
 
 		deviceContext->Unmap(_matrixBufferPerFrame, 0);
-		deviceContext->VSSetConstantBuffers(1, 1, &_matrixBufferPerFrame);
+		deviceContext->VSSetConstantBuffers(0, 1, &_matrixBufferPerFrame);
 	}
 
 	ID3D11ShaderResourceView* ShadowMap::GetShadowSRV()

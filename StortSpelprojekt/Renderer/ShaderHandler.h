@@ -31,6 +31,7 @@ namespace Renderer
 		VertexShaderData*		_defaultVS;
 		VertexShaderData*		_geoPassVS;
 		VertexShaderData*		_lightPassVS;
+		VertexShaderData*		_shadowMapVS;
 
 		//Pixel shaders
 		ID3D11PixelShader*		_defaultPS;
@@ -56,6 +57,7 @@ namespace Renderer
 		void SetDefaultShaders(ID3D11DeviceContext* deviceContext);
 		void SetGeometryPassShaders(ID3D11DeviceContext* deviceContext);
 		void SetLightPassShaders(ID3D11DeviceContext* deviceContext);
+		void SetShadowPassShaders(ID3D11DeviceContext* deviceContext);
 	};
 }
 

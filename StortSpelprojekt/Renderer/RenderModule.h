@@ -7,6 +7,7 @@
 #include "ShaderHandler.h"
 #include <DirectXMath.h>
 #include "RenderUtils.h"
+#include "ShadowMap.h"
 
 namespace Renderer
 {
@@ -43,11 +44,17 @@ namespace Renderer
 		void InitializeConstantBuffers();
 
 		void SetDataPerObject(DirectX::XMMATRIX* world, ID3D11ShaderResourceView* diffuse, ID3D11ShaderResourceView* specular);
-		void SetResourcesPerMesh(ID3D11Buffer* vertexBuffer, int vertexSize);
+		void SetDataPerMesh(ID3D11Buffer* vertexBuffer, int vertexSize);
+		void SetShadowMapDataPerObject(DirectX::XMMATRIX* world);
+
+
+		//TEMP!
+
+		ShadowMap* _shadowMap;
 
 	public:
 
-		enum ShaderStage { GEO_PASS, LIGHT_PASS };
+		enum ShaderStage { GEO_PASS, LIGHT_PASS, LIGHT_ACCUMULATION_PASS };
 
 		RenderModule(HWND hwnd, int screenWidth, int screenHeight);
 		~RenderModule();
@@ -55,10 +62,13 @@ namespace Renderer
 		void ResizeResources(HWND hwnd, int windowWidth, int windowHeight);
 
 		void SetDataPerFrame(DirectX::XMMATRIX* view, DirectX::XMMATRIX* projection);
+		void SetShadowMapDataPerLight(DirectX::XMMATRIX* lightView, DirectX::XMMATRIX* lightProjection);
+
 		void SetShaderStage(ShaderStage stage);
 
 		void BeginScene(float red, float green, float blue, float alpha);
 		void Render(DirectX::XMMATRIX* world, RenderObject* renderObject);
+		void RenderShadowMap(DirectX::XMMATRIX* world, RenderObject* renderObject);
 		void RenderLightQuad();
 		void EndScene();
 

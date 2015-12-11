@@ -1,12 +1,12 @@
-cbuffer matrixBufferPerObject : register(b0)
-{
-	matrix worldMatrix;
-};
-
-cbuffer matrixBufferPerFrame : register(b1)
+cbuffer matrixBufferPerFrame : register(b0)
 {
 	matrix viewMatrix;
 	matrix projectionMatrix;
+};
+
+cbuffer matrixBufferPerObject : register(b1)
+{
+	matrix worldMatrix;
 };
 
 struct VertexInputType

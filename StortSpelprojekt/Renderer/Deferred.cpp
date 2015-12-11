@@ -148,10 +148,11 @@ void Deferred::InitializeBuffers(ID3D11Device* device)
 
 }
 
-void Deferred::SetRenderTargets(ID3D11DeviceContext* deviceContext)
+int Deferred::SetRenderTargets(ID3D11DeviceContext* deviceContext)
 {
 	//Bind the render target view array and depth stencil buffer to the output render pipeline
 	deviceContext->OMSetRenderTargets(BUFFER_COUNT, _renderTargetViewArray, _depthStencilView);
+	return BUFFER_COUNT;
 }
 
 void Deferred::ClearRenderTargets(ID3D11DeviceContext* deviceContext, float r, float g, float b, float a)

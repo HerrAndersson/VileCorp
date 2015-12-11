@@ -56,12 +56,15 @@ namespace Renderer
 		HRESULT result = _d3d->GetDevice()->CreateBuffer(&bufferDesc, &data, &_screenQuad);
 
 		InitializeConstantBuffers();
+
+		_shadowMap = new ShadowMap(_d3d->GetDevice(), 2048);
 	}
 
 	RenderModule::~RenderModule()
 	{
 		delete _d3d;
 		delete _shaderHandler;
+		delete _shadowMap;
 		SAFE_RELEASE(_screenQuad);
 		SAFE_RELEASE(_matrixBufferPerObject);
 		SAFE_RELEASE(_matrixBufferPerFrame);
@@ -157,7 +160,7 @@ namespace Renderer
 		deviceContext->VSSetConstantBuffers(1, 1, &_matrixBufferPerObject);
 	}
 
-	void RenderModule::SetResourcesPerMesh(ID3D11Buffer* vertexBuffer, int vertexSize)
+	void RenderModule::SetDataPerMesh(ID3D11Buffer* vertexBuffer, int vertexSize)
 	{
 		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
 
@@ -166,6 +169,36 @@ namespace Renderer
 
 		deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &vs, &offset);
 		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	}
+
+	void RenderModule::SetShadowMapDataPerLight(DirectX::XMMATRIX* lightView, DirectX::XMMATRIX* lightProjection)
+	{
+		_shadowMap->SetDataPerFrame(_d3d->GetDeviceContext(), lightView, lightProjection);
+	}
+
+	void RenderModule::SetShadowMapDataPerObject(DirectX::XMMATRIX* world)
+	{
+		_shadowMap->SetDataPerObject(_d3d->GetDeviceContext(), world);
+	}
+
+	void RenderModule::RenderShadowMap(DirectX::XMMATRIX* world, RenderObject* renderObject)
+	{
+		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
+		SetShadowMapDataPerObject(world);
+		_d3d->SetCullingState(DirectXHandler::CullingState::FRONT);
+
+		int vertexSize = sizeof(Vertex);
+
+		if (renderObject->_skeleton != -1)
+		{
+			vertexSize = sizeof(WeightedVertex);
+		}
+
+		for (auto mesh : renderObject->_meshes)
+		{
+			SetDataPerMesh(mesh._vertexBuffer, vertexSize);
+			deviceContext->Draw(mesh._vertexBufferSize, 0);
+		}
 	}
 
 	void RenderModule::SetShaderStage(ShaderStage stage)
@@ -180,9 +213,16 @@ namespace Renderer
 		}
 		case LIGHT_PASS:
 		{
-			_d3d->SetLightPassRTVs();
+			int nrOfSRVs =_d3d->SetLightPassRTVs();
 			_shaderHandler->SetLightPassShaders(_d3d->GetDeviceContext());
+			ID3D11ShaderResourceView* shadowMapSRV = _shadowMap->GetShadowSRV();
+			_d3d->GetDeviceContext()->PSSetShaderResources(nrOfSRVs, 1, &shadowMapSRV);
 			break;
+		}
+		case LIGHT_ACCUMULATION_PASS:
+		{
+			_shadowMap->ActivateShadowRendering(_d3d->GetDeviceContext());
+			_shaderHandler->SetShadowPassShaders(_d3d->GetDeviceContext());
 		}
 		};
 	}
@@ -223,7 +263,7 @@ namespace Renderer
 		
 		for (auto mesh : renderObject->_meshes)
 		{
-			SetResourcesPerMesh(mesh._vertexBuffer, vertexSize);
+			SetDataPerMesh(mesh._vertexBuffer, vertexSize);
 			deviceContext->Draw(mesh._vertexBufferSize, 0);
 		}
 	}

@@ -59,15 +59,28 @@ namespace Renderer
 
 		_lightPassVS = CreateVertexShader(device, L"../Renderer/Shaders/LightVS.hlsl", lightInputDesc, numElements);
 		_lightPassPS = CreatePixelShader(device, L"../Renderer/Shaders/LightPS.hlsl");
+
+
+		//Shadow map shaders init
+		D3D11_INPUT_ELEMENT_DESC shadowInputDesc[] =
+		{
+			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		};
+
+		numElements = sizeof(shadowInputDesc) / sizeof(shadowInputDesc[0]);
+
+		_shadowMapVS = CreateVertexShader(device, L"../Renderer/Shaders/ShadowVS.hlsl", shadowInputDesc, numElements);
 	}
 
 	ShaderHandler::~ShaderHandler()
 	{
 		delete _defaultVS;
-		SAFE_RELEASE(_defaultPS);
 		delete _geoPassVS;
-		SAFE_RELEASE(_geoPassPS);
 		delete _lightPassVS;
+		delete _shadowMapVS;
+
+		SAFE_RELEASE(_defaultPS);
+		SAFE_RELEASE(_geoPassPS);
 		SAFE_RELEASE(_lightPassPS);
 	}
 
@@ -305,6 +318,23 @@ namespace Renderer
 		deviceContext->GSSetShader(nullptr, nullptr, 0);
 		deviceContext->DSSetShader(nullptr, nullptr, 0);
 		deviceContext->PSSetShader(_lightPassPS, nullptr, 0);
+		deviceContext->CSSetShader(nullptr, nullptr, 0);
+
+		//Set sampler
+		deviceContext->PSSetSamplers(0, 1, &_samplerWRAP);
+	}
+
+	void ShaderHandler::SetShadowPassShaders(ID3D11DeviceContext* deviceContext)
+	{
+		//Set vertex layout
+		deviceContext->IASetInputLayout(_shadowMapVS->_inputLayout);
+
+		//Set shaders
+		deviceContext->VSSetShader(_shadowMapVS->_vertexShader, nullptr, 0);
+		deviceContext->HSSetShader(nullptr, nullptr, 0);
+		deviceContext->GSSetShader(nullptr, nullptr, 0);
+		deviceContext->DSSetShader(nullptr, nullptr, 0);
+		deviceContext->PSSetShader(nullptr, nullptr, 0);
 		deviceContext->CSSetShader(nullptr, nullptr, 0);
 
 		//Set sampler

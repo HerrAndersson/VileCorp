@@ -33,20 +33,16 @@ namespace Renderer
 
 		ID3D11DepthStencilView*			_shadowDepthStencilView;
 		ID3D11ShaderResourceView*		_shadowShaderResourceView;
-
 		ID3D11DepthStencilState*        _shadowDepthStencilState;
 
 		D3D11_VIEWPORT					_shadowViewport;
-
-		ID3D11InputLayout*              _shadowInputLayout;
-		ID3D11VertexShader*             _shadowVS;
 
 		ID3D11Buffer*					_matrixBufferPerObject;
 		ID3D11Buffer*					_matrixBufferPerFrame;
 
 	public:
 
-		ShadowMap(ID3D11Device* device, int dimensions, LPCWSTR vsFilename);
+		ShadowMap(ID3D11Device* device, int dimensions);
 		virtual ~ShadowMap();
 
 		ID3D11ShaderResourceView* GetShadowSRV();

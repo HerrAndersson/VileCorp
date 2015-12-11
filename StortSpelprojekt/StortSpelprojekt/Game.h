@@ -12,6 +12,8 @@
 #include "InitVar.h"
 #include "Trap.h"
 #include "InputDevice.h"
+#include "Spotlight.h"
+#include "ShadowMap.h"
 
 class Game
 {
@@ -38,6 +40,7 @@ private:
 
 
 	//TEMP!
+	Spotlight* _spotlight;
 
 public:
 

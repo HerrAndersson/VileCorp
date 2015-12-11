@@ -35,10 +35,10 @@ SamplerState ObjSamplerState : register(s0);
 
 float4 main(VS_OUT input) : SV_TARGET
 {
-	PointLight p;
-	p.position = float3(5, 1, 4);
-	p.color = float3(0.02f, 1.0f, 0.02f);
-	p.intensity = 0.01f;
+	//PointLight p;
+	//p.position = float3(5, 1, 4);
+	//p.color = float3(0.02f, 1.0f, 0.02f);
+	//p.intensity = 0.01f;
 
 	float4 diffuse = diffuseTex.Sample(ObjSamplerState, input.uv);
 	float4 normal = normalTex.Sample(ObjSamplerState, input.uv);
@@ -83,10 +83,10 @@ float4 main(VS_OUT input) : SV_TARGET
 
 
 
-	float3 lv = worldPos.xyz - p.position;
-	float len = length(lv);
+	//float3 lv = worldPos.xyz - p.position;
+	//float len = length(lv);
 
-	float depth1 = depthMap.Sample(ObjSamplerState, input.uv).r;
+	/*float depth1 = depthMap.Sample(ObjSamplerState, input.uv).r;
 	float depth2;
 	bool shadowed = false;
 	for (int i = 0; i < 100; i++)
@@ -106,14 +106,14 @@ float4 main(VS_OUT input) : SV_TARGET
 		}
 		depth1 = depth2;
 	}
-
-	if (dot(lv, normal.xyz) < 0)
-	{
-		float falloff = (p.intensity) / dot(lv, lv);
-		finalAmbient += p.color * p.intensity * falloff;
-		//finalAmbient *= falloff;
-		finalAmbient *= 1.8f/(len);
-	}
+*/
+	//if (dot(lv, normal.xyz) < 0)
+	//{
+	//	float falloff = (p.intensity) / dot(lv, lv);
+	//	finalAmbient += p.color * p.intensity * falloff;
+	//	//finalAmbient *= falloff;
+	//	finalAmbient *= 1.8f/(len);
+	//}
 
 	return float4(finalAmbient, diffuse.a);
 }

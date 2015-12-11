@@ -11,10 +11,10 @@ Spotlight::Spotlight(float nearClip, float farClip, float fov, int width, int he
 
 	//Prepare vectors for Matrix initialization
 	DirectX::XMVECTOR vPos = DirectX::XMLoadFloat3(&_position);
-	DirectX::XMVECTOR vDir = XMVector3TransformCoord(DirectX::XMLoadFloat3(&_direction), XMMatrixRotationRollPitchYaw(_rotation.x, _rotation.y, _rotation.z));
+	DirectX::XMVECTOR vDir = XMVector3TransformCoord(DirectX::XMLoadFloat3(&_direction),  XMMatrixRotationRollPitchYaw(XMConvertToRadians(_rotation.x), XMConvertToRadians(_rotation.y), XMConvertToRadians(_rotation.z)));
 	DirectX::XMVECTOR vUp = DirectX::XMLoadFloat3(&_up);
 	
-	_viewMatrix = DirectX::XMMatrixLookAtLH(vPos, vDir, vUp);
+	_viewMatrix = DirectX::XMMatrixLookAtLH(vPos, vPos + vDir, vUp);
 	_projectionMatrix = DirectX::XMMatrixPerspectiveFovLH(fov, (float)width / (float)height, nearClip, farClip);
 }
 
@@ -26,16 +26,18 @@ Spotlight::~Spotlight()
 void Spotlight::Update()
 {
 	//Prepare vectors for Matrix initialization
+	XMFLOAT3 dir = DirectX::XMFLOAT3(0, 0, 1);
 	XMMATRIX rotationMatrix = XMMatrixRotationRollPitchYaw(XMConvertToRadians(_rotation.x), XMConvertToRadians(_rotation.y), XMConvertToRadians(_rotation.z));
 
 	DirectX::XMVECTOR vPos = DirectX::XMLoadFloat3(&_position);
-	DirectX::XMVECTOR vDir = XMVector3TransformCoord(DirectX::XMLoadFloat3(&_direction), rotationMatrix);
+	DirectX::XMVECTOR vDir = XMVector3TransformCoord(DirectX::XMLoadFloat3(&dir), rotationMatrix);
 	DirectX::XMVECTOR vUp = XMVector3TransformCoord(DirectX::XMLoadFloat3(&_up), rotationMatrix);
 
-	XMStoreFloat3(&_direction, vDir);
+	XMStoreFloat3(&dir, vDir);
 	XMStoreFloat3(&_up, vUp);
+	_direction = dir;
 
-	_viewMatrix = DirectX::XMMatrixLookAtLH(vPos, vDir, vUp);
+	_viewMatrix = DirectX::XMMatrixLookAtLH(vPos, vPos + vDir, vUp);
 }
 
 void Spotlight::SetPosition(XMFLOAT3 position)

@@ -178,22 +178,43 @@ namespace Renderer
 		_deferredShader->ClearRenderTargets(_deviceContext, r, g, b, a);
 	}
 
-	void DirectXHandler::SetGeometryPassRTVs()
+	int DirectXHandler::SetGeometryPassRTVs()
 	{
 		_deviceContext->OMSetDepthStencilState(_depthEnable, 1);
-		_deferredShader->SetRenderTargets(_deviceContext);
 		_deviceContext->RSSetState(_rasterizerStateBack);
+		_deviceContext->RSSetViewports(1, &_viewport);
+		int nrOfRTVs = _deferredShader->SetRenderTargets(_deviceContext);
+		
+		return nrOfRTVs;
 	}
 
-	void DirectXHandler::SetLightPassRTVs()
+	int DirectXHandler::SetLightPassRTVs()
 	{
 		_deviceContext->OMSetRenderTargets(1, &_renderTargetView, nullptr);
 		_deviceContext->RSSetState(_rasterizerStateBack);
 		_deviceContext->OMSetDepthStencilState(_depthDisable, 1);
+		_deviceContext->RSSetViewports(1, &_viewport);
 
 		int count = 0;
 		ID3D11ShaderResourceView** b = _deferredShader->GetShaderResourceViews(count);
 		_deviceContext->PSSetShaderResources(0, count, b);
+
+		return count;
+	}
+
+	void DirectXHandler::SetCullingState(CullingState state)
+	{
+		switch (state)
+		{
+		case Renderer::DirectXHandler::BACK:
+			_deviceContext->RSSetState(_rasterizerStateBack);
+			break;
+		case Renderer::DirectXHandler::FRONT:
+			_deviceContext->RSSetState(_rasterizerStateFront);
+			break;
+		default:
+			break;
+		}
 	}
 
 	void DirectXHandler::ResizeResources(HWND hwnd, int windowWidth, int windowHeight)

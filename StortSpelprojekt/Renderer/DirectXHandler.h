@@ -31,6 +31,8 @@ namespace Renderer
 
 	public:
 
+		enum CullingState { BACK, FRONT };
+
 		DirectXHandler(HWND hwnd, int screenWidth, int screenHeight);
 		~DirectXHandler();
 
@@ -38,8 +40,10 @@ namespace Renderer
 		ID3D11DeviceContext* GetDeviceContext();
 
 		void ClearGeometryPassRTVs(float r, float g, float b, float a);
-		void SetGeometryPassRTVs();
-		void SetLightPassRTVs();
+		int SetGeometryPassRTVs();
+		int SetLightPassRTVs();
+
+		void SetCullingState(CullingState state);
 
 		void ResizeResources(HWND hwnd, int windowWidth, int windowHeight);
 
