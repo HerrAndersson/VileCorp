@@ -1,4 +1,4 @@
-#pragma once
+  #pragma once
 #include <DirectXMath.h>
 #include "RenderUtils.h"
 #include "AIUtil.h"

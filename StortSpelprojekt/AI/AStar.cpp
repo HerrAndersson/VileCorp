@@ -10,26 +10,8 @@ namespace AI
 	//Calculates h based on the distance to the goal
 	void AStar::CalculateHCost(Vec2D pos)
 	{
-		__int16 a = abs(_goal._x - pos._x);						//horizontal distance to goal
-		__int16 b = abs(_goal._y - pos._y);						//vertical distance to goal
-		switch (_heuristicType)
-		{
-		case AStar::MANHATTAN:
-			_grid[pos._x][pos._y]._hCost = a + b;
-			break;
-		case AStar::CHEBYSHEV:
-			_grid[pos._x][pos._y]._hCost = std::min(a, b) + abs(a - b);
-			break;
-		case AStar::OCTILE:
-			_grid[pos._x][pos._y]._hCost = SQRT2 * std::min(a, b) + abs(a - b);
-			break;
-		case AStar::EUCLIDEAN:
-			_grid[pos._x][pos._y]._hCost = sqrt(a*a + b*b);
-			break;
-		default:
-			break;
-		}
-		_grid[pos._x][pos._y]._hCost *= _hWeight;
+		
+		_grid[pos._x][pos._y]._hCost = GetHeuristicDistance(pos, _goal) * _hWeight;
 	}
 
 	//calculates g by adding the preceding nodes g-cost to the current tilecost.
@@ -141,6 +123,31 @@ namespace AI
 		return _pathLength;
 	}
 
+	float AStar::GetHeuristicDistance(Vec2D start, Vec2D goal) const
+	{
+		float h = 0;
+		short x = abs(goal._x - start._x);						//horizontal distance to goal
+		short y = abs(goal._y - start._y);						//vertical distance to goal
+		switch (_heuristicType)
+		{
+		case AStar::MANHATTAN:
+			h = (float)(x + y);
+			break;
+		case AStar::CHEBYSHEV:
+			h = (float)(std::min(x, y) + abs(x - y));
+			break;
+		case AStar::OCTILE:
+			h = SQRT2 * std::min(x, y) + abs(x - y);
+			break;
+		case AStar::EUCLIDEAN:
+			h = (float)(sqrt(x * x + y * y));
+			break;
+		default:
+			break;
+		}
+		return h;
+	}
+
 	void AStar::CleanMap()
 	{
 		delete[] _path;
@@ -156,7 +163,7 @@ namespace AI
 				_grid[i][j]._parent = nullptr;
 			}
 		}
-		_openQueue.~Heap();
+		_openQueue.empty();
 		_openQueue = Heap<Node>();
 	}
 
@@ -165,9 +172,13 @@ namespace AI
 	TODO: Return the path as a sorted list
 	--Victor
 	*/
-	void AStar::FindPath()
+	bool AStar::FindPath()
 	{
-		_pathLength = 1;																//It's 1 because there's an offset in the loop later.
+		if (_goal == _start)
+		{
+			return false;
+		}
+		_pathLength = 0;																//It's 1 because there's an offset in the loop later.
 		Vec2D currentPos = _start;
 		_grid[_start._x][_start._y]._open = 2;
 
@@ -183,12 +194,19 @@ namespace AI
 					CalculateGCost(currentPos, checkedPos);
 				}
 			}
-			currentPos = _openQueue.removeMin()._position;
-			while (_grid[currentPos._x][currentPos._y]._open == 2)
+			if (_openQueue.size() <= 0)
+			{
+				return false;
+			}
+			else
 			{
 				currentPos = _openQueue.removeMin()._position;
+				while (_grid[currentPos._x][currentPos._y]._open == 2)
+				{
+					currentPos = _openQueue.removeMin()._position;
+				}
+				_grid[currentPos._x][currentPos._y]._open = 2;
 			}
-			_grid[currentPos._x][currentPos._y]._open = 2;
 		}
 		while (currentPos != _start)													//traces the route back to start
 		{
@@ -203,6 +221,7 @@ namespace AI
 			_path[c++] = currentPos;
 			currentPos = _grid[currentPos._x][currentPos._y]._parent->_position;
 		}
-		_path[c++] = currentPos;
+	//	_path[c++] = currentPos;														//Excluding start position since it should already be known
+		return true;
 	}
 }
