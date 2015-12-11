@@ -306,6 +306,7 @@ void LevelEdit::HandleInput()
 
 void LevelEdit::Update(float deltaTime)
 {
+	HandleSelected();
 	HandleInput();
 	_objectHandler->Update();
 }

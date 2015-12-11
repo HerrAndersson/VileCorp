@@ -54,21 +54,21 @@ void Game::ResizeResources(System::WindowSettings settings)
 
 void Game::HandleInput()
 {
-	if (GetAsyncKeyState(VK_LEFT) != 0)
+	if (_input->IsPressed(System::Input::F10))
 	{
 		//Windowed mode
 		System::WindowSettings settings(1280, 720, System::WindowSettings::SHOW_CURSOR);
 		ResizeResources(settings);
 	}
 
-	if (GetAsyncKeyState(VK_RIGHT) != 0)
+	if (_input->IsPressed(System::Input::F12))
 	{
 		//Fullscreen
 		System::WindowSettings settings(1920, 1080, System::WindowSettings::SHOW_CURSOR | System::WindowSettings::FULLSCREEN);
 		ResizeResources(settings);
 	}
 
-	if (GetAsyncKeyState(VK_UP) != 0)
+	if (_input->IsPressed(System::Input::F13))
 	{
 		//Borderless windowed
 		System::WindowSettings settings(567, 765, System::WindowSettings::SHOW_CURSOR | System::WindowSettings::BORDERLESS);
@@ -76,7 +76,7 @@ void Game::HandleInput()
 	}
 	if (_input->IsPressed(VK_ESCAPE))
 	{
-		//TODO: Make a graceful exit.
+		//TODO: Make a graceful exit. Rikhard
 	}
 }
 
