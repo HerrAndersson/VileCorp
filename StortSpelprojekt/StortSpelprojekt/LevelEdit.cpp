@@ -28,6 +28,7 @@ LevelEdit::LevelEdit(HINSTANCE hInstance, int nCmdShow)
 	_input = new System::InputDevice(_window->GetHWND());
 
 	_selectedObj = 0;
+	_lastSelected = 0;
 	_tileMultiplier = 1;
 
 	
@@ -174,24 +175,28 @@ void LevelEdit::HandleInput()
 	{
 		_objectHandler->Clear();
 		_objectHandler->LoadLevel(1);
+		ResetSelectedObj();
 	}
 
 	if (_input->IsPressed(0x32))
 	{
 		_objectHandler->Clear();
 		_objectHandler->LoadLevel(2);
+		ResetSelectedObj();
 	}
 
 	if (_input->IsPressed(0x33))
 	{
 		_objectHandler->Clear();
 		_objectHandler->LoadLevel(3);
+		ResetSelectedObj();
 	}
 
 	if (_input->IsPressed(0x34))
 	{
 		_objectHandler->Clear();
 		_objectHandler->LoadLevel(4);
+		ResetSelectedObj();
 	}
 
 
@@ -381,6 +386,7 @@ int LevelEdit::Run()
 		if (_timer.GetFrameTime() >= MS_PER_FRAME)
 		{
 			HandleInput();
+			HandleSelected();
 			Update(deltaTime);
 			Render();
 			_timer.Reset();
@@ -388,4 +394,49 @@ int LevelEdit::Run()
 	}
 
 	return 0;
+}
+
+
+void LevelEdit:: HandleSelected()
+{
+	GameObject* temp;
+	if (_selectedObj != _lastSelected || _selectedObj == 0)
+	{
+	temp = _objectHandler->Find(_selectedObj);
+			if (temp->GetType() < 3)
+			{
+				XMFLOAT3 tempPos = temp->GetPosition();
+				temp->SetPosition(XMFLOAT3(tempPos.x, 0.2, tempPos.z));
+			}
+			_lastSelected = _selectedObj;
+
+	}
+	else
+	{
+		if (_selectedObj >0)
+		{
+			temp = _objectHandler->Find(_selectedObj-1);
+				if (temp->GetType() < 3)
+				{
+					XMFLOAT3 tempPos = temp->GetPosition();
+					temp->SetPosition(XMFLOAT3(tempPos.x, 0, tempPos.z));
+				}
+		}
+		
+		
+	
+
+	}
+	
+	
+	
+
+}
+
+
+void LevelEdit::ResetSelectedObj()
+{
+	_selectedObj = 0;
+	_lastSelected = -1;
+
 }

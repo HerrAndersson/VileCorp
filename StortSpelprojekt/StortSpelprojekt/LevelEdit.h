@@ -35,8 +35,10 @@ private:
 	void Render();
 
 	//Level Edit
+	void HandleSelected();
 	void LoadLevel();
 	void InitNewLevel();
+	void ResetSelectedObj();
 
 public:
 
@@ -46,6 +48,9 @@ public:
 	//temps
 	int _selectedObj;
 	int _tileMultiplier;
-	
+
+	int _lastSelected;
+
+
 	int Run();
 };
