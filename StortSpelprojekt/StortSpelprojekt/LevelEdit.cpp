@@ -385,31 +385,36 @@ int LevelEdit::Run()
 }
 
 
-void LevelEdit:: HandleSelected()
+void LevelEdit::HandleSelected()
 {
 	GameObject* temp;
-	if (_selectedObj != _lastSelected || _selectedObj == 0)
+
+	if (_objectHandler->GetSize() > 0)
 	{
-	temp = _objectHandler->Find(_selectedObj);
+
+		if (_selectedObj != _lastSelected || _selectedObj == 0)
+		{
+			
+			//Lower last selected
+			temp = _objectHandler->Find(_lastSelected);
+			if (temp->GetType() < 3)
+			{
+				XMFLOAT3 tempPos = temp->GetPosition();
+				temp->SetPosition(XMFLOAT3(tempPos.x, 0.0, tempPos.z));
+			}
+			//Raise selected
+			temp = _objectHandler->Find(_selectedObj);
 			if (temp->GetType() < 3)
 			{
 				XMFLOAT3 tempPos = temp->GetPosition();
 				temp->SetPosition(XMFLOAT3(tempPos.x, 0.2, tempPos.z));
 			}
-			_lastSelected = _selectedObj;
 
-	}
-	else
-	{
-		if (_selectedObj >0)
-		{
-			temp = _objectHandler->Find(_selectedObj-1);
-				if (temp->GetType() < 3)
-				{
-					XMFLOAT3 tempPos = temp->GetPosition();
-					temp->SetPosition(XMFLOAT3(tempPos.x, 0, tempPos.z));
-				}
+
 		}
+		
+
+		_lastSelected = _selectedObj;
 	}
 }
 
@@ -423,5 +428,5 @@ void LevelEdit::ResetSelectedObj()
 void LevelEdit::InitNewLevel()
 {
 	_objectHandler->Clear();
-	ResetSelectedObj();
+	//ResetSelectedObj();
 }
