@@ -102,56 +102,60 @@ void LevelEdit::HandleInput()
 		}
 	}
 
-	//Translation and rotation controls
-	if (_input->IsPressed(VK_LEFT))
-	{
 
-		temp = _objectHandler->Find(_selectedObj);
-		if (temp->GetType() < 3)
+	//Check if there is a tile to move
+	if (_objectHandler->GetSize() > 0)
+	{
+		//Translation and rotation controls
+		if (_input->IsPressed(VK_LEFT))
 		{
-			XMFLOAT3 tempPos = temp->GetPosition();
-			temp->SetPosition(XMFLOAT3(tempPos.x - 1 * _tileMultiplier, tempPos.y, tempPos.z));
+			
+			temp = _objectHandler->Find(_selectedObj);
+			if (temp->GetType() == WALL || FLOOR || UNIT)
+			{
+				XMFLOAT3 tempPos = temp->GetPosition();
+				temp->SetPosition(XMFLOAT3(tempPos.x - 1 * _tileMultiplier, tempPos.y, tempPos.z));
+			}
+
 		}
 
-	}
-
-	if (_input->IsPressed(VK_RIGHT))
-	{
-		temp = _objectHandler->Find(_selectedObj);
-		if (temp->GetType()  < 3)
+		if (_input->IsPressed(VK_RIGHT))
 		{
-			XMFLOAT3 tempPos = temp->GetPosition();
-			temp->SetPosition(XMFLOAT3(tempPos.x + 1 * _tileMultiplier, tempPos.y, tempPos.z));
+			temp = _objectHandler->Find(_selectedObj);
+			if (temp->GetType() == WALL || FLOOR || UNIT)
+			{
+				XMFLOAT3 tempPos = temp->GetPosition();
+				temp->SetPosition(XMFLOAT3(tempPos.x + 1 * _tileMultiplier, tempPos.y, tempPos.z));
+			}
+		}
+
+		if (_input->IsPressed(VK_UP))
+		{
+			temp = _objectHandler->Find(_selectedObj);
+
+			if (temp->GetType() == WALL || FLOOR || UNIT)
+			{
+				XMFLOAT3 tempPos = temp->GetPosition();
+				temp->SetPosition(XMFLOAT3(tempPos.x, tempPos.y, tempPos.z + 1 * _tileMultiplier));
+			}
+		}
+
+
+		if (_input->IsPressed(VK_DOWN))
+		{
+			temp = _objectHandler->Find(_selectedObj);
+			if (temp->GetType() == WALL || FLOOR || UNIT)
+			{
+				XMFLOAT3 tempPos = temp->GetPosition();
+				temp->SetPosition(XMFLOAT3(tempPos.x, tempPos.y, tempPos.z - 1 * _tileMultiplier));
+			}
 		}
 	}
-
-	if (_input->IsPressed(VK_UP))
-	{
-		temp = _objectHandler->Find(_selectedObj);
-
-		if (temp->GetType()  < 3)
-		{
-			XMFLOAT3 tempPos = temp->GetPosition();
-			temp->SetPosition(XMFLOAT3(tempPos.x, tempPos.y, tempPos.z + 1 * _tileMultiplier));
-		}
-	}
-
-
-	if (_input->IsPressed(VK_DOWN))
-	{
-		temp = _objectHandler->Find(_selectedObj);
-		if (temp->GetType()  < 3)
-		{
-			XMFLOAT3 tempPos = temp->GetPosition();
-			temp->SetPosition(XMFLOAT3(tempPos.x, tempPos.y, tempPos.z - 1 * _tileMultiplier));
-		}
-	}
-
 	//Scale Objects
 	if (_input->IsPressed(VK_NUMPAD6))
 	{
 		temp = _objectHandler->Find(_selectedObj);
-		if (temp->GetType()  < 3)
+		if (temp->GetType() == WALL || FLOOR || UNIT)
 		{
 			XMFLOAT3 tempPos = temp->GetScale();
 			temp->SetScale(XMFLOAT3(tempPos.x+ 1, tempPos.y, tempPos.z ));
@@ -161,7 +165,7 @@ void LevelEdit::HandleInput()
 	if (_input->IsPressed(VK_NUMPAD4))
 	{
 		temp = _objectHandler->Find(_selectedObj);
-		if (temp->GetType()  < 3)
+		if (temp->GetType() == WALL || FLOOR || UNIT)
 		{
 			XMFLOAT3 tempPos = temp->GetScale();
 			temp->SetScale(XMFLOAT3(tempPos.x - 1, tempPos.y, tempPos.z ));
@@ -171,7 +175,7 @@ void LevelEdit::HandleInput()
 	if (_input->IsPressed(VK_NUMPAD8))
 	{
 		temp = _objectHandler->Find(_selectedObj);
-		if (temp->GetType()  < 3)
+		if (temp->GetType() == WALL || FLOOR || UNIT)
 		{
 			XMFLOAT3 tempPos = temp->GetScale();
 			temp->SetScale(XMFLOAT3(tempPos.x , tempPos.y, tempPos.z + 1));
@@ -181,7 +185,7 @@ void LevelEdit::HandleInput()
 	if (_input->IsPressed(VK_NUMPAD2))
 	{
 		temp = _objectHandler->Find(_selectedObj);
-		if (temp->GetType()  < 3)
+		if (temp->GetType() == WALL || FLOOR || UNIT)
 		{
 			XMFLOAT3 tempPos = temp->GetScale();
 			temp->SetScale(XMFLOAT3(tempPos.x, tempPos.y , tempPos.z - 1));
@@ -192,7 +196,7 @@ void LevelEdit::HandleInput()
 	if (_input->IsPressed(0x5A))
 	{
 		temp = _objectHandler->Find(_selectedObj);
-		if (temp->GetType()  < 3)
+		if (temp->GetType() == WALL || FLOOR || UNIT)
 		{
 			XMFLOAT3 tempRot = temp->GetRotation();
 			temp->SetRotation(XMFLOAT3(tempRot.x, tempRot.y + (DirectX::XM_PI/2), tempRot.z));
@@ -201,7 +205,7 @@ void LevelEdit::HandleInput()
 	if (_input->IsPressed(0x58))
 	{
 		temp = _objectHandler->Find(_selectedObj);
-		if (temp->GetType()  < 3)
+		if (temp->GetType() == WALL || FLOOR || UNIT)
 		{
 			XMFLOAT3 tempRot = temp->GetRotation();
 			temp->SetRotation(XMFLOAT3(tempRot.x, tempRot.y - (DirectX::XM_PI / 2), tempRot.z));
@@ -431,7 +435,7 @@ void LevelEdit::HandleSelected()
 			{
 				//Lower and scale last selected
 				temp = _objectHandler->Find(_lastSelected);
-				if (temp->GetType() < 3)
+				if (temp->GetType() == WALL || FLOOR || UNIT)
 				{
 					XMFLOAT3 tempPos = temp->GetPosition();
 					temp->SetPosition(XMFLOAT3(tempPos.x, 0.0, tempPos.z));
@@ -442,7 +446,7 @@ void LevelEdit::HandleSelected()
 			}
 			//Raise and scale selected
 			temp = _objectHandler->Find(_selectedObj);
-			if (temp->GetType() < 3)
+			if (temp->GetType() == WALL || FLOOR || UNIT)
 			{
 				XMFLOAT3 tempPos = temp->GetPosition();
 				temp->SetPosition(XMFLOAT3(tempPos.x, 0.1, tempPos.z));
