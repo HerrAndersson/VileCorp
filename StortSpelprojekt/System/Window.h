@@ -55,5 +55,5 @@ namespace System
 	};
 
 	static LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
-	static Window* windowHandle = nullptr;
+	static Window* _windowHandle = nullptr;
 }

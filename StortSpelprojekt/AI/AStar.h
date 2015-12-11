@@ -94,7 +94,7 @@ namespace AI
 		void SetGoalPosition(Vec2D pos);
 		Vec2D* GetPath() const;
 		int GetPathLength() const;
-		void cleanMap();
+		void CleanMap();
 		void FindPath();
 	};
 

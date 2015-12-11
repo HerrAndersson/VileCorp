@@ -1,5 +1,4 @@
-#ifndef RENDERMODULE_H
-#define RENDERMODULE_H
+#pragma once
 
 #define RENDERER_EXPORT __declspec(dllexport)
 
@@ -7,29 +6,35 @@
 #include "ShaderHandler.h"
 #include <DirectXMath.h>
 #include "RenderUtils.h"
+#include "HUDElement.h"
 
 namespace Renderer
 {
 	class RENDERER_EXPORT RenderModule
 	{
 	private:
-
+		// Any point of this? Isn't used... - Zache
 		struct ScreenQuadVertex
 		{
-			float x, y, z;
-			float u, v;
+			float _x, _y, _z;
+			float _u, _v;
 		};
 
 		//Constant buffers
 		struct MatrixBufferPerObject
 		{
-			DirectX::XMMATRIX world;
+			DirectX::XMMATRIX _world;
 		};
 
 		struct MatrixBufferPerFrame
 		{
-			DirectX::XMMATRIX viewMatrix;
-			DirectX::XMMATRIX projectionMatrix;
+			DirectX::XMMATRIX _viewMatrix;
+			DirectX::XMMATRIX _projectionMatrix;
+		};
+
+		struct MatrixBufferHud
+		{
+			DirectX::XMMATRIX model;
 		};
 
 		ID3D11Buffer* _matrixBufferPerObject;
@@ -39,6 +44,7 @@ namespace Renderer
 		ShaderHandler* _shaderHandler;
 
 		ID3D11Buffer* _screenQuad;
+		ID3D11Buffer* _matrixBufferHUD;
 
 		void InitializeConstantBuffers();
 
@@ -47,7 +53,7 @@ namespace Renderer
 
 	public:
 
-		enum ShaderStage { GEO_PASS, LIGHT_PASS, GRID_PASS };
+		enum ShaderStage { GEO_PASS, LIGHT_PASS, HUD_PASS, GRID_PASS};
 
 		RenderModule(HWND hwnd, int screenWidth, int screenHeight);
 		~RenderModule();
@@ -59,6 +65,7 @@ namespace Renderer
 
 		void BeginScene(float red, float green, float blue, float alpha);
 		void Render(DirectX::XMMATRIX* world, RenderObject* renderObject);
+		void Render(std::vector<HUDElement>* imageData);
 		void RenderLineList(DirectX::XMMATRIX* world, ID3D11Buffer* lineList, int nrOfPoints, DirectX::XMFLOAT3 color);
 		void RenderLightQuad();
 		void EndScene();
@@ -67,5 +74,3 @@ namespace Renderer
 		ID3D11DeviceContext* GetDeviceContext() const;
 	};
 }
-
-#endif

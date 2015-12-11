@@ -10,26 +10,27 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 
 	_timer = System::Timer();
 
-	//Initialize Variables
-	InitVar initVar;
-
 	_renderModule = new Renderer::RenderModule(_window->GetHWND(), settings._width, settings._height);
+	
+	_assetManager = new AssetManager(_renderModule->GetDevice());
 
+	//Init camera
 	_camera = new System::Camera(0.1f, 1000.0f, DirectX::XM_PIDIV2, settings._width, settings._height);
 	_camera->SetPosition(XMFLOAT3(3, 10, 0));
 	_camera->SetRotation(XMFLOAT3(60, 0, 0));
-	initVar._camera = _camera;
 
-	_UI = new UIHandler(_renderModule->GetDevice(), _window->GetWindowSettings());
-	initVar._uiHandler = _UI;
+	_UI = new UIHandler(_renderModule->GetDevice(), _window->GetWindowSettings(), _assetManager);
 
-	_objectHandler = new ObjectHandler(_renderModule->GetDevice());
-	initVar._objectHandler = _objectHandler;
+	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager);
 	
 	_input = new System::InputDevice(_window->GetHWND());
+	//Init statemachine
+	InitVar initVar;
+	initVar._objectHandler = _objectHandler;
+	initVar._uiHandler = _UI;
 	initVar._inputHandler = _input;
-
-	_SM = new StateMachine(initVar);
+	initVar._camera = _camera;
+	_SM = new StateMachine(initVar);	initVar._inputHandler = _input;
 }
 
 Game::~Game() 
@@ -38,8 +39,6 @@ Game::~Game()
 	delete _renderModule;
 	delete _camera;
 	delete _objectHandler;
-	//TODO remove comments when the objectHandler is initialized
-	//delete _objectHandler;
 	delete _UI;
 	delete _SM;
 	delete _input;
@@ -90,10 +89,6 @@ void Game::Update(float deltaTime)
 
 	*/
 	_input->Update();
-
-	//Test code - Rikhard
-	HandleInput();
-
 	_UI->Update();
 	_UI->OnResize(_window->GetWindowSettings());
 	_SM->Update(deltaTime);
@@ -112,8 +107,10 @@ void Game::Render()
 	}
 
 	_renderModule->SetShaderStage(Renderer::RenderModule::LIGHT_PASS);
-
 	_renderModule->RenderLightQuad();
+	
+	_renderModule->SetShaderStage(Renderer::RenderModule::HUD_PASS);
+	_renderModule->Render(_UI->GetTextureData());
 	_UI->Render(_renderModule->GetDeviceContext());
 	_renderModule->EndScene();
 }
@@ -125,6 +122,7 @@ int Game::Run()
 		_timer.Update();
 		if (_timer.GetFrameTime() >= MS_PER_FRAME)
 		{
+			HandleInput();
 			Update(_timer.GetFrameTime());
 			Render();
 			_timer.Reset();

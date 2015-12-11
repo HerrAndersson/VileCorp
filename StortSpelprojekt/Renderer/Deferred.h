@@ -19,8 +19,8 @@ private:
 	*/
 	static const int BUFFER_COUNT = 4;
 
-	int textureWidth;
-	int textureHeight;
+	int _textureWidth;
+	int _textureHeight;
 
 	ID3D11RenderTargetView*		 _renderTargetViewArray[BUFFER_COUNT];
 	ID3D11ShaderResourceView*	 _shaderResourceViewArray[BUFFER_COUNT];
