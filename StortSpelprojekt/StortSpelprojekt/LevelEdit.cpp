@@ -169,29 +169,32 @@ void LevelEdit::HandleInput()
 	if (_input->IsPressed(0x31))
 	{
 		_objectHandler->Clear();
-		_objectHandler->LoadLevel(1);
 		ResetSelectedObj();
+		_objectHandler->LoadLevel(1);
+		
 	}
 
 	if (_input->IsPressed(0x32))
 	{
 		_objectHandler->Clear();
-		_objectHandler->LoadLevel(2);
 		ResetSelectedObj();
+		_objectHandler->LoadLevel(2);
 	}
 
 	if (_input->IsPressed(0x33))
 	{
 		_objectHandler->Clear();
-		_objectHandler->LoadLevel(3);
 		ResetSelectedObj();
+		_objectHandler->LoadLevel(3);
+		
 	}
 
 	if (_input->IsPressed(0x34))
 	{
 		_objectHandler->Clear();
-		_objectHandler->LoadLevel(4);
 		ResetSelectedObj();
+		_objectHandler->LoadLevel(4);
+		
 	}
 
 
@@ -369,8 +372,6 @@ int LevelEdit::Run()
 			return 0;
 
 		}
-
-
 		if (_timer.GetFrameTime() >= MS_PER_FRAME)
 		{
 			HandleInput();
@@ -389,18 +390,23 @@ void LevelEdit::HandleSelected()
 {
 	GameObject* temp;
 
-	if (_objectHandler->GetSize() > 0)
+	if (_objectHandler->GetSize() != 0)
 	{
+		temp = _objectHandler->Find(_lastSelected);
 
 		if (_selectedObj != _lastSelected || _selectedObj == 0)
 		{
-			
-			//Lower last selected
-			temp = _objectHandler->Find(_lastSelected);
-			if (temp->GetType() < 3)
+			if (_lastSelected != -1)
 			{
-				XMFLOAT3 tempPos = temp->GetPosition();
-				temp->SetPosition(XMFLOAT3(tempPos.x, 0.0, tempPos.z));
+				//Lower last selected
+				temp = _objectHandler->Find(_lastSelected);
+				if (temp->GetType() < 3)
+				{
+					XMFLOAT3 tempPos = temp->GetPosition();
+					temp->SetPosition(XMFLOAT3(tempPos.x, 0.0, tempPos.z));
+					XMFLOAT3 tempScale = temp->GetScale();
+					temp->SetScale(XMFLOAT3(1, 1, 1));
+				}
 			}
 			//Raise selected
 			temp = _objectHandler->Find(_selectedObj);
@@ -408,6 +414,8 @@ void LevelEdit::HandleSelected()
 			{
 				XMFLOAT3 tempPos = temp->GetPosition();
 				temp->SetPosition(XMFLOAT3(tempPos.x, 0.2, tempPos.z));
+				XMFLOAT3 tempScale = temp->GetScale();
+				temp->SetScale(XMFLOAT3(1.2, 1.2, 1.2));
 			}
 
 
