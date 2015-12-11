@@ -1,7 +1,7 @@
 #pragma once
 
 #include "stdafx.h"
-#include "StateMachine.h"
+#include "StateMachine/StateMachine.h"
 #include "Window.h"
 #include "RenderModule.h"
 #include "Camera.h"
@@ -9,7 +9,7 @@
 #include "ObjectHandler.h"
 #include "Timer.h"
 #include "AssetManager.h"
-#include "InitVar.h"
+#include "StateMachine/InitVar.h"
 #include "Trap.h"
 #include "InputDevice.h"
 

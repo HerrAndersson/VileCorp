@@ -11,12 +11,8 @@ int WINAPI wWinMain(HINSTANCE _hInstance, HINSTANCE _hPrevInstance, LPWSTR _lpCm
 	{
 		myInitMemoryCheck();
 		
-		//Game game(_hInstance, _nCmdShow);
-		//result = game.Run();
-		LevelEdit LevelEdit(_hInstance, _nCmdShow);
-		result = LevelEdit.Run();
-
-
+		Game game(_hInstance, _nCmdShow);
+		result = game.Run();
 	}
 	catch (const std::exception& e)
 	{

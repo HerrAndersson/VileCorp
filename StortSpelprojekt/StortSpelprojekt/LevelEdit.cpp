@@ -13,7 +13,7 @@ LevelEdit::LevelEdit(HINSTANCE hInstance, int nCmdShow)
 
 	//Initialize Variables
 	InitVar initVar;
-	initVar.objectHandler = _objectHandler;
+	initVar._objectHandler = _objectHandler;
 
 	_camera = new System::Camera(0.1f, 1000.0f, DirectX::XM_PIDIV2, settings._width, settings._height);
 	_camera->SetPosition(XMFLOAT3(3, 10, 0));
@@ -22,7 +22,7 @@ LevelEdit::LevelEdit(HINSTANCE hInstance, int nCmdShow)
 	_timer = System::Timer();
 
 	_objectHandler = new ObjectHandler(_renderModule->GetDevice());
-	initVar.uiHandler = _UI;
+	initVar._uiHandler = _UI;
 	_SM = new StateMachine(initVar);
 
 	_input = new System::InputDevice(_window->GetHWND());
@@ -30,8 +30,6 @@ LevelEdit::LevelEdit(HINSTANCE hInstance, int nCmdShow)
 	_selectedObj = 0;
 	_lastSelected = 0;
 	_tileMultiplier = 1;
-
-	
 }
 
 LevelEdit::~LevelEdit()
