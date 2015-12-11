@@ -147,6 +147,47 @@ void LevelEdit::HandleInput()
 		}
 	}
 
+	//Scale Objects
+	if (_input->IsPressed(VK_NUMPAD6))
+	{
+		temp = _objectHandler->Find(_selectedObj);
+		if (temp->GetType()  < 3)
+		{
+			XMFLOAT3 tempPos = temp->GetScale();
+			temp->SetScale(XMFLOAT3(tempPos.x+ 1, tempPos.y, tempPos.z ));
+		}
+	}
+
+	if (_input->IsPressed(VK_NUMPAD4))
+	{
+		temp = _objectHandler->Find(_selectedObj);
+		if (temp->GetType()  < 3)
+		{
+			XMFLOAT3 tempPos = temp->GetScale();
+			temp->SetScale(XMFLOAT3(tempPos.x - 1, tempPos.y, tempPos.z ));
+		}
+	}
+
+	if (_input->IsPressed(VK_NUMPAD8))
+	{
+		temp = _objectHandler->Find(_selectedObj);
+		if (temp->GetType()  < 3)
+		{
+			XMFLOAT3 tempPos = temp->GetScale();
+			temp->SetScale(XMFLOAT3(tempPos.x , tempPos.y, tempPos.z + 1));
+		}
+	}
+
+	if (_input->IsPressed(VK_NUMPAD2))
+	{
+		temp = _objectHandler->Find(_selectedObj);
+		if (temp->GetType()  < 3)
+		{
+			XMFLOAT3 tempPos = temp->GetScale();
+			temp->SetScale(XMFLOAT3(tempPos.x, tempPos.y , tempPos.z - 1));
+		}
+	}
+	
 
 	if (_input->IsPressed(0x5A))
 	{
@@ -212,49 +253,29 @@ void LevelEdit::HandleInput()
 	//R Adds Floor
 	if (_input->IsPressed(0x52))
 	{
-		if (_objectHandler->GetSize() < 1)
-		{
 			_objectHandler->Add(FLOOR, FLOOR, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));	
 			_selectedObj = _objectHandler->GetSize()-1;
-		}
-		else
-		{
-			_objectHandler->Add(FLOOR, FLOOR, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
-			_selectedObj = _objectHandler->GetSize() - 1;
-		}	
 	}
 
 	//T adds Wall
 	if (_input->IsPressed(0x54))
 	{
-		if (_objectHandler->GetSize() < 1)
-		{
 			_objectHandler->Add(WALL, WALL, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
 			_selectedObj = _objectHandler->GetSize() - 1;
-
-		}
-		else
-		{
-			_objectHandler->Add(WALL, WALL, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
-			_selectedObj = _objectHandler->GetSize() - 1;
-		}
 	}
 
 	//Y adds Unit
 	if (_input->IsPressed(0x59))
 	{
-		if (_objectHandler->GetSize() < 1)
-		{
 			_objectHandler->Add(UNIT, UNIT, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
 			_selectedObj = _objectHandler->GetSize() - 1;
-		}
-		else
-		{
-			_objectHandler->Add(UNIT, UNIT, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
-			_selectedObj = _objectHandler->GetSize() - 1;
-		}
 	}
 
+
+	if (_input->IsPressed(VK_DELETE))
+	{
+		DeleteObject();
+	}
 
 	//Camera mouse control
 	System::MouseCoord mouseCoord = _input->GetMouseCoord();
@@ -408,30 +429,27 @@ void LevelEdit::HandleSelected()
 		{
 			if (_lastSelected != -1)
 			{
-				//Lower last selected
+				//Lower and scale last selected
 				temp = _objectHandler->Find(_lastSelected);
 				if (temp->GetType() < 3)
 				{
 					XMFLOAT3 tempPos = temp->GetPosition();
 					temp->SetPosition(XMFLOAT3(tempPos.x, 0.0, tempPos.z));
-					XMFLOAT3 tempScale = temp->GetScale();
-					temp->SetScale(XMFLOAT3(1, 1, 1));
+					//XMFLOAT3 tempScale = temp->GetScale();
+					//temp->SetScale(XMFLOAT3(1, 1, 1));
+					
 				}
 			}
-			//Raise selected
+			//Raise and scale selected
 			temp = _objectHandler->Find(_selectedObj);
 			if (temp->GetType() < 3)
 			{
 				XMFLOAT3 tempPos = temp->GetPosition();
-				temp->SetPosition(XMFLOAT3(tempPos.x, 0.2, tempPos.z));
-				XMFLOAT3 tempScale = temp->GetScale();
-				temp->SetScale(XMFLOAT3(1.2, 1.2, 1.2));
+				temp->SetPosition(XMFLOAT3(tempPos.x, 0.1, tempPos.z));
+				//XMFLOAT3 tempScale = temp->GetScale();
+				//temp->SetScale(XMFLOAT3(1.1, 1.1, 1.1));
 			}
-
-
 		}
-		
-
 		_lastSelected = _selectedObj;
 	}
 }
@@ -446,5 +464,17 @@ void LevelEdit::ResetSelectedObj()
 void LevelEdit::InitNewLevel()
 {
 	_objectHandler->Clear();
-	//ResetSelectedObj();
+	ResetSelectedObj();
+}
+
+void LevelEdit::DeleteObject()
+{
+	GameObject* temp;
+	if (_selectedObj != 0)
+	{
+	temp = _objectHandler->Find(_selectedObj);
+	_objectHandler->Remove(_selectedObj);
+		_selectedObj--;
+	}
+
 }

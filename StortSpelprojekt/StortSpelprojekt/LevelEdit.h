@@ -42,6 +42,7 @@ private:
 	void LoadLevel();
 	void InitNewLevel();
 	void ResetSelectedObj();
+	void DeleteObject();
 
 public:
 
