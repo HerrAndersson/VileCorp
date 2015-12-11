@@ -59,11 +59,6 @@ void LevelEdit::LoadLevel()
 	//load existing level.
 }
 
-void LevelEdit::InitNewLevel()
-{
-	//Create floor tile
-}
-
 
 void LevelEdit::HandleInput()
 {
@@ -200,17 +195,16 @@ void LevelEdit::HandleInput()
 	}
 
 
-	//Press C to clear
+	//Press C to init new level
 	if (_input->IsPressed(0x43))
 	{
-		_objectHandler->Clear();
-		_selectedObj = 0;
+		InitNewLevel();
 	}
 
 
 	//tempAddObj
 
-	//R
+	//R Adds Floor
 	if (_input->IsPressed(0x52))
 	{
 		if (_objectHandler->GetSize() < 1)
@@ -222,11 +216,10 @@ void LevelEdit::HandleInput()
 		{
 			_objectHandler->Add(FLOOR, FLOOR, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
 			_selectedObj = _objectHandler->GetSize() - 1;
-		}
-		
+		}	
 	}
 
-	//T
+	//T adds Wall
 	if (_input->IsPressed(0x54))
 	{
 		if (_objectHandler->GetSize() < 1)
@@ -240,26 +233,21 @@ void LevelEdit::HandleInput()
 			_objectHandler->Add(WALL, WALL, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
 			_selectedObj = _objectHandler->GetSize() - 1;
 		}
-
 	}
 
-
-
-	//Y
+	//Y adds Unit
 	if (_input->IsPressed(0x59))
 	{
 		if (_objectHandler->GetSize() < 1)
 		{
 			_objectHandler->Add(UNIT, UNIT, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
 			_selectedObj = _objectHandler->GetSize() - 1;
-
 		}
 		else
 		{
 			_objectHandler->Add(UNIT, UNIT, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
 			_selectedObj = _objectHandler->GetSize() - 1;
 		}
-
 	}
 
 
@@ -422,15 +410,7 @@ void LevelEdit:: HandleSelected()
 					temp->SetPosition(XMFLOAT3(tempPos.x, 0, tempPos.z));
 				}
 		}
-		
-		
-	
-
 	}
-	
-	
-	
-
 }
 
 
@@ -438,5 +418,10 @@ void LevelEdit::ResetSelectedObj()
 {
 	_selectedObj = 0;
 	_lastSelected = -1;
+}
 
+void LevelEdit::InitNewLevel()
+{
+	_objectHandler->Clear();
+	ResetSelectedObj();
 }
