@@ -250,7 +250,7 @@ void AssetManager::LoadModel(string fileName, RenderObject* renderObject) {
 	{
 		mesh = &renderObject->_meshes[i];
 		_infile->seekg(mesh->_toMesh);
-		if(renderObject->_skeleton)
+		if(renderObject->_isSkinned)
 		{
 			weightedVertices.resize(mesh->_vertexBufferSize);
 			_infile->read((char*)weightedVertices.data(), mesh->_vertexBufferSize*sizeof(WeightedVertex));
@@ -260,7 +260,7 @@ void AssetManager::LoadModel(string fileName, RenderObject* renderObject) {
 			vertices.resize(mesh->_vertexBufferSize);
 			_infile->read((char*)vertices.data(), mesh->_vertexBufferSize*sizeof(Vertex));
 		}
-		mesh->_vertexBuffer = CreateVertexBuffer(&weightedVertices, &vertices, renderObject->_skeleton);
+		mesh->_vertexBuffer = CreateVertexBuffer(&weightedVertices, &vertices, renderObject->_isSkinned);
 	}
 
 	if (renderObject->_diffuseTexture != nullptr)
@@ -328,7 +328,12 @@ RenderObject* AssetManager::ScanModel(string fileName)
 	skeletonFileName.resize(skeletonStringLength);
 	_infile->read((char*)skeletonFileName.data(), skeletonStringLength);
 
-	bool skeleton = strcmp(skeletonFileName.data(), "Unrigged") != 0;
+	renderObject->_isSkinned = strcmp(skeletonFileName.data(), "Unrigged") != 0;
+
+	if (renderObject->_isSkinned)
+	{
+		LoadSkeleton(skeletonFileName);
+	}
 
 	for (int i = 0; i < mainHeader._meshCount; i++)
 	{
@@ -345,7 +350,7 @@ RenderObject* AssetManager::ScanModel(string fileName)
 		renderObject->_meshes[i]._name.resize(meshHeader._nameLength);
 
 		_infile->read((char*)renderObject->_meshes[i]._name.data(), meshHeader._nameLength);
-		if(skeleton)
+		if(renderObject->_isSkinned)
 			_infile->seekg(meshHeader._numberOfVertices*sizeof(WeightedVertex), ios::cur);
 		else
 			_infile->seekg(meshHeader._numberOfVertices*sizeof(Vertex), ios::cur);
@@ -435,4 +440,62 @@ ID3D11ShaderResourceView* AssetManager::GetTexture(string filename)
 	Texture* texture = ScanTexture(filename);
 	texture->LoadTexture(_device);
 	return texture->_data;
+}
+
+void AssetManager::LoadSkeleton(string filename)
+{
+
+	for (Skeleton skeleton : *_skeletons)
+	{
+		if (strcmp(skeleton._name.c_str(), filename.data()))
+		{
+			return;
+		}
+	}
+
+#ifdef _DEBUG
+	string file_path = "../../Output/Bin/x86/Debug/Assets/Models/";
+#else
+	string file_path = "Assets/Models/";
+#endif
+
+	file_path.append(filename);
+	_infile->open(file_path.c_str(), ifstream::binary);
+
+	if (!_infile->is_open())
+	{
+		return;
+	}
+
+	Skeleton* skeleton = new Skeleton;
+
+	SkeletonHeader header;
+	_infile->read((char*)&header, sizeof(SkeletonHeader));
+	if (header._version != _animationFormatVersion)
+	{
+		throw std::runtime_error("Failed to load " + file_path + ":\nIncorrect fileversion");
+	}
+
+	vector<int> frameCountPerAction;
+	frameCountPerAction.resize(header._actionCount);
+	_infile->read((char*)frameCountPerAction.data(), header._actionCount * 4);
+
+	skeleton->_skeleton.resize(header._boneCount);
+	_infile->read((char*)skeleton->_skeleton.data(), header._boneCount * sizeof(Bone));
+
+	skeleton->_actions.resize(header._actionCount);
+	for (uint a = 0; a < skeleton->_actions.size(); a++)
+	{
+		skeleton->_actions[a]._frameTime.resize(frameCountPerAction[a]);
+		_infile->read((char*)skeleton->_actions[a]._frameTime.data(), frameCountPerAction[a] * 4);
+
+		skeleton->_actions[a]._bones.resize(header._boneCount);
+		for (uint b = 0; b < skeleton->_actions[a]._bones.size(); b++)
+		{
+			skeleton->_actions[a]._bones[b]._frames.resize(frameCountPerAction[a]);
+			_infile->read((char*)skeleton->_actions[a]._bones[b]._frames.data(), sizeof(Frame) * frameCountPerAction[a]);
+		}
+	}
+
+	_infile->close();
 }

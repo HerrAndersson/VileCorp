@@ -96,6 +96,11 @@ struct LevelHeader
 	int _version, _tileGridSizeX, _tileGridSizeY, _nrOfGameObjects;
 };
 
+struct SkeletonHeader
+{
+	int _version, _framerate, _boneCount, _actionCount;
+};
+
 struct GameObjectData
 {
 	int _posX, _posZ;
@@ -150,12 +155,14 @@ class ASSET_MANAGER_EXPORT AssetManager
 {
 private:
 	int _meshFormatVersion = 24;
+	int _animationFormatVersion = 10;
 	ifstream* _infile;
 	ID3D11Device* _device;
 
 	vector<string>* _modelFiles;
 	vector<string>* _levelFileNames;
 	vector<Tileset>* _tilesets;
+	vector<Skeleton>* _skeletons;
 
 	vector<RenderObject*>* _renderObjects;
 	vector<RenderObject*>* _renderObjectsToFlush;
@@ -167,6 +174,7 @@ private:
 	void Flush();
 	RenderObject* ScanModel(string file_path);
 	Texture* ScanTexture(string filename);
+	void LoadSkeleton(string filename);
 	void DecrementUsers(Texture* texture);
 	ID3D11Buffer* CreateVertexBuffer(vector<WeightedVertex> *weightedVertices, vector<Vertex> *vertices, int skeleton);
 	void SetupRenderObjectList(Tileset* tileset);

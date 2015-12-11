@@ -4,6 +4,37 @@
 #include <vector>
 #include <DirectXMath.h>
 
+struct Bone
+{
+	int _parent;
+	DirectX::XMFLOAT4X4 _inverseBindpose;
+};
+
+struct Frame
+{
+	DirectX::XMFLOAT3 _translation;
+	DirectX::XMFLOAT4 _rotation;
+	DirectX::XMFLOAT3 _scale;
+};
+
+struct BoneFrames
+{
+	std::vector<Frame> _frames;
+};
+
+struct Action
+{
+	std::vector<int> _frameTime;
+	std::vector<BoneFrames> _bones;
+};
+
+struct Skeleton
+{
+	std::string _name;
+	std::vector<Bone> _skeleton;
+	std::vector<Action> _actions;
+};
+
 struct WeightedVertex
 {
 	short _boneIndices[4];
@@ -63,7 +94,8 @@ struct Texture
 struct RenderObject
 {
 	bool _meshLoaded, _toUnload;
-	short _skeleton = 0;
+	bool _isSkinned = false;
+	std::string _skeleton;
 	float _diffuse[4], _specular[4];
 	Texture* _diffuseTexture = nullptr;
 	Texture* _specularTexture = nullptr;
