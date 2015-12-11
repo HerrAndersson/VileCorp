@@ -22,6 +22,7 @@ namespace System
 		bool _last[KEY_CODE_CAP];
 
 		HWND _hwnd;
+		bool _cursorLock;
 
 	public:
 
@@ -35,6 +36,7 @@ namespace System
 		bool IsPressed(int key);
 		bool IsReleased(int key);
 		MouseCoord GetMouseCoord()const;
+		void ToggleCursorLock();
 	};
 
 	namespace Input

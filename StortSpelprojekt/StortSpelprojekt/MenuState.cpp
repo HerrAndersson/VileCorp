@@ -12,13 +12,9 @@ MenuState::~MenuState()
 
 void MenuState::Update(float deltaTime)
 {
-	if (_inputDevice->IsPressed(System::Input::LeftMouse))
+	if (_controls->IsFunctionKeyDown(System::FunctionKey::DEBUG_ENABLE_FREECAM))
 	{
-		//Get mouse coord
-		//Calculate mouse coord to screenspace
-		//Check collision with all the buttons
-		//Execute code for button
-		
+		_controls->ToggleCursorLock();
 	}
 }
 

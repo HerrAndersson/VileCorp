@@ -16,6 +16,7 @@ namespace System
 		_mouseCoord._deltaPos.y = 0;
 
 		_hwnd = hwnd;
+		_cursorLock = false;
 	}
 	InputDevice::~InputDevice()
 	{}
@@ -35,11 +36,15 @@ namespace System
 			_current[i] = GetAsyncKeyState(i) ? 1:0 & 0x0800;
 		}
 		
-		if (GetFocus() == _hwnd)
+		if (GetFocus() == _hwnd && _cursorLock)
 		{
 			//Sets mouse position to the middle of the window
 			SetCursorPos(rect.left + (rect.right - rect.left) / 2, rect.top + (rect.bottom - rect.top) / 2);
 			ClipCursor(&rect);
+		}
+		else
+		{
+			ClipCursor(nullptr);
 		}
 	}
 
@@ -66,5 +71,10 @@ namespace System
 	MouseCoord InputDevice::GetMouseCoord()const
 	{
 		return _mouseCoord;
+	}
+
+	void InputDevice::ToggleCursorLock()
+	{
+		_cursorLock = !_cursorLock;
 	}
 }

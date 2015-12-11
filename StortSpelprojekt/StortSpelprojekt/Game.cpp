@@ -10,7 +10,7 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	_renderModule = new Renderer::RenderModule(_window->GetHWND(), settings._width, settings._height);
 	_assetManager = new AssetManager(_renderModule->GetDevice());
 	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager);
-	_input = new System::InputDevice(_window->GetHWND());
+	_controls = new System::Controls(_window->GetHWND());
 	_UI = new UIHandler(_renderModule->GetDevice(), _window->GetWindowSettings(), _assetManager);
 
 	//Init camera
@@ -19,13 +19,13 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	_camera->SetRotation(XMFLOAT3(60, 0, 0));
 
 	_timer = System::Timer();
-
+	
 	//Init statemachine
 	InitVar initVar;
 	initVar._uiHandler = _UI;
 	initVar._objectHandler = _objectHandler;
 	initVar._uiHandler = _UI;
-	initVar._inputDevice = _input;
+	initVar._controls = _controls;
 	_SM = new StateMachine(initVar);
 }
 
@@ -37,7 +37,7 @@ Game::~Game()
 	delete _objectHandler;
 	delete _UI;
 	delete _SM;
-	delete _input;
+	delete _controls;
 	delete _assetManager;
 }
 void Game::ResizeResources(System::WindowSettings settings)
@@ -47,79 +47,7 @@ void Game::ResizeResources(System::WindowSettings settings)
 	_camera->Resize(settings._width, settings._height);
 }
 
-void Game::HandleInput()
-{
-	if (GetAsyncKeyState(VK_LEFT) != 0)
-	{
-		//Windowed mode
-		System::WindowSettings settings(1280, 720, System::WindowSettings::SHOW_CURSOR);
-		ResizeResources(settings);
-	}
 
-	if (GetAsyncKeyState(VK_RIGHT) != 0)
-	{
-		//Fullscreen
-		System::WindowSettings settings(1920, 1080, System::WindowSettings::SHOW_CURSOR | System::WindowSettings::FULLSCREEN);
-		ResizeResources(settings);
-	}
-
-	if (GetAsyncKeyState(VK_UP) != 0)
-	{
-		//Borderless windowed
-		System::WindowSettings settings(567, 765, System::WindowSettings::SHOW_CURSOR | System::WindowSettings::BORDERLESS);
-		ResizeResources(settings);
-	}
-
-	//Camera mouse control
-	System::MouseCoord mouseCoord = _input->GetMouseCoord();
-	if (mouseCoord._deltaPos.x != 0 || mouseCoord._deltaPos.y != 0)
-	{
-		XMFLOAT3 rotation = _camera->GetRotation();
-		rotation.y += mouseCoord._deltaPos.x / 10.0f;
-		rotation.x += mouseCoord._deltaPos.y / 10.0f;
-		_camera->SetRotation(rotation);
-	}
-
-	XMFLOAT3 forward(0, 0, 0);
-	XMFLOAT3 position = _camera->GetPosition();
-	XMFLOAT3 right(0, 0, 0);
-	bool isMoving = false;
-	float v = 0.1f;
-	if (GetAsyncKeyState('W'))
-	{
-		forward = _camera->GetForwardVector();
-		isMoving = true;
-	}
-	else if (GetAsyncKeyState('S'))
-	{
-		forward = _camera->GetForwardVector();
-		forward.x *= -1;
-		forward.y *= -1;
-		forward.z *= -1;
-		isMoving = true;
-	}
-
-	if (GetAsyncKeyState('D'))
-	{
-		right = _camera->GetRightVector();
-		isMoving = true;
-	}
-	else if (GetAsyncKeyState('A'))
-	{
-		right = _camera->GetRightVector();
-		right.x *= -1;
-		right.y *= -1;
-		right.z *= -1;
-		isMoving = true;
-	}
-
-	if (isMoving)
-	{
-		_camera->SetPosition(XMFLOAT3(position.x + (forward.x + right.x) * v, position.y + (forward.y + right.y) * v, position.z + (forward.z + right.z) * v));
-	}
-
-	
-}
 
 void Game::Update(float deltaTime)
 {
@@ -130,7 +58,7 @@ void Game::Update(float deltaTime)
 	vi vill hämta objekten
 
 	*/
-	_input->Update();
+	_controls->Update();
 	_UI->Update();
 	_UI->OnResize(_window->GetWindowSettings());
 	_SM->Update(deltaTime);
@@ -189,7 +117,6 @@ int Game::Run()
 		_timer.Update();
 		if (_timer.GetFrameTime() >= MS_PER_FRAME)
 		{
-			HandleInput();
 			Update(deltaTime);
 			Render();
 			_timer.Reset();

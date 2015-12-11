@@ -11,7 +11,7 @@
 #include "AssetManager.h"
 #include "InitVar.h"
 #include "Trap.h"
-#include "InputDevice.h"
+#include "Controls.h"
 
 class Game
 {
@@ -26,12 +26,11 @@ private:
 	UIHandler*					_UI;
 	System::Timer				_timer;
 
-	System::InputDevice*		_input;
+	System::Controls*			_controls;
 	AssetManager*				_assetManager;
 
 	//Resizing window, directx resources, camera
 	void ResizeResources(System::WindowSettings settings);
-	void HandleInput();
 	void Update(float deltaTime);
 	void Render();
 

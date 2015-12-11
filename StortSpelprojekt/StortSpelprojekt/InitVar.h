@@ -2,11 +2,11 @@
 
 #include "UIHandler.h"
 #include "ObjectHandler.h"
-#include "InputDevice.h"
+#include "Controls.h"
 
 struct InitVar
 {
+	System::Controls*	_controls;
 	ObjectHandler*		_objectHandler;
-	UIHandler*		_uiHandler;
-	System::InputDevice*	_inputDevice;
+	UIHandler*			_uiHandler;
 };
