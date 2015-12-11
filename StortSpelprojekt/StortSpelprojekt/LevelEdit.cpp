@@ -29,6 +29,8 @@ LevelEdit::LevelEdit(HINSTANCE hInstance, int nCmdShow)
 
 	_selectedObj = 0;
 	_tileMultiplier = 1;
+
+	
 }
 
 LevelEdit::~LevelEdit()
@@ -65,11 +67,17 @@ void LevelEdit::InitNewLevel()
 void LevelEdit::HandleInput()
 {
 	GameObject* temp;
+	int maxObject = _objectHandler->GetSize();
+	int selectedLevel = 1;
+
 
 	//Tile select
 	if (_input->IsPressed(VK_ADD))
 	{
-		_selectedObj++;
+		if (_selectedObj < maxObject)
+		{
+			_selectedObj++;
+		}
 		
 	}
 
@@ -141,6 +149,7 @@ void LevelEdit::HandleInput()
 		}
 	}
 
+
 	if (_input->IsPressed(0x5A))
 	{
 		temp = _objectHandler->Find(_selectedObj);
@@ -158,6 +167,94 @@ void LevelEdit::HandleInput()
 			XMFLOAT3 tempRot = temp->GetRotation();
 			temp->SetRotation(XMFLOAT3(tempRot.x, tempRot.y - (DirectX::XM_PI / 2), tempRot.z));
 		}
+	}
+
+	//Temp LevelLoads
+	if (_input->IsPressed(0x31))
+	{
+		_objectHandler->Clear();
+		_objectHandler->LoadLevel(1);
+	}
+
+	if (_input->IsPressed(0x32))
+	{
+		_objectHandler->Clear();
+		_objectHandler->LoadLevel(2);
+	}
+
+	if (_input->IsPressed(0x33))
+	{
+		_objectHandler->Clear();
+		_objectHandler->LoadLevel(3);
+	}
+
+	if (_input->IsPressed(0x34))
+	{
+		_objectHandler->Clear();
+		_objectHandler->LoadLevel(4);
+	}
+
+
+	//Press C to clear
+	if (_input->IsPressed(0x43))
+	{
+		_objectHandler->Clear();
+		_selectedObj = 0;
+	}
+
+
+	//tempAddObj
+
+	//R
+	if (_input->IsPressed(0x52))
+	{
+		if (_objectHandler->GetSize() < 1)
+		{
+			_objectHandler->Add(FLOOR, FLOOR, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));	
+			_selectedObj = _objectHandler->GetSize()-1;
+		}
+		else
+		{
+			_objectHandler->Add(FLOOR, FLOOR, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
+			_selectedObj = _objectHandler->GetSize() - 1;
+		}
+		
+	}
+
+	//T
+	if (_input->IsPressed(0x54))
+	{
+		if (_objectHandler->GetSize() < 1)
+		{
+			_objectHandler->Add(WALL, WALL, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
+			_selectedObj = _objectHandler->GetSize() - 1;
+
+		}
+		else
+		{
+			_objectHandler->Add(WALL, WALL, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
+			_selectedObj = _objectHandler->GetSize() - 1;
+		}
+
+	}
+
+
+
+	//Y
+	if (_input->IsPressed(0x59))
+	{
+		if (_objectHandler->GetSize() < 1)
+		{
+			_objectHandler->Add(UNIT, UNIT, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
+			_selectedObj = _objectHandler->GetSize() - 1;
+
+		}
+		else
+		{
+			_objectHandler->Add(UNIT, UNIT, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
+			_selectedObj = _objectHandler->GetSize() - 1;
+		}
+
 	}
 
 
