@@ -31,7 +31,7 @@ public:
 	DirectX::XMMATRIX* GetViewMatrix();
 	DirectX::XMMATRIX* GetProjectionMatrix();
 
-
+	bool IsPotentiallyInLight(DirectX::XMFLOAT3 position);
 
 	//Overloading these guarantees 16B alignment of XMMATRIX
 	void* operator new(size_t i);

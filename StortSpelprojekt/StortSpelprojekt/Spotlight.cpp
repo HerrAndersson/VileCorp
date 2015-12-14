@@ -4,18 +4,18 @@ using namespace DirectX;
 
 Spotlight::Spotlight(float nearClip, float farClip, float fov, int width, int height)
 {
-	_position = DirectX::XMFLOAT3(0, 0, 0);
-	_rotation = DirectX::XMFLOAT3(0, 0, 0);
-	_direction = DirectX::XMFLOAT3(0, 0, 1);
-	_up = DirectX::XMFLOAT3(0, 1, 0);
+	_position = XMFLOAT3(0, 0, 0);
+	_rotation = XMFLOAT3(0, 0, 0);
+	_direction = XMFLOAT3(0, 0, 1);
+	_up = XMFLOAT3(0, 1, 0);
 
 	//Prepare vectors for Matrix initialization
-	DirectX::XMVECTOR vPos = DirectX::XMLoadFloat3(&_position);
-	DirectX::XMVECTOR vDir = XMVector3TransformCoord(DirectX::XMLoadFloat3(&_direction),  XMMatrixRotationRollPitchYaw(XMConvertToRadians(_rotation.x), XMConvertToRadians(_rotation.y), XMConvertToRadians(_rotation.z)));
-	DirectX::XMVECTOR vUp = DirectX::XMLoadFloat3(&_up);
+	XMVECTOR vPos = XMLoadFloat3(&_position);
+	XMVECTOR vDir = XMVector3TransformCoord(XMLoadFloat3(&_direction),  XMMatrixRotationRollPitchYaw(XMConvertToRadians(_rotation.x), XMConvertToRadians(_rotation.y), XMConvertToRadians(_rotation.z)));
+	XMVECTOR vUp = XMLoadFloat3(&_up);
 	
-	_viewMatrix = DirectX::XMMatrixLookAtLH(vPos, vPos + vDir, vUp);
-	_projectionMatrix = DirectX::XMMatrixPerspectiveFovLH(fov, (float)width / (float)height, nearClip, farClip);
+	_viewMatrix = XMMatrixLookAtLH(vPos, vPos + vDir, vUp);
+	_projectionMatrix = XMMatrixPerspectiveFovLH(fov, (float)width / (float)height, nearClip, farClip);
 }
 
 Spotlight::~Spotlight()
@@ -29,9 +29,9 @@ void Spotlight::Update()
 	XMFLOAT3 dir = DirectX::XMFLOAT3(0, 0, 1);
 	XMMATRIX rotationMatrix = XMMatrixRotationRollPitchYaw(XMConvertToRadians(_rotation.x), XMConvertToRadians(_rotation.y), XMConvertToRadians(_rotation.z));
 
-	DirectX::XMVECTOR vPos = DirectX::XMLoadFloat3(&_position);
-	DirectX::XMVECTOR vDir = XMVector3TransformCoord(DirectX::XMLoadFloat3(&dir), rotationMatrix);
-	DirectX::XMVECTOR vUp = XMVector3TransformCoord(DirectX::XMLoadFloat3(&_up), rotationMatrix);
+	XMVECTOR vPos = DirectX::XMLoadFloat3(&_position);
+	XMVECTOR vDir = XMVector3TransformCoord(DirectX::XMLoadFloat3(&dir), rotationMatrix);
+	XMVECTOR vUp = XMVector3TransformCoord(DirectX::XMLoadFloat3(&_up), rotationMatrix);
 
 	XMStoreFloat3(&dir, vDir);
 	XMStoreFloat3(&_up, vUp);
@@ -81,6 +81,11 @@ XMMATRIX* Spotlight::GetViewMatrix()
 XMMATRIX* Spotlight::GetProjectionMatrix()
 {
 	return &_projectionMatrix;
+}
+
+bool Spotlight::IsPotentiallyInLight(XMFLOAT3 position)
+{
+	return false;
 }
 
 //Overloading these guarantees 16B alignment of XMMATRIX
