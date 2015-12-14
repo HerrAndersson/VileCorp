@@ -12,12 +12,14 @@ private:
 	{
 		static const int OBJECT_CAPACITY = 5;
 		GameObject* _objectsOnTile[OBJECT_CAPACITY];					//0 = floor or wall, 1 = 1st unit, 2 = 2nd unit, 3 = trap/thief objectives, 4 = trigger
+		bool _isVisible;
 		Tile()
 		{
 			for (int i = 0; i < OBJECT_CAPACITY; i++)
 			{
 				_objectsOnTile[i] = nullptr;
 			}
+			_isVisible = false;
 		}
 		~Tile(){}
 
@@ -58,4 +60,5 @@ public:
 	bool IsTriggerOnTile(int x, int z) const;
 	bool IsObjectiveOnTile(int x, int z)const;
 	bool IsTypeOnTile(int x, int z, Type type)const;
+	bool IsTileVisible(int x, int z) const;
 };

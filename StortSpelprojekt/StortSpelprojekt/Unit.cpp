@@ -405,10 +405,30 @@ int Unit::GetVisDistance(int x1, int y1, int x2, int y2)
 	return (x1 - x2) * (x1 - x2) + ((y1 - y2) * (y1 - y2));
 }
 
+void Unit::CalculatePath()
+{
+	if (_aStar->FindPath())
+	{
+		_path = _aStar->GetPath();
+		_pathLength = _aStar->GetPathLength();
+	}
+	else
+	{
+		_path = nullptr;
+		_pathLength = 0;
+	}
+}
+
+
+int Unit::GetApproxDistance(AI::Vec2D target) const
+{
+	return _aStar->GetHeuristicDistance(_tilePosition, target);
+}
 
 Unit::Unit()
 	: GameObject()
 {
+	_goalPriority = -1;
 	_aStar = new AI::AStar();
 	_visibleTiles = nullptr;
 	_visionRadius = 0;
@@ -418,6 +438,7 @@ Unit::Unit()
 Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject* renderObject, const Tilemap* tileMap)
 	: GameObject(ID, position, rotation, tilePosition, type, renderObject)
 {
+	_goalPriority = -1;
 	_visionRadius = 3;
 	_visibleTiles = new AI::Vec2D[ (2 * _visionRadius) * (2 * _visionRadius)];
 	_nrOfVisibleTiles = 0;
@@ -437,17 +458,17 @@ Unit::~Unit()
 	_aStar = nullptr;
 }
 
-int Unit::getPathLength() const
+int Unit::GetPathLength() const
 {
 	return _pathLength;
 }
 
-AI::Vec2D Unit::getGoal()
+AI::Vec2D Unit::GetGoal()
 {
 	return _goalTilePosition;
 }
 
-AI::Vec2D Unit::getDirection()
+AI::Vec2D Unit::GetDirection()
 {
 	return _direction;
 }
@@ -523,12 +544,16 @@ void Unit::CheckVisibleTiles()
 		{
 			_aStar->SetTileCost(_visibleTiles[i], 10);
 		}
-		if (_ID == 100)									//Temporary solution to only use one of the units
+		//if (_ID == 100)									//Temporary solution to only use one of the units
+		//{
+		//	if (_tileMap->IsTypeOnTile(_visibleTiles[i]._x, _visibleTiles[i]._y, UNIT) && !(_visibleTiles[i] == _goalTilePosition || _visibleTiles[i] == _tilePosition))	//Unit finds another unit
+		//	{
+		//		CalculatePath(_visibleTiles[i]);
+		//	}
+		//}
+		if (_tileMap->UnitsOnTile(_visibleTiles[i]._x, _visibleTiles[i]._y) > 0 && !(_visibleTiles[i] == _goalTilePosition || _visibleTiles[i] == _tilePosition))	//Unit finds another unit
 		{
-			if (_tileMap->IsTypeOnTile(_visibleTiles[i]._x, _visibleTiles[i]._y, UNIT) && !(_visibleTiles[i] == _goalTilePosition || _visibleTiles[i] == _tilePosition))	//Unit finds another unit
-			{
-				CalculatePath(_visibleTiles[i]);
-			}
+			EvaluateTile(UNIT, _visibleTiles[i]);			//TODO: Change unit to guard/enemy --Victor
 		}
 	}
 }
@@ -542,12 +567,13 @@ void Unit::CheckAllTiles()
 			//Handle objectives
 			if (_tileMap->IsObjectiveOnTile(i, j))
 			{
-				if (_tilePosition == _goalTilePosition || _aStar->GetHeuristicDistance(_tilePosition, {i, j}) < _aStar->GetHeuristicDistance(_tilePosition, _goalTilePosition))	//Choose the 'closest' objective
-				{
-					_goalTilePosition = {i, j};
-					_aStar->SetGoalPosition(_goalTilePosition);
-				}
+				//if (_tilePosition == _goalTilePosition || _aStar->GetHeuristicDistance(_tilePosition, {i, j}) < _aStar->GetHeuristicDistance(_tilePosition, _goalTilePosition))	//Choose the 'closest' objective
+				//{
+				//	_goalTilePosition = {i, j};
+				//	_aStar->SetGoalPosition(_goalTilePosition);
+				//}
 				_aStar->SetTileCost({ i, j }, 1);
+				EvaluateTile(LOOT, {i, j});
 			}
 			//Handle walls
  			if (_tileMap->IsWallOnTile(i, j))
@@ -560,6 +586,16 @@ void Unit::CheckAllTiles()
 			}
 		}
 	}
+}
+
+void Unit::SetGoal(AI::Vec2D goal)
+{
+	_goalTilePosition = goal;
+	_aStar->CleanMap();
+	_aStar->SetStartPosition(_tilePosition);
+	_aStar->SetGoalPosition(goal);
+	CalculatePath();
+
 }
 
 /*
@@ -599,6 +635,8 @@ void Unit::Move()
 	}
 
 	_tilePosition += _direction;
+
+	//TODO: React to objects in same tile --Victor
 
 	FindVisibleTiles();
 	CheckVisibleTiles();

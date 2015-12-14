@@ -270,3 +270,9 @@ bool Tilemap::IsTypeOnTile(int x, int z, Type type) const
 	}
 	return false;
 }
+
+bool Tilemap::IsTileVisible(int x, int z) const
+{
+	return _map[x][z]._isVisible;
+}
+

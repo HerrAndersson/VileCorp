@@ -37,8 +37,8 @@ GameObject* ObjectHandler::Add(Type type, int renderObjectID, XMFLOAT3 position 
 		_tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
 		break;
 	case UNIT:
-		//TODO Tileposition parameters are temporary
-		object = new Unit(_idCounter++, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(renderObjectID), _tilemap);
+		//Temporary. Enemies and guards should replace units properly
+		object = new Enemy(_idCounter++, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(renderObjectID), _tilemap);
 		_gameObjects.push_back(object);
 		_size++;
 		_tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
@@ -196,7 +196,7 @@ void ObjectHandler::InitPathfinding()
 		{
 			Unit* unit = dynamic_cast<Unit*>(_gameObjects[i]);
 			unit->CheckAllTiles();
-			unit->CalculatePath(unit->getGoal());
+			unit->CalculatePath(unit->GetGoal());
 			unit->Move();
 		}
 	}
