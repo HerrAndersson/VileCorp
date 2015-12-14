@@ -25,9 +25,12 @@ namespace System
 		RECT rect;
 		GetWindowRect(_hwnd, &rect);
 
+
 		GetCursorPos(&_mouseCoord._pos);
+		
 		_mouseCoord._deltaPos.x = _mouseCoord._pos.x - (rect.left + (rect.right - rect.left) / 2);
 		_mouseCoord._deltaPos.y = _mouseCoord._pos.y - (rect.top + (rect.bottom - rect.top) / 2);
+
 
 		for (int i = 1; i < KEYCODECAP; i++)
 		{
@@ -41,6 +44,7 @@ namespace System
 			SetCursorPos(rect.left + (rect.right - rect.left) / 2, rect.top + (rect.bottom - rect.top) / 2);
 			ClipCursor(&rect);
 		}
+		ScreenToClient(_hwnd, &_mouseCoord._pos);
 	}
 
 	bool InputDevice::IsDown(int key)
@@ -65,6 +69,7 @@ namespace System
 
 	MouseCoord InputDevice::GetMouseCoord()const
 	{
+		
 		return _mouseCoord;
 	}
 }

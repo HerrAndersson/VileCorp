@@ -118,7 +118,66 @@ void Game::HandleInput()
 		_camera->SetPosition(XMFLOAT3(position.x + (forward.x + right.x) * v, position.y + (forward.y + right.y) * v, position.z + (forward.z + right.z) * v));
 	}
 
+
+	//Picking control
+	if (GetAsyncKeyState(VK_LBUTTON))
+	{
+		Picking();
+	}
+
 	
+}
+
+vector<GameObject*> Game::Picking()
+{
+	vector<GameObject*> pickedObjects;
+	XMFLOAT3 mouseWorldPos = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	XMFLOAT4X4 viewMatrix;
+	XMFLOAT4X4 projMatrix;
+	XMStoreFloat4x4(&projMatrix, *_camera->GetProjectionMatrix());
+
+	//Translating mouseposition to viewSpace
+	POINT point = _input->GetMouseCoord()._pos;
+	float width = (float)_window->GetWindowSettings()._width;
+	float xPos = (float)point.x /width;
+	xPos = (xPos * 2.0f) - 1.0f;
+
+	float height = (float)_window->GetWindowSettings()._height;
+	float yPos = (float)point.y / height;
+	yPos = (yPos * -2.0f) + 1.0f;
+	
+	mouseWorldPos.x = xPos / projMatrix._11;
+	mouseWorldPos.y = yPos / projMatrix._22;
+
+
+
+	XMMATRIX inverseViewMatrix = XMMatrixInverse(nullptr, *_camera->GetViewMatrix());
+	XMStoreFloat3(&mouseWorldPos, XMVector3TransformCoord(XMVectorSet(mouseWorldPos.x, mouseWorldPos.y, mouseWorldPos.z, 1.0f),  inverseViewMatrix));
+
+	//System::Ray ray = System::Ray(System::Vec3(_camera->GetPosition()), (System::Vec3(mouseWorldPos)));// -System::Vec3(_camera->GetPosition())));
+	System::Ray ray = System::Ray(System::Vec3(_camera->GetPosition()), System::Vec3(_camera->GetForwardVector()));
+
+	vector<GameObject*> pickableObjects = _objectHandler->GetAll(UNIT);
+
+	//GameObject* go= _objectHandler->Add(TRAP, 0, ((ray._origin + ray._direction)).convertToXMFLOAT(), XMFLOAT3(0.0f,0.0f,0.0f));
+	//_objectHandler->Add(TRAP, 0, (_camera->GetForwardVector()*5.0f).convertToXMFLOAT(), XMFLOAT3(0.0f, 0.0f, 0.0f));
+	//System::Sphere pickObject = System::Sphere(System::Vec3(0.0f,0.0f,0.0f), 2.0f);
+	//System::Box pickObject = System::Box(1.0f, 1.8f, 1.0f, System::Vec3(0.0f, 0.0f, 0.0f));
+	for (int i = 0; i < pickableObjects.size(); i++)
+	{
+		//System::Sphere pickObject = System::Sphere(System::Vec3(pickableObjects[i]->GetPosition()), 2.0f);
+		System::Box pickObject = System::Box(1.0f, 1.8f, 1.0f, System::Vec3(pickableObjects[i]->GetPosition()));
+		//System::Box pickObject = System::Box(1.0f, 1.8f, 1.0f, System::Vec3(go->GetPosition()));
+		
+
+
+		if (System::Collision(ray, pickObject))
+		{
+			pickedObjects.push_back(pickableObjects[i]);
+		}
+	}
+
+	return pickedObjects;
 }
 
 void Game::Update(float deltaTime)
@@ -130,6 +189,8 @@ void Game::Update(float deltaTime)
 	vi vill hämta objekten
 
 	*/
+
+
 	_input->Update();
 	_UI->Update();
 	_UI->OnResize(_window->GetWindowSettings());

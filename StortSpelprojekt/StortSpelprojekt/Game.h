@@ -12,6 +12,10 @@
 #include "InitVar.h"
 #include "Trap.h"
 #include "InputDevice.h"
+#include "VectorMath.h"
+#include "Shapes.h"
+
+
 
 class Game
 {
@@ -27,10 +31,13 @@ private:
 	System::Timer				_timer;
 
 	System::InputDevice*		_input;
+	
 
 	//Resizing window, directx resources, camera
 	void ResizeResources(System::WindowSettings settings);
 	void HandleInput();
+	//Returns picked objects
+	vector<GameObject*> Picking();
 	void Update(float deltaTime);
 	void Render();
 
