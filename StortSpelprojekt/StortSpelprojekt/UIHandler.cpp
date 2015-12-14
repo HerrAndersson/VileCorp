@@ -165,3 +165,12 @@ std::vector<Renderer::HUDElement>* UIHandler::GetTextureData()
 	return &_textures;
 }
 
+void* UIHandler::operator new(size_t i)
+{
+	return _mm_malloc(i, 16);
+}
+
+void UIHandler::operator delete(void* p)
+{
+	_mm_free(p);
+}
