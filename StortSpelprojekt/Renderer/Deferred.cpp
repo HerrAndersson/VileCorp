@@ -35,6 +35,7 @@ void Deferred::InitializeBuffers(ID3D11Device* device)
 	textureDesc.Height = textureHeight;
 	textureDesc.MipLevels = 1;
 	textureDesc.ArraySize = 1;
+	//textureDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
 	textureDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
 	textureDesc.SampleDesc.Count = 1;
 	textureDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -186,7 +187,7 @@ void Deferred::ResizeRenderTargets(ID3D11Device* device, int textureWidth, int t
 
 ID3D11ShaderResourceView** Deferred::GetShaderResourceViews(int& count)
 {
-	count = BUFFER_COUNT;
-	_shaderResourceViewArray[4] = _depthShaderResourceView;
+	count = BUFFER_COUNT + 1;
+	_shaderResourceViewArray[BUFFER_COUNT] = _depthShaderResourceView;
 	return _shaderResourceViewArray;
 }

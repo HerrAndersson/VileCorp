@@ -14,18 +14,16 @@ private:
 	/* Render target views
 	[0] = Diffuse Color
 	[1] = Normal
-	[2] = Position
-	[3] = World Position
-	[4] = Depth from view
-	[5] = Shadow map / light accumulation - Set in SetLightPassRTVs.
+	[2] = Depth from view
+	[3] = Shadow map / light accumulation - Set in SetLightPassRTVs.
 	*/
-	static const int BUFFER_COUNT = 5;
+	static const int BUFFER_COUNT = 2;
 
 	int textureWidth;
 	int textureHeight;
 
-	ID3D11RenderTargetView*		 _renderTargetViewArray[BUFFER_COUNT];
-	ID3D11ShaderResourceView*	 _shaderResourceViewArray[BUFFER_COUNT];
+	ID3D11RenderTargetView*		 _renderTargetViewArray[BUFFER_COUNT+2];
+	ID3D11ShaderResourceView*	 _shaderResourceViewArray[BUFFER_COUNT+2];
 	
 	ID3D11DepthStencilView*		 _depthStencilView;
 	ID3D11ShaderResourceView*	 _depthShaderResourceView;
