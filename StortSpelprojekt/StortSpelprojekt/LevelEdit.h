@@ -34,6 +34,8 @@ private:
 		int _tileType;
 	};
 
+	XMFLOAT3 _lastObjPosition = XMFLOAT3(0.0, 0.0, 0.0);
+
 	//temps
 	int _selectedObj;
 	int _tileMultiplier;

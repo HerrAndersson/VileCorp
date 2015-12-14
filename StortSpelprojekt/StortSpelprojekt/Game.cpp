@@ -42,6 +42,7 @@ Game::~Game()
 	delete _UI;
 	delete _SM;
 	delete _input;
+	delete _assetManager;
 }
 
 void Game::ResizeResources(System::WindowSettings settings)

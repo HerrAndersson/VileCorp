@@ -86,7 +86,10 @@ void LevelEdit::HandleInput()
 			if (temp->GetType() == WALL || FLOOR || UNIT)
 			{
 				XMFLOAT3 tempPos = temp->GetPosition();
-				temp->SetPosition(XMFLOAT3(tempPos.x - 1 * _tileMultiplier, tempPos.y, tempPos.z));
+				tempPos = XMFLOAT3(tempPos.x - 1 * _tileMultiplier, tempPos.y, tempPos.z);
+				temp->SetPosition(tempPos);
+				_lastObjPosition = tempPos;
+
 			}
 
 		}
@@ -97,7 +100,9 @@ void LevelEdit::HandleInput()
 			if (temp->GetType() == WALL || FLOOR || UNIT)
 			{
 				XMFLOAT3 tempPos = temp->GetPosition();
-				temp->SetPosition(XMFLOAT3(tempPos.x + 1 * _tileMultiplier, tempPos.y, tempPos.z));
+				tempPos = XMFLOAT3(tempPos.x + 1 * _tileMultiplier, tempPos.y, tempPos.z);
+				temp->SetPosition(tempPos);
+				_lastObjPosition = tempPos;
 			}
 		}
 
@@ -108,7 +113,9 @@ void LevelEdit::HandleInput()
 			if (temp->GetType() == WALL || FLOOR || UNIT)
 			{
 				XMFLOAT3 tempPos = temp->GetPosition();
-				temp->SetPosition(XMFLOAT3(tempPos.x, tempPos.y, tempPos.z + 1 * _tileMultiplier));
+				tempPos = XMFLOAT3(tempPos.x, tempPos.y, tempPos.z + 1 * _tileMultiplier);
+				temp->SetPosition(tempPos);
+				_lastObjPosition = tempPos;
 			}
 		}
 
@@ -119,7 +126,9 @@ void LevelEdit::HandleInput()
 			if (temp->GetType() == WALL || FLOOR || UNIT)
 			{
 				XMFLOAT3 tempPos = temp->GetPosition();
-				temp->SetPosition(XMFLOAT3(tempPos.x, tempPos.y, tempPos.z - 1 * _tileMultiplier));
+				tempPos = XMFLOAT3(tempPos.x, tempPos.y, tempPos.z - 1 * _tileMultiplier);
+				temp->SetPosition(tempPos);
+				_lastObjPosition = tempPos;
 			}
 		}
 	}
@@ -229,28 +238,28 @@ void LevelEdit::HandleInput()
 	//R Adds Floor
 	if (_inputHandler->IsPressed(System::Input::R))
 	{
-			_objectHandler->Add(FLOOR, FLOOR, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));	
+			_objectHandler->Add(FLOOR, FLOOR, _lastObjPosition, XMFLOAT3(0.0f, 0.0f, 0.0f));	
 			_selectedObj = _objectHandler->GetSize()-1;
 	}
 
 	//T adds Wall
 	if (_inputHandler->IsPressed(System::Input::T))
 	{
-			_objectHandler->Add(WALL, WALL, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
+			_objectHandler->Add(WALL, WALL, _lastObjPosition, XMFLOAT3(0.0f, 0.0f, 0.0f));
 			_selectedObj = _objectHandler->GetSize() - 1;
 	}
 
 	//Y adds Unit
 	if (_inputHandler->IsPressed(System::Input::Y))
 	{
-			_objectHandler->Add(UNIT, UNIT, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
+			_objectHandler->Add(UNIT, UNIT, _lastObjPosition, XMFLOAT3(0.0f, 0.0f, 0.0f));
 			_selectedObj = _objectHandler->GetSize() - 1;
 	}
 
 	//U adds Goal
 	if (_inputHandler->IsPressed(System::Input::U))
 	{
-		_objectHandler->Add(LOOT, LOOT, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
+		_objectHandler->Add(LOOT, LOOT, _lastObjPosition, XMFLOAT3(0.0f, 0.0f, 0.0f));
 		_selectedObj = _objectHandler->GetSize() - 1;
 	}
 
@@ -258,7 +267,7 @@ void LevelEdit::HandleInput()
 	if (_inputHandler->IsPressed(System::Input::I))
 	{
 		//TODO: Add ENTRY to enum list
-		//_objectHandler->Add(ENTRY, ENTRY, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
+		//_objectHandler->Add(ENTRY, ENTRY, _lastObjPosition, XMFLOAT3(0.0f, 0.0f, 0.0f));
 		//_selectedObj = _objectHandler->GetSize() - 1;
 	}
 
@@ -328,7 +337,7 @@ void LevelEdit::Update(float deltaTime)
 {
 	HandleSelected();
 	HandleInput();
-	_objectHandler->Update();
+	//_objectHandler->Update();
 }
 
 void LevelEdit::HandleSelected()
@@ -463,6 +472,7 @@ void LevelEdit::ExportLevel()
 
 	fclose(source);
 	fclose(dest);
-
+	
+	mapData.clear();
 
 }
