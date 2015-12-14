@@ -12,7 +12,7 @@ MenuState::~MenuState()
 
 void MenuState::Update(float deltaTime)
 {
-	if (_controls->IsFunctionKeyDown(System::FunctionKey::DEBUG_ENABLE_FREECAM))
+	if (_controls->IsFunctionKeyDown("ROTATE_CAMERA_LEFT"))
 	{
 		_controls->ToggleCursorLock();
 	}
