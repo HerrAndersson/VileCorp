@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdio>
+#include <ShlObj.h>
 #include "UIHandler.h"
 #include "ObjectHandler.h"
 #include "InputDevice.h"
@@ -15,6 +17,23 @@ private:
 	System::Camera*			_camera;
 	Grid*					_grid;
 
+
+	struct LevelHeader
+	{
+		int _version;
+		int _levelSizeX;
+		int _levelSizeY;
+		int _nrOfTileObjects;
+	};
+
+	struct MapData
+	{
+		int _posX;
+		int _posZ;
+		float _rotY;
+		int _tileType;
+	};
+
 	//temps
 	int _selectedObj;
 	int _tileMultiplier;
@@ -28,6 +47,9 @@ private:
 	void InitNewLevel();
 	void ResetSelectedObj();
 	void DeleteObject();
+
+	void ExportLevel();
+
 public:
 	LevelEdit();
 	~LevelEdit();

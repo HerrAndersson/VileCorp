@@ -302,6 +302,11 @@ void LevelEdit::HandleInput()
 	}
 
 
+	if (GetAsyncKeyState('Q'))
+	{
+		ExportLevel();
+	}
+
 }
 
 void LevelEdit::Update(float deltaTime)
@@ -370,5 +375,79 @@ void LevelEdit::DeleteObject()
 	_objectHandler->Remove(_selectedObj);
 		_selectedObj--;
 	}
+
+}
+
+void LevelEdit::ExportLevel()
+{
+	LevelHeader levelHead;
+	levelHead._version = 10;
+	Tilemap* tileMap = _objectHandler->GetTileMap();
+	levelHead._levelSizeY = tileMap->GetHeight();
+	levelHead._levelSizeX = tileMap->GetWidth();
+	levelHead._nrOfTileObjects = _objectHandler->GetSize();
+
+	//Iterating through all game objects and saving only the relevant data for exporting.
+	std::vector<MapData> mapData;
+	mapData.reserve(levelHead._nrOfTileObjects);
+	std::vector<GameObject*> *gameObjects = _objectHandler->GetGameObjects();
+	for (int i = 0; i < levelHead._nrOfTileObjects; i++)
+	{
+
+		GameObject *gameObj = gameObjects->at(i);
+		MapData mapD;
+		
+		mapD._tileType = gameObj->GetType();
+		DirectX::XMFLOAT3 position = gameObj->GetPosition();
+		mapD._posX = position.x;
+		mapD._posZ = position.z;
+		mapD._rotY = gameObj->GetRotation().y;
+
+		mapData.push_back(mapD);
+	}
+
+	char userPath[MAX_PATH];
+	SHGetFolderPathA(NULL, CSIDL_PROFILE, NULL, 0, userPath);
+
+	string outputPath, copyPath;
+	string levelName = "exportedLevel.lvl";
+
+	//Setting the output folder depending on if running debug or release mode.
+	#ifdef _DEBUG
+		outputPath = "../../Output/Bin/x86/Debug/Assets/Levels/";
+		copyPath = (string)userPath + "\\Google Drive\\Stort spelprojekt\\Assets\\Levels\\";
+	#else
+		outputPath = ("/Assets/Levels/");
+	#endif
+
+	outputPath += levelName;
+	copyPath += levelName;
+
+	ofstream outputFile;
+	
+	outputFile.open(outputPath, ios::out | ios::binary);
+
+	outputFile.write((const char*)&levelHead, sizeof(levelHead));
+
+	for (auto md : mapData)
+	{
+		outputFile.write((const char*)&md, sizeof(mapData));
+	}
+
+	outputFile.close();
+
+	char buf[BUFSIZ];
+	size_t size;
+
+	FILE* source = fopen(outputPath.c_str(), "rb");
+	FILE* dest = fopen(copyPath.c_str(), "wb");
+
+	while (size = fread(buf, 1, BUFSIZ, source)) {
+		fwrite(buf, 1, size, dest);
+	}
+
+	fclose(source);
+	fclose(dest);
+
 
 }
