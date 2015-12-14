@@ -35,6 +35,7 @@ namespace Renderer
 	__declspec(align(16))class RENDERER_EXPORT Fonts
 	{
 	private:
+		bool				_externalWrapper;
 		IFW1Factory*		_factory;
 		IFW1FontWrapper*	_fontWrapper;
 
@@ -45,6 +46,7 @@ namespace Renderer
 			IDWriteTextLayout*		writeTextLayout;
 			IDWriteFontCollection*	fontCollection;
 			IDWriteTextLayout*		textLayout;
+			IDWriteTextFormat*		textFormat;
 			LPCWSTR					fontName;
 			float					fontSize;
 			const WCHAR*			fontText;
@@ -56,10 +58,17 @@ namespace Renderer
 		Fonts();
 		void Release();
 
+		//Create empty Wrapper
+		void CreateFontWrapper(ID3D11Device* device);
+		IFW1FontWrapper* GetFontWrapper();
+
 		//Default 
 		HRESULT Initialize(ID3D11Device* device, LPCWSTR fontName);
-		//Custom font
+		//Custom font - USING ITS OWN WRAPPERDEVICE.
 		HRESULT Initialize(ID3D11Device* device, LPCWSTR fontName, LPCWSTR filePath);
+		//Custom font - USING EXTERNAL WRAPPERDEVICE.
+		HRESULT Initialize(IFW1FontWrapper* fontWrapper, ID3D11Device* device, LPCWSTR fontName, LPCWSTR filePath);
+
 		HRESULT DrawString(ID3D11DeviceContext* device, const WCHAR* text, int textSize, float fontSize, float x, float y, UINT32 color);
 	};
 }

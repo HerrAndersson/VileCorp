@@ -13,13 +13,15 @@
 class UIHandler
 {
 private:
-	std::vector<FontInfo>			_fonts;
-	int					_textId;
-	System::WindowSettings			_windowSettings;
-	ID3D11Device*				_device;
-	AssetManager*				_AM;
+	std::vector<FontInfo>				_fonts;
+	int									_textId;
+	System::WindowSettings				_windowSettings;
+	ID3D11Device*						_device;
+	AssetManager*						_AM;
 	std::vector<Renderer::HUDElement>	_textures;
-	int					_textureId;
+	int									_textureId;
+
+	Renderer::Fonts						_fontWrapper;
 	
 
 public:
