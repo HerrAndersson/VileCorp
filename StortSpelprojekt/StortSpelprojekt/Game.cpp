@@ -28,8 +28,8 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	_input = new System::InputDevice(_window->GetHWND());
 
 	//TEMP!
-	_spotlight = new Spotlight(0.1f, 1000.0f, XM_PIDIV4, 2048, 2048);
-	_spotlight->SetPositionAndRotation(XMFLOAT3(3, 1, 3), XMFLOAT3(0, 45, 0));
+	_spotlight = new Spotlight(0.1f, 1000.0f, XM_PIDIV4, 256, 256);
+	_spotlight->SetPositionAndRotation(XMFLOAT3(5, 1, 5), XMFLOAT3(0, 90, 0));
 }
 
 Game::~Game() 
@@ -149,7 +149,7 @@ void Game::Update(float deltaTime)
 void Game::Render()
 {
 	_renderModule->BeginScene(0.0f, 1.0f, 1.0f, 1);
-	_renderModule->SetDataPerFrame(_spotlight->GetViewMatrix(), _spotlight->GetProjectionMatrix());
+	_renderModule->SetDataPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
 	_renderModule->SetShaderStage(Renderer::RenderModule::GEO_PASS);
 
 	//RenderList renderList = _objectHandler->GetAll(0);
@@ -172,30 +172,31 @@ void Game::Render()
 	}
 
 
-	_renderModule->SetShaderStage(Renderer::RenderModule::LIGHT_ACCUMULATION_PASS);
+//	for (ALL  SPOTLIGHTS)
+//	{
 
-	_renderModule->SetShadowMapDataPerLight(_spotlight->GetViewMatrix(), _spotlight->GetProjectionMatrix());
 
-	for (auto i : *gameObjects)
-	{
-		_renderModule->RenderShadowMap(&i->GetMatrix(), i->GetRenderObject());
-	}
+
+		_renderModule->SetShaderStage(Renderer::RenderModule::SHADOW_GENERATION);
+		_renderModule->SetShadowMapDataPerSpotLight(_spotlight->GetViewMatrix(), _spotlight->GetProjectionMatrix());
+
+		for (auto i : *gameObjects)
+		{
+			_renderModule->RenderShadowMap(&i->GetMatrix(), i->GetRenderObject());
+		}
+
+
+		//Adds the light/shadows to the diffuse texture by sampling from it, modifying it, and then use it as render target again.
+		//_renderModule->SetShaderStage(Renderer::RenderModule::LIGHT_APPLICATION);
+
+
+
+//	}
+
+	_renderModule->SetLightPassData(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
 	
 
 	_renderModule->SetShaderStage(Renderer::RenderModule::LIGHT_PASS);
-
-
-	/*for (all pointlights)
-	{
-		generate cubic shadowmap
-		render to accumulation buffer with cubic shadowmap
-	}
-
-	for (all directional lights)
-	{
-		generate shadowmap
-		render to accumulation buffer with shadowmap
-	}*/
 
 	_renderModule->RenderLightQuad();
 	_renderModule->EndScene();
@@ -208,7 +209,7 @@ int Game::Run()
 	//_objectHandler->Add(TRAP, 0, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
 
 	//_objectHandler->Add(TRAP, 0, XMFLOAT3(0.5f, -1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
-	_objectHandler->LoadLevel(4);
+	_objectHandler->LoadLevel(5);
 
 	_objectHandler->InitPathfinding();
 

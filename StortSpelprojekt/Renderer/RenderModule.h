@@ -33,8 +33,15 @@ namespace Renderer
 			DirectX::XMMATRIX projectionMatrix;
 		};
 
+		struct MatrixBufferLightPass
+		{
+			DirectX::XMMATRIX invertedView;
+			DirectX::XMMATRIX invertedProjection;
+		};
+
 		ID3D11Buffer* _matrixBufferPerObject;
 		ID3D11Buffer* _matrixBufferPerFrame;
+		ID3D11Buffer* _matrixBufferLightPass;
 
 		DirectXHandler* _d3d;
 		ShaderHandler* _shaderHandler;
@@ -54,7 +61,7 @@ namespace Renderer
 
 	public:
 
-		enum ShaderStage { GEO_PASS, LIGHT_PASS, LIGHT_ACCUMULATION_PASS };
+		enum ShaderStage { GEO_PASS, LIGHT_PASS, SHADOW_GENERATION, LIGHT_APPLICATION };
 
 		RenderModule(HWND hwnd, int screenWidth, int screenHeight);
 		~RenderModule();
@@ -62,7 +69,8 @@ namespace Renderer
 		void ResizeResources(HWND hwnd, int windowWidth, int windowHeight);
 
 		void SetDataPerFrame(DirectX::XMMATRIX* view, DirectX::XMMATRIX* projection);
-		void SetShadowMapDataPerLight(DirectX::XMMATRIX* lightView, DirectX::XMMATRIX* lightProjection);
+		void SetShadowMapDataPerSpotLight(DirectX::XMMATRIX* lightView, DirectX::XMMATRIX* lightProjection);
+		void SetLightPassData(DirectX::XMMATRIX* camView, DirectX::XMMATRIX* camProjection);
 
 		void SetShaderStage(ShaderStage stage);
 

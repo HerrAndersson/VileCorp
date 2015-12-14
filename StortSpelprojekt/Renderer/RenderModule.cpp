@@ -57,7 +57,7 @@ namespace Renderer
 
 		InitializeConstantBuffers();
 
-		_shadowMap = new ShadowMap(_d3d->GetDevice(), 2048);
+		_shadowMap = new ShadowMap(_d3d->GetDevice(), 256);
 	}
 
 	RenderModule::~RenderModule()
@@ -94,6 +94,13 @@ namespace Renderer
 		if (FAILED(result))
 		{
 			throw std::runtime_error("RenderModule::InitializeConstantBuffers: Failed to create MatrixBufferPerFrame");
+		}
+
+		matrixBufferDesc.ByteWidth = sizeof(MatrixBufferLightPass);
+		result = device->CreateBuffer(&matrixBufferDesc, NULL, &_matrixBufferLightPass);
+		if (FAILED(result))
+		{
+			throw std::runtime_error("RenderModule::InitializeConstantBuffers: Failed to create MatrixBufferLightPass");
 		}
 	}
 
@@ -171,7 +178,7 @@ namespace Renderer
 		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	}
 
-	void RenderModule::SetShadowMapDataPerLight(DirectX::XMMATRIX* lightView, DirectX::XMMATRIX* lightProjection)
+	void RenderModule::SetShadowMapDataPerSpotLight(DirectX::XMMATRIX* lightView, DirectX::XMMATRIX* lightProjection)
 	{
 		_shadowMap->SetDataPerFrame(_d3d->GetDeviceContext(), lightView, lightProjection);
 	}
@@ -201,6 +208,35 @@ namespace Renderer
 		}
 	}
 
+	void RenderModule::SetLightPassData(XMMATRIX* camView, XMMATRIX* camProjection)
+	{
+		HRESULT result;
+		D3D11_MAPPED_SUBRESOURCE mappedResource;
+		MatrixBufferLightPass* dataPtr;
+		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
+
+		//View,Projection
+		XMMATRIX invView, invProj;
+
+		invView = XMMatrixTranspose(XMMatrixInverse(nullptr, *camView));
+		invProj = XMMatrixTranspose(XMMatrixInverse(nullptr, *camProjection));
+
+		result = deviceContext->Map(_matrixBufferPerFrame, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+		if (FAILED(result))
+		{
+			throw std::runtime_error("RenderModule::SetDataPerFrame: Failed to Map _matrixBufferPerFrame");
+		}
+
+		dataPtr = (MatrixBufferLightPass*)mappedResource.pData;
+
+		dataPtr->invertedView;
+		dataPtr->invertedProjection = invProj;
+
+		deviceContext->Unmap(_matrixBufferPerFrame, 0);
+
+		deviceContext->VSSetConstantBuffers(0, 1, &_matrixBufferLightPass);
+	}
+
 	void RenderModule::SetShaderStage(ShaderStage stage)
 	{
 		switch(stage)
@@ -219,7 +255,7 @@ namespace Renderer
 			_d3d->GetDeviceContext()->PSSetShaderResources(nrOfSRVs, 1, &shadowMapSRV);
 			break;
 		}
-		case LIGHT_ACCUMULATION_PASS:
+		case SHADOW_GENERATION:
 		{
 			_shadowMap->ActivateShadowRendering(_d3d->GetDeviceContext());
 			_shaderHandler->SetShadowPassShaders(_d3d->GetDeviceContext());
