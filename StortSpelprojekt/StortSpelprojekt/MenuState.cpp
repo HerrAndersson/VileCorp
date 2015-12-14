@@ -25,8 +25,8 @@ void MenuState::Update(float deltaTime)
 void MenuState::OnStateEnter()
 {
 	_uiHandler->AddCustomFont(L"../../Output/Bin/x86/Debug/Assets/Fonts/Calibri.ttf", L"Calibri", XMFLOAT2(0, 0), 32.0f, 0xff0099ff, L"Continue");
-	_uiHandler->Add2DTexture("floor.png", DirectX::XMFLOAT2(-0.8f, -0.8f), DirectX::XMFLOAT2(0.2f, 0.2f));
-	_uiHandler->AddButton("floor.png", DirectX::XMFLOAT2(0.8f, -0.8f), DirectX::XMFLOAT2(0.2f, 0.2f));
+	//_uiHandler->Add2DTexture("floor.png", DirectX::XMFLOAT2(-0.8f, -0.8f), DirectX::XMFLOAT2(0.2f, 0.2f));
+	//_uiHandler->AddButton("floor.png", DirectX::XMFLOAT2(0.8f, -0.8f), DirectX::XMFLOAT2(0.2f, 0.2f));
 	
 	/*
 	_uiHandler->AddCustomFont(L"../../Output/Bin/x86/Debug/Assets/Fonts/Calibri.ttf", L"Calibri", XMFLOAT2(0, 100), 32.0f, 0xff0099ff, L"Start");
