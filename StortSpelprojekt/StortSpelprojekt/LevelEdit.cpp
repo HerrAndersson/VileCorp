@@ -24,7 +24,7 @@ void LevelEdit::Initialize(InitVar* initVar)
 	_lastSelected = 0;
 	_tileMultiplier = 1;
 
-	_objectHandler->LoadLevel(3);
+	_objectHandler->LoadLevel(0);
 
 	//_grid = new Grid(_renderModule->GetDevice(), 1, 10);
 }
@@ -227,24 +227,39 @@ void LevelEdit::HandleInput()
 	//tempAddObj
 
 	//R Adds Floor
-	if (_inputHandler->IsPressed(0x52))
+	if (_inputHandler->IsPressed(System::Input::R))
 	{
 			_objectHandler->Add(FLOOR, FLOOR, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));	
 			_selectedObj = _objectHandler->GetSize()-1;
 	}
 
 	//T adds Wall
-	if (_inputHandler->IsPressed(0x54))
+	if (_inputHandler->IsPressed(System::Input::T))
 	{
 			_objectHandler->Add(WALL, WALL, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
 			_selectedObj = _objectHandler->GetSize() - 1;
 	}
 
 	//Y adds Unit
-	if (_inputHandler->IsPressed(0x59))
+	if (_inputHandler->IsPressed(System::Input::Y))
 	{
 			_objectHandler->Add(UNIT, UNIT, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
 			_selectedObj = _objectHandler->GetSize() - 1;
+	}
+
+	//U adds Goal
+	if (_inputHandler->IsPressed(System::Input::U))
+	{
+		_objectHandler->Add(LOOT, LOOT, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
+		_selectedObj = _objectHandler->GetSize() - 1;
+	}
+
+	//I adds ENTRY
+	if (_inputHandler->IsPressed(System::Input::I))
+	{
+		//TODO: Add ENTRY to enum list
+		//_objectHandler->Add(ENTRY, ENTRY, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
+		//_selectedObj = _objectHandler->GetSize() - 1;
 	}
 
 
