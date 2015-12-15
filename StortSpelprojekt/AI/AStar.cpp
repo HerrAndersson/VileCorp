@@ -64,6 +64,9 @@ namespace AI
 		_grid = nullptr;
 	}
 
+	/*
+		Sets grid size, start- and goal positions and heuristic used for the pathfinding algorithm
+	*/
 	AStar::AStar(int width, int height, Vec2D start, Vec2D goal, Heuristic heuristic, int hWeight)
 	{
 		_pathLength = 0;
@@ -72,6 +75,34 @@ namespace AI
 		_height = height;
 		_start = start;
 		_goal = goal;
+		_heuristicType = heuristic;
+		_hWeight = hWeight;
+		_openQueue = Heap<Node>();
+		_grid = new Node*[_width];
+		for (__int16 i = 0; i < _width; i++)
+		{
+			_grid[i] = new Node[_height];
+			for (__int16 j = 0; j < _height; j++)
+			{
+				_grid[i][j] = Node(i, j);
+				_grid[i][j]._open = 0;
+				//CalculateHCost({i,j});
+			}
+		}
+	}
+
+
+	/*
+		Sets grid size and heuristic used for the pathfinding algorithm
+	*/
+	AStar::AStar(int width, int height, Heuristic heuristic, int hWeight)
+	{
+		_pathLength = 0;
+		_path = nullptr;
+		_width = width;
+		_height = height;
+		_start = {0,0};
+		_goal = {0,0};
 		_heuristicType = heuristic;
 		_hWeight = hWeight;
 		_openQueue = Heap<Node>();
@@ -168,6 +199,16 @@ namespace AI
 	}
 
 	/*
+		Make Everything ready for the algorithm to run
+	*/
+	void AStar::Init(Vec2D start, Vec2D goal)
+	{
+		CleanMap();
+		SetStartPosition(start);
+		SetGoalPosition(goal);
+	}
+
+	/*
 	Runs the actual A* algorithm.
 	TODO: Return the path as a sorted list
 	--Victor
@@ -187,8 +228,8 @@ namespace AI
 			for (int i = 0; i < 8 && (_heuristicType != MANHATTAN || i < 4); i++)		//Manhattan skips diagonals 
 			{
 				Vec2D checkedPos = currentPos + NEIGHBOUR_OFFSETS[i];
-				if (IsPositionValid(checkedPos) && _grid[checkedPos._x][checkedPos._y]._open != 2 && _grid[checkedPos._x][checkedPos._y]._tileCost >= 0 &&	 //checks for borders and already visited
-					_grid[checkedPos._x][currentPos._y]._tileCost >= 0 && _grid[currentPos._x][checkedPos._y]._tileCost >= 0)								//checks for corners
+				if (IsPositionValid(checkedPos) && _grid[checkedPos._x][checkedPos._y]._open != 2 && _grid[checkedPos._x][checkedPos._y]._tileCost > 0 &&	 //checks for borders and already visited
+					_grid[checkedPos._x][currentPos._y]._tileCost > 0 && _grid[currentPos._x][checkedPos._y]._tileCost > 0)								//checks for corners
 				{
 					CalculateHCost(checkedPos);											//As the program works now, h must be calculated before g.
 					CalculateGCost(currentPos, checkedPos);

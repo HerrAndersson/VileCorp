@@ -20,14 +20,21 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Architecture.cpp" />
+<<<<<<< HEAD
+=======
+    <ClCompile Include="BaseState.cpp" />
     <ClCompile Include="Enemy.cpp" />
+>>>>>>> origin/T2-15-Guards-and-intruders
     <ClCompile Include="FontInfo.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameLogic.cpp" />
     <ClCompile Include="GameObject.cpp" />
-    <ClCompile Include="Guard.cpp" />
+<<<<<<< HEAD
     <ClCompile Include="Grid.cpp" />
     <ClCompile Include="LevelEdit.cpp" />
+=======
+    <ClCompile Include="Guard.cpp" />
+>>>>>>> origin/T2-15-Guards-and-intruders
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ObjectHandler.cpp" />
     <ClCompile Include="StateMachine\BaseState.cpp" />
@@ -45,14 +52,23 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Architecture.h" />
+<<<<<<< HEAD
+=======
+    <ClInclude Include="BaseState.h" />
     <ClInclude Include="Enemy.h" />
+>>>>>>> origin/T2-15-Guards-and-intruders
     <ClInclude Include="FontInfo.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameLogic.h" />
     <ClInclude Include="GameObject.h" />
+<<<<<<< HEAD
     <ClInclude Include="Grid.h" />
-    <ClInclude Include="Guard.h" />
     <ClInclude Include="LevelEdit.h" />
+=======
+    <ClInclude Include="Guard.h" />
+    <ClInclude Include="InitVar.h" />
+    <ClInclude Include="MenuState.h" />
+>>>>>>> origin/T2-15-Guards-and-intruders
     <ClInclude Include="ObjectHandler.h" />
     <ClInclude Include="StateMachine\BaseState.h" />
     <ClInclude Include="StateMachine\InitVar.h" />

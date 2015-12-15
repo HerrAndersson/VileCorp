@@ -12,8 +12,8 @@ ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager)
 
 ObjectHandler::~ObjectHandler()
 {
-	Release();
 	delete _tilemap;
+	Release();
 }
 
 
@@ -37,8 +37,8 @@ GameObject* ObjectHandler::Add(Type type, int renderObjectID, XMFLOAT3 position 
 		_tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
 		break;
 	case UNIT:
-		//TODO Tileposition parameters are temporary
-		object = new Unit(_idCounter++, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(renderObjectID), _tilemap);
+		//Temporary. Enemies and guards should replace units properly
+		object = new Enemy(_idCounter++, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(renderObjectID), _tilemap);
 		_gameObjects.push_back(object);
 		_size++;
 		_tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
@@ -196,7 +196,7 @@ void ObjectHandler::InitPathfinding()
 		{
 			Unit* unit = dynamic_cast<Unit*>(_gameObjects[i]);
 			unit->CheckAllTiles();
-			unit->CalculatePath(unit->getGoal());
+			unit->CalculatePath(unit->GetGoal());
 			unit->Move();
 		}
 	}
@@ -225,6 +225,8 @@ void ObjectHandler::Update()
 
 void ObjectHandler::Release()
 {
+	//_gameObjects[72]->Release();
+	//delete _gameObjects[72];
 	for (int i = 0; i < _size; i++)
 	{
 		_gameObjects[i]->Release();

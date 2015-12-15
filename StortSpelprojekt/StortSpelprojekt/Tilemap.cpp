@@ -28,8 +28,7 @@ Tilemap::Tilemap(int width, int height)
 		_height = height;
 		_width = width;
 		_map = new Tile*[_width];
-
-		for (int i = 0; i < _width; i++)
+ 		for (int i = 0; i < _width; i++)
 		{
 			_map[i] = new Tile[_height];
 
@@ -190,6 +189,11 @@ GameObject* Tilemap::GetObjectOnTile(int x, int z, int index) const
 	return _map[x][z]._objectsOnTile[index];
 }
 
+bool Tilemap::IsTileEmpty(int x, int z) const
+{
+	return IsValid(x, z) && _map[x][z]._objectsOnTile[0] == nullptr;
+}
+
 bool Tilemap::IsWallOnTile(int x, int z) const
 {
 	if (!IsValid(x, z) || _map[x][z]._objectsOnTile[0] == nullptr)
@@ -270,3 +274,9 @@ bool Tilemap::IsTypeOnTile(int x, int z, Type type) const
 	}
 	return false;
 }
+
+bool Tilemap::IsTileVisible(int x, int z) const
+{
+	return _map[x][z]._isVisible;
+}
+
