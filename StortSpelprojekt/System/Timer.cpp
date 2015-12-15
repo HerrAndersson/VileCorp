@@ -41,6 +41,7 @@ namespace System
 			gameTime = 0;
 	}
 
+	// Seconds
 	double Timer::GetFrameTime()
 	{
 		return frameTime;

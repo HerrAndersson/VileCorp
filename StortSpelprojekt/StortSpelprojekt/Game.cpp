@@ -187,14 +187,14 @@ int Game::Run()
 
 
 	_objectHandler->InitPathfinding();
-
+	_timer.Reset();
 	while (_window->Run())
 	{
 		_timer.Update();
 		if (_timer.GetFrameTime() >= MS_PER_FRAME)
 		{
 			HandleInput();
-			Update(deltaTime);
+			Update(_timer.GetFrameTime());
 			Render();
 			_timer.Reset();
 		}

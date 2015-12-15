@@ -34,15 +34,16 @@ struct VS_OUT
 VS_OUT main(VS_IN input)
 {
 	VS_OUT output = (VS_OUT)0;
-
-	float4 animPos = float4(input.pos, 1.0f);
-	float4 animNormal = float4(input.normal, 1.0f);
+	
+	float4 inputPos = float4(input.pos, 1.0f);
+	float4 animPos;
+	float4 animNormal = float4(input.normal, 0.0f);
 
 	// Calculating the new position for every vertex based on the bones matrices
-	animPos =	mul(animPos, bones[input.boneIndex.x]) * input.boneWeight.x;
-	animPos +=	mul(animPos, bones[input.boneIndex.y]) * input.boneWeight.y;
-	animPos +=	mul(animPos, bones[input.boneIndex.z]) * input.boneWeight.z;
-	animPos +=	mul(animPos, bones[input.boneIndex.w]) * input.boneWeight.w;
+	animPos = mul(inputPos, bones[input.boneIndex.y]) * input.boneWeight.y;
+	animPos += mul(inputPos, bones[input.boneIndex.x]) * input.boneWeight.x;
+	animPos += mul(inputPos, bones[input.boneIndex.z]) * input.boneWeight.z;
+	animPos += mul(inputPos, bones[input.boneIndex.w]) * input.boneWeight.w;
 
 	animNormal = mul(animNormal, bones[input.boneIndex.x]) * input.boneWeight.x;
 	animNormal += mul(animNormal, bones[input.boneIndex.y]) * input.boneWeight.y;

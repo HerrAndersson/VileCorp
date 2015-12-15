@@ -238,13 +238,13 @@ void ObjectHandler::Update(float deltaTime)
 
 	for (GameObject* gameObject : _animatedGameObjects)
 	{
-		//gameObject->GetAnimation()->Update(deltaTime);
+		gameObject->GetAnimation()->Update(deltaTime / 1000.0f);
 	}
 }
 
 void ObjectHandler::Release()
 {
-	for (int i = 0; i < _size; i++)
+	for (int i = 0; i < _size; i++) 
 	{
 		_gameObjects[i]->Release();
 		delete _gameObjects[i];
