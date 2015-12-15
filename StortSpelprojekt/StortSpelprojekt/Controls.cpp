@@ -126,7 +126,7 @@ namespace System
 						}
 						else if (key.length() == 1) //Map the key directly to the ascii code
 						{
-							mainKey = (int)key[0];
+							mainKey = key[0];
 							if (!(mainKey >= '0' && mainKey <= '9' ||
 								mainKey >= 'A' && mainKey <= 'Z'))
 							{

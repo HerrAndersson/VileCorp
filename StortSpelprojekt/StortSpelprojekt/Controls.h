@@ -15,8 +15,8 @@ namespace System
 	{
 		struct Key
 		{
-			int mainKey;
-			int keyModifier;
+			char mainKey;
+			char keyModifier;
 		};
 		enum KeyModifiers
 		{
