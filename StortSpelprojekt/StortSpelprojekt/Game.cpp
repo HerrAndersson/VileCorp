@@ -157,11 +157,16 @@ void Game::Render()
 	//	_renderModule->Render(&renderList.modelMatrices[j], renderList._renderObject);
 	//}
 	
-	std::vector<GameObject*>* gameObjects = _objectHandler->GetGameObjects();
-	for (auto i : *gameObjects)
+	std::vector<std::vector<GameObject*>>* gameObjects = _objectHandler->GetGameObjects();
+
+	for (int i = 0; i < NR_OF_TYPES; i++)
 	{
-		_renderModule->Render(&i->GetMatrix(), i->GetRenderObject());
+		for (GameObject* g : gameObjects->at(i))
+		{
+			_renderModule->Render(&(g->GetMatrix()), g->GetRenderObject());
+		}
 	}
+
 
 	_renderModule->SetShaderStage(Renderer::RenderModule::LIGHT_PASS);
 	_renderModule->RenderLightQuad();

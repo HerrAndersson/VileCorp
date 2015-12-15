@@ -12,7 +12,7 @@ If the object doesn't need a _renderObject, set it to nullptr.
 If the object has a renderObject but is out of sight _visibility will be false.
 */
 
-enum Type {UNIT, FLOOR, WALL, LOOT, TRAP, TRIGGER };
+enum Type {UNIT, FLOOR, WALL, LOOT, TRAP, TRIGGER, NR_OF_TYPES/*Has to be last*/ };
 
 class GameObject
 {
