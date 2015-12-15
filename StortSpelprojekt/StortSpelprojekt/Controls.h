@@ -20,10 +20,11 @@ namespace System
 		};
 		enum KeyModifiers
 		{
-			MODIFIER_NONE	= 0x0,
-			MODIFIER_CTRL	= 0x1,
-			MODIFIER_ALT	= 0x2,
-			MODIFIER_SHIFT	= 0x4,
+			NONE	= 0x0,
+			CTRL	= 0x1,
+			ALT		= 0x2,
+			SHIFT	= 0x4,
+			REPEAT	= 0x8
 		};
 
 	private:
