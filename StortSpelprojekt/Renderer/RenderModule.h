@@ -66,7 +66,7 @@ namespace Renderer
 		void BeginScene(float red, float green, float blue, float alpha);
 		void Render(DirectX::XMMATRIX* world, RenderObject* renderObject);
 		void Render(std::vector<HUDElement>* imageData);
-		void RenderLineList(DirectX::XMMATRIX* world, ID3D11Buffer* lineList, int nrOfPoints, DirectX::XMFLOAT3 color);
+		void RenderLineList(DirectX::XMMATRIX* world, ID3D11Buffer* lineList, int nrOfPoints);
 		void RenderLightQuad();
 		void EndScene();
 

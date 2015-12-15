@@ -72,3 +72,8 @@ void StateMachine::ProcessStateRequest()
 		_baseStates[_currentState]->OnStateEnter();
 	}
 }
+
+State StateMachine::GetState() 
+{
+	return _currentState;
+}

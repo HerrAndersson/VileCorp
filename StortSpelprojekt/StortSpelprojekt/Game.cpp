@@ -31,6 +31,12 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	initVar._inputHandler = _input;
 	initVar._camera = _camera;
 	_SM = new StateMachine(initVar);	initVar._inputHandler = _input;
+
+	_SM->Update(_timer.GetFrameTime());
+	if (_SM->GetState() == LEVELEDITSTATE)
+	{
+		_grid = new Grid(_renderModule->GetDevice(), 1, 10);
+	}
 }
 
 Game::~Game() 
@@ -43,6 +49,7 @@ Game::~Game()
 	delete _SM;
 	delete _input;
 	delete _assetManager;
+	delete _grid;
 }
 
 void Game::ResizeResources(System::WindowSettings settings)
@@ -93,6 +100,8 @@ void Game::Update(float deltaTime)
 	_UI->Update();
 	_UI->OnResize(_window->GetWindowSettings());
 	_SM->Update(deltaTime);
+
+
 }
 
 void Game::Render()
@@ -105,6 +114,18 @@ void Game::Render()
 	for (auto i : *gameObjects)
 	{
 		_renderModule->Render(&i->GetMatrix(), i->GetRenderObject());
+	}
+
+	if (_SM->GetState() == LEVELEDITSTATE)
+	{
+		_renderModule->SetShaderStage(Renderer::RenderModule::GRID_PASS);
+
+		std::vector<DirectX::XMMATRIX>* gridMatrices = _grid->GetGridMatrices();
+
+		for (auto &matrix : *gridMatrices)
+		{
+			_renderModule->RenderLineList(&matrix, _grid->GetLineBuffer(), 2);
+		}
 	}
 
 	_renderModule->SetShaderStage(Renderer::RenderModule::LIGHT_PASS);

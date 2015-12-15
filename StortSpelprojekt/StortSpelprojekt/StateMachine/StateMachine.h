@@ -23,4 +23,5 @@ public:
 	~StateMachine();
 
 	void Update(float deltaTime);
+	State GetState();
 };

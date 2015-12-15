@@ -276,13 +276,18 @@ namespace Renderer
 		}
 	}
 
-	void RenderModule::RenderLineList(DirectX::XMMATRIX* world, ID3D11Buffer* lineList, int nrOfPoints, DirectX::XMFLOAT3 color)
+	void RenderModule::RenderLineList(DirectX::XMMATRIX* world, ID3D11Buffer* lineList, int nrOfPoints)
 	{
 		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
 
 		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
 
-		SetResourcesPerObject(world, nullptr, nullptr);
+		//World
+		XMMATRIX worldMatrix = *world;
+
+		worldMatrix = XMMatrixTranspose(worldMatrix);
+
+		SetResourcesPerObject(&worldMatrix, nullptr, nullptr);
 
 		int pointSize = sizeof(XMFLOAT3);
 

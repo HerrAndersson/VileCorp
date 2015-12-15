@@ -14,7 +14,7 @@ struct VS_OUT
 
 float4 main(VS_OUT input) : SV_TARGET
 {
-	input.color = float4(0.0, 0.0, 0.0, 1.0);
+	input.color = float4(1.0, 1.0, 1.0, 1.0);
 
 	return input.color;
 }
