@@ -193,11 +193,9 @@ void Game::Render()
 
 //	}
 
-	_renderModule->SetLightPassData(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
-	
 
 	_renderModule->SetShaderStage(Renderer::RenderModule::LIGHT_PASS);
-
+	_renderModule->SetLightPassData(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
 	_renderModule->RenderLightQuad();
 	_renderModule->EndScene();
 }
@@ -212,6 +210,9 @@ int Game::Run()
 	_objectHandler->LoadLevel(5);
 
 	_objectHandler->InitPathfinding();
+
+	//int s = 10;
+	//SystemParametersInfo(SPI_SETMOUSESPEED, 0, (LPVOID)s, 0);
 
 	while (_window->Run())
 	{
