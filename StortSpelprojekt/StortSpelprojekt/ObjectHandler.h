@@ -49,7 +49,7 @@ public:
 	int GetSize() const;
 
 	//Add a gameobject
-	GameObject* Add(Type type, int renderObjectID, XMFLOAT3 position, XMFLOAT3 rotation);
+	bool Add(Type type, int renderObjectID, XMFLOAT3 position, XMFLOAT3 rotation);
 	bool Remove(short ID);
 	void Clear();
 	

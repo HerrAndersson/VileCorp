@@ -47,6 +47,10 @@ public:
 	void SetRotation(const DirectX::XMFLOAT3& rotation);
 	void SetScale(const DirectX::XMFLOAT3& scale);
 
+	void Translate(const DirectX::XMFLOAT3& offset);
+	void Scale(const DirectX::XMFLOAT3& scale);
+	void Rotate(const DirectX::XMFLOAT3& rotate);
+
 	AI::Vec2D GetTilePosition()const;
 	void SetTilePosition(AI::Vec2D pos);
 	Type GetType() const;

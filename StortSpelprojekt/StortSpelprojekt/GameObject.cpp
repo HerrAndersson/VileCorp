@@ -82,6 +82,27 @@ void GameObject::SetScale(const DirectX::XMFLOAT3 & scale)
 	CalculateMatrix();
 }
 
+void GameObject::Translate(const DirectX::XMFLOAT3 & offset)
+{
+	_position.x += offset.x;
+	_position.y += offset.y;
+	_position.z += offset.z;
+}
+
+void GameObject::Scale(const DirectX::XMFLOAT3& scale)
+{
+	_scale.x += scale.x;
+	_scale.y += scale.y;
+	_scale.z += scale.z;
+}
+
+void GameObject::Rotate(const DirectX::XMFLOAT3& rotate)
+{
+	_rotation.x = rotate.x;
+	_rotation.y = rotate.y;
+	_rotation.z = rotate.z;
+}
+
 AI::Vec2D GameObject::GetTilePosition() const
 {
 	return _tilePosition;

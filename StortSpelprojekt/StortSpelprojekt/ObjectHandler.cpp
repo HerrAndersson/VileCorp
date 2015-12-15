@@ -22,9 +22,10 @@ int ObjectHandler::GetSize() const
 	return _size;
 }
 
-GameObject* ObjectHandler::Add(Type type, int renderObjectID, XMFLOAT3 position = XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3 rotation = XMFLOAT3(0.0f, 0.0f, 0.0f))
+bool ObjectHandler::Add(Type type, int renderObjectID, XMFLOAT3 position = XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3 rotation = XMFLOAT3(0.0f, 0.0f, 0.0f))
 {
 	GameObject* object = nullptr;
+	bool addedObject = false;
 
 	switch (type)
 	{
@@ -32,35 +33,32 @@ GameObject* ObjectHandler::Add(Type type, int renderObjectID, XMFLOAT3 position 
 	case WALL:
 	case LOOT:
 		object = new Architecture(_idCounter++, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(renderObjectID));
-		_gameObjects.push_back(object);
-		_size++;
-		_tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
+		addedObject = _tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
 		break;
 	case UNIT:
 		//Temporary. Enemies and guards should replace units properly
 		object = new Enemy(_idCounter++, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(renderObjectID), _tilemap);
-		_gameObjects.push_back(object);
-		_size++;
-		_tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
+		addedObject = _tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
 		break;
 	case TRAP:
 		object = new Trap(_idCounter++, position, rotation, AI::Vec2D(1,1), type, _assetManager->GetRenderObject(renderObjectID));
-		_gameObjects.push_back(object);
-		_size++;
-		_tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
+		addedObject = _tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
 		break;
 	case TRIGGER:
 		object = new Trigger(_idCounter++, position, rotation, AI::Vec2D(1,1), type, _assetManager->GetRenderObject(renderObjectID));
-		_gameObjects.push_back(object);
-		_size++;
-		_tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
+		addedObject = _tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
 		break;
 	default:
-		
 		break;
 	}
 
-	return object;
+	if (addedObject == true)
+	{
+		_gameObjects.push_back(object);
+		_size++;
+	}
+
+	return addedObject;
 }
 
 bool ObjectHandler::Remove(short ID)

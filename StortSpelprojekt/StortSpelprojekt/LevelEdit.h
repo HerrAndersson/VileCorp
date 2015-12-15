@@ -7,6 +7,7 @@
 #include "InputDevice.h"
 #include "StateMachine/InitVar.h"
 #include "Grid.h"
+#include "AStar.h"
 
 class LevelEdit
 {
@@ -16,6 +17,8 @@ private:
 	System::InputDevice*	_inputHandler;
 	System::Camera*			_camera;
 	Grid*					_grid;
+	AI::AStar*				_aStar;
+	Tilemap*				_tileMap;
 
 
 	struct LevelHeader
@@ -37,20 +40,23 @@ private:
 	XMFLOAT3 _lastObjPosition = XMFLOAT3(0.0, 0.0, 0.0);
 
 	//temps
-	int _selectedObj;
+	GameObject* _selectedObj;
+	GameObject* _lastSelected;
 	int _tileMultiplier;
 
-	int _lastSelected;
+	int _tilemapHeight, _tilemapWidth;
 
 
 	void HandleInput();
 	void HandleSelected();
-	void LoadLevel();
+	void LoadLevel(int levelID);
 	void InitNewLevel();
 	void ResetSelectedObj();
 	void DeleteObject();
 
 	void ExportLevel();
+
+	void MoveSelectedObject();
 
 public:
 	LevelEdit();
