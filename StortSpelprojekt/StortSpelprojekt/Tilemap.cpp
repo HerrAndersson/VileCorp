@@ -28,8 +28,7 @@ Tilemap::Tilemap(int width, int height)
 		_height = height;
 		_width = width;
 		_map = new Tile*[_width];
-		int tilesize = sizeof(Tile);
-		for (int i = 0; i < _width; i++)
+ 		for (int i = 0; i < _width; i++)
 		{
 			_map[i] = new Tile[_height];
 

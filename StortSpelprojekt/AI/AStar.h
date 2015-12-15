@@ -88,6 +88,7 @@ namespace AI
 	public:
 		AStar();
 		AStar(int width, int height, Vec2D start, Vec2D goal, Heuristic heuristic = MANHATTAN, int hWeight = 1);
+		AStar(int width, int height, Heuristic heuristic = MANHATTAN, int hWeight = 1);
 		virtual ~AStar();
 		void SetTileCost(Vec2D pos, int cost = 1);
 		void SetStartPosition(Vec2D pos);
@@ -96,6 +97,7 @@ namespace AI
 		int GetPathLength() const;
 		float GetHeuristicDistance(Vec2D start, Vec2D goal) const;
 		void CleanMap();
+		void Init(Vec2D start, Vec2D goal);
 		bool FindPath();
 	};
 
