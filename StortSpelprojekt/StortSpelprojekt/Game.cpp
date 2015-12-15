@@ -34,11 +34,11 @@ Game::~Game()
 	delete _window;
 	delete _renderModule;
 	delete _camera;
-	delete _objectHandler;
 	delete _UI;
 	delete _SM;
 	delete _input;
 	delete _assetManager;
+	delete _objectHandler;
 }
 void Game::ResizeResources(System::WindowSettings settings)
 {

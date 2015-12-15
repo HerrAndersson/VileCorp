@@ -36,3 +36,6 @@ void Guard::EvaluateTile(Type objective, AI::Vec2D tile)
 
 void Guard::act(Type obj)
 {}
+
+void Guard::Release()
+{}

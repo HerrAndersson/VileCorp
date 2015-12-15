@@ -16,6 +16,8 @@ namespace AI
 			_x = x;
 			_y = y;
 		}
+		~Vec2D()
+		{}
 		bool operator==(const Vec2D& comp)
 		{
 			return _x == comp._x && _y == comp._y;

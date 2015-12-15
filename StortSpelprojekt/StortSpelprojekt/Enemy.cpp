@@ -9,7 +9,9 @@ Enemy::Enemy(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 ro
 {}
 
 Enemy::~Enemy()
-{}
+{ 
+
+}
 
 void Enemy::EvaluateTile(Type objective, AI::Vec2D tile)
 {
@@ -35,4 +37,7 @@ void Enemy::EvaluateTile(Type objective, AI::Vec2D tile)
 }
 
 void Enemy::act(Type obj)
+{}
+
+void Enemy::Release()
 {}

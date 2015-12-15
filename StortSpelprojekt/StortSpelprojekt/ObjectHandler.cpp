@@ -12,8 +12,8 @@ ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager)
 
 ObjectHandler::~ObjectHandler()
 {
-	Release();
 	delete _tilemap;
+	Release();
 }
 
 
@@ -225,6 +225,8 @@ void ObjectHandler::Update()
 
 void ObjectHandler::Release()
 {
+	//_gameObjects[72]->Release();
+	//delete _gameObjects[72];
 	for (int i = 0; i < _size; i++)
 	{
 		_gameObjects[i]->Release();

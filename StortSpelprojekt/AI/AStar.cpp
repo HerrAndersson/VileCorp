@@ -187,8 +187,8 @@ namespace AI
 			for (int i = 0; i < 8 && (_heuristicType != MANHATTAN || i < 4); i++)		//Manhattan skips diagonals 
 			{
 				Vec2D checkedPos = currentPos + NEIGHBOUR_OFFSETS[i];
-				if (IsPositionValid(checkedPos) && _grid[checkedPos._x][checkedPos._y]._open != 2 && _grid[checkedPos._x][checkedPos._y]._tileCost >= 0 &&	 //checks for borders and already visited
-					_grid[checkedPos._x][currentPos._y]._tileCost >= 0 && _grid[currentPos._x][checkedPos._y]._tileCost >= 0)								//checks for corners
+				if (IsPositionValid(checkedPos) && _grid[checkedPos._x][checkedPos._y]._open != 2 && _grid[checkedPos._x][checkedPos._y]._tileCost > 0 &&	 //checks for borders and already visited
+					_grid[checkedPos._x][currentPos._y]._tileCost > 0 && _grid[currentPos._x][checkedPos._y]._tileCost > 0)								//checks for corners
 				{
 					CalculateHCost(checkedPos);											//As the program works now, h must be calculated before g.
 					CalculateGCost(currentPos, checkedPos);

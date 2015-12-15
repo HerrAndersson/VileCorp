@@ -28,7 +28,7 @@ Tilemap::Tilemap(int width, int height)
 		_height = height;
 		_width = width;
 		_map = new Tile*[_width];
-
+		int tilesize = sizeof(Tile);
 		for (int i = 0; i < _width; i++)
 		{
 			_map[i] = new Tile[_height];
@@ -188,6 +188,11 @@ int Tilemap::GetWidth() const
 GameObject* Tilemap::GetObjectOnTile(int x, int z, int index) const
 {
 	return _map[x][z]._objectsOnTile[index];
+}
+
+bool Tilemap::IsTileEmpty(int x, int z) const
+{
+	return IsValid(x, z) && _map[x][z]._objectsOnTile[0] == nullptr;
 }
 
 bool Tilemap::IsWallOnTile(int x, int z) const

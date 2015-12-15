@@ -440,7 +440,7 @@ Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 {
 	_goalPriority = -1;
 	_visionRadius = 3;
-	_visibleTiles = new AI::Vec2D[ (2 * _visionRadius) * (2 * _visionRadius)];
+	_visibleTiles = new AI::Vec2D[ (2 * _visionRadius + 1) * (2 * _visionRadius + 1)];
 	_nrOfVisibleTiles = 0;
 	_goalTilePosition = _tilePosition;
 	_tileMap = tileMap;
