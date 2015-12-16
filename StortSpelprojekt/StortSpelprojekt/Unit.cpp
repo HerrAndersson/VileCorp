@@ -8,8 +8,8 @@ void Unit::ScanOctant(int depth, int octant, double &startSlope, double endSlope
 	int visRangeSqrd = _visionRadius * _visionRadius;
 	int x = 0;
 	int y = 0;
-	int unitPosX = this->GetTilePosition()._x;
-	int unitPosY = this->GetTilePosition()._y;
+	int unitPosX = 1;//this->GetTilePosition()._x;
+	int unitPosY = 1;//this->GetTilePosition()._y;
 	
 	bool leftToRight = true;
 	bool rowByRow = true;
@@ -22,13 +22,13 @@ void Unit::ScanOctant(int depth, int octant, double &startSlope, double endSlope
 	switch (octant)
 	{
 	case 1:
-		leftToRight = true;
-		rowByRow = true;
-		endSlopeCompOffset = 1;//Negative of positive offset
-		startSlopeOffset = 1;//Negative or positive offset
-		prevTileVec = AI::Vec2D(-1, 0);//In what direction the previous tile was
-		endCornerVec = AI::Vec2D(-1, -1);//Is multiplied with 0.5
-		startCornerVec = AI::Vec2D(-1, 1);//Is multiplied with 0.5
+		leftToRight			= true;
+		rowByRow			= true;
+		endSlopeCompOffset	= 1;//Negative of positive offset
+		startSlopeOffset	= 1;//Negative or positive offset
+		prevTileVec			= AI::Vec2D(-1, 0);//In what direction the previous tile was
+		endCornerVec		= AI::Vec2D(-1, -1);//Is multiplied with 0.5
+		startCornerVec		= AI::Vec2D(-1, 1);//Is multiplied with 0.5
 
 		y = unitPosY + depth;
 		if (y < 0)
@@ -44,13 +44,13 @@ void Unit::ScanOctant(int depth, int octant, double &startSlope, double endSlope
 		break;
 
 	case 2:
-		leftToRight = false;
-		rowByRow = true;
-		endSlopeCompOffset = -1;
-		startSlopeOffset = -1;
-		prevTileVec = AI::Vec2D(1, 0);
-		endCornerVec = AI::Vec2D(1, -1);
-		startCornerVec = AI::Vec2D(1, 1);
+		leftToRight			= false;
+		rowByRow			= true;
+		endSlopeCompOffset	= -1;
+		startSlopeOffset	= -1;
+		prevTileVec			= AI::Vec2D(1, 0);
+		endCornerVec		= AI::Vec2D(1, -1);
+		startCornerVec		= AI::Vec2D(1, 1);
 
 		y = unitPosY + depth;
 		if (y >= _tileMap->GetHeight())
@@ -66,13 +66,13 @@ void Unit::ScanOctant(int depth, int octant, double &startSlope, double endSlope
 		break;
 		
 	case 3:
-		leftToRight = false;
-		rowByRow = false;
-		endSlopeCompOffset = -1;
-		startSlopeOffset = -1;
-		prevTileVec = AI::Vec2D(0, 1);
-		endCornerVec = AI::Vec2D(-1, 1);
-		startCornerVec = AI::Vec2D(1, 1);
+		leftToRight			= false;
+		rowByRow			= false;
+		endSlopeCompOffset	= -1;
+		startSlopeOffset	= -1;
+		prevTileVec			= AI::Vec2D(0, 1);
+		endCornerVec		= AI::Vec2D(-1, 1);
+		startCornerVec		= AI::Vec2D(1, 1);
 
 		x = unitPosX + depth;
 		if (x >= _tileMap->GetWidth())
@@ -88,13 +88,13 @@ void Unit::ScanOctant(int depth, int octant, double &startSlope, double endSlope
 		break;
 
 	case 4:
-		leftToRight = true;
-		rowByRow = false;
-		endSlopeCompOffset = 1;
-		startSlopeOffset = -1;
-		prevTileVec = AI::Vec2D(0, -1);
-		endCornerVec = AI::Vec2D(-1, -1);
-		startCornerVec = AI::Vec2D(1, -1);
+		leftToRight			= true;
+		rowByRow			= false;
+		endSlopeCompOffset	= 1;
+		startSlopeOffset	= -1;
+		prevTileVec			= AI::Vec2D(0, -1);
+		endCornerVec		= AI::Vec2D(-1, -1);
+		startCornerVec		= AI::Vec2D(1, -1);
 
 		x = unitPosX + depth;
 		if (x >= _tileMap->GetWidth())
@@ -111,13 +111,13 @@ void Unit::ScanOctant(int depth, int octant, double &startSlope, double endSlope
 		break;
 
 	case 5:
-		leftToRight = false;
-		rowByRow = true;
-		endSlopeCompOffset = 1;
-		startSlopeOffset = -1;
-		prevTileVec = AI::Vec2D(-1, 0);
-		endCornerVec = AI::Vec2D(1, -1);
-		startCornerVec = AI::Vec2D(-1, -1);
+		leftToRight			= false;
+		rowByRow			= true;
+		endSlopeCompOffset	= 1;
+		startSlopeOffset	= -1;
+		prevTileVec			= AI::Vec2D(-1, 0);
+		endCornerVec		= AI::Vec2D(1, -1);
+		startCornerVec		= AI::Vec2D(-1, -1);
 
 		y = unitPosY - depth;
 		if (y < 0)
@@ -133,13 +133,13 @@ void Unit::ScanOctant(int depth, int octant, double &startSlope, double endSlope
 		break;
 
 	case 6:
-		leftToRight = true;
-		rowByRow = true;
-		endSlopeCompOffset = -1;
-		startSlopeOffset = -1;
-		prevTileVec = AI::Vec2D(-1, 0);
-		endCornerVec = AI::Vec2D(1, -1);
-		startCornerVec = AI::Vec2D(-1, -1);
+		leftToRight			= true;
+		rowByRow			= true;
+		endSlopeCompOffset	= -1;
+		startSlopeOffset	= -1;
+		prevTileVec			= AI::Vec2D(-1, 0);
+		endCornerVec		= AI::Vec2D(1, -1);
+		startCornerVec		= AI::Vec2D(-1, -1);
 
 		y = unitPosY - depth;
 		if (y < 0)
@@ -155,13 +155,13 @@ void Unit::ScanOctant(int depth, int octant, double &startSlope, double endSlope
 		break;
 
 	case 7:
-		leftToRight = true;
-		rowByRow = false;
-		endSlopeCompOffset = -1;
-		startSlopeOffset = -1;
-		prevTileVec = AI::Vec2D(0, -1);
-		endCornerVec = AI::Vec2D(1, -1);
-		startCornerVec = AI::Vec2D(-1, -1);
+		leftToRight			= true;
+		rowByRow			= false;
+		endSlopeCompOffset	= -1;
+		startSlopeOffset	= -1;
+		prevTileVec			= AI::Vec2D(0, -1);
+		endCornerVec		= AI::Vec2D(1, -1);
+		startCornerVec		= AI::Vec2D(-1, -1);
 
 		x = unitPosX - depth;
 		if (x < 0)
@@ -177,13 +177,13 @@ void Unit::ScanOctant(int depth, int octant, double &startSlope, double endSlope
 		break;
 
 	case 8:
-		leftToRight = false;
-		rowByRow = false;
-		endSlopeCompOffset = 1;
-		startSlopeOffset = 1;
-		prevTileVec = AI::Vec2D(0, 1);
-		endCornerVec = AI::Vec2D(1, 1);
-		startCornerVec = AI::Vec2D(-1, 1);
+		leftToRight			= false;
+		rowByRow			= false;
+		endSlopeCompOffset	= 1;
+		startSlopeOffset	= 1;
+		prevTileVec			= AI::Vec2D(0, 1);
+		endCornerVec		= AI::Vec2D(1, 1);
+		startCornerVec		= AI::Vec2D(-1, 1);
 
 		x = unitPosX - depth;
 		if (x < 0)
@@ -242,35 +242,49 @@ void Unit::ScanOctant(int depth, int octant, double &startSlope, double endSlope
 		if (rowByRow)
 		{
 			if (leftToRight)//If left to right, add to x
+			{
 				x++;
+			}
 			else//Else subtract x
+			{
 				x--;
+			}
 		}
 		else//Else use y 
 		{
 			if (leftToRight)//If left to right, add to y
+			{
 				y++;
+			}
 			else//Else subtract y
+			{
 				y--;
+			}	
 		}
 	}
 	
 	if (rowByRow)//If row by row, use x
 	{
 		if (leftToRight)//If NOT left to right, add to x
+		{
 			x--;
+		}
 		else//Else subtract x
+		{
 			x++;
+		}
 	}
 	else//Else use y
 	{
 		if (leftToRight)//If NOT left to right, add to y
+		{
 			y--;
+		}
 		else//Else subtract y
+		{
 			y++;
+		}
 	}
-
-
 
 	//Set x within tile range if it's outside
 	if (x < 0)
@@ -309,7 +323,6 @@ double Unit::GetSlope(double x1, double y1, double x2, double y2, bool invert)
 	{
 		return -((x1 - x2) / (y1 - y2));
 	}
-
 }
 
 int Unit::GetVisDistance(int x1, int y1, int x2, int y2)
