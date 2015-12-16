@@ -5,8 +5,9 @@
 
 Game::Game(HINSTANCE hInstance, int nCmdShow)
 {
+	_gameHandle = this;
 	System::WindowSettings settings;
-	_window = new System::Window("Amazing game", hInstance, settings);
+	_window = new System::Window("Amazing game", hInstance, settings, WndProc);
 	_renderModule = new Renderer::RenderModule(_window->GetHWND(), settings._width, settings._height);
 	_assetManager = new AssetManager(_renderModule->GetDevice());
 	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager);
@@ -27,6 +28,8 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	initVar._uiHandler = _UI;
 	initVar._inputDevice = _input;
 	_SM = new StateMachine(initVar);
+
+	
 }
 
 Game::~Game() 
@@ -70,6 +73,7 @@ void Game::HandleInput()
 		ResizeResources(settings);
 	}
 
+	/*
 	//Camera mouse control
 	System::MouseCoord mouseCoord = _input->GetMouseCoord();
 	if (mouseCoord._deltaPos.x != 0 || mouseCoord._deltaPos.y != 0)
@@ -112,12 +116,12 @@ void Game::HandleInput()
 		right.z *= -1;
 		isMoving = true;
 	}
-
+	
 	if (isMoving)
 	{
 		_camera->SetPosition(XMFLOAT3(position.x + (forward.x + right.x) * v, position.y + (forward.y + right.y) * v, position.z + (forward.z + right.z) * v));
 	}
-
+	*/
 	
 }
 
@@ -130,7 +134,7 @@ void Game::Update(float deltaTime)
 	vi vill hämta objekten
 
 	*/
-	_input->Update();
+	//
 	_UI->Update();
 	_UI->OnResize(_window->GetWindowSettings());
 	_SM->Update(deltaTime);
@@ -197,4 +201,60 @@ int Game::Run()
 	}
 
 	return 0;
+}
+
+LRESULT CALLBACK Game::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam)
+{
+	return DefWindowProc(hwnd, umsg, wparam, lparam);
+}
+
+
+LRESULT CALLBACK Game::WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
+{
+	switch (umessage)
+	{
+	case WM_QUIT:
+	{
+		PostQuitMessage(0);
+		return 0;
+	}
+	case WM_DESTROY:
+	{
+		PostQuitMessage(0);
+		return 0;
+	}
+	case WM_CLOSE:
+	{
+		PostQuitMessage(0);
+		return 0;
+	}
+	case WM_INPUT:
+	{
+		/*
+		UINT dwSize;
+		UINT asdf = 0;
+		asdf = GetRawInputData((HRAWINPUT)lparam, RID_INPUT, NULL, &dwSize,
+			sizeof(RAWINPUTHEADER));
+		LPBYTE lpb = new BYTE[dwSize];
+		if (lpb == NULL)
+		{
+			return 0;
+		}
+
+		if (GetRawInputData((HRAWINPUT)lparam, RID_INPUT, lpb, &dwSize,
+			sizeof(RAWINPUTHEADER)) != dwSize)
+			OutputDebugString(TEXT("GetRawInputData does not return correct size !\n"));
+
+		RAWINPUT* raw = (RAWINPUT*)lpb;
+		delete[] lpb;
+		return 0;
+		*/
+		_gameHandle->_input->Update(lparam);
+	}
+
+	default:
+	{
+		return _gameHandle->MessageHandler(hwnd, umessage, wparam, lparam);
+	}
+	}
 }
