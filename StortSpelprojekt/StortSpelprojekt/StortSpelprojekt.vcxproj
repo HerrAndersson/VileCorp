@@ -30,7 +30,6 @@
     <ClCompile Include="OptionsState.cpp" />
     <ClCompile Include="PlayState.cpp" />
     <ClCompile Include="SplashState.cpp" />
-    <ClCompile Include="Spotlight.cpp" />
     <ClCompile Include="StateMachine.cpp" />
     <ClCompile Include="Tilemap.cpp" />
     <ClCompile Include="Trap.cpp" />
@@ -50,7 +49,6 @@
     <ClInclude Include="OptionsState.h" />
     <ClInclude Include="PlayState.h" />
     <ClInclude Include="SplashState.h" />
-    <ClInclude Include="Spotlight.h" />
     <ClInclude Include="StateMachine.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Tilemap.h" />

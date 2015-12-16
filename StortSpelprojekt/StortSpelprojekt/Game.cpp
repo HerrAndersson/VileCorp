@@ -28,8 +28,8 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	_input = new System::InputDevice(_window->GetHWND());
 
 	//TEMP!
-	_spotlight = new Spotlight(0.1f, 1000.0f, XM_PIDIV4, 256, 256);
-	_spotlight->SetPositionAndRotation(XMFLOAT3(5, 1, 5), XMFLOAT3(0, 90, 0));
+	_spotlight = new Renderer::Spotlight(0.1f, 1000.0f, XM_PIDIV4, 256, 256, 1.0f, 15.0f, XMFLOAT3(0.0f, 1.0f, 1.0f));
+	_spotlight->SetPositionAndRotation(XMFLOAT3(3, 1, 5), XMFLOAT3(0, 90, 0));
 }
 
 Game::~Game() 
@@ -196,8 +196,12 @@ void Game::Render()
 
 	_renderModule->SetShaderStage(Renderer::RenderModule::LIGHT_PASS);
 	_renderModule->SetLightPassDataPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
-	_renderModule->SetLightPassDataPerLight(_spotlight->GetViewMatrix(), _spotlight->GetProjectionMatrix());
 
+	_renderModule->SetLightPassDataPerLight(_spotlight);
+
+	XMFLOAT3 rot = _spotlight->GetRotation();
+	rot.y -= 2.0f;
+	_spotlight->SetRotation(rot);
 
 	_renderModule->RenderLightQuad();
 	_renderModule->EndScene();

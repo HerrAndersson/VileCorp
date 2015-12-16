@@ -40,7 +40,7 @@ private:
 
 
 	//TEMP!
-	Spotlight* _spotlight;
+	Renderer::Spotlight* _spotlight;
 
 public:
 
