@@ -76,7 +76,8 @@ bool Tilemap::AddObjectToTile(int x, int z, GameObject * obj)
 			_map[x][z]._objectsOnTile[0] = obj;
 			result = true;
 			break;
-		case UNIT:
+		case ENEMY:
+		case GUARD:
 			if (_map[x][z]._objectsOnTile[1] == nullptr)
 			{
 				_map[x][z]._objectsOnTile[1] = obj;
@@ -125,7 +126,8 @@ bool Tilemap::RemoveObjectFromTile(int x, int z, GameObject * obj)
 				result = true;
 			}
 			break;
-		case UNIT:
+		case ENEMY:
+		case GUARD:
 			if (_map[x][z]._objectsOnTile[1] != nullptr && _map[x][z]._objectsOnTile[1]->GetID() == obj->GetID())
 			{
 				_map[x][z]._objectsOnTile[1] = nullptr;
@@ -213,11 +215,11 @@ int Tilemap::UnitsOnTile(int x, int z) const
 		return 0;
 	}
 	int result = 0;
-	if (_map[x][z]._objectsOnTile[1] != nullptr && _map[x][z]._objectsOnTile[1]->GetType() == UNIT)
+	if (_map[x][z]._objectsOnTile[1] != nullptr && _map[x][z]._objectsOnTile[1]->GetType() == GUARD || _map[x][z]._objectsOnTile[1]->GetType() == ENEMY)
 	{
 		result++;
 	}
-	if (_map[x][z]._objectsOnTile[2] != nullptr && _map[x][z]._objectsOnTile[2]->GetType() == UNIT)
+	if (_map[x][z]._objectsOnTile[2] != nullptr && _map[x][z]._objectsOnTile[2]->GetType() == GUARD || _map[x][z]._objectsOnTile[1]->GetType() == ENEMY)
 	{
 		result++;
 	}

@@ -19,18 +19,18 @@ void Enemy::EvaluateTile(Type objective, AI::Vec2D tile)
 	switch (objective)
 	{
 	case LOOT:
+		tempPriority = 2;
 	case GUARD:
 	case TRAP:
-	case TRIGGER:				//Guards don't react to these
+	case TRIGGER:
 		break;
 	case ENEMY:
-		tempPriority = 10;
 		break;
 	default:
 		break;
 	}
 	tempPriority;
-	if (_goalPriority <= 0 || tempPriority * GetApproxDistance(tile) < _goalPriority * GetApproxDistance(GetGoal()))
+	if ( _goalPriority <= 0 || tempPriority * GetApproxDistance(tile) < _goalPriority * GetApproxDistance(GetGoal()))
 	{
 		SetGoal(tile);
 	} 

@@ -36,7 +36,8 @@ GameObject* ObjectHandler::Add(Type type, int renderObjectID, XMFLOAT3 position 
 		_size++;
 		_tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
 		break;
-	case UNIT:
+	case ENEMY:
+	case GUARD:
 		//Temporary. Enemies and guards should replace units properly
 		object = new Enemy(_idCounter++, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(renderObjectID), _tilemap);
 		_gameObjects.push_back(object);
@@ -192,7 +193,7 @@ void ObjectHandler::InitPathfinding()
 {
 	for (int i = 0; i < _size; i++)
 	{
-		if (_gameObjects[i]->GetType() == UNIT)																	//Handle unit movement
+		if (_gameObjects[i]->GetType() == GUARD || _gameObjects[i]->GetType() == ENEMY)												//Initiate unit movement
 		{
 			Unit* unit = dynamic_cast<Unit*>(_gameObjects[i]);
 			unit->CheckAllTiles();
@@ -208,11 +209,11 @@ void ObjectHandler::Update()
 	for (int i = 0; i < _size; i++)
 	{
 		_gameObjects[i]->Update();
-		if (_gameObjects[i]->GetType() == UNIT)																	//Handle unit movement
+		if (_gameObjects[i]->GetType() == GUARD || _gameObjects[i]->GetType() == ENEMY)									//Handle unit movement
 		{
 			float xOffset = abs(_gameObjects[i]->GetPosition().x - _gameObjects[i]->GetTilePosition()._x);
 			float zOffset = abs(_gameObjects[i]->GetPosition().z - _gameObjects[i]->GetTilePosition()._y);
-			if (xOffset > 0.99 || zOffset > 0.99 )																//If unit is on a new tile	
+			if (xOffset > 0.99 || zOffset > 0.99 )																		 //If unit is on a new tile	
 			{
 				Unit* unit = dynamic_cast<Unit*>(_gameObjects[i]);
  				_tilemap->RemoveObjectFromTile(_gameObjects[i]->GetTilePosition()._x, _gameObjects[i]->GetTilePosition()._y, unit);

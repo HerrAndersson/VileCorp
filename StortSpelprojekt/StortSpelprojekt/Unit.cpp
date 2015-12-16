@@ -553,7 +553,7 @@ void Unit::CheckVisibleTiles()
 		//}
 		if (_tileMap->UnitsOnTile(_visibleTiles[i]._x, _visibleTiles[i]._y) > 0 && !(_visibleTiles[i] == _goalTilePosition || _visibleTiles[i] == _tilePosition))	//Unit finds another unit
 		{
-			EvaluateTile(UNIT, _visibleTiles[i]);			//TODO: Change unit to guard/enemy --Victor
+			EvaluateTile(ENEMY, _visibleTiles[i]);			//TODO: Make tilemap functions to check for guard/enemy --Victor
 		}
 	}
 }
@@ -567,11 +567,6 @@ void Unit::CheckAllTiles()
 			//Handle objectives
 			if (_tileMap->IsObjectiveOnTile(i, j))
 			{
-				//if (_tilePosition == _goalTilePosition || _aStar->GetHeuristicDistance(_tilePosition, {i, j}) < _aStar->GetHeuristicDistance(_tilePosition, _goalTilePosition))	//Choose the 'closest' objective
-				//{
-				//	_goalTilePosition = {i, j};
-				//	_aStar->SetGoalPosition(_goalTilePosition);
-				//}
 				_aStar->SetTileCost({ i, j }, 1);
 				EvaluateTile(LOOT, {i, j});
 			}
