@@ -217,7 +217,7 @@ namespace Renderer
 		}
 	}
 
-	void RenderModule::SetLightPassDataPerLight(DirectX::XMMATRIX* lightView, DirectX::XMMATRIX* lightProjection)
+	void RenderModule::SetLightPassDataPerLight(Spotlight* spotlight)
 	{
 		HRESULT result;
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -227,8 +227,8 @@ namespace Renderer
 		//View,Projection
 		XMMATRIX view, proj;
 
-		view = XMMatrixTranspose(*lightView);
-		proj = XMMatrixTranspose(*lightProjection);
+		view = XMMatrixTranspose(*(spotlight->GetViewMatrix()));
+		proj = XMMatrixTranspose(*(spotlight->GetProjectionMatrix()));
 
 		result = deviceContext->Map(_matrixBufferLightPassPerLight, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 		if (FAILED(result))
@@ -240,6 +240,12 @@ namespace Renderer
 
 		dataPtr->viewMatrix = view;
 		dataPtr->projectionMatrix = proj;
+		dataPtr->position = spotlight->GetPosition();
+		dataPtr->angle = XMConvertToDegrees(spotlight->GetAngle());
+		dataPtr->direction = spotlight->GetDirection();
+		dataPtr->intensity = spotlight->GetIntensity();
+		dataPtr->color = spotlight->GetColor();
+		dataPtr->range = spotlight->GetRange();
 
 		deviceContext->Unmap(_matrixBufferLightPassPerLight, 0);
 

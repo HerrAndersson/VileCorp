@@ -8,6 +8,7 @@
 #include <DirectXMath.h>
 #include "RenderUtils.h"
 #include "ShadowMap.h"
+#include "Spotlight.h"
 
 namespace Renderer
 {
@@ -43,6 +44,12 @@ namespace Renderer
 		{
 			DirectX::XMMATRIX viewMatrix;
 			DirectX::XMMATRIX projectionMatrix;
+			DirectX::XMFLOAT3 position;
+			float angle;
+			DirectX::XMFLOAT3 direction;
+			float intensity;
+			DirectX::XMFLOAT3 color;
+			float range;
 		};
 
 		ID3D11Buffer* _matrixBufferPerObject;
@@ -79,7 +86,7 @@ namespace Renderer
 		void SetShadowMapDataPerSpotLight(DirectX::XMMATRIX* lightView, DirectX::XMMATRIX* lightProjection);
 
 		void SetLightPassDataPerFrame(DirectX::XMMATRIX* camView, DirectX::XMMATRIX* camProjection);
-		void SetLightPassDataPerLight(DirectX::XMMATRIX* lightView, DirectX::XMMATRIX* lightProjection);
+		void SetLightPassDataPerLight(Spotlight* spotlight);
 
 		void SetShaderStage(ShaderStage stage);
 
