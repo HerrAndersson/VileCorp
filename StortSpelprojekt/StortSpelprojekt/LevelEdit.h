@@ -26,7 +26,7 @@ private:
 		int _version;
 		int _levelSizeX;
 		int _levelSizeY;
-		int _nrOfTileObjects;
+		int _nrOfGameObjects;
 	};
 
 	struct MapData

@@ -35,8 +35,9 @@ struct RenderList
 class ObjectHandler
 {
 private:
-	int _size;
-	std::vector<GameObject*> _gameObjects;
+	vector<vector<GameObject*>> _gameObjects;
+	//vector<RenderList> _renderLists;
+
 	short _idCounter;
 	Tilemap* _tilemap;
 
@@ -46,21 +47,19 @@ public:
 	ObjectHandler(ID3D11Device* device, AssetManager* assetManager);
 	~ObjectHandler();
 
-	int GetSize() const;
-
 	//Add a gameobject
 	bool Add(Type type, int renderObjectID, XMFLOAT3 position, XMFLOAT3 rotation);
-	bool Remove(short ID);
-	void Clear();
-	
+	bool Remove(GameObject* gameObject);
+	bool Remove(Type type, int ID);
 
-	GameObject* Find(short ID);
-	GameObject* Find(int index);
+	GameObject* Find(Type type, int ID);
+	GameObject* Find(Type type, short index);
 	//Returns a vector containing all gameobjects with the same type
-	vector<GameObject*> GetAll(Type type);
+	vector<GameObject*> GetAllByType(Type type);
 	//Returns a list of a renderobject and matrices for all objects using the renderobject
-	RenderList GetAll(int renderObjectID);
-	std::vector<GameObject*>* GetGameObjects();
+	RenderList GetAllByType(int renderObjectID);
+	int GetTotalNrOfGameObjects() const;
+	vector<vector<GameObject*>>* GetGameObjects();
 
 	Tilemap* GetTileMap() const;
 	void SetTileMap(Tilemap* tilemap);

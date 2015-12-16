@@ -33,7 +33,7 @@ void LevelEdit::Initialize(InitVar* initVar)
 void LevelEdit::LoadLevel(int levelID)
 {
 	//load existing level.
-	_objectHandler->Clear();
+	_objectHandler->Release();
 	ResetSelectedObj();
 	_objectHandler->LoadLevel(levelID);
 	_tileMap = _objectHandler->GetTileMap();
@@ -44,7 +44,7 @@ void LevelEdit::LoadLevel(int levelID)
 void LevelEdit::HandleInput()
 {
 	//GameObject* temp;
-	int maxObject = _objectHandler->GetSize();
+	int maxObject = _objectHandler->GetTotalNrOfGameObjects();
 	int selectedLevel = 1;
 
 	// TODO: Replace by picking Erik
@@ -83,7 +83,7 @@ void LevelEdit::HandleInput()
 
 
 	//Check if there is a tile to move
-	if (_objectHandler->GetSize() > 0)
+	if (_objectHandler->GetTotalNrOfGameObjects() > 0)
 	{
 		//Translation and rotation controls
 		if (_inputHandler->IsPressed(VK_LEFT))
@@ -211,28 +211,28 @@ void LevelEdit::HandleInput()
 	if (_inputHandler->IsPressed(System::Input::R))
 	{
 			_objectHandler->Add(FLOOR, FLOOR, _lastObjPosition, XMFLOAT3(0.0f, 0.0f, 0.0f));
-			_selectedObj = _objectHandler->Find(_objectHandler->GetSize() - 1);
+			//_selectedObj = _objectHandler->Find(_objectHandler->GetTotalNrOfGameObjects() - 1);
 	}
 
 	//T adds Wall
 	if (_inputHandler->IsPressed(System::Input::T))
 	{
 			_objectHandler->Add(WALL, WALL, _lastObjPosition, XMFLOAT3(0.0f, 0.0f, 0.0f));
-			_selectedObj = _objectHandler->Find(_objectHandler->GetSize() - 1);
+			//_selectedObj = _objectHandler->Find(_objectHandler->GetTotalNrOfGameObjects() - 1);
 	}
 
 	//Y adds Unit
 	if (_inputHandler->IsPressed(System::Input::Y))
 	{
 			_objectHandler->Add(UNIT, UNIT, _lastObjPosition, XMFLOAT3(0.0f, 0.0f, 0.0f));
-			_selectedObj = _objectHandler->Find(_objectHandler->GetSize() - 1);
+			//_selectedObj = _objectHandler->Find(_objectHandler->GetTotalNrOfGameObjects() - 1);
 	}
 
 	//U adds Goal
 	if (_inputHandler->IsPressed(System::Input::U))
 	{
 		_objectHandler->Add(LOOT, LOOT, _lastObjPosition, XMFLOAT3(0.0f, 0.0f, 0.0f));
-		_selectedObj = _objectHandler->Find(_objectHandler->GetSize() - 1);
+		//_selectedObj = _objectHandler->Find(_objectHandler->GetTotalNrOfGameObjects() - 1);
 	}
 
 	//I adds ENTRY
@@ -332,7 +332,7 @@ void LevelEdit::HandleSelected()
 {
 	//GameObject* temp;
 
-	if (_objectHandler->GetSize() != 0)
+	if (_objectHandler->GetTotalNrOfGameObjects() != 0)
 	{
 		if (_selectedObj != _lastSelected || _selectedObj == 0)
 		{
@@ -371,7 +371,7 @@ void LevelEdit::ResetSelectedObj()
 
 void LevelEdit::InitNewLevel()
 {
-	_objectHandler->Clear();
+	_objectHandler->Release();
 	ResetSelectedObj();
 }
 
@@ -382,7 +382,6 @@ void LevelEdit::DeleteObject()
 	{
 		//temp = _objectHandler->Find(_selectedObj);
 		_objectHandler->Remove(_selectedObj);
-		_selectedObj--;
 	}
 
 }
@@ -394,25 +393,28 @@ void LevelEdit::ExportLevel()
 	Tilemap* tileMap = _objectHandler->GetTileMap();
 	levelHead._levelSizeY = tileMap->GetHeight();
 	levelHead._levelSizeX = tileMap->GetWidth();
-	levelHead._nrOfTileObjects = _objectHandler->GetSize();
+	levelHead._nrOfGameObjects = _objectHandler->GetTotalNrOfGameObjects();
 
 	//Iterating through all game objects and saving only the relevant data for exporting.
 	std::vector<MapData> mapData;
-	mapData.reserve(levelHead._nrOfTileObjects);
-	std::vector<GameObject*> *gameObjects = _objectHandler->GetGameObjects();
-	for (int i = 0; i < levelHead._nrOfTileObjects; i++)
+	mapData.reserve(levelHead._nrOfGameObjects);
+	std::vector<std::vector<GameObject*>>* gameObjects = _objectHandler->GetGameObjects();
+
+	for (int i = 0; i < gameObjects->size(); i++)
 	{
+		for (int y = 0; y < gameObjects[i].size(); y++)
+		{
+			GameObject *gameObj = (*gameObjects)[i][y];
+			MapData mapD;
 
-		GameObject *gameObj = gameObjects->at(i);
-		MapData mapD;
-		
-		mapD._tileType = gameObj->GetType();
-		DirectX::XMFLOAT3 position = gameObj->GetPosition();
-		mapD._posX = position.x;
-		mapD._posZ = position.z;
-		mapD._rotY = gameObj->GetRotation().y;
+			mapD._tileType = gameObj->GetType();
+			DirectX::XMFLOAT3 position = gameObj->GetPosition();
+			mapD._posX = position.x;
+			mapD._posZ = position.z;
+			mapD._rotY = gameObj->GetRotation().y;
 
-		mapData.push_back(mapD);
+			mapData.push_back(mapD);
+		}
 	}
 
 	char userPath[MAX_PATH];
