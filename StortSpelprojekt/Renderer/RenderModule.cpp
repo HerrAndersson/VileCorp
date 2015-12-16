@@ -68,7 +68,8 @@ namespace Renderer
 		SAFE_RELEASE(_screenQuad);
 		SAFE_RELEASE(_matrixBufferPerObject);
 		SAFE_RELEASE(_matrixBufferPerFrame);
-		SAFE_RELEASE(_matrixBufferLightPass);
+		SAFE_RELEASE(_matrixBufferLightPassPerFrame);
+		SAFE_RELEASE(_matrixBufferLightPassPerLight);
 	}
 
 	void RenderModule::InitializeConstantBuffers()
@@ -97,11 +98,18 @@ namespace Renderer
 			throw std::runtime_error("RenderModule::InitializeConstantBuffers: Failed to create MatrixBufferPerFrame");
 		}
 
-		matrixBufferDesc.ByteWidth = sizeof(MatrixBufferLightPass);
-		result = device->CreateBuffer(&matrixBufferDesc, NULL, &_matrixBufferLightPass);
+		matrixBufferDesc.ByteWidth = sizeof(MatrixBufferLightPassPerFrame);
+		result = device->CreateBuffer(&matrixBufferDesc, NULL, &_matrixBufferLightPassPerFrame);
 		if (FAILED(result))
 		{
-			throw std::runtime_error("RenderModule::InitializeConstantBuffers: Failed to create MatrixBufferLightPass");
+			throw std::runtime_error("RenderModule::InitializeConstantBuffers: Failed to create MatrixBufferLightPassPerFrame");
+		}
+
+		matrixBufferDesc.ByteWidth = sizeof(MatrixBufferLightPassPerLight);
+		result = device->CreateBuffer(&matrixBufferDesc, NULL, &_matrixBufferLightPassPerLight);
+		if (FAILED(result))
+		{
+			throw std::runtime_error("RenderModule::InitializeConstantBuffers: Failed to create MatrixBufferLightPassPerLight");
 		}
 	}
 
@@ -209,11 +217,40 @@ namespace Renderer
 		}
 	}
 
-	void RenderModule::SetLightPassData(XMMATRIX* camView, XMMATRIX* camProjection)
+	void RenderModule::SetLightPassDataPerLight(DirectX::XMMATRIX* lightView, DirectX::XMMATRIX* lightProjection)
 	{
 		HRESULT result;
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
-		MatrixBufferLightPass* dataPtr;
+		MatrixBufferLightPassPerLight* dataPtr;
+		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
+
+		//View,Projection
+		XMMATRIX view, proj;
+
+		view = XMMatrixTranspose(*lightView);
+		proj = XMMatrixTranspose(*lightProjection);
+
+		result = deviceContext->Map(_matrixBufferLightPassPerLight, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+		if (FAILED(result))
+		{
+			throw std::runtime_error("RenderModule::SetLightPassData: Failed to Map _matrixBufferLightPass");
+		}
+
+		dataPtr = (MatrixBufferLightPassPerLight*)mappedResource.pData;
+
+		dataPtr->viewMatrix = view;
+		dataPtr->projectionMatrix = proj;
+
+		deviceContext->Unmap(_matrixBufferLightPassPerLight, 0);
+
+		deviceContext->PSSetConstantBuffers(3, 1, &_matrixBufferLightPassPerLight);
+	}
+
+	void RenderModule::SetLightPassDataPerFrame(XMMATRIX* camView, XMMATRIX* camProjection)
+	{
+		HRESULT result;
+		D3D11_MAPPED_SUBRESOURCE mappedResource;
+		MatrixBufferLightPassPerFrame* dataPtr;
 		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
 
 		//View,Projection
@@ -223,20 +260,20 @@ namespace Renderer
 		invView = XMMatrixTranspose(XMMatrixInverse(&v, *camView));
 		invProj = XMMatrixTranspose(XMMatrixInverse(&v, *camProjection));
 
-		result = deviceContext->Map(_matrixBufferLightPass, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+		result = deviceContext->Map(_matrixBufferLightPassPerFrame, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 		if (FAILED(result))
 		{
 			throw std::runtime_error("RenderModule::SetLightPassData: Failed to Map _matrixBufferLightPass");
 		}
 
-		dataPtr = (MatrixBufferLightPass*)mappedResource.pData;
+		dataPtr = (MatrixBufferLightPassPerFrame*)mappedResource.pData;
 
 		dataPtr->invertedView = invView;
 		dataPtr->invertedProjection = invProj;
 
-		deviceContext->Unmap(_matrixBufferLightPass, 0);
+		deviceContext->Unmap(_matrixBufferLightPassPerFrame, 0);
 
-		deviceContext->PSSetConstantBuffers(2, 1, &_matrixBufferLightPass);
+		deviceContext->PSSetConstantBuffers(2, 1, &_matrixBufferLightPassPerFrame);
 	}
 
 	void RenderModule::SetShaderStage(ShaderStage stage)

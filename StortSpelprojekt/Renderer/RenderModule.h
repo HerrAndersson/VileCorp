@@ -33,15 +33,22 @@ namespace Renderer
 			DirectX::XMMATRIX projectionMatrix;
 		};
 
-		struct MatrixBufferLightPass
+		struct MatrixBufferLightPassPerFrame
 		{
 			DirectX::XMMATRIX invertedView;
 			DirectX::XMMATRIX invertedProjection;
 		};
 
+		struct MatrixBufferLightPassPerLight
+		{
+			DirectX::XMMATRIX viewMatrix;
+			DirectX::XMMATRIX projectionMatrix;
+		};
+
 		ID3D11Buffer* _matrixBufferPerObject;
 		ID3D11Buffer* _matrixBufferPerFrame;
-		ID3D11Buffer* _matrixBufferLightPass;
+		ID3D11Buffer* _matrixBufferLightPassPerFrame;
+		ID3D11Buffer* _matrixBufferLightPassPerLight;
 
 		DirectXHandler* _d3d;
 		ShaderHandler* _shaderHandler;
@@ -70,7 +77,9 @@ namespace Renderer
 
 		void SetDataPerFrame(DirectX::XMMATRIX* view, DirectX::XMMATRIX* projection);
 		void SetShadowMapDataPerSpotLight(DirectX::XMMATRIX* lightView, DirectX::XMMATRIX* lightProjection);
-		void SetLightPassData(DirectX::XMMATRIX* camView, DirectX::XMMATRIX* camProjection);
+
+		void SetLightPassDataPerFrame(DirectX::XMMATRIX* camView, DirectX::XMMATRIX* camProjection);
+		void SetLightPassDataPerLight(DirectX::XMMATRIX* lightView, DirectX::XMMATRIX* lightProjection);
 
 		void SetShaderStage(ShaderStage stage);
 

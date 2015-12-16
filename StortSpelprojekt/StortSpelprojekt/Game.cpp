@@ -195,7 +195,10 @@ void Game::Render()
 
 
 	_renderModule->SetShaderStage(Renderer::RenderModule::LIGHT_PASS);
-	_renderModule->SetLightPassData(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
+	_renderModule->SetLightPassDataPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
+	_renderModule->SetLightPassDataPerLight(_spotlight->GetViewMatrix(), _spotlight->GetProjectionMatrix());
+
+
 	_renderModule->RenderLightQuad();
 	_renderModule->EndScene();
 }
