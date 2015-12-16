@@ -41,6 +41,7 @@ namespace System
 			SetCursorPos(rect.left + (rect.right - rect.left) / 2, rect.top + (rect.bottom - rect.top) / 2);
 			ClipCursor(&rect);
 		}
+		ScreenToClient(_hwnd, &_mouseCoord._pos);
 	}
 
 	bool InputDevice::IsDown(int key)

@@ -32,6 +32,7 @@
     <ClCompile Include="ObjectHandler.cpp" />
     <ClCompile Include="StateMachine\BaseState.cpp" />
     <ClCompile Include="StateMachine\LevelEditState.cpp" />
+    <ClCompile Include="PickingDevice.cpp" />
     <ClCompile Include="StateMachine\MenuState.cpp" />
     <ClCompile Include="StateMachine\OptionsState.cpp" />
     <ClCompile Include="StateMachine\PlayState.cpp" />
@@ -56,6 +57,7 @@
     <ClInclude Include="ObjectHandler.h" />
     <ClInclude Include="StateMachine\BaseState.h" />
     <ClInclude Include="StateMachine\InitVar.h" />
+    <ClInclude Include="PickingDevice.h" />
     <ClInclude Include="StateMachine\LevelEditState.h" />
     <ClInclude Include="StateMachine\MenuState.h" />
     <ClInclude Include="StateMachine\OptionsState.h" />

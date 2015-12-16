@@ -26,6 +26,8 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	_input = new System::InputDevice(_window->GetHWND());
 	//Init statemachine
 	InitVar initVar;
+
+	_pickingDevice = new PickingDevice(_camera, _window);
 	initVar._objectHandler = _objectHandler;
 	initVar._uiHandler = _UI;
 	initVar._inputHandler = _input;
@@ -49,6 +51,7 @@ Game::~Game()
 	delete _SM;
 	delete _input;
 	delete _assetManager;
+	delete _pickingDevice;
 	delete _grid;
 }
 

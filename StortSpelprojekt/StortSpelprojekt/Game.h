@@ -13,6 +13,7 @@
 #include "Trap.h"
 #include "InputDevice.h"
 #include "Grid.h"
+#include "PickingDevice.h"
 
 class Game
 {
@@ -29,6 +30,8 @@ private:
 	System::InputDevice*		_input;
 	AssetManager*				_assetManager;
 	Grid*						_grid;
+	PickingDevice*				_pickingDevice;
+	
 
 	//Resizing window, directx resources, camera
 	void HandleInput();
