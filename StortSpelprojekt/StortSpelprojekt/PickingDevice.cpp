@@ -6,32 +6,61 @@
 Ray PickingDevice::calculatePickRay(POINT mousePoint)
 {
 	//TODO maek work
-	XMFLOAT3 mouseWorldPos = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	XMFLOAT3 mouseViewPos;
 	XMFLOAT4X4 viewMatrix;
 	XMFLOAT4X4 projMatrix;
 	XMStoreFloat4x4(&projMatrix, *_camera->GetProjectionMatrix());
 
 	//Translating mouseposition to viewSpace
 	float width = (float)_window->GetWindowSettings()._width;
-	float xPos = (float)mousePoint.x / width;
-	xPos = (xPos * 2.0f) - 1.0f;
+	float xPos = (float)mousePoint.x;
+
 
 	float height = (float)_window->GetWindowSettings()._height;
-	float yPos = (float)mousePoint.y / height;
-	yPos = (yPos * -2.0f) + 1.0f;
-
-	mouseWorldPos.x = xPos / projMatrix._11;
-	mouseWorldPos.y = yPos / projMatrix._22;
+	float yPos = (float)mousePoint.y;
 
 
-	XMMATRIX inverseViewMatrix = XMMatrixInverse(nullptr, *_camera->GetViewMatrix());
-	XMStoreFloat3(&mouseWorldPos, XMVector3TransformCoord(XMVectorSet(mouseWorldPos.x, mouseWorldPos.y, mouseWorldPos.z, 1.0f), inverseViewMatrix));
+	mouseViewPos.x = (((2 * xPos) / width)- 1.0f) / projMatrix._11;
+	mouseViewPos.y = (((-2 * yPos) / height) + 1.0f) / projMatrix._22;
+	mouseViewPos.z = 1.0f;
 
-	//Ray ray = Ray(Vec3(_camera->GetPosition()), (Vec3(mouseWorldPos)) - Vec3(_camera->GetPosition()));
-	Ray ray = Ray(Vec3(_camera->GetPosition()), Vec3(_camera->GetForwardVector()));
 
+	XMVECTOR determinant;
+	XMMATRIX inverseViewMatrix = XMMatrixInverse(&determinant, *_camera->GetViewMatrix());
+	XMStoreFloat3(&mouseViewPos, XMVector3TransformCoord(XMVectorSet(mouseViewPos.x, mouseViewPos.y, mouseViewPos.z, 0.0f), inverseViewMatrix));
+
+	Ray ray = Ray(Vec3(_camera->GetPosition()), (Vec3(mouseViewPos) - Vec3(_camera->GetPosition())));
 
 	return ray;
+}
+
+vector<GameObject*> PickingDevice::sortByDistance(vector<GameObject*> pickedObjects)
+{
+	vector<GameObject*> sortedObjects;
+
+
+	for (unsigned int i = 0; i < pickedObjects.size(); i++)
+	{
+		int shortestIndex = -1;
+		float shortestDistance = FLT_MAX;
+
+		for (unsigned int j = 0; j < pickedObjects.size(); j++)
+		{
+			float objectToCameraLength = (Vec3(pickedObjects[j]->GetPosition()) - Vec3(_camera->GetPosition())).Length();
+
+			if (objectToCameraLength < shortestDistance)
+			{
+				shortestIndex = j;
+				shortestDistance = objectToCameraLength;
+			}
+		}
+		sortedObjects.push_back(pickedObjects[shortestIndex]);
+		pickedObjects.erase(pickedObjects.begin()+shortestIndex);
+	}
+
+
+
+	return sortedObjects;
 }
 
 PickingDevice::PickingDevice(System::Camera * camera, System::Window* window)
@@ -88,8 +117,8 @@ vector<GameObject*> PickingDevice::pickObjects(POINT mousePoint, vector<GameObje
 			pickedObjects.push_back(pickableObjects[i]);
 		}
 	}
-	
-	return pickedObjects;
+
+	return sortByDistance(pickedObjects);
 }
 
 
@@ -114,6 +143,7 @@ vector<GameObject*> PickingDevice::pickTilemap(POINT mousePoint, Tilemap* tilema
 			}
 		}
 	}
+
 
 	return pickedObjects;
 }

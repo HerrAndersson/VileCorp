@@ -128,7 +128,8 @@ void Game::HandleInput()
 		vector<GameObject*> gameObjects = Picking();
 		for (unsigned int i = 0; i < gameObjects.size(); i++)
 		{
-			_objectHandler->Remove(gameObjects[i]->GetID());
+			//Loops through the objects picked
+			//_objectHandler->Remove(gameObjects[i]->GetID());
 		}
 	}
 }

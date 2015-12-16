@@ -28,8 +28,8 @@ namespace System
 
 		GetCursorPos(&_mouseCoord._pos);
 		
-		_mouseCoord._deltaPos.x = _mouseCoord._pos.x - (rect.left + (rect.right - rect.left) / 2);
-		_mouseCoord._deltaPos.y = _mouseCoord._pos.y - (rect.top + (rect.bottom - rect.top) / 2);
+		//_mouseCoord._deltaPos.x = _mouseCoord._pos.x - (rect.left + (rect.right - rect.left) / 2);
+		//_mouseCoord._deltaPos.y = _mouseCoord._pos.y - (rect.top + (rect.bottom - rect.top) / 2);
 
 
 		for (int i = 1; i < KEYCODECAP; i++)
@@ -41,7 +41,7 @@ namespace System
 		if (GetFocus() == _hwnd)
 		{
 			//Sets mouse position to the middle of the window
-			SetCursorPos(rect.left + (rect.right - rect.left) / 2, rect.top + (rect.bottom - rect.top) / 2);
+			//SetCursorPos(rect.left + (rect.right - rect.left) / 2, rect.top + (rect.bottom - rect.top) / 2);
 			ClipCursor(&rect);
 		}
 		ScreenToClient(_hwnd, &_mouseCoord._pos);
