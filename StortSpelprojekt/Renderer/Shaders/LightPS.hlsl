@@ -26,13 +26,6 @@ struct VS_OUT
 	float2 uv : TEXCOORD;
 };
 
-struct PointLight
-{
-	float3 position;
-	float3 color;
-	float intensity;
-};
-
 Texture2D diffuseTex : register(t0);
 Texture2D normalTex : register(t1);
 Texture2D camDepthMap : register(t2);
@@ -59,18 +52,6 @@ float3 ReconstructWorldFromCamDepth(float2 uv)
 
 float4 main(VS_OUT input) : SV_TARGET
 {
-	PointLight p;
-	p.position = float3(3, 1, 6);
-	p.color = float3(0.02f, 1.0f, 0.02f);
-	p.intensity = 0.1f;
-
-	//SpotLight s;
-	//s.position = float3(5, 1, 5);
-	//s.color = float3(0, 1, 1);
-	//s.direction = float3(1, 0, 0);
-	//s.angle = 45;
-	//s.intensity = 1.0f;
-	//s.range = 15.0f;
 
 	float4 diffuse = diffuseTex.Sample(samplerWrap, input.uv);
 	float4 normal = normalTex.Sample(samplerWrap, input.uv);
@@ -109,7 +90,7 @@ float4 main(VS_OUT input) : SV_TARGET
 
 		float depth = lightSpacePos.z / lightSpacePos.w;
 
-		float epsilon = 0.0001f;
+		float epsilon = 0.00001f;
 		float dx = 1.0f / 256;
 
 		float s0 = lightDepthMap.Sample(samplerClamp, smTex).r;
@@ -121,32 +102,19 @@ float4 main(VS_OUT input) : SV_TARGET
 		float2 lerps = frac(texelPos);
 		float shadowCoeff = lerp(lerp(s0, s1, lerps.x), lerp(s2, s3, lerps.x), lerps.y);
 
-		if (shadowCoeff < depth - epsilon)
+		if (dot(-normalize(lightToPixel), normalize(lightDirection)) > 0.93f)
 		{
-			finalColor = saturate(finalColor * shadowCoeff);
-		}
-		else if (dot(-normalize(lightToPixel), normalize(lightDirection)) > 0.95f)
-		{
-			finalColor += lightColor * lightIntensity;
-			finalColor *= dot(-normalize(lightToPixel), lightDirection);
+			if (shadowCoeff < depth - epsilon)
+			{
+				finalColor *= shadowCoeff;
+			}
+			else
+			{
+				finalColor += saturate(lightColor * lightIntensity);
+				finalColor *= dot(-normalize(lightToPixel), lightDirection);
+			}
 		}
 	}
-
-
-	//float3 worldPos = ReconstructWorldFromCamDepth(input.uv);
-	//float3 lightToPixel = s.position - worldPos;
-
-	//float l = length(lightToPixel);
-
-	//if (dot(normalize(lightToPixel), normal.xyz) > 0)
-	//{
-	//	float falloff = (p.intensity) / (pow(0.75f, 2)) * (pow(l, 4.4f)); //      dot(lightToPixel, lightToPixel);
-
-	//	finalColor += p.color * p.intensity * falloff;
-	//	finalColor *= 1.8f / (l);
-
-	//	//return float4(finalColor, diffuse.a);
-	//}
 
 	return saturate(float4(finalColor * float3(0.2f, 0.2f, 0.2f), 1));
 }
