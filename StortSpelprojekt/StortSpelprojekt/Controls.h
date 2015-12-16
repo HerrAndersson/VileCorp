@@ -30,6 +30,8 @@ namespace System
 	private:
 		InputDevice _inputDevice;
 		std::map<std::string, Key> keymap;
+
+		void StringToKeyMap(const std::string& key, char &mainKey, char& keyModifiers);
 	public:
 		Controls(HWND hwnd);
 		~Controls();
@@ -37,7 +39,6 @@ namespace System
 		void ToggleCursorLock();
 
 		bool IsFunctionKeyDown(const std::string& key);
-		bool IsMouseFunctionKeyDown(const std::string& key, System::MouseCoord& position);
 	};
 
 }

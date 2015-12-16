@@ -12,7 +12,7 @@ MenuState::~MenuState()
 
 void MenuState::Update(float deltaTime)
 {
-	if (_controls->IsFunctionKeyDown("DEBUG_ENABLE_FREECAM"))
+	if (_controls->IsFunctionKeyDown("DEBUG:ENABLE_FREECAM"))
 	{
 		_controls->ToggleCursorLock();
 	}

@@ -30,6 +30,12 @@ namespace System
 		shift
 		repeat (if the should return true every time the key is checked)
 
+	To use this, call "IsFunctionKeyDown" with the string defined as STATE:KEYBIND.
+	Example:
+		if (_controls->IsFunctionKeyDown("MAP_EDIT:SAVE"))
+		{
+			//Code
+		}
 		//Mattias
 	*/
 	Controls::Controls(HWND hwnd) : _inputDevice(hwnd)
@@ -45,112 +51,124 @@ namespace System
 		Document d;
 		d.Parse(str.c_str());
 
-		//Loop through the whole keymap
+		//Loop through all the states
 		for (Value::ConstMemberIterator it = d.MemberBegin(); it != d.MemberEnd(); ++it)
 		{
-			string currentKeyMapName(it->name.GetString());
-			const Value& currentKeyMap = d[currentKeyMapName.c_str()];
-			int currentKeyMod = NONE;
-			int mainKey = 0;
+			std::string currentStateName(it->name.GetString());
+			char currentKeyMod = NONE;
+			char mainKey = 0;
 
-			if (currentKeyMap.IsArray())
+			//Loop through the whole keymap
+			for (Value::ConstMemberIterator i = it->value.MemberBegin(); i != it->value.MemberEnd(); ++i)
 			{
-				for (SizeType j = 0; j < currentKeyMap.Size(); j++)
+				string currentKeyMapName(i->name.GetString());
+				const Value& currentKeyMap = it->value[currentKeyMapName.c_str()];
+
+				if (currentKeyMap.IsArray())
 				{
-					if (currentKeyMap[j].IsString())
+					for (SizeType j = 0; j < currentKeyMap.Size(); j++)
 					{
-						string key(currentKeyMap[j].GetString());
-						if (key == "ctrl")
+						if (currentKeyMap[j].IsString())
 						{
-							currentKeyMod |= CTRL;
-						}
-						else if (key == "alt")
-						{
-							currentKeyMod |= ALT;
-						}
-						else if (key == "shift")
-						{
-							currentKeyMod |= SHIFT;
-						}
-						else if (key == "repeat")
-						{
-							currentKeyMod |= REPEAT;
-						}
-						else if (key == "spacebar")
-						{
-							mainKey = VK_SPACE;
-						}
-						else if (key == "escape")
-						{
-							mainKey = VK_ESCAPE;
-						}
-						else if (key == "tab")
-						{
-							mainKey = VK_TAB;
-						}
-						else if (key == "pageup")
-						{
-							mainKey = VK_PRIOR;
-						}
-						else if (key == "pagedown")
-						{
-							mainKey = VK_NEXT;
-						}
-						else if (key == "end")
-						{
-							mainKey = VK_END;
-						}
-						else if (key == "home")
-						{
-							mainKey = VK_HOME;
-						}
-						else if (key == "leftarrow")
-						{
-							mainKey = VK_LEFT;
-						}
-						else if (key == "uparrow")
-						{
-							mainKey = VK_UP;
-						}
-						else if (key == "rightarrow")
-						{
-							mainKey = VK_RIGHT;
-						}
-						else if (key == "downarrow")
-						{
-							mainKey = VK_DOWN;
-						}
-						else if (key == "delete")
-						{
-							mainKey = VK_DELETE;
-						}
-						else if (key.length() == 1) //Map the key directly to the ascii code
-						{
-							mainKey = key[0];
-							if (!(mainKey >= '0' && mainKey <= '9' ||
-								mainKey >= 'A' && mainKey <= 'Z'))
-							{
-								throw std::runtime_error("Invalid main key: \""+ key + "\" in " + currentKeyMapName);
-							}
-						}
-						else
-						{
-							throw std::runtime_error("Undefined keyword \""+ key +"\" in " + currentKeyMapName);
+							string key(currentKeyMap[j].GetString());
+							StringToKeyMap(key, mainKey, currentKeyMod);
 						}
 					}
+					keymap[currentStateName + ":" + currentKeyMapName].keyModifier = currentKeyMod;
+					keymap[currentStateName + ":" + currentKeyMapName].mainKey = mainKey;
 				}
-				keymap[currentKeyMapName].keyModifier = currentKeyMod;
-				keymap[currentKeyMapName].mainKey = mainKey;
-			}
-			if (!mainKey)
-			{
-				throw std::runtime_error("Failed to get keybind " + currentKeyMapName + " in controls.json");
+
+				if (!mainKey)
+				{
+					throw std::runtime_error("Failed to get keybind " + currentKeyMapName + " in controls.json");
+				}
 			}
 		}
 	}
 
 	Controls::~Controls()
 	{
+	}
+
+	void Controls::StringToKeyMap(const std::string& key, char &mainKey, char& keyModifiers)
+	{
+		if (key == "ctrl")
+		{
+			keyModifiers |= CTRL;
+		}
+		else if (key == "alt")
+		{
+			keyModifiers |= ALT;
+		}
+		else if (key == "shift")
+		{
+			keyModifiers |= SHIFT;
+		}
+		else if (key == "repeat")
+		{
+			keyModifiers |= REPEAT;
+		}
+		else if (key == "spacebar")
+		{
+			mainKey = VK_SPACE;
+		}
+		else if (key == "escape")
+		{
+			mainKey = VK_ESCAPE;
+		}
+		else if (key == "tab")
+		{
+			mainKey = VK_TAB;
+		}
+		else if (key == "pageup")
+		{
+			mainKey = VK_PRIOR;
+		}
+		else if (key == "pagedown")
+		{
+			mainKey = VK_NEXT;
+		}
+		else if (key == "end")
+		{
+			mainKey = VK_END;
+		}
+		else if (key == "home")
+		{
+			mainKey = VK_HOME;
+		}
+		else if (key == "leftarrow")
+		{
+			mainKey = VK_LEFT;
+		}
+		else if (key == "uparrow")
+		{
+			mainKey = VK_UP;
+		}
+		else if (key == "rightarrow")
+		{
+			mainKey = VK_RIGHT;
+		}
+		else if (key == "downarrow")
+		{
+			mainKey = VK_DOWN;
+		}
+		else if (key == "delete")
+		{
+			mainKey = VK_DELETE;
+		}
+		else if (key.length() == 1) //Map the key directly to the ascii code
+		{
+			mainKey = key[0];
+			if (!(mainKey >= '0' && mainKey <= '9' ||
+				mainKey >= 'A' && mainKey <= 'Z'))
+			{
+				throw std::runtime_error("Invalid main key: \"" + key + "\"");
+			}
+		}
+		else
+		{
+			throw std::runtime_error("Undefined keyword \"" + key + "\"");
+		}
 	}
 
 	void Controls::Update()
@@ -187,11 +205,5 @@ namespace System
 			ret = _inputDevice.IsPressed(keymap[key].mainKey);
 		}
 		return ret && keymap[key].keyModifier == modifersActivated;
-	}
-
-
-	bool System::Controls::IsMouseFunctionKeyDown(const std::string & key, System::MouseCoord & position)
-	{
-		return false;
 	}
 }
