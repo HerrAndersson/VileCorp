@@ -39,13 +39,12 @@ public:
 	AI::Vec2D GetGoal();
 	AI::Vec2D GetDirection();
 	void FindVisibleTiles();									 
-	void CheckVisibleTiles();									//Same for all units. Only difference is based on _visionRadius
-	void CheckAllTiles();										//Thief should evaluate objectives. Guards don't need to yet, since the player gives orders.
+	void CheckVisibleTiles();		
+	void CheckAllTiles();				
 	virtual void EvaluateTile(Type objective, AI::Vec2D tile) = 0;
 	void SetGoal(AI::Vec2D goal);
-	void CalculatePath(AI::Vec2D goal);									//Same for all units
-	void Move();														//Possibly the same. Finding new objectives need to be separate.
-	void Update();														//Same as move
+	void Move();
+	void Update();					
 	virtual void Release();
 	virtual void act(Type obj) = 0;									//context specific action on the unit's objective
 };

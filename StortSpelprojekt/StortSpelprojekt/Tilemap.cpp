@@ -226,6 +226,30 @@ int Tilemap::UnitsOnTile(int x, int z) const
 	return result;
 }
 
+bool Tilemap::isGuardOnTile(int x, int z) const
+{
+	if (!IsValid(x, z) || ( _map[x][z]._objectsOnTile[1] == nullptr && _map[x][z]._objectsOnTile[2] == nullptr))
+	{
+		return false;
+	}
+	else
+	{
+		return  _map[x][z]._objectsOnTile[1]->GetType() == GUARD || _map[x][z]._objectsOnTile[2]->GetType() == GUARD;
+	}
+}
+
+bool Tilemap::isEnemyOnTile(int x, int z) const
+{
+	if (!IsValid(x, z) || (_map[x][z]._objectsOnTile[1] == nullptr && _map[x][z]._objectsOnTile[2] == nullptr))
+	{
+		return false;
+	}
+	else
+	{
+		return  _map[x][z]._objectsOnTile[1]->GetType() == ENEMY || _map[x][z]._objectsOnTile[2]->GetType() == ENEMY;
+	}
+}
+
 bool Tilemap::IsTrapOnTile(int x, int z) const
 {
 	if (!IsValid(x, z) || _map[x][z]._objectsOnTile[3] == nullptr)

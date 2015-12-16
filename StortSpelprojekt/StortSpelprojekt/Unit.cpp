@@ -473,44 +473,6 @@ AI::Vec2D Unit::GetDirection()
 	return _direction;
 }
 
-
-
-/*
-Gathers the tiles which are visible to the unit.
-Currently only checks if walls block vision (not traps or units)
-*/
-//void Unit::FindVisibleTiles()
-//{
-//	double startSlope = 1.0;
-//	_visibleTiles[0] = AI::Vec2D(this->GetTilePosition()._x, this->GetTilePosition()._y);
-//	_nrOfVisibleTiles = 1;
-//
-//	//If looking north, scan octant 1 and 2
-//	if (_direction._y == 1)
-//	{
-//		ScanOctant(1, 1, startSlope, 0.0);
-//		ScanOctant(1, 2, startSlope, 0.0);
-//	}
-//	//If looking east, scan octant 3 and 4
-//	else if (_direction._x == 1)
-//	{
-//		ScanOctant(1, 3, startSlope, 0.0);
-//		ScanOctant(1, 4, startSlope, 0.0);
-//	}
-//	//If looking south, scan octant 5 and 6
-//	else if (_direction._y == -1)
-//	{
-//		ScanOctant(1, 5, startSlope, 0.0);
-//		ScanOctant(1, 6, startSlope, 0.0);
-//	}
-//	//If looking west, scan octant 7 and 8
-//	else if (_direction._x == -1)
-//	{
-//		ScanOctant(1, 7, startSlope, 0.0);
-//		ScanOctant(1, 8, startSlope, 0.0);
-//	}
-//} 
-
 /*
 Gathers the tiles which are visible to the unit.
 Temporary solution until the proper vision cone is fixed.
@@ -544,16 +506,9 @@ void Unit::CheckVisibleTiles()
 		{
 			_aStar->SetTileCost(_visibleTiles[i], 10);
 		}
-		//if (_ID == 100)									//Temporary solution to only use one of the units
-		//{
-		//	if (_tileMap->IsTypeOnTile(_visibleTiles[i]._x, _visibleTiles[i]._y, UNIT) && !(_visibleTiles[i] == _goalTilePosition || _visibleTiles[i] == _tilePosition))	//Unit finds another unit
-		//	{
-		//		CalculatePath(_visibleTiles[i]);
-		//	}
-		//}
 		if (_tileMap->UnitsOnTile(_visibleTiles[i]._x, _visibleTiles[i]._y) > 0 && !(_visibleTiles[i] == _goalTilePosition || _visibleTiles[i] == _tilePosition))	//Unit finds another unit
 		{
-			EvaluateTile(ENEMY, _visibleTiles[i]);			//TODO: Make tilemap functions to check for guard/enemy --Victor
+			EvaluateTile(ENEMY, _visibleTiles[i]);
 		}
 	}
 }
@@ -583,6 +538,10 @@ void Unit::CheckAllTiles()
 	}
 }
 
+
+/*
+	Moves the goal and finds the path to the new goal
+*/
 void Unit::SetGoal(AI::Vec2D goal)
 {
 	_goalTilePosition = goal;
@@ -590,30 +549,29 @@ void Unit::SetGoal(AI::Vec2D goal)
 	_aStar->SetStartPosition(_tilePosition);
 	_aStar->SetGoalPosition(goal);
 	CalculatePath();
-
 }
 
-/*
-	Calculate path to a predetermined goal
-*/
-void Unit::CalculatePath(AI::Vec2D goal)
-{
-	_goalTilePosition = goal;
-	_aStar->CleanMap();
-	_aStar->SetStartPosition(_tilePosition);
-	_aStar->SetGoalPosition(goal);
-	if (_aStar->FindPath())
-	{
-		_path = _aStar->GetPath();
-		_pathLength = _aStar->GetPathLength();
-	}
-	else
-	{
-		_path = nullptr;
-		_pathLength = 0;
-	}
-
-}
+///*
+//	Calculate path to a predetermined goal
+//*/
+//void Unit::CalculatePath(AI::Vec2D goal)
+//{
+//	_goalTilePosition = goal;
+//	_aStar->CleanMap();
+//	_aStar->SetStartPosition(_tilePosition);
+//	_aStar->SetGoalPosition(goal);
+//	if (_aStar->FindPath())
+//	{
+//		_path = _aStar->GetPath();
+//		_pathLength = _aStar->GetPathLength();
+//	}
+//	else
+//	{
+//		_path = nullptr;
+//		_pathLength = 0;
+//	}
+//
+//}
 
 /* 
 	Moves the unit to the tile it's aiming for and selects a new walking direction.
@@ -633,6 +591,7 @@ void Unit::Move()
 
 	//TODO: React to objects in same tile --Victor
 
+
 	FindVisibleTiles();
 	CheckVisibleTiles();
 
@@ -641,7 +600,6 @@ void Unit::Move()
 	if (_direction._x == 0)
 	{
  		_rotation.y = DirectX::XM_PIDIV2 * (_direction._y + 1);
-		//_rotation.y = atan(_direction._y / _direction._x);
 	}
 	else if (_direction._x == -1)
 	{
@@ -676,7 +634,6 @@ void Unit::Update()
 	else
 	{
 		CheckAllTiles();
-		CalculatePath(_goalTilePosition);
 	}
 }
 
