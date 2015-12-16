@@ -31,20 +31,20 @@ bool ObjectHandler::Add(Type type, int renderObjectID, XMFLOAT3 position = XMFLO
 	case WALL:
 	case LOOT:
 		object = new Architecture(_idCounter++, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(renderObjectID));
-		_tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
+		addedObject = _tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
 		break;
 	case UNIT:
 		//TODO Tileposition parameters are temporary
 		object = new Enemy(_idCounter++, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(renderObjectID), _tilemap);
-		_tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
+		addedObject = _tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
 		break;
 	case TRAP:
 		object = new Trap(_idCounter++, position, rotation, AI::Vec2D(1,1), type, _assetManager->GetRenderObject(renderObjectID));
-		_tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
+		addedObject = _tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
 		break;
 	case TRIGGER:
 		object = new Trigger(_idCounter++, position, rotation, AI::Vec2D(1,1), type, _assetManager->GetRenderObject(renderObjectID));
-		_tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
+		addedObject = _tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
 		break;
 	default:
 		
@@ -55,6 +55,11 @@ bool ObjectHandler::Add(Type type, int renderObjectID, XMFLOAT3 position = XMFLO
 	{
 		_gameObjects[type].push_back(object);
 	}
+	else
+	{
+		//TODO: Log failed add attempts - Rikhard
+		delete object;
+	}
 
 	return addedObject;
 }
@@ -63,20 +68,17 @@ bool ObjectHandler::Remove(Type type, int ID)
 {
 	bool removed = false;
 
-	for (vector<GameObject*>::iterator i = _gameObjects[type].begin();
-	i != _gameObjects[type].end(); i++)
+	int gameObjectsByTypeSize = _gameObjects[type].size();
+	for (int i = 0; !removed && i < gameObjectsByTypeSize; i++)
 	{
-		if ((*i)->GetID() == ID)
+		if (_gameObjects[type].at(i)->GetID() == ID)
 		{
-			// Release object resource
-			(*i)->Release();
-
-			// Replace pointer with the last pointer int the vector
-			(*i) = (*_gameObjects[type].end());
-
-			// Remove pointer value to avoid various problems
+			_tilemap->RemoveObjectFromTile(_gameObjects[type].at(i));
+			GameObject* tempObject = _gameObjects[type].at(i);
+			tempObject->Release();
+			_gameObjects[type].at(i) = _gameObjects[type].back();
+			delete tempObject;
 			_gameObjects[type].pop_back();
-
 			removed = true;
 		}
 	}
@@ -227,6 +229,7 @@ void ObjectHandler::Release()
 			g->Release();
 			delete g;
 		}
+		_gameObjects[i].clear();
 	}
 	_idCounter = 0;
 }

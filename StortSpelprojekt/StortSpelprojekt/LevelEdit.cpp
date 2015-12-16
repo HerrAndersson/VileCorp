@@ -19,11 +19,13 @@ void LevelEdit::Initialize(InitVar* initVar)
 	_objectHandler = initVar->_objectHandler;
 	_uiHandler = initVar->_uiHandler;
 	_camera = initVar->_camera;
+	_pickingDevice = initVar->_pickingDevice;
 	_aStar = new AI::AStar();
 
 	_selectedObj = nullptr;
 	_lastSelected = nullptr;
 	_tileMultiplier = 1;
+	_isSelectionMode = true;
 
 	LoadLevel(0);
 
@@ -43,29 +45,34 @@ void LevelEdit::LoadLevel(int levelID)
 
 void LevelEdit::HandleInput()
 {
-	//GameObject* temp;
-	int maxObject = _objectHandler->GetTotalNrOfGameObjects();
-	int selectedLevel = 1;
+	if (_inputHandler->IsPressed(System::Input::LeftMouse))
+	{
+		if (_isSelectionMode)
+		{
+			AI::Vec2D pickedTile = _pickingDevice->pickTile(_inputHandler->GetMouseCoord()._pos);
+			std::vector<GameObject*> objectsOnTile = _objectHandler->GetTileMap()->GetAllObjectsOnTile(pickedTile);
+			if (!objectsOnTile.empty())
+			{
+				SelectObject(*(objectsOnTile.end() - 1));
+			}
+		}
+		else
+		{
 
-	// TODO: Replace by picking Erik
-	////Tile select
-	//if (_inputHandler->IsPressed(VK_ADD))
-	//{
-	//	if (_selectedObj < maxObject)
-	//	{
-	//		_selectedObj++;
-	//	}
-	//	
-	//}
+		}
+	}
 
-	//if (_inputHandler->IsPressed(VK_SUBTRACT))
-	//{
-	//	if (_selectedObj != 0)
-	//	{
-	//		_selectedObj--;
-	//	}
-	//		
-	//}
+	if (_inputHandler->IsPressed(System::Input::RightMouse))
+	{
+		if (_isSelectionMode)
+		{
+			SelectObject(nullptr);
+		}
+		else
+		{
+			_isSelectionMode = true;
+		}
+	}
 
 	//Move tile greater distance per button press
 	if (_inputHandler->IsPressed(VK_PRIOR))
@@ -81,7 +88,7 @@ void LevelEdit::HandleInput()
 		}
 	}
 
-
+/*
 	//Check if there is a tile to move
 	if (_objectHandler->GetTotalNrOfGameObjects() > 0)
 	{
@@ -175,7 +182,7 @@ void LevelEdit::HandleInput()
 		//XMFLOAT3 tempRot = temp->GetRotation();
 		//temp->SetRotation(XMFLOAT3(tempRot.x, tempRot.y - (DirectX::XM_PI/2), tempRot.z));
 	}
-
+*/
 	//Temp LevelLoads
 	if (_inputHandler->IsPressed(0x31))
 	{
@@ -199,14 +206,14 @@ void LevelEdit::HandleInput()
 
 
 	//Press C to init new level
-	if (_inputHandler->IsPressed(0x43))
+	if (_inputHandler->IsPressed(System::Input::C))
 	{
 		InitNewLevel();
 	}
 
 
 	//tempAddObj
-
+	/*
 	//R Adds Floor
 	if (_inputHandler->IsPressed(System::Input::R))
 	{
@@ -242,7 +249,7 @@ void LevelEdit::HandleInput()
 		//_objectHandler->Add(ENTRY, ENTRY, _lastObjPosition, XMFLOAT3(0.0f, 0.0f, 0.0f));
 		//_selectedObj = _objectHandler->GetSize() - 1;
 	}
-
+	*/
 
 	if (_inputHandler->IsPressed(VK_DELETE))
 	{
@@ -303,6 +310,7 @@ void LevelEdit::HandleInput()
 		ExportLevel();
 	}
 
+	/*
 	// Testing of map
 	if (GetAsyncKeyState('F'))
 	{
@@ -319,49 +327,14 @@ void LevelEdit::HandleInput()
 		_aStar->CleanMap();
 		_aStar->FindPath();
 	}
+	*/
 }
 
 void LevelEdit::Update(float deltaTime)
 {
-	HandleSelected();
 	HandleInput();
 	//_objectHandler->Update();
 }
-
-void LevelEdit::HandleSelected()
-{
-	//GameObject* temp;
-
-	if (_objectHandler->GetTotalNrOfGameObjects() != 0)
-	{
-		if (_selectedObj != _lastSelected || _selectedObj == 0)
-		{
-			if (_lastSelected != nullptr)
-			{
-				//Lower and scale last selected
-				//temp = _objectHandler->Find(_lastSelected);
-				if (_lastSelected->GetType() == WALL || FLOOR || UNIT)
-				{
-					XMFLOAT3 tempPos = _lastSelected->GetPosition();
-					_lastSelected->SetPosition(XMFLOAT3(tempPos.x, 0.0, tempPos.z));
-					//XMFLOAT3 tempScale = temp->GetScale();
-					//temp->SetScale(XMFLOAT3(1, 1, 1));
-					
-				}
-			}
-			//Raise and scale selected
-			if (_selectedObj->GetType() == WALL || FLOOR || UNIT)
-			{
-				XMFLOAT3 tempPos = _selectedObj->GetPosition();
-				_selectedObj->SetPosition(XMFLOAT3(tempPos.x, 0.1, tempPos.z));
-				//XMFLOAT3 tempScale = temp->GetScale();
-				//temp->SetScale(XMFLOAT3(1.1, 1.1, 1.1));
-			}
-		}
-		_lastSelected = _selectedObj;
-	}
-}
-
 
 void LevelEdit::ResetSelectedObj()
 {
@@ -378,12 +351,12 @@ void LevelEdit::InitNewLevel()
 void LevelEdit::DeleteObject()
 {
 	//GameObject* temp;
-	if (_selectedObj != 0)
+	if (_selectedObj != nullptr)
 	{
 		//temp = _objectHandler->Find(_selectedObj);
 		_objectHandler->Remove(_selectedObj);
+		_selectedObj = nullptr;
 	}
-
 }
 
 void LevelEdit::ExportLevel()
@@ -462,4 +435,20 @@ void LevelEdit::ExportLevel()
 	
 	mapData.clear();
 
+}
+
+void LevelEdit::SelectObject(GameObject* selectedObject)
+{
+	float yOffset = 0.1f;
+
+	if (_selectedObj != nullptr)
+	{
+		_selectedObj->Translate(DirectX::XMFLOAT3(0,-yOffset,0));
+	}
+	_selectedObj = selectedObject;
+
+	if (_selectedObj != nullptr)
+	{
+		_selectedObj->Translate(DirectX::XMFLOAT3(0, yOffset, 0));
+	}
 }

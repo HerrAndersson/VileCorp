@@ -23,6 +23,7 @@ protected:
 	UIHandler*				_uiHandler;
 	System::InputDevice*	_inputHandler;
 	System::Camera*			_camera;
+	PickingDevice*			_pickingDevice;
 	
 	void ChangeState(State newState);
 public:

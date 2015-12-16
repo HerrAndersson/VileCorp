@@ -8,6 +8,7 @@ BaseState::BaseState(InitVar initVar)
 	_uiHandler			= initVar._uiHandler;
 	_inputHandler		= initVar._inputHandler;
 	_camera				= initVar._camera;
+	_pickingDevice		= initVar._pickingDevice;
 	_newStateRequest	= SPLASHSTATE;
 }
 

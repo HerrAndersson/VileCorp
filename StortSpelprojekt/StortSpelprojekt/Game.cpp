@@ -32,6 +32,8 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	initVar._uiHandler = _UI;
 	initVar._inputHandler = _input;
 	initVar._camera = _camera;
+	initVar._pickingDevice = _pickingDevice;
+
 	_SM = new StateMachine(initVar);	initVar._inputHandler = _input;
 
 	_SM->Update(_timer.GetFrameTime());

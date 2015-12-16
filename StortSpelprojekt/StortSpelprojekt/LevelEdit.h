@@ -16,6 +16,7 @@ private:
 	UIHandler*				_uiHandler;
 	System::InputDevice*	_inputHandler;
 	System::Camera*			_camera;
+	PickingDevice*			_pickingDevice;
 	Grid*					_grid;
 	AI::AStar*				_aStar;
 	Tilemap*				_tileMap;
@@ -38,24 +39,20 @@ private:
 	};
 
 	XMFLOAT3 _lastObjPosition = XMFLOAT3(0.0, 0.0, 0.0);
-
-	//temps
 	GameObject* _selectedObj;
 	GameObject* _lastSelected;
 	int _tileMultiplier;
-
 	int _tilemapHeight, _tilemapWidth;
-
+	bool _isSelectionMode = true;
 
 	void HandleInput();
-	void HandleSelected();
 	void LoadLevel(int levelID);
 	void InitNewLevel();
 	void ResetSelectedObj();
 	void DeleteObject();
 
 	void ExportLevel();
-
+	void SelectObject(GameObject* selectedObject);
 	void MoveSelectedObject();
 
 public:

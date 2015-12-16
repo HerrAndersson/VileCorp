@@ -4,6 +4,7 @@
 #include "../ObjectHandler.h"
 #include "InputDevice.h"
 #include "Camera.h"
+#include "../PickingDevice.h"
 
 struct InitVar
 {
@@ -11,4 +12,6 @@ struct InitVar
 	UIHandler*				_uiHandler;
 	System::InputDevice*	_inputHandler;
 	System::Camera*			_camera;
+	PickingDevice*			_pickingDevice;
+
 };

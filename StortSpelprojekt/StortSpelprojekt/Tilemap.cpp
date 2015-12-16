@@ -159,6 +159,12 @@ bool Tilemap::RemoveObjectFromTile(int x, int z, GameObject * obj)
 	return result;
 }
 
+bool Tilemap::RemoveObjectFromTile(GameObject* obj)
+{
+	AI::Vec2D tileCoord = obj->GetTilePosition();
+	return RemoveObjectFromTile(tileCoord._x, tileCoord._y, obj);
+}
+
 void Tilemap::ClearTile(int x, int z)
 {
 	if (IsValid(x, z))
@@ -187,6 +193,25 @@ int Tilemap::GetWidth() const
 GameObject* Tilemap::GetObjectOnTile(int x, int z, int index) const
 {
 	return _map[x][z]._objectsOnTile[index];
+}
+
+std::vector<GameObject*> Tilemap::GetAllObjectsOnTile(AI::Vec2D tileCoords) const
+{
+	std::vector<GameObject*> objectsOnTile = std::vector<GameObject*>();
+	objectsOnTile.reserve(Tile::OBJECT_CAPACITY);
+
+	if (IsValid(tileCoords._x, tileCoords._y))
+	{
+		for (int i = 0; i < Tile::OBJECT_CAPACITY; i++)
+		{
+			if (_map[tileCoords._x][tileCoords._y]._objectsOnTile[i] != nullptr)
+			{
+				objectsOnTile.push_back(_map[tileCoords._x][tileCoords._y]._objectsOnTile[i]);
+			}
+		}
+	}
+
+	return objectsOnTile;
 }
 
 bool Tilemap::IsTileEmpty(int x, int z) const

@@ -47,6 +47,7 @@ public:
 
 	bool AddObjectToTile(int x, int z, GameObject* obj);
 	bool RemoveObjectFromTile(int x, int z, GameObject* obj);
+	bool RemoveObjectFromTile(GameObject* obj);
 	void ClearTile(int x, int z);
 	
 	int GetNrOfTiles() const;
@@ -54,6 +55,7 @@ public:
 	int GetWidth() const;
 
 	GameObject* GetObjectOnTile(int x, int z, int index) const; // More thinking
+	std::vector<GameObject*> GetAllObjectsOnTile(AI::Vec2D tileCoords) const;
 	bool IsTileEmpty(int x, int z)const;
 	bool IsWallOnTile(int x, int z)const;
 	int UnitsOnTile(int x, int z)const;
