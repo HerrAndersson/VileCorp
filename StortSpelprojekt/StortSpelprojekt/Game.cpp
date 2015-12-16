@@ -26,6 +26,8 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	_SM = new StateMachine(initVar);
 
 	_input = new System::InputDevice(_window->GetHWND());
+
+	_pickingDevice = new PickingDevice(_camera, _window);
 }
 
 Game::~Game() 
@@ -39,6 +41,7 @@ Game::~Game()
 	delete _UI;
 	delete _SM;
 	delete _input;
+	delete _pickingDevice;
 }
 void Game::ResizeResources(System::WindowSettings settings)
 {
@@ -122,62 +125,18 @@ void Game::HandleInput()
 	//Picking control
 	if (GetAsyncKeyState(VK_LBUTTON))
 	{
-		Picking();
+		vector<GameObject*> gameObjects = Picking();
+		for (unsigned int i = 0; i < gameObjects.size(); i++)
+		{
+			_objectHandler->Remove(gameObjects[i]->GetID());
+		}
 	}
-
-	
 }
 
 vector<GameObject*> Game::Picking()
 {
-	vector<GameObject*> pickedObjects;
-	XMFLOAT3 mouseWorldPos = XMFLOAT3(0.0f, 0.0f, 0.0f);
-	XMFLOAT4X4 viewMatrix;
-	XMFLOAT4X4 projMatrix;
-	XMStoreFloat4x4(&projMatrix, *_camera->GetProjectionMatrix());
-
-	//Translating mouseposition to viewSpace
-	POINT point = _input->GetMouseCoord()._pos;
-	float width = (float)_window->GetWindowSettings()._width;
-	float xPos = (float)point.x /width;
-	xPos = (xPos * 2.0f) - 1.0f;
-
-	float height = (float)_window->GetWindowSettings()._height;
-	float yPos = (float)point.y / height;
-	yPos = (yPos * -2.0f) + 1.0f;
-	
-	mouseWorldPos.x = xPos / projMatrix._11;
-	mouseWorldPos.y = yPos / projMatrix._22;
-
-
-
-	XMMATRIX inverseViewMatrix = XMMatrixInverse(nullptr, *_camera->GetViewMatrix());
-	XMStoreFloat3(&mouseWorldPos, XMVector3TransformCoord(XMVectorSet(mouseWorldPos.x, mouseWorldPos.y, mouseWorldPos.z, 1.0f),  inverseViewMatrix));
-
-	//System::Ray ray = System::Ray(System::Vec3(_camera->GetPosition()), (System::Vec3(mouseWorldPos)));// -System::Vec3(_camera->GetPosition())));
-	System::Ray ray = System::Ray(System::Vec3(_camera->GetPosition()), System::Vec3(_camera->GetForwardVector()));
-
-	vector<GameObject*> pickableObjects = _objectHandler->GetAll(UNIT);
-
-	//GameObject* go= _objectHandler->Add(TRAP, 0, ((ray._origin + ray._direction)).convertToXMFLOAT(), XMFLOAT3(0.0f,0.0f,0.0f));
-	//_objectHandler->Add(TRAP, 0, (_camera->GetForwardVector()*5.0f).convertToXMFLOAT(), XMFLOAT3(0.0f, 0.0f, 0.0f));
-	//System::Sphere pickObject = System::Sphere(System::Vec3(0.0f,0.0f,0.0f), 2.0f);
-	//System::Box pickObject = System::Box(1.0f, 1.8f, 1.0f, System::Vec3(0.0f, 0.0f, 0.0f));
-	for (int i = 0; i < pickableObjects.size(); i++)
-	{
-		//System::Sphere pickObject = System::Sphere(System::Vec3(pickableObjects[i]->GetPosition()), 2.0f);
-		System::Box pickObject = System::Box(1.0f, 1.8f, 1.0f, System::Vec3(pickableObjects[i]->GetPosition()));
-		//System::Box pickObject = System::Box(1.0f, 1.8f, 1.0f, System::Vec3(go->GetPosition()));
-		
-
-
-		if (System::Collision(ray, pickObject))
-		{
-			pickedObjects.push_back(pickableObjects[i]);
-		}
-	}
-
-	return pickedObjects;
+	return _pickingDevice->pickObjects(_input->GetMouseCoord()._pos, _objectHandler->GetAll(WALL));
+	//return _pickingDevice->pickTilemap(_input->GetMouseCoord()._pos, _objectHandler->GetTileMap());
 }
 
 void Game::Update(float deltaTime)

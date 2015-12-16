@@ -28,6 +28,7 @@
     <ClCompile Include="MenuState.cpp" />
     <ClCompile Include="ObjectHandler.cpp" />
     <ClCompile Include="OptionsState.cpp" />
+    <ClCompile Include="PickingDevice.cpp" />
     <ClCompile Include="PlayState.cpp" />
     <ClCompile Include="SplashState.cpp" />
     <ClCompile Include="StateMachine.cpp" />
@@ -47,6 +48,7 @@
     <ClInclude Include="MenuState.h" />
     <ClInclude Include="ObjectHandler.h" />
     <ClInclude Include="OptionsState.h" />
+    <ClInclude Include="PickingDevice.h" />
     <ClInclude Include="PlayState.h" />
     <ClInclude Include="SplashState.h" />
     <ClInclude Include="StateMachine.h" />

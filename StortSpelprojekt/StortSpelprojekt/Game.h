@@ -12,8 +12,7 @@
 #include "InitVar.h"
 #include "Trap.h"
 #include "InputDevice.h"
-#include "VectorMath.h"
-#include "Shapes.h"
+#include "PickingDevice.h"
 
 
 
@@ -31,6 +30,7 @@ private:
 	System::Timer				_timer;
 
 	System::InputDevice*		_input;
+	PickingDevice*				_pickingDevice;
 	
 
 	//Resizing window, directx resources, camera
