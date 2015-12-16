@@ -28,8 +28,8 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	_input = new System::InputDevice(_window->GetHWND());
 
 	//TEMP!
-	_spotlight = new Renderer::Spotlight(0.1f, 1000.0f, XM_PIDIV4, 256, 256, 1.0f, 15.0f, XMFLOAT3(0.0f, 1.0f, 1.0f));
-	_spotlight->SetPositionAndRotation(XMFLOAT3(3, 1, 5), XMFLOAT3(0, 90, 0));
+	_spotlight = new Renderer::Spotlight(0.1f, 1000.0f, XM_PIDIV4, 256, 256, 1.0f, 25.0f, XMFLOAT3(0.0f, 1.0f, 1.0f));
+	_spotlight->SetPositionAndRotation(XMFLOAT3(15, 1.0f, 10), XMFLOAT3(0, 90, 0));
 }
 
 Game::~Game() 
@@ -200,8 +200,14 @@ void Game::Render()
 	_renderModule->SetLightPassDataPerLight(_spotlight);
 
 	XMFLOAT3 rot = _spotlight->GetRotation();
-	rot.y -= 2.0f;
+	rot.y -= 2;
 	_spotlight->SetRotation(rot);
+
+	XMFLOAT3 color = _spotlight->GetColor();
+	color.x = sin(_timer.GetGameTime() / 1000);
+	color.y = sin(_timer.GetGameTime() / 1000 + XMConvertToRadians(120));
+	color.z = sin(_timer.GetGameTime() / 1000 + XMConvertToRadians(240));
+	_spotlight->SetColor(color);
 
 	_renderModule->RenderLightQuad();
 	_renderModule->EndScene();

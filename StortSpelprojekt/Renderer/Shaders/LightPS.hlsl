@@ -33,16 +33,6 @@ struct PointLight
 	float intensity;
 };
 
-//struct SpotLight
-//{
-//	float3 position;
-//	float3 color;
-//	float3 direction;
-//	float angle;
-//	float intensity;
-//	float range;
-//};
-
 Texture2D diffuseTex : register(t0);
 Texture2D normalTex : register(t1);
 Texture2D camDepthMap : register(t2);
@@ -89,15 +79,15 @@ float4 main(VS_OUT input) : SV_TARGET
 
 	float3 finalColor = diffuse.xyz;
 
-	if (input.uv.x < 0.2f && input.uv.y < 0.2f)
-	{
-		return pow(camDepthMap.Sample(samplerWrap, input.uv*5.0f).r,10);
-	}
+	//if (input.uv.x < 0.2f && input.uv.y < 0.2f)
+	//{
+	//	return pow(camDepthMap.Sample(samplerWrap, input.uv*5.0f).r,10);
+	//}
 
-	if (input.uv.x > 0.8f && input.uv.y < 0.2f)
-	{
-		return pow(lightDepthMap.Sample(samplerWrap, input.uv*5.0f).r,10);
-	}
+	//if (input.uv.x > 0.8f && input.uv.y < 0.2f)
+	//{
+	//	return pow(lightDepthMap.Sample(samplerWrap, input.uv*5.0f).r,10);
+	//}
 
 	float3 worldPos = ReconstructWorldFromCamDepth(input.uv);
 	float3 lightToPixel = lightPosition - worldPos;
