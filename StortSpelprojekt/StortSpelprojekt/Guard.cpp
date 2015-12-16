@@ -34,8 +34,23 @@ void Guard::EvaluateTile(Type objective, AI::Vec2D tile)
 	}
 }
 
-void Guard::act(Type obj)
-{}
+void Guard::act(GameObject* obj)
+{
+	switch (obj->GetType())
+	{
+	case LOOT:
+	case GUARD:
+	case TRAP:
+	case TRIGGER:										//Guards don't react to these (yet)
+		break;	
+	case ENEMY:											//The guard hits the enemy
+		Unit* unit = dynamic_cast<Unit*>(obj);
+		unit->ChangeHealth(1);
+		break;
+	default:
+		break;
+	}
+}
 
 void Guard::Release()
 {}

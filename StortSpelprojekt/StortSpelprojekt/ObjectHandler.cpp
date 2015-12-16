@@ -211,14 +211,23 @@ void ObjectHandler::Update()
 		_gameObjects[i]->Update();
 		if (_gameObjects[i]->GetType() == GUARD || _gameObjects[i]->GetType() == ENEMY)									//Handle unit movement
 		{
-			float xOffset = abs(_gameObjects[i]->GetPosition().x - _gameObjects[i]->GetTilePosition()._x);
-			float zOffset = abs(_gameObjects[i]->GetPosition().z - _gameObjects[i]->GetTilePosition()._y);
-			if (xOffset > 0.99 || zOffset > 0.99 )																		 //If unit is on a new tile	
+			Unit* unit = dynamic_cast<Unit*>(_gameObjects[i]);
+			if (unit->GetHealth() <= 0)
 			{
-				Unit* unit = dynamic_cast<Unit*>(_gameObjects[i]);
- 				_tilemap->RemoveObjectFromTile(_gameObjects[i]->GetTilePosition()._x, _gameObjects[i]->GetTilePosition()._y, unit);
-				unit->Move();
-				_tilemap->AddObjectToTile(_gameObjects[i]->GetTilePosition()._x, _gameObjects[i]->GetTilePosition()._y, unit);
+				_tilemap->RemoveObjectFromTile(_gameObjects[i]->GetTilePosition()._x, _gameObjects[i]->GetTilePosition()._y, unit);
+				unit->Release();
+				delete unit;
+			}
+			else
+			{
+				float xOffset = abs(_gameObjects[i]->GetPosition().x - _gameObjects[i]->GetTilePosition()._x);
+				float zOffset = abs(_gameObjects[i]->GetPosition().z - _gameObjects[i]->GetTilePosition()._y);
+				if (xOffset > 0.99 || zOffset > 0.99)																		 //If unit is on a new tile	
+				{
+					_tilemap->RemoveObjectFromTile(_gameObjects[i]->GetTilePosition()._x, _gameObjects[i]->GetTilePosition()._y, unit);
+					unit->Move();
+					_tilemap->AddObjectToTile(_gameObjects[i]->GetTilePosition()._x, _gameObjects[i]->GetTilePosition()._y, unit);
+				}
 			}
 		}
 	}
@@ -230,6 +239,7 @@ void ObjectHandler::Release()
 	//delete _gameObjects[72];
 	for (int i = 0; i < _size; i++)
 	{
+		_tilemap->RemoveObjectFromTile(_gameObjects[i]->GetTilePosition()._x, _gameObjects[i]->GetTilePosition()._y, _gameObjects[i]);
 		_gameObjects[i]->Release();
 		delete _gameObjects[i];
 	}

@@ -16,15 +16,15 @@ private:
 	AI::Vec2D _direction;
 	float  _moveSpeed;
 
-
 	int _visionRadius;
 	AI::Vec2D* _visibleTiles;
 	int _nrOfVisibleTiles;
 
+	int _health;
+
 	void ScanOctant(int depth, int octant, double &startSlope, double endSlope);
 	double GetSlope(double x1, double y1, double x2, double y2, bool invert);
 	int GetVisDistance(int x1, int y1, int x2, int y2);
-
 	void CalculatePath();
 
 protected:
@@ -38,6 +38,7 @@ public:
 	int GetPathLength()const;
 	AI::Vec2D GetGoal();
 	AI::Vec2D GetDirection();
+	int GetHealth();
 	void FindVisibleTiles();									 
 	void CheckVisibleTiles();		
 	void CheckAllTiles();				
@@ -46,6 +47,8 @@ public:
 	void Move();
 	void Update();					
 	virtual void Release();
-	virtual void act(Type obj) = 0;									//context specific action on the unit's objective
+	virtual void act(GameObject* obj) = 0;									//context specific action on the unit's objective
+	void ChangeHealth(int damage);
+
 };
 

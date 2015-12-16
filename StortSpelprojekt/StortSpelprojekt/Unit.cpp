@@ -433,6 +433,7 @@ Unit::Unit()
 	_visibleTiles = nullptr;
 	_visionRadius = 0;
 	_goalTilePosition = {0,0};
+	_health = 1;
 }
 
 Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject* renderObject, const Tilemap* tileMap)
@@ -444,10 +445,9 @@ Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	_nrOfVisibleTiles = 0;
 	_goalTilePosition = _tilePosition;
 	_tileMap = tileMap;
-	_aStar = new AI::AStar(_tileMap->GetWidth(), _tileMap->GetHeight(), _tilePosition, {0,0}, AI::AStar::OCTILE);		//TODO: Find the unit's goal --Victor
-
-	//Scan tilemap for floor layout and objectives
-	//CheckAllTiles();
+	_aStar = new AI::AStar(_tileMap->GetWidth(), _tileMap->GetHeight(), _tilePosition, {0,0}, AI::AStar::OCTILE);
+	
+	_health = 1;					//TODO: Update constrcutor parameters to include health  --Victor
 }
 
 
@@ -471,6 +471,11 @@ AI::Vec2D Unit::GetGoal()
 AI::Vec2D Unit::GetDirection()
 {
 	return _direction;
+}
+
+int Unit::GetHealth()
+{
+	return _health;
 }
 
 /*
@@ -639,5 +644,10 @@ void Unit::Update()
 
 void Unit::Release()
 {}
+
+void Unit::ChangeHealth(int damage)
+{
+	_health -= damage;
+}
 
 
