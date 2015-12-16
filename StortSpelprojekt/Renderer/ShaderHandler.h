@@ -40,6 +40,9 @@ namespace Renderer
 
 		//Samplers
 		ID3D11SamplerState*		_samplerWRAP;
+		ID3D11SamplerState*		_samplerPOINT;
+		ID3D11SamplerState*		_samplerCLAMP;
+		ID3D11SamplerState*		_samplerCMP;
 
 		VertexShaderData* CreateVertexShader(ID3D11Device* device, LPCWSTR fileName, D3D11_INPUT_ELEMENT_DESC* inputDesc, int inputDescSize);
 
