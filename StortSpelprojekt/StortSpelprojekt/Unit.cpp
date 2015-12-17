@@ -435,9 +435,10 @@ void Unit::Move()
 
 	AI::Vec2D nextTile = _path[--_pathLength];
 	_direction = nextTile - _tilePosition;
+
 	if (_direction._x == 0)
 	{
- 		_rotation.y = DirectX::XM_PIDIV2 * (_direction._y + 1);
+		_rotation.y = DirectX::XM_PIDIV2 * (_direction._y + 1);
 	}
 	else if (_direction._x == -1)
 	{
@@ -447,11 +448,12 @@ void Unit::Move()
 	{
 		_rotation.y = 3 * DirectX::XM_PIDIV2 - DirectX::XM_PIDIV4 * _direction._y;
 	}
-	CalculateMatrix();
 }
 
 void Unit::Update()
 {
+	//SmoothRotate();
+
 	if (_direction._x == 0)
 	{
 	}
@@ -473,6 +475,31 @@ void Unit::Update()
 	{
 		CheckAllTiles();
 	}
+}
+
+void Unit::SmoothRotate()
+{
+	if (_pathLength > 0)
+	{
+		if (_time < 1.0f)
+		{
+			_time += 0.005;
+			AI::Vec2D nextDir = _tilePosition + _direction - _path[_pathLength - 1];
+
+			DirectX::XMVECTOR directionV = DirectX::XMVectorSet(_direction._x, 0.0f, _direction._y, 0.0f);
+			DirectX::XMVECTOR nextDirectionV = DirectX::XMVectorSet(nextDir._x, 0.0f, nextDir._y, 0.0f);
+			DirectX::XMVECTOR finalV = DirectX::XMVectorLerp(directionV, nextDirectionV, _time);
+
+			DirectX::XMFLOAT4 finalF;
+			DirectX::XMStoreFloat4(&finalF, finalV);
+			_rotation.y = finalF.z;
+		}
+		else
+		{
+			_time = 0.0f;
+		}
+	}
+	CalculateMatrix();
 }
 
 void Unit::Release()

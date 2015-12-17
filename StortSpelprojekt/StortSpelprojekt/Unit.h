@@ -15,6 +15,7 @@ private:
 	const Tilemap* _tileMap;		//Pointer to the tileMap in objectHandler(?). Units should preferably have read-, but not write-access.
 	AI::Vec2D _direction;
 	float  _moveSpeed;
+	float _time = 0.0f;
 
 	int _visionRadius;
 	AI::Vec2D* _visibleTiles;
@@ -26,6 +27,7 @@ private:
 	double GetSlope(double x1, double y1, double x2, double y2, bool invert);
 	int GetVisDistance(int x1, int y1, int x2, int y2);
 	void CalculatePath();
+	void SmoothRotate();
 
 protected:
 	int _goalPriority;				//Lower value means higher priority
