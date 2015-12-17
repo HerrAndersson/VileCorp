@@ -12,6 +12,8 @@
 using namespace std;
 using namespace DirectX;
 
+
+
 class PickingDevice
 {
 private:

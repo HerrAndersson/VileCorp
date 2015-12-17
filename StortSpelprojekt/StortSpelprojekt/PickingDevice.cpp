@@ -100,8 +100,8 @@ vector<GameObject*> PickingDevice::pickObjects(POINT mousePoint, vector<GameObje
 
 	for (unsigned int i = 0; i < pickableObjects.size(); i++)
 	{
-		Sphere pickObject = Sphere(Vec3(pickableObjects[i]->GetPosition()), 2.0f);
-		//Box pickObject = Box(1.0f, 3.0f, 1.0f, Vec3(pickableObjects[i]->GetPosition()));
+		//Sphere pickObject = Sphere(Vec3(pickableObjects[i]->GetPosition()), 2.0f);
+		Box pickObject = Box(1.0f, 3.0f, 1.0f, Vec3(pickableObjects[i]->GetPosition()));
 
 
 		if (Collision(ray, pickObject))

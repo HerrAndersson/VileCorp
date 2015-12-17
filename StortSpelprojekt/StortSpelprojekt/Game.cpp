@@ -136,7 +136,7 @@ void Game::HandleInput()
 
 vector<GameObject*> Game::Picking()
 {
-	return _pickingDevice->pickObjects(_input->GetMouseCoord()._pos, _objectHandler->GetAll(WALL));
+	return _pickingDevice->pickObjects(_input->GetMouseCoord()._pos, _objectHandler->GetAll(FLOOR));
 	//return _pickingDevice->pickTilemap(_input->GetMouseCoord()._pos, _objectHandler->GetTileMap());
 }
 
