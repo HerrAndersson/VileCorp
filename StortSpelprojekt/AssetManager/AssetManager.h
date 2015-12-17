@@ -37,14 +37,17 @@ struct TilesetHandler
 	bool Int64(int64_t i) { return true; }
 	bool Uint64(uint64_t u) { return true; }
 	bool Double(double d) { return true; }
-	bool String(const char* str, rapidjson::SizeType length, bool copy) {
+	bool String(const char* str, rapidjson::SizeType length, bool copy)
+	{
 		if (nameNext)
 		{
 			tileset->name = str;
 			nameNext = false;
 		}
 		else
+		{
 			cur->push_back(str);
+		}
 		return true;
 	}
 	bool StartObject()
@@ -54,9 +57,12 @@ struct TilesetHandler
 		tileset = &tilesets->back();
 		return true;
 	}
-	bool Key(const char* str, rapidjson::SizeType length, bool copy) {
+	bool Key(const char* str, rapidjson::SizeType length, bool copy)
+	{
 		if (!strcmp("name", str))
+		{
 			nameNext = true;
+		}
 		else if (!strcmp("floors", str))
 		{
 			cur = &tileset->floors;
@@ -158,6 +164,8 @@ private:
 	int _animationFormatVersion = 10;
 	ifstream* _infile;
 	ID3D11Device* _device;
+	Tileset* _activeTileset;
+
 
 	vector<string>* _modelFiles;
 	vector<string>* _levelFileNames;
@@ -175,7 +183,6 @@ private:
 	RenderObject* ScanModel(string file_path);
 	Texture* ScanTexture(string filename);
 	Skeleton* LoadSkeleton(string filename);
-	void DecrementUsers(Texture* texture);
 	ID3D11Buffer* CreateVertexBuffer(vector<WeightedVertex> *weightedVertices, vector<Vertex> *vertices, int skeleton);
 	void SetupRenderObjectList(Tileset* tileset);
 	void SetupLevelFileNameList();

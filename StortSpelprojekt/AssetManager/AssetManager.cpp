@@ -25,15 +25,16 @@ AssetManager::AssetManager(ID3D11Device* device)
 AssetManager::~AssetManager()
 {
 	for (Texture* texture : *_textures)
+	{
 		if (texture->_loaded)
 		{
 			texture->_data->Release();
 			delete texture;
 		}
+	}
 
 	for (uint i = 0; i < _renderObjects->size(); i++)
 	{
-		UnloadModel(i, true);
 		delete _renderObjects->at(i);
 	}
 	delete _infile;
@@ -60,7 +61,7 @@ void AssetManager::SetupRenderObjectList(Tileset* tileset)
 //#else
 //	GetFilenamesInDirectory("Assets/Models/", ".bin", *modelFiles);
 //#endif
-
+	_modelFiles->clear();
 	for (string str : tileset->floors) _modelFiles->push_back(str);
 	for (string str : tileset->walls) _modelFiles->push_back(str);
 	for (string str : tileset->deco) _modelFiles->push_back(str);
@@ -71,6 +72,7 @@ void AssetManager::SetupRenderObjectList(Tileset* tileset)
 		RenderObject* renderObject = ScanModel(_modelFiles->at(i));
 		_renderObjects->push_back(renderObject);
 	}
+	_activeTileset = tileset;
 }
 
 void AssetManager::SetupLevelFileNameList()
@@ -108,23 +110,28 @@ void AssetManager::SetupTilesets()
 		rapidjson::StringStream ss(&buffer[0]);
 		reader.Parse(ss, handler);
 	}
+	_activeTileset = &_tilesets->at(0);
+	SetupRenderObjectList(&_tilesets->at(0));
 }
 
-void AssetManager::DecrementUsers(Texture* texture)
-{
-	texture->_activeUsers--;
-	if (!texture->_activeUsers)
-		_texturesToFlush->push_back(texture);
-}
-
+//Replaces current Tileset, do not call without clearing GameObjects - Fredrik
 bool AssetManager::ActivateTileset(string name)
 {
-	for(Tileset set : *_tilesets)
+	if (!strcmp(name.c_str(), _activeTileset->name.c_str()))
+	{
+		return true;
+	}
+	
+	_renderObjects->clear();
+
+	for (Tileset set : *_tilesets)
+	{
 		if (!strcmp(name.c_str(), set.name.c_str()))
 		{
 			SetupRenderObjectList(&set);
 			return true;
 		}
+	}
 	return false;
 }
 
@@ -141,9 +148,19 @@ void AssetManager::UnloadModel(int index, bool force)
 		renderObject->_toUnload = false;
 		renderObject->_meshLoaded = false;
 		if (renderObject->_diffuseTexture != nullptr)
-			DecrementUsers(renderObject->_diffuseTexture);
+		{
+			if (renderObject->_diffuseTexture->DecrementUsers())
+			{
+				_texturesToFlush->push_back(renderObject->_diffuseTexture);
+			}
+		}
 		if (renderObject->_specularTexture != nullptr)
-			DecrementUsers(renderObject->_specularTexture);
+		{
+			if (renderObject->_specularTexture->DecrementUsers())
+			{
+				_texturesToFlush->push_back(renderObject->_specularTexture);
+			}
+		}
 	}
 	else
 	{
@@ -185,22 +202,40 @@ void AssetManager::ParseLevel(int index, vector<GameObjectData> &gameObjects, in
 void AssetManager::Flush()
 {
 	for (RenderObject* renderObject : *_renderObjectsToFlush)
+	{
 		if (renderObject->_toUnload)
 		{
 			for (Mesh m : renderObject->_meshes)
+			{
 				m._vertexBuffer->Release();
+			}
 			renderObject->_toUnload = false;
 			renderObject->_meshLoaded = false;
 			if (renderObject->_diffuseTexture != nullptr)
-				DecrementUsers(renderObject->_diffuseTexture);
+			{
+				if (renderObject->_diffuseTexture->DecrementUsers())
+				{
+					_texturesToFlush->push_back(renderObject->_diffuseTexture);
+				}
+			}
 			if (renderObject->_specularTexture != nullptr)
-				DecrementUsers(renderObject->_specularTexture);
+			{
+				if (renderObject->_specularTexture->DecrementUsers())
+				{
+					_texturesToFlush->push_back(renderObject->_specularTexture);
+				}
+			}
 		}
+	}
 	_renderObjectsToFlush->clear();
 
 	for (Texture* texture : *_texturesToFlush)
+	{
 		if (!texture->_activeUsers)
+		{
 			texture->_data->Release();
+		}
+	}
 	_texturesToFlush->clear();
 }
 
@@ -218,6 +253,16 @@ HRESULT Texture::LoadTexture(ID3D11Device* device)
 	}
 	_activeUsers++;
 	return res;
+}
+
+bool Texture::DecrementUsers()
+{
+	_activeUsers--;
+	if (!_activeUsers)
+	{
+		return true;
+	}
+	return false;
 }
 
 //Loads a model to the GPU

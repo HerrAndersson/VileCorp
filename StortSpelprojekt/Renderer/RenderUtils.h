@@ -85,6 +85,7 @@ struct Mesh
 struct Texture
 {
 	HRESULT LoadTexture(ID3D11Device* device);
+	bool DecrementUsers();
 	bool _loaded = false;
 	short _activeUsers = 0;
 	std::wstring _filename;
@@ -101,5 +102,20 @@ struct RenderObject
 	Texture* _diffuseTexture = nullptr;
 	Texture* _specularTexture = nullptr;
 	std::vector<Mesh> _meshes;
-	~RenderObject() { _meshes.clear(); }
+	~RenderObject()
+	{
+		for (unsigned int i = 0; i < _meshes.size(); i++)
+		{
+			if (_diffuseTexture != nullptr)
+			{
+				_diffuseTexture->DecrementUsers();
+			}
+			if (_specularTexture != nullptr)
+			{
+				_specularTexture->DecrementUsers();
+			}
+			_meshes[i]._vertexBuffer->Release();
+		}
+		_meshes.clear();
+	}
 };
