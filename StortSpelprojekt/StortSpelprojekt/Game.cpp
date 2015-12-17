@@ -37,11 +37,11 @@ Game::~Game()
 	delete _window;
 	delete _renderModule;
 	delete _camera;
-	delete _objectHandler;
 	delete _UI;
 	delete _SM;
 	delete _input;
 	delete _assetManager;
+	delete _objectHandler;
 }
 void Game::ResizeResources(System::WindowSettings settings)
 {
@@ -183,7 +183,7 @@ int Game::Run()
 	//_objectHandler->Add(TRAP, 0, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
 
 	//_objectHandler->Add(TRAP, 0, XMFLOAT3(0.5f, -1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
-	_objectHandler->LoadLevel(3);
+	_objectHandler->LoadLevel(4);
 
 
 	_objectHandler->InitPathfinding();

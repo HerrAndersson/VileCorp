@@ -1,4 +1,4 @@
-#pragma once
+ #pragma once
 #define AI_EXPORT __declspec(dllexport)
 
 namespace AI
@@ -16,6 +16,8 @@ namespace AI
 			_x = x;
 			_y = y;
 		}
+		~Vec2D()
+		{}
 		bool operator==(const Vec2D& comp)
 		{
 			return _x == comp._x && _y == comp._y;
@@ -51,6 +53,6 @@ namespace AI
 		}
 	};
 
-	const double SQRT2 = 1.41421356;								//used for diagonals. Placing a constant means no root-calculations.
+	const float SQRT2 = 1.41421356f;								//used for diagonals. Placing a constant means no root-calculations.
 	const Vec2D NEIGHBOUR_OFFSETS[8] = { { -1, 0 },{ 1, 0 },{ 0, -1 },{ 0, 1 },{ -1, -1 },{ 1, -1 },{ -1, 1 },{ 1, 1 } };	//Straight moves in 0-3, diagonal in 4-7
 }
