@@ -10,8 +10,7 @@ void Unit::ScanOctant(int depth, int octant, double &startSlope, double endSlope
 	int y = 0;
 	int unitPosX = this->GetTilePosition()._x;
 	int unitPosY = this->GetTilePosition()._y;
-	
-	bool leftToRight = true;
+	int leftToRight = 1;							//can be 1 or -1
 	bool rowByRow = true;
 	int endSlopeCompOffset = 1;
 	int startSlopeOffset = 1;
@@ -22,10 +21,6 @@ void Unit::ScanOctant(int depth, int octant, double &startSlope, double endSlope
 	switch (octant)
 	{
 	case 1:
-		leftToRight			= true;
-		rowByRow			= true;
-		endSlopeCompOffset	= 1;//Negative of positive offset
-		startSlopeOffset	= 1;//Negative or positive offset
 		prevTileVec			= AI::Vec2D(-1, 0);//In what direction the previous tile was
 		endCornerVec		= AI::Vec2D(-1, -1);//Is multiplied with 0.5
 		startCornerVec		= AI::Vec2D(-1, 1);//Is multiplied with 0.5
@@ -35,17 +30,11 @@ void Unit::ScanOctant(int depth, int octant, double &startSlope, double endSlope
 		{
 			return;
 		}
-
 		x = unitPosX - (int)((startSlope * (double)depth));
-		if (x < 0)
-		{
-			x = 0;
-		}
+		x = max(x, 0);
 		break;
-
 	case 2:
-		leftToRight			= false;
-		rowByRow			= true;
+		leftToRight			= -1;
 		endSlopeCompOffset	= -1;
 		startSlopeOffset	= -1;
 		prevTileVec			= AI::Vec2D(1, 0);
@@ -57,16 +46,11 @@ void Unit::ScanOctant(int depth, int octant, double &startSlope, double endSlope
 		{
 			return;
 		}
-
 		x = unitPosX + (int)((startSlope * (double)depth));
-		if (x >= _tileMap->GetWidth())
-		{
-			x = _tileMap->GetWidth() - 1;
-		}
-		break;
-		
+		x = min(x , _tileMap->GetWidth() - 1);
+		break;		
 	case 3:
-		leftToRight			= false;
+		leftToRight			= -1;
 		rowByRow			= false;
 		endSlopeCompOffset	= -1;
 		startSlopeOffset	= -1;
@@ -79,18 +63,11 @@ void Unit::ScanOctant(int depth, int octant, double &startSlope, double endSlope
 		{
 			return;
 		}
-
 		y = unitPosY + (int)((startSlope * (double)depth));
-		if (y >= _tileMap->GetHeight())
-		{
-			y = _tileMap->GetHeight() - 1;
-		}
+		y = min(y, _tileMap->GetHeight() - 1);
 		break;
-
 	case 4:
-		leftToRight			= true;
 		rowByRow			= false;
-		endSlopeCompOffset	= 1;
 		startSlopeOffset	= -1;
 		prevTileVec			= AI::Vec2D(0, -1);
 		endCornerVec		= AI::Vec2D(-1, -1);
@@ -101,19 +78,11 @@ void Unit::ScanOctant(int depth, int octant, double &startSlope, double endSlope
 		{
 			return;
 		}
-
 		y = unitPosY - (int)((startSlope * (double)depth));
-		if (y < 0)
-		{
-			y = 0;
-		}
-
+		y = max(y, 0);
 		break;
-
 	case 5:
-		leftToRight			= false;
-		rowByRow			= true;
-		endSlopeCompOffset	= 1;
+		leftToRight			= -1;
 		startSlopeOffset	= -1;
 		prevTileVec			= AI::Vec2D(-1, 0);
 		endCornerVec		= AI::Vec2D(1, -1);
@@ -124,17 +93,10 @@ void Unit::ScanOctant(int depth, int octant, double &startSlope, double endSlope
 		{
 			return;
 		}
-
 		x = unitPosX + (int)((startSlope * (double)depth));
-		if (x >= _tileMap->GetWidth())
-		{
-			x = _tileMap->GetWidth() - 1;
-		}
+		x = min(x, _tileMap->GetWidth() - 1);
 		break;
-
 	case 6:
-		leftToRight			= true;
-		rowByRow			= true;
 		endSlopeCompOffset	= -1;
 		startSlopeOffset	= -1;
 		prevTileVec			= AI::Vec2D(-1, 0);
@@ -146,16 +108,10 @@ void Unit::ScanOctant(int depth, int octant, double &startSlope, double endSlope
 		{
 			return;
 		}
-
 		x = unitPosX - (int)((startSlope * (double)depth));
-		if (x < 0)
-		{
-			x = 0;
-		}
+		x = max(x, 0);
 		break;
-
 	case 7:
-		leftToRight			= true;
 		rowByRow			= false;
 		endSlopeCompOffset	= -1;
 		startSlopeOffset	= -1;
@@ -170,17 +126,11 @@ void Unit::ScanOctant(int depth, int octant, double &startSlope, double endSlope
 		}
 
 		y = unitPosY - (int)((startSlope * (double)depth));
-		if (y < 0)
-		{
-			y = 0;
-		}
+		y = max(y, 0);
 		break;
-
 	case 8:
-		leftToRight			= false;
+		leftToRight			= -1;
 		rowByRow			= false;
-		endSlopeCompOffset	= 1;
-		startSlopeOffset	= 1;
 		prevTileVec			= AI::Vec2D(0, 1);
 		endCornerVec		= AI::Vec2D(1, 1);
 		startCornerVec		= AI::Vec2D(-1, 1);
@@ -190,12 +140,8 @@ void Unit::ScanOctant(int depth, int octant, double &startSlope, double endSlope
 		{
 			return;
 		}
-
 		y = unitPosY + (int)((startSlope * (double)depth));
-		if (y >= _tileMap->GetHeight())
-		{
-			y = _tileMap->GetHeight() - 1;
-		}
+		y = min(y, _tileMap->GetHeight() - 1);
 		break;
 	};
 
@@ -241,70 +187,30 @@ void Unit::ScanOctant(int depth, int octant, double &startSlope, double endSlope
 		//If row by row, use x
 		if (rowByRow)
 		{
-			if (leftToRight)//If left to right, add to x
-			{
-				x++;
-			}
-			else//Else subtract x
-			{
-				x--;
-			}
+			x += leftToRight;
 		}
 		else//Else use y 
 		{
-			if (leftToRight)//If left to right, add to y
-			{
-				y++;
-			}
-			else//Else subtract y
-			{
-				y--;
-			}	
+			y+= leftToRight;
 		}
 	}
 	
 	if (rowByRow)//If row by row, use x
 	{
-		if (leftToRight)//If NOT left to right, add to x
-		{
-			x--;
-		}
-		else//Else subtract x
-		{
-			x++;
-		}
+		x -= leftToRight;
 	}
 	else//Else use y
 	{
-		if (leftToRight)//If NOT left to right, add to y
-		{
-			y--;
-		}
-		else//Else subtract y
-		{
-			y++;
-		}
+		y -= leftToRight;
 	}
 
 	//Set x within tile range if it's outside
-	if (x < 0)
-	{
-		x = 0;
-	}
-	else if (x >= _tileMap->GetWidth())
-	{
-		x = this->_tileMap->GetWidth() - 1;
-	}
+	x = max(x, 0);
+	x = min(x, _tileMap->GetWidth() - 1);
 
 	//Set y within tile range if it's outside
-	if (y < 0)
-	{
-		y = 0;
-	}
-	else if (y >= _tileMap->GetHeight())
-	{
-		y = _tileMap->GetHeight() - 1;
-	}
+	y = max(y, 0);
+	y = min(y, _tileMap->GetHeight() - 1);
 
 	//Recurse and run if depth is within range
 	if (depth < _visionRadius && (!_tileMap->IsWallOnTile(x, y)))
@@ -344,7 +250,6 @@ void Unit::CalculatePath()
 		_pathLength = 0;
 	}
 }
-
 
 int Unit::GetApproxDistance(AI::Vec2D target) const
 {
@@ -402,6 +307,49 @@ AI::Vec2D Unit::GetDirection()
 int Unit::GetHealth()
 {
 	return _health;
+}
+
+
+/*
+Gathers the tiles which are visible to the unit.
+Currently only checks if walls block vision (not traps or units)
+*/
+void Unit::FindVisibleTiles()
+{
+	double startSlope = 1.0;
+	_visibleTiles[0] = AI::Vec2D(this->GetTilePosition()._x, this->GetTilePosition()._y);
+	_nrOfVisibleTiles = 1;
+
+	//If looking north, scan octant 1 and 2
+	if (_direction._y == 1)
+	{
+		ScanOctant(1, 1, startSlope, 0.0);
+		startSlope = 1.0;
+		ScanOctant(1, 2, startSlope, 0.0);
+	}
+	//If looking east, scan octant 3 and 4
+	else if (_direction._x == 1)
+	{
+		ScanOctant(1, 3, startSlope, 0.0);
+		startSlope = 1.0;
+		ScanOctant(1, 4, startSlope, 0.0);
+	}
+	//If looking south, scan octant 5 and 6
+	else if (_direction._y == -1)
+	{
+		ScanOctant(1, 5, startSlope, 0.0);
+		startSlope = 1.0;
+		{
+			ScanOctant(1, 6, startSlope, 0.0);
+		}
+		//If looking west, scan octant 7 and 8
+	}
+	else if (_direction._x == -1)
+	{
+		ScanOctant(1, 7, startSlope, 0.0);
+		startSlope = 1.0;
+		ScanOctant(1, 8, startSlope, 0.0);
+	}
 }
 
 /*
@@ -463,29 +411,6 @@ void Unit::SetGoal(AI::Vec2D goal)
 	_aStar->SetGoalPosition(goal);
 	CalculatePath();
 }
-
-///*
-//	Calculate path to a predetermined goal
-//*/
-//void Unit::CalculatePath(AI::Vec2D goal)
-//{
-//	_goalTilePosition = goal;
-//	_aStar->CleanMap();
-//	_aStar->SetStartPosition(_tilePosition);
-//	_aStar->SetGoalPosition(goal);
-//	if (_aStar->FindPath())
-//	{
-//		_path = _aStar->GetPath();
-//		_pathLength = _aStar->GetPathLength();
-//	}
-//	else
-//	{
-//		_path = nullptr;
-//		_pathLength = 0;
-//	}
-//
-//}
-
 /* 
 	Moves the unit to the tile it's aiming for and selects a new walking direction.
 	This should NOT update every frame. It only updates when the unit reaches a new tile. 
@@ -554,46 +479,9 @@ void Unit::Release()
 {}
 
 void Unit::ChangeHealth(int damage)
-/*
-	Gathers the tiles which are visible to the unit.
-	Currently only checks if walls block vision (not traps or units)
-*/
-void Unit::FindVisibleTiles()
-{
-	double startSlope = 1.0;
-	_visibleTiles[0] = AI::Vec2D(this->GetTilePosition()._x, this->GetTilePosition()._y);
-	_nrOfVisibleTiles = 1;
-
-	//If looking north, scan octant 1 and 2
-	if (_direction._y == 1)
-	{
-		ScanOctant(1, 1, startSlope, 0.0);
-		startSlope = 1.0;
-		ScanOctant(1, 2, startSlope, 0.0);
-	}
-	//If looking east, scan octant 3 and 4
-	else if (_direction._x == 1)
-	{
-		ScanOctant(1, 3, startSlope, 0.0);
-		startSlope = 1.0;
-		ScanOctant(1, 4, startSlope, 0.0);
-	}
-	//If looking south, scan octant 5 and 6
-	else if (_direction._y == -1)
-	{
-		ScanOctant(1, 5, startSlope, 0.0);
-		startSlope = 1.0;
 {
 	_health -= damage;
-		ScanOctant(1, 6, startSlope, 0.0);
-	}
-	//If looking west, scan octant 7 and 8
-	else if (_direction._x == -1)
-	{
-		ScanOctant(1, 7, startSlope, 0.0);
-		startSlope = 1.0;
-		ScanOctant(1, 8, startSlope, 0.0);
-	}
 }
+
 
 
