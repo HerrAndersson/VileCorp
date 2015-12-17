@@ -9,13 +9,13 @@ namespace System
 	{
 	private:
 
-		INT64 frequency;
-		double ticksPerMs;
-		INT64 startTime;
+		INT64 _frequency;
+		double _ticksPerMs;
+		INT64 _startTime;
 
-		double tempTime;
-		double frameTime;   //Time since last frame
-		double gameTime;	//Time since the beginning of the game
+		double _tempTime;
+		double _frameTime;   //Time since last frame
+		double _gameTime;	//Time since the beginning of the game
 
 	public:
 

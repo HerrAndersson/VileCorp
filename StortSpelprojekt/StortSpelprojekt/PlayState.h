@@ -1,5 +1,4 @@
-#ifndef PLAYSTATE_H
-#define PLAYSTATE_H
+#pragma once
 
 #include "BaseState.h"
 
@@ -14,5 +13,3 @@ public:
 	void OnStateEnter();
 	void OnStateExit();
 };
-
-#endif

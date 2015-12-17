@@ -35,7 +35,9 @@ namespace Renderer
 		hResult = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, 0,
 			&featLvl, 1, D3D11_SDK_VERSION, &swapChainDesc, &_swapChain, &_device, NULL, &_deviceContext);
 		if (FAILED(hResult))
+		{
 			throw std::runtime_error("DirectXHandler: Error creating swap chain");
+		}
 
 		//Setup texture desctiption
 		D3D11_TEXTURE2D_DESC textureDesc;
@@ -56,11 +58,15 @@ namespace Renderer
 		ID3D11Texture2D* backBufferPointer;
 		hResult = _swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&backBufferPointer);
 		if (FAILED(hResult))
+		{
 			throw std::runtime_error("DirectXHandler: Could not get swap chain pointer");
+		}
 
 		hResult = _device->CreateRenderTargetView(backBufferPointer, NULL, &_renderTargetView);
 		if (FAILED(hResult))
+		{
 			throw std::runtime_error("DirectXHandler: Error creating render target view ");
+		}
 
 		backBufferPointer->Release();
 		backBufferPointer = nullptr;
@@ -134,14 +140,18 @@ namespace Renderer
 		//Create depth enable
 		hResult = _device->CreateDepthStencilState(&depthStencilDesc, &_depthEnable);
 		if (FAILED(hResult))
+		{
 			throw std::runtime_error("DirectXHandler: Error creating depth stencil ENABLE");
+		}
 
 		depthStencilDesc.DepthEnable = false;
 
 		//Create depth disable
 		hResult = _device->CreateDepthStencilState(&depthStencilDesc, &_depthDisable);
 		if (FAILED(hResult))
+		{
 			throw std::runtime_error("DirectXHandler: Error creating depth stencil DISABLE");
+		}
 
 		_deferredShader = new Deferred(_device, screenWidth, screenHeight);
 
@@ -194,6 +204,13 @@ namespace Renderer
 		int count = 0;
 		ID3D11ShaderResourceView** b = _deferredShader->GetShaderResourceViews(count);
 		_deviceContext->PSSetShaderResources(0, count, b);
+	}
+
+	void DirectXHandler::SetHUDPassRTVs()
+	{
+		_deviceContext->OMSetRenderTargets(1, &_renderTargetView, nullptr);
+		_deviceContext->RSSetState(_rasterizerStateBack);
+		_deviceContext->OMSetDepthStencilState(_depthDisable, 1);
 	}
 
 	void DirectXHandler::ResizeResources(HWND hwnd, int windowWidth, int windowHeight)

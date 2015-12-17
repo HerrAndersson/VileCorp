@@ -27,6 +27,7 @@ private:
 	System::Timer				_timer;
 
 	System::InputDevice*		_input;
+	AssetManager*				_assetManager;
 
 	//Resizing window, directx resources, camera
 	void ResizeResources(System::WindowSettings settings);

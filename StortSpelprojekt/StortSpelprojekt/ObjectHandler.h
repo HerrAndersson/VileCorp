@@ -5,6 +5,8 @@
 #include "Trap.h"
 #include "Architecture.h"
 #include "Trigger.h"
+#include "Enemy.h"
+#include "Guard.h"
 #include "Tilemap.h"
 #include "AssetManager.h"
 
@@ -27,7 +29,7 @@ Returns all objects of a certain Type (i.e. Traps) as a seperate objectHandler
 struct RenderList
 {
 	RenderObject* _renderObject;
-	vector<XMMATRIX> modelMatrices;
+	vector<XMMATRIX> _modelMatrices;
 };
 
 class ObjectHandler
@@ -41,8 +43,7 @@ private:
 	AssetManager* _assetManager;
 
 public:
-	ObjectHandler();
-	ObjectHandler(ID3D11Device* device);
+	ObjectHandler(ID3D11Device* device, AssetManager* assetManager);
 	~ObjectHandler();
 
 	int GetSize() const;
@@ -59,10 +60,7 @@ public:
 	vector<GameObject*> GetAll(Type type);
 	//Returns a list of a renderobject and matrices for all objects using the renderobject
 	RenderList GetAll(int renderObjectID);
-	std::vector<GameObject*>* GetGameObjects()
-	{
-		return &_gameObjects;
-	};
+	std::vector<GameObject*>* GetGameObjects();
 
 	Tilemap* GetTileMap() const;
 	void SetTileMap(Tilemap* tilemap);

@@ -117,7 +117,7 @@ namespace System
 		return _mm_malloc(i, 16);
 	}
 
-		void Camera::operator delete(void* p)
+	void Camera::operator delete(void* p)
 	{
 		_mm_free(p);
 	}

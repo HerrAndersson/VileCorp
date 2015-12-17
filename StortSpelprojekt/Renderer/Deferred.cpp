@@ -6,8 +6,8 @@ using namespace DirectX;
 
 Deferred::Deferred(ID3D11Device* device, int textureWidth, int textureHeight)
 {
-	this->textureWidth = textureWidth;
-	this->textureHeight = textureHeight;
+	this->_textureWidth = textureWidth;
+	this->_textureHeight = textureHeight;
 
 	InitializeBuffers(device);
 }
@@ -31,8 +31,8 @@ void Deferred::InitializeBuffers(ID3D11Device* device)
 	D3D11_TEXTURE2D_DESC textureDesc;
 	ZeroMemory(&textureDesc, sizeof(textureDesc));
 	//Render target texture description
-	textureDesc.Width = textureWidth;
-	textureDesc.Height = textureHeight;
+	textureDesc.Width = _textureWidth;
+	textureDesc.Height = _textureHeight;
 	textureDesc.MipLevels = 1;
 	textureDesc.ArraySize = 1;
 	textureDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
@@ -92,8 +92,8 @@ void Deferred::InitializeBuffers(ID3D11Device* device)
 	//Description of the depth buffer
 	D3D11_TEXTURE2D_DESC depthBufferDesc;
 	ZeroMemory(&depthBufferDesc, sizeof(depthBufferDesc));
-	depthBufferDesc.Width = textureWidth;
-	depthBufferDesc.Height = textureHeight;
+	depthBufferDesc.Width = _textureWidth;
+	depthBufferDesc.Height = _textureHeight;
 	depthBufferDesc.MipLevels = 1;
 	depthBufferDesc.ArraySize = 1;
 	depthBufferDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
@@ -155,8 +155,8 @@ void Deferred::ClearRenderTargets(ID3D11DeviceContext* deviceContext, float r, f
 
 void Deferred::ResizeRenderTargets(ID3D11Device* device, int textureWidth, int textureHeight)
 {
-	this->textureWidth = textureWidth;
-	this->textureHeight = textureHeight;
+	this->_textureWidth = textureWidth;
+	this->_textureHeight = textureHeight;
 
 	SAFE_RELEASE(_depthStencilView);
 	SAFE_RELEASE(_depthStencilBuffer);

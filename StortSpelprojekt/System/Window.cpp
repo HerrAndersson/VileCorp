@@ -41,7 +41,7 @@ namespace System
 
 	void Window::InitializeWindow()
 	{
-		windowHandle = this;
+		_windowHandle = this;
 
 		int posX, posY;
 
@@ -220,7 +220,7 @@ namespace System
 
 		default:
 		{
-			return windowHandle->MessageHandler(hwnd, umessage, wparam, lparam);
+			return _windowHandle->MessageHandler(hwnd, umessage, wparam, lparam);
 		}
 		}
 	}
