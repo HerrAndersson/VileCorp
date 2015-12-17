@@ -14,7 +14,8 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	_renderModule = new Renderer::RenderModule(_window->GetHWND(), settings._width, settings._height);
 	
 	_assetManager = new AssetManager(_renderModule->GetDevice());
-	_controls = new System::Controls(_window->GetHWND());
+	_input = new System::InputDevice(_window->GetHWND());
+	_controls = new System::Controls(_input);
 
 	//Init camera
 	_camera = new System::Camera(0.1f, 1000.0f, DirectX::XM_PIDIV2, settings._width, settings._height);
@@ -25,7 +26,7 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	
 	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager);
 	
-	_input = new System::InputDevice(_window->GetHWND());
+	
 	//Init statemachine
 	InitVar initVar;
 
@@ -37,7 +38,7 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	initVar._inputDevice = _input;
 	initVar._pickingDevice = _pickingDevice;
 
-	_SM = new StateMachine(initVar);	initVar._inputHandler = _input;
+	_SM = new StateMachine(initVar);	initVar._inputDevice = _input;
 
 	_SM->Update(_timer.GetFrameTime());
 	if (_SM->GetState() == LEVELEDITSTATE)
@@ -58,6 +59,7 @@ Game::~Game()
 	delete _assetManager;
 	delete _pickingDevice;
 	delete _grid;
+	delete _input;
 }
 
 void Game::ResizeResources(System::WindowSettings settings)
@@ -78,13 +80,12 @@ void Game::Update(float deltaTime)
 	vi vill hämta objekten
 
 	*/
-	_input->Update();
-	_controls->Update();
+	
 	_UI->Update();
 	_UI->OnResize(_window->GetWindowSettings());
 	_SM->Update(deltaTime);
 
-
+	_input->UpdatePerFrame();
 }
 
 void Game::Render()

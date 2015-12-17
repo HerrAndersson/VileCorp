@@ -15,10 +15,15 @@ namespace System
 		GetWindowRect(_hwnd, &rect);
 		_mouseCoord._pos.x = (rect.left + (rect.right - rect.left)) / 2;
 		_mouseCoord._pos.y = (rect.top + (rect.bottom - rect.top)) / 2;
+		//_mouseCoord._pos.x = 0;
+		//_mouseCoord._pos.y = 0;
+		_mouseCoord._deltaPos.x = 0;
+		_mouseCoord._deltaPos.y = 0;
 		SetCursorPos(_mouseCoord._pos.x, _mouseCoord._pos.y);
 		
 		_rawBufferSize = 256;
 		_rawBuffer = new BYTE[_rawBufferSize];
+		_cursorLock = false;
 		RegisterDevice(hwnd);
 	}
 	InputDevice::~InputDevice()
@@ -35,9 +40,43 @@ namespace System
 		_mouseCoord._deltaPos.x = 0;
 		_mouseCoord._deltaPos.y = 0;
 		HandleRawInput(lParam);
-		_mouseCoord._pos.x += _mouseCoord._deltaPos.x;
-		_mouseCoord._pos.y += _mouseCoord._deltaPos.y;
-		SetCursorPos(_mouseCoord._pos.x, _mouseCoord._pos.y);
+
+		// Temp code
+		RECT rect;
+		GetWindowRect(_hwnd, &rect);
+
+		
+
+
+		//_mouseCoord._pos.x += _mouseCoord._deltaPos.x;
+		//_mouseCoord._pos.y += _mouseCoord._deltaPos.y;
+		if (_cursorLock)
+		{
+			_mouseCoord._pos.x = (rect.left + (rect.right - rect.left) / 2);
+			_mouseCoord._pos.y = (rect.top + (rect.bottom - rect.top) / 2);
+			SetCursorPos(_mouseCoord._pos.x, _mouseCoord._pos.y);
+		}
+		
+	}
+	void InputDevice::UpdatePerFrame()
+	{
+		//memcpy(_last, _current, sizeof(bool) * KEY_CODE_CAP);
+		if (_cursorLock)
+		{
+			_mouseCoord._deltaPos.x = 0;
+			_mouseCoord._deltaPos.y = 0;
+		}
+		
+
+		//RECT rect;
+		//GetWindowRect(_hwnd, &rect);
+		//_mouseCoord._pos.x = (rect.left + (rect.right - rect.left) / 2);
+		//_mouseCoord._pos.y = (rect.top + (rect.bottom - rect.top) / 2);
+
+
+		//_mouseCoord._pos.x += _mouseCoord._deltaPos.x;
+		//_mouseCoord._pos.y += _mouseCoord._deltaPos.y;
+		//SetCursorPos(_mouseCoord._pos.x, _mouseCoord._pos.y);
 	}
 
 	void InputDevice::HandleRawInput(LPARAM lParam)
@@ -190,9 +229,15 @@ namespace System
 			throw std::runtime_error("Error in RegisterRawInputDevices");
 		}
 		ScreenToClient(_hwnd, &_mouseCoord._pos);
+
+		/*RECT rect;
+		GetWindowRect(_hwnd, &rect);
+
+		if(_cursorLock && GetFocus() == _hwnd)
 		{
+			SetCursorPos(rect.left + (rect.right - rect.left) / 2, rect.top + (rect.bottom - rect.top) / 2);
 			ClipCursor(nullptr);
-		}
+		}*/
 	}
 
 	bool InputDevice::IsDown(int key)
@@ -207,12 +252,16 @@ namespace System
 
 	bool InputDevice::IsPressed(int key)
 	{
-		return _current[key] && !_last[key];
+		bool ret = _current[key] && !_last[key];
+		_last[key] = _current[key];
+		return ret;
 	}
 
 	bool InputDevice::IsReleased(int key)
 	{
-		return !_current[key] && _last[key];
+		bool ret = !_current[key] && _last[key];
+		_last[key] = _current[key];
+		return ret;
 	}
 
 	MouseCoord InputDevice::GetMouseCoord()const
@@ -223,5 +272,14 @@ namespace System
 	void InputDevice::ToggleCursorLock()
 	{
 		_cursorLock = !_cursorLock;
+	}
+
+	bool InputDevice::GetCursorLock() const
+	{
+		return _cursorLock;
+	}
+	void InputDevice::SetCursorLock(bool locked)
+	{
+		_cursorLock = locked;
 	}
 }

@@ -1,6 +1,6 @@
 #pragma once
 #include "InitVar.h"
-#include "Controls.h"
+#include "../Controls.h"
 
 enum State
 {

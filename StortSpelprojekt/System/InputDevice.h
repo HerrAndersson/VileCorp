@@ -35,6 +35,7 @@ namespace System
 		~InputDevice();
 
 		void Update(LPARAM lparam);
+		void UpdatePerFrame();
 
 		void HandleRawInput(LPARAM lparam);
 		void RegisterDevice(HWND hwnd);
@@ -44,7 +45,10 @@ namespace System
 		bool IsPressed(int key);
 		bool IsReleased(int key);
 		MouseCoord GetMouseCoord()const;
+
 		void ToggleCursorLock();
+		bool GetCursorLock() const;
+		void SetCursorLock(bool locked);
 	};
 
 	namespace Input

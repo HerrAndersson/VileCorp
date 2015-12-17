@@ -6,21 +6,17 @@
 #include "ObjectHandler.h"
 #include "InputDevice.h"
 #include "StateMachine/InitVar.h"
-#include "Grid.h"
 #include "AStar.h"
 
 class LevelEdit
 {
 private:
-	ObjectHandler*			_objectHandler;
-	UIHandler*				_uiHandler;
-	System::InputDevice*	_inputHandler;
-	System::Camera*			_camera;
-	PickingDevice*			_pickingDevice;
-	Grid*					_grid;
+	InitVar*				_initVar;
 	AI::AStar*				_aStar;
 	Tilemap*				_tileMap;
 
+
+	
 
 	struct LevelHeader
 	{

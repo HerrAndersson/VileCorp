@@ -31,6 +31,7 @@ private:
 	AssetManager*				_assetManager;
 	Grid*						_grid;
 	PickingDevice*				_pickingDevice;
+	System::InputDevice*		_input;
 	
 
 	//Resizing window, directx resources, camera

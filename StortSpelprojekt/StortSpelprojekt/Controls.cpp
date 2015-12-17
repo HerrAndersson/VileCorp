@@ -38,8 +38,9 @@ namespace System
 		}
 		//Mattias
 	*/
-	Controls::Controls(HWND hwnd) : _inputDevice(hwnd)
+	Controls::Controls(System::InputDevice* input)
 	{
+		_inputDevice = input;
 		ifstream file("../../Output/Bin/x86/Debug/Assets/controls.json");
 		if (!file.good())
 		{
@@ -170,39 +171,35 @@ namespace System
 			throw std::runtime_error("Undefined keyword \"" + key + "\"");
 		}
 	}
-
-	void Controls::Update()
-	{
-		_inputDevice.Update();
-	}
 	void Controls::ToggleCursorLock()
 	{
-		_inputDevice.ToggleCursorLock();
+		_inputDevice->ToggleCursorLock();
 	}
 
 	bool Controls::IsFunctionKeyDown(const std::string& key)
 	{
 		bool ret = false;
 		int modifersActivated = NONE;
-		if (_inputDevice.IsDown(Input::Shift))
+		if (_inputDevice->IsDown(Input::Shift))
 		{
 			modifersActivated |= SHIFT;
 		}
-		if (_inputDevice.IsDown(Input::Control))
+		if (_inputDevice->IsDown(Input::Control))
 		{
 			modifersActivated |= CTRL;
 		}
-		if (_inputDevice.IsDown(Input::Alt))
+		if (_inputDevice->IsDown(Input::Alt))
 		{
 			modifersActivated |= ALT;
 		}
 		if (keymap[key].keyModifier & REPEAT)
 		{
-			ret = _inputDevice.IsDown(keymap[key].mainKey);
+			ret = _inputDevice->IsDown(keymap[key].mainKey);
+			modifersActivated |= REPEAT;
 		}
 		else
 		{
-			ret = _inputDevice.IsPressed(keymap[key].mainKey);
+			ret = _inputDevice->IsPressed(keymap[key].mainKey);
 		}
 		return ret && keymap[key].keyModifier == modifersActivated;
 	}

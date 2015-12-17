@@ -9,7 +9,7 @@ class GameLogic
 private:
 	ObjectHandler*			_objectHandler;
 	UIHandler*				_uiHandler;
-	System::InputDevice*	_inputHandler;
+	System::InputDevice*	_inputDevice;
 	System::Camera*			_camera;
 
 	void HandleInput();
