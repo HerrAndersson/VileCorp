@@ -5,8 +5,9 @@
 
 Game::Game(HINSTANCE hInstance, int nCmdShow)
 {
+	_gameHandle = this;
 	System::WindowSettings settings;
-	_window = new System::Window("Amazing game", hInstance, settings);
+	_window = new System::Window("Amazing game", hInstance, settings, WndProc);
 
 	_timer = System::Timer();
 
@@ -33,6 +34,7 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	initVar._uiHandler = _UI;
 	initVar._controls = _controls;
 	initVar._camera = _camera;
+	initVar._inputDevice = _input;
 	initVar._pickingDevice = _pickingDevice;
 
 	_SM = new StateMachine(initVar);	initVar._inputHandler = _input;
@@ -76,6 +78,7 @@ void Game::Update(float deltaTime)
 	vi vill hämta objekten
 
 	*/
+	_input->Update();
 	_controls->Update();
 	_UI->Update();
 	_UI->OnResize(_window->GetWindowSettings());
@@ -134,4 +137,60 @@ int Game::Run()
 	}
 
 	return 0;
+}
+
+LRESULT CALLBACK Game::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam)
+{
+	return DefWindowProc(hwnd, umsg, wparam, lparam);
+}
+
+
+LRESULT CALLBACK Game::WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
+{
+	switch (umessage)
+	{
+	case WM_QUIT:
+	{
+		PostQuitMessage(0);
+		return 0;
+	}
+	case WM_DESTROY:
+	{
+		PostQuitMessage(0);
+		return 0;
+	}
+	case WM_CLOSE:
+	{
+		PostQuitMessage(0);
+		return 0;
+	}
+	case WM_INPUT:
+	{
+		/*
+		UINT dwSize;
+		UINT asdf = 0;
+		asdf = GetRawInputData((HRAWINPUT)lparam, RID_INPUT, NULL, &dwSize,
+			sizeof(RAWINPUTHEADER));
+		LPBYTE lpb = new BYTE[dwSize];
+		if (lpb == NULL)
+		{
+			return 0;
+		}
+
+		if (GetRawInputData((HRAWINPUT)lparam, RID_INPUT, lpb, &dwSize,
+			sizeof(RAWINPUTHEADER)) != dwSize)
+			OutputDebugString(TEXT("GetRawInputData does not return correct size !\n"));
+
+		RAWINPUT* raw = (RAWINPUT*)lpb;
+		delete[] lpb;
+		return 0;
+		*/
+		_gameHandle->_input->Update(lparam);
+	}
+
+	default:
+	{
+		return _gameHandle->MessageHandler(hwnd, umessage, wparam, lparam);
+	}
+	}
 }

@@ -1,7 +1,7 @@
 #include "Window.h"
 namespace System
 {
-	Window::Window(LPCSTR applicationName, HINSTANCE hinstance, WindowSettings settings)
+	Window::Window(LPCSTR applicationName, HINSTANCE hinstance, WindowSettings settings, WNDPROC wndProc)
 	{
 		_applicationName = applicationName;
 		_hinstance = hinstance;
@@ -10,7 +10,7 @@ namespace System
 		_style = 0;
 		_exStyle = 0;
 
-		InitializeWindow();
+		InitializeWindow(wndProc);
 
 		_style = GetWindowLong(_hwnd, GWL_STYLE);
 		_exStyle = GetWindowLong(_hwnd, GWL_EXSTYLE);
@@ -39,7 +39,7 @@ namespace System
 		_hinstance = NULL;
 	}
 
-	void Window::InitializeWindow()
+	void Window::InitializeWindow(WNDPROC wndProc)
 	{
 		_windowHandle = this;
 
@@ -48,7 +48,7 @@ namespace System
 		//Setup the windows class with default settings.
 		WNDCLASSEX wc;
 		wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
-		wc.lpfnWndProc = WndProc;
+		wc.lpfnWndProc = wndProc;
 		wc.cbClsExtra = 0;
 		wc.cbWndExtra = 0;
 		wc.hInstance = _hinstance;
@@ -193,35 +193,5 @@ namespace System
 		return _settings;
 	}
 
-	LRESULT CALLBACK Window::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam)
-	{
-		return DefWindowProc(hwnd, umsg, wparam, lparam);
-	}
-
-	LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
-	{
-		switch (umessage)
-		{
-		case WM_QUIT:
-		{
-			PostQuitMessage(0);
-			return 0;
-		}
-		case WM_DESTROY:
-		{
-			PostQuitMessage(0);
-			return 0;
-		}
-		case WM_CLOSE:
-		{
-			PostQuitMessage(0);
-			return 0;
-		}
-
-		default:
-		{
-			return _windowHandle->MessageHandler(hwnd, umessage, wparam, lparam);
-		}
-		}
-	}
+	
 }

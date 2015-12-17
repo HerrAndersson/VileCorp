@@ -7,6 +7,8 @@ UIHandler::UIHandler(ID3D11Device* device, System::WindowSettings windowSettings
 	_windowSettings	= windowSettings;
 	_AM				= assetManager;
 	_textureId		= 0;
+
+	_fontWrapper.CreateFontWrapper(device);
 }
 
 UIHandler::~UIHandler()
@@ -60,7 +62,7 @@ int UIHandler::AddCustomFont(const WCHAR* filePath, const WCHAR* fontName, Direc
 {
 	if (_textId == 0) //if first element
 	{
-		_fonts.push_back(FontInfo(filePath, fontName, position, fontSize, color, text, _textId, true, _device));
+		_fonts.push_back(FontInfo(_fontWrapper.GetFontWrapper(), filePath, fontName, position, fontSize, color, text, _textId, true, _device));
 	}
 	else
 	{
@@ -79,7 +81,7 @@ int UIHandler::AddCustomFont(const WCHAR* filePath, const WCHAR* fontName, Direc
 		if (found == -1)
 		{
 			//Then create a new font.
-			_fonts.push_back(FontInfo(filePath, fontName, position, fontSize, color, text, _textId, true, _device));
+			_fonts.push_back(FontInfo(_fontWrapper.GetFontWrapper(), filePath, fontName, position, fontSize, color, text, _textId, true, _device));
 		}
 		else
 		{
@@ -93,7 +95,7 @@ int UIHandler::AddCustomFont(const WCHAR* filePath, const WCHAR* fontName, Direc
 
 void UIHandler::Render(ID3D11DeviceContext* _deviceContext)
 {
-	for (auto i : _fonts)
+	for (auto &i : _fonts)
 	{
 		i.Render(_deviceContext);
 	}
@@ -163,3 +165,12 @@ std::vector<Renderer::HUDElement>* UIHandler::GetTextureData()
 	return &_textures;
 }
 
+void* UIHandler::operator new(size_t i)
+{
+	return _mm_malloc(i, 16);
+}
+
+void UIHandler::operator delete(void* p)
+{
+	_mm_free(p);
+}

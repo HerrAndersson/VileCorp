@@ -37,11 +37,16 @@ private:
 	void ResizeResources(System::WindowSettings settings);
 	void Update(float deltaTime);
 	void Render();
+	
 
 public:
-
 	Game(HINSTANCE hInstance, int nCmdShow);
 	~Game();
 
+	LRESULT CALLBACK MessageHandler(HWND, UINT, WPARAM, LPARAM);
+	static LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
+
 	int Run();
 };
+
+static Game* _gameHandle;

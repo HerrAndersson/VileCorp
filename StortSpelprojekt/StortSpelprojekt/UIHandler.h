@@ -10,16 +10,18 @@
 #include "AssetManager.h"
 #include "HUDElement.h"
 
-class UIHandler
+__declspec(align(16))class UIHandler
 {
 private:
-	std::vector<FontInfo>			_fonts;
-	int					_textId;
-	System::WindowSettings			_windowSettings;
-	ID3D11Device*				_device;
-	AssetManager*				_AM;
+	std::vector<FontInfo>				_fonts;
+	int									_textId;
+	System::WindowSettings				_windowSettings;
+	ID3D11Device*						_device;
+	AssetManager*						_AM;
 	std::vector<Renderer::HUDElement>	_textures;
-	int					_textureId;
+	int									_textureId;
+
+	Renderer::Fonts						_fontWrapper;
 	
 
 public:
@@ -44,4 +46,8 @@ public:
 	int Add2DTexture(std::string filePath, DirectX::XMFLOAT2 position, DirectX::XMFLOAT2 size);
 	int AddButton(std::string filePath, DirectX::XMFLOAT2 position, DirectX::XMFLOAT2 size);
 	std::vector<Renderer::HUDElement>* GetTextureData();
+
+	//Overloading these guarantees 16B alignment of XMMATRIX
+	void* operator new(size_t i);
+	void operator delete(void* p);
 };

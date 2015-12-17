@@ -25,6 +25,32 @@ FontInfo::FontInfo(const WCHAR* filePath_,
 	}
 }
 
+FontInfo::FontInfo(IFW1FontWrapper* fontWrapper,
+	const WCHAR* filePath_,
+	const WCHAR* fontName_,
+	DirectX::XMFLOAT2 position_,
+	float fontSize_,
+	UINT32 color_,
+	std::wstring text_,
+	int textId_,
+	bool custom_,
+	ID3D11Device* device_)
+{
+	_filePath = filePath_;
+	_fontName = fontName_;
+	_text.push_back(TextInfo(position_, fontSize_, color_, text_, textId_));
+
+	//Setting up the fontDevice
+	if (!custom_)
+	{
+		//_fontDevice.Initialize(device_, filePath_);
+	}
+	else
+	{
+		_fontDevice.Initialize(fontWrapper, device_, fontName_, filePath_);
+	}
+}
+
 FontInfo::~FontInfo()
 {
 
