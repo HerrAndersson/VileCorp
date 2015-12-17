@@ -1,0 +1,60 @@
+#pragma once
+
+#include "stdafx.h"
+#include "StateMachine/StateMachine.h"
+#include "StateMachine/InitVar.h"
+#include "Window.h"
+#include "RenderModule.h"
+#include "Camera.h"
+#include "UIHandler.h"
+#include "ObjectHandler.h"
+#include "Timer.h"
+#include "AssetManager.h"
+#include "Trap.h"
+<<<<<<< HEAD
+#include "InputDevice.h"
+#include "Grid.h"
+#include "PickingDevice.h"
+=======
+#include "Controls.h"
+>>>>>>> origin/T2-13-ControlClass
+
+class Game
+{
+private:
+	const float	MS_PER_FRAME = 1000.0f / 60;
+
+	StateMachine*				_SM;
+	System::Window*				_window;
+	Renderer::RenderModule*		_renderModule;
+	System::Camera*				_camera;
+	ObjectHandler*				_objectHandler;
+	UIHandler*					_UI;
+	System::Timer				_timer;
+<<<<<<< HEAD
+	System::InputDevice*		_input;
+=======
+
+	System::Controls*			_controls;
+>>>>>>> origin/T2-13-ControlClass
+	AssetManager*				_assetManager;
+	Grid*						_grid;
+	PickingDevice*				_pickingDevice;
+	
+
+	//Resizing window, directx resources, camera
+<<<<<<< HEAD
+	void HandleInput();
+=======
+>>>>>>> origin/T2-13-ControlClass
+	void ResizeResources(System::WindowSettings settings);
+	void Update(float deltaTime);
+	void Render();
+
+public:
+
+	Game(HINSTANCE hInstance, int nCmdShow);
+	~Game();
+
+	int Run();
+};

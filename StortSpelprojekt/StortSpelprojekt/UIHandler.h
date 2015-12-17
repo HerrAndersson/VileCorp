@@ -1,5 +1,4 @@
-#ifndef UIHANDLER_H
-#define UIHANDLER_H
+#pragma once
 
 #include <d3d11.h>
 #include <vector>
@@ -8,17 +7,25 @@
 #include "Fonts.h"
 #include "Window.h"
 #include "FontInfo.h"
+#include "AssetManager.h"
+#include "HUDElement.h"
 
-class UIHandler
+__declspec(align(16))class UIHandler
 {
 private:
-	std::vector<FontInfo>		_fonts;
-	int							_textId;
-	System::WindowSettings		_windowSettings;
-	ID3D11Device*				_device;
+	std::vector<FontInfo>				_fonts;
+	int									_textId;
+	System::WindowSettings				_windowSettings;
+	ID3D11Device*						_device;
+	AssetManager*						_AM;
+	std::vector<Renderer::HUDElement>	_textures;
+	int									_textureId;
+
+	Renderer::Fonts						_fontWrapper;
+	
 
 public:
-	UIHandler(ID3D11Device* device, System::WindowSettings windowSettings);
+	UIHandler(ID3D11Device* device, System::WindowSettings windowSettings, AssetManager* assetManager);
 	~UIHandler();
 
 	void Update();
@@ -35,6 +42,12 @@ public:
 	//Remove an individual text
 	bool RemoveText(int id);
 
-};
 
-#endif
+	int Add2DTexture(std::string filePath, DirectX::XMFLOAT2 position, DirectX::XMFLOAT2 size);
+	int AddButton(std::string filePath, DirectX::XMFLOAT2 position, DirectX::XMFLOAT2 size);
+	std::vector<Renderer::HUDElement>* GetTextureData();
+
+	//Overloading these guarantees 16B alignment of XMMATRIX
+	void* operator new(size_t i);
+	void operator delete(void* p);
+};

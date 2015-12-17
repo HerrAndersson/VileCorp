@@ -3,7 +3,6 @@
 
 AssetManager::AssetManager(ID3D11Device* device)
 {
-
 	_device = device;
 	_infile = new ifstream;
 	_modelFiles = new vector<string>;
@@ -29,8 +28,8 @@ AssetManager::~AssetManager()
 		if (texture->_loaded)
 		{
 			texture->_data->Release();
-			delete texture;
 		}
+		delete texture;
 	}
 
 	for (uint i = 0; i < _renderObjects->size(); i++)
@@ -62,9 +61,18 @@ void AssetManager::SetupRenderObjectList(Tileset* tileset)
 //	GetFilenamesInDirectory("Assets/Models/", ".bin", *modelFiles);
 //#endif
 	_modelFiles->clear();
-	for (string str : tileset->floors) _modelFiles->push_back(str);
-	for (string str : tileset->walls) _modelFiles->push_back(str);
-	for (string str : tileset->deco) _modelFiles->push_back(str);
+	for (string str : tileset->_floors)
+	{
+		_modelFiles->push_back(str);
+	}
+	for (string str : tileset->_walls)
+	{
+		_modelFiles->push_back(str);
+	}
+	for (string str : tileset->_deco)
+	{
+		_modelFiles->push_back(str);
+	}
 
 
 	for (uint i = 0; i < _modelFiles->size(); i++)
@@ -94,7 +102,7 @@ void AssetManager::SetupTilesets()
 #endif
 
 	TilesetHandler handler;
-	handler.tilesets = _tilesets;
+	handler._tilesets = _tilesets;
 	string buffer;
 	rapidjson::Reader reader;
 	for (string set : tilesetFileNames)
@@ -126,7 +134,7 @@ bool AssetManager::ActivateTileset(string name)
 
 	for (Tileset set : *_tilesets)
 	{
-		if (!strcmp(name.c_str(), set.name.c_str()))
+		if (!strcmp(name.c_str(), set._name.c_str()))
 		{
 			SetupRenderObjectList(&set);
 			return true;
@@ -140,11 +148,15 @@ void AssetManager::UnloadModel(int index, bool force)
 {
 	RenderObject* renderObject = _renderObjects->at(index);
 	if (!renderObject->_meshLoaded)
+	{
 		return;
+	}
 	if (force)
 	{
 		for (auto m : renderObject->_meshes)
+		{
 			m._vertexBuffer->Release();
+		}
 		renderObject->_toUnload = false;
 		renderObject->_meshLoaded = false;
 		if (renderObject->_diffuseTexture != nullptr)
@@ -249,6 +261,11 @@ HRESULT Texture::LoadTexture(ID3D11Device* device)
 #else
 		res = DirectX::CreateWICTextureFromFile(device, _filename.c_str(), nullptr, &_data, 0);
 #endif
+		if (_data == nullptr)
+		{
+			string filenameString(_filename.begin(),_filename.end());
+			throw std::runtime_error("Texture " + filenameString + " not found");
+		}
 		_loaded = true;
 	}
 	_activeUsers++;
@@ -302,17 +319,21 @@ void AssetManager::LoadModel(string fileName, RenderObject* renderObject) {
 	}
 
 	if (renderObject->_diffuseTexture != nullptr)
+	{
 		if (renderObject->_diffuseTexture->LoadTexture(_device) == E_OUTOFMEMORY)
 		{
 			Flush();
 			renderObject->_diffuseTexture->LoadTexture(_device);//TODO handle if still out of memory - Fredrik
 		}
+	}
 	if (renderObject->_specularTexture != nullptr)
-		if(renderObject->_specularTexture->LoadTexture(_device) == E_OUTOFMEMORY)
+	{
+		if (renderObject->_specularTexture->LoadTexture(_device) == E_OUTOFMEMORY)
 		{
 			Flush();
 			renderObject->_specularTexture->LoadTexture(_device);//TODO handle if still out of memory - Fredrik
 		}
+	}
 
 	_infile->close();
 	renderObject->_meshLoaded = true;
@@ -358,8 +379,9 @@ RenderObject* AssetManager::ScanModel(string fileName)
 	_infile->read((char*)&mainHeader, sizeof(MainHeader));
 	mainHeader._meshCount++;
 	if (mainHeader._version != _meshFormatVersion)
-		throw runtime_error("Failed to load " + file_path + ":\nIncorrect fileversion");
-
+	{
+		throw std::runtime_error("Failed to load " + file_path + ":\nIncorrect fileversion");
+	}
 	int skeletonStringLength;
 	_infile->read((char*)&skeletonStringLength, 4);
 	renderObject->_skeletonName.resize(skeletonStringLength);
@@ -412,9 +434,13 @@ RenderObject* AssetManager::ScanModel(string fileName)
 	_infile->read((char*)specFile.data(), matHeader._specularNameLength);
 
 	if (matHeader._diffuseNameLength)
+	{
 		renderObject->_diffuseTexture = ScanTexture(diffFile);
+	}
 	if (matHeader._specularNameLength)
+	{
 		renderObject->_specularTexture = ScanTexture(specFile);
+	}
 
 	_infile->close();
 
@@ -466,9 +492,13 @@ RenderObject* AssetManager::GetRenderObject(int index)
 {
 	RenderObject* renderObject = _renderObjects->at(index);
 	if (!renderObject->_meshLoaded)
+	{
 		LoadModel(_modelFiles->at(index), renderObject);
+	}
 	else if (renderObject->_toUnload)
+	{
 		renderObject->_toUnload = false;
+	}
 	return renderObject;
 }
 

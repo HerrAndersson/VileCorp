@@ -7,6 +7,7 @@
 #include "SplashState.h"
 #include "MenuState.h"
 #include "PlayState.h"
+#include "LevelEditState.h"
 #include "OptionsState.h"
 #include <vector>
 
@@ -22,4 +23,5 @@ public:
 	~StateMachine();
 
 	void Update(float deltaTime);
+	State GetState();
 };

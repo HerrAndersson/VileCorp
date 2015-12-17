@@ -5,6 +5,8 @@
 #include "Trap.h"
 #include "Architecture.h"
 #include "Trigger.h"
+#include "Enemy.h"
+#include "Guard.h"
 #include "Tilemap.h"
 #include "AssetManager.h"
 
@@ -27,52 +29,37 @@ Returns all objects of a certain Type (i.e. Traps) as a seperate objectHandler
 struct RenderList
 {
 	RenderObject* _renderObject;
-	vector<XMMATRIX> modelMatrices;
+	vector<XMMATRIX> _modelMatrices;
 };
 
 class ObjectHandler
 {
 private:
-	int _size;
-	std::vector<GameObject*> _gameObjects;
-	std::vector<GameObject*> _animatedGameObjects;
-	std::vector<GameObject*> _staticGameObjects;
+	vector<vector<GameObject*>> _gameObjects;
+	//vector<RenderList> _renderLists;
+
 	short _idCounter;
 	Tilemap* _tilemap;
 
 	AssetManager* _assetManager;
 
 public:
-	ObjectHandler();
-	ObjectHandler(ID3D11Device* device);
+	ObjectHandler(ID3D11Device* device, AssetManager* assetManager);
 	~ObjectHandler();
 
-	int GetSize() const;
-
 	//Add a gameobject
-	GameObject* Add(Type type, int renderObjectID, XMFLOAT3 position, XMFLOAT3 rotation);
-	bool Remove(short ID);
-	void Clear();
-	
+	bool Add(Type type, int renderObjectID, XMFLOAT3 position, XMFLOAT3 rotation);
+	bool Remove(GameObject* gameObject);
+	bool Remove(Type type, int ID);
 
-	GameObject* Find(short ID);
-	GameObject* Find(int index);
+	GameObject* Find(Type type, int ID);
+	GameObject* Find(Type type, short index);
 	//Returns a vector containing all gameobjects with the same type
-	vector<GameObject*> GetAll(Type type);
+	vector<GameObject*> GetAllByType(Type type);
 	//Returns a list of a renderobject and matrices for all objects using the renderobject
-	RenderList GetAll(int renderObjectID);
-	std::vector<GameObject*>* GetGameObjects()
-	{
-		return &_gameObjects;
-	};
-	std::vector<GameObject*>* GetAnimatedGameObjects()
-	{
-		return &_animatedGameObjects;
-	};
-	std::vector<GameObject*>* GetStaticGameObjects()
-	{
-		return &_staticGameObjects;
-	};
+	RenderList GetAllByType(int renderObjectID);
+	int GetTotalNrOfGameObjects() const;
+	vector<vector<GameObject*>>* GetGameObjects();
 
 	Tilemap* GetTileMap() const;
 	void SetTileMap(Tilemap* tilemap);

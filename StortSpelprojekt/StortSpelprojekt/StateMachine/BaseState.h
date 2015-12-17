@@ -1,13 +1,13 @@
-#ifndef BASESTATE_H
-#define BASESTATE_H
-
+#pragma once
 #include "InitVar.h"
+#include "../Controls.h"
 
 enum State
 {
 	SPLASHSTATE,
 	MENUSTATE,
 	PLAYSTATE,
+	LEVELEDITSTATE,
 	OPTIONSSTATE,
 	EXITSTATE,
 };
@@ -18,8 +18,12 @@ private:
 	static State BaseState::_newStateRequest;
 
 protected:
-	ObjectHandler*		_objectHandler;
-	UIHandler*			_uiHandler;
+	System::Controls*		_controls;
+	ObjectHandler*			_objectHandler;
+	UIHandler*				_uiHandler;
+	System::InputDevice*	_inputHandler;
+	System::Camera*			_camera;
+	PickingDevice*			_pickingDevice;
 	
 	void ChangeState(State newState);
 public:
@@ -32,5 +36,3 @@ public:
 
 	State GetNewStateRequest()const;
 };
-
-#endif

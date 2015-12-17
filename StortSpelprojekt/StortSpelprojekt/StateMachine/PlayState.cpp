@@ -2,7 +2,7 @@
 
 PlayState::PlayState(InitVar initVar) : BaseState(initVar)
 {
-
+	_initVar = initVar;
 }
 
 PlayState::~PlayState()
@@ -10,12 +10,12 @@ PlayState::~PlayState()
 
 void PlayState::Update(float deltaTime)
 {
-	
+	_gameLogic.Update();
 }
 
 void PlayState::OnStateEnter()
 {
-
+	_gameLogic.Initialize(&_initVar);
 }
 
 void PlayState::OnStateExit()

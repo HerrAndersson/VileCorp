@@ -17,18 +17,18 @@ using namespace DirectX;
 
 struct Tileset
 {
-	string name;
-	vector<string> floors;
-	vector<string> walls;
-	vector<string> deco;
+	string _name;
+	vector<string> _floors;
+	vector<string> _walls;
+	vector<string> _deco;
 };
 
 struct TilesetHandler
 {
-	vector<Tileset>* tilesets;
-	Tileset* tileset;
-	vector<string>* cur;
-	bool nameNext = false;
+	vector<Tileset>* _tilesets;
+	Tileset* _tileset;
+	vector<string>* _cur;
+	bool _nameNext = false;
 
 	bool Null() { return true; }
 	bool Bool(bool b) { return true; }
@@ -39,41 +39,41 @@ struct TilesetHandler
 	bool Double(double d) { return true; }
 	bool String(const char* str, rapidjson::SizeType length, bool copy)
 	{
-		if (nameNext)
+		if (_nameNext)
 		{
-			tileset->name = str;
-			nameNext = false;
+			_tileset->_name = str;
+			_nameNext = false;
 		}
 		else
 		{
-			cur->push_back(str);
+			_cur->push_back(str);
 		}
 		return true;
 	}
 	bool StartObject()
 	{
 		Tileset newTileset;
-		tilesets->push_back(newTileset);
-		tileset = &tilesets->back();
+		_tilesets->push_back(newTileset);
+		_tileset = &_tilesets->back();
 		return true;
 	}
 	bool Key(const char* str, rapidjson::SizeType length, bool copy)
 	{
 		if (!strcmp("name", str))
 		{
-			nameNext = true;
+			_nameNext = true;
 		}
 		else if (!strcmp("floors", str))
 		{
-			cur = &tileset->floors;
+			_cur = &_tileset->_floors;
 		}
 		else if (!strcmp("walls", str))
 		{
-			cur = &tileset->walls;
+			_cur = &_tileset->_walls;
 		}
 		else if (!strcmp("deco", str))
 		{
-			cur = &tileset->deco;
+			_cur = &_tileset->_deco;
 		}
 		return true;
 	}
@@ -151,8 +151,8 @@ static bool GetFilenamesInDirectory(char* folder, char* extension, vector<string
 	return true;
 }
 
-//AssetManager keeps lists of all assets in the game(currently meshes and textures), and loads them onto the GPU or memory when required.
-//RenderObjects are the interface by which the assetmanager provides models to the renderer. They contain at least one mesh, two colors for diffuse and specular respectively, two handles to textures, an pointer to its skeleton and various help variables.
+//AssetManager keeps lists of all assets in the game(currently meshes, textures and skeletal animation), and loads them onto the GPU or memory when required.
+//RenderObjects are the interface by which the assetmanager provides models to the renderer. They contain at least one mesh, two colors for diffuse and specular respectively, two handles to textures, a pointer to its skeleton and various help variables.
 //Get buffers with:
 //assetManager->GetRenderObject(MY_OBJECT_RENDEROBJECT_INDEX)->meshes[SUBMESH_INDEX].vertexBuffer; Also on meshlevel lies the size of the buffer and any lights that may be present.
 //Call assetManager->UnLoad(MY_OBJECT_RENDEROBJECT_INDEX, false) if you think the mesh probably won't be needed again soon

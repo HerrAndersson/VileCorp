@@ -23,6 +23,11 @@ StateMachine::StateMachine(InitVar initVar)
 			_baseStates.push_back(new PlayState(initVar));
 			break;
 		}
+		case LEVELEDITSTATE:
+		{
+			_baseStates.push_back(new LevelEditState(initVar));
+			break;
+		}
 		case OPTIONSSTATE:
 		{
 			_baseStates.push_back(new OptionsState(initVar));
@@ -30,7 +35,6 @@ StateMachine::StateMachine(InitVar initVar)
 		}
 		}
 	}
-
 }
 
 StateMachine::~StateMachine()
@@ -45,30 +49,13 @@ void StateMachine::Update(float deltaTime)
 {
 	switch (_currentState)
 	{
-	case SPLASHSTATE:
-	{
-		_baseStates[_currentState]->Update(deltaTime);
-		break;
-	}
-	case MENUSTATE:
-	{
-		_baseStates[_currentState]->Update(deltaTime);
-		break;
-	}
-	case PLAYSTATE:
-	{
-		_baseStates[_currentState]->Update(deltaTime);
-		break;
-	}
-
-	case OPTIONSSTATE:
-	{
-		_baseStates[_currentState]->Update(deltaTime);
-		break;
-	}
 	case EXITSTATE:
 	{
-
+		break;
+	}
+	default:
+	{
+		_baseStates[_currentState]->Update(deltaTime);
 		break;
 	}
 	}
@@ -84,4 +71,9 @@ void StateMachine::ProcessStateRequest()
 		_currentState = _baseStates[_currentState]->GetNewStateRequest();
 		_baseStates[_currentState]->OnStateEnter();
 	}
+}
+
+State StateMachine::GetState() 
+{
+	return _currentState;
 }

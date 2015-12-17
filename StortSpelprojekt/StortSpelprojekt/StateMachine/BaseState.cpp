@@ -4,8 +4,11 @@ State BaseState::_newStateRequest;
 
 BaseState::BaseState(InitVar initVar)
 {
-	_objectHandler		= initVar.objectHandler;
-	_uiHandler			= initVar.uiHandler;
+	_controls = initVar._controls;
+	_objectHandler		= initVar._objectHandler;
+	_uiHandler			= initVar._uiHandler;
+	_camera				= initVar._camera;
+	_pickingDevice		= initVar._pickingDevice;
 	_newStateRequest	= SPLASHSTATE;
 }
 

@@ -1,4 +1,4 @@
-#pragma once
+  #pragma once
 #include <DirectXMath.h>
 #include "RenderUtils.h"
 #include "AIUtil.h"
@@ -13,7 +13,7 @@ If the object doesn't need a _renderObject, set it to nullptr.
 If the object has a renderObject but is out of sight _visibility will be false.
 */
 
-enum Type {UNIT, FLOOR, WALL, LOOT, TRAP, TRIGGER };
+enum Type {UNIT, FLOOR, WALL, LOOT, TRAP, TRIGGER, GUARD, ENEMY, NR_OF_TYPES/*Has to be last*/ };
 
 class GameObject
 {
@@ -48,6 +48,10 @@ public:
 	void SetPosition(const DirectX::XMFLOAT3& position);
 	void SetRotation(const DirectX::XMFLOAT3& rotation);
 	void SetScale(const DirectX::XMFLOAT3& scale);
+
+	void Translate(const DirectX::XMFLOAT3& offset);
+	void Scale(const DirectX::XMFLOAT3& scale);
+	void Rotate(const DirectX::XMFLOAT3& rotate);
 
 	AI::Vec2D GetTilePosition()const;
 	void SetTilePosition(AI::Vec2D pos);

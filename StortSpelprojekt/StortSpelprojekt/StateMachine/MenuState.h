@@ -1,12 +1,11 @@
-#ifndef MENUSTATE_H
-#define MENUSTATE_H
+#pragma once
 
 #include "BaseState.h"
 
 class MenuState : public BaseState
 {
 private:
-	UIHandler* _uiHandler;
+
 
 public:
 	MenuState(InitVar initVar);
@@ -16,5 +15,3 @@ public:
 	void OnStateEnter();
 	void OnStateExit();
 };
-
-#endif

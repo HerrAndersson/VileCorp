@@ -1,11 +1,13 @@
-#ifndef PLAYSTATE_H
-#define PLAYSTATE_H
+#pragma once
 
 #include "BaseState.h"
+#include "../GameLogic.h"
 
 class PlayState : public BaseState
 {
 private:
+	GameLogic _gameLogic;
+	InitVar _initVar;
 public:
 	PlayState(InitVar initVar);
 	~PlayState();
@@ -14,5 +16,3 @@ public:
 	void OnStateEnter();
 	void OnStateExit();
 };
-
-#endif

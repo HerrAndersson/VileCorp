@@ -1,8 +1,7 @@
 //Handles the walkable and non-walkable tiles
 //Aron and Victor worked on this
 
-#ifndef TILEMAP_H
-#define TILEMAP_H
+#pragma once
 
 #include "GameObject.h"
 
@@ -13,12 +12,14 @@ private:
 	{
 		static const int OBJECT_CAPACITY = 5;
 		GameObject* _objectsOnTile[OBJECT_CAPACITY];					//0 = floor or wall, 1 = 1st unit, 2 = 2nd unit, 3 = trap/thief objectives, 4 = trigger
+		bool _isVisible;
 		Tile()
 		{
 			for (int i = 0; i < OBJECT_CAPACITY; i++)
 			{
 				_objectsOnTile[i] = nullptr;
 			}
+			_isVisible = false;
 		}
 		~Tile(){}
 
@@ -46,6 +47,7 @@ public:
 
 	bool AddObjectToTile(int x, int z, GameObject* obj);
 	bool RemoveObjectFromTile(int x, int z, GameObject* obj);
+	bool RemoveObjectFromTile(GameObject* obj);
 	void ClearTile(int x, int z);
 	
 	int GetNrOfTiles() const;
@@ -53,11 +55,13 @@ public:
 	int GetWidth() const;
 
 	GameObject* GetObjectOnTile(int x, int z, int index) const; // More thinking
+	std::vector<GameObject*> GetAllObjectsOnTile(AI::Vec2D tileCoords) const;
+	bool IsTileEmpty(int x, int z)const;
 	bool IsWallOnTile(int x, int z)const;
 	int UnitsOnTile(int x, int z)const;
 	bool IsTrapOnTile(int x, int z)const;
 	bool IsTriggerOnTile(int x, int z) const;
 	bool IsObjectiveOnTile(int x, int z)const;
 	bool IsTypeOnTile(int x, int z, Type type)const;
+	bool IsTileVisible(int x, int z) const;
 };
-#endif

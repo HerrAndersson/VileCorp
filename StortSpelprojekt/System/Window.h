@@ -33,7 +33,7 @@ namespace System
 		HWND			_hwnd;
 		WindowSettings	_settings;
 
-		void InitializeWindow();
+		void InitializeWindow(WNDPROC wndProc);
 		void ShutdownWindow();
 
 		LONG _style;
@@ -41,7 +41,7 @@ namespace System
 
 	public:
 
-		Window(LPCSTR applicationName, HINSTANCE hinstance, WindowSettings settings);
+		Window(LPCSTR applicationName, HINSTANCE hinstance, WindowSettings settings, WNDPROC wndProc);
 		virtual ~Window();
 
 		bool Run();
@@ -51,9 +51,9 @@ namespace System
 
 		WindowSettings GetWindowSettings();
 
-		LRESULT CALLBACK MessageHandler(HWND, UINT, WPARAM, LPARAM);
+		static LRESULT CALLBACK MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam);
 	};
 
-	static LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
-	static Window* windowHandle = nullptr;
+	
+	static Window* _windowHandle = nullptr;
 }

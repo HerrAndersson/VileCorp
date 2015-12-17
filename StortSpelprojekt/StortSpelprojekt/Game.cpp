@@ -5,41 +5,63 @@
 
 Game::Game(HINSTANCE hInstance, int nCmdShow)
 {
+	_gameHandle = this;
 	System::WindowSettings settings;
-	_window = new System::Window("Amazing game", hInstance, settings);
+	_window = new System::Window("Amazing game", hInstance, settings, WndProc);
+
+	_timer = System::Timer();
 
 	_renderModule = new Renderer::RenderModule(_window->GetHWND(), settings._width, settings._height);
-	_UI = new UIHandler(_renderModule->GetDevice(), _window->GetWindowSettings());
+	
+	_assetManager = new AssetManager(_renderModule->GetDevice());
+	_input = new System::InputDevice(_window->GetHWND());
+	_controls = new System::Controls(_input);
 
-	//Initialize Variables
-	InitVar initVar;
-	initVar.objectHandler	= _objectHandler;
-
+	//Init camera
 	_camera = new System::Camera(0.1f, 1000.0f, DirectX::XM_PIDIV2, settings._width, settings._height);
 	_camera->SetPosition(XMFLOAT3(3, 10, 0));
 	_camera->SetRotation(XMFLOAT3(60, 0, 0));
 
-	_timer = System::Timer();
+	_UI = new UIHandler(_renderModule->GetDevice(), _window->GetWindowSettings(), _assetManager);
 	
-	_objectHandler = new ObjectHandler(_renderModule->GetDevice());
-	initVar.uiHandler		= _UI;
-	_SM = new StateMachine(initVar);
+	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager);
+	
+	
+	//Init statemachine
+	InitVar initVar;
 
-	_input = new System::InputDevice(_window->GetHWND());
+	_pickingDevice = new PickingDevice(_camera, _window);
+	initVar._objectHandler = _objectHandler;
+	initVar._uiHandler = _UI;
+	initVar._controls = _controls;
+	initVar._camera = _camera;
+	initVar._inputDevice = _input;
+	initVar._pickingDevice = _pickingDevice;
+
+	_SM = new StateMachine(initVar);	initVar._inputDevice = _input;
+
+	_SM->Update(_timer.GetFrameTime());
+	if (_SM->GetState() == LEVELEDITSTATE)
+	{
+		_grid = new Grid(_renderModule->GetDevice(), 1, 10);
+	}
 }
 
 Game::~Game() 
-{	
+{
 	delete _window;
 	delete _renderModule;
 	delete _camera;
 	delete _objectHandler;
-	//TODO remove comments when the objectHandler is initialized
-	//delete _objectHandler;
 	delete _UI;
 	delete _SM;
+	delete _controls;
+	delete _assetManager;
+	delete _pickingDevice;
+	delete _grid;
 	delete _input;
 }
+
 void Game::ResizeResources(System::WindowSettings settings)
 {
 	_window->ResizeWindow(settings);
@@ -47,79 +69,7 @@ void Game::ResizeResources(System::WindowSettings settings)
 	_camera->Resize(settings._width, settings._height);
 }
 
-void Game::HandleInput()
-{
-	if (GetAsyncKeyState(VK_LEFT) != 0)
-	{
-		//Windowed mode
-		System::WindowSettings settings(1280, 720, System::WindowSettings::SHOW_CURSOR);
-		ResizeResources(settings);
-	}
 
-	if (GetAsyncKeyState(VK_RIGHT) != 0)
-	{
-		//Fullscreen
-		System::WindowSettings settings(1920, 1080, System::WindowSettings::SHOW_CURSOR | System::WindowSettings::FULLSCREEN);
-		ResizeResources(settings);
-	}
-
-	if (GetAsyncKeyState(VK_UP) != 0)
-	{
-		//Borderless windowed
-		System::WindowSettings settings(567, 765, System::WindowSettings::SHOW_CURSOR | System::WindowSettings::BORDERLESS);
-		ResizeResources(settings);
-	}
-
-	//Camera mouse control
-	System::MouseCoord mouseCoord = _input->GetMouseCoord();
-	if (mouseCoord._deltaPos.x != 0 || mouseCoord._deltaPos.y != 0)
-	{
-		XMFLOAT3 rotation = _camera->GetRotation();
-		rotation.y += mouseCoord._deltaPos.x / 10.0f;
-		rotation.x += mouseCoord._deltaPos.y / 10.0f;
-		_camera->SetRotation(rotation);
-	}
-
-	XMFLOAT3 forward(0, 0, 0);
-	XMFLOAT3 position = _camera->GetPosition();
-	XMFLOAT3 right(0, 0, 0);
-	bool isMoving = false;
-	float v = 0.1f;
-	if (GetAsyncKeyState('W'))
-	{
-		forward = _camera->GetForwardVector();
-		isMoving = true;
-	}
-	else if (GetAsyncKeyState('S'))
-	{
-		forward = _camera->GetForwardVector();
-		forward.x *= -1;
-		forward.y *= -1;
-		forward.z *= -1;
-		isMoving = true;
-	}
-
-	if (GetAsyncKeyState('D'))
-	{
-		right = _camera->GetRightVector();
-		isMoving = true;
-	}
-	else if (GetAsyncKeyState('A'))
-	{
-		right = _camera->GetRightVector();
-		right.x *= -1;
-		right.y *= -1;
-		right.z *= -1;
-		isMoving = true;
-	}
-
-	if (isMoving)
-	{
-		_camera->SetPosition(XMFLOAT3(position.x + (forward.x + right.x) * v, position.y + (forward.y + right.y) * v, position.z + (forward.z + right.z) * v));
-	}
-
-	
-}
 
 void Game::Update(float deltaTime)
 {
@@ -130,70 +80,57 @@ void Game::Update(float deltaTime)
 	vi vill hämta objekten
 
 	*/
-	_input->Update();
+	
 	_UI->Update();
 	_UI->OnResize(_window->GetWindowSettings());
 	_SM->Update(deltaTime);
 	_objectHandler->Update(deltaTime);
+	_input->UpdatePerFrame();
 }
 
 void Game::Render()
 {
 	_renderModule->BeginScene(0.0f, 1.0f, 1.0f, 1);
 	_renderModule->SetResourcesPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
-
-	std::vector<GameObject*>* animatedGameObjects = _objectHandler->GetAnimatedGameObjects();
-	std::vector<GameObject*>* staticGameObjects = _objectHandler->GetStaticGameObjects();
-
-	_renderModule->SetShaderStage(Renderer::RenderModule::ANIM_PASS);
-	for (auto i : *animatedGameObjects)
+	_renderModule->SetShaderStage(Renderer::RenderModule::GEO_PASS);
+	
+	std::vector<std::vector<GameObject*>>* gameObjects = _objectHandler->GetGameObjects();
+	for (int i = 0; i < NR_OF_TYPES; i++)
 	{
-		_renderModule->Render(&i->GetMatrix(), i->GetRenderObject(), i->GetAnimation()->GetTransforms());	
+		for (GameObject* g : gameObjects->at(i))
+		{
+			_renderModule->Render(&(g->GetMatrix()), g->GetRenderObject());
+		}
 	}
 
-	//RenderList renderList = _objectHandler->GetAll(0);
-	
-	
-	//_renderModule->Render(&_objectHandler->GetAll(TRAP).at(0)->GetMatrix(), renderList._renderObject);
-	//_renderModule->Render(&_objectHandler->GetAll(TRAP).at(1)->GetMatrix(), renderList._renderObject);
-	//TODO: Will make nestled later /Texxarne
-	//for (int j = 0; j < renderList.modelMatrices.size(); j++)
-	//{
-	//	_renderModule->Render(&renderList.modelMatrices[j], renderList._renderObject);
-	//}
-	
-	_renderModule->SetShaderStage(Renderer::RenderModule::GEO_PASS);
-	for (auto i : *staticGameObjects)
+	if (_SM->GetState() == LEVELEDITSTATE)
 	{
-		_renderModule->Render(&i->GetMatrix(), i->GetRenderObject());
+		_renderModule->SetShaderStage(Renderer::RenderModule::GRID_PASS);
+
+		std::vector<DirectX::XMMATRIX>* gridMatrices = _grid->GetGridMatrices();
+
+		for (auto &matrix : *gridMatrices)
+		{
+			_renderModule->RenderLineList(&matrix, _grid->GetLineBuffer(), 2);
+		}
 	}
 
 	_renderModule->SetShaderStage(Renderer::RenderModule::LIGHT_PASS);
-
-
 	_renderModule->RenderLightQuad();
+	
+	_renderModule->SetShaderStage(Renderer::RenderModule::HUD_PASS);
+	_renderModule->Render(_UI->GetTextureData());
 	_UI->Render(_renderModule->GetDeviceContext());
 	_renderModule->EndScene();
 }
 
 int Game::Run()
 {
-	float deltaTime = 0; //someone create this.
-	//Needs a Tilemap in the objectHandler /Markus
-	//_objectHandler->Add(TRAP, 0, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
-
-	//_objectHandler->Add(TRAP, 0, XMFLOAT3(0.5f, -1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
-	_objectHandler->LoadLevel(3);
-
-
-	_objectHandler->InitPathfinding();
-	_timer.Reset();
 	while (_window->Run())
 	{
 		_timer.Update();
 		if (_timer.GetFrameTime() >= MS_PER_FRAME)
 		{
-			HandleInput();
 			Update(_timer.GetFrameTime());
 			Render();
 			_timer.Reset();
@@ -201,4 +138,60 @@ int Game::Run()
 	}
 
 	return 0;
+}
+
+LRESULT CALLBACK Game::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam)
+{
+	return DefWindowProc(hwnd, umsg, wparam, lparam);
+}
+
+
+LRESULT CALLBACK Game::WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
+{
+	switch (umessage)
+	{
+	case WM_QUIT:
+	{
+		PostQuitMessage(0);
+		return 0;
+	}
+	case WM_DESTROY:
+	{
+		PostQuitMessage(0);
+		return 0;
+	}
+	case WM_CLOSE:
+	{
+		PostQuitMessage(0);
+		return 0;
+	}
+	case WM_INPUT:
+	{
+		/*
+		UINT dwSize;
+		UINT asdf = 0;
+		asdf = GetRawInputData((HRAWINPUT)lparam, RID_INPUT, NULL, &dwSize,
+			sizeof(RAWINPUTHEADER));
+		LPBYTE lpb = new BYTE[dwSize];
+		if (lpb == NULL)
+		{
+			return 0;
+		}
+
+		if (GetRawInputData((HRAWINPUT)lparam, RID_INPUT, lpb, &dwSize,
+			sizeof(RAWINPUTHEADER)) != dwSize)
+			OutputDebugString(TEXT("GetRawInputData does not return correct size !\n"));
+
+		RAWINPUT* raw = (RAWINPUT*)lpb;
+		delete[] lpb;
+		return 0;
+		*/
+		_gameHandle->_input->Update(lparam);
+	}
+
+	default:
+	{
+		return _gameHandle->MessageHandler(hwnd, umessage, wparam, lparam);
+	}
+	}
 }

@@ -23,6 +23,7 @@ public:
 	T getMin()const;
 	int size() const;
 	void swap(T& obj1, T& obj2);
+	void empty();
 };
 
 template<typename T>
@@ -47,6 +48,7 @@ template<typename T>
 Heap<T>::~Heap()
 {
 	delete[] _tree;
+	_tree = nullptr;
 }
 
 template<typename T>
@@ -126,4 +128,10 @@ void Heap<T>::swap(T& obj1, T& obj2)
 	T temp = obj1;
 	obj1 = obj2;
 	obj2 = temp;
+}
+
+template<typename T>
+void Heap<T>::empty()
+{
+	_nrOfElements = 0;
 }

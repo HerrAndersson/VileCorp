@@ -7,19 +7,19 @@ namespace System
 	Timer::Timer()
 	{
 		// Check to see if this system supports high performance timers
-		QueryPerformanceFrequency((LARGE_INTEGER*)&frequency);
+		QueryPerformanceFrequency((LARGE_INTEGER*)&_frequency);
 
-		if (frequency == 0)
+		if (_frequency == 0)
 		{
 			throw runtime_error("Timer: Could not initialize Timer");
 		}
 
-		ticksPerMs = (float)(frequency / 1000);
+		_ticksPerMs = (float)(_frequency / 1000);
 
-		QueryPerformanceCounter((LARGE_INTEGER*)&startTime);
+		QueryPerformanceCounter((LARGE_INTEGER*)&_startTime);
 
-		frameTime = 0;
-		gameTime = 0;
+		_frameTime = 0;
+		_gameTime = 0;
 	}
 
 	Timer::~Timer()
@@ -30,35 +30,37 @@ namespace System
 	{
 		INT64 currentTime;
 		QueryPerformanceCounter((LARGE_INTEGER*)&currentTime);		//Query the current time
-		double timeDifference = (double)(currentTime - startTime); 	//Difference in time since the last time-query 
-		tempTime = timeDifference / ticksPerMs;						//Time difference over the timer speed resolution give frameTime
-		startTime = currentTime; 									//Restart the timer
+		double timeDifference = (double)(currentTime - _startTime); 	//Difference in time since the last time-query 
+		_tempTime = timeDifference / _ticksPerMs;						//Time difference over the timer speed resolution give frameTime
+		_startTime = currentTime; 									//Restart the timer
 
-		frameTime += tempTime;
-		gameTime += tempTime;
+		_frameTime += _tempTime;
+		_gameTime += _tempTime;
 
-		if (gameTime > (DBL_MAX - 100000000))
-			gameTime = 0;
+		if (_gameTime > (DBL_MAX - 100000000))
+		{
+			_gameTime = 0;
+		}
 	}
 
 	// Seconds
 	double Timer::GetFrameTime()
 	{
-		return frameTime;
+		return _frameTime;
 	}
 
 	double Timer::GetGameTime()
 	{
-		return gameTime;
+		return _gameTime;
 	}
 
 	void Timer::Reset()
 	{
-		frameTime = 0;
+		_frameTime = 0;
 	}
 
 	int Timer::GetFPS()
 	{
-		return (int)(1 / (frameTime / 1000));
+		return (int)(1 / (_frameTime / 1000));
 	}
 }

@@ -1,10 +1,14 @@
 #include "UIHandler.h"
 
-UIHandler::UIHandler(ID3D11Device* device, System::WindowSettings windowSettings)
+UIHandler::UIHandler(ID3D11Device* device, System::WindowSettings windowSettings, AssetManager* assetManager)
 {
-	_device = device;
-	_textId = 0;
-	_windowSettings = windowSettings;
+	_device			= device;
+	_textId			= 0;
+	_windowSettings	= windowSettings;
+	_AM				= assetManager;
+	_textureId		= 0;
+
+	_fontWrapper.CreateFontWrapper(device);
 }
 
 UIHandler::~UIHandler()
@@ -13,8 +17,6 @@ UIHandler::~UIHandler()
 	{
 		i.Release();
 	}
-	_fonts.clear();
-	std::vector<FontInfo>().swap(_fonts);
 }
 
 void UIHandler::Update()
@@ -60,7 +62,7 @@ int UIHandler::AddCustomFont(const WCHAR* filePath, const WCHAR* fontName, Direc
 {
 	if (_textId == 0) //if first element
 	{
-		_fonts.push_back(FontInfo(filePath, fontName, position, fontSize, color, text, _textId, true, _device));
+		_fonts.push_back(FontInfo(_fontWrapper.GetFontWrapper(), filePath, fontName, position, fontSize, color, text, _textId, true, _device));
 	}
 	else
 	{
@@ -79,7 +81,7 @@ int UIHandler::AddCustomFont(const WCHAR* filePath, const WCHAR* fontName, Direc
 		if (found == -1)
 		{
 			//Then create a new font.
-			_fonts.push_back(FontInfo(filePath, fontName, position, fontSize, color, text, _textId, true, _device));
+			_fonts.push_back(FontInfo(_fontWrapper.GetFontWrapper(), filePath, fontName, position, fontSize, color, text, _textId, true, _device));
 		}
 		else
 		{
@@ -93,7 +95,7 @@ int UIHandler::AddCustomFont(const WCHAR* filePath, const WCHAR* fontName, Direc
 
 void UIHandler::Render(ID3D11DeviceContext* _deviceContext)
 {
-	for (auto i : _fonts)
+	for (auto &i : _fonts)
 	{
 		i.Render(_deviceContext);
 	}
@@ -141,4 +143,34 @@ bool UIHandler::RemoveText(int id)
 		}
 	}
 	return rv;
+}
+
+int UIHandler::Add2DTexture(std::string filePath, DirectX::XMFLOAT2 position, DirectX::XMFLOAT2 size)
+{
+	ID3D11ShaderResourceView* tex = _AM->GetTexture(filePath);
+	_textures.push_back(Renderer::HUDElement(position, size, tex));
+
+	return _textureId++;
+}
+
+int UIHandler::AddButton(std::string filePath, DirectX::XMFLOAT2 position, DirectX::XMFLOAT2 size)
+{
+	int buttonId = Add2DTexture(filePath, position, size);
+
+	return buttonId;
+}
+
+std::vector<Renderer::HUDElement>* UIHandler::GetTextureData()
+{
+	return &_textures;
+}
+
+void* UIHandler::operator new(size_t i)
+{
+	return _mm_malloc(i, 16);
+}
+
+void UIHandler::operator delete(void* p)
+{
+	_mm_free(p);
 }
