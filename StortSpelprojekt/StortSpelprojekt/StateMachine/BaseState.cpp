@@ -2,13 +2,14 @@
 
 State BaseState::_newStateRequest;
 
-BaseState::BaseState(InitVar initVar)
+BaseState::BaseState(System::Controls* controls, ObjectHandler* objectHandler, UIHandler* uiHandler, System::InputDevice* inputDevice, System::Camera* camera, PickingDevice* pickingDevice)
 {
-	_controls = initVar._controls;
-	_objectHandler		= initVar._objectHandler;
-	_uiHandler			= initVar._uiHandler;
-	_camera				= initVar._camera;
-	_pickingDevice		= initVar._pickingDevice;
+	_controls			= controls;
+	_objectHandler		= objectHandler;
+	_uiHandler			= uiHandler;
+	_inputDevice		= inputDevice;
+	_camera				= camera;
+	_pickingDevice		= pickingDevice;
 	_newStateRequest	= SPLASHSTATE;
 }
 

@@ -12,12 +12,12 @@ GameLogic::~GameLogic()
 
 }
 
-void GameLogic::Initialize(InitVar* initVar)
+void GameLogic::Initialize(System::InputDevice* inputDevice, ObjectHandler* objectHandler, UIHandler* uiHandler, System::Camera* camera)
 {
-	_inputDevice = initVar->_inputDevice;
-	_objectHandler = initVar->_objectHandler;
-	_uiHandler = initVar->_uiHandler;
-	_camera = initVar->_camera;
+	_inputDevice = inputDevice;
+	_objectHandler = objectHandler;
+	_uiHandler = uiHandler;
+	_camera = camera;
 
 	//Needs a Tilemap in the objectHandler /Markus
 	//_objectHandler->Add(TRAP, 0, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));

@@ -13,10 +13,13 @@ LevelEdit::~LevelEdit()
 	delete _aStar;
 }
 
-void LevelEdit::Initialize(InitVar* initVar)
+void LevelEdit::Initialize(ObjectHandler* objectHandler, System::InputDevice* inputDevice, System::Controls* controls, PickingDevice* pickingDevice, System::Camera* camera)
 {
-	_initVar = initVar;
-
+	_objectHandler = objectHandler;
+	_inputDevice = inputDevice;
+	_controls = controls;
+	_pickingDevice = pickingDevice;
+	_camera = camera;
 	_aStar = new AI::AStar();
 
 	_selectedObj = nullptr;
@@ -30,28 +33,27 @@ void LevelEdit::Initialize(InitVar* initVar)
 void LevelEdit::LoadLevel(int levelID)
 {
 	//load existing level.
-	_initVar->_objectHandler->Release();
+	_objectHandler->Release();
 	ResetSelectedObj();
-	_initVar->_objectHandler->LoadLevel(levelID);
-	_tileMap = _initVar->_objectHandler->GetTileMap();
+	_objectHandler->LoadLevel(levelID);
+	_tileMap = _objectHandler->GetTileMap();
 	_tilemapHeight = _tileMap->GetHeight();
 	_tilemapWidth = _tileMap->GetWidth();
 }
 
 void LevelEdit::HandleInput()
 {
-
-	if (_initVar->_controls->IsFunctionKeyDown("DEBUG:ENABLE_FREECAM"))
+	if (_controls->IsFunctionKeyDown("DEBUG:ENABLE_FREECAM"))
 	{
-		_initVar->_inputDevice->ToggleCursorLock();
+		_inputDevice->ToggleCursorLock();
 	}
 
-	if (_initVar->_inputDevice->IsPressed(System::Input::LeftMouse))
+	if (_inputDevice->IsPressed(System::Input::LeftMouse))
 	{
 		if (_isSelectionMode)
 		{
-			AI::Vec2D pickedTile = _initVar->_pickingDevice->pickTile(_initVar->_inputDevice->GetMouseCoord()._pos);
-			std::vector<GameObject*> objectsOnTile = _initVar->_objectHandler->GetTileMap()->GetAllObjectsOnTile(pickedTile);
+			AI::Vec2D pickedTile = _pickingDevice->pickTile(_inputDevice->GetMouseCoord()._pos);
+			std::vector<GameObject*> objectsOnTile = _objectHandler->GetTileMap()->GetAllObjectsOnTile(pickedTile);
 			if (!objectsOnTile.empty())
 			{
 				SelectObject(*(objectsOnTile.end() - 1));
@@ -63,7 +65,7 @@ void LevelEdit::HandleInput()
 		}
 	}
 
-	if (_initVar->_inputDevice->IsPressed(System::Input::RightMouse))
+	if (_inputDevice->IsPressed(System::Input::RightMouse))
 	{
 		if (_isSelectionMode)
 		{
@@ -259,52 +261,52 @@ void LevelEdit::HandleInput()
 	*/
 
 	//Camera mouse control
-	if (_initVar->_inputDevice->GetCursorLock())
+	if (_inputDevice->GetCursorLock())
 	{
-		System::MouseCoord mouseCoord = _initVar->_inputDevice->GetMouseCoord();
+		System::MouseCoord mouseCoord = _inputDevice->GetMouseCoord();
 		float sensitivity = 5.0f;
 		if (mouseCoord._deltaPos.x != 0 || mouseCoord._deltaPos.y != 0)
 		{
-			XMFLOAT3 rotation = _initVar->_camera->GetRotation();
+			XMFLOAT3 rotation = _camera->GetRotation();
 			rotation.y += mouseCoord._deltaPos.x / sensitivity;
 			rotation.x += mouseCoord._deltaPos.y / sensitivity;
-			_initVar->_camera->SetRotation(rotation);
+			_camera->SetRotation(rotation);
 		}
 	}
 	XMFLOAT3 forward(0, 0, 0);
-	XMFLOAT3 position = _initVar->_camera->GetPosition();
+	XMFLOAT3 position = _camera->GetPosition();
 	XMFLOAT3 right(0, 0, 0);
 	bool isMoving = false;
 	float v = 0.1f;
 
 
-	if (_initVar->_controls->IsFunctionKeyDown("DEBUG:ENABLE_FREECAM"))
+	if (_controls->IsFunctionKeyDown("DEBUG:ENABLE_FREECAM"))
 	{
-		_initVar->_inputDevice->ToggleCursorLock();
+		_inputDevice->ToggleCursorLock();
 	}
 	
-	if (_initVar->_controls->IsFunctionKeyDown("MAP_EDIT:MOVE_CAMERA_UP"))
+	if (_controls->IsFunctionKeyDown("MAP_EDIT:MOVE_CAMERA_UP"))
 	{
-		forward = _initVar->_camera->GetForwardVector();
+		forward = _camera->GetForwardVector();
 		isMoving = true;
 	}
-	else if (_initVar->_controls->IsFunctionKeyDown("MAP_EDIT:MOVE_CAMERA_DOWN"))
+	else if (_controls->IsFunctionKeyDown("MAP_EDIT:MOVE_CAMERA_DOWN"))
 	{
-		forward = _initVar->_camera->GetForwardVector();
+		forward = _camera->GetForwardVector();
 		forward.x *= -1;
 		forward.y *= -1;
 		forward.z *= -1;
 		isMoving = true;
 	}
 
-	if (_initVar->_controls->IsFunctionKeyDown("MAP_EDIT:MOVE_CAMERA_RIGHT"))
+	if (_controls->IsFunctionKeyDown("MAP_EDIT:MOVE_CAMERA_RIGHT"))
 	{
-		right = _initVar->_camera->GetRightVector();
+		right = _camera->GetRightVector();
 		isMoving = true;
 	}
-	else if (_initVar->_controls->IsFunctionKeyDown("MAP_EDIT:MOVE_CAMERA_LEFT"))
+	else if (_controls->IsFunctionKeyDown("MAP_EDIT:MOVE_CAMERA_LEFT"))
 	{
-		right = _initVar->_camera->GetRightVector();
+		right = _camera->GetRightVector();
 		right.x *= -1;
 		right.y *= -1;
 		right.z *= -1;
@@ -313,7 +315,7 @@ void LevelEdit::HandleInput()
 
 	if (isMoving)
 	{
-		_initVar->_camera->SetPosition(XMFLOAT3(position.x + (forward.x + right.x) * v, position.y + (forward.y + right.y) * v, position.z + (forward.z + right.z) * v));
+		_camera->SetPosition(XMFLOAT3(position.x + (forward.x + right.x) * v, position.y + (forward.y + right.y) * v, position.z + (forward.z + right.z) * v));
 	}
 	/*
 
@@ -345,7 +347,7 @@ void LevelEdit::HandleInput()
 void LevelEdit::Update(float deltaTime)
 {
 	HandleInput();
-	_initVar->_objectHandler->Update();
+	_objectHandler->Update();
 }
 
 void LevelEdit::ResetSelectedObj()
@@ -356,7 +358,7 @@ void LevelEdit::ResetSelectedObj()
 
 void LevelEdit::InitNewLevel()
 {
-	_initVar->_objectHandler->Release();
+	_objectHandler->Release();
 	ResetSelectedObj();
 }
 
@@ -366,7 +368,7 @@ void LevelEdit::DeleteObject()
 	if (_selectedObj != nullptr)
 	{
 		//temp = _objectHandler->Find(_selectedObj);
-		_initVar->_objectHandler->Remove(_selectedObj);
+		_objectHandler->Remove(_selectedObj);
 		_selectedObj = nullptr;
 	}
 }
@@ -375,15 +377,15 @@ void LevelEdit::ExportLevel()
 {
 	LevelHeader levelHead;
 	levelHead._version = 10;
-	Tilemap* tileMap = _initVar->_objectHandler->GetTileMap();
+	Tilemap* tileMap = _objectHandler->GetTileMap();
 	levelHead._levelSizeY = tileMap->GetHeight();
 	levelHead._levelSizeX = tileMap->GetWidth();
-	levelHead._nrOfGameObjects = _initVar->_objectHandler->GetTotalNrOfGameObjects();
+	levelHead._nrOfGameObjects = _objectHandler->GetTotalNrOfGameObjects();
 
 	//Iterating through all game objects and saving only the relevant data for exporting.
 	std::vector<MapData> mapData;
 	mapData.reserve(levelHead._nrOfGameObjects);
-	std::vector<std::vector<GameObject*>>* gameObjects = _initVar->_objectHandler->GetGameObjects();
+	std::vector<std::vector<GameObject*>>* gameObjects = _objectHandler->GetGameObjects();
 
 	for (int i = 0; i < gameObjects->size(); i++)
 	{

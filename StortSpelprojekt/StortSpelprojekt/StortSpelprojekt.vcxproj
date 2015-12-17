@@ -58,7 +58,6 @@
     <ClInclude Include="LevelEdit.h" />
     <ClInclude Include="ObjectHandler.h" />
     <ClInclude Include="StateMachine\BaseState.h" />
-    <ClInclude Include="StateMachine\InitVar.h" />
     <ClInclude Include="PickingDevice.h" />
     <ClInclude Include="StateMachine\LevelEditState.h" />
     <ClInclude Include="StateMachine\MenuState.h" />

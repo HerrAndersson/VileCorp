@@ -28,17 +28,8 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	
 	
 	//Init statemachine
-	InitVar initVar;
-
 	_pickingDevice = new PickingDevice(_camera, _window);
-	initVar._objectHandler = _objectHandler;
-	initVar._uiHandler = _UI;
-	initVar._controls = _controls;
-	initVar._camera = _camera;
-	initVar._inputDevice = _input;
-	initVar._pickingDevice = _pickingDevice;
-
-	_SM = new StateMachine(initVar);	initVar._inputDevice = _input;
+	_SM = new StateMachine(_controls, _objectHandler, _UI, _input, _camera, _pickingDevice);	/*initVar._inputDevice = _input;*/
 
 	_SM->Update(_timer.GetFrameTime());
 	if (_SM->GetState() == LEVELEDITSTATE)
@@ -58,8 +49,12 @@ Game::~Game()
 	delete _controls;
 	delete _assetManager;
 	delete _pickingDevice;
-	delete _grid;
 	delete _input;
+
+	if (_grid != nullptr)
+	{
+		delete _grid;
+	}
 }
 
 void Game::ResizeResources(System::WindowSettings settings)

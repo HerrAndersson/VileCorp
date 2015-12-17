@@ -6,7 +6,7 @@ class OptionsState : public BaseState
 {
 private:
 public:
-	OptionsState(InitVar initVar);
+	OptionsState(System::Controls* controls, ObjectHandler* objectHandler, UIHandler* uiHandler, System::InputDevice* inputDevice, System::Camera* camera, PickingDevice* pickingDevice);
 	~OptionsState();
 
 	void Update(float deltaTime);

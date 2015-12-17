@@ -5,18 +5,20 @@
 #include "UIHandler.h"
 #include "ObjectHandler.h"
 #include "InputDevice.h"
-#include "StateMachine/InitVar.h"
 #include "AStar.h"
+#include "Controls.h"
+#include "PickingDevice.h"
 
 class LevelEdit
 {
 private:
-	InitVar*				_initVar;
 	AI::AStar*				_aStar;
 	Tilemap*				_tileMap;
-
-
-	
+	ObjectHandler*			_objectHandler;
+	System::InputDevice*	_inputDevice;
+	System::Controls*		_controls;
+	PickingDevice*			_pickingDevice;
+	System::Camera*			_camera;
 
 	struct LevelHeader
 	{
@@ -56,5 +58,5 @@ public:
 	~LevelEdit();
 
 	void Update(float deltaTime);
-	void Initialize(InitVar* initVar);
+	void Initialize(ObjectHandler* objectHandler, System::InputDevice* inputDevice, System::Controls* controls, PickingDevice* pickingDevice, System::Camera* camera);
 };

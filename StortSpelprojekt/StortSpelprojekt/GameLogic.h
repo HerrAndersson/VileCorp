@@ -2,7 +2,7 @@
 #include "UIHandler.h"
 #include "ObjectHandler.h"
 #include "InputDevice.h"
-#include "StateMachine/InitVar.h"
+#include "Camera.h"
 
 class GameLogic
 {
@@ -16,6 +16,6 @@ private:
 public:
 	GameLogic();
 	~GameLogic();
-	void Initialize(InitVar* initVar);
+	void Initialize(System::InputDevice* inputDevice, ObjectHandler* objectHandler,  UIHandler* uiHandler, System::Camera* camera);
 	void Update();
 };

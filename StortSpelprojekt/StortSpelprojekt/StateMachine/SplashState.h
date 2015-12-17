@@ -6,7 +6,7 @@ class SplashState : public BaseState
 {
 private:
 public:
-	SplashState(InitVar initVar);
+	SplashState(System::Controls* controls, ObjectHandler* objectHandler, UIHandler* uiHandler, System::InputDevice* inputDevice, System::Camera* camera, PickingDevice* pickingDevice);
 	~SplashState();
 
 	void Update(float deltaTime);

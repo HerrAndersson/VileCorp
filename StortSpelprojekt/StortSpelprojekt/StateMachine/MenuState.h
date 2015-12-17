@@ -8,7 +8,7 @@ private:
 
 
 public:
-	MenuState(InitVar initVar);
+	MenuState(System::Controls* controls, ObjectHandler* objectHandler, UIHandler* uiHandler, System::InputDevice* inputDevice, System::Camera* camera, PickingDevice* pickingDevice);
 	~MenuState();
 
 	void Update(float deltaTime);

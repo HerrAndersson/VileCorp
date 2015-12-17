@@ -2,7 +2,6 @@
 
 #include "stdafx.h"
 #include "StateMachine/StateMachine.h"
-#include "StateMachine/InitVar.h"
 #include "Window.h"
 #include "RenderModule.h"
 #include "Camera.h"
@@ -29,7 +28,7 @@ private:
 	System::Timer				_timer;
 	System::Controls*			_controls;
 	AssetManager*				_assetManager;
-	Grid*						_grid;
+	Grid*						_grid = nullptr;
 	PickingDevice*				_pickingDevice;
 	System::InputDevice*		_input;
 	

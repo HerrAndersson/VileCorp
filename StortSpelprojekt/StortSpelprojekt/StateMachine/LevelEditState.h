@@ -7,9 +7,9 @@ class LevelEditState : public BaseState
 {
 private:
 	LevelEdit _levelEdit;
-	InitVar _initVar;
+
 public:
-	LevelEditState(InitVar initVar);
+	LevelEditState(System::Controls* controls, ObjectHandler* objectHandler, UIHandler* uiHandler, System::InputDevice* inputDevice, System::Camera* camera, PickingDevice* pickingDevice);
 	~LevelEditState();
 
 	void Update(float deltaTime);
