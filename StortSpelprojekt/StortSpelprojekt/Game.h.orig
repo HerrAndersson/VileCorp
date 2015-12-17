@@ -11,9 +11,13 @@
 #include "Timer.h"
 #include "AssetManager.h"
 #include "Trap.h"
-#include "Controls.h"
+<<<<<<< HEAD
+#include "InputDevice.h"
 #include "Grid.h"
 #include "PickingDevice.h"
+=======
+#include "Controls.h"
+>>>>>>> origin/T2-13-ControlClass
 
 class Game
 {
@@ -27,13 +31,22 @@ private:
 	ObjectHandler*				_objectHandler;
 	UIHandler*					_UI;
 	System::Timer				_timer;
+<<<<<<< HEAD
+	System::InputDevice*		_input;
+=======
+
 	System::Controls*			_controls;
+>>>>>>> origin/T2-13-ControlClass
 	AssetManager*				_assetManager;
 	Grid*						_grid;
 	PickingDevice*				_pickingDevice;
 	
 
 	//Resizing window, directx resources, camera
+<<<<<<< HEAD
+	void HandleInput();
+=======
+>>>>>>> origin/T2-13-ControlClass
 	void ResizeResources(System::WindowSettings settings);
 	void Update(float deltaTime);
 	void Render();

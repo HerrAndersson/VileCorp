@@ -42,10 +42,14 @@ namespace System
 			SetCursorPos(rect.left + (rect.right - rect.left) / 2, rect.top + (rect.bottom - rect.top) / 2);
 			ClipCursor(&rect);
 		}
+<<<<<<< HEAD
 		ScreenToClient(_hwnd, &_mouseCoord._pos);
+=======
+		else
 		{
 			ClipCursor(nullptr);
 		}
+>>>>>>> origin/T2-13-ControlClass
 	}
 
 	bool InputDevice::IsDown(int key)

@@ -1,7 +1,6 @@
-#ifndef BASESTATE_H
-#define BASESTATE_H
-
+#pragma once
 #include "InitVar.h"
+#include "Controls.h"
 
 enum State
 {
@@ -19,6 +18,7 @@ private:
 	static State BaseState::_newStateRequest;
 
 protected:
+	System::Controls*		_controls;
 	ObjectHandler*			_objectHandler;
 	UIHandler*				_uiHandler;
 	System::InputDevice*	_inputHandler;
@@ -36,5 +36,3 @@ public:
 
 	State GetNewStateRequest()const;
 };
-
-#endif

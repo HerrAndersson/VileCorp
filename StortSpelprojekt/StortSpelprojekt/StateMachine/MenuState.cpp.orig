@@ -12,13 +12,13 @@ MenuState::~MenuState()
 
 void MenuState::Update(float deltaTime)
 {
+<<<<<<< HEAD:StortSpelprojekt/StortSpelprojekt/StateMachine/MenuState.cpp
+	if (_inputHandler->IsPressed(System::Input::LeftMouse))
+=======
 	if (_controls->IsFunctionKeyDown("DEBUG:ENABLE_FREECAM"))
+>>>>>>> origin/T2-13-ControlClass:StortSpelprojekt/StortSpelprojekt/MenuState.cpp
 	{
-		//Get mouse coord
-		//Calculate mouse coord to screenspace
-		//Check collision with all the buttons
-		//Execute code for button
-		
+		_controls->ToggleCursorLock();
 	}
 }
 

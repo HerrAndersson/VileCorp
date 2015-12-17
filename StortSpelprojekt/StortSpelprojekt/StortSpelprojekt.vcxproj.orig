@@ -20,8 +20,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Architecture.cpp" />
+<<<<<<< HEAD
     <ClCompile Include="Enemy.cpp" />
+=======
+    <ClCompile Include="BaseState.cpp" />
     <ClCompile Include="Controls.cpp" />
+>>>>>>> origin/T2-13-ControlClass
     <ClCompile Include="FontInfo.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameLogic.cpp" />
@@ -47,8 +51,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Architecture.h" />
+<<<<<<< HEAD
     <ClInclude Include="Enemy.h" />
+=======
+    <ClInclude Include="BaseState.h" />
     <ClInclude Include="Controls.h" />
+>>>>>>> origin/T2-13-ControlClass
     <ClInclude Include="FontInfo.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameLogic.h" />
