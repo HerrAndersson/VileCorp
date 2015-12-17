@@ -23,6 +23,10 @@ GameObject::GameObject(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::X
 
 GameObject::~GameObject()
 {
+	if (_renderObject->_isSkinned)
+	{
+		delete _animation;
+	}
 }
 
 void GameObject::CalculateMatrix()

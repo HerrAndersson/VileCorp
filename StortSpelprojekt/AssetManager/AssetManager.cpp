@@ -13,7 +13,7 @@ AssetManager::AssetManager(ID3D11Device* device)
 	_texturesToFlush = new vector<Texture*>;
 	_levelFileNames = new vector<string>;
 	_tilesets = new vector<Tileset>;
-	_skeletons = new vector<Skeleton>;
+	_skeletons = new vector<Skeleton*>;
 
 	SetupTilesets();
 #ifdef _DEBUG
@@ -43,14 +43,11 @@ AssetManager::~AssetManager()
 	delete _textures;
 	delete _texturesToFlush;
 	delete _levelFileNames;
-	for (Tileset set : *_tilesets)
-	{
-		set.deco.clear();
-		set.floors.clear();
-		set.walls.clear();
-	}
-	_tilesets->clear();
 	delete _tilesets;
+	for (uint i = 0; i < _skeletons->size(); i++)
+	{
+		delete _skeletons->at(i);
+	}
 	delete _skeletons;
 }
 
@@ -67,6 +64,7 @@ void AssetManager::SetupRenderObjectList(Tileset* tileset)
 	for (string str : tileset->floors) _modelFiles->push_back(str);
 	for (string str : tileset->walls) _modelFiles->push_back(str);
 	for (string str : tileset->deco) _modelFiles->push_back(str);
+
 
 	for (uint i = 0; i < _modelFiles->size(); i++)
 	{
@@ -439,11 +437,11 @@ ID3D11ShaderResourceView* AssetManager::GetTexture(string filename)
 Skeleton* AssetManager::LoadSkeleton(string filename)
 {
 
-	for (Skeleton skeleton : *_skeletons)
+	for (Skeleton* skeleton : *_skeletons)
 	{
-		if (strcmp(skeleton._name.c_str(), filename.data()))
+		if (strcmp(skeleton->_name.c_str(), filename.data()))
 		{
-			return &skeleton;
+			return skeleton;
 		}
 	}
 
@@ -461,8 +459,8 @@ Skeleton* AssetManager::LoadSkeleton(string filename)
 		throw runtime_error("Failed to open " + file_path);
 	}
 
-	Skeleton* skeleton = new Skeleton;
-	_skeletons->push_back(*skeleton);
+	_skeletons->push_back(new Skeleton);
+	Skeleton* skeleton = _skeletons->back();
 
 	SkeletonHeader header;
 	_infile->read((char*)&header, sizeof(SkeletonHeader));

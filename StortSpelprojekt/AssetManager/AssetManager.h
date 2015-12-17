@@ -162,7 +162,7 @@ private:
 	vector<string>* _modelFiles;
 	vector<string>* _levelFileNames;
 	vector<Tileset>* _tilesets;
-	vector<Skeleton>* _skeletons;
+	vector<Skeleton*>* _skeletons;
 
 	vector<RenderObject*>* _renderObjects;
 	vector<RenderObject*>* _renderObjectsToFlush;
