@@ -182,9 +182,27 @@ bool ObjectHandler::LoadLevel(int lvlIndex)
 	delete _tilemap;
 	_tilemap = new Tilemap(dimX, dimY);
 
+	Type tileType = FLOOR;
 	for (auto i : gameObjectData)
 	{
-		Add((Type)i._tileType, i._tileType, DirectX::XMFLOAT3(i._posX, 0, i._posZ), DirectX::XMFLOAT3(0, i._rotY, 0));
+		switch (i._tileType)
+		{
+		case 0:
+			tileType = ENEMY;
+			break;
+		case 1:
+			tileType = FLOOR;
+			break;
+		case 2:
+			tileType = WALL;
+			break;
+		case 3:
+			tileType = LOOT;
+			break;
+		default:
+			break;
+		}
+		Add(tileType, tileType, DirectX::XMFLOAT3(i._posX, 0, i._posZ), DirectX::XMFLOAT3(0, i._rotY, 0));
 	}
 	return false;
 }
