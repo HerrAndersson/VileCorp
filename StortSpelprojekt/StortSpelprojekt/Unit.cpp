@@ -2,9 +2,6 @@
 
 void Unit::ScanOctant(int depth, int octant, double &startSlope, double endSlope)
 {
-	/*
-	(The radius of the visual range)^2
-	*/
 	int visRangeSqrd = _visionRadius * _visionRadius;
 	int x = 0;
 	int y = 0;
@@ -154,63 +151,43 @@ void Unit::ScanOctant(int depth, int octant, double &startSlope, double endSlope
 			if (_tileMap->IsWallOnTile(x, y))
 			{
 				//If previous tile was in range and not a wall
-				if ((x + (prevTileVec._x) >= 0 && y + (prevTileVec._y) >= 0) && 
-					(x + (prevTileVec._x) <= _tileMap->GetWidth() && y + (prevTileVec._y) <= _tileMap->GetHeight()))
+				if (_tileMap->IsValid(x, y) && !_tileMap->IsWallOnTile(x + prevTileVec._x, y + prevTileVec._y))
 				{
-					if ((!_tileMap->IsWallOnTile(x + (prevTileVec._x), y + (prevTileVec._y))))
-					{
 						//Recurse and adjust depth with new end slope
-						ScanOctant(depth + 1, octant, startSlope, 
-							(endSlopeCompOffset) * GetSlope(x + (endCornerVec._x * 0.5), y + (endCornerVec._y * 0.5), unitPosX, unitPosY, (!rowByRow)));
-					}
+					ScanOctant(depth + 1, octant, startSlope, (endSlopeCompOffset) * GetSlope(x + (endCornerVec._x * 0.5), y + (endCornerVec._y * 0.5), unitPosX, unitPosY, (!rowByRow)));
 				}
 			}
-			//Current cell NOT blocked
 			else
 			{
-				//If previous tile was in range and a wall
-				if ((x + (prevTileVec._x) >= 0 && y + (prevTileVec._y) >= 0) &&
-					(x + (prevTileVec._x) <= _tileMap->GetWidth() && y + (prevTileVec._y) <= _tileMap->GetHeight()))
+				if ((_tileMap->IsWallOnTile(x + (prevTileVec._x), y + (prevTileVec._y))))
 				{
-					if ((_tileMap->IsWallOnTile(x + (prevTileVec._x), y + (prevTileVec._y))))
-					{
-						startSlope = (startSlopeOffset) * GetSlope(x + (startCornerVec._x * 0.5), y + (startCornerVec._y * 0.5), unitPosX, unitPosY, (!rowByRow));
-					}
+					startSlope = (startSlopeOffset) * GetSlope(x + (startCornerVec._x * 0.5), y + (startCornerVec._y * 0.5), unitPosX, unitPosY, (!rowByRow));
 				}
-
 				//Add current tile to visible
 				_visibleTiles[_nrOfVisibleTiles] = AI::Vec2D(x, y);
 				_nrOfVisibleTiles++;
 			}
 		}
-
-		//If row by row, use x
-		if (rowByRow)
+		if (rowByRow)			//If row by row, use x
 		{
 			x += leftToRight;
 		}
-		else//Else use y 
+		else					//Else use y 
 		{
 			y+= leftToRight;
 		}
 	}
-	
-	if (rowByRow)//If row by row, use x
+	if (rowByRow)				//If row by row, use x
 	{
 		x -= leftToRight;
 	}
-	else//Else use y
+	else						//Else use y
 	{
 		y -= leftToRight;
 	}
 
-	//Set x within tile range if it's outside
-	x = max(x, 0);
-	x = min(x, _tileMap->GetWidth() - 1);
-
-	//Set y within tile range if it's outside
-	y = max(y, 0);
-	y = min(y, _tileMap->GetHeight() - 1);
+	x = min(max(x, 0), _tileMap->GetWidth() - 1);	//Set x within tile range if it's outside
+	y = min(max(y, 0), _tileMap->GetHeight() - 1);	//Set y within tile range if it's outside
 
 	//Recurse and run if depth is within range
 	if (depth < _visionRadius && (!_tileMap->IsWallOnTile(x, y)))

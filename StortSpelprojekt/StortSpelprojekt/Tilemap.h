@@ -37,7 +37,6 @@ private:
 	
 	Tile** _map;
 
-	bool IsValid(int x, int z) const;
 	
 public:
 	Tilemap();
@@ -54,6 +53,7 @@ public:
 	int GetWidth() const;
 
 	GameObject* GetObjectOnTile(int x, int z, int index) const; // More thinking
+	bool IsValid(int x, int z) const;
 	bool IsTileEmpty(int x, int z)const;
 	bool IsWallOnTile(int x, int z)const;
 	int UnitsOnTile(int x, int z)const;
