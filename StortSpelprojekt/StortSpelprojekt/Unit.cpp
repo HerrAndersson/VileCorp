@@ -8,8 +8,8 @@ void Unit::ScanOctant(int depth, int octant, double &startSlope, double endSlope
 	int visRangeSqrd = _visionRadius * _visionRadius;
 	int x = 0;
 	int y = 0;
-	int unitPosX = 1;//this->GetTilePosition()._x;
-	int unitPosY = 1;//this->GetTilePosition()._y;
+	int unitPosX = this->GetTilePosition()._x;
+	int unitPosY = this->GetTilePosition()._y;
 	
 	bool leftToRight = true;
 	bool rowByRow = true;
