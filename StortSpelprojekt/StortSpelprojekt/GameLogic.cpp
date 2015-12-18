@@ -28,10 +28,10 @@ void GameLogic::Initialize(InitVar* initVar)
 	_objectHandler->InitPathfinding();
 }
 
-void GameLogic::Update()
+void GameLogic::Update(float deltaTime)
 {
 	HandleInput();
-	_objectHandler->Update();
+	_objectHandler->Update(deltaTime);
 }
 
 void GameLogic::HandleInput()

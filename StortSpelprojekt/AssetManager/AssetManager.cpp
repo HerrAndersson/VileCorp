@@ -125,7 +125,7 @@ void AssetManager::SetupTilesets()
 //Replaces current Tileset, do not call without clearing GameObjects - Fredrik
 bool AssetManager::ActivateTileset(string name)
 {
-	if (!strcmp(name.c_str(), _activeTileset->name.c_str()))
+	if (!strcmp(name.c_str(), _activeTileset->_name.c_str()))
 	{
 		return true;
 	}

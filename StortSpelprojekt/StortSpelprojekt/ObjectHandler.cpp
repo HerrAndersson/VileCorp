@@ -204,7 +204,7 @@ void ObjectHandler::Update(float deltaTime)
 	{
 		for (GameObject* g : _gameObjects[i])
 		{
-			g->Update();
+			g->Update(deltaTime);
 			if (g->GetType() == UNIT)																	//Handle unit movement
 			{
 				float xOffset = abs(g->GetPosition().x - g->GetTilePosition()._x);
@@ -218,11 +218,6 @@ void ObjectHandler::Update(float deltaTime)
 				}
 			}
 		}
-	}
-
-	for (GameObject* gameObject : _animatedGameObjects)
-	{
-		gameObject->GetAnimation()->Update(deltaTime / 1000.0f);
 	}
 }
 

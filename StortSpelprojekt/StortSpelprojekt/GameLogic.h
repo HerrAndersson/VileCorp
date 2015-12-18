@@ -17,5 +17,5 @@ public:
 	GameLogic();
 	~GameLogic();
 	void Initialize(InitVar* initVar);
-	void Update();
+	void Update(float deltaTime);
 };

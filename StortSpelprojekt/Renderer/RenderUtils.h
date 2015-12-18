@@ -114,7 +114,10 @@ struct RenderObject
 			{
 				_specularTexture->DecrementUsers();
 			}
-			_meshes[i]._vertexBuffer->Release();
+			if (_meshLoaded)
+			{
+				_meshes[i]._vertexBuffer->Release();
+			}
 		}
 		_meshes.clear();
 	}

@@ -684,6 +684,10 @@ void Unit::Update(float deltaTime)
 		CheckAllTiles();
 		CalculatePath(_goalTilePosition);
 	}
+	if (_animation != nullptr)
+	{
+		_animation->Update(deltaTime);
+	}
 }
 
 void Unit::Release()

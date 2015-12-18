@@ -345,7 +345,7 @@ void LevelEdit::HandleInput()
 void LevelEdit::Update(float deltaTime)
 {
 	HandleInput();
-	_initVar->_objectHandler->Update();
+	_initVar->_objectHandler->Update(deltaTime);
 }
 
 void LevelEdit::ResetSelectedObj()

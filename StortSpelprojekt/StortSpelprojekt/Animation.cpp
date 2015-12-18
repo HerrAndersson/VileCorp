@@ -6,8 +6,10 @@ Animation::Animation(Skeleton* skeleton)
 	toRootTransforms.resize(_skeleton->_skeleton.size());
 	toParentTransforms.resize(_skeleton->_skeleton.size());
 	finalTransforms.resize(_skeleton->_skeleton.size());
-	for (int i = 0; i < finalTransforms.size(); i++)
+	for (unsigned int i = 0; i < finalTransforms.size(); i++)
+	{
 		DirectX::XMStoreFloat4x4(&finalTransforms[i], DirectX::XMMatrixIdentity());
+	}
 	_animTime = 0.0f;
 	_currentAction = -1;
 	_currentCycle = 0;
@@ -30,7 +32,7 @@ void Animation::Update(float time)
 		}
 		else
 		{
-			for (int i = 0; i < _skeleton->_skeleton.size(); i++)
+			for (unsigned int i = 0; i < _skeleton->_skeleton.size(); i++)
 			{
 				toParentTransforms[i] = Interpolate(i, _currentAction);
 			}
@@ -42,7 +44,7 @@ void Animation::Update(float time)
 		{
 			_animTime -= _skeleton->_actions[_currentCycle]._frameTime.back();
 		}
-		for (int i = 0; i < _skeleton->_skeleton.size(); i++)
+		for (unsigned int i = 0; i < _skeleton->_skeleton.size(); i++)
 		{
 			toParentTransforms[i] = Interpolate(i, _currentCycle);
 		}
@@ -50,7 +52,7 @@ void Animation::Update(float time)
 
 	toRootTransforms[0] = toParentTransforms[0];
 
-	for (int i = 1; i < _skeleton->_skeleton.size(); i++)
+	for (unsigned int i = 1; i < _skeleton->_skeleton.size(); i++)
 	{
 		// Current bone transform relative to its parent
 		DirectX::XMMATRIX toParent = DirectX::XMLoadFloat4x4(&toParentTransforms[i]);
@@ -59,7 +61,7 @@ void Animation::Update(float time)
 		DirectX::XMStoreFloat4x4(&toRootTransforms[i], toRoot);
 	}
 
-	for (int i = 0; i < _skeleton->_skeleton.size(); i++)
+	for (unsigned int i = 0; i < _skeleton->_skeleton.size(); i++)
 	{
 		DirectX::XMMATRIX offset = DirectX::XMLoadFloat4x4(&_skeleton->_skeleton[i]._inverseBindpose);
 		DirectX::XMMATRIX toRoot = DirectX::XMLoadFloat4x4(&toRootTransforms[i]);
@@ -103,7 +105,7 @@ DirectX::XMFLOAT4X4 Animation::Interpolate(unsigned int boneID, int action)
 
 	else
 	{
-		for (int i = 0; i <= _skeleton->_actions[action]._frameTime.size(); i++)
+		for (unsigned int i = 0; i <= _skeleton->_actions[action]._frameTime.size(); i++)
 		{
 			_currTime = _skeleton->_actions[action]._frameTime[i];
 			_nextTime = _skeleton->_actions[action]._frameTime[i + 1];

@@ -10,7 +10,7 @@ PlayState::~PlayState()
 
 void PlayState::Update(float deltaTime)
 {
-	_gameLogic.Update();
+	_gameLogic.Update(deltaTime);
 }
 
 void PlayState::OnStateEnter()
