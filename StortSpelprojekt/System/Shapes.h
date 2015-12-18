@@ -41,68 +41,6 @@ struct Sphere
 	}
 };
 
-//TODO unfinished
-struct Cylinder
-{
-	Vec3 _position;
-	Vec3 _direction;
-	float _radius;
-	float _height;
-
-	Cylinder(Vec3 position = Vec3(), float radius = 0.0f, float height = 0.0f)
-	{
-		_position = position;
-		_direction = Vec3(0.0f, 1.0f, 0.0f);
-		_radius = radius;
-		_height = height;
-	}
-};
-
-//TODO unfinished
-struct Triangle
-{
-	Vec3 _point1, _point2, _point3;
-
-	Triangle(Vec3 point1 = Vec3(), Vec3 point2 = Vec3(), Vec3 point3 = Vec3())
-	{
-		_point1 = point1;
-		_point2 = point2;
-		_point3 = point3;
-	}
-};
-
-//TODO unfinished
-struct Cone
-{
-	Vec3 _origin;
-	Vec3 _direction;
-	float _radius;
-
-	Cone(Vec3 origin = Vec3(), Vec3 direction = Vec3(), float radius = 0.0f)
-	{
-		_origin = origin;
-		_direction = direction;
-		_radius = radius;
-	}
-};
-
-//Aligned square
-struct Square
-{
-	Vec3 _point1, _point2;
-
-	Square(Vec3 point1 = Vec3(), Vec3 point2 = Vec3())
-	{
-		_point1 = point1;
-		_point2 = point2;
-	}
-	Square(Vec3 position, float height, float width)
-	{
-		_point1 = Vec3(position._x - (height*0.5f), position._y, position._z - (width*0.5f));
-		_point2 = Vec3(position._x + (height*0.5f), position._y, position._z + (width*0.5f));
-	}
-};
-
 struct Box
 {
 	Vec3 _position;
@@ -110,12 +48,11 @@ struct Box
 	Plane _ySlab;
 	Plane _zSlab;
 
-	Box(float xLength, float yLength, float zLength, Vec3 position = Vec3(), Vec3 rotation = Vec3(0.0f, 0.0f, 0.0f))
+	Box(float xLength, float yLength, float zLength, Vec3 position = Vec3(), Vec3 rotation = Vec3())
 	{
 		XMMATRIX rotationMatrix = XMMatrixRotationRollPitchYawFromVector(rotation.convertToXMVECTOR());
 
 		_position = position;
-		;
 		_xSlab = Plane(Vec3(XMVector3TransformCoord(XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f), rotationMatrix)), xLength*0.5f);
 		_ySlab = Plane(Vec3(XMVector3TransformCoord(XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f), rotationMatrix)), yLength *0.5f);
 		_zSlab = Plane(Vec3(XMVector3TransformCoord(XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f), rotationMatrix)), zLength*0.5f);
@@ -227,44 +164,3 @@ static bool Collision(Ray ray, Box box)
 	return (greatestTMin <= smallestTMax);
 }
 
-static bool Collision(Ray ray, Cylinder cylinder)
-{
-	Vec3 objectVector = cylinder._position - ray._origin;
-	Vec3 tMax = Vec3();
-	Vec3 tMin = Vec3();
-	float smallestTMax = FLT_MAX;
-	float greatestTMin = -FLT_MAX;
-	bool hit = false;
-
-	Plane topPlane = Plane(cylinder._direction, cylinder._height);
-
-	//The ray is not parallell with the plane
-	if (Collision(ray, topPlane))
-	{
-		tMax._y = ((cylinder._position._y + cylinder._height) - ray._origin._y) / ray._direction._y;
-		tMin._y = ((cylinder._position._y) - ray._origin._y) / ray._direction._y;
-
-		if (tMax._y < tMin._y)
-		{
-			float temp = tMax._y;
-			tMax._y = tMin._y;
-			tMin._y = temp;
-		}
-		if (tMin._y > greatestTMin)
-		{
-			greatestTMin = tMin._y;
-		}
-		if (tMax._y < smallestTMax)
-		{
-			smallestTMax = tMax._y;
-		}
-
-		//Check the hit points in y-axis as well as cylinder radius to make sure it isn't too far off to the side
-		if ((greatestTMin <= smallestTMax) && Collision(ray, Sphere(cylinder._position, cylinder._radius)))
-		{
-			hit = true;
-		}
-	}
-
-	return hit;
-}

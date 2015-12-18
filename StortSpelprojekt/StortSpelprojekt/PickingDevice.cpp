@@ -104,6 +104,7 @@ vector<GameObject*> PickingDevice::pickObjects(POINT mousePoint, vector<GameObje
 		Box pickObject = Box(1.0f, 3.0f, 1.0f, Vec3(pickableObjects[i]->GetPosition()));
 
 
+
 		if (Collision(ray, pickObject))
 		{
 			pickedObjects.push_back(pickableObjects[i]);
