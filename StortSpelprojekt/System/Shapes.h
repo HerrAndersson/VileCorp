@@ -118,14 +118,17 @@ struct Box
 	Plane _zSlab;
 
 
-	Box(float xLength, float yLength, float zLength, Vec3 position = Vec3(), Vec3 direction = Vec3(0.0f, 0.0f, 1.0f))
+	Box(float xLength, float yLength, float zLength, Vec3 position = Vec3(), Vec3 rotation = Vec3(0.0f, 0.0f, 0.0f))
 	{
+		XMMATRIX rotationMatrix = XMMatrixRotationRollPitchYawFromVector(rotation.convertToXMVECTOR());
+
+
 		_position = position;
-
-		_zSlab = Plane(direction, zLength*0.5f);
-		_ySlab = Plane(Vec3(0.0f, 1.0f, 0.0f), yLength *0.5f);
-		_xSlab = Plane(direction.Cross(_ySlab._normal), xLength*0.5f);
-
+		;
+		_xSlab = Plane(Vec3(XMVector3TransformCoord(XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f), rotationMatrix)), xLength*0.5f);
+		_ySlab = Plane(Vec3(XMVector3TransformCoord(XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f), rotationMatrix)), yLength *0.5f);
+		_zSlab = Plane(Vec3(XMVector3TransformCoord(XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f), rotationMatrix)), zLength*0.5f);
+		
 	}
 
 };

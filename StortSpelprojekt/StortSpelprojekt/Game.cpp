@@ -129,7 +129,7 @@ void Game::HandleInput()
 		for (unsigned int i = 0; i < gameObjects.size(); i++)
 		{
 			//Loops through the objects picked
-			//_objectHandler->Remove(gameObjects[i]->GetID());
+			_objectHandler->Remove(gameObjects[i]->GetID());
 		}
 	}
 }
