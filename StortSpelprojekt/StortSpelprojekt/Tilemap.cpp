@@ -219,7 +219,7 @@ int Tilemap::UnitsOnTile(int x, int z) const
 	{
 		result++;
 	}
-	if (_map[x][z]._objectsOnTile[2] != nullptr && (_map[x][z]._objectsOnTile[2]->GetType() == GUARD || _map[x][z]._objectsOnTile[1]->GetType() == ENEMY))
+	if (_map[x][z]._objectsOnTile[2] != nullptr && (_map[x][z]._objectsOnTile[2]->GetType() == GUARD || _map[x][z]._objectsOnTile[2]->GetType() == ENEMY))
 	{
 		result++;
 	}

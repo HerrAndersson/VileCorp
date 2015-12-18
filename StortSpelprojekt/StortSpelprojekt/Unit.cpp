@@ -423,7 +423,11 @@ void Unit::SetGoal(AI::Vec2D goal)
 void Unit::Move()
 {
 		
-	if (_pathLength <= 0)		//The unit has reached its goal and needs a new one
+	//if (_pathLength <= 0)		//The unit has reached its goal and needs a new one
+	//{
+	//	CheckAllTiles();
+	//}
+	if (_goalTilePosition == _tilePosition)
 	{
 		CheckAllTiles();
 	}
@@ -475,6 +479,7 @@ void Unit::Update()
 	else
 	{
 		CheckAllTiles();
+		Move();
 	}
 }
 
