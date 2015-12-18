@@ -56,13 +56,6 @@ struct Cylinder
 		_radius = radius;
 		_height = height;
 	}
-	Cylinder(Vec3 position, Vec3 direction, float radius, float height)
-	{
-		_position = Vec3();
-		_direction = Vec3();
-		_radius = 0.0f;
-		_height = 0.0f;
-	}
 };
 
 //TODO unfinished
@@ -117,11 +110,9 @@ struct Box
 	Plane _ySlab;
 	Plane _zSlab;
 
-
 	Box(float xLength, float yLength, float zLength, Vec3 position = Vec3(), Vec3 rotation = Vec3(0.0f, 0.0f, 0.0f))
 	{
 		XMMATRIX rotationMatrix = XMMatrixRotationRollPitchYawFromVector(rotation.convertToXMVECTOR());
-
 
 		_position = position;
 		;
@@ -152,26 +143,21 @@ static bool Collision(Ray ray, Plane plane)
 
 static bool Collision(Ray ray, Sphere sphere)
 {
-
 	Vec3 objectVector =  sphere._position - ray._origin;
-
 	float dotProduct = objectVector.Dot(ray._direction);
 	float denominator = ray._direction.Dot(ray._direction);
-
 	Vec3 projectedVector = ray._direction * (dotProduct / denominator);
-
 	float length = (objectVector - projectedVector).Length();
+
 	return (length <= sphere._radius);
 }
 
-static	bool Collision(Ray ray, Box box)
+static bool Collision(Ray ray, Box box)
 {
 	Vec3 tMax = Vec3();
 	Vec3 tMin = Vec3();
-
 	float smallestTMax = FLT_MAX;
 	float greatestTMin = -FLT_MAX;
-
 
 	if (Collision(ray, box._xSlab))
 	{
@@ -184,7 +170,6 @@ static	bool Collision(Ray ray, Box box)
 			tMax._x = tMin._x;
 			tMin._x = temp;
 		}
-
 		if (tMin._x > greatestTMin && tMin._x)
 		{
 			greatestTMin = tMin._x;
@@ -242,3 +227,44 @@ static	bool Collision(Ray ray, Box box)
 	return (greatestTMin <= smallestTMax);
 }
 
+static bool Collision(Ray ray, Cylinder cylinder)
+{
+	Vec3 objectVector = cylinder._position - ray._origin;
+	Vec3 tMax = Vec3();
+	Vec3 tMin = Vec3();
+	float smallestTMax = FLT_MAX;
+	float greatestTMin = -FLT_MAX;
+	bool hit = false;
+
+	Plane topPlane = Plane(cylinder._direction, cylinder._height);
+
+	//The ray is not parallell with the plane
+	if (Collision(ray, topPlane))
+	{
+		tMax._y = ((cylinder._position._y + cylinder._height) - ray._origin._y) / ray._direction._y;
+		tMin._y = ((cylinder._position._y) - ray._origin._y) / ray._direction._y;
+
+		if (tMax._y < tMin._y)
+		{
+			float temp = tMax._y;
+			tMax._y = tMin._y;
+			tMin._y = temp;
+		}
+		if (tMin._y > greatestTMin)
+		{
+			greatestTMin = tMin._y;
+		}
+		if (tMax._y < smallestTMax)
+		{
+			smallestTMax = tMax._y;
+		}
+
+		//Check the hit points in y-axis as well as cylinder radius to make sure it isn't too far off to the side
+		if ((greatestTMin <= smallestTMax) && Collision(ray, Sphere(cylinder._position, cylinder._radius)))
+		{
+			hit = true;
+		}
+	}
+
+	return hit;
+}
