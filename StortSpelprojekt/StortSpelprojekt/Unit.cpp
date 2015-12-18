@@ -353,38 +353,6 @@ void Unit::FindVisibleTiles()
 	}
 	startSlope = 1.0;
 	ScanOctant(1, octant, startSlope, 0.0);
-
-
-	////If looking north, scan octant 1 and 2
-	//if (_direction._y == 1)
-	//{
-	//	ScanOctant(1, 1, startSlope, 0.0);
-	//	startSlope = 1.0;
-	//	ScanOctant(1, 2, startSlope, 0.0);
-	//}
-	////If looking east, scan octant 3 and 4
-	//else if (_direction._x == 1)
-	//{
-	//	ScanOctant(1, 3, startSlope, 0.0);
-	//	startSlope = 1.0;
-	//	ScanOctant(1, 4, startSlope, 0.0);
-	//}
-	////If looking south, scan octant 5 and 6
-	//else if (_direction._y == -1)
-	//{
-	//	ScanOctant(1, 5, startSlope, 0.0);
-	//	startSlope = 1.0;
-	//	{
-	//		ScanOctant(1, 6, startSlope, 0.0);
-	//	}
-	//	//If looking west, scan octant 7 and 8
-	//}
-	//else if (_direction._x == -1)
-	//{
-	//	ScanOctant(1, 7, startSlope, 0.0);
-	//	startSlope = 1.0;
-	//	ScanOctant(1, 8, startSlope, 0.0);
-	//}
 }
 
 /*

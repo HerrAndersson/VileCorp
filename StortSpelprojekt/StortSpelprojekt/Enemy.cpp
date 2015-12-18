@@ -29,8 +29,7 @@ void Enemy::EvaluateTile(Type objective, AI::Vec2D tile)
 	default:
 		break;
 	}
-	tempPriority;
-	if ( _goalPriority <= 0 || tempPriority * GetApproxDistance(tile) < _goalPriority * GetApproxDistance(GetGoal()))
+	if ( tempPriority > 0 && ( _goalPriority <= 0 || tempPriority * GetApproxDistance(tile) < _goalPriority * GetApproxDistance(GetGoal()) ) )
 	{
 		SetGoal(tile);
 	} 
