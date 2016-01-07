@@ -11,7 +11,7 @@ private:
 	AI::AStar* _aStar;
 	AI::Vec2D _goalTilePosition;
 	AI::Vec2D* _path;
-	int _pathLength;
+	
 	const Tilemap* _tileMap;		//Pointer to the tileMap in objectHandler(?). Units should preferably have read-, but not write-access.
 	AI::Vec2D _direction;
 	float  _moveSpeed;
@@ -29,6 +29,7 @@ private:
 
 protected:
 	int _goalPriority;				//Lower value means higher priority
+	int _pathLength;
 	int GetApproxDistance(AI::Vec2D target)const;
 
 public:
