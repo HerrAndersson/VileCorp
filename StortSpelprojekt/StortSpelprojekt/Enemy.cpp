@@ -36,6 +36,9 @@ void Enemy::EvaluateTile(Type objective, AI::Vec2D tile)
 	} 
 }
 
+void Enemy::EvaluateTile(GameObject * obj)
+{}
+
 void Enemy::act(GameObject* obj)
 {}
 

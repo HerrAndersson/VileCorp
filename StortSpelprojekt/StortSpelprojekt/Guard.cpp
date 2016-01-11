@@ -35,6 +35,9 @@ void Guard::EvaluateTile(Type objective, AI::Vec2D tile)
 	}
 }
 
+void Guard::EvaluateTile(GameObject * obj)
+{}
+
 void Guard::act(GameObject* obj)
 {
 	switch (obj->GetType())

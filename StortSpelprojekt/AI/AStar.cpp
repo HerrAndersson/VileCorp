@@ -40,7 +40,7 @@ namespace AI
 			break;
 		}
 
-		// tileCost < 0 means unwalkable. open == 0 means no previous gCost, meaning g is automatically better.
+		// tileCost <= 0 means unwalkable. open == 0 means no previous gCost, meaning g is automatically better.
 		if (_grid[currentPos._x][currentPos._y]._tileCost > 0 && (_grid[currentPos._x][currentPos._y]._open == 0 || _grid[currentPos._x][currentPos._y]._gCost > g))
 		{
 			_grid[currentPos._x][currentPos._y]._open = 1;
@@ -264,5 +264,28 @@ namespace AI
 		}
 	//	_path[c++] = currentPos;														//Excluding start position since it should already be known
 		return true;
+	}
+
+
+	void AStar::printMap()
+	{
+		std::fstream file;
+		file.open("aimap.txt");
+		for (__int16 i = 0; i < _width; i++)
+		{
+			for (__int16 j = 0; j < _height; j++)
+			{
+				//if (_grid[i][j]._tileCost <= 0)
+				//{
+				//	file << 0 << "\t";
+				//}
+				//else
+				//{
+					file << (int)_grid[i][j]._tileCost << "\t";
+			//	}
+			}
+			file << "\n";
+		}
+		file.close();
 	}
 }

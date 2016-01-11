@@ -220,11 +220,14 @@ void Unit::CalculatePath()
 	{
 		_path = _aStar->GetPath();
 		_pathLength = _aStar->GetPathLength();
+		//_aStar->printMap();
 	}
 	else
 	{
 		_path = nullptr;
 		_pathLength = 0;
+	//	_aStar->printMap();
+		
 	}
 }
 
@@ -383,12 +386,6 @@ void Unit::CheckAllTiles()
 	{
 		for (int j = 0; j < _tileMap->GetHeight(); j++)
 		{ 
-			//Handle objectives
-			if (_tileMap->IsObjectiveOnTile(i, j))
-			{
-				_aStar->SetTileCost({ i, j }, 1);
-				EvaluateTile(LOOT, {i, j});
-			}
 			//Handle walls
  			if (_tileMap->IsWallOnTile(i, j))
 			{
@@ -400,6 +397,19 @@ void Unit::CheckAllTiles()
 			}
 		}
 	}
+	for (int i = 0; i < _tileMap->GetWidth(); i++)
+	{
+		for (int j = 0; j < _tileMap->GetHeight(); j++)
+		{
+			//Handle objectives
+			if (_tileMap->IsObjectiveOnTile(i, j))
+			{
+				_aStar->SetTileCost({i, j}, 1);
+				EvaluateTile(LOOT, {i, j});
+			}
+		}
+	}
+	//_aStar->printMap();
 }
 
 

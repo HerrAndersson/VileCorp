@@ -44,6 +44,7 @@ public:
 	void CheckVisibleTiles();		
 	void CheckAllTiles();				
 	virtual void EvaluateTile(Type objective, AI::Vec2D tile) = 0;
+	virtual void EvaluateTile(GameObject* obj) = 0;
 	void SetGoal(AI::Vec2D goal);
 	void Move();
 	void Update();					
