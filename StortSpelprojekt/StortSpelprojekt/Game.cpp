@@ -181,7 +181,7 @@ LRESULT CALLBACK Game::WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM l
 		delete[] lpb;
 		return 0;
 		*/
-		_gameHandle->_input->Update(lparam);
+		_gameHandle->_input->Update(lparam, hwnd);
 	}
 
 	default:

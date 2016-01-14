@@ -10,7 +10,7 @@ private:
 
 public:
 	LevelEditState(System::Controls* controls, ObjectHandler* objectHandler, UIHandler* uiHandler, System::InputDevice* inputDevice, System::Camera* camera, PickingDevice* pickingDevice);
-	~LevelEditState();
+	virtual ~LevelEditState();
 
 	void Update(float deltaTime);
 	void OnStateEnter();

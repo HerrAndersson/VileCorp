@@ -34,7 +34,7 @@ namespace System
 		}
 	}
 
-	void InputDevice::Update(LPARAM lParam)
+	void InputDevice::Update(LPARAM lParam, HWND hwnd)
 	{
 		memcpy(_last, _current, sizeof(bool) * KEY_CODE_CAP);
 		_mouseCoord._deltaPos.x = 0;
@@ -48,15 +48,16 @@ namespace System
 		
 
 
-		//_mouseCoord._pos.x += _mouseCoord._deltaPos.x;
-		//_mouseCoord._pos.y += _mouseCoord._deltaPos.y;
+		_mouseCoord._pos.x += _mouseCoord._deltaPos.x;
+		_mouseCoord._pos.y += _mouseCoord._deltaPos.y;
+		GetCursorPos(&_mouseCoord._clientPos);
+		ScreenToClient(hwnd, &_mouseCoord._clientPos);
 		if (_cursorLock)
 		{
 			_mouseCoord._pos.x = (rect.left + (rect.right - rect.left) / 2);
 			_mouseCoord._pos.y = (rect.top + (rect.bottom - rect.top) / 2);
 			SetCursorPos(_mouseCoord._pos.x, _mouseCoord._pos.y);
 		}
-		
 	}
 	void InputDevice::UpdatePerFrame()
 	{

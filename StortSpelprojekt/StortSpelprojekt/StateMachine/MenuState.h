@@ -9,7 +9,7 @@ private:
 
 public:
 	MenuState(System::Controls* controls, ObjectHandler* objectHandler, UIHandler* uiHandler, System::InputDevice* inputDevice, System::Camera* camera, PickingDevice* pickingDevice);
-	~MenuState();
+	virtual ~MenuState();
 
 	void Update(float deltaTime);
 	void OnStateEnter();

@@ -9,7 +9,7 @@ private:
 	GameLogic _gameLogic;
 public:
 	PlayState(System::Controls* controls, ObjectHandler* objectHandler, UIHandler* uiHandler, System::InputDevice* inputDevice, System::Camera* camera, PickingDevice* pickingDevice);
-	~PlayState();
+	virtual ~PlayState();
 
 	void Update(float deltaTime);
 	void OnStateEnter();

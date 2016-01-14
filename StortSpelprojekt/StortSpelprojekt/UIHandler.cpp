@@ -145,17 +145,61 @@ bool UIHandler::RemoveText(int id)
 	return rv;
 }
 
-int UIHandler::Add2DTexture(std::string filePath, DirectX::XMFLOAT2 position, DirectX::XMFLOAT2 size)
+void UIHandler::SetButtonVisibility(int id, bool visible)
+{
+	_textures[id].SetVisibility(visible);
+}
+
+bool UIHandler::GetButtonVisibility(int id)
+{
+	return _textures[id].GetVisibility();
+}
+
+bool UIHandler::Intersect(POINT mousePoint, int id)
+{
+	if (mousePoint.x > hitBox[id].x && mousePoint.y > hitBox[id].y)
+	{
+		if (mousePoint.x < hitBox[id].z && mousePoint.y < hitBox[id].w)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	else
+	{
+		return false;
+	}
+}
+
+int UIHandler::Add2DTexture(std::string filePath, DirectX::XMFLOAT2 position, DirectX::XMFLOAT2 size, bool visible)
 {
 	ID3D11ShaderResourceView* tex = _AM->GetTexture(filePath);
-	_textures.push_back(Renderer::HUDElement(position, size, tex));
+	_textures.push_back(Renderer::HUDElement(position, size, tex, visible));
 
 	return _textureId++;
 }
 
-int UIHandler::AddButton(std::string filePath, DirectX::XMFLOAT2 position, DirectX::XMFLOAT2 size)
+int UIHandler::AddButton(std::string filePath, DirectX::XMFLOAT2 position, DirectX::XMFLOAT2 size, bool visible)
 {
-	int buttonId = Add2DTexture(filePath, position, size);
+	int buttonId = Add2DTexture(filePath, position, size, visible);
+	hitBox.push_back(DirectX::XMFLOAT4(position.x - size.x, position.y + size.y, position.x + size.x, position.y - size.y));
+
+	hitBox.back().x += 1.0f;
+	hitBox.back().x /= 2.0f;
+	hitBox.back().x *= (float)_windowSettings._width;
+	hitBox.back().z += 1.0f;
+	hitBox.back().z /= 2.0f;
+	hitBox.back().z *= (float)_windowSettings._width;
+
+	hitBox.back().y -= 1.0f;
+	hitBox.back().y /= -2.0f;
+	hitBox.back().y *= (float)_windowSettings._height;
+	hitBox.back().w -= 1.0f;
+	hitBox.back().w /= -2.0f;
+	hitBox.back().w *= (float)_windowSettings._height;
 
 	return buttonId;
 }

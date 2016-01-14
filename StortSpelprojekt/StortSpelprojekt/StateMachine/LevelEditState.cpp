@@ -21,7 +21,7 @@ void LevelEditState::Update(float deltaTime)
 
 void LevelEditState::OnStateEnter()
 {
-	_levelEdit.Initialize(_objectHandler, _inputDevice, _controls, _pickingDevice, _camera);
+	_levelEdit.Initialize(_objectHandler, _inputDevice, _controls, _pickingDevice, _camera, _uiHandler);
 }
 
 void LevelEditState::OnStateExit()

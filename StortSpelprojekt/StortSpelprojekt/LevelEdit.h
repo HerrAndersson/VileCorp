@@ -19,6 +19,7 @@ private:
 	System::Controls*		_controls;
 	PickingDevice*			_pickingDevice;
 	System::Camera*			_camera;
+	UIHandler*				_uiHandler;
 
 	struct LevelHeader
 	{
@@ -36,14 +37,23 @@ private:
 		int _tileType;
 	};
 
+	struct ButtonInfo
+	{
+		int parent;
+		bool active = false;
+	};
+
 	XMFLOAT3 _lastObjPosition = XMFLOAT3(0.0, 0.0, 0.0);
 	GameObject* _selectedObj;
 	GameObject* _lastSelected;
+	System::MouseCoord mouseCoord;
 	int _tileMultiplier;
 	int _tilemapHeight, _tilemapWidth;
 	bool _isSelectionMode = true;
+	std::vector<ButtonInfo> buttonInfo;
 
 	void HandleInput();
+	void HandleHUD();
 	void LoadLevel(int levelID);
 	void InitNewLevel();
 	void ResetSelectedObj();
@@ -58,5 +68,10 @@ public:
 	~LevelEdit();
 
 	void Update(float deltaTime);
-	void Initialize(ObjectHandler* objectHandler, System::InputDevice* inputDevice, System::Controls* controls, PickingDevice* pickingDevice, System::Camera* camera);
+	void Initialize(ObjectHandler* objectHandler, 
+		System::InputDevice* inputDevice, 
+		System::Controls* controls, 
+		PickingDevice* pickingDevice, 
+		System::Camera* camera, 
+		UIHandler* uiHandler);
 };

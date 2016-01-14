@@ -32,7 +32,7 @@ protected:
 	void ChangeState(State newState);
 public:
 	BaseState(System::Controls* controls, ObjectHandler* objectHandler, UIHandler* uiHandler, System::InputDevice* inputDevice, System::Camera* camera, PickingDevice* pickingDevice);
-	~BaseState();
+	virtual ~BaseState();
 
 	virtual void Update(float deltaTime) = 0;
 	virtual void OnStateEnter() = 0;

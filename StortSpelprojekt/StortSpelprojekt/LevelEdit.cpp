@@ -13,7 +13,7 @@ LevelEdit::~LevelEdit()
 	delete _aStar;
 }
 
-void LevelEdit::Initialize(ObjectHandler* objectHandler, System::InputDevice* inputDevice, System::Controls* controls, PickingDevice* pickingDevice, System::Camera* camera)
+void LevelEdit::Initialize(ObjectHandler* objectHandler, System::InputDevice* inputDevice, System::Controls* controls, PickingDevice* pickingDevice, System::Camera* camera, UIHandler* uiHandler)
 {
 	_objectHandler = objectHandler;
 	_inputDevice = inputDevice;
@@ -21,11 +21,22 @@ void LevelEdit::Initialize(ObjectHandler* objectHandler, System::InputDevice* in
 	_pickingDevice = pickingDevice;
 	_camera = camera;
 	_aStar = new AI::AStar();
+	_uiHandler = uiHandler;
 
 	_selectedObj = nullptr;
 	_lastSelected = nullptr;
 	_tileMultiplier = 1;
 	_isSelectionMode = true;
+
+	// Add all buttons and hide them
+	buttonInfo.resize(3);
+	_uiHandler->AddButton("Floor_Button.png", DirectX::XMFLOAT2(-0.9f, 0.95f), DirectX::XMFLOAT2(0.1f, 0.05f), true);
+	_uiHandler->AddButton("floor.png", DirectX::XMFLOAT2(-0.9f, 0.85f), DirectX::XMFLOAT2(0.1f, 0.05f), false);
+	_uiHandler->AddButton("floor2.png", DirectX::XMFLOAT2(-0.7f, 0.85f), DirectX::XMFLOAT2(0.1f, 0.05f), false);
+
+	buttonInfo[0].parent = -1;
+	buttonInfo[1].parent = 0;
+	buttonInfo[2].parent = 1;
 
 	LoadLevel(0);
 }
@@ -39,6 +50,33 @@ void LevelEdit::LoadLevel(int levelID)
 	_tileMap = _objectHandler->GetTileMap();
 	_tilemapHeight = _tileMap->GetHeight();
 	_tilemapWidth = _tileMap->GetWidth();
+}
+
+void LevelEdit::HandleHUD()
+{
+	for (int i = 0; i < buttonInfo.size(); i++)
+	{
+		if (buttonInfo[i].parent != -1)
+		{
+			if (buttonInfo[buttonInfo[i].parent].active == true)
+			{
+				_uiHandler->SetButtonVisibility(i, true);
+
+				if (_uiHandler->Intersect(mouseCoord._clientPos, i) == true)
+				{
+					buttonInfo[i].active = true;
+				}
+			}
+			else
+			{
+				_uiHandler->SetButtonVisibility(i, false);
+			}
+		}
+		else if(_uiHandler->Intersect(mouseCoord._clientPos, i) == true)
+		{
+			buttonInfo[i].active = true;
+		}
+	}
 }
 
 void LevelEdit::HandleInput()
@@ -263,7 +301,6 @@ void LevelEdit::HandleInput()
 	//Camera mouse control
 	if (_inputDevice->GetCursorLock())
 	{
-		System::MouseCoord mouseCoord = _inputDevice->GetMouseCoord();
 		float sensitivity = 5.0f;
 		if (mouseCoord._deltaPos.x != 0 || mouseCoord._deltaPos.y != 0)
 		{
@@ -346,6 +383,8 @@ void LevelEdit::HandleInput()
 
 void LevelEdit::Update(float deltaTime)
 {
+	mouseCoord = _inputDevice->GetMouseCoord();
+	HandleHUD();
 	HandleInput();
 	_objectHandler->Update();
 }

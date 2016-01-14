@@ -257,22 +257,25 @@ namespace Renderer
 
 		for (auto i : *imageData)
 		{
-			result = _d3d->GetDeviceContext()->Map(_matrixBufferHUD, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-			if (FAILED(result))
+			if (i.GetVisibility() == true)
 			{
-				throw std::runtime_error("RenderModule::SetResourcesPerObject: Failed to Map _matrixBufferHUD");
+				result = _d3d->GetDeviceContext()->Map(_matrixBufferHUD, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+				if (FAILED(result))
+				{
+					throw std::runtime_error("RenderModule::SetResourcesPerObject: Failed to Map _matrixBufferHUD");
+				}
+
+				MatrixBufferHud* dataPtr = (MatrixBufferHud*)mappedResource.pData;
+				dataPtr->model = *(i.GetModelMatrix());
+
+				_d3d->GetDeviceContext()->Unmap(_matrixBufferHUD, 0);
+
+				_d3d->GetDeviceContext()->VSSetConstantBuffers(0, 1, &_matrixBufferHUD);
+				ID3D11ShaderResourceView* tex = i.GetTexture();
+				_d3d->GetDeviceContext()->PSSetShaderResources(0, 1, &tex);
+
+				_d3d->GetDeviceContext()->Draw(6, 0);
 			}
-
-			MatrixBufferHud* dataPtr = (MatrixBufferHud*)mappedResource.pData;
-			dataPtr->model = *(i.GetModelMatrix());
-
-			_d3d->GetDeviceContext()->Unmap(_matrixBufferHUD, 0);
-
-			_d3d->GetDeviceContext()->VSSetConstantBuffers(0, 1, &_matrixBufferHUD);
-			ID3D11ShaderResourceView* tex = i.GetTexture();
-			_d3d->GetDeviceContext()->PSSetShaderResources(0, 1, &tex);
-
-			_d3d->GetDeviceContext()->Draw(6, 0);
 		}
 	}
 

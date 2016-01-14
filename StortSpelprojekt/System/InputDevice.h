@@ -11,6 +11,7 @@ namespace System
 	{
 		POINT _pos;
 		POINT _deltaPos;
+		POINT _clientPos;
 	};
 
 	class SYSTEM_EXPORT InputDevice
@@ -34,7 +35,7 @@ namespace System
 		InputDevice(HWND hwnd);
 		~InputDevice();
 
-		void Update(LPARAM lparam);
+		void Update(LPARAM lparam, HWND hwnd);
 		void UpdatePerFrame();
 
 		void HandleRawInput(LPARAM lparam);
