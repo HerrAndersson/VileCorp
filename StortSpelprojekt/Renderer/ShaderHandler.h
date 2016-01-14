@@ -37,6 +37,7 @@ namespace Renderer
 		ID3D11PixelShader*		_defaultPS;
 		ID3D11PixelShader*		_geoPassPS;
 		ID3D11PixelShader*		_lightPassPS;
+		ID3D11PixelShader*		_lightApplyPS;
 
 		//Samplers
 		ID3D11SamplerState*		_samplerWRAP;
@@ -59,8 +60,9 @@ namespace Renderer
 
 		void SetDefaultShaders(ID3D11DeviceContext* deviceContext);
 		void SetGeometryPassShaders(ID3D11DeviceContext* deviceContext);
-		void SetLightPassShaders(ID3D11DeviceContext* deviceContext);
+		void SetFinalPassShaders(ID3D11DeviceContext* deviceContext);
 		void SetShadowPassShaders(ID3D11DeviceContext* deviceContext);
+		void SetLightApplicationShaders(ID3D11DeviceContext* deviceContext);
 	};
 }
 

@@ -75,7 +75,7 @@ namespace Renderer
 
 	public:
 
-		enum ShaderStage { GEO_PASS, LIGHT_PASS, SHADOW_GENERATION, LIGHT_APPLICATION };
+		enum ShaderStage { GEO_PASS, FINAL_PASS, SHADOW_GENERATION, LIGHT_APPLICATION };
 
 		RenderModule(HWND hwnd, int screenWidth, int screenHeight);
 		~RenderModule();
@@ -93,7 +93,7 @@ namespace Renderer
 		void BeginScene(float red, float green, float blue, float alpha);
 		void Render(DirectX::XMMATRIX* world, RenderObject* renderObject);
 		void RenderShadowMap(DirectX::XMMATRIX* world, RenderObject* renderObject);
-		void RenderLightQuad();
+		void RenderScreenQuad();
 		void EndScene();
 
 		ID3D11Device* GetDevice() const;

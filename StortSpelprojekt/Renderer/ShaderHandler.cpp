@@ -92,7 +92,6 @@ namespace Renderer
 		}
 
 		////////////////////////////////////////////////////////////// Create Shaders ///////////////////////////////////////////////////////////////
-
 		D3D11_INPUT_ELEMENT_DESC inputDesc[] =
 		{
 			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
@@ -120,6 +119,7 @@ namespace Renderer
 
 		_lightPassVS = CreateVertexShader(device, L"../Renderer/Shaders/LightVS.hlsl", lightInputDesc, numElements);
 		_lightPassPS = CreatePixelShader(device, L"../Renderer/Shaders/LightPS.hlsl");
+		_lightApplyPS = CreatePixelShader(device, L"../Renderer/Shaders/LightApplyPS.hlsl");
 
 
 		//Shadow map shaders init
@@ -143,6 +143,7 @@ namespace Renderer
 		SAFE_RELEASE(_defaultPS);
 		SAFE_RELEASE(_geoPassPS);
 		SAFE_RELEASE(_lightPassPS);
+		SAFE_RELEASE(_lightApplyPS);
 
 		SAFE_RELEASE(_samplerWRAP);
 		SAFE_RELEASE(_samplerPOINT);
@@ -375,7 +376,7 @@ namespace Renderer
 		deviceContext->PSSetSamplers(0, 2, samplers);
 	}
 
-	void ShaderHandler::SetLightPassShaders(ID3D11DeviceContext * deviceContext)
+	void ShaderHandler::SetFinalPassShaders(ID3D11DeviceContext * deviceContext)
 	{
 		//Set vertex layout
 		deviceContext->IASetInputLayout(_lightPassVS->_inputLayout);
@@ -404,6 +405,24 @@ namespace Renderer
 		deviceContext->GSSetShader(nullptr, nullptr, 0);
 		deviceContext->DSSetShader(nullptr, nullptr, 0);
 		deviceContext->PSSetShader(nullptr, nullptr, 0);
+		deviceContext->CSSetShader(nullptr, nullptr, 0);
+
+		//Set sampler
+		ID3D11SamplerState* samplers[2] = { _samplerWRAP, _samplerCLAMP };
+		deviceContext->PSSetSamplers(0, 2, samplers);
+	}
+
+	void ShaderHandler::SetLightApplicationShaders(ID3D11DeviceContext* deviceContext)
+	{
+		//Set vertex layout
+		deviceContext->IASetInputLayout(_lightPassVS->_inputLayout);
+
+		//Set shaders
+		deviceContext->VSSetShader(_lightPassVS->_vertexShader, nullptr, 0);
+		deviceContext->HSSetShader(nullptr, nullptr, 0);
+		deviceContext->GSSetShader(nullptr, nullptr, 0);
+		deviceContext->DSSetShader(nullptr, nullptr, 0);
+		deviceContext->PSSetShader(_lightApplyPS, nullptr, 0);
 		deviceContext->CSSetShader(nullptr, nullptr, 0);
 
 		//Set sampler

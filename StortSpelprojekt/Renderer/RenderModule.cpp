@@ -284,26 +284,32 @@ namespace Renderer
 
 	void RenderModule::SetShaderStage(ShaderStage stage)
 	{
+		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
+
 		switch(stage)
 		{
 		case GEO_PASS:
 		{
 			_d3d->SetGeometryPassRTVs();
-			_shaderHandler->SetGeometryPassShaders(_d3d->GetDeviceContext());
+			_shaderHandler->SetGeometryPassShaders(deviceContext);
 			break;
 		}
-		case LIGHT_PASS:
+		case FINAL_PASS:
 		{
 			int nrOfSRVs =_d3d->SetLightPassRTVs();
-			_shaderHandler->SetLightPassShaders(_d3d->GetDeviceContext());
+			_shaderHandler->SetFinalPassShaders(deviceContext);
 			ID3D11ShaderResourceView* shadowMapSRV = _shadowMap->GetShadowSRV();
 			_d3d->GetDeviceContext()->PSSetShaderResources(nrOfSRVs, 1, &shadowMapSRV);
 			break;
 		}
 		case SHADOW_GENERATION:
 		{
-			_shadowMap->ActivateShadowRendering(_d3d->GetDeviceContext());
-			_shaderHandler->SetShadowPassShaders(_d3d->GetDeviceContext());
+			_shadowMap->ActivateShadowRendering(deviceContext);
+			_shaderHandler->SetShadowPassShaders(deviceContext);
+		}
+		case LIGHT_APPLICATION:
+		{
+			_shaderHandler->SetLightApplicationShaders(deviceContext);
 		}
 		};
 	}
@@ -349,7 +355,7 @@ namespace Renderer
 		}
 	}
 
-	void RenderModule::RenderLightQuad()
+	void RenderModule::RenderScreenQuad()
 	{
 		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
 

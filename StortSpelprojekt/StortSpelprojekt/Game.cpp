@@ -52,8 +52,6 @@ void Game::ResizeResources(System::WindowSettings settings)
 
 void Game::HandleInput()
 {
-	
-
 
 	if (GetAsyncKeyState(VK_LEFT) != 0)
 	{
@@ -123,22 +121,10 @@ void Game::HandleInput()
 	{
 		_camera->SetPosition(XMFLOAT3(position.x + (forward.x + right.x) * v, position.y + (forward.y + right.y) * v, position.z + (forward.z + right.z) * v));
 	}
-
-	
 }
-
-int frames = 0;
 
 void Game::Update(float deltaTime)
 {
-	/*
-	Object handler update
-
-	hämta från objecthander eller olika update functioner i objecthander
-	vi vill hämta objekten
-
-	*/
-
 	_input->Update();
 	_UI->Update();
 	_UI->OnResize(_window->GetWindowSettings());
@@ -149,20 +135,10 @@ void Game::Update(float deltaTime)
 void Game::Render()
 {
 	_renderModule->BeginScene(0.0f, 1.0f, 1.0f, 1);
+
+	///////////////////////////////////////////////////////////// Geometry pass //////////////////////////////////////////////////////////
 	_renderModule->SetDataPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
 	_renderModule->SetShaderStage(Renderer::RenderModule::GEO_PASS);
-
-	//RenderList renderList = _objectHandler->GetAll(0);
-	
-	
-	//_renderModule->Render(&_objectHandler->GetAll(TRAP).at(0)->GetMatrix(), renderList._renderObject);
-	//_renderModule->Render(&_objectHandler->GetAll(TRAP).at(1)->GetMatrix(), renderList._renderObject);
-
-	//TODO: Will make nestled later /Texxarne
-	//for (int j = 0; j < renderList.modelMatrices.size(); j++)
-	//{
-	//	_renderModule->Render(&renderList.modelMatrices[j], renderList._renderObject);
-	//}
 	
 	std::vector<GameObject*>* gameObjects = _objectHandler->GetGameObjects();
 
@@ -171,12 +147,11 @@ void Game::Render()
 		_renderModule->Render(&i->GetMatrix(), i->GetRenderObject());
 	}
 
-
+	///////////////////////////////////////////////////////////// Light pass /////////////////////////////////////////////////////////////
+	_renderModule->SetLightPassDataPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
 //	for (ALL  SPOTLIGHTS)
 //	{
-
-
-
+		//Generates the shadow map for one spotlight
 		_renderModule->SetShaderStage(Renderer::RenderModule::SHADOW_GENERATION);
 		_renderModule->SetShadowMapDataPerSpotLight(_spotlight->GetViewMatrix(), _spotlight->GetProjectionMatrix());
 
@@ -185,20 +160,18 @@ void Game::Render()
 			_renderModule->RenderShadowMap(&i->GetMatrix(), i->GetRenderObject());
 		}
 
-
 		//Adds the light/shadows to the diffuse texture by sampling from it, modifying it, and then use it as render target again.
-		//_renderModule->SetShaderStage(Renderer::RenderModule::LIGHT_APPLICATION);
+		_renderModule->SetShaderStage(Renderer::RenderModule::LIGHT_APPLICATION);
+		_renderModule->SetLightPassDataPerLight(_spotlight);
 
-
+		//Render screen quad. Using diffuse to sample from, and output to SET CORRECT RENDER TARGET -> diffuse texture!
+		_renderModule->RenderScreenQuad();
 
 //	}
 
-
-	_renderModule->SetShaderStage(Renderer::RenderModule::LIGHT_PASS);
-	_renderModule->SetLightPassDataPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
-
-	_renderModule->SetLightPassDataPerLight(_spotlight);
-
+	////////////////////////////////////////////////// Render quad to screen //////////////////////////////////////////////////////
+	_renderModule->SetShaderStage(Renderer::RenderModule::FINAL_PASS);
+	
 	XMFLOAT3 rot = _spotlight->GetRotation();
 	rot.y -= 2;
 	_spotlight->SetRotation(rot);
@@ -209,23 +182,14 @@ void Game::Render()
 	color.z = sin(_timer.GetGameTime() / 1000 + XMConvertToRadians(240));
 	_spotlight->SetColor(color);
 
-	_renderModule->RenderLightQuad();
+	_renderModule->RenderScreenQuad();
 	_renderModule->EndScene();
 }
 
 int Game::Run()
 {
-	float deltaTime = 0; //someone create this.
-	//Needs a Tilemap in the objectHandler /Markus
-	//_objectHandler->Add(TRAP, 0, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
-
-	//_objectHandler->Add(TRAP, 0, XMFLOAT3(0.5f, -1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
 	_objectHandler->LoadLevel(5);
-
 	_objectHandler->InitPathfinding();
-
-	//int s = 10;
-	//SystemParametersInfo(SPI_SETMOUSESPEED, 0, (LPVOID)s, 0);
 
 	while (_window->Run())
 	{
@@ -235,12 +199,11 @@ int Game::Run()
 			return 0;
 		}
 
-
 		_timer.Update();
 		if (_timer.GetFrameTime() >= MS_PER_FRAME)
 		{
 			HandleInput();
-			Update(deltaTime);
+			Update(_timer.GetFrameTime());
 
 			Render();
 
