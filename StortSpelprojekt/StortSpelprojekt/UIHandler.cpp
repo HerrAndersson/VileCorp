@@ -117,9 +117,9 @@ void UIHandler::OnResize(System::WindowSettings windowSettings)
 bool UIHandler::RemoveFont(const WCHAR* filePath)
 {
 	bool rv = false;
-	for (auto i : _fonts)
+	for (auto &i : _fonts)
 	{
-		if (0 != wcscmp(i.GetFilePath(), filePath))
+		if (0 == wcscmp(i.GetFilePath(), filePath))
 		{
 			i.Release();
 			rv = true;
@@ -134,7 +134,7 @@ bool UIHandler::RemoveText(int id)
 	bool rv = false;
 	bool deleted = false;
 	int incr = 0;
-	for (auto i : _fonts)
+	for (auto &i : _fonts)
 	{
 		deleted = i.RemoveText(id);
 		if (deleted)

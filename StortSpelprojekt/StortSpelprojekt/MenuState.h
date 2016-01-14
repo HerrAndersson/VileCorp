@@ -6,7 +6,6 @@ class MenuState : public BaseState
 {
 private:
 
-
 public:
 	MenuState(InitVar initVar);
 	~MenuState();
