@@ -37,9 +37,9 @@ namespace System
 		
 		if (GetFocus() == _hwnd)
 		{
-			//Sets mouse position to the middle of the window
-			SetCursorPos(rect.left + (rect.right - rect.left) / 2, rect.top + (rect.bottom - rect.top) / 2);
-			ClipCursor(&rect);
+			////Sets mouse position to the middle of the window
+			//SetCursorPos(rect.left + (rect.right - rect.left) / 2, rect.top + (rect.bottom - rect.top) / 2);
+			//ClipCursor(&rect);
 		}
 	}
 

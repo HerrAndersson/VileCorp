@@ -15,8 +15,8 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 
 	//Init camera
 	_camera = new System::Camera(0.1f, 1000.0f, DirectX::XM_PIDIV2, settings._width, settings._height);
-	_camera->SetPosition(XMFLOAT3(3, 10, 0));
-	_camera->SetRotation(XMFLOAT3(60, 0, 0));
+	_camera->SetPosition(XMFLOAT3(3, 7, 0));
+	_camera->SetRotation(XMFLOAT3(70, 0, 0));
 
 	_timer = System::Timer();
 
@@ -72,13 +72,13 @@ void Game::HandleInput()
 
 	//Camera mouse control
 	System::MouseCoord mouseCoord = _input->GetMouseCoord();
-	if (mouseCoord._deltaPos.x != 0 || mouseCoord._deltaPos.y != 0)
-	{
-		XMFLOAT3 rotation = _camera->GetRotation();
-		rotation.y += mouseCoord._deltaPos.x / 10.0f;
-		rotation.x += mouseCoord._deltaPos.y / 10.0f;
-		_camera->SetRotation(rotation);
-	}
+	//if (mouseCoord._deltaPos.x != 0 || mouseCoord._deltaPos.y != 0)
+	//{
+	//	XMFLOAT3 rotation = _camera->GetRotation();
+	//	rotation.y += mouseCoord._deltaPos.x / 10.0f;
+	//	rotation.x += mouseCoord._deltaPos.y / 10.0f;
+	//	_camera->SetRotation(rotation);
+	//}
 
 	XMFLOAT3 forward(0, 0, 0);
 	XMFLOAT3 position = _camera->GetPosition();
@@ -87,15 +87,17 @@ void Game::HandleInput()
 	float v = 0.1f;
 	if (GetAsyncKeyState('W'))
 	{
-		forward = _camera->GetForwardVector();
+		//forward = _camera->GetForwardVector();
+		forward = DirectX::XMFLOAT3(0, 0, 1);
 		isMoving = true;
 	}
 	else if (GetAsyncKeyState('S'))
 	{
-		forward = _camera->GetForwardVector();
-		forward.x *= -1;
-		forward.y *= -1;
-		forward.z *= -1;
+		//forward = _camera->GetForwardVector();
+		forward = DirectX::XMFLOAT3(0, 0, -1);
+		//forward.x *= -1;
+		//forward.y *= -1;
+		//forward.z *= -1;
 		isMoving = true;
 	}
 
