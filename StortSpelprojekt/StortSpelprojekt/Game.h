@@ -13,6 +13,8 @@
 #include "Controls.h"
 #include "Grid.h"
 #include "PickingDevice.h"
+#include "PlayerInfo.h"
+#include "ConfigParser.h"
 
 class Game
 {
@@ -31,6 +33,7 @@ private:
 	Grid*						_grid = nullptr;
 	PickingDevice*				_pickingDevice;
 	System::InputDevice*		_input;
+	PlayerInfo					_playerInfo;
 	
 
 	//Resizing window, directx resources, camera
