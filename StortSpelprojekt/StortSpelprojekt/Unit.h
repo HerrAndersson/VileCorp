@@ -22,6 +22,8 @@ private:
 
 	int _health;
 
+	GameObject* _objective;
+
 	void ScanOctant(int depth, int octant, double &startSlope, double endSlope);
 	double GetSlope(double x1, double y1, double x2, double y2, bool invert);
 	int GetVisDistance(int x1, int y1, int x2, int y2);
@@ -46,6 +48,7 @@ public:
 	virtual void EvaluateTile(Type objective, AI::Vec2D tile) = 0;
 	virtual void EvaluateTile(GameObject* obj) = 0;
 	void SetGoal(AI::Vec2D goal);
+	void SetGoal(GameObject* objective);
 	void Move();
 	void Update();					
 	virtual void Release();

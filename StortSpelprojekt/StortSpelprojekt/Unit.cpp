@@ -375,7 +375,7 @@ void Unit::CheckVisibleTiles()
 		}
 		if (_tileMap->UnitsOnTile(_visibleTiles[i]._x, _visibleTiles[i]._y) > 0 && !(_visibleTiles[i] == _goalTilePosition || _visibleTiles[i] == _tilePosition))	//Unit finds another unit
 		{
-			EvaluateTile(ENEMY, _visibleTiles[i]);
+			EvaluateTile(_tileMap->GetObjectOnTile(_visibleTiles[i]._x, _visibleTiles[i]._y, ENEMY));				//
 		}
 	}
 }
@@ -405,7 +405,7 @@ void Unit::CheckAllTiles()
 			if (_tileMap->IsObjectiveOnTile(i, j))
 			{
 				_aStar->SetTileCost({i, j}, 1);
-				EvaluateTile(LOOT, {i, j});
+				EvaluateTile(_tileMap->GetObjectOnTile(i, j, LOOT));
 			}
 		}
 	}
@@ -419,11 +419,23 @@ void Unit::CheckAllTiles()
 void Unit::SetGoal(AI::Vec2D goal)
 {
 	_goalTilePosition = goal;
+	_objective = _tileMap->GetObjectOnTile(goal._x, goal._y, FLOOR);		//Note: Make sure walled tiles aren't valid goals
 	_aStar->CleanMap();
 	_aStar->SetStartPosition(_tilePosition);
 	_aStar->SetGoalPosition(goal);
 	CalculatePath();
 }
+
+void Unit::SetGoal(GameObject * objective)
+{
+	_goalTilePosition = objective->GetTilePosition();
+	_objective = objective;
+	_aStar->CleanMap();
+	_aStar->SetStartPosition(_tilePosition);
+	_aStar->SetGoalPosition(_goalTilePosition);
+	CalculatePath();
+}
+
 /* 
 	Moves the unit to the tile it's aiming for and selects a new walking direction.
 	This should NOT update every frame. It only updates when the unit reaches a new tile. 

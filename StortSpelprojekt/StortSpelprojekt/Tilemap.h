@@ -53,6 +53,7 @@ public:
 	int GetWidth() const;
 
 	GameObject* GetObjectOnTile(int x, int z, int index) const; // More thinking
+	GameObject* GetObjectOnTile(int x, int z, Type type) const;
 	bool IsValid(int x, int z) const;
 	bool IsTileEmpty(int x, int z)const;
 	bool IsWallOnTile(int x, int z)const;

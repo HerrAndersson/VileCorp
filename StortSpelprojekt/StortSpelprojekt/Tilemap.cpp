@@ -191,6 +191,42 @@ GameObject* Tilemap::GetObjectOnTile(int x, int z, int index) const
 	return _map[x][z]._objectsOnTile[index];
 }
 
+GameObject * Tilemap::GetObjectOnTile(int x, int z, Type type) const
+{
+	GameObject* result = nullptr;
+	if (IsValid(x, z))
+	{
+		switch (type)
+		{
+		case FLOOR:
+		case WALL:
+			result = _map[x][z]._objectsOnTile[0];
+			break;
+		case ENEMY:
+		case GUARD:
+			if (_map[x][z]._objectsOnTile[1] != nullptr && _map[x][z]._objectsOnTile[1]->GetType() == type)
+			{
+				result = _map[x][z]._objectsOnTile[1];
+			}
+			else if (_map[x][z]._objectsOnTile[2] != nullptr && _map[x][z]._objectsOnTile[2]->GetType() == type)
+			{
+				result = _map[x][z]._objectsOnTile[2];
+			}
+			break;
+		case TRAP:
+		case LOOT:
+			result = _map[x][z]._objectsOnTile[3];
+			break;
+		case TRIGGER:
+			result = _map[x][z]._objectsOnTile[4];
+			break;
+		default:
+			break;
+		}
+	}
+	return result;
+}
+
 bool Tilemap::IsTileEmpty(int x, int z) const
 {
 	return IsValid(x, z) && _map[x][z]._objectsOnTile[0] == nullptr;
