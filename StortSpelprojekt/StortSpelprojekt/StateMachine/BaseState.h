@@ -1,5 +1,4 @@
-#ifndef BASESTATE_H
-#define BASESTATE_H
+#pragma once
 
 #include "InitVar.h"
 
@@ -8,6 +7,7 @@ enum State
 	SPLASHSTATE,
 	MENUSTATE,
 	PLAYSTATE,
+	PLACEMENTSTATE,
 	LEVELEDITSTATE,
 	OPTIONSSTATE,
 	EXITSTATE,
@@ -35,5 +35,3 @@ public:
 
 	State GetNewStateRequest()const;
 };
-
-#endif

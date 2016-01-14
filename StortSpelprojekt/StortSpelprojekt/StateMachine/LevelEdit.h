@@ -1,10 +1,10 @@
 #pragma once
 
-#include "UIHandler.h"
-#include "ObjectHandler.h"
-#include "InputDevice.h"
-#include "StateMachine/InitVar.h"
-#include "Grid.h"
+#include "../UIHandler.h"
+#include "../ObjectHandler.h"
+#include "../System/InputDevice.h"
+#include "../StateMachine/InitVar.h"
+#include "../Grid.h"
 
 class LevelEdit
 {
@@ -32,6 +32,8 @@ public:
 	LevelEdit();
 	~LevelEdit();
 
-	void Update(float deltaTime);
+	void Add(Type type, int renderObjectID);
+
+	void Update();
 	void Initialize(InitVar* initVar);
 };

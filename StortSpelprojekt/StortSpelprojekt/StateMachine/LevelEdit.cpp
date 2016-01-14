@@ -4,13 +4,15 @@
 #include <sstream>
 
 LevelEdit::LevelEdit()
-{
-
-}
+{}
 
 LevelEdit::~LevelEdit()
-{
+{}
 
+void LevelEdit::Add(Type type, int renderObjectID)
+{
+	_objectHandler->Add(type, renderObjectID, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
+	_selectedObj = _objectHandler->GetSize() - 1;
 }
 
 void LevelEdit::Initialize(InitVar* initVar)
@@ -224,28 +226,28 @@ void LevelEdit::HandleInput()
 	}
 
 
-	//tempAddObj
+	////tempAddObj
 
-	//R Adds Floor
-	if (_inputHandler->IsPressed(0x52))
-	{
-			_objectHandler->Add(FLOOR, FLOOR, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));	
-			_selectedObj = _objectHandler->GetSize()-1;
-	}
+	////R Adds Floor
+	//if (_inputHandler->IsPressed(0x52))
+	//{
+	//		_objectHandler->Add(FLOOR, FLOOR, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));	
+	//		_selectedObj = _objectHandler->GetSize()-1;
+	//}
 
-	//T adds Wall
-	if (_inputHandler->IsPressed(0x54))
-	{
-			_objectHandler->Add(WALL, WALL, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
-			_selectedObj = _objectHandler->GetSize() - 1;
-	}
+	////T adds Wall
+	//if (_inputHandler->IsPressed(0x54))
+	//{
+	//		_objectHandler->Add(WALL, WALL, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
+	//		_selectedObj = _objectHandler->GetSize() - 1;
+	//}
 
-	//Y adds Unit
-	if (_inputHandler->IsPressed(0x59))
-	{
-			_objectHandler->Add(UNIT, UNIT, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
-			_selectedObj = _objectHandler->GetSize() - 1;
-	}
+	////Y adds Unit
+	//if (_inputHandler->IsPressed(0x59))
+	//{
+	//		_objectHandler->Add(UNIT, UNIT, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
+	//		_selectedObj = _objectHandler->GetSize() - 1;
+	//}
 
 
 	if (_inputHandler->IsPressed(VK_DELETE))
@@ -304,7 +306,7 @@ void LevelEdit::HandleInput()
 
 }
 
-void LevelEdit::Update(float deltaTime)
+void LevelEdit::Update()
 {
 	HandleSelected();
 	HandleInput();
@@ -348,7 +350,6 @@ void LevelEdit::HandleSelected()
 	}
 }
 
-
 void LevelEdit::ResetSelectedObj()
 {
 	_selectedObj = 0;
@@ -358,6 +359,7 @@ void LevelEdit::ResetSelectedObj()
 void LevelEdit::InitNewLevel()
 {
 	_objectHandler->Clear();
+
 	ResetSelectedObj();
 }
 
@@ -366,8 +368,8 @@ void LevelEdit::DeleteObject()
 	GameObject* temp;
 	if (_selectedObj != 0)
 	{
-	temp = _objectHandler->Find(_selectedObj);
-	_objectHandler->Remove(_selectedObj);
+		temp = _objectHandler->Find(_selectedObj);
+		_objectHandler->Remove(_selectedObj);
 		_selectedObj--;
 	}
 

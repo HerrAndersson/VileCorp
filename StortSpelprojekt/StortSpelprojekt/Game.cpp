@@ -30,7 +30,7 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	initVar._uiHandler = _UI;
 	initVar._inputHandler = _input;
 	initVar._camera = _camera;
-	_SM = new StateMachine(initVar);	initVar._inputHandler = _input;
+	_SM = new StateMachine(initVar);
 }
 
 Game::~Game() 

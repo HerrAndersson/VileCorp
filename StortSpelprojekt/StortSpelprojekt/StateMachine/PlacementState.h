@@ -3,17 +3,21 @@
 #include "BaseState.h"
 #include "LevelEdit.h"
 
-class LevelEditState : public BaseState
+class PlacementState : public BaseState
 {
 private:
 	LevelEdit _levelEdit;
 	InitVar _initVar;
 
+	int _budget;
+
+
 public:
-	LevelEditState(InitVar initVar);
-	~LevelEditState();
+	PlacementState(InitVar initVar);
+	~PlacementState();
 
 	void Update(float deltaTime);
 	void OnStateEnter();
 	void OnStateExit();
 };
+
