@@ -1,6 +1,7 @@
 #pragma once
 #include <cmath>
 #include <algorithm>
+#include <fstream>
 #include "Heap.h"
 #include "AIUtil.h"
 
@@ -88,14 +89,19 @@ namespace AI
 	public:
 		AStar();
 		AStar(int width, int height, Vec2D start, Vec2D goal, Heuristic heuristic = MANHATTAN, int hWeight = 1);
+		AStar(int width, int height, Heuristic heuristic = MANHATTAN, int hWeight = 1);
 		virtual ~AStar();
 		void SetTileCost(Vec2D pos, int cost = 1);
 		void SetStartPosition(Vec2D pos);
 		void SetGoalPosition(Vec2D pos);
 		Vec2D* GetPath() const;
 		int GetPathLength() const;
-		void cleanMap();
-		void FindPath();
+		float GetHeuristicDistance(Vec2D start, Vec2D goal) const;
+		void CleanMap();
+		void Init(Vec2D start, Vec2D goal);
+		bool FindPath();
+
+		void printMap();
 	};
 
 }

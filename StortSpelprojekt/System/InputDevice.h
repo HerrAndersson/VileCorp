@@ -17,9 +17,9 @@ namespace System
 	private:
 		MouseCoord	_mouseCoord;
 		//136 due to 134 keycodes + 0 is skipped.
-		const static int KEYCODECAP = 136;
-		bool _current[KEYCODECAP];
-		bool _last[KEYCODECAP];
+		const static int KEY_CODE_CAP = 136;
+		bool _current[KEY_CODE_CAP];
+		bool _last[KEY_CODE_CAP];
 
 		HWND _hwnd;
 

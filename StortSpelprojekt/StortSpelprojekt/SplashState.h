@@ -1,5 +1,4 @@
-#ifndef SPLASHSTATE_H
-#define SPLASHSTATE_H
+#pragma once
 
 #include "BaseState.h"
 
@@ -14,5 +13,3 @@ public:
 	void OnStateEnter();
 	void OnStateExit();
 };
-
-#endif

@@ -30,6 +30,7 @@ private:
 	System::Timer				_timer;
 
 	System::InputDevice*		_input;
+	AssetManager*				_assetManager;
 	PickingDevice*				_pickingDevice;
 	
 

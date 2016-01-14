@@ -30,7 +30,7 @@ void GameObject::CalculateMatrix()
 	//	XMLoadFloat3(&_position)
 	//	);
 
-	//DO NOT TOUCH!!! //Haxxmaxxer
+	//DO NOT TOUCH!
 	_objectMatrix = DirectX::XMMatrixTranspose(
 		DirectX::XMMatrixScalingFromVector(DirectX::XMLoadFloat3(&_scale)) * 
 		DirectX::XMMatrixRotationRollPitchYaw(_rotation.x, _rotation.y, _rotation.z) *
@@ -46,7 +46,6 @@ unsigned short GameObject::GetID() const
 
 DirectX::XMMATRIX GameObject::GetMatrix() const
 {
-
 	return _objectMatrix;
 }
 

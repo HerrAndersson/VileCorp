@@ -2,28 +2,18 @@
 
 
 
-ObjectHandler::ObjectHandler()
+ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager)
 {
 	_size = 0;
 	_idCounter = 0;
-	_assetManager = nullptr;
-	_tilemap =  nullptr;
-}
-
-ObjectHandler::ObjectHandler(ID3D11Device* device)
-{
-	_size = 0;
-	_idCounter = 0;
-	_assetManager = new AssetManager(device);
+	_assetManager = assetManager;
 	_tilemap = nullptr;
 }
 
 ObjectHandler::~ObjectHandler()
 {
-	Release();
-	Clear();
-	delete _assetManager;
 	delete _tilemap;
+	Release();
 }
 
 
@@ -46,9 +36,10 @@ GameObject* ObjectHandler::Add(Type type, int renderObjectID, XMFLOAT3 position 
 		_size++;
 		_tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
 		break;
-	case UNIT:
-		//TODO Tileposition parameters are temporary
-		object = new Unit(_idCounter++, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(renderObjectID), _tilemap);
+	case ENEMY:
+	case GUARD:
+		//Temporary. Enemies and guards should replace units properly
+		object = new Enemy(_idCounter++, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(renderObjectID), _tilemap);
 		_gameObjects.push_back(object);
 		_size++;
 		_tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
@@ -153,16 +144,21 @@ RenderList ObjectHandler::GetAll(int renderObjectID)
 	RenderList list;
 
 	list._renderObject = _assetManager->GetRenderObject(renderObjectID);
-	list.modelMatrices.resize(_size);
+	list._modelMatrices.resize(_size);
 	for (int i = 0; i < _size; i++)
 	{
 		if (_gameObjects.at(i)->GetRenderObject() == _assetManager->GetRenderObject(renderObjectID))
 		{	
-			list.modelMatrices[i] = _gameObjects[i]->GetMatrix();
+			list._modelMatrices[i] = _gameObjects[i]->GetMatrix();
 		}
 	}
 
 	return list;
+}
+
+std::vector<GameObject*>* ObjectHandler::GetGameObjects()
+{
+	return &_gameObjects;
 }
 
 Tilemap * ObjectHandler::GetTileMap() const
@@ -181,15 +177,32 @@ bool ObjectHandler::LoadLevel(int lvlIndex)
 	vector<GameObjectData> gameObjectData;
 	_assetManager->ParseLevel(lvlIndex, gameObjectData, dimX, dimY);
 
-	_gameObjects.clear();
+	Clear();
 
 	delete _tilemap;
 	_tilemap = new Tilemap(dimX, dimY);
 
+	Type tileType = FLOOR;
 	for (auto i : gameObjectData)
 	{
-		Add((Type)i._tileType, i._tileType, DirectX::XMFLOAT3(i._posX, 0, i._posZ), DirectX::XMFLOAT3(0, i._rotY, 0));
-		
+		switch (i._tileType)
+		{
+		case 0:
+			tileType = ENEMY;
+			break;
+		case 1:
+			tileType = FLOOR;
+			break;
+		case 2:
+			tileType = WALL;
+			break;
+		case 3:
+			tileType = LOOT;
+			break;
+		default:
+			break;
+		}
+		Add(tileType, tileType, DirectX::XMFLOAT3(i._posX, 0, i._posZ), DirectX::XMFLOAT3(0, i._rotY, 0));
 	}
 	return false;
 }
@@ -198,11 +211,12 @@ void ObjectHandler::InitPathfinding()
 {
 	for (int i = 0; i < _size; i++)
 	{
-		if (_gameObjects[i]->GetType() == UNIT)																	//Handle unit movement
+		if (_gameObjects[i]->GetType() == GUARD || _gameObjects[i]->GetType() == ENEMY)												//Initiate unit movement
 		{
 			Unit* unit = dynamic_cast<Unit*>(_gameObjects[i]);
 			unit->CheckAllTiles();
-			unit->CalculatePath();
+			//unit->CalculatePath(unit->GetGoal());
+			unit->Move();
 		}
 	}
 }
@@ -213,16 +227,25 @@ void ObjectHandler::Update()
 	for (int i = 0; i < _size; i++)
 	{
 		_gameObjects[i]->Update();
-		if (_gameObjects[i]->GetType() == UNIT)																	//Handle unit movement
+		if (_gameObjects[i]->GetType() == GUARD || _gameObjects[i]->GetType() == ENEMY)									//Handle unit movement
 		{
-			float xOffset = abs(_gameObjects[i]->GetPosition().x - _gameObjects[i]->GetTilePosition()._x);
-			float zOffset = abs(_gameObjects[i]->GetPosition().z - _gameObjects[i]->GetTilePosition()._y);
-			if (xOffset > 0.98 || zOffset > 0.98 )																//If unit is on a new tile	
+			Unit* unit = dynamic_cast<Unit*>(_gameObjects[i]);
+			if (unit->GetHealth() <= 0)
 			{
-				Unit* unit = dynamic_cast<Unit*>(_gameObjects[i]);
 				_tilemap->RemoveObjectFromTile(_gameObjects[i]->GetTilePosition()._x, _gameObjects[i]->GetTilePosition()._y, unit);
-				unit->Move();
-				_tilemap->AddObjectToTile(_gameObjects[i]->GetTilePosition()._x, _gameObjects[i]->GetTilePosition()._y, unit);
+				unit->Release();
+				delete unit;
+			}
+			else
+			{
+				float xOffset = abs(_gameObjects[i]->GetPosition().x - _gameObjects[i]->GetTilePosition()._x);
+				float zOffset = abs(_gameObjects[i]->GetPosition().z - _gameObjects[i]->GetTilePosition()._y);
+				if (xOffset > 0.99 || zOffset > 0.99)																		 //If unit is on a new tile	
+				{
+					_tilemap->RemoveObjectFromTile(_gameObjects[i]->GetTilePosition()._x, _gameObjects[i]->GetTilePosition()._y, unit);
+					unit->Move();
+					_tilemap->AddObjectToTile(_gameObjects[i]->GetTilePosition()._x, _gameObjects[i]->GetTilePosition()._y, unit);
+				}
 			}
 		}
 	}
@@ -230,8 +253,11 @@ void ObjectHandler::Update()
 
 void ObjectHandler::Release()
 {
+	//_gameObjects[72]->Release();
+	//delete _gameObjects[72];
 	for (int i = 0; i < _size; i++)
 	{
+		_tilemap->RemoveObjectFromTile(_gameObjects[i]->GetTilePosition()._x, _gameObjects[i]->GetTilePosition()._y, _gameObjects[i]);
 		_gameObjects[i]->Release();
 		delete _gameObjects[i];
 	}

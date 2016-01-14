@@ -7,25 +7,26 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 {
 	System::WindowSettings settings;
 	_window = new System::Window("Amazing game", hInstance, settings);
-
 	_renderModule = new Renderer::RenderModule(_window->GetHWND(), settings._width, settings._height);
-	_UI = new UIHandler(_renderModule->GetDevice(), _window->GetWindowSettings());
+	_assetManager = new AssetManager(_renderModule->GetDevice());
+	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager);
+	_input = new System::InputDevice(_window->GetHWND());
+	_UI = new UIHandler(_renderModule->GetDevice(), _window->GetWindowSettings(), _assetManager);
 
-	//Initialize Variables
-	InitVar initVar;
-	initVar.objectHandler	= _objectHandler;
-
+	//Init camera
 	_camera = new System::Camera(0.1f, 1000.0f, DirectX::XM_PIDIV2, settings._width, settings._height);
 	_camera->SetPosition(XMFLOAT3(3, 10, 0));
 	_camera->SetRotation(XMFLOAT3(60, 0, 0));
 
 	_timer = System::Timer();
-	
-	_objectHandler = new ObjectHandler(_renderModule->GetDevice());
-	initVar.uiHandler		= _UI;
-	_SM = new StateMachine(initVar);
 
-	_input = new System::InputDevice(_window->GetHWND());
+	//Init statemachine
+	InitVar initVar;
+	initVar._uiHandler = _UI;
+	initVar._objectHandler = _objectHandler;
+	initVar._uiHandler = _UI;
+	initVar._inputDevice = _input;
+	_SM = new StateMachine(initVar);
 
 	_pickingDevice = new PickingDevice(_camera, _window);
 }
@@ -35,13 +36,12 @@ Game::~Game()
 	delete _window;
 	delete _renderModule;
 	delete _camera;
-	delete _objectHandler;
-	//TODO remove comments when the objectHandler is initialized
-	//delete _objectHandler;
 	delete _UI;
 	delete _SM;
 	delete _input;
+	delete _assetManager;
 	delete _pickingDevice;
+	delete _objectHandler;
 }
 void Game::ResizeResources(System::WindowSettings settings)
 {
@@ -185,9 +185,10 @@ void Game::Render()
 	}
 
 	_renderModule->SetShaderStage(Renderer::RenderModule::LIGHT_PASS);
-
-
 	_renderModule->RenderLightQuad();
+	
+	_renderModule->SetShaderStage(Renderer::RenderModule::HUD_PASS);
+	_renderModule->Render(_UI->GetTextureData());
 	_UI->Render(_renderModule->GetDeviceContext());
 	_renderModule->EndScene();
 }
@@ -199,7 +200,7 @@ int Game::Run()
 	//_objectHandler->Add(TRAP, 0, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
 
 	//_objectHandler->Add(TRAP, 0, XMFLOAT3(0.5f, -1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
-	_objectHandler->LoadLevel(3);
+	_objectHandler->LoadLevel(4);
 
 
 	_objectHandler->InitPathfinding();

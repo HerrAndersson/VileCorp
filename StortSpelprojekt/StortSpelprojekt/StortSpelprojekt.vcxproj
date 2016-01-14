@@ -21,9 +21,11 @@
   <ItemGroup>
     <ClCompile Include="Architecture.cpp" />
     <ClCompile Include="BaseState.cpp" />
+    <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="FontInfo.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="Guard.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MenuState.cpp" />
     <ClCompile Include="ObjectHandler.cpp" />
@@ -41,9 +43,11 @@
   <ItemGroup>
     <ClInclude Include="Architecture.h" />
     <ClInclude Include="BaseState.h" />
+    <ClInclude Include="Enemy.h" />
     <ClInclude Include="FontInfo.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="Guard.h" />
     <ClInclude Include="InitVar.h" />
     <ClInclude Include="MenuState.h" />
     <ClInclude Include="ObjectHandler.h" />
@@ -91,7 +95,7 @@
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
