@@ -29,10 +29,7 @@ namespace System
 	}
 	InputDevice::~InputDevice()
 	{
-		if (_rawBuffer != nullptr) {
-			delete []_rawBuffer;
-			_rawBuffer = nullptr;
-		}
+		delete[]_rawBuffer;
 	}
 
 	void InputDevice::Update()
@@ -40,15 +37,20 @@ namespace System
 		memcpy(_last, _current, sizeof(bool) * KEY_CODE_CAP);
 		memcpy(_current, _buffer, sizeof(bool) * KEY_CODE_CAP);
 
+		//Reset the scroll wheel state every frame
+		_buffer[Input::ScrollWheelDown] = false;
+		_buffer[Input::ScrollWheelUp] = false;
+
+		//Add the delta pos to absulute pos
 		_mouseCoord._deltaPos.x = _mouseBuffer._deltaPos.x;
 		_mouseCoord._deltaPos.y = _mouseBuffer._deltaPos.y;
 		
-		_mouseBuffer._deltaPos.x -= _mouseCoord._deltaPos.x;
-		_mouseBuffer._deltaPos.y -= _mouseCoord._deltaPos.y;
+		_mouseBuffer._deltaPos.x = 0;
+		_mouseBuffer._deltaPos.y = 0;
 
 		_mouseCoord._pos.x += _mouseCoord._deltaPos.x;
 		_mouseCoord._pos.y += _mouseCoord._deltaPos.y;
-		SetCursorPos(_mouseCoord._pos.x, _mouseCoord._pos.y);
+		//SetCursorPos(_mouseCoord._pos.x, _mouseCoord._pos.y);
 	}
 
 	void InputDevice::HandleRawInput(LPARAM lParam)
@@ -69,7 +71,7 @@ namespace System
 		RAWINPUT* raw = (RAWINPUT*)_rawBuffer;
 
 
-		//MOUSE
+		//Mouse movement, scroll and mouse buttons
 		if (raw->header.dwType == RIM_TYPEMOUSE)
 		{
 			switch (raw->data.mouse.usButtonFlags)
@@ -96,19 +98,16 @@ namespace System
 			}
 			case RI_MOUSE_WHEEL:
 			{
-				if ((signed)raw->data.mouse.usButtonData < 0)
+				SHORT mouseDelta = (SHORT)raw->data.mouse.usButtonData;
+
+				if (mouseDelta > 0)
 				{
 					_buffer[Input::ScrollWheelUp] = true;
 				}
-				else if (raw->data.mouse.usButtonData > 0)
+				else if (mouseDelta < 0)
 				{
 					_buffer[Input::ScrollWheelDown] = true;
-				}
-				else if (raw->data.mouse.usButtonData == 0)
-				{
-					_buffer[Input::ScrollWheelDown] = false;
-					_buffer[Input::ScrollWheelUp] = false;
-				}
+				}				
 				break;
 			}
 			case RI_MOUSE_BUTTON_3_DOWN:
@@ -148,7 +147,6 @@ namespace System
 				break;
 			}
 			}
-
 		}
 
 		//KEYBOARD
@@ -162,18 +160,7 @@ namespace System
 			{
 				_buffer[raw->data.keyboard.VKey] = false;
 			}
-
-			// Provides the left/right version of a key.
-			// Not used in our project and skipped.
-			/*
-			switch (raw->data.keyboard.Flags == RI_KEY_E0) //Left version of a key
-			{}
-			switch (raw->data.keyboard.Flags == RI_KEY_E1) //Right version of a key
-			{}
-			*/
 		}
-		
-	
 	
 		//clean up of buffer
 		DefRawInputProc((PRAWINPUT*)_rawBuffer, 1, sizeof(RAWINPUTHEADER));
