@@ -5,7 +5,7 @@
 #include <d3dcompiler.h>
 #include <DirectXMath.h>
 #include <stdexcept>
-#include "Deferred.h"
+#include "stdafx.h"
 
 #pragma comment (lib, "d3d11.lib")
 #pragma comment (lib, "d3dcompiler.lib")
@@ -16,25 +16,46 @@ namespace Renderer
 	{
 	private:
 
+		static const int BUFFER_COUNT = 2;
+
+		int _textureWidth;
+		int _textureHeight;
+
+		ID3D11RenderTargetView*		 _deferredRTVArray[BUFFER_COUNT + 2];
+		ID3D11ShaderResourceView*	 _deferredSRVarray[BUFFER_COUNT + 2];
+
+		ID3D11RenderTargetView*		 _backBufferRTV;
+
+		ID3D11DepthStencilView*		 _backBufferDSV;
+		ID3D11ShaderResourceView*	 _backBufferDepthSRV;
+
+
+
 		IDXGISwapChain*				_swapChain;
 		ID3D11Device*			    _device;
 		ID3D11DeviceContext*		_deviceContext;
-		ID3D11RenderTargetView*		_renderTargetView;
 		D3D11_VIEWPORT				_viewport;
-		Deferred*                   _deferredShader;
 
-		ID3D11DepthStencilState*	_depthEnable;
-		ID3D11DepthStencilState*	_depthDisable;
+
+
+
+
+
+		ID3D11DepthStencilState*	_depthStateEnable;
+		ID3D11DepthStencilState*	_depthStateDisable;
 
 		ID3D11RasterizerState*		_rasterizerStateBack;
 		ID3D11RasterizerState*		_rasterizerStateFront;
 
-		ID3D11BlendState*			_blendEnable;
-		ID3D11BlendState*			_blendDisable;
+		ID3D11BlendState*			_blendStateEnable;
+		ID3D11BlendState*			_blendStateDisable;
+
+		void InitializeDeferredBuffers();
 
 	public:
 
 		enum CullingState { BACK, FRONT };
+		enum BlendState { ENABLE, DISABLE };
 
 		DirectXHandler(HWND hwnd, int screenWidth, int screenHeight);
 		~DirectXHandler();
@@ -42,12 +63,12 @@ namespace Renderer
 		ID3D11Device* GetDevice();
 		ID3D11DeviceContext* GetDeviceContext();
 
-		void ClearGeometryPassRTVs(float r, float g, float b, float a);
 		int SetGeometryPassRTVs();
 		int SetFinalPassRTVs();
 		int SetLightPassRTVs();
 
 		void SetCullingState(CullingState state);
+		void SetBlendState(BlendState state);
 
 		void ResizeResources(HWND hwnd, int windowWidth, int windowHeight);
 
