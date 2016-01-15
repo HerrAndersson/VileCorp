@@ -65,14 +65,14 @@ namespace Renderer
 		backBufferPointer->Release();
 		backBufferPointer = nullptr;
 
-		//Setup the description of the shader resource view.
-		D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
-		ZeroMemory(&shaderResourceViewDesc, sizeof(shaderResourceViewDesc));
+		////Setup the description of the shader resource view.
+		//D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
+		//ZeroMemory(&shaderResourceViewDesc, sizeof(shaderResourceViewDesc));
 
-		shaderResourceViewDesc.Format = textureDesc.Format;
-		shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-		shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
-		shaderResourceViewDesc.Texture2D.MipLevels = 1;
+		//shaderResourceViewDesc.Format = textureDesc.Format;
+		//shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+		//shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
+		//shaderResourceViewDesc.Texture2D.MipLevels = 1;
 
 		//Rasterizer setup
 		D3D11_RASTERIZER_DESC rasterDesc;
@@ -104,14 +104,6 @@ namespace Renderer
 			throw std::runtime_error("DirectXHandler: Error creating rasterizer state");
 		}
 
-		//Set up viewport
-		_viewport.Width = (float)screenWidth;
-		_viewport.Height = (float)screenHeight;
-		_viewport.MinDepth = 0.0f;
-		_viewport.MaxDepth = 1.0f;
-		_viewport.TopLeftX = 0.0f;
-		_viewport.TopLeftY = 0.0f;
-
 		//Init depth stencil states
 		D3D11_DEPTH_STENCIL_DESC depthStencilDesc;
 		ZeroMemory(&depthStencilDesc, sizeof(depthStencilDesc));
@@ -136,16 +128,46 @@ namespace Renderer
 		if (FAILED(hResult))
 			throw std::runtime_error("DirectXHandler: Error creating depth stencil ENABLE");
 
+		//Create depth disable
 		depthStencilDesc.DepthEnable = false;
 
-		//Create depth disable
 		hResult = _device->CreateDepthStencilState(&depthStencilDesc, &_depthDisable);
 		if (FAILED(hResult))
 			throw std::runtime_error("DirectXHandler: Error creating depth stencil DISABLE");
 
-		_deferredShader = new Deferred(_device, screenWidth, screenHeight);
+		//Create blend enable
+		D3D11_BLEND_DESC omDesc;
+		ZeroMemory(&omDesc, sizeof(D3D11_BLEND_DESC));
+		omDesc.RenderTarget[0].BlendEnable = true;
+		omDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+		omDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+		omDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+		omDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+		omDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+		omDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+		omDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 
-		//Set context data 
+		hResult = _device->CreateBlendState(&omDesc, &_blendEnable);
+		if (FAILED(hResult))
+			throw std::runtime_error("DirectXHandler: Error creating blend ENABLE");
+
+		//Create blend disable
+		omDesc.RenderTarget[0].BlendEnable = false;
+
+		hResult = _device->CreateBlendState(&omDesc, &_blendDisable);
+		if (FAILED(hResult))
+			throw std::runtime_error("DirectXHandler: Error creating blend DISABLE");
+
+		//Set up viewport
+		_viewport.Width = (float)screenWidth;
+		_viewport.Height = (float)screenHeight;
+		_viewport.MinDepth = 0.0f;
+		_viewport.MaxDepth = 1.0f;
+		_viewport.TopLeftX = 0.0f;
+		_viewport.TopLeftY = 0.0f;
+
+		//Set context data and other
+		_deferredShader = new Deferred(_device, screenWidth, screenHeight);
 		_deviceContext->RSSetState(_rasterizerStateFront);
 		_deviceContext->OMSetDepthStencilState(_depthEnable, 1);
 		_deviceContext->RSSetViewports(1, &_viewport);
@@ -158,7 +180,9 @@ namespace Renderer
 		_swapChain->Release();
 		_device->Release();
 		_deviceContext->Release();
-		_renderTargetView->Release();
+		_renderTargetView->Release(); 
+		_blendEnable->Release();
+		_blendDisable->Release();
 
 		delete _deferredShader;
 	}
@@ -188,18 +212,34 @@ namespace Renderer
 		return nrOfRTVs;
 	}
 
-	int DirectXHandler::SetLightPassRTVs()
+	int DirectXHandler::SetFinalPassRTVs()
 	{
 		_deviceContext->OMSetRenderTargets(1, &_renderTargetView, nullptr);
 		_deviceContext->RSSetState(_rasterizerStateBack);
 		_deviceContext->OMSetDepthStencilState(_depthDisable, 1);
 		_deviceContext->RSSetViewports(1, &_viewport);
 
-		int count = 0;
-		ID3D11ShaderResourceView** b = _deferredShader->GetShaderResourceViews(count);
-		_deviceContext->PSSetShaderResources(0, count, b);
+		int nrOfSRVs = 0;
+		ID3D11ShaderResourceView** b = _deferredShader->GetShaderResourceViews(nrOfSRVs);
+		_deviceContext->PSSetShaderResources(0, nrOfSRVs, b);
 
-		return count;
+		return nrOfSRVs;
+	}
+
+	int DirectXHandler::SetLightPassRTVs()
+	{
+		ID3D11RenderTargetView* diffuseRTV = _deferredShader->GetDiffuseRTV();
+		_deviceContext->OMSetRenderTargets(1, &diffuseRTV, nullptr);
+
+		_deviceContext->RSSetState(_rasterizerStateBack);
+		_deviceContext->OMSetDepthStencilState(_depthDisable, 1);
+		_deviceContext->RSSetViewports(1, &_viewport);
+
+		int nrOfSRVs = 0;
+		ID3D11ShaderResourceView** b = _deferredShader->GetShaderResourceViews(nrOfSRVs);
+		_deviceContext->PSSetShaderResources(0, nrOfSRVs, b);
+
+		return nrOfSRVs;
 	}
 
 	void DirectXHandler::SetCullingState(CullingState state)

@@ -29,6 +29,9 @@ namespace Renderer
 		ID3D11RasterizerState*		_rasterizerStateBack;
 		ID3D11RasterizerState*		_rasterizerStateFront;
 
+		ID3D11BlendState*			_blendEnable;
+		ID3D11BlendState*			_blendDisable;
+
 	public:
 
 		enum CullingState { BACK, FRONT };
@@ -41,6 +44,7 @@ namespace Renderer
 
 		void ClearGeometryPassRTVs(float r, float g, float b, float a);
 		int SetGeometryPassRTVs();
+		int SetFinalPassRTVs();
 		int SetLightPassRTVs();
 
 		void SetCullingState(CullingState state);
