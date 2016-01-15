@@ -191,7 +191,7 @@ void ObjectHandler::InitPathfinding()
 		{
 			Unit* unit = dynamic_cast<Unit*>((*i));
 			unit->CheckAllTiles();
-			unit->CalculatePath(unit->GetGoal());
+			unit->Move();
 		}
 	}
 }

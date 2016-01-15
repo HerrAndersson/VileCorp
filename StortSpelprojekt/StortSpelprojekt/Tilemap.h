@@ -21,7 +21,8 @@ private:
 			}
 			_isVisible = false;
 		}
-		~Tile(){}
+		~Tile()
+		{}
 
 		Tile& operator=(const Tile& comp)
 		{
@@ -34,11 +35,10 @@ private:
 	};
 	int _height;
 	int _width;
-	
+
 	Tile** _map;
 
-	bool IsValid(int x, int z) const;
-	
+
 public:
 	Tilemap();
 	Tilemap(int width, int height);
@@ -49,13 +49,14 @@ public:
 	bool RemoveObjectFromTile(int x, int z, GameObject* obj);
 	bool RemoveObjectFromTile(GameObject* obj);
 	void ClearTile(int x, int z);
-	
+
 	int GetNrOfTiles() const;
 	int GetHeight() const;
 	int GetWidth() const;
 
 	GameObject* GetObjectOnTile(int x, int z, int index) const; // More thinking
 	std::vector<GameObject*> GetAllObjectsOnTile(AI::Vec2D tileCoords) const;
+	bool IsValid(int x, int z) const;
 	bool IsTileEmpty(int x, int z)const;
 	bool IsWallOnTile(int x, int z)const;
 	int UnitsOnTile(int x, int z)const;

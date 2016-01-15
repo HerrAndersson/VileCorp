@@ -28,7 +28,7 @@ Tilemap::Tilemap(int width, int height)
 		_height = height;
 		_width = width;
 		_map = new Tile*[_width];
- 		for (int i = 0; i < _width; i++)
+		for (int i = 0; i < _width; i++)
 		{
 			_map[i] = new Tile[_height];
 
@@ -83,7 +83,7 @@ bool Tilemap::AddObjectToTile(int x, int z, GameObject * obj)
 				_map[x][z]._objectsOnTile[1] = obj;
 				result = true;
 			}
-			else if(_map[x][z]._objectsOnTile[2] == nullptr)
+			else if (_map[x][z]._objectsOnTile[2] == nullptr)
 			{
 				_map[x][z]._objectsOnTile[2] = obj;
 				result = true;
@@ -244,7 +244,7 @@ int Tilemap::UnitsOnTile(int x, int z) const
 	{
 		result++;
 	}
-	if (_map[x][z]._objectsOnTile[2] != nullptr && (_map[x][z]._objectsOnTile[2]->GetType() == GUARD || _map[x][z]._objectsOnTile[1]->GetType() == ENEMY))
+	if (_map[x][z]._objectsOnTile[2] != nullptr && (_map[x][z]._objectsOnTile[2]->GetType() == GUARD || _map[x][z]._objectsOnTile[2]->GetType() == ENEMY))
 	{
 		result++;
 	}
@@ -253,7 +253,7 @@ int Tilemap::UnitsOnTile(int x, int z) const
 
 bool Tilemap::isGuardOnTile(int x, int z) const
 {
-	if (!IsValid(x, z) || ( _map[x][z]._objectsOnTile[1] == nullptr && _map[x][z]._objectsOnTile[2] == nullptr))
+	if (!IsValid(x, z) || (_map[x][z]._objectsOnTile[1] == nullptr && _map[x][z]._objectsOnTile[2] == nullptr))
 	{
 		return false;
 	}

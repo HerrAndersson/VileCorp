@@ -13,6 +13,7 @@
 #include "Controls.h"
 #include "Grid.h"
 #include "PickingDevice.h"
+#include "Player.h"
 #include "JsonStructs.h"
 #include "ConfigParser.h"
 
@@ -34,6 +35,7 @@ private:
 	Grid*						_grid = nullptr;
 	PickingDevice*			_pickingDevice;
 	System::InputDevice*		_input;
+	Player*						_player;
 	PlayerInfo					_playerInfo;
 	
 	
