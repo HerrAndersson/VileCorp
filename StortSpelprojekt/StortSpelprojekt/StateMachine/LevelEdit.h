@@ -15,8 +15,8 @@ private:
 	System::Camera*			_camera;
 	Grid*					_grid;
 
-	//temps
 	int _selectedObj;
+
 	int _tileMultiplier;
 
 	int _lastSelected;
@@ -31,6 +31,8 @@ private:
 public:
 	LevelEdit();
 	~LevelEdit();
+
+	int GetSelectedObject();
 
 	void Add(Type type, int renderObjectID);
 

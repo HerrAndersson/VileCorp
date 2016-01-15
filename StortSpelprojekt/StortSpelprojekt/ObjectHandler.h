@@ -30,16 +30,16 @@ struct RenderList
 	vector<XMMATRIX> _modelMatrices;
 };
 
-static int IDCOUNT = 0;
-
 class ObjectHandler
 {
 private:
 	vector<vector<GameObject*>> _gameObjects;
 	//vector<RenderList> _renderLists;
 
-	short _idCounter;
 	Tilemap* _tilemap;
+
+	int _idCount = 0;
+	int _objectCount = 0;
 
 	AssetManager* _assetManager;
 
@@ -49,8 +49,11 @@ public:
 
 	//Add a gameobject
 	GameObject* Add(Type type, /*int renderObjectID,*/ XMFLOAT3 position, XMFLOAT3 rotation);
+	
+	bool Remove(int ID);
 	bool Remove(Type type, int ID);
 
+	GameObject* Find(int ID);
 	GameObject* Find(Type type, int ID);
 	GameObject* Find(Type type, short index);
 	//Returns a vector containing all gameobjects with the same type
@@ -58,6 +61,8 @@ public:
 	//Returns a list of a renderobject and matrices for all objects using the renderobject
 	RenderList GetAll(int renderObjectID);
 	vector<vector<GameObject*>>* GetGameObjects();
+
+	int GetObjectCount() const;
 
 	Tilemap* GetTileMap() const;
 	void SetTileMap(Tilemap* tilemap);

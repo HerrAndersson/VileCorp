@@ -9,10 +9,17 @@ LevelEdit::LevelEdit()
 LevelEdit::~LevelEdit()
 {}
 
+int LevelEdit::GetSelectedObject()
+{
+	return _selectedObj;
+}
+
 void LevelEdit::Add(Type type, int renderObjectID)
 {
 	_objectHandler->Add(type, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
-	_selectedObj = _objectHandler->GetGameObjects()->at(type).back()->GetID();
+	
+	GameObject* temp = _objectHandler->GetGameObjects()->at(type).back();
+	_selectedObj = temp->GetID();
 }
 
 void LevelEdit::Initialize(InitVar* initVar)
@@ -39,7 +46,7 @@ void LevelEdit::LoadLevel()
 void LevelEdit::HandleInput()
 {
 	GameObject* temp;
-	int maxObject = _objectHandler->GetSize();
+	int maxObject = _objectHandler->GetObjectCount();
 	int selectedLevel = 1;
 
 
@@ -78,7 +85,7 @@ void LevelEdit::HandleInput()
 
 
 	//Check if there is a tile to move
-	if (_objectHandler->GetSize() > 0)
+	if (_objectHandler->GetObjectCount() > 0)
 	{
 		//Translation and rotation controls
 		if (_inputHandler->IsPressed(VK_LEFT))
@@ -317,29 +324,23 @@ void LevelEdit::HandleSelected()
 {
 	GameObject* temp;
 
-	if (_objectHandler->GetSize() != 0)
+	if (_objectHandler->GetObjectCount() != 0)
 	{
 		temp = _objectHandler->Find(_lastSelected);
 
 		if (_selectedObj != _lastSelected || _selectedObj == 0)
 		{
-			if (_lastSelected != -1)
+			if (temp->GetType() == WALL || FLOOR || UNIT)
 			{
-				//Lower and scale last selected
-				temp = _objectHandler->Find(_lastSelected);
-				if (temp->GetType() == WALL || FLOOR || UNIT)
+				if (_lastSelected != -1)
 				{
+
 					XMFLOAT3 tempPos = temp->GetPosition();
 					temp->SetPosition(XMFLOAT3(tempPos.x, 0.0, tempPos.z));
 					//XMFLOAT3 tempScale = temp->GetScale();
 					//temp->SetScale(XMFLOAT3(1, 1, 1));
-					
 				}
-			}
-			//Raise and scale selected
-			temp = _objectHandler->Find(_selectedObj);
-			if (temp->GetType() == WALL || FLOOR || UNIT)
-			{
+				temp = _objectHandler->Find(_selectedObj);
 				XMFLOAT3 tempPos = temp->GetPosition();
 				temp->SetPosition(XMFLOAT3(tempPos.x, 0.1, tempPos.z));
 				//XMFLOAT3 tempScale = temp->GetScale();
@@ -365,12 +366,9 @@ void LevelEdit::InitNewLevel()
 
 void LevelEdit::DeleteObject()
 {
-	GameObject* temp;
 	if (_selectedObj != 0)
 	{
-		temp = _objectHandler->Find(_selectedObj);
 		_objectHandler->Remove(_selectedObj);
 		_selectedObj--;
 	}
-
 }
