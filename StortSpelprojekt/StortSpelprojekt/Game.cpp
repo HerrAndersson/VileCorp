@@ -82,7 +82,7 @@ void Game::Update(float deltaTime)
 	_UI->Update();
 	_UI->OnResize(_window->GetWindowSettings());
 	_SM->Update(deltaTime);
-
+	_objectHandler->Update(deltaTime);
 	_input->UpdatePerFrame();
 }
 

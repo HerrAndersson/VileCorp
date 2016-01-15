@@ -17,5 +17,5 @@ public:
 	GameLogic();
 	~GameLogic();
 	void Initialize(System::InputDevice* inputDevice, ObjectHandler* objectHandler,  UIHandler* uiHandler, System::Camera* camera);
-	void Update();
+	void Update(float deltaTime);
 };

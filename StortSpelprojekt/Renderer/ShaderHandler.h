@@ -31,6 +31,7 @@ namespace Renderer
 		VertexShaderData*		_defaultVS;
 		VertexShaderData*		_geoPassVS;
 		VertexShaderData*		_lightPassVS;
+		VertexShaderData*		_animPassVS;
 		VertexShaderData*		_gridPassVS;
 		VertexShaderData*		_hudPassVS;
 
@@ -60,6 +61,7 @@ namespace Renderer
 		void SetDefaultShaders(ID3D11DeviceContext* deviceContext);
 		void SetGeometryPassShaders(ID3D11DeviceContext* deviceContext);
 		void SetLightPassShaders(ID3D11DeviceContext* deviceContext);
+		void SetAnimationPassShaders(ID3D11DeviceContext* deviceContext);
 		void SetGridPassShaders(ID3D11DeviceContext* deviceContest);
 		void SetHUDPassShaders(ID3D11DeviceContext* deviceContext);
 	};

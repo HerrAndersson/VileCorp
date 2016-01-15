@@ -59,6 +59,7 @@ bool ObjectHandler::Add(Type type, int renderObjectID, XMFLOAT3 position = XMFLO
 	{
 		//TODO: Log failed add attempts - Rikhard
 		delete object;
+
 	}
 
 	return addedObject;
@@ -102,7 +103,7 @@ GameObject* ObjectHandler::Find(Type type, int ID)
 	return nullptr;
 }
 
-GameObject* ObjectHandler::Find(Type type, short index)
+GameObject* ObjectHandler::Find(Type type, short index)//TODO why? - Fredrik
 {
 	for (GameObject* g : _gameObjects[type])
 	{
@@ -195,7 +196,7 @@ void ObjectHandler::InitPathfinding()
 	}
 }
 
-void ObjectHandler::Update()
+void ObjectHandler::Update(float deltaTime)
 {
 	//Update all objects gamelogic
 
@@ -203,7 +204,7 @@ void ObjectHandler::Update()
 	{
 		for (GameObject* g : _gameObjects[i])
 		{
-			g->Update();
+			g->Update(deltaTime);
 			if (g->GetType() == UNIT)																	//Handle unit movement
 			{
 				float xOffset = abs(g->GetPosition().x - g->GetTilePosition()._x);

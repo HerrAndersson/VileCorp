@@ -12,6 +12,7 @@ AssetManager::AssetManager(ID3D11Device* device)
 	_texturesToFlush = new vector<Texture*>;
 	_levelFileNames = new vector<string>;
 	_tilesets = new vector<Tileset>;
+	_skeletons = new vector<Skeleton*>;
 
 	SetupTilesets();
 
@@ -29,40 +30,31 @@ AssetManager::~AssetManager()
 		}
 		delete texture;
 	}
-	_textures->clear();
 
 	for (uint i = 0; i < _renderObjects->size(); i++)
 	{
-		UnloadModel(i, true);
 		delete _renderObjects->at(i);
 	}
-	_renderObjects->clear();
-	_infile->clear();
 	delete _infile;
-	_modelFiles->clear();
 	delete _modelFiles;
 	delete _renderObjects;
-	_renderObjectsToFlush->clear();
 	delete _renderObjectsToFlush;
 	delete _textures;
-	_texturesToFlush->clear();
 	delete _texturesToFlush;
-	_levelFileNames->clear();
 	delete _levelFileNames;
-	for (Tileset set : *_tilesets)
-	{
-		set._deco.clear();
-		set._floors.clear();
-		set._walls.clear();
-	}
-	_tilesets->clear();
 	delete _tilesets;
+	for (uint i = 0; i < _skeletons->size(); i++)
+	{
+		delete _skeletons->at(i);
+	}
+	delete _skeletons;
 }
 
 //Looks through the Models folder and creates an empty RenderObject for each entry
 void AssetManager::SetupRenderObjectList(Tileset* tileset)
 {
 
+	_modelFiles->clear();
 	for (string str : tileset->_floors)
 	{
 		_modelFiles->push_back(str);
@@ -76,11 +68,13 @@ void AssetManager::SetupRenderObjectList(Tileset* tileset)
 		_modelFiles->push_back(str);
 	}
 
+
 	for (uint i = 0; i < _modelFiles->size(); i++)
 	{
 		RenderObject* renderObject = ScanModel(_modelFiles->at(i));
 		_renderObjects->push_back(renderObject);
 	}
+	_activeTileset = tileset;
 }
 
 void AssetManager::SetupLevelFileNameList()
@@ -111,19 +105,20 @@ void AssetManager::SetupTilesets()
 		rapidjson::StringStream ss(&buffer[0]);
 		reader.Parse(ss, handler);
 	}
+	_activeTileset = &_tilesets->at(0);
+	SetupRenderObjectList(&_tilesets->at(0));
 }
 
-void AssetManager::DecrementUsers(Texture* texture)
-{
-	texture->_activeUsers--;
-	if (!texture->_activeUsers)
-	{
-		_texturesToFlush->push_back(texture);
-	}
-}
-
+//Replaces current Tileset, do not call without clearing GameObjects - Fredrik
 bool AssetManager::ActivateTileset(string name)
 {
+	if (!strcmp(name.c_str(), _activeTileset->_name.c_str()))
+	{
+		return true;
+	}
+	
+	_renderObjects->clear();
+
 	for (Tileset set : *_tilesets)
 	{
 		if (!strcmp(name.c_str(), set._name.c_str()))
@@ -148,15 +143,21 @@ void AssetManager::UnloadModel(int index, bool force)
 		for (auto m : renderObject->_meshes)
 		{
 			m._vertexBuffer->Release();
-			renderObject->_toUnload = false;
-			renderObject->_meshLoaded = false;
-			if (renderObject->_diffuseTexture != nullptr)
+		}
+		renderObject->_toUnload = false;
+		renderObject->_meshLoaded = false;
+		if (renderObject->_diffuseTexture != nullptr)
+		{
+			if (renderObject->_diffuseTexture->DecrementUsers())
 			{
-				DecrementUsers(renderObject->_diffuseTexture);
+				_texturesToFlush->push_back(renderObject->_diffuseTexture);
 			}
-			if (renderObject->_specularTexture != nullptr)
+		}
+		if (renderObject->_specularTexture != nullptr)
+		{
+			if (renderObject->_specularTexture->DecrementUsers())
 			{
-				DecrementUsers(renderObject->_specularTexture);
+				_texturesToFlush->push_back(renderObject->_specularTexture);
 			}
 		}
 	}
@@ -206,15 +207,21 @@ void AssetManager::Flush()
 			for (Mesh m : renderObject->_meshes)
 			{
 				m._vertexBuffer->Release();
-				renderObject->_toUnload = false;
-				renderObject->_meshLoaded = false;
-				if (renderObject->_diffuseTexture != nullptr)
+			}
+			renderObject->_toUnload = false;
+			renderObject->_meshLoaded = false;
+			if (renderObject->_diffuseTexture != nullptr)
+			{
+				if (renderObject->_diffuseTexture->DecrementUsers())
 				{
-					DecrementUsers(renderObject->_diffuseTexture);
+					_texturesToFlush->push_back(renderObject->_diffuseTexture);
 				}
-				if (renderObject->_specularTexture != nullptr)
+			}
+			if (renderObject->_specularTexture != nullptr)
+			{
+				if (renderObject->_specularTexture->DecrementUsers())
 				{
-					DecrementUsers(renderObject->_specularTexture);
+					_texturesToFlush->push_back(renderObject->_specularTexture);
 				}
 			}
 		}
@@ -236,7 +243,11 @@ HRESULT Texture::LoadTexture(ID3D11Device* device)
 	HRESULT res = S_OK;
 	if (!_loaded)
 	{
+#ifdef _DEBUG
 		res = DirectX::CreateWICTextureFromFile(device, _filename.c_str(), nullptr, &_data, 0);
+#else
+		res = DirectX::CreateWICTextureFromFile(device, _filename.c_str(), nullptr, &_data, 0);
+#endif
 		if (_data == nullptr)
 		{
 			string filenameString(_filename.begin(),_filename.end());
@@ -246,6 +257,16 @@ HRESULT Texture::LoadTexture(ID3D11Device* device)
 	}
 	_activeUsers++;
 	return res;
+}
+
+bool Texture::DecrementUsers()
+{
+	_activeUsers--;
+	if (!_activeUsers)
+	{
+		return true;
+	}
+	return false;
 }
 
 //Loads a model to the GPU
@@ -263,14 +284,23 @@ void AssetManager::LoadModel(string fileName, RenderObject* renderObject) {
 
 	Mesh* mesh;
 	vector<Vertex> vertices;
+	vector<WeightedVertex> weightedVertices;
 
 	for (uint i = 0; i < renderObject->_meshes.size(); i++)
 	{
 		mesh = &renderObject->_meshes[i];
 		_infile->seekg(mesh->_toMesh);
-		vertices.resize(mesh->_vertexBufferSize);
-		_infile->read((char*)vertices.data(), mesh->_vertexBufferSize*sizeof(Vertex));
-		mesh->_vertexBuffer = CreateVertexBuffer(&vertices, renderObject->_skeleton);
+		if(renderObject->_isSkinned)
+		{
+			weightedVertices.resize(mesh->_vertexBufferSize);
+			_infile->read((char*)weightedVertices.data(), mesh->_vertexBufferSize*sizeof(WeightedVertex));
+		}
+		else
+		{
+			vertices.resize(mesh->_vertexBufferSize);
+			_infile->read((char*)vertices.data(), mesh->_vertexBufferSize*sizeof(Vertex));
+		}
+		mesh->_vertexBuffer = CreateVertexBuffer(&weightedVertices, &vertices, renderObject->_isSkinned);
 	}
 
 	if (renderObject->_diffuseTexture != nullptr)
@@ -333,6 +363,13 @@ RenderObject* AssetManager::ScanModel(string fileName)
 	{
 		throw std::runtime_error("Failed to load " + file_path + ":\nIncorrect fileversion");
 	}
+	int skeletonStringLength;
+	_infile->read((char*)&skeletonStringLength, 4);
+	renderObject->_skeletonName.resize(skeletonStringLength);
+	_infile->read((char*)renderObject->_skeletonName.data(), skeletonStringLength);
+
+	renderObject->_isSkinned = strcmp(renderObject->_skeletonName.data(), "Unrigged") != 0;
+
 	for (int i = 0; i < mainHeader._meshCount; i++)
 	{
 		Mesh mesh;
@@ -348,7 +385,10 @@ RenderObject* AssetManager::ScanModel(string fileName)
 		renderObject->_meshes[i]._name.resize(meshHeader._nameLength);
 
 		_infile->read((char*)renderObject->_meshes[i]._name.data(), meshHeader._nameLength);
-		_infile->seekg(meshHeader._numberOfVertices*sizeof(Vertex), ios::cur);
+		if(renderObject->_isSkinned)
+			_infile->seekg(meshHeader._numberOfVertices*sizeof(WeightedVertex), ios::cur);
+		else
+			_infile->seekg(meshHeader._numberOfVertices*sizeof(Vertex), ios::cur);
 
 		if (meshHeader._numberPointLights)
 		{
@@ -385,24 +425,34 @@ RenderObject* AssetManager::ScanModel(string fileName)
 
 	_infile->close();
 
+	if (renderObject->_isSkinned)
+	{
+		renderObject->_skeleton = LoadSkeleton(renderObject->_skeletonName);
+	}
+
 	renderObject->_meshLoaded = false;
 
 	return renderObject;
 }
 
-ID3D11Buffer* AssetManager::CreateVertexBuffer(vector<Vertex> *vertices, int skeleton)
+ID3D11Buffer* AssetManager::CreateVertexBuffer(vector<WeightedVertex> *weightedVertices, vector<Vertex> *vertices, int skeleton)
 {
 	D3D11_BUFFER_DESC vbDESC;
 	vbDESC.Usage = D3D11_USAGE_DEFAULT;
-	vbDESC.ByteWidth = sizeof(Vertex)* vertices->size();
+	if(skeleton)
+		vbDESC.ByteWidth = sizeof(WeightedVertex)* weightedVertices->size();
+	else
+		vbDESC.ByteWidth = sizeof(Vertex)* vertices->size();
 	vbDESC.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	vbDESC.CPUAccessFlags = 0;
 	vbDESC.MiscFlags = 0;
 	vbDESC.StructureByteStride = 0;
 
 	D3D11_SUBRESOURCE_DATA vertexData;
-
-	vertexData.pSysMem = vertices->data();
+	if(skeleton)
+		vertexData.pSysMem = weightedVertices->data();
+	else
+		vertexData.pSysMem = vertices->data();
 	vertexData.SysMemPitch = 0;
 	vertexData.SysMemSlicePitch = 0;
 
@@ -438,4 +488,60 @@ ID3D11ShaderResourceView* AssetManager::GetTexture(string filename)
 	Texture* texture = ScanTexture(filename);
 	texture->LoadTexture(_device);
 	return texture->_data;
+}
+
+Skeleton* AssetManager::LoadSkeleton(string filename)
+{
+
+	for (Skeleton* skeleton : *_skeletons)
+	{
+		if (strcmp(skeleton->_name.c_str(), filename.data()))
+		{
+			return skeleton;
+		}
+	}
+
+	string file_path = "Assets/Models/";
+
+	file_path.append(filename);
+	_infile->open(file_path.c_str(), ifstream::binary);
+
+	if (!_infile->is_open())
+	{
+		throw runtime_error("Failed to open " + file_path);
+	}
+
+	_skeletons->push_back(new Skeleton);
+	Skeleton* skeleton = _skeletons->back();
+
+	SkeletonHeader header;
+	_infile->read((char*)&header, sizeof(SkeletonHeader));
+	if (header._version != _animationFormatVersion)
+	{
+		throw runtime_error("Failed to load " + file_path + ":\nIncorrect fileversion");
+	}
+
+	vector<int> frameCountPerAction;
+	frameCountPerAction.resize(header._actionCount);
+	_infile->read((char*)frameCountPerAction.data(), header._actionCount * 4);
+
+	skeleton->_skeleton.resize(header._boneCount);
+	_infile->read((char*)skeleton->_skeleton.data(), header._boneCount * sizeof(Bone));
+
+	skeleton->_actions.resize(header._actionCount);
+	for (uint a = 0; a < skeleton->_actions.size(); a++)
+	{
+		skeleton->_actions[a]._frameTime.resize(frameCountPerAction[a]);
+		_infile->read((char*)skeleton->_actions[a]._frameTime.data(), frameCountPerAction[a] * 4);
+
+		skeleton->_actions[a]._bones.resize(header._boneCount);
+		for (uint b = 0; b < skeleton->_actions[a]._bones.size(); b++)
+		{
+			skeleton->_actions[a]._bones[b]._frames.resize(frameCountPerAction[a]);
+			_infile->read((char*)skeleton->_actions[a]._bones[b]._frames.data(), sizeof(Frame) * frameCountPerAction[a]);
+		}
+	}
+
+	_infile->close();
+	return skeleton;
 }

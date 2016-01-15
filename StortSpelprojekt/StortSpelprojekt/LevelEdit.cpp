@@ -386,7 +386,7 @@ void LevelEdit::Update(float deltaTime)
 	mouseCoord = _inputDevice->GetMouseCoord();
 	HandleHUD();
 	HandleInput();
-	_objectHandler->Update();
+	_objectHandler->Update(deltaTime);
 }
 
 void LevelEdit::ResetSelectedObj()

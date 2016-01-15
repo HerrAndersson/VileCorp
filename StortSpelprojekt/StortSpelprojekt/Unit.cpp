@@ -446,6 +446,7 @@ Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	_tileMap = tileMap;
 	_aStar = new AI::AStar(_tileMap->GetWidth(), _tileMap->GetHeight(), _tilePosition, {0,0}, AI::AStar::OCTILE);		//TODO: Find the unit's goal --Victor
 
+
 	//Scan tilemap for floor layout and objectives
 	//CheckAllTiles();
 }
@@ -659,7 +660,7 @@ void Unit::Move()
 	CalculateMatrix();
 }
 
-void Unit::Update()
+void Unit::Update(float deltaTime)
 {
 	if (_direction._x == 0)
 	{
@@ -682,6 +683,10 @@ void Unit::Update()
 	{
 		CheckAllTiles();
 		CalculatePath(_goalTilePosition);
+	}
+	if (_animation != nullptr)
+	{
+		_animation->Update(deltaTime);
 	}
 }
 

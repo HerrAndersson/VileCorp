@@ -43,6 +43,7 @@ namespace System
 		}
 	}
 
+	// Seconds
 	double Timer::GetFrameTime()
 	{
 		return _frameTime;

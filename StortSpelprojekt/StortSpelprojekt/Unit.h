@@ -45,7 +45,7 @@ public:
 	void SetGoal(AI::Vec2D goal);
 	void CalculatePath(AI::Vec2D goal);									//Same for all units
 	void Move();														//Possibly the same. Finding new objectives need to be separate.
-	void Update();														//Same as move
+	void Update(float deltaTime);														//Same as move
 	virtual void Release();
 	virtual void act(Type obj) = 0;									//context specific action on the unit's objective
 };
