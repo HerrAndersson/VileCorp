@@ -30,6 +30,8 @@ struct RenderList
 	vector<XMMATRIX> _modelMatrices;
 };
 
+static int IDCOUNT = 0;
+
 class ObjectHandler
 {
 private:
@@ -46,7 +48,7 @@ public:
 	~ObjectHandler();
 
 	//Add a gameobject
-	GameObject* Add(Type type, int renderObjectID, XMFLOAT3 position, XMFLOAT3 rotation);
+	GameObject* Add(Type type, /*int renderObjectID,*/ XMFLOAT3 position, XMFLOAT3 rotation);
 	bool Remove(Type type, int ID);
 
 	GameObject* Find(Type type, int ID);

@@ -11,8 +11,8 @@ LevelEdit::~LevelEdit()
 
 void LevelEdit::Add(Type type, int renderObjectID)
 {
-	_objectHandler->Add(type, renderObjectID, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
-	_selectedObj = _objectHandler->GetSize() - 1;
+	_objectHandler->Add(type, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
+	_selectedObj = _objectHandler->GetGameObjects()->at(type).back()->GetID();
 }
 
 void LevelEdit::Initialize(InitVar* initVar)
@@ -189,7 +189,7 @@ void LevelEdit::HandleInput()
 	//Temp LevelLoads
 	if (_inputHandler->IsPressed(0x31))
 	{
-		_objectHandler->Clear();
+		_objectHandler->Release();
 		ResetSelectedObj();
 		_objectHandler->LoadLevel(1);
 		
@@ -197,14 +197,14 @@ void LevelEdit::HandleInput()
 
 	if (_inputHandler->IsPressed(0x32))
 	{
-		_objectHandler->Clear();
+		_objectHandler->Release();
 		ResetSelectedObj();
 		_objectHandler->LoadLevel(2);
 	}
 
 	if (_inputHandler->IsPressed(0x33))
 	{
-		_objectHandler->Clear();
+		_objectHandler->Release();
 		ResetSelectedObj();
 		_objectHandler->LoadLevel(3);
 		
@@ -212,7 +212,7 @@ void LevelEdit::HandleInput()
 
 	if (_inputHandler->IsPressed(0x34))
 	{
-		_objectHandler->Clear();
+		_objectHandler->Release();
 		ResetSelectedObj();
 		_objectHandler->LoadLevel(4);
 		
@@ -358,7 +358,7 @@ void LevelEdit::ResetSelectedObj()
 
 void LevelEdit::InitNewLevel()
 {
-	_objectHandler->Clear();
+	_objectHandler->Release();
 
 	ResetSelectedObj();
 }
