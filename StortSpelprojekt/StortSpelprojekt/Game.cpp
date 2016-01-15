@@ -5,13 +5,8 @@
 
 Game::Game(HINSTANCE hInstance, int nCmdShow)
 {
-	TCHAR pwd[MAX_PATH];
-	GetCurrentDirectory(MAX_PATH, pwd);
-
-	_playerInfo._test = pwd;
 	System::saveJSON(&_playerInfo, "test.json", "Player Info");
 	System::loadJSON(&_playerInfo, "test.json");
-
 	
 	_gameHandle = this;
 	System::WindowSettings settings;
