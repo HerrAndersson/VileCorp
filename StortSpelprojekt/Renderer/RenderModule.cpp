@@ -296,10 +296,8 @@ namespace Renderer
 		}
 		case FINAL_PASS:
 		{
-			int nrOfSRVs =_d3d->SetLightPassRTVs();
+			int nrOfSRVs =_d3d->SetFinalPassRTVs();
 			_shaderHandler->SetFinalPassShaders(deviceContext);
-			ID3D11ShaderResourceView* shadowMapSRV = _shadowMap->GetShadowSRV();
-			_d3d->GetDeviceContext()->PSSetShaderResources(nrOfSRVs, 1, &shadowMapSRV);
 			break;
 		}
 		case SHADOW_GENERATION:
@@ -309,7 +307,10 @@ namespace Renderer
 		}
 		case LIGHT_APPLICATION:
 		{
+			int nrOfSRVs = _d3d->SetLightPassRTVs();
 			_shaderHandler->SetLightApplicationShaders(deviceContext);
+			ID3D11ShaderResourceView* shadowMapSRV = _shadowMap->GetShadowSRV();
+			_d3d->GetDeviceContext()->PSSetShaderResources(nrOfSRVs, 1, &shadowMapSRV);
 		}
 		};
 	}

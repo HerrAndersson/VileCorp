@@ -156,6 +156,11 @@ int Deferred::SetRenderTargets(ID3D11DeviceContext* deviceContext)
 	return BUFFER_COUNT;
 }
 
+ID3D11RenderTargetView* Deferred::GetDiffuseRTV()
+{
+	return _renderTargetViewArray[0];
+}
+
 void Deferred::ClearRenderTargets(ID3D11DeviceContext* deviceContext, float r, float g, float b, float a)
 {
 	float color[4] = { r, g, b, a };

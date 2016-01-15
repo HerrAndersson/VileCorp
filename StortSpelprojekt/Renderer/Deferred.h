@@ -15,7 +15,7 @@ private:
 	[0] = Diffuse Color
 	[1] = Normal
 	[2] = Depth from view
-	[3] = Shadow map / light accumulation - Set in SetLightPassRTVs.
+	[3] = Shadow map - Set in SetLightPassRTVs.
 	*/
 	static const int BUFFER_COUNT = 2;
 
@@ -34,6 +34,8 @@ public:
 
 	Deferred(ID3D11Device* device, int textureWidth, int textureHeight);
 	virtual ~Deferred();
+
+	ID3D11RenderTargetView* GetDiffuseRTV();
 
 	int SetRenderTargets(ID3D11DeviceContext* deviceContext);
 	void ClearRenderTargets(ID3D11DeviceContext* deviceContext, float r, float g, float b, float a);

@@ -10,9 +10,9 @@ struct VS_OUT
 float4 main(VS_OUT input) : SV_TARGET
 {
 	float4 diffuse = diffuseTex.Sample(samplerWrap, input.uv);
-	float shadowCoeff = diffuse.a;
+	//float shadowCoeff = diffuse.a;
 
-	diffuse *= shadowCoeff;
+	//diffuse *= shadowCoeff;
 
 	return saturate(float4(diffuse.xyz * float3(0.2f, 0.2f, 0.2f), 1));
 }

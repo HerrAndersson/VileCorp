@@ -50,9 +50,8 @@ float3 ReconstructWorldFromCamDepth(float2 uv)
 	return float3(worldPos.xyz / worldPos.w);
 }
 
-float4 main(VS_OUT input) : SV_TARGET
+float4 main(VS_OUT input) : SV_Target0
 {
-
 	float4 diffuse = diffuseTex.Sample(samplerWrap, input.uv);
 	float4 normal = normalTex.Sample(samplerWrap, input.uv);
 	normal.w = 0.0f;
@@ -106,7 +105,7 @@ float4 main(VS_OUT input) : SV_TARGET
 		{
 			if (shadowCoeff < depth - epsilon)
 			{
-				finalColor *= shadowCoeff;  //Spara shadowcoeff i alpha värdet i diffusetexture?. Applicera i LightPS
+				finalColor *= shadowCoeff;
 			}
 			else
 			{
@@ -115,6 +114,8 @@ float4 main(VS_OUT input) : SV_TARGET
 			}
 		}
 	}
+
+	//Use blending instead?
 
 	return saturate(float4(finalColor, 1));
 }
