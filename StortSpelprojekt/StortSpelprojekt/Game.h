@@ -13,6 +13,7 @@
 #include "Trap.h"
 #include "InputDevice.h"
 #include "PickingDevice.h"
+#include "Player.h"
 
 
 
@@ -32,13 +33,13 @@ private:
 	System::InputDevice*		_input;
 	AssetManager*				_assetManager;
 	PickingDevice*				_pickingDevice;
+	Player*						_player;
 	
 
 	//Resizing window, directx resources, camera
 	void ResizeResources(System::WindowSettings settings);
 	void HandleInput();
 	//Returns picked objects
-	vector<GameObject*> Picking();
 	void Update(float deltaTime);
 	void Render();
 

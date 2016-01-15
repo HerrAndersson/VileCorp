@@ -29,6 +29,7 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	_SM = new StateMachine(initVar);
 
 	_pickingDevice = new PickingDevice(_camera, _window);
+	_player = new Player();
 }
 
 Game::~Game() 
@@ -125,19 +126,35 @@ void Game::HandleInput()
 	//Picking control
 	if (GetAsyncKeyState(VK_LBUTTON))
 	{
-		vector<GameObject*> gameObjects = Picking();
-		for (unsigned int i = 0; i < gameObjects.size(); i++)
+		vector<GameObject*> pickedUnits = _pickingDevice->pickObjects(_input->GetMouseCoord()._pos, _objectHandler->GetAll(ENEMY));
+
+		if (!pickedUnits.empty())
 		{
-			//Loops through the objects picked
-			_objectHandler->Remove(gameObjects[i]->GetID());
+			Unit* unit = (Unit*)pickedUnits[0];
+			_player->SelectUnit(unit);
+
+			unit->SetScale(DirectX::XMFLOAT3(1.5f, 1.5f, 1.5f));
 		}
 	}
-}
-
-vector<GameObject*> Game::Picking()
-{
-	return _pickingDevice->pickObjects(_input->GetMouseCoord()._pos, _objectHandler->GetAll(FLOOR));
-	//return _pickingDevice->pickTilemap(_input->GetMouseCoord()._pos, _objectHandler->GetTileMap());
+	if (GetAsyncKeyState(VK_SPACE))
+	{
+		if (_player->AreUnitsSelected())
+		{
+			_player->MoveUnits(_pickingDevice->pickTile(_input->GetMouseCoord()._pos));
+		}
+	}
+	if (GetAsyncKeyState(VK_RBUTTON))
+	{
+		if (_player->AreUnitsSelected())
+		{
+			vector<Unit*> units = _player->GetSelectedUnits();
+			for (int i = 0; i < units.size(); i++)
+			{
+				units[i]->SetScale(DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f));
+			}
+			_player->DeselectUnits();
+		}
+	}
 }
 
 void Game::Update(float deltaTime)

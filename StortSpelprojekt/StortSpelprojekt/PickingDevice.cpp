@@ -5,7 +5,6 @@
 
 Ray PickingDevice::calculatePickRay(POINT mousePoint)
 {
-	//TODO maek work
 	XMFLOAT3 mouseViewPos;
 	XMFLOAT4X4 viewMatrix;
 	XMFLOAT4X4 projMatrix;

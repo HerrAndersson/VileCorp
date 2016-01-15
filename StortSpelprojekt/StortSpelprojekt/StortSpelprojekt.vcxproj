@@ -31,6 +31,7 @@
     <ClCompile Include="ObjectHandler.cpp" />
     <ClCompile Include="OptionsState.cpp" />
     <ClCompile Include="PickingDevice.cpp" />
+    <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayState.cpp" />
     <ClCompile Include="SplashState.cpp" />
     <ClCompile Include="StateMachine.cpp" />
@@ -53,6 +54,7 @@
     <ClInclude Include="ObjectHandler.h" />
     <ClInclude Include="OptionsState.h" />
     <ClInclude Include="PickingDevice.h" />
+    <ClInclude Include="Player.h" />
     <ClInclude Include="PlayState.h" />
     <ClInclude Include="SplashState.h" />
     <ClInclude Include="StateMachine.h" />
@@ -95,7 +97,7 @@
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
