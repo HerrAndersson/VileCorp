@@ -29,7 +29,7 @@ namespace System
 
 	private:
 		InputDevice* _inputDevice;
-		std::map<std::string, Key> keymap;
+		std::map<std::string, Key>* _keymap;
 
 		void StringToKeyMap(const std::string& key, char &mainKey, char& keyModifiers);
 	public:

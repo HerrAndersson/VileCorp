@@ -4,15 +4,11 @@
 
 namespace System
 {
-#ifdef _DEBUG
-#define DBG_PATH "../../Output/Bin/x86/Debug/"
-#else
-#define DBG_PATH ""
-#endif
+
 
 	template<class T> void loadJSON(T data, std::string path)
 	{
-		std::ifstream inStream(DBG_PATH + path);
+		std::ifstream inStream(path);
 		if (inStream.is_open())
 		{
 			cereal::JSONInputArchive inArchive(inStream);
@@ -22,7 +18,7 @@ namespace System
 
 	template<class T> void saveJSON(T data, std::string path, std::string title)
 	{
-		std::ofstream outStream(DBG_PATH + path);
+		std::ofstream outStream(path);
 		cereal::JSONOutputArchive outArchive(outStream);
 		outArchive.setNextName(title.c_str());
 		outArchive(*data);

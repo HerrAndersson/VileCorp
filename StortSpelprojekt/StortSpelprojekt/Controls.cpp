@@ -40,8 +40,10 @@ namespace System
 	*/
 	Controls::Controls(System::InputDevice* input)
 	{
+		_keymap = new std::map<std::string, Key>();
+
 		_inputDevice = input;
-		ifstream file("../../Output/Bin/x86/Debug/Assets/controls.json");
+		ifstream file("Assets/controls.json");
 		if (!file.good())
 		{
 			throw std::runtime_error("Failed to open controls.json");
@@ -75,8 +77,8 @@ namespace System
 							StringToKeyMap(key, mainKey, currentKeyMod);
 						}
 					}
-					keymap[currentStateName + ":" + currentKeyMapName].keyModifier = currentKeyMod;
-					keymap[currentStateName + ":" + currentKeyMapName].mainKey = mainKey;
+					(*_keymap)[currentStateName + ":" + currentKeyMapName].keyModifier = currentKeyMod;
+					(*_keymap)[currentStateName + ":" + currentKeyMapName].mainKey = mainKey;
 				}
 
 				if (!mainKey)
@@ -89,6 +91,7 @@ namespace System
 
 	Controls::~Controls()
 	{
+		delete _keymap;
 	}
 
 	void Controls::StringToKeyMap(const std::string& key, char &mainKey, char& keyModifiers)
@@ -192,15 +195,15 @@ namespace System
 		{
 			modifersActivated |= ALT;
 		}
-		if (keymap[key].keyModifier & REPEAT)
+		if ((*_keymap)[key].keyModifier & REPEAT)
 		{
-			ret = _inputDevice->IsDown(keymap[key].mainKey);
+			ret = _inputDevice->IsDown((*_keymap)[key].mainKey);
 			modifersActivated |= REPEAT;
 		}
 		else
 		{
-			ret = _inputDevice->IsPressed(keymap[key].mainKey);
+			ret = _inputDevice->IsPressed((*_keymap)[key].mainKey);
 		}
-		return ret && keymap[key].keyModifier == modifersActivated;
+		return ret && (*_keymap)[key].keyModifier == modifersActivated;
 	}
 }

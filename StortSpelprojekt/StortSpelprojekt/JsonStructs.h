@@ -3,12 +3,6 @@
 //#include <fstream>
 //#include <cereal/archives/json.hpp>
 
-//#ifdef _DEBUG
-//#define DBG_PATH "../../Output/Bin/x86/Debug/"
-//#else
-//#define DBG_PATH ""
-//#endif
-
 struct PlayerInfo
 {
 	std::string _name = "Jonas";

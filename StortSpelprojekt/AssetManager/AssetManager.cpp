@@ -14,9 +14,8 @@ AssetManager::AssetManager(ID3D11Device* device)
 	_tilesets = new vector<Tileset>;
 
 	SetupTilesets();
-#ifdef _DEBUG
+
 	ActivateTileset("default");
-#endif
 	SetupLevelFileNameList();
 }
 
@@ -64,12 +63,6 @@ AssetManager::~AssetManager()
 void AssetManager::SetupRenderObjectList(Tileset* tileset)
 {
 
-//#ifdef _DEBUG
-//	GetFilenamesInDirectory("../../Output/Bin/x86/Debug/Assets/Models/", ".bin", *_modelFiles);
-//#else
-//	GetFilenamesInDirectory("Assets/Models/", ".bin", *modelFiles);
-//#endif
-
 	for (string str : tileset->_floors)
 	{
 		_modelFiles->push_back(str);
@@ -92,21 +85,14 @@ void AssetManager::SetupRenderObjectList(Tileset* tileset)
 
 void AssetManager::SetupLevelFileNameList()
 {
-#ifdef _DEBUG
-	GetFilenamesInDirectory("../../Output/Bin/x86/Debug/Assets/Levels/", ".lvl", *_levelFileNames);
-#else
 	GetFilenamesInDirectory("Assets/Levels/", ".lvl", *_levelFileNames);
-#endif
 }
 
 void AssetManager::SetupTilesets()
 {
 	vector<string> tilesetFileNames;
-#ifdef _DEBUG
-	GetFilenamesInDirectory("../../Output/Bin/x86/Debug/Assets/Tilesets/", ".json", tilesetFileNames);
-#else
+
 	GetFilenamesInDirectory("Assets/Tilesets/", ".json", tilesetFileNames);
-#endif
 
 	TilesetHandler handler;
 	handler._tilesets = _tilesets;
@@ -264,11 +250,9 @@ HRESULT Texture::LoadTexture(ID3D11Device* device)
 
 //Loads a model to the GPU
 void AssetManager::LoadModel(string fileName, RenderObject* renderObject) {
-#ifdef _DEBUG
-	string file_path = "../../Output/Bin/x86/Debug/Assets/Models/";
-#else
+
 	string file_path = "Assets/Models/";
-#endif
+
 	file_path.append(fileName);
 	_infile->open(file_path.c_str(), ifstream::binary);
 
@@ -320,11 +304,9 @@ Texture* AssetManager::ScanTexture(string filename)
 	}
 	Texture* texture = new Texture;
 	texture->_filename = wstring(filename.begin(), filename.end());
-#ifdef _DEBUG
-	texture->_filename.insert(0, L"../../Output/Bin/x86/Debug/Assets/Textures/");
-#else
+
 	texture->_filename.insert(0, L"Assets/Textures/");
-#endif
+
 	_textures->push_back(texture);
 	return texture;
 }
@@ -332,11 +314,9 @@ Texture* AssetManager::ScanTexture(string filename)
 //Creates a RenderObject for the specified model without loading it
 RenderObject* AssetManager::ScanModel(string fileName)
 {
-#ifdef _DEBUG
-	string file_path = "../../Output/Bin/x86/Debug/Assets/Models/";
-#else
+
 	string file_path = "Assets/Models/";
-#endif
+
 	file_path.append(fileName);
 	RenderObject* renderObject = new RenderObject;
 	_infile->open(file_path.c_str(), ifstream::binary);
