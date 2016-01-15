@@ -24,7 +24,6 @@ void MenuState::Update(float deltaTime)
 		//Calculate mouse coord to screenspace
 		//Check collision with all the buttons
 		//Execute code for button
-		
 	}
 }
 

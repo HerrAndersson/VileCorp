@@ -9,74 +9,47 @@ namespace System
 		{
 			_current[i] = false;
 			_last[i] = false;
+			_buffer[i] = false;
 		}
 
 		RECT rect;
 		GetWindowRect(_hwnd, &rect);
 		_mouseCoord._pos.x = (rect.left + (rect.right - rect.left)) / 2;
 		_mouseCoord._pos.y = (rect.top + (rect.bottom - rect.top)) / 2;
-		//_mouseCoord._pos.x = 0;
-		//_mouseCoord._pos.y = 0;
-		_mouseCoord._deltaPos.x = 0;
-		_mouseCoord._deltaPos.y = 0;
 		SetCursorPos(_mouseCoord._pos.x, _mouseCoord._pos.y);
+
+		_mouseBuffer._pos.x = _mouseCoord._pos.x;
+		_mouseBuffer._pos.y = _mouseCoord._pos.y;
+		_mouseBuffer._deltaPos.x = 0;
+		_mouseBuffer._deltaPos.y = 0;
 		
 		_rawBufferSize = 256;
 		_rawBuffer = new BYTE[_rawBufferSize];
-		_cursorLock = false;
 		RegisterDevice(hwnd);
 	}
 	InputDevice::~InputDevice()
 	{
-		if (_rawBuffer != nullptr) {
-			delete []_rawBuffer;
-			_rawBuffer = nullptr;
-		}
+		delete[]_rawBuffer;
 	}
 
-	void InputDevice::Update(LPARAM lParam, HWND hwnd)
+	void InputDevice::Update()
 	{
 		memcpy(_last, _current, sizeof(bool) * KEY_CODE_CAP);
-		_mouseCoord._deltaPos.x = 0;
-		_mouseCoord._deltaPos.y = 0;
-		HandleRawInput(lParam);
+		memcpy(_current, _buffer, sizeof(bool) * KEY_CODE_CAP);
 
-		// Temp code
-		RECT rect;
-		GetWindowRect(_hwnd, &rect);
+		//Reset the scroll wheel state every frame
+		_buffer[Input::ScrollWheelDown] = false;
+		_buffer[Input::ScrollWheelUp] = false;
 
+		//Add the delta pos to absulute pos
+		_mouseCoord._deltaPos.x = _mouseBuffer._deltaPos.x;
+		_mouseCoord._deltaPos.y = _mouseBuffer._deltaPos.y;
 		
-
+		_mouseBuffer._deltaPos.x = 0;
+		_mouseBuffer._deltaPos.y = 0;
 
 		_mouseCoord._pos.x += _mouseCoord._deltaPos.x;
 		_mouseCoord._pos.y += _mouseCoord._deltaPos.y;
-		GetCursorPos(&_mouseCoord._clientPos);
-		ScreenToClient(hwnd, &_mouseCoord._clientPos);
-		if (_cursorLock)
-		{
-			_mouseCoord._pos.x = (rect.left + (rect.right - rect.left) / 2);
-			_mouseCoord._pos.y = (rect.top + (rect.bottom - rect.top) / 2);
-			SetCursorPos(_mouseCoord._pos.x, _mouseCoord._pos.y);
-		}
-	}
-	void InputDevice::UpdatePerFrame()
-	{
-		//memcpy(_last, _current, sizeof(bool) * KEY_CODE_CAP);
-		if (_cursorLock)
-		{
-			_mouseCoord._deltaPos.x = 0;
-			_mouseCoord._deltaPos.y = 0;
-		}
-		
-
-		//RECT rect;
-		//GetWindowRect(_hwnd, &rect);
-		//_mouseCoord._pos.x = (rect.left + (rect.right - rect.left) / 2);
-		//_mouseCoord._pos.y = (rect.top + (rect.bottom - rect.top) / 2);
-
-
-		//_mouseCoord._pos.x += _mouseCoord._deltaPos.x;
-		//_mouseCoord._pos.y += _mouseCoord._deltaPos.y;
 		//SetCursorPos(_mouseCoord._pos.x, _mouseCoord._pos.y);
 	}
 
@@ -98,86 +71,82 @@ namespace System
 		RAWINPUT* raw = (RAWINPUT*)_rawBuffer;
 
 
-		//MOUSE
+		//Mouse movement, scroll and mouse buttons
 		if (raw->header.dwType == RIM_TYPEMOUSE)
 		{
 			switch (raw->data.mouse.usButtonFlags)
 			{
 			case RI_MOUSE_LEFT_BUTTON_DOWN:
 			{
-				_current[Input::LeftMouse] = true;
+				_buffer[Input::LeftMouse] = true;
 				break;
 			}
 			case RI_MOUSE_LEFT_BUTTON_UP:
 			{
-				_current[Input::LeftMouse] = false;
+				_buffer[Input::LeftMouse] = false;
 				break;
 			}
 			case RI_MOUSE_RIGHT_BUTTON_DOWN:
 			{
-				_current[Input::LeftMouse] = true;
+				_buffer[Input::RightMouse] = true;
 				break;
 			}
 			case RI_MOUSE_RIGHT_BUTTON_UP:
 			{
-				_current[Input::LeftMouse] = false;
+				_buffer[Input::RightMouse] = false;
 				break;
 			}
 			case RI_MOUSE_WHEEL:
 			{
-				if ((signed)raw->data.mouse.usButtonData < 0)
+				SHORT mouseDelta = (SHORT)raw->data.mouse.usButtonData;
+
+				if (mouseDelta > 0)
 				{
-					_current[Input::ScrollWheelUp] = true;
+					_buffer[Input::ScrollWheelUp] = true;
 				}
-				else if (raw->data.mouse.usButtonData > 0)
+				else if (mouseDelta < 0)
 				{
-					_current[Input::ScrollWheelDown] = true;
-				}
-				else if (raw->data.mouse.usButtonData == 0)
-				{
-					_current[Input::ScrollWheelDown] = false;
-					_current[Input::ScrollWheelUp] = false;
-				}
+					_buffer[Input::ScrollWheelDown] = true;
+				}				
 				break;
 			}
 			case RI_MOUSE_BUTTON_3_DOWN:
 			{
-				_current[Input::Mouse3] = true;
+				_buffer[Input::Mouse3] = true;
 				break;
 			}
 			case RI_MOUSE_BUTTON_3_UP:
 			{
-				_current[Input::Mouse3] = false;
+				_buffer[Input::Mouse3] = false;
 				break;
 			}
 			case RI_MOUSE_BUTTON_4_DOWN:
 			{
-				_current[Input::Mouse4] = true;
+				_buffer[Input::Mouse4] = true;
 				break;
 			}
 			case RI_MOUSE_BUTTON_4_UP:
 			{
-				_current[Input::Mouse4] = false;
+				_buffer[Input::Mouse4] = false;
 				break;
 			}
 			case RI_MOUSE_BUTTON_5_DOWN:
 			{
-				_current[Input::Mouse5] = true;
+				_buffer[Input::Mouse5] = true;
 				break;
 			}
 			case RI_MOUSE_BUTTON_5_UP:
 			{
-				_current[Input::Mouse5] = false;
+				_buffer[Input::Mouse5] = false;
 				break;
 			}
 			case MOUSE_MOVE_RELATIVE:
 			{
-				_mouseCoord._deltaPos.x = raw->data.mouse.lLastX;
-				_mouseCoord._deltaPos.y = raw->data.mouse.lLastY;
+				_mouseBuffer._deltaPos.x += raw->data.mouse.lLastX;
+				_mouseBuffer._deltaPos.y += raw->data.mouse.lLastY;
 				break;
 			}
 			}
-
 		}
 
 		//KEYBOARD
@@ -185,24 +154,13 @@ namespace System
 		{
 			if (raw->data.keyboard.Flags == RI_KEY_MAKE)
 			{
-				_current[raw->data.keyboard.VKey] = true;
+				_buffer[raw->data.keyboard.VKey] = true;
 			}
 			if (raw->data.keyboard.Flags == RI_KEY_BREAK)
 			{
-				_current[raw->data.keyboard.VKey] = false;
+				_buffer[raw->data.keyboard.VKey] = false;
 			}
-
-			// Provides the left/right version of a key.
-			// Not used in our project and skipped.
-			/*
-			switch (raw->data.keyboard.Flags == RI_KEY_E0) //Left version of a key
-			{}
-			switch (raw->data.keyboard.Flags == RI_KEY_E1) //Right version of a key
-			{}
-			*/
 		}
-		
-	
 	
 		//clean up of buffer
 		DefRawInputProc((PRAWINPUT*)_rawBuffer, 1, sizeof(RAWINPUTHEADER));
@@ -229,16 +187,6 @@ namespace System
 		{
 			throw std::runtime_error("Error in RegisterRawInputDevices");
 		}
-		ScreenToClient(_hwnd, &_mouseCoord._pos);
-
-		/*RECT rect;
-		GetWindowRect(_hwnd, &rect);
-
-		if(_cursorLock && GetFocus() == _hwnd)
-		{
-			SetCursorPos(rect.left + (rect.right - rect.left) / 2, rect.top + (rect.bottom - rect.top) / 2);
-			ClipCursor(nullptr);
-		}*/
 	}
 
 	bool InputDevice::IsDown(int key)
@@ -253,34 +201,16 @@ namespace System
 
 	bool InputDevice::IsPressed(int key)
 	{
-		bool ret = _current[key] && !_last[key];
-		_last[key] = _current[key];
-		return ret;
+		return _current[key] && !_last[key];
 	}
 
 	bool InputDevice::IsReleased(int key)
 	{
-		bool ret = !_current[key] && _last[key];
-		_last[key] = _current[key];
-		return ret;
+		return !_current[key] && _last[key];
 	}
 
 	MouseCoord InputDevice::GetMouseCoord()const
 	{
 		return _mouseCoord;
-	}
-
-	void InputDevice::ToggleCursorLock()
-	{
-		_cursorLock = !_cursorLock;
-	}
-
-	bool InputDevice::GetCursorLock() const
-	{
-		return _cursorLock;
-	}
-	void InputDevice::SetCursorLock(bool locked)
-	{
-		_cursorLock = locked;
 	}
 }

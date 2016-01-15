@@ -432,7 +432,7 @@ Unit::Unit()
 	_aStar = new AI::AStar();
 	_visibleTiles = nullptr;
 	_visionRadius = 0;
-	_goalTilePosition = {0,0};
+	_goalTilePosition = { 0,0 };
 }
 
 Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject* renderObject, const Tilemap* tileMap)
@@ -440,15 +440,14 @@ Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 {
 	_goalPriority = -1;
 	_visionRadius = 3;
-	_visibleTiles = new AI::Vec2D[ (2 * _visionRadius + 1) * (2 * _visionRadius + 1)];
+	_visibleTiles = new AI::Vec2D[(2 * _visionRadius + 1) * (2 * _visionRadius + 1)];
 	_nrOfVisibleTiles = 0;
 	_goalTilePosition = _tilePosition;
 	_tileMap = tileMap;
-	_aStar = new AI::AStar(_tileMap->GetWidth(), _tileMap->GetHeight(), _tilePosition, {0,0}, AI::AStar::OCTILE);		//TODO: Find the unit's goal --Victor
+	_aStar = new AI::AStar(_tileMap->GetWidth(), _tileMap->GetHeight(), _tilePosition, { 0,0 }, AI::AStar::OCTILE);		//TODO: Find the unit's goal --Victor
 
-
-	//Scan tilemap for floor layout and objectives
-	//CheckAllTiles();
+																														//Scan tilemap for floor layout and objectives
+																														//CheckAllTiles();
 }
 
 
@@ -524,14 +523,14 @@ void Unit::FindVisibleTiles()
 	{
 		for (int j = 0; j < 2 * _visionRadius + 1; j++)
 		{
-			_visibleTiles[_nrOfVisibleTiles++] = {_tilePosition._x + i - _visionRadius, _tilePosition._y + j - _visionRadius};
+			_visibleTiles[_nrOfVisibleTiles++] = { _tilePosition._x + i - _visionRadius, _tilePosition._y + j - _visionRadius };
 		}
 	}
 
 }
 
 /*
-	Checks tiles that are visible to the unit
+Checks tiles that are visible to the unit
 */
 void Unit::CheckVisibleTiles()
 {
@@ -564,7 +563,7 @@ void Unit::CheckAllTiles()
 	for (int i = 0; i < _tileMap->GetWidth(); i++)
 	{
 		for (int j = 0; j < _tileMap->GetHeight(); j++)
-		{ 
+		{
 			//Handle objectives
 			if (_tileMap->IsObjectiveOnTile(i, j))
 			{
@@ -574,16 +573,16 @@ void Unit::CheckAllTiles()
 				//	_aStar->SetGoalPosition(_goalTilePosition);
 				//}
 				_aStar->SetTileCost({ i, j }, 1);
-				EvaluateTile(LOOT, {i, j});
+				EvaluateTile(LOOT, { i, j });
 			}
 			//Handle walls
- 			if (_tileMap->IsWallOnTile(i, j))
+			if (_tileMap->IsWallOnTile(i, j))
 			{
-				_aStar->SetTileCost({i, j}, -1);
+				_aStar->SetTileCost({ i, j }, -1);
 			}
 			else
 			{
-				_aStar->SetTileCost({i, j}, 1);
+				_aStar->SetTileCost({ i, j }, 1);
 			}
 		}
 	}
@@ -600,7 +599,7 @@ void Unit::SetGoal(AI::Vec2D goal)
 }
 
 /*
-	Calculate path to a predetermined goal
+Calculate path to a predetermined goal
 */
 void Unit::CalculatePath(AI::Vec2D goal)
 {
@@ -621,15 +620,15 @@ void Unit::CalculatePath(AI::Vec2D goal)
 
 }
 
-/* 
-	Moves the unit to the tile it's aiming for and selects a new walking direction.
-	This should NOT update every frame. It only updates when the unit reaches a new tile. 
+/*
+Moves the unit to the tile it's aiming for and selects a new walking direction.
+This should NOT update every frame. It only updates when the unit reaches a new tile.
 
-	Name should be changed to make it clear that this is tile movement
+Name should be changed to make it clear that this is tile movement
 */
 void Unit::Move()
 {
-		
+
 	if (_pathLength <= 0)		//The unit has reached its goal and needs a new one
 	{
 		CheckAllTiles();
@@ -646,7 +645,7 @@ void Unit::Move()
 	_direction = nextTile - _tilePosition;
 	if (_direction._x == 0)
 	{
- 		_rotation.y = DirectX::XM_PIDIV2 * (_direction._y + 1);
+		_rotation.y = DirectX::XM_PIDIV2 * (_direction._y + 1);
 		//_rotation.y = atan(_direction._y / _direction._x);
 	}
 	else if (_direction._x == -1)
@@ -660,7 +659,7 @@ void Unit::Move()
 	CalculateMatrix();
 }
 
-void Unit::Update(float deltaTime)
+void Unit::Update()
 {
 	if (_direction._x == 0)
 	{
@@ -683,10 +682,6 @@ void Unit::Update(float deltaTime)
 	{
 		CheckAllTiles();
 		CalculatePath(_goalTilePosition);
-	}
-	if (_animation != nullptr)
-	{
-		_animation->Update(deltaTime);
 	}
 }
 

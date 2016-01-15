@@ -59,6 +59,8 @@ public:
 	bool IsTileEmpty(int x, int z)const;
 	bool IsWallOnTile(int x, int z)const;
 	int UnitsOnTile(int x, int z)const;
+	bool isGuardOnTile(int x, int z)const;
+	bool isEnemyOnTile(int x, int z)const;
 	bool IsTrapOnTile(int x, int z)const;
 	bool IsTriggerOnTile(int x, int z) const;
 	bool IsObjectiveOnTile(int x, int z)const;

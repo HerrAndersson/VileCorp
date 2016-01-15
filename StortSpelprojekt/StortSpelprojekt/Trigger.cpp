@@ -68,10 +68,8 @@ void Trigger::ActivateTraps()
 	}
 }
 
-void Trigger::Update(float deltaTime)
-{
-}
+void Trigger::Update()
+{}
 
 void Trigger::Release()
-{
-}
+{}

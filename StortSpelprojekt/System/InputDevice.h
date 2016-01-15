@@ -11,32 +11,31 @@ namespace System
 	{
 		POINT _pos;
 		POINT _deltaPos;
-		POINT _clientPos;
 	};
 
 	class SYSTEM_EXPORT InputDevice
 	{
 	private:
 		MouseCoord	_mouseCoord;
+		MouseCoord	_mouseBuffer;
 
 		//142 due to 140 keycodes + 0 is skipped.
 		const static int KEY_CODE_CAP = 142;
 		bool _current[KEY_CODE_CAP];
 		bool _last[KEY_CODE_CAP];
+		bool _buffer[KEY_CODE_CAP];
 
 		//Raw input Data
 		BYTE* _rawBuffer;
 		UINT _rawBufferSize;
 
 		HWND _hwnd;
-		bool _cursorLock;
 
 	public:
 		InputDevice(HWND hwnd);
 		~InputDevice();
 
-		void Update(LPARAM lparam, HWND hwnd);
-		void UpdatePerFrame();
+		void Update();
 
 		void HandleRawInput(LPARAM lparam);
 		void RegisterDevice(HWND hwnd);
@@ -46,10 +45,6 @@ namespace System
 		bool IsPressed(int key);
 		bool IsReleased(int key);
 		MouseCoord GetMouseCoord()const;
-
-		void ToggleCursorLock();
-		bool GetCursorLock() const;
-		void SetCursorLock(bool locked);
 	};
 
 	namespace Input

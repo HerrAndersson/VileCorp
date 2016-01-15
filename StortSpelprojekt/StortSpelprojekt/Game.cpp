@@ -79,11 +79,11 @@ void Game::Update(float deltaTime)
 
 	*/
 	
+	_input->Update();
 	_UI->Update();
 	_UI->OnResize(_window->GetWindowSettings());
 	_SM->Update(deltaTime);
 	_objectHandler->Update(deltaTime);
-	_input->UpdatePerFrame();
 }
 
 void Game::Render()
@@ -165,26 +165,7 @@ LRESULT CALLBACK Game::WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM l
 	}
 	case WM_INPUT:
 	{
-		/*
-		UINT dwSize;
-		UINT asdf = 0;
-		asdf = GetRawInputData((HRAWINPUT)lparam, RID_INPUT, NULL, &dwSize,
-			sizeof(RAWINPUTHEADER));
-		LPBYTE lpb = new BYTE[dwSize];
-		if (lpb == NULL)
-		{
-			return 0;
-		}
-
-		if (GetRawInputData((HRAWINPUT)lparam, RID_INPUT, lpb, &dwSize,
-			sizeof(RAWINPUTHEADER)) != dwSize)
-			OutputDebugString(TEXT("GetRawInputData does not return correct size !\n"));
-
-		RAWINPUT* raw = (RAWINPUT*)lpb;
-		delete[] lpb;
-		return 0;
-		*/
-		_gameHandle->_input->Update(lparam, hwnd);
+		_gameHandle->_input->HandleRawInput(lparam);
 	}
 
 	default:

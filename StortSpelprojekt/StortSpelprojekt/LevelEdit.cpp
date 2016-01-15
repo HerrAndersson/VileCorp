@@ -83,7 +83,7 @@ void LevelEdit::HandleInput()
 {
 	if (_controls->IsFunctionKeyDown("DEBUG:ENABLE_FREECAM"))
 	{
-		_inputDevice->ToggleCursorLock();
+		//_inputDevice->ToggleCursorLock();
 	}
 
 	if (_inputDevice->IsPressed(System::Input::LeftMouse))
@@ -299,17 +299,17 @@ void LevelEdit::HandleInput()
 	*/
 
 	//Camera mouse control
-	if (_inputDevice->GetCursorLock())
-	{
-		float sensitivity = 5.0f;
-		if (mouseCoord._deltaPos.x != 0 || mouseCoord._deltaPos.y != 0)
-		{
-			XMFLOAT3 rotation = _camera->GetRotation();
-			rotation.y += mouseCoord._deltaPos.x / sensitivity;
-			rotation.x += mouseCoord._deltaPos.y / sensitivity;
-			_camera->SetRotation(rotation);
-		}
-	}
+	//if (_inputDevice->GetCursorLock())
+	//{
+	//	float sensitivity = 5.0f;
+	//	if (mouseCoord._deltaPos.x != 0 || mouseCoord._deltaPos.y != 0)
+	//	{
+	//		XMFLOAT3 rotation = _camera->GetRotation();
+	//		rotation.y += mouseCoord._deltaPos.x / sensitivity;
+	//		rotation.x += mouseCoord._deltaPos.y / sensitivity;
+	//		_camera->SetRotation(rotation);
+	//	}
+	//}
 	XMFLOAT3 forward(0, 0, 0);
 	XMFLOAT3 position = _camera->GetPosition();
 	XMFLOAT3 right(0, 0, 0);
@@ -319,7 +319,7 @@ void LevelEdit::HandleInput()
 
 	if (_controls->IsFunctionKeyDown("DEBUG:ENABLE_FREECAM"))
 	{
-		_inputDevice->ToggleCursorLock();
+		//_inputDevice->ToggleCursorLock();
 	}
 	
 	if (_controls->IsFunctionKeyDown("MAP_EDIT:MOVE_CAMERA_UP"))

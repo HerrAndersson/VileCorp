@@ -15,9 +15,8 @@ Trap::~Trap()
 void Trap::Activate()
 {}
 
-void Trap::Update(float deltaTime)
-{
-}
+void Trap::Update()
+{}
 
 void Trap::Release()
 {
