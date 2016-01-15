@@ -11,12 +11,19 @@
 
 struct PlayerInfo
 {
-	int _test = 0;
+	std::string _name = "Jonas";
+	int _gold = 100;
+	int _level = 0;
+
+
+
 
 	template<class A>
 	void serialize(A& a)
 	{
-		a(CEREAL_NVP(_test));
+		a(CEREAL_NVP(_name)),
+		a(CEREAL_NVP(_gold)),
+		a(CEREAL_NVP(_level));
 	}
 
 	//void read(std::string path)
@@ -36,3 +43,4 @@ struct PlayerInfo
 	//	outArchive(*this);
 	//}
 };
+

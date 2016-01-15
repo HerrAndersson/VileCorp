@@ -8,6 +8,7 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	System::saveJSON(&_playerInfo, "Assets/test.json", "Player Info");
 	System::loadJSON(&_playerInfo, "Assets/test.json");
 
+	
 	_gameHandle = this;
 	System::WindowSettings settings;
 	_window = new System::Window("Amazing game", hInstance, settings, WndProc);

@@ -13,7 +13,7 @@
 #include "Controls.h"
 #include "Grid.h"
 #include "PickingDevice.h"
-#include "PlayerInfo.h"
+#include "JsonStructs.h"
 #include "ConfigParser.h"
 
 class Game
@@ -34,6 +34,7 @@ private:
 	PickingDevice*				_pickingDevice;
 	System::InputDevice*		_input;
 	PlayerInfo					_playerInfo;
+	
 	
 
 	//Resizing window, directx resources, camera
