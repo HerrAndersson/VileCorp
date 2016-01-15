@@ -5,8 +5,12 @@
 
 Game::Game(HINSTANCE hInstance, int nCmdShow)
 {
-	System::saveJSON(&_playerInfo, "Assets/test.json", "Player Info");
-	System::loadJSON(&_playerInfo, "Assets/test.json");
+	TCHAR pwd[MAX_PATH];
+	GetCurrentDirectory(MAX_PATH, pwd);
+
+	_playerInfo._test = pwd;
+	System::saveJSON(&_playerInfo, "test.json", "Player Info");
+	System::loadJSON(&_playerInfo, "test.json");
 
 	_gameHandle = this;
 	System::WindowSettings settings;

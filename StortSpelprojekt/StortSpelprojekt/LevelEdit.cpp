@@ -29,14 +29,14 @@ void LevelEdit::Initialize(ObjectHandler* objectHandler, System::InputDevice* in
 	_isSelectionMode = true;
 
 	// Add all buttons and hide them
-	buttonInfo.resize(3);
-	_uiHandler->AddButton("Floor_Button.png", DirectX::XMFLOAT2(-0.9f, 0.95f), DirectX::XMFLOAT2(0.1f, 0.05f), true);
+	//buttonInfo.resize(3);
+	_uiHandler->AddButton("floor3.png", DirectX::XMFLOAT2(-0.9f, 0.95f), DirectX::XMFLOAT2(0.1f, 0.05f), true);
 	_uiHandler->AddButton("floor.png", DirectX::XMFLOAT2(-0.9f, 0.85f), DirectX::XMFLOAT2(0.1f, 0.05f), false);
 	_uiHandler->AddButton("floor2.png", DirectX::XMFLOAT2(-0.7f, 0.85f), DirectX::XMFLOAT2(0.1f, 0.05f), false);
 
-	buttonInfo[0].parent = -1;
-	buttonInfo[1].parent = 0;
-	buttonInfo[2].parent = 1;
+	//buttonInfo[0].parent = -1;
+	//buttonInfo[1].parent = 0;
+	//buttonInfo[2].parent = 1;
 
 	LoadLevel(0);
 }
@@ -54,7 +54,7 @@ void LevelEdit::LoadLevel(int levelID)
 
 void LevelEdit::HandleHUD()
 {
-	for (int i = 0; i < buttonInfo.size(); i++)
+	/*for (int i = 0; i < buttonInfo.size(); i++)
 	{
 		if (buttonInfo[i].parent != -1)
 		{
@@ -76,7 +76,7 @@ void LevelEdit::HandleHUD()
 		{
 			buttonInfo[i].active = true;
 		}
-	}
+	}*/
 }
 
 void LevelEdit::HandleInput()
@@ -426,9 +426,9 @@ void LevelEdit::ExportLevel()
 	mapData.reserve(levelHead._nrOfGameObjects);
 	std::vector<std::vector<GameObject*>>* gameObjects = _objectHandler->GetGameObjects();
 
-	for (int i = 0; i < gameObjects->size(); i++)
+	for (uint i = 0; i < gameObjects->size(); i++)
 	{
-		for (int y = 0; y < gameObjects[i].size(); y++)
+		for (uint y = 0; y < gameObjects[i].size(); y++)
 		{
 			GameObject *gameObj = (*gameObjects)[i][y];
 			MapData mapD;
@@ -450,12 +450,8 @@ void LevelEdit::ExportLevel()
 	string levelName = "exportedLevel.lvl";
 
 	//Setting the output folder depending on if running debug or release mode.
-	#ifdef _DEBUG
-		outputPath = "../../Output/Bin/x86/Debug/Assets/Levels/";
-		copyPath = (string)userPath + "\\Google Drive\\Stort spelprojekt\\Assets\\Levels\\";
-	#else
-		outputPath = ("/Assets/Levels/");
-	#endif
+
+	outputPath = ("/Assets/Levels/");
 
 	outputPath += levelName;
 	copyPath += levelName;
@@ -475,9 +471,10 @@ void LevelEdit::ExportLevel()
 
 	char buf[BUFSIZ];
 	size_t size;
-
-	FILE* source = fopen(outputPath.c_str(), "rb");
-	FILE* dest = fopen(copyPath.c_str(), "wb");
+	FILE* source;
+	FILE* dest;
+	fopen_s(&source, outputPath.c_str(), "rb");
+	fopen_s(&dest, copyPath.c_str(), "wb");
 
 	while (size = fread(buf, 1, BUFSIZ, source)) {
 		fwrite(buf, 1, size, dest);

@@ -41,12 +41,12 @@ namespace Renderer
 
 		int numElements = sizeof(inputDesc) / sizeof(inputDesc[0]);
 
-		_defaultVS = CreateVertexShader(device, L"../Renderer/Shaders/DefaultVS.hlsl", inputDesc, numElements);
-		_defaultPS = CreatePixelShader(device, L"../Renderer/Shaders/DefaultPS.hlsl");
+		_defaultVS = CreateVertexShader(device, L"Assets/Shaders/DefaultVS.hlsl", inputDesc, numElements);
+		_defaultPS = CreatePixelShader(device, L"Assets/Shaders/DefaultPS.hlsl");
 
 		//GEOMETRY pass init
-		_geoPassVS = CreateVertexShader(device, L"../Renderer/Shaders/GeoVS.hlsl", inputDesc, numElements);
-		_geoPassPS = CreatePixelShader(device, L"../Renderer/Shaders/GeoPS.hlsl");
+		_geoPassVS = CreateVertexShader(device, L"Assets/Shaders/GeoVS.hlsl", inputDesc, numElements);
+		_geoPassPS = CreatePixelShader(device, L"Assets/Shaders/GeoPS.hlsl");
 
 		//LIGHT pass init
 		D3D11_INPUT_ELEMENT_DESC lightInputDesc[] =
@@ -57,8 +57,8 @@ namespace Renderer
 
 		numElements = sizeof(lightInputDesc) / sizeof(lightInputDesc[0]);
 
-		_lightPassVS = CreateVertexShader(device, L"../Renderer/Shaders/LightVS.hlsl", lightInputDesc, numElements);
-		_lightPassPS = CreatePixelShader(device, L"../Renderer/Shaders/LightPS.hlsl");
+		_lightPassVS = CreateVertexShader(device, L"Assets/Shaders/LightVS.hlsl", lightInputDesc, numElements);
+		_lightPassPS = CreatePixelShader(device, L"Assets/Shaders/LightPS.hlsl");
 
 		//Grid pass init
 		D3D11_INPUT_ELEMENT_DESC gridInputDesc[] =
@@ -69,14 +69,14 @@ namespace Renderer
 
 		numElements = sizeof(gridInputDesc) / sizeof(gridInputDesc[0]);
 
-		_gridPassVS = CreateVertexShader(device, L"../Renderer/Shaders/GridVS.hlsl", gridInputDesc, numElements);
-		_gridPassPS = CreatePixelShader(device, L"../Renderer/Shaders/GridPS.hlsl");
+		_gridPassVS = CreateVertexShader(device, L"Assets/Shaders/GridVS.hlsl", gridInputDesc, numElements);
+		_gridPassPS = CreatePixelShader(device, L"Assets/Shaders/GridPS.hlsl");
 		
 		//HUD pass init
 		numElements = sizeof(lightInputDesc) / sizeof(lightInputDesc[0]);
 
-		_hudPassVS = CreateVertexShader(device, L"../Renderer/Shaders/HudVS.hlsl", lightInputDesc, numElements);
-		_hudPassPS = CreatePixelShader(device, L"../Renderer/Shaders/HudPS.hlsl");
+		_hudPassVS = CreateVertexShader(device, L"Assets/Shaders/HudVS.hlsl", lightInputDesc, numElements);
+		_hudPassPS = CreatePixelShader(device, L"Assets/Shaders/HudPS.hlsl");
 	}
 
 	ShaderHandler::~ShaderHandler()

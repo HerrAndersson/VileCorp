@@ -3,15 +3,9 @@
 //#include <fstream>
 //#include <cereal/archives/json.hpp>
 
-//#ifdef _DEBUG
-//#define DBG_PATH "../../Output/Bin/x86/Debug/"
-//#else
-//#define DBG_PATH ""
-//#endif
-
 struct PlayerInfo
 {
-	int _test = 0;
+	std::string _test = "";
 
 	template<class A>
 	void serialize(A& a)

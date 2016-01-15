@@ -143,7 +143,7 @@ RenderList ObjectHandler::GetAllByType(int renderObjectID)
 int ObjectHandler::GetTotalNrOfGameObjects() const
 {
 	int totalSize = 0;
-	for (int i = 0; i < _gameObjects.size(); i++)
+	for (uint i = 0; i < _gameObjects.size(); i++)
 	{
 		totalSize += _gameObjects[i].size();
 	}
