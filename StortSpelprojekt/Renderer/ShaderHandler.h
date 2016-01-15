@@ -9,6 +9,7 @@ namespace Renderer
 	class ShaderHandler
 	{
 	private:
+
 		struct VertexShaderData
 		{
 			ID3D11VertexShader* _vertexShader;

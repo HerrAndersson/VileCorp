@@ -7,7 +7,6 @@ using namespace DirectX;
 
 namespace Renderer
 {
-
 	ShadowMap::ShadowMap(ID3D11Device* device, int dimensions)
 	{
 		this->dimensions = dimensions;

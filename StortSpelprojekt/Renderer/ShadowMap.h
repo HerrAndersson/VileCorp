@@ -6,11 +6,15 @@
 #include <d3dcompiler.h>
 #include <string>
 
-//Before rendering to shadow map:
+/*
 
-//~ Activate FRONT-FACE culling
-//~ Set vertex buffer before the Draw/DrawIndexed call
-//~ Set topology
+Before rendering to shadow map:
+
+~ Activate FRONT-FACE culling
+~ Set vertex buffer before the Draw/DrawIndexed call
+~ Set topology
+
+*/
 
 namespace Renderer
 {

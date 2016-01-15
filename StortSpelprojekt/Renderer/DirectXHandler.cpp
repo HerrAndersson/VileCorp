@@ -8,7 +8,6 @@ namespace Renderer
 		_textureWidth = screenWidth;
 		_textureHeight = screenHeight;
 
-
 		//////////////////////////////////////////////////// Swap chain, back buffer RTV //////////////////////////////////////////////////// 
 		//Describe the swap chain
 		DXGI_SWAP_CHAIN_DESC swapChainDesc;

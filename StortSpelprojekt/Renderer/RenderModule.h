@@ -52,15 +52,14 @@ namespace Renderer
 			float range;
 		};
 
-		ID3D11Buffer* _matrixBufferPerObject;
-		ID3D11Buffer* _matrixBufferPerFrame;
-		ID3D11Buffer* _matrixBufferLightPassPerFrame;
-		ID3D11Buffer* _matrixBufferLightPassPerLight;
+		ID3D11Buffer*		_matrixBufferPerObject;
+		ID3D11Buffer*		_matrixBufferPerFrame;
+		ID3D11Buffer*		_matrixBufferLightPassPerFrame;
+		ID3D11Buffer*		_matrixBufferLightPassPerLight;
+		ID3D11Buffer*		_screenQuad;
 
-		DirectXHandler* _d3d;
-		ShaderHandler* _shaderHandler;
-
-		ID3D11Buffer* _screenQuad;
+		DirectXHandler*		_d3d;
+		ShaderHandler*		_shaderHandler;
 
 		void InitializeConstantBuffers();
 
@@ -68,9 +67,7 @@ namespace Renderer
 		void SetDataPerMesh(ID3D11Buffer* vertexBuffer, int vertexSize);
 		void SetShadowMapDataPerObject(DirectX::XMMATRIX* world);
 
-
-		//TEMP!
-
+		//TEMP! (?)
 		ShadowMap* _shadowMap;
 
 	public:
