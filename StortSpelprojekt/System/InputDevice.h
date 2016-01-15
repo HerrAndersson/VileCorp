@@ -28,7 +28,7 @@ namespace System
 		InputDevice(HWND hwnd);
 		~InputDevice();
 
-		void Update();
+		void Update(bool lockMouse = false);
 		
 		bool IsDown(int key);
 		bool IsUp(int key);

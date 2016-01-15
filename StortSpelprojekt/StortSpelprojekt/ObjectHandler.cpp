@@ -45,7 +45,7 @@ GameObject* ObjectHandler::Add(Type type, int renderObjectID, XMFLOAT3 position 
 		_tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
 		break;
 	case TRAP:
-		object = new Trap(_idCounter++, position, rotation, AI::Vec2D(1,1), type, _assetManager->GetRenderObject(renderObjectID));
+		object = new Trap(_idCounter++, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(renderObjectID));
 		_gameObjects.push_back(object);
 		_size++;
 		_tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
@@ -245,6 +245,22 @@ void ObjectHandler::Update()
 					_tilemap->RemoveObjectFromTile(_gameObjects[i]->GetTilePosition()._x, _gameObjects[i]->GetTilePosition()._y, unit);
 					unit->Move();
 					_tilemap->AddObjectToTile(_gameObjects[i]->GetTilePosition()._x, _gameObjects[i]->GetTilePosition()._y, unit);
+				}
+			}
+		}
+
+		/*
+		Check if there is a unit on trap, in that case activate it.
+		Checks for both guards and enemies for debugging purposes /Seb
+		*/
+		if (_gameObjects[i]->GetType() == TRAP)
+		{
+			for (int j = 0; j < _size; j++)
+			{
+				if (_gameObjects[j]->GetType() == GUARD || _gameObjects[j]->GetType() == ENEMY &&
+					_gameObjects[j]->GetTilePosition() == _gameObjects[i]->GetTilePosition())
+				{
+					((Trap*)_gameObjects[i])->Activate();
 				}
 			}
 		}

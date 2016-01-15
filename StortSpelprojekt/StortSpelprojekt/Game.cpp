@@ -17,6 +17,7 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	_camera = new System::Camera(0.1f, 1000.0f, DirectX::XM_PIDIV2, settings._width, settings._height);
 	_camera->SetPosition(XMFLOAT3(3, 7, 0));
 	_camera->SetRotation(XMFLOAT3(70, 0, 0));
+	//_camera->SetMode(System::FREE_CAM);
 
 	_timer = System::Timer();
 
@@ -70,15 +71,16 @@ void Game::HandleInput()
 		ResizeResources(settings);
 	}
 
-	//Camera mouse control
+	//Camera mouse control (Only when free camera)
 	System::MouseCoord mouseCoord = _input->GetMouseCoord();
-	//if (mouseCoord._deltaPos.x != 0 || mouseCoord._deltaPos.y != 0)
-	//{
-	//	XMFLOAT3 rotation = _camera->GetRotation();
-	//	rotation.y += mouseCoord._deltaPos.x / 10.0f;
-	//	rotation.x += mouseCoord._deltaPos.y / 10.0f;
-	//	_camera->SetRotation(rotation);
-	//}
+	if (_camera->GetMode() == System::FREE_CAM &&
+		mouseCoord._deltaPos.x != 0 || mouseCoord._deltaPos.y != 0)
+	{
+		XMFLOAT3 rotation = _camera->GetRotation();
+		rotation.y += mouseCoord._deltaPos.x / 10.0f;
+		rotation.x += mouseCoord._deltaPos.y / 10.0f;
+		_camera->SetRotation(rotation);
+	}
 
 	XMFLOAT3 forward(0, 0, 0);
 	XMFLOAT3 position = _camera->GetPosition();
@@ -87,17 +89,30 @@ void Game::HandleInput()
 	float v = 0.1f;
 	if (GetAsyncKeyState('W'))
 	{
-		//forward = _camera->GetForwardVector();
-		forward = DirectX::XMFLOAT3(0, 0, 1);
+		if (_camera->GetMode() == System::LOCKED_CAM)
+		{
+			forward = DirectX::XMFLOAT3(0, 0, 1);
+		}
+		else
+		{
+			forward = _camera->GetForwardVector();
+		}
 		isMoving = true;
 	}
 	else if (GetAsyncKeyState('S'))
 	{
-		//forward = _camera->GetForwardVector();
-		forward = DirectX::XMFLOAT3(0, 0, -1);
-		//forward.x *= -1;
-		//forward.y *= -1;
-		//forward.z *= -1;
+		if (_camera->GetMode() == System::LOCKED_CAM)
+		{
+			forward = DirectX::XMFLOAT3(0, 0, -1);
+		}
+		else
+		{
+			forward = _camera->GetForwardVector();
+
+			forward.x *= -1;
+			forward.y *= -1;
+			forward.z *= -1;
+		}
 		isMoving = true;
 	}
 
@@ -132,7 +147,7 @@ void Game::Update(float deltaTime)
 	vi vill hämta objekten
 
 	*/
-	_input->Update();
+	_input->Update();//Put true in parameter for locked mouse (used for debugging)
 	_UI->Update();
 	_UI->OnResize(_window->GetWindowSettings());
 	_SM->Update(deltaTime);
@@ -179,8 +194,7 @@ int Game::Run()
 	float deltaTime = 0; //someone create this.
 	//Needs a Tilemap in the objectHandler /Markus
 	//_objectHandler->Add(TRAP, 0, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
-
-	//_objectHandler->Add(TRAP, 0, XMFLOAT3(0.5f, -1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
+	
 	_objectHandler->LoadLevel(4);
 
 

@@ -20,7 +20,11 @@ namespace System
 	InputDevice::~InputDevice()
 	{}
 
-	void InputDevice::Update()
+	/*
+	The bool in the update is for locking mouse, 
+	needed only when using free cam
+	*/
+	void InputDevice::Update(bool lockMouse)
 	{
 		RECT rect;
 		GetWindowRect(_hwnd, &rect);
@@ -35,11 +39,11 @@ namespace System
 			_current[i] = GetAsyncKeyState(i) ? 1:0 & 0x0800;
 		}
 		
-		if (GetFocus() == _hwnd)
+		if (lockMouse && GetFocus() == _hwnd)
 		{
-			////Sets mouse position to the middle of the window
-			//SetCursorPos(rect.left + (rect.right - rect.left) / 2, rect.top + (rect.bottom - rect.top) / 2);
-			//ClipCursor(&rect);
+			//Sets mouse position to the middle of the window
+			SetCursorPos(rect.left + (rect.right - rect.left) / 2, rect.top + (rect.bottom - rect.top) / 2);
+			ClipCursor(&rect);
 		}
 	}
 
