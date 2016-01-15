@@ -148,24 +148,29 @@ void Game::Render()
 	}
 
 	///////////////////////////////////////////////////////////// Light pass /////////////////////////////////////////////////////////////
-	//_renderModule->SetLightPassDataPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
-	////for (ALL SPOTLIGHTS)
-	////{
-	//	//Generates the shadow map for one spotlight
-	//	_renderModule->SetShaderStage(Renderer::RenderModule::SHADOW_GENERATION);
-	//	_renderModule->SetShadowMapDataPerSpotLight(_spotlight->GetViewMatrix(), _spotlight->GetProjectionMatrix());
+	_renderModule->SetLightPassDataPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
+	//for (ALL SPOTLIGHTS)
+	//{
+		//Generates the shadow map for one spotlight
+		_renderModule->SetShaderStage(Renderer::RenderModule::SHADOW_GENERATION);
+		_renderModule->SetShadowMapDataPerSpotLight(_spotlight->GetViewMatrix(), _spotlight->GetProjectionMatrix());
 
-	//	for (auto i : *gameObjects)
-	//	{
-	//		_renderModule->RenderShadowMap(&i->GetMatrix(), i->GetRenderObject());
-	//	}
+		for (auto i : *gameObjects)
+		{
+			_renderModule->RenderShadowMap(&i->GetMatrix(), i->GetRenderObject());
+		}
 
-	//	//Adds the light/shadows to the diffuse texture by sampling from it, modifying it, and then use it as render target again.
-	//	_renderModule->SetShaderStage(Renderer::RenderModule::LIGHT_APPLICATION);
-	//	_renderModule->SetLightPassDataPerLight(_spotlight);
+		/*
+		Geo pass should render directly to the backbuffer.
+		Lighting pass should for each light:
+			Create shadow map
+			Render a volume, to backbuffer with additive blending, that represents the light to only do the calculations on the pixels that might be in the light. Apply shadow maps.
 
-	//	//Using diffuse to sample from, and output to diffuse texture. SET0112ORRET RENDER TARGET -> diffuse texture!
-	//	_renderModule->RenderScreenQuad();
+		Then FINAL_PASS is not needed, just EndScene
+		*/
+
+		_renderModule->SetShaderStage(Renderer::RenderModule::LIGHT_APPLICATION);
+		_renderModule->SetLightPassDataPerLight(_spotlight);
 
 	////}
 
