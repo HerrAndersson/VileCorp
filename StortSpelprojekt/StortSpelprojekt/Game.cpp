@@ -74,7 +74,7 @@ void Game::HandleInput()
 	//Camera mouse control (Only when free camera)
 	System::MouseCoord mouseCoord = _input->GetMouseCoord();
 	if (_camera->GetMode() == System::FREE_CAM &&
-		mouseCoord._deltaPos.x != 0 || mouseCoord._deltaPos.y != 0)
+		(mouseCoord._deltaPos.x != 0 || mouseCoord._deltaPos.y != 0))
 	{
 		XMFLOAT3 rotation = _camera->GetRotation();
 		rotation.y += mouseCoord._deltaPos.x / 10.0f;
