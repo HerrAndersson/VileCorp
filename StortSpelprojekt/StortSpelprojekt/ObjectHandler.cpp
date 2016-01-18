@@ -4,7 +4,7 @@
 
 ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager)
 {
-	_idCounter = 0;
+	_idCount = 0;
 	_assetManager = assetManager;
 	_tilemap = nullptr;
 
@@ -20,7 +20,7 @@ ObjectHandler::~ObjectHandler()
 	delete _tilemap;
 }
 
-bool ObjectHandler::Add(Type type, int renderObjectID, XMFLOAT3 position = XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3 rotation = XMFLOAT3(0.0f, 0.0f, 0.0f))
+bool ObjectHandler::Add(Type type, /*int renderObjectID,*/ XMFLOAT3 position = XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3 rotation = XMFLOAT3(0.0f, 0.0f, 0.0f))
 {
 	GameObject* object = nullptr;
 	bool addedObject = false;
@@ -30,21 +30,21 @@ bool ObjectHandler::Add(Type type, int renderObjectID, XMFLOAT3 position = XMFLO
 	case FLOOR:
 	case WALL:
 	case LOOT:
-		object = new Architecture(_idCounter++, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(renderObjectID));
+		object = new Architecture(_idCount, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(type));
 		addedObject = _tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
 		break;
 	case ENEMY:
 	case GUARD:
 		//TODO Tileposition parameters are temporary
-		object = new Enemy(_idCounter++, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(renderObjectID), _tilemap);
+		object = new Enemy(_idCount, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(type), _tilemap);
 		addedObject = _tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
 		break;
 	case TRAP:
-		object = new Trap(_idCounter++, position, rotation, AI::Vec2D(1,1), type, _assetManager->GetRenderObject(renderObjectID));
+		object = new Trap(_idCount, position, rotation, AI::Vec2D(1,1), type, _assetManager->GetRenderObject(type));
 		addedObject = _tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
 		break;
 	case TRIGGER:
-		object = new Trigger(_idCounter++, position, rotation, AI::Vec2D(1,1), type, _assetManager->GetRenderObject(renderObjectID));
+		object = new Trigger(_idCount, position, rotation, AI::Vec2D(1,1), type, _assetManager->GetRenderObject(type));
 		addedObject = _tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
 		break;
 	default:
@@ -52,9 +52,12 @@ bool ObjectHandler::Add(Type type, int renderObjectID, XMFLOAT3 position = XMFLO
 		break;
 	}
 
+	_idCount++;
+	
 	if (addedObject == true)
 	{
 		_gameObjects[type].push_back(object);
+		_objectCount++;
 	}
 	else
 	{
@@ -66,25 +69,98 @@ bool ObjectHandler::Add(Type type, int renderObjectID, XMFLOAT3 position = XMFLO
 	return addedObject;
 }
 
-bool ObjectHandler::Remove(Type type, int ID)
+bool ObjectHandler::Remove(int ID)
 {
-	bool removed = false;
-
-	int gameObjectsByTypeSize = _gameObjects[type].size();
-	for (int i = 0; !removed && i < gameObjectsByTypeSize; i++)
+	for (int i = 0; i < NR_OF_TYPES; i++)
 	{
-		if (_gameObjects[type].at(i)->GetID() == ID)
+		for (int j = 0; j < _gameObjects[i].size(); j++)
 		{
-			_tilemap->RemoveObjectFromTile(_gameObjects[type].at(i));
-			GameObject* tempObject = _gameObjects[type].at(i);
-			tempObject->Release();
-			_gameObjects[type].at(i) = _gameObjects[type].back();
-			delete tempObject;
-			_gameObjects[type].pop_back();
-			removed = true;
+			if (_gameObjects[i][j]->GetID() == ID)
+			{
+				// Release object resource
+				_gameObjects[i][j]->Release();
+
+				delete _gameObjects[i][j];
+
+				// Replace pointer with the last pointer int the vector
+				_gameObjects[i][j] = _gameObjects[i].back();
+
+				// Remove pointer value to avoid various problems
+				_gameObjects[i].pop_back();
+
+				_objectCount--;
+
+				return true;
+			}
 		}
 	}
-	return removed;
+
+
+	//for (vector<GameObject*> v : _gameObjects)
+	//{
+	//	for (int i = 0; i < v.size(); i++)
+	//	{
+	//		if (v[i]->GetID() == ID)
+	//		{
+	//			// Release object resource
+	//			v[i]->Release();
+
+	//			delete v[i];
+
+	//			// Replace pointer with the last pointer int the vector
+	//			v[i] = v.back();
+
+	//			// Remove pointer value to avoid various problems
+	//			v.pop_back();
+
+	//			_objectCount--;
+
+	//			return true;
+	//		}
+	//	}
+	//}
+	return false;
+}
+
+bool ObjectHandler::Remove(Type type, int ID)
+{
+	for (int i = 0; i < _gameObjects[type].size(); i++)
+	{
+		if (_gameObjects[type][i]->GetID() == ID)
+		{
+			_tilemap->RemoveObjectFromTile(_gameObjects[type].at(i));
+			_gameObjects[type][i]->Release();
+
+			delete _gameObjects[type][i];
+
+			// Replace pointer with the last pointer int the vector
+			_gameObjects[type][i] = _gameObjects[type].back();
+
+			// Remove pointer value to avoid various problems
+			_gameObjects[type].pop_back();
+
+			_objectCount--;
+
+			return true;
+		}
+	}
+
+	return false;
+}
+
+GameObject * ObjectHandler::Find(int ID)
+{
+	for (vector<GameObject*> v : _gameObjects)
+	{
+		for (GameObject* g : v)
+		{
+			if (g->GetID() == ID)
+			{
+				return g;
+			}
+		}
+	}
+	return nullptr;
 }
 
 bool ObjectHandler::Remove(GameObject* gameObject)
@@ -121,7 +197,6 @@ vector<GameObject*> ObjectHandler::GetAllByType(Type type)
 RenderList ObjectHandler::GetAllByType(int renderObjectID)
 {
 	// TODO make it so that it returns a vector of renderlists to improve performance /Markus
-	// Har jag missförstått något? /Zache
 
 	RenderList list;
 	list._renderObject = _assetManager->GetRenderObject(renderObjectID);;
@@ -142,19 +217,14 @@ RenderList ObjectHandler::GetAllByType(int renderObjectID)
 	return list;
 }
 
-int ObjectHandler::GetTotalNrOfGameObjects() const
-{
-	int totalSize = 0;
-	for (uint i = 0; i < _gameObjects.size(); i++)
-	{
-		totalSize += _gameObjects[i].size();
-	}
-	return totalSize;
-}
-
 vector<vector<GameObject*>>* ObjectHandler::GetGameObjects()
 {
 	return &_gameObjects;
+}
+
+int ObjectHandler::GetObjectCount() const
+{
+	return _objectCount;
 }
 
 Tilemap * ObjectHandler::GetTileMap() const
@@ -178,7 +248,7 @@ bool ObjectHandler::LoadLevel(int lvlIndex)
 
 	for (auto i : gameObjectData)
 	{
-		Add((Type)(i._tileType - 1), i._tileType - 1, DirectX::XMFLOAT3(i._posX, 0, i._posZ), DirectX::XMFLOAT3(0, i._rotY, 0));
+		Add((Type)(i._tileType - 1), DirectX::XMFLOAT3(i._posX, 0, i._posZ), DirectX::XMFLOAT3(0, i._rotY, 0));
 	}
 	return false;
 }
@@ -247,5 +317,6 @@ void ObjectHandler::Release()
 		}
 		_gameObjects[i].clear();
 	}
-	_idCounter = 0;
+	_idCount = 0;
+	_objectCount = 0;
 }
