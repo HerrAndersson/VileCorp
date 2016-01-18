@@ -93,7 +93,7 @@ void Game::HandleInput()
 		{
 			forward = DirectX::XMFLOAT3(0, 0, 1);
 		}
-		else
+		else if(_camera->GetMode() == System::FREE_CAM)
 		{
 			forward = _camera->GetForwardVector();
 		}
@@ -105,7 +105,7 @@ void Game::HandleInput()
 		{
 			forward = DirectX::XMFLOAT3(0, 0, -1);
 		}
-		else
+		else if (_camera->GetMode() == System::FREE_CAM)
 		{
 			forward = _camera->GetForwardVector();
 
@@ -143,8 +143,7 @@ void Game::Update(float deltaTime)
 	/*
 	Object handler update
 
-	hämta från objecthander eller olika update functioner i objecthander
-	vi vill hämta objekten
+	Fetch from objecthandler or different update functions in objecthandler
 
 	*/
 	_input->Update();//Put true in parameter for locked mouse (used for debugging)
