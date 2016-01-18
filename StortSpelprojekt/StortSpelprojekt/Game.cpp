@@ -28,7 +28,7 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	_input = new System::InputDevice(_window->GetHWND());
 
 	//TEMP!
-	_spotlight = new Renderer::Spotlight(0.1f, 1000.0f, XM_PIDIV4, 256, 256, 1.0f, 25.0f, XMFLOAT3(0.0f, 1.0f, 1.0f)); //Ska ha samma dimensions som shadow map, som nu ligger i render module
+	_spotlight = new Renderer::Spotlight(_renderModule->GetDevice(), 0.1f, 1000.0f, XM_PIDIV4, 256, 256, 1.0f, 25.0f, XMFLOAT3(0.0f, 1.0f, 1.0f)); //Ska ha samma dimensions som shadow map, som nu ligger i render module
 	_spotlight->SetPositionAndRotation(XMFLOAT3(15, 1.0f, 10), XMFLOAT3(0, 90, 0));
 }
 
@@ -147,30 +147,32 @@ void Game::Render()
 		_renderModule->Render(&i->GetMatrix(), i->GetRenderObject());
 	}
 
+	_renderModule->DEBUG_RenderLightVolume(_spotlight->GetVolumeBuffer());
+
 	///////////////////////////////////////////////////////////// Light pass /////////////////////////////////////////////////////////////
 	_renderModule->SetLightPassDataPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
 	//for (ALL SPOTLIGHTS)
 	//{
 		//Generates the shadow map for one spotlight
-		_renderModule->SetShaderStage(Renderer::RenderModule::SHADOW_GENERATION);
-		_renderModule->SetShadowMapDataPerSpotLight(_spotlight->GetViewMatrix(), _spotlight->GetProjectionMatrix());
+		//_renderModule->SetShaderStage(Renderer::RenderModule::SHADOW_GENERATION);
+		//_renderModule->SetShadowMapDataPerSpotLight(_spotlight->GetViewMatrix(), _spotlight->GetProjectionMatrix());
 
-		for (auto i : *gameObjects)
-		{
-			_renderModule->RenderShadowMap(&i->GetMatrix(), i->GetRenderObject());
-		}
+		//for (auto i : *gameObjects)
+		//{
+		//	_renderModule->RenderShadowMap(&i->GetMatrix(), i->GetRenderObject());
+		//}
 
-		/*
-		Geo pass should render directly to the backbuffer.
-		Lighting pass should for each light:
-			Create shadow map
-			Render a volume, to backbuffer with additive blending, that represents the light to only do the calculations on the pixels that might be in the light. Apply shadow maps.
+		///*
+		//Geo pass should render directly to the backbuffer.
+		//Lighting pass should for each light:
+		//	Create shadow map
+		//	Render a volume, to backbuffer with additive blending, that represents the light to only do the calculations on the pixels that might be in the light. Apply shadow maps.
 
-		Then FINAL_PASS is not needed, just EndScene
-		*/
+		//Then FINAL_PASS is not needed, just EndScene
+		//*/
 
-		_renderModule->SetShaderStage(Renderer::RenderModule::LIGHT_APPLICATION);
-		_renderModule->SetLightPassDataPerLight(_spotlight);
+		//_renderModule->SetShaderStage(Renderer::RenderModule::LIGHT_APPLICATION);
+		//_renderModule->SetLightPassDataPerLight(_spotlight);
 
 	////}
 

@@ -20,6 +20,8 @@ namespace Renderer
 
 		DirectX::XMMATRIX	_viewMatrix;
 		DirectX::XMMATRIX	_projectionMatrix;
+		DirectX::XMMATRIX   _worldMatrix;
+		DirectX::XMMATRIX	_rotationMatrix;
 
 		float				_angle;
 		float				_intensity;
@@ -27,13 +29,14 @@ namespace Renderer
 
 		DirectX::XMFLOAT3	_color;
 
+		int					_nrOfTriangles;
 		ID3D11Buffer*		_lightConeVolume;
 
 		void Update();
 
 	public:
 
-		Spotlight(float nearClip, float farClip, float fov, int width, int height, float intensity = 1.0f, float range = 10.0f, DirectX::XMFLOAT3 color = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f));
+		Spotlight(ID3D11Device* device, float nearClip, float farClip, float fov, int width, int height, float intensity = 1.0f, float range = 10.0f, DirectX::XMFLOAT3 color = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), int resolution = 72);
 		~Spotlight();
 
 		void SetPosition(DirectX::XMFLOAT3 position);
@@ -47,8 +50,8 @@ namespace Renderer
 		float GetIntensity() const;
 		float GetRange() const;
 		float GetAngle() const;
-		DirectX::XMFLOAT3 GetColor() const;
 
+		DirectX::XMFLOAT3 GetColor() const;
 		DirectX::XMFLOAT3 GetPosition() const;
 		DirectX::XMFLOAT3 GetRotation() const;
 		DirectX::XMFLOAT3 GetDirection() const;
@@ -56,7 +59,7 @@ namespace Renderer
 		DirectX::XMMATRIX* GetViewMatrix();
 		DirectX::XMMATRIX* GetProjectionMatrix();
 
-		//bool IsPotentiallyInLight(DirectX::XMFLOAT3 position);
+		ID3D11Buffer* GetVolumeBuffer() const;
 
 		//Overloading these guarantees 16B alignment of XMMATRIX
 		void* operator new(size_t i);
