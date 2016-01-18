@@ -1,5 +1,6 @@
 #pragma once
 #include <cereal/cereal.hpp>
+#include <cereal\types\vector.hpp>
 
 struct PlayerInfo
 {
@@ -10,9 +11,9 @@ struct PlayerInfo
 	template<class A>
 	void serialize(A& a)
 	{
-		a(CEREAL_NVP(_name)),
-		a(CEREAL_NVP(_gold)),
-		a(CEREAL_NVP(_level));
+		a((CEREAL_NVP(_name)),
+		(CEREAL_NVP(_gold)),
+		(CEREAL_NVP(_level)));
 	}
 
 	
@@ -32,14 +33,14 @@ struct SettingInfo
 	template<class A>
 	void serialize(A& a)
 	{
-		a(CEREAL_NVP(_resX)),
-		a(CEREAL_NVP(_resY)),
-		a(CEREAL_NVP(_default)),
-		a(CEREAL_NVP(_shadowmap)),
-		a(CEREAL_NVP(_fullScreen)),
-		a(CEREAL_NVP(_debugMode)),
-		a(CEREAL_NVP(_bordeless)),
-		a(CEREAL_NVP(_showMouseCursor));
+		a((CEREAL_NVP(_resX)),
+		(CEREAL_NVP(_resY)),
+		(CEREAL_NVP(_default)),
+		(CEREAL_NVP(_shadowmap)),
+		(CEREAL_NVP(_fullScreen)),
+		(CEREAL_NVP(_debugMode)),
+		(CEREAL_NVP(_bordeless)),
+		(CEREAL_NVP(_showMouseCursor)));
 	}
 
 

@@ -40,6 +40,8 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	{
 		_grid = new Grid(_renderModule->GetDevice(), 1, 10);
 	}
+
+	CheckSettings();
 }
 
 void Game::CheckSettings()
@@ -49,7 +51,10 @@ void Game::CheckSettings()
 
 	if (_gameSettings._default == false)
 	{
-		//_window->ResizeWindow();
+		System::WindowSettings winSettings = _window->GetWindowSettings();
+		winSettings._width = _gameSettings._resX;
+		winSettings._height = _gameSettings._resY;
+		_window->ResizeWindow(winSettings);
 	}
 }
 
