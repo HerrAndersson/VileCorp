@@ -42,6 +42,7 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	}
 
 	CheckSettings();
+	System::saveJSON(&_controlMapEdit, "Assets/ControlScheme.json", "Map_Edit");
 }
 
 void Game::CheckSettings()

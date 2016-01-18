@@ -35,6 +35,7 @@ private:
 	System::InputDevice*		_input;
 	PlayerInfo					_playerInfo;
 	SettingInfo					_gameSettings;
+	ControlMapEdit				_controlMapEdit;
 	
 
 	//Resizing window, directx resources, camera
