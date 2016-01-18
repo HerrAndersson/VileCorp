@@ -34,13 +34,14 @@ private:
 	PickingDevice*				_pickingDevice;
 	System::InputDevice*		_input;
 	PlayerInfo					_playerInfo;
-	
+	SettingInfo					_gameSettings;
 	
 
 	//Resizing window, directx resources, camera
 	void ResizeResources(System::WindowSettings settings);
 	void Update(float deltaTime);
 	void Render();
+	void CheckSettings();
 	
 
 public:

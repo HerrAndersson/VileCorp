@@ -5,8 +5,9 @@
 
 Game::Game(HINSTANCE hInstance, int nCmdShow)
 {
-	System::saveJSON(&_playerInfo, "test.json", "Player Info");
-	System::loadJSON(&_playerInfo, "test.json");
+	System::saveJSON(&_playerInfo, "Assets/test.json", "Player Info");
+	System::loadJSON(&_playerInfo, "Assets/test.json");
+
 	
 	_gameHandle = this;
 	System::WindowSettings settings;
@@ -38,6 +39,17 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	if (_SM->GetState() == LEVELEDITSTATE)
 	{
 		_grid = new Grid(_renderModule->GetDevice(), 1, 10);
+	}
+}
+
+void Game::CheckSettings()
+{
+	//System::saveJSON(&_gameSettings, "Assets/GameSettings.json", "Game Settings");
+	System::loadJSON(&_gameSettings, "Assets/GameSettings.json");
+
+	if (_gameSettings._default == false)
+	{
+		//_window->ResizeWindow();
 	}
 }
 

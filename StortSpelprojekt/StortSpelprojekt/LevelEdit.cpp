@@ -29,14 +29,31 @@ void LevelEdit::Initialize(ObjectHandler* objectHandler, System::InputDevice* in
 	_isSelectionMode = true;
 
 	// Add all buttons and hide them
-	//buttonInfo.resize(3);
-	_uiHandler->AddButton("floor3.png", DirectX::XMFLOAT2(-0.9f, 0.95f), DirectX::XMFLOAT2(0.1f, 0.05f), true);
-	_uiHandler->AddButton("floor.png", DirectX::XMFLOAT2(-0.9f, 0.85f), DirectX::XMFLOAT2(0.1f, 0.05f), false);
-	_uiHandler->AddButton("floor2.png", DirectX::XMFLOAT2(-0.7f, 0.85f), DirectX::XMFLOAT2(0.1f, 0.05f), false);
+	buttonInfo.resize(32);
+	_uiHandler->AddButton("floor.png", DirectX::XMFLOAT2(-0.9f, 0.95f), DirectX::XMFLOAT2(0.1f, 0.05f), true);
+	_uiHandler->AddButton("wall.png", DirectX::XMFLOAT2(-0.9f, 0.85f), DirectX::XMFLOAT2(0.1f, 0.05f), true);
+	_rootAmount = 2;
 
-	//buttonInfo[0].parent = -1;
-	//buttonInfo[1].parent = 0;
-	//buttonInfo[2].parent = 1;
+	buttonInfo[0].parent = 0;
+	buttonInfo[1].parent = 0;
+
+	float xled = -0.7f;
+	float yled = 0.95f;
+	int id = 2;
+	_floorAmount = 0;
+	for (int i = 0; i < 10; i++)
+	{
+		for (int j = 0; j < 3; j++)
+		{
+			_uiHandler->AddButton("diamond.png", DirectX::XMFLOAT2(xled, yled), DirectX::XMFLOAT2(0.1f, 0.05f), false);
+			xled += 0.2;
+			buttonInfo[id].parent = 1;
+			id++;
+			_floorAmount++;
+		}
+		xled = -0.7f;
+		yled -= 0.1f;
+	}
 
 	LoadLevel(0);
 }
@@ -54,29 +71,99 @@ void LevelEdit::LoadLevel(int levelID)
 
 void LevelEdit::HandleHUD()
 {
-	/*for (int i = 0; i < buttonInfo.size(); i++)
-	{
-		if (buttonInfo[i].parent != -1)
-		{
-			if (buttonInfo[buttonInfo[i].parent].active == true)
-			{
-				_uiHandler->SetButtonVisibility(i, true);
 
-				if (_uiHandler->Intersect(mouseCoord._clientPos, i) == true)
-				{
-					buttonInfo[i].active = true;
-				}
+	//for (int i = 0; i < buttonInfo.size(); i++)
+	//{
+	//	if (buttonInfo[i].parent != -1)
+	//	{
+
+	//	}
+	//	else
+	//	{
+	//		_uiHandler->SetButtonVisibility(i, true);
+	//		someOneActive = true;
+	//	}
+	//}
+
+	//for (int i = 0; i < buttonInfo.size(); i++)
+	//{
+	//	if (someOneActive == false)
+	//	{
+	//		_uiHandler->SetButtonVisibility(i, false);
+	//	}
+	//}
+	//someOneActive = false;
+
+	////for (int i = 0; i < buttonInfo.size(); i++)
+	////{
+	////	if (buttonInfo[i].parent != -1)
+	////	{
+	////		if (buttonInfo[buttonInfo[i].parent].active == true)
+	////		{
+	////			_uiHandler->SetButtonVisibility(i, true);
+
+	////			if (_uiHandler->Intersect(mouseCoord._clientPos, i) == true)
+	////			{
+	////				buttonInfo[i].active = true;
+	////				someOneActive = true;
+	////			}
+	////		}
+	////		else
+	////		{
+	////			_uiHandler->SetButtonVisibility(i, false);
+	////		}
+	////	}
+	////	else if(_uiHandler->Intersect(mouseCoord._clientPos, i) == true)
+	////	{
+	////		buttonInfo[i].active = true;
+	////	}
+	////}
+
+	////for (int i = 0; i < buttonInfo.size(); i++)
+	////{
+	////	if (someOneActive == false)
+	////	{
+	////		if (buttonInfo[i].parent != -1)
+	////		{
+	////		_uiHandler->SetButtonVisibility(i, false);
+	////		}
+	////	}
+	////}
+	////someOneActive = false;
+
+	for (int i = 0; i < _rootAmount; i++)
+	{
+		if (_uiHandler->Intersect(mouseCoord._clientPos, i) == true)
+		{
+			_uiHandler->SetButtonVisibility(i, true);
+			
+			if (i == 0)
+			{
+				_floor = true;
+			}
+			else if (i == 1)
+			{
+				_wall = true;
 			}
 			else
 			{
-				_uiHandler->SetButtonVisibility(i, false);
+				for (int i = 0; i < _floorAmount; i++)
+				{
+					_uiHandler->SetButtonVisibility(i + _rootAmount, false);
+				}
+				_floor = false;
+				_wall = false;
 			}
 		}
-		else if(_uiHandler->Intersect(mouseCoord._clientPos, i) == true)
+	}
+
+	if (_floor == true)
+	{
+		for (int i = 0; i < _floorAmount; i++)
 		{
-			buttonInfo[i].active = true;
+			_uiHandler->SetButtonVisibility(i + _rootAmount, true);
 		}
-	}*/
+	}
 }
 
 void LevelEdit::HandleInput()
@@ -426,9 +513,9 @@ void LevelEdit::ExportLevel()
 	mapData.reserve(levelHead._nrOfGameObjects);
 	std::vector<std::vector<GameObject*>>* gameObjects = _objectHandler->GetGameObjects();
 
-	for (uint i = 0; i < gameObjects->size(); i++)
+	for (int i = 0; i < gameObjects->size(); i++)
 	{
-		for (uint y = 0; y < gameObjects[i].size(); y++)
+		for (int y = 0; y < gameObjects[i].size(); y++)
 		{
 			GameObject *gameObj = (*gameObjects)[i][y];
 			MapData mapD;
