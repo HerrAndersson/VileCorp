@@ -1,14 +1,5 @@
 #include "PlacementState.h"
 
-bool compareFloat3(XMFLOAT3 a, XMFLOAT3 b)
-{
-	if (a.x == b.x && a.z == b.z)
-	{
-		return true;
-	}
-	return false;
-}
-
 PlacementState::PlacementState(InitVar initVar) : BaseState(initVar)
 {
 	_initVar = initVar;
@@ -33,9 +24,7 @@ void PlacementState::Update(float deltaTime)
 	{	
 		if (_budget - cost >= 0)
 		{
-			Trap* selected = (Trap*)_levelEdit.GetSelectedObject();
 			vector<GameObject*>* vec = &_objectHandler->GetGameObjects()->at(TRAP);
-			
 			if (vec->empty())
 			{
 				_levelEdit.Add(TRAP, TRAP);
@@ -44,13 +33,9 @@ void PlacementState::Update(float deltaTime)
 			else
 			{
 				bool taken = false;
-				for (GameObject* g : *vec)
+				if (_levelEdit.Marked(TRAP))
 				{
-					if (selected != g && compareFloat3(selected->GetPosition(), g->GetPosition()))
-					{
-						taken = true;
-						break;
-					}
+					taken = true;
 				}
 				if (!taken)
 				{
@@ -60,19 +45,13 @@ void PlacementState::Update(float deltaTime)
 			}
 		}
 	}
-	else if (_inputHandler->IsPressed(System::Input::Backspace))
+	else if (_inputHandler->IsPressed(System::Input::Delete))
 	{
-		Trap* selected = (Trap*)_levelEdit.GetSelectedObject();
-		vector<GameObject*>* vec = &_objectHandler->GetGameObjects()->at(TRAP);
-		for (GameObject* g : *vec)
+		if (!_levelEdit.Delete(TRAP))
 		{
-			if (selected != g && compareFloat3(selected->GetPosition(), g->GetPosition()))
-			{
-				_budget += cost;
-				_objectHandler->Remove(g->GetID());
-				break;
-			}
+			_budget += cost;
 		}
+		
 	}
 }
 

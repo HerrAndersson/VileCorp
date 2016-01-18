@@ -16,12 +16,11 @@ private:
 	Grid*					_grid;
 
 	//int _selectedObjID;
-	GameObject* _selectedObj;
+	GameObject* _marker;
 
 	int _tileMultiplier;
 
 	int _lastSelected;
-
 
 	void HandleInput();
 	void HandleSelected();
@@ -35,6 +34,8 @@ public:
 	GameObject* GetSelectedObject();
 
 	void Add(Type type, int renderObjectID);
+	bool Delete(Type type);
+	bool Marked(Type type);
 
 	void Update();
 	void Initialize(InitVar* initVar);

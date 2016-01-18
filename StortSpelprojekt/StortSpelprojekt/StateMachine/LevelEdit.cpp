@@ -9,14 +9,52 @@ LevelEdit::LevelEdit()
 LevelEdit::~LevelEdit()
 {}
 
+bool compareFloat3(XMFLOAT3 a, XMFLOAT3 b)
+{
+	if (a.x == b.x && a.z == b.z)
+	{
+		return true;
+	}
+	return false;
+}
+
 GameObject* LevelEdit::GetSelectedObject()
 {
-	return _selectedObj;
+	return _marker;
 }
 
 void LevelEdit::Add(Type type, int renderObjectID)
 {
-	_objectHandler->Add(type, _selectedObj->GetPosition(), XMFLOAT3(0.0f, 0.0f, 0.0f));	
+	_objectHandler->Add(type, _marker->GetPosition(), XMFLOAT3(0.0f, 0.0f, 0.0f));	
+}
+
+bool LevelEdit::Delete(Type type)
+{
+	vector<GameObject*>* vec = &_objectHandler->GetGameObjects()->at(type);
+	for (GameObject* g : *vec)
+	{
+		if (_marker != g && compareFloat3(_marker->GetPosition(), g->GetPosition()))
+		{
+			_objectHandler->Remove(g->GetType(), g->GetID());
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool LevelEdit::Marked(Type type)
+{
+	vector<GameObject*>* vec = &_objectHandler->GetGameObjects()->at(type);
+	for (GameObject* g : *vec)
+	{
+		if (_marker != g && compareFloat3(_marker->GetPosition(), g->GetPosition()))
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
 
 void LevelEdit::Initialize(InitVar* initVar)
@@ -32,7 +70,7 @@ void LevelEdit::Initialize(InitVar* initVar)
 	_objectHandler->LoadLevel(3);
 
 	// Temporary hack because no mouse interface
-	_selectedObj = _objectHandler->GetGameObjects()->at(1)[0];
+	_marker = _objectHandler->GetGameObjects()->at(1)[0];
 
 	//_grid = new Grid(_renderModule->GetDevice(), 1, 10);
 }
@@ -68,94 +106,94 @@ void LevelEdit::HandleInput()
 		//Translation and rotation controls
 		if (_inputHandler->IsPressed(VK_LEFT))
 		{
-			if (_selectedObj->GetType() == WALL || FLOOR || UNIT)
+			if (_marker->GetType() == WALL || FLOOR || UNIT)
 			{
-				XMFLOAT3 tempPos = _selectedObj->GetPosition();
-				_selectedObj->SetPosition(XMFLOAT3(tempPos.x - 1 * _tileMultiplier, tempPos.y, tempPos.z));
+				XMFLOAT3 tempPos = _marker->GetPosition();
+				_marker->SetPosition(XMFLOAT3(tempPos.x - 1 * _tileMultiplier, tempPos.y, tempPos.z));
 			}
 
 		}
 
 		if (_inputHandler->IsPressed(VK_RIGHT))
 		{
-			if (_selectedObj->GetType() == WALL || FLOOR || UNIT)
+			if (_marker->GetType() == WALL || FLOOR || UNIT)
 			{
-				XMFLOAT3 tempPos = _selectedObj->GetPosition();
-				_selectedObj->SetPosition(XMFLOAT3(tempPos.x + 1 * _tileMultiplier, tempPos.y, tempPos.z));
+				XMFLOAT3 tempPos = _marker->GetPosition();
+				_marker->SetPosition(XMFLOAT3(tempPos.x + 1 * _tileMultiplier, tempPos.y, tempPos.z));
 			}
 		}
 
 		if (_inputHandler->IsPressed(VK_UP))
 		{
-			if (_selectedObj->GetType() == WALL || FLOOR || UNIT)
+			if (_marker->GetType() == WALL || FLOOR || UNIT)
 			{
-				XMFLOAT3 tempPos = _selectedObj->GetPosition();
-				_selectedObj->SetPosition(XMFLOAT3(tempPos.x, tempPos.y, tempPos.z + 1 * _tileMultiplier));
+				XMFLOAT3 tempPos = _marker->GetPosition();
+				_marker->SetPosition(XMFLOAT3(tempPos.x, tempPos.y, tempPos.z + 1 * _tileMultiplier));
 			}
 		}
 
 
 		if (_inputHandler->IsPressed(VK_DOWN))
 		{
-			if (_selectedObj->GetType() == WALL || FLOOR || UNIT)
+			if (_marker->GetType() == WALL || FLOOR || UNIT)
 			{
-				XMFLOAT3 tempPos = _selectedObj->GetPosition();
-				_selectedObj->SetPosition(XMFLOAT3(tempPos.x, tempPos.y, tempPos.z - 1 * _tileMultiplier));
+				XMFLOAT3 tempPos = _marker->GetPosition();
+				_marker->SetPosition(XMFLOAT3(tempPos.x, tempPos.y, tempPos.z - 1 * _tileMultiplier));
 			}
 		}
 	}
 	//Scale Objects
 	if (_inputHandler->IsPressed(VK_NUMPAD6))
 	{
-		if (_selectedObj->GetType() == WALL || FLOOR || UNIT)
+		if (_marker->GetType() == WALL || FLOOR || UNIT)
 		{
-			XMFLOAT3 tempPos = _selectedObj->GetScale();
-			_selectedObj->SetScale(XMFLOAT3(tempPos.x+ 1, tempPos.y, tempPos.z ));
+			XMFLOAT3 tempPos = _marker->GetScale();
+			_marker->SetScale(XMFLOAT3(tempPos.x+ 1, tempPos.y, tempPos.z ));
 		}
 	}
 
 	if (_inputHandler->IsPressed(VK_NUMPAD4))
 	{
-		if (_selectedObj->GetType() == WALL || FLOOR || UNIT)
+		if (_marker->GetType() == WALL || FLOOR || UNIT)
 		{
-			XMFLOAT3 tempPos = _selectedObj->GetScale();
-			_selectedObj->SetScale(XMFLOAT3(tempPos.x - 1, tempPos.y, tempPos.z ));
+			XMFLOAT3 tempPos = _marker->GetScale();
+			_marker->SetScale(XMFLOAT3(tempPos.x - 1, tempPos.y, tempPos.z ));
 		}
 	}
 
 	if (_inputHandler->IsPressed(VK_NUMPAD8))
 	{
-		if (_selectedObj->GetType() == WALL || FLOOR || UNIT)
+		if (_marker->GetType() == WALL || FLOOR || UNIT)
 		{
-			XMFLOAT3 tempPos = _selectedObj->GetScale();
-			_selectedObj->SetScale(XMFLOAT3(tempPos.x , tempPos.y, tempPos.z + 1));
+			XMFLOAT3 tempPos = _marker->GetScale();
+			_marker->SetScale(XMFLOAT3(tempPos.x , tempPos.y, tempPos.z + 1));
 		}
 	}
 
 	if (_inputHandler->IsPressed(VK_NUMPAD2))
 	{
-		if (_selectedObj->GetType() == WALL || FLOOR || UNIT)
+		if (_marker->GetType() == WALL || FLOOR || UNIT)
 		{
-			XMFLOAT3 tempPos = _selectedObj->GetScale();
-			_selectedObj->SetScale(XMFLOAT3(tempPos.x, tempPos.y , tempPos.z - 1));
+			XMFLOAT3 tempPos = _marker->GetScale();
+			_marker->SetScale(XMFLOAT3(tempPos.x, tempPos.y , tempPos.z - 1));
 		}
 	}
 	
 
 	if (_inputHandler->IsPressed(0x5A))
 	{
-		if (_selectedObj->GetType() == WALL || FLOOR || UNIT)
+		if (_marker->GetType() == WALL || FLOOR || UNIT)
 		{
-			XMFLOAT3 tempRot = _selectedObj->GetRotation();
-			_selectedObj->SetRotation(XMFLOAT3(tempRot.x, tempRot.y + (DirectX::XM_PI/2), tempRot.z));
+			XMFLOAT3 tempRot = _marker->GetRotation();
+			_marker->SetRotation(XMFLOAT3(tempRot.x, tempRot.y + (DirectX::XM_PI/2), tempRot.z));
 		}
 	}
 	if (_inputHandler->IsPressed(0x58))
 	{
-		if (_selectedObj->GetType() == WALL || FLOOR || UNIT)
+		if (_marker->GetType() == WALL || FLOOR || UNIT)
 		{
-			XMFLOAT3 tempRot = _selectedObj->GetRotation();
-			_selectedObj->SetRotation(XMFLOAT3(tempRot.x, tempRot.y - (DirectX::XM_PI / 2), tempRot.z));
+			XMFLOAT3 tempRot = _marker->GetRotation();
+			_marker->SetRotation(XMFLOAT3(tempRot.x, tempRot.y - (DirectX::XM_PI / 2), tempRot.z));
 		}
 	}
 
@@ -205,21 +243,21 @@ void LevelEdit::HandleInput()
 	//if (_inputHandler->IsPressed(0x52))
 	//{
 	//		_objectHandler->Add(FLOOR, FLOOR, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));	
-	//		_selectedObj = _objectHandler->GetSize()-1;
+	//		_marker = _objectHandler->GetSize()-1;
 	//}
 
 	////T adds Wall
 	//if (_inputHandler->IsPressed(0x54))
 	//{
 	//		_objectHandler->Add(WALL, WALL, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
-	//		_selectedObj = _objectHandler->GetSize() - 1;
+	//		_marker = _objectHandler->GetSize() - 1;
 	//}
 
 	////Y adds Unit
 	//if (_inputHandler->IsPressed(0x59))
 	//{
 	//		_objectHandler->Add(UNIT, UNIT, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
-	//		_selectedObj = _objectHandler->GetSize() - 1;
+	//		_marker = _objectHandler->GetSize() - 1;
 	//}
 
 	//Camera mouse control
@@ -286,17 +324,17 @@ void LevelEdit::HandleSelected()
 	{
 		GameObject* temp = _objectHandler->Find(_lastSelected);
 
-		if (_selectedObj->GetID() != _lastSelected)
+		if (_marker->GetID() != _lastSelected)
 		{
 			if (temp!= nullptr && temp->GetType() == WALL || FLOOR || UNIT)
 			{
-				temp = _selectedObj;
+				temp = _marker;
 				temp->SetPosition(XMFLOAT3(temp->GetPosition().x, 0.1, temp->GetPosition().z));
 				//XMFLOAT3 tempScale = temp->GetScale();
 				//temp->SetScale(XMFLOAT3(1.1, 1.1, 1.1));
 			}
 		}
-		_lastSelected = _selectedObj->GetID();
+		_lastSelected = _marker->GetID();
 	}
 }
 

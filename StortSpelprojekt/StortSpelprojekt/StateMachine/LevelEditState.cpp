@@ -31,6 +31,15 @@ void LevelEditState::Update(float deltaTime)
 	{
 		_levelEdit.Add(UNIT, UNIT);
 	}
+
+	else if (_inputHandler->IsDown(System::Input::Delete))
+	{
+		for (int i = 0; i < NR_OF_TYPES; i++)
+		{
+			_levelEdit.Delete((Type)i);
+		}
+		
+	}
 }
 
 void LevelEditState::OnStateEnter()
