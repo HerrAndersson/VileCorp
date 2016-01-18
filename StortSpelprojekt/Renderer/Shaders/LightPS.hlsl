@@ -14,5 +14,5 @@ float4 main(VS_OUT input) : SV_TARGET
 
 	//diffuse *= shadowCoeff;
 
-	return saturate(float4(diffuse.xyz * float3(0.2f, 0.2f, 0.2f), 1));
+	return saturate(float4(diffuse.xyz, 1)); // * float3(0.2f, 0.2f, 0.2f), 1));
 }

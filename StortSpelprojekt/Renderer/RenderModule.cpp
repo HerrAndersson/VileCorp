@@ -369,6 +369,24 @@ namespace Renderer
 		deviceContext->Draw(6, 0);
 	}
 
+	void RenderModule::DEBUG_RenderLightVolume(ID3D11Buffer* volume)
+	{
+		_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::NONE);
+
+		XMMATRIX i = XMMatrixTranspose(XMMatrixTranslation(10, 10, 10));
+		SetDataPerObject(&i, nullptr, nullptr);
+
+		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
+
+		UINT32 vertexSize = sizeof(XMFLOAT3);
+		UINT32 offset = 0;
+
+		deviceContext->IASetVertexBuffers(0, 1, &volume, &vertexSize, &offset);
+		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		deviceContext->Draw(72*3*2, 0);
+	}
+
 	void RenderModule::EndScene()
 	{
 		_d3d->EndScene();
