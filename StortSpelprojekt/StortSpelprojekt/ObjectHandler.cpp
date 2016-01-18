@@ -233,7 +233,7 @@ void ObjectHandler::Update()
 			_tilemap->RemoveObjectFromTile(_gameObjects[i]->GetTilePosition()._x, _gameObjects[i]->GetTilePosition()._y, _gameObjects[i]);
 			_gameObjects[i]->SetPickUpState(HELD);
 		}
-		else if (_gameObjects[i]->GetPickUpState() == PICKINGUP)
+		else if (_gameObjects[i]->GetPickUpState() == DROPPING)
 		{
 			_tilemap->AddObjectToTile(_gameObjects[i]->GetTilePosition()._x, _gameObjects[i]->GetTilePosition()._y, _gameObjects[i]);
 			_gameObjects[i]->SetPickUpState(ONTILE);

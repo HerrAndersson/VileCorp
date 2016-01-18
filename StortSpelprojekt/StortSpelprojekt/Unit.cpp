@@ -454,16 +454,22 @@ void Unit::SetGoal(GameObject * objective)
 void Unit::Move()
 {
 		
-	//if (_pathLength <= 0)		//The unit has reached its goal and needs a new one
-	//{
-	//	CheckAllTiles();
-	//}
-	if (_goalTilePosition == _tilePosition)
+	if (_pathLength <= 0)		//The unit has reached its goal and needs a new one
 	{
 		CheckAllTiles();
 	}
+	//if (_goalTilePosition == _tilePosition)
+	//{
+	//	CheckAllTiles();
+	//}
 
 	_tilePosition += _direction;
+
+	if (_objective != nullptr && _objective->GetPickUpState() != ONTILE)			//Check that no one took your objective
+	{
+		_objective = nullptr;
+		_pathLength = 0;														//reseting _pathLength to indicate that a new path needs to be found_objecti
+	}
 
 	//TODO: React to objects in same tile --Victor
 

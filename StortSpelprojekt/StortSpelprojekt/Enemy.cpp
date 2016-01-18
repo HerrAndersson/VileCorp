@@ -52,7 +52,7 @@ void Enemy::EvaluateTile(GameObject* obj)
 	default:
 		break;
 	}
-	if (tempPriority > 0 && obj->GetTilePosition() != _tilePosition && (_pathLength <= 0 || tempPriority * GetApproxDistance(obj->GetTilePosition()) < _goalPriority * GetApproxDistance(GetGoal())))
+	if (obj->GetPickUpState()==ONTILE && tempPriority > 0 && obj->GetTilePosition() != _tilePosition && (_pathLength <= 0 || tempPriority * GetApproxDistance(obj->GetTilePosition()) < _goalPriority * GetApproxDistance(GetGoal())))
 	{
 		_goalPriority = tempPriority;
 		SetGoal(obj);
