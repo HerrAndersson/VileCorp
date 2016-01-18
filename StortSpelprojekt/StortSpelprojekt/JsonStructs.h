@@ -33,9 +33,9 @@ struct SettingInfo
 	template<class A>
 	void serialize(A& a)
 	{
-		a((CEREAL_NVP(_resX)),
+		a((CEREAL_NVP(_default)),
+		(CEREAL_NVP(_resX)),
 		(CEREAL_NVP(_resY)),
-		(CEREAL_NVP(_default)),
 		(CEREAL_NVP(_shadowmap)),
 		(CEREAL_NVP(_fullScreen)),
 		(CEREAL_NVP(_debugMode)),

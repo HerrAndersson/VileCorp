@@ -54,6 +54,19 @@ void Game::CheckSettings()
 		System::WindowSettings winSettings = _window->GetWindowSettings();
 		winSettings._width = _gameSettings._resX;
 		winSettings._height = _gameSettings._resY;
+		winSettings._flags = 0;
+		if (_gameSettings._fullScreen == true)
+		{
+			winSettings._flags += 1;
+		}
+		else if (_gameSettings._bordeless == true)
+		{
+			winSettings._flags += 2;
+		}
+		else if (_gameSettings._showMouseCursor == true)
+		{
+			winSettings._flags += 4;
+		}
 		_window->ResizeWindow(winSettings);
 	}
 }
