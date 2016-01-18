@@ -24,6 +24,45 @@ namespace Renderer
 
 		_viewMatrix = XMMatrixLookAtLH(vPos, vPos + vDir, vUp);
 		_projectionMatrix = XMMatrixPerspectiveFovLH(fov, (float)width / (float)height, nearClip, farClip);
+
+
+
+
+
+		XMVECTOR L = XMVectorSet(_position.x, _position.y, _position.z, 1);					//L light position
+		XMVECTOR d = XMVectorSet(_direction.x, _direction.y, _direction.z, 1);				//d light direction(unit vector)
+		float r = range;																	//r light radius
+		float a = XMConvertToDegrees(fov);													//a opening angle
+
+		XMVECTOR B = L + d*r;																//B = L + d*r is the center of the cone base.
+		float w = r * sin(a);																//w = r * sin a is the radius of the cone base.
+
+		XMVECTOR T = XMVectorSet(1, 0, 0, 0);
+		XMVECTOR X = XMVector3Cross(d, T);													//Calculate a vector x that is normal to d. 
+																							
+		if (XMVectorGetX(XMVector3Length(X)) == 0)											//if cross(d, (1, 0, 0)) != 0 this is your x, else cross(d, (0, 1, 0)).
+		{
+			T = XMVectorSet(0, 1, 0, 0);
+			X = XMVector3Cross(d, T);
+		}
+
+		X = XMVector4Normalize(X);															//You also have to normalize it after that.
+
+		XMVECTOR Y = XMVector3Cross(d, X);													//Given this x, calculate another vector y = cross(d, x).y should be unit length already, you don't need to normalize it.
+
+
+	//		Now the vertices of the cone base are given by :
+	//	v(t) = B + w * (x * cos t + y * sin t)
+	//		with t varying from 0 to 2pi in as many steps as you want... With these you can draw two triangle fans, one around B, one around L.
+
+		double pi2 = 2 * XM_PI;
+		double resolution = 5;
+		for (double t = 0; t < pi2; t += pi2 / resolution)
+		{
+			XMVECTOR v = B + w *(X*cos(t) + Y * sin(t));
+
+			float f = t;
+		}
 	}
 
 	Spotlight::~Spotlight()
@@ -126,10 +165,10 @@ namespace Renderer
 		return _color;
 	}
 
-	bool Spotlight::IsPotentiallyInLight(XMFLOAT3 position)
-	{
-		return false;
-	}
+	//bool Spotlight::IsPotentiallyInLight(XMFLOAT3 position)
+	//{
+	//	return false;
+	//}
 
 	//Overloading these guarantees 16B alignment of XMMATRIX
 	void* Spotlight::operator new(size_t i)

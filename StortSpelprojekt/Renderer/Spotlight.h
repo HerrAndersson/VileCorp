@@ -1,5 +1,6 @@
 #pragma once
 #include <DirectXMath.h>
+#include <d3d11.h>
 
 #define RENDERER_EXPORT __declspec(dllexport)
 
@@ -25,6 +26,8 @@ namespace Renderer
 		float				_range;
 
 		DirectX::XMFLOAT3	_color;
+
+		ID3D11Buffer*		_lightConeVolume;
 
 		void Update();
 
@@ -53,7 +56,7 @@ namespace Renderer
 		DirectX::XMMATRIX* GetViewMatrix();
 		DirectX::XMMATRIX* GetProjectionMatrix();
 
-		bool IsPotentiallyInLight(DirectX::XMFLOAT3 position);
+		//bool IsPotentiallyInLight(DirectX::XMFLOAT3 position);
 
 		//Overloading these guarantees 16B alignment of XMMATRIX
 		void* operator new(size_t i);

@@ -45,21 +45,15 @@ namespace Renderer
 
 		hr = device->CreateTexture2D(&shadowMapDesc, nullptr, &shadowMap);
 		if (FAILED(hr))
-		{
 			throw runtime_error("ShadowMap: Could not create Shadow map Texture2D");
-		}
 
 		hr = device->CreateDepthStencilView(shadowMap, &depthStencilViewDesc, &_shadowDepthStencilView);
 		if (FAILED(hr))
-		{
 			throw runtime_error("ShadowMap: Could not create Shadow map DSV");
-		}
 
 		hr = device->CreateShaderResourceView(shadowMap, &shaderResourceViewDesc, &_shadowShaderResourceView);
 		if (FAILED(hr))
-		{
 			throw runtime_error("ShadowMap: Could not create Shadow map SRV");
-		}
 
 		/////////////////////////////////////////////////////////// Buffers /////////////////////////////////////////////////////////////
 		D3D11_BUFFER_DESC matrixBufferDesc;
@@ -70,20 +64,16 @@ namespace Renderer
 		matrixBufferDesc.StructureByteStride = 0;
 
 		matrixBufferDesc.ByteWidth = sizeof(MatrixBufferPerObject);
-		hr = device->CreateBuffer(&matrixBufferDesc, NULL, &_matrixBufferPerObject);
 
+		hr = device->CreateBuffer(&matrixBufferDesc, NULL, &_matrixBufferPerObject);
 		if (FAILED(hr))
-		{
 			throw std::runtime_error("ShadowMap: Failed to create matrixBufferPerObject");
-		}
 
 		matrixBufferDesc.ByteWidth = sizeof(MatrixBufferPerFrame);
-		hr = device->CreateBuffer(&matrixBufferDesc, NULL, &_matrixBufferPerFrame);
 
+		hr = device->CreateBuffer(&matrixBufferDesc, NULL, &_matrixBufferPerFrame);
 		if (FAILED(hr))
-		{
 			throw std::runtime_error("ShadowMap: Failed to create matrixBufferPerFrame");
-		}
 
 		///////////////////////////////////////////////////////////// Other /////////////////////////////////////////////////////////////
 		ZeroMemory(&_shadowViewport, sizeof(D3D11_VIEWPORT));
@@ -101,12 +91,10 @@ namespace Renderer
 
 		hr = device->CreateDepthStencilState(&shadowDepthStencilDesc, &_shadowDepthStencilState);
 		if (FAILED(hr))
-			throw runtime_error("Shadow Depth stencil error");
+			throw runtime_error("ShadowMap: Could not create Depth stencil state");
 
 		if (shadowMap)
-		{
 			shadowMap->Release();
-		}
 	}
 
 	ShadowMap::~ShadowMap()
@@ -135,13 +123,14 @@ namespace Renderer
 		XMMATRIX tw = *modelWorld;
 
 		hr = deviceContext->Map(_matrixBufferPerObject, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+		if (FAILED(hr))
+			throw runtime_error("ShadowMap::SetDataPerObject: Could not Map _matrixBufferPerObject");
 
 		MatrixBufferPerObject* matrixDataBuffer = (MatrixBufferPerObject*)mappedResource.pData;
 
 		matrixDataBuffer->modelWorld = tw;
 
 		deviceContext->Unmap(_matrixBufferPerObject, 0);
-
 		deviceContext->VSSetConstantBuffers(1, 1, &_matrixBufferPerObject);
 	}
 
@@ -154,6 +143,8 @@ namespace Renderer
 		XMMATRIX tp = XMMatrixTranspose(*lightProjection);
 
 		hr = deviceContext->Map(_matrixBufferPerFrame, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+		if (FAILED(hr))
+			throw runtime_error("ShadowMap::SetDataPerFrame: Could not Map _matrixBufferPerFrame");
 
 		MatrixBufferPerFrame* matrixDataBuffer = (MatrixBufferPerFrame*)mappedResource.pData;
 

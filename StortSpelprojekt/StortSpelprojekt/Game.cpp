@@ -28,7 +28,7 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	_input = new System::InputDevice(_window->GetHWND());
 
 	//TEMP!
-	_spotlight = new Renderer::Spotlight(0.1f, 1000.0f, XM_PIDIV4, 256, 256, 1.0f, 25.0f, XMFLOAT3(0.0f, 1.0f, 1.0f));
+	_spotlight = new Renderer::Spotlight(0.1f, 1000.0f, XM_PIDIV4, 256, 256, 1.0f, 25.0f, XMFLOAT3(0.0f, 1.0f, 1.0f)); //Ska ha samma dimensions som shadow map, som nu ligger i render module
 	_spotlight->SetPositionAndRotation(XMFLOAT3(15, 1.0f, 10), XMFLOAT3(0, 90, 0));
 }
 
