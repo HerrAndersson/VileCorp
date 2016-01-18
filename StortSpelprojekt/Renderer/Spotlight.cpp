@@ -31,10 +31,10 @@ namespace Renderer
 		_projectionMatrix = XMMatrixPerspectiveFovLH(fov, (float)width / (float)height, nearClip, farClip);
 
 		//Create a cone that represents the light as a volume
-		XMVECTOR L = XMVectorSet(_position.x, _position.y, _position.z, 1);					
-		XMVECTOR d = XMVectorSet(_direction.x, _direction.y, _direction.z, 1);				
+		XMVECTOR L = XMVector4Normalize(XMVectorSet(_position.x, _position.y, _position.z, 1));
+		XMVECTOR d = XMVector4Normalize(XMVectorSet(_direction.x, _direction.y, _direction.z, 1));
 		float r = range;																	
-		float a = XMConvertToDegrees(fov);													
+		double a = fov;													
 
 		XMVECTOR B = L + d*r; //Center of the cone base.
 		float w = r * sin(a); //Radius of the cone base.
@@ -42,16 +42,17 @@ namespace Renderer
 		//Calculate a vector X that is normal to direction
 		XMVECTOR T = XMVectorSet(1, 0, 0, 0);
 		XMVECTOR X = XMVector3Cross(d, T);													
-																							
+		X = XMVector4Normalize(X);
 		if (XMVectorGetX(XMVector3Length(X)) == 0)
 		{
 			T = XMVectorSet(0, 1, 0, 0);
 			X = XMVector3Cross(d, T);
+			X = XMVector4Normalize(X);
 		}
-		X = XMVector4Normalize(X);
 
 		//Given this x, calculate another vector y = cross(d, x)
 		XMVECTOR Y = XMVector3Cross(d, X);
+		Y = XMVector4Normalize(Y);
 
 	    //The vertices of the cone base are given by: v(t) = B + w * (x * cos t + y * sin t), with t varying from 0 to 2*pi.
 		double pi2 = 2 * XM_PI;
