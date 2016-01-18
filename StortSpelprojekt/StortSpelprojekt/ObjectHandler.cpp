@@ -298,6 +298,8 @@ void ObjectHandler::Release()
 			g->Release();
 			delete g;
 		}
+		_gameObjects[i].clear();
 	}
 	_idCount = 0;
+	_objectCount = 0;
 }

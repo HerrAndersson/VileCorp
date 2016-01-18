@@ -330,7 +330,7 @@ void LevelEdit::HandleSelected()
 
 		if (_selectedObj != _lastSelected || _selectedObj == 0)
 		{
-			if (temp->GetType() == WALL || FLOOR || UNIT)
+			if (temp!= nullptr && temp->GetType() == WALL || FLOOR || UNIT)
 			{
 				if (_lastSelected != -1)
 				{
@@ -362,6 +362,8 @@ void LevelEdit::InitNewLevel()
 	_objectHandler->Release();
 
 	ResetSelectedObj();
+
+	//Add(TRAP, TRAP);
 }
 
 void LevelEdit::DeleteObject()
