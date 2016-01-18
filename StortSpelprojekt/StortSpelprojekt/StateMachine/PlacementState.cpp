@@ -33,7 +33,7 @@ void PlacementState::Update(float deltaTime)
 	{	
 		if (_budget - cost >= 0)
 		{
-			GameObject* selected = _objectHandler->Find(TRAP, _levelEdit.GetSelectedObject());
+			Trap* selected = (Trap*)_levelEdit.GetSelectedObject();
 			vector<GameObject*>* vec = &_objectHandler->GetGameObjects()->at(TRAP);
 			
 			if (vec->empty())
@@ -62,14 +62,14 @@ void PlacementState::Update(float deltaTime)
 	}
 	else if (_inputHandler->IsPressed(System::Input::Backspace))
 	{
-		GameObject* selected = _objectHandler->Find(TRAP, _levelEdit.GetSelectedObject());
+		Trap* selected = (Trap*)_levelEdit.GetSelectedObject();
 		vector<GameObject*>* vec = &_objectHandler->GetGameObjects()->at(TRAP);
 		for (GameObject* g : *vec)
 		{
 			if (selected != g && compareFloat3(selected->GetPosition(), g->GetPosition()))
 			{
 				_budget += cost;
-				_objectHandler->Remove(/*TRAP,*/ g->GetID());
+				_objectHandler->Remove(g->GetID());
 				break;
 			}
 		}

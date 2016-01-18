@@ -15,7 +15,8 @@ private:
 	System::Camera*			_camera;
 	Grid*					_grid;
 
-	int _selectedObj;
+	//int _selectedObjID;
+	GameObject* _selectedObj;
 
 	int _tileMultiplier;
 
@@ -27,12 +28,11 @@ private:
 	void LoadLevel();
 	void InitNewLevel();
 	void ResetSelectedObj();
-	void DeleteObject();
 public:
 	LevelEdit();
 	~LevelEdit();
 
-	int GetSelectedObject();
+	GameObject* GetSelectedObject();
 
 	void Add(Type type, int renderObjectID);
 

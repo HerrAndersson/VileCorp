@@ -48,7 +48,7 @@ public:
 	~ObjectHandler();
 
 	//Add a gameobject
-	GameObject* Add(Type type, /*int renderObjectID,*/ XMFLOAT3 position, XMFLOAT3 rotation);
+	GameObject* Add(Type type, XMFLOAT3 position, XMFLOAT3 rotation);
 	
 	bool Remove(int ID);
 	bool Remove(Type type, int ID);

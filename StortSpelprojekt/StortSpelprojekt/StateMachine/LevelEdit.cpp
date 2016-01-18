@@ -9,17 +9,14 @@ LevelEdit::LevelEdit()
 LevelEdit::~LevelEdit()
 {}
 
-int LevelEdit::GetSelectedObject()
+GameObject* LevelEdit::GetSelectedObject()
 {
 	return _selectedObj;
 }
 
 void LevelEdit::Add(Type type, int renderObjectID)
 {
-	_objectHandler->Add(type, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
-	
-	GameObject* temp = _objectHandler->GetGameObjects()->at(type).back();
-	_selectedObj = temp->GetID();
+	_objectHandler->Add(type, _selectedObj->GetPosition(), XMFLOAT3(0.0f, 0.0f, 0.0f));	
 }
 
 void LevelEdit::Initialize(InitVar* initVar)
@@ -29,11 +26,13 @@ void LevelEdit::Initialize(InitVar* initVar)
 	_uiHandler = initVar->_uiHandler;
 	_camera = initVar->_camera;
 
-	_selectedObj = 0;
 	_lastSelected = 0;
 	_tileMultiplier = 1;
 
 	_objectHandler->LoadLevel(3);
+
+	// Temporary hack because no mouse interface
+	_selectedObj = _objectHandler->GetGameObjects()->at(1)[0];
 
 	//_grid = new Grid(_renderModule->GetDevice(), 1, 10);
 }
@@ -45,29 +44,8 @@ void LevelEdit::LoadLevel()
 
 void LevelEdit::HandleInput()
 {
-	GameObject* temp;
 	int maxObject = _objectHandler->GetObjectCount();
 	int selectedLevel = 1;
-
-
-	//Tile select
-	if (_inputHandler->IsPressed(VK_ADD))
-	{
-		if (_selectedObj < maxObject)
-		{
-			_selectedObj++;
-		}
-		
-	}
-
-	if (_inputHandler->IsPressed(VK_SUBTRACT))
-	{
-		if (_selectedObj != 0)
-		{
-			_selectedObj--;
-		}
-			
-	}
 
 	//Move tile greater distance per button press
 	if (_inputHandler->IsPressed(VK_PRIOR))
@@ -90,106 +68,94 @@ void LevelEdit::HandleInput()
 		//Translation and rotation controls
 		if (_inputHandler->IsPressed(VK_LEFT))
 		{
-			
-			temp = _objectHandler->Find(_selectedObj);
-			if (temp->GetType() == WALL || FLOOR || UNIT)
+			if (_selectedObj->GetType() == WALL || FLOOR || UNIT)
 			{
-				XMFLOAT3 tempPos = temp->GetPosition();
-				temp->SetPosition(XMFLOAT3(tempPos.x - 1 * _tileMultiplier, tempPos.y, tempPos.z));
+				XMFLOAT3 tempPos = _selectedObj->GetPosition();
+				_selectedObj->SetPosition(XMFLOAT3(tempPos.x - 1 * _tileMultiplier, tempPos.y, tempPos.z));
 			}
 
 		}
 
 		if (_inputHandler->IsPressed(VK_RIGHT))
 		{
-			temp = _objectHandler->Find(_selectedObj);
-			if (temp->GetType() == WALL || FLOOR || UNIT)
+			if (_selectedObj->GetType() == WALL || FLOOR || UNIT)
 			{
-				XMFLOAT3 tempPos = temp->GetPosition();
-				temp->SetPosition(XMFLOAT3(tempPos.x + 1 * _tileMultiplier, tempPos.y, tempPos.z));
+				XMFLOAT3 tempPos = _selectedObj->GetPosition();
+				_selectedObj->SetPosition(XMFLOAT3(tempPos.x + 1 * _tileMultiplier, tempPos.y, tempPos.z));
 			}
 		}
 
 		if (_inputHandler->IsPressed(VK_UP))
 		{
-			temp = _objectHandler->Find(_selectedObj);
-
-			if (temp->GetType() == WALL || FLOOR || UNIT)
+			if (_selectedObj->GetType() == WALL || FLOOR || UNIT)
 			{
-				XMFLOAT3 tempPos = temp->GetPosition();
-				temp->SetPosition(XMFLOAT3(tempPos.x, tempPos.y, tempPos.z + 1 * _tileMultiplier));
+				XMFLOAT3 tempPos = _selectedObj->GetPosition();
+				_selectedObj->SetPosition(XMFLOAT3(tempPos.x, tempPos.y, tempPos.z + 1 * _tileMultiplier));
 			}
 		}
 
 
 		if (_inputHandler->IsPressed(VK_DOWN))
 		{
-			temp = _objectHandler->Find(_selectedObj);
-			if (temp->GetType() == WALL || FLOOR || UNIT)
+			if (_selectedObj->GetType() == WALL || FLOOR || UNIT)
 			{
-				XMFLOAT3 tempPos = temp->GetPosition();
-				temp->SetPosition(XMFLOAT3(tempPos.x, tempPos.y, tempPos.z - 1 * _tileMultiplier));
+				XMFLOAT3 tempPos = _selectedObj->GetPosition();
+				_selectedObj->SetPosition(XMFLOAT3(tempPos.x, tempPos.y, tempPos.z - 1 * _tileMultiplier));
 			}
 		}
 	}
 	//Scale Objects
 	if (_inputHandler->IsPressed(VK_NUMPAD6))
 	{
-		temp = _objectHandler->Find(_selectedObj);
-		if (temp->GetType() == WALL || FLOOR || UNIT)
+		if (_selectedObj->GetType() == WALL || FLOOR || UNIT)
 		{
-			XMFLOAT3 tempPos = temp->GetScale();
-			temp->SetScale(XMFLOAT3(tempPos.x+ 1, tempPos.y, tempPos.z ));
+			XMFLOAT3 tempPos = _selectedObj->GetScale();
+			_selectedObj->SetScale(XMFLOAT3(tempPos.x+ 1, tempPos.y, tempPos.z ));
 		}
 	}
 
 	if (_inputHandler->IsPressed(VK_NUMPAD4))
 	{
-		temp = _objectHandler->Find(_selectedObj);
-		if (temp->GetType() == WALL || FLOOR || UNIT)
+		if (_selectedObj->GetType() == WALL || FLOOR || UNIT)
 		{
-			XMFLOAT3 tempPos = temp->GetScale();
-			temp->SetScale(XMFLOAT3(tempPos.x - 1, tempPos.y, tempPos.z ));
+			XMFLOAT3 tempPos = _selectedObj->GetScale();
+			_selectedObj->SetScale(XMFLOAT3(tempPos.x - 1, tempPos.y, tempPos.z ));
 		}
 	}
 
 	if (_inputHandler->IsPressed(VK_NUMPAD8))
 	{
-		temp = _objectHandler->Find(_selectedObj);
-		if (temp->GetType() == WALL || FLOOR || UNIT)
+		if (_selectedObj->GetType() == WALL || FLOOR || UNIT)
 		{
-			XMFLOAT3 tempPos = temp->GetScale();
-			temp->SetScale(XMFLOAT3(tempPos.x , tempPos.y, tempPos.z + 1));
+			XMFLOAT3 tempPos = _selectedObj->GetScale();
+			_selectedObj->SetScale(XMFLOAT3(tempPos.x , tempPos.y, tempPos.z + 1));
 		}
 	}
 
 	if (_inputHandler->IsPressed(VK_NUMPAD2))
 	{
-		temp = _objectHandler->Find(_selectedObj);
-		if (temp->GetType() == WALL || FLOOR || UNIT)
+		if (_selectedObj->GetType() == WALL || FLOOR || UNIT)
 		{
-			XMFLOAT3 tempPos = temp->GetScale();
-			temp->SetScale(XMFLOAT3(tempPos.x, tempPos.y , tempPos.z - 1));
+			XMFLOAT3 tempPos = _selectedObj->GetScale();
+			_selectedObj->SetScale(XMFLOAT3(tempPos.x, tempPos.y , tempPos.z - 1));
 		}
 	}
 	
 
 	if (_inputHandler->IsPressed(0x5A))
 	{
-		temp = _objectHandler->Find(_selectedObj);
-		if (temp->GetType() == WALL || FLOOR || UNIT)
+		if (_selectedObj->GetType() == WALL || FLOOR || UNIT)
 		{
-			XMFLOAT3 tempRot = temp->GetRotation();
-			temp->SetRotation(XMFLOAT3(tempRot.x, tempRot.y + (DirectX::XM_PI/2), tempRot.z));
+			XMFLOAT3 tempRot = _selectedObj->GetRotation();
+			_selectedObj->SetRotation(XMFLOAT3(tempRot.x, tempRot.y + (DirectX::XM_PI/2), tempRot.z));
 		}
 	}
 	if (_inputHandler->IsPressed(0x58))
 	{
-		temp = _objectHandler->Find(_selectedObj);
-		if (temp->GetType() == WALL || FLOOR || UNIT)
+		if (_selectedObj->GetType() == WALL || FLOOR || UNIT)
 		{
-			XMFLOAT3 tempRot = temp->GetRotation();
-			temp->SetRotation(XMFLOAT3(tempRot.x, tempRot.y - (DirectX::XM_PI / 2), tempRot.z));
+			XMFLOAT3 tempRot = _selectedObj->GetRotation();
+			_selectedObj->SetRotation(XMFLOAT3(tempRot.x, tempRot.y - (DirectX::XM_PI / 2), tempRot.z));
 		}
 	}
 
@@ -256,12 +222,6 @@ void LevelEdit::HandleInput()
 	//		_selectedObj = _objectHandler->GetSize() - 1;
 	//}
 
-
-	if (_inputHandler->IsPressed(VK_DELETE))
-	{
-		DeleteObject();
-	}
-
 	//Camera mouse control
 	System::MouseCoord mouseCoord = _inputHandler->GetMouseCoord();
 	if (mouseCoord._deltaPos.x != 0 || mouseCoord._deltaPos.y != 0)
@@ -322,38 +282,26 @@ void LevelEdit::Update()
 
 void LevelEdit::HandleSelected()
 {
-	GameObject* temp;
-
 	if (_objectHandler->GetObjectCount() != 0)
 	{
-		temp = _objectHandler->Find(_lastSelected);
+		GameObject* temp = _objectHandler->Find(_lastSelected);
 
-		if (_selectedObj != _lastSelected || _selectedObj == 0)
+		if (_selectedObj->GetID() != _lastSelected)
 		{
 			if (temp!= nullptr && temp->GetType() == WALL || FLOOR || UNIT)
 			{
-				if (_lastSelected != -1)
-				{
-
-					XMFLOAT3 tempPos = temp->GetPosition();
-					temp->SetPosition(XMFLOAT3(tempPos.x, 0.0, tempPos.z));
-					//XMFLOAT3 tempScale = temp->GetScale();
-					//temp->SetScale(XMFLOAT3(1, 1, 1));
-				}
-				temp = _objectHandler->Find(_selectedObj);
-				XMFLOAT3 tempPos = temp->GetPosition();
-				temp->SetPosition(XMFLOAT3(tempPos.x, 0.1, tempPos.z));
+				temp = _selectedObj;
+				temp->SetPosition(XMFLOAT3(temp->GetPosition().x, 0.1, temp->GetPosition().z));
 				//XMFLOAT3 tempScale = temp->GetScale();
 				//temp->SetScale(XMFLOAT3(1.1, 1.1, 1.1));
 			}
 		}
-		_lastSelected = _selectedObj;
+		_lastSelected = _selectedObj->GetID();
 	}
 }
 
 void LevelEdit::ResetSelectedObj()
 {
-	_selectedObj = 0;
 	_lastSelected = -1;
 }
 
@@ -364,13 +312,4 @@ void LevelEdit::InitNewLevel()
 	ResetSelectedObj();
 
 	//Add(TRAP, TRAP);
-}
-
-void LevelEdit::DeleteObject()
-{
-	if (_selectedObj != 0)
-	{
-		_objectHandler->Remove(_selectedObj);
-		_selectedObj--;
-	}
 }
