@@ -178,7 +178,6 @@
     <PreBuildEvent>
       <Command>
       </Command>
-if errorlevel 1 exit 0 else exit %errorlevel%</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
