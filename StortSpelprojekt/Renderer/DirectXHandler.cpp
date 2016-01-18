@@ -70,13 +70,19 @@ namespace Renderer
 		//Create rasterizer states
 		hResult = _device->CreateRasterizerState(&rasterDesc, &_rasterizerStateBack);
 		if (FAILED(hResult))
-			throw std::runtime_error("DirectXHandler: Error creating rasterizer state");
+			throw std::runtime_error("DirectXHandler: Error creating rasterizer state BACK");
 
 		rasterDesc.CullMode = D3D11_CULL_FRONT;
 
 		hResult = _device->CreateRasterizerState(&rasterDesc, &_rasterizerStateFront);
 		if (FAILED(hResult))
-			throw std::runtime_error("DirectXHandler: Error creating rasterizer state");
+			throw std::runtime_error("DirectXHandler: Error creating rasterizer state FRONT");
+
+		rasterDesc.CullMode = D3D11_CULL_NONE;
+
+		hResult = _device->CreateRasterizerState(&rasterDesc, &_rasterizerStateNone);
+		if (FAILED(hResult))
+			throw std::runtime_error("DirectXHandler: Error creating rasterizer state NONE");
 
 		/////////////////////////////////////////////////////// Depth stencil states ///////////////////////////////////////////////////////
 		D3D11_DEPTH_STENCIL_DESC depthStencilDesc;
@@ -270,6 +276,9 @@ namespace Renderer
 		SAFE_RELEASE(_backBufferRTV)
 		SAFE_RELEASE(_blendStateEnable)
 		SAFE_RELEASE(_blendStateDisable)
+		SAFE_RELEASE(_rasterizerStateNone)
+		SAFE_RELEASE(_rasterizerStateBack)
+		SAFE_RELEASE(_rasterizerStateFront)
 
 		SAFE_RELEASE(_backBufferDSV);
 		SAFE_RELEASE(_backBufferDepthSRV);
@@ -344,6 +353,11 @@ namespace Renderer
 			_deviceContext->RSSetState(_rasterizerStateFront);
 			break;
 		}
+		case Renderer::DirectXHandler::CullingState::NONE:
+		{
+			_deviceContext->RSSetState(_rasterizerStateNone);
+			break;
+		}
 		default:
 			break;
 		}
@@ -359,7 +373,7 @@ namespace Renderer
 			_deviceContext->OMSetBlendState(_blendStateEnable, factor, 0);
 			break;
 		}
-		case Renderer::DirectXHandler::FRONT:
+		case Renderer::DirectXHandler::BlendState::DISABLE:
 		{
 			_deviceContext->OMSetBlendState(_blendStateDisable, factor, 0);
 			break;
