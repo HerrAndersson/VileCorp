@@ -244,6 +244,8 @@ Unit::Unit()
 	_visibleTiles = nullptr;
 	_visionRadius = 0;
 	_goalTilePosition = {0,0};
+	_heldObject = nullptr;
+	_waiting = -1;
 	_health = 1;
 }
 
@@ -257,7 +259,9 @@ Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	_goalTilePosition = _tilePosition;
 	_tileMap = tileMap;
 	_aStar = new AI::AStar(_tileMap->GetWidth(), _tileMap->GetHeight(), _tilePosition, {0,0}, AI::AStar::OCTILE);
+	_heldObject = nullptr;
 	
+	_waiting = -1;
 	_health = 1;					//TODO: Update constrcutor parameters to include health  --Victor
 }
 
@@ -287,6 +291,11 @@ AI::Vec2D Unit::GetDirection()
 int Unit::GetHealth()
 {
 	return _health;
+}
+
+GameObject * Unit::GetHeldObject() const
+{
+	return _heldObject;
 }
 
 
@@ -461,9 +470,16 @@ void Unit::Move()
 
 	FindVisibleTiles();
 	CheckVisibleTiles();
+	if (_pathLength > 0)
+	{
+		AI::Vec2D nextTile = _path[--_pathLength];
+		_direction = nextTile - _tilePosition;
+	}
+	else
+	{
+		wait(60);
+	}
 
-	AI::Vec2D nextTile = _path[--_pathLength];
-	_direction = nextTile - _tilePosition;
 	if (_direction._x == 0)
 	{
  		_rotation.y = DirectX::XM_PIDIV2 * (_direction._y + 1);
@@ -484,7 +500,17 @@ void Unit::Update()
 	if (_direction._x == 0)
 	{
 	}
-	if (_pathLength > 0)
+
+	if (_waiting > 0)
+	{
+		_waiting--;
+	}
+	else if (_waiting == 0)
+	{
+		_waiting--;
+		Move();
+	}
+	else if (_pathLength > 0)
 	{
 		if (_direction._x == 0 || _direction._y == 0)		//Right angle movement
 		{
@@ -500,13 +526,19 @@ void Unit::Update()
 	}
 	else
 	{
+		act(_objective);
 		CheckAllTiles();
-		Move();
+		wait(60);
 	}
 }
 
 void Unit::Release()
 {}
+
+void Unit::wait(int frames)
+{
+	_waiting = frames;
+}
 
 void Unit::ChangeHealth(int damage)
 {

@@ -227,11 +227,31 @@ void ObjectHandler::Update()
 	for (int i = 0; i < _size; i++)
 	{
 		_gameObjects[i]->Update();
+
+		if (_gameObjects[i]->GetPickUpState() == PICKINGUP)
+		{
+			_tilemap->RemoveObjectFromTile(_gameObjects[i]->GetTilePosition()._x, _gameObjects[i]->GetTilePosition()._y, _gameObjects[i]);
+			_gameObjects[i]->SetPickUpState(HELD);
+		}
+		else if (_gameObjects[i]->GetPickUpState() == PICKINGUP)
+		{
+			_tilemap->AddObjectToTile(_gameObjects[i]->GetTilePosition()._x, _gameObjects[i]->GetTilePosition()._y, _gameObjects[i]);
+			_gameObjects[i]->SetPickUpState(ONTILE);
+		}
+
 		if (_gameObjects[i]->GetType() == GUARD || _gameObjects[i]->GetType() == ENEMY)									//Handle unit movement
 		{
 			Unit* unit = dynamic_cast<Unit*>(_gameObjects[i]);
+
+			GameObject* heldObject = unit->GetHeldObject();
+
+			if (heldObject != nullptr)
+			{
+				heldObject->SetPosition(unit->GetPosition());
+			}
 			if (unit->GetHealth() <= 0)
 			{
+				//drop held object and set its tile position
 				_tilemap->RemoveObjectFromTile(_gameObjects[i]->GetTilePosition()._x, _gameObjects[i]->GetTilePosition()._y, unit);
 				unit->Release();
 				delete unit;

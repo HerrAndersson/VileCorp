@@ -20,6 +20,8 @@ private:
 	AI::Vec2D* _visibleTiles;
 	int _nrOfVisibleTiles;
 
+	int _waiting;					//Temporarily counting frame. Should use a timer eventually
+
 	int _health;
 
 	GameObject* _objective;
@@ -32,6 +34,7 @@ private:
 protected:
 	int _goalPriority;				//Lower value means higher priority
 	int _pathLength;
+	GameObject* _heldObject;
 	int GetApproxDistance(AI::Vec2D target)const;
 
 public:
@@ -42,6 +45,7 @@ public:
 	AI::Vec2D GetGoal();
 	AI::Vec2D GetDirection();
 	int GetHealth();
+	GameObject* GetHeldObject()const;
 	void FindVisibleTiles();									 
 	void CheckVisibleTiles();		
 	void CheckAllTiles();				
@@ -53,6 +57,7 @@ public:
 	void Update();					
 	virtual void Release();
 	virtual void act(GameObject* obj) = 0;									//context specific action on the unit's objective
+	void wait(int frames);
 	void ChangeHealth(int damage);
 
 };

@@ -60,7 +60,25 @@ void Enemy::EvaluateTile(GameObject* obj)
 }
 
 void Enemy::act(GameObject* obj)
-{}
+{
+	switch (obj->GetType())
+	{
+	case LOOT:
+		if (_heldObject == nullptr)
+		{
+			obj->SetPickUpState(PICKINGUP);
+			_heldObject = obj;
+		}
+	case GUARD:
+	case TRAP:
+	case TRIGGER:										//Guards don't react to these (yet)
+		break;
+	case ENEMY:											//The guard hits the enemy
+		break;
+	default:
+		break;
+	}
+}
 
 void Enemy::Release()
 {}

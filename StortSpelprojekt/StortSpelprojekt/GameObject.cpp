@@ -14,6 +14,7 @@ GameObject::GameObject(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::X
 	_tilePosition = tilePosition;
 	_type = type;
 	_renderObject = renderObject;
+	_pickUpState = ONTILE;
 	CalculateMatrix();
 }
 
@@ -110,6 +111,16 @@ void GameObject::SetVisibility(bool visible)
 RenderObject * GameObject::GetRenderObject() const
 {
 	return _renderObject;
+}
+
+void GameObject::SetPickUpState(PickUpState state)
+{
+	_pickUpState = state;
+}
+
+PickUpState GameObject::GetPickUpState()const
+{
+	return _pickUpState;
 }
 
 void* GameObject::operator new(size_t i)

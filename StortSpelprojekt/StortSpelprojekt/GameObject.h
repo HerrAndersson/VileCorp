@@ -13,6 +13,7 @@ If the object has a renderObject but is out of sight _visibility will be false.
 */
 
 enum Type { FLOOR, WALL, LOOT, SPAWN, TRAP, TRIGGER, GUARD, ENEMY };
+enum PickUpState{ONTILE, HELD, PICKINGUP, DROPPING};
 
 class GameObject
 {
@@ -23,10 +24,11 @@ protected:
 	DirectX::XMFLOAT3 _rotation;
 	DirectX::XMFLOAT3 _scale;
 	AI::Vec2D _tilePosition;
-	//Vec2i _direction;
 	Type _type;
-	bool _visible; // OBS
+	bool _visible;
 	RenderObject* _renderObject;
+
+	PickUpState _pickUpState;
 
 	void CalculateMatrix();
 
@@ -55,6 +57,9 @@ public:
 	void SetVisibility(bool visible);
 
 	RenderObject* GetRenderObject() const;
+
+	void SetPickUpState( PickUpState state);
+	PickUpState GetPickUpState()const;
 
 	//Update object gamelogic
 	void virtual Update() = 0;
