@@ -35,7 +35,7 @@ namespace System
 		InputDevice(HWND hwnd);
 		~InputDevice();
 
-		void Update();
+		void Update(bool lockMouse = false);
 
 		void HandleRawInput(LPARAM lparam);
 		void RegisterDevice(HWND hwnd);

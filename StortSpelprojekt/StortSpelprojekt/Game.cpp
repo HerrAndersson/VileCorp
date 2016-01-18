@@ -22,8 +22,9 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 
 	//Init camera
 	_camera = new System::Camera(0.1f, 1000.0f, DirectX::XM_PIDIV2, settings._width, settings._height);
-	_camera->SetPosition(XMFLOAT3(3, 10, 0));
-	_camera->SetRotation(XMFLOAT3(60, 0, 0));
+	_camera->SetPosition(XMFLOAT3(3, 7, 0));
+	_camera->SetRotation(XMFLOAT3(70, 0, 0));
+	//_camera->SetMode(System::FREE_CAM);
 
 	_UI = new UIHandler(_renderModule->GetDevice(), _window->GetWindowSettings(), _assetManager);
 	
@@ -41,7 +42,6 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	}
 
 	_pickingDevice = new PickingDevice(_camera, _window);
-	_player = new Player();
 }
 
 Game::~Game() 
@@ -77,8 +77,7 @@ void Game::Update(float deltaTime)
 	/*
 	Object handler update
 
-	hämta från objecthander eller olika update functioner i objecthander
-	vi vill hämta objekten
+	Fetch from objecthandler or different update functions in objecthandler
 
 	*/
 	

@@ -13,7 +13,9 @@ Trap::~Trap()
 {}
 
 void Trap::Activate()
-{}
+{
+	this->SetPosition(DirectX::XMFLOAT3(3.0f, 0.1f, 4.0f));
+}
 
 void Trap::Update()
 {}

@@ -5,7 +5,7 @@
 
 LevelEdit::LevelEdit()
 {
-
+	_aStar = nullptr;
 }
 
 LevelEdit::~LevelEdit()
@@ -316,12 +316,6 @@ void LevelEdit::HandleInput()
 	bool isMoving = false;
 	float v = 0.1f;
 
-
-	if (_controls->IsFunctionKeyDown("DEBUG:ENABLE_FREECAM"))
-	{
-		//_inputDevice->ToggleCursorLock();
-	}
-	
 	if (_controls->IsFunctionKeyDown("MAP_EDIT:MOVE_CAMERA_UP"))
 	{
 		forward = _camera->GetForwardVector();

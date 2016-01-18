@@ -32,7 +32,11 @@ namespace System
 		delete[]_rawBuffer;
 	}
 
-	void InputDevice::Update()
+	/*
+	The bool in the update is for locking mouse, 
+	needed only when using free cam
+	*/
+	void InputDevice::Update(bool lockMouse)
 	{
 		memcpy(_last, _current, sizeof(bool) * KEY_CODE_CAP);
 		memcpy(_current, _buffer, sizeof(bool) * KEY_CODE_CAP);

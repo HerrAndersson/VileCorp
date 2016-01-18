@@ -33,7 +33,8 @@ bool ObjectHandler::Add(Type type, int renderObjectID, XMFLOAT3 position = XMFLO
 		object = new Architecture(_idCounter++, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(renderObjectID));
 		addedObject = _tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
 		break;
-	case UNIT:
+	case ENEMY:
+	case GUARD:
 		//TODO Tileposition parameters are temporary
 		object = new Enemy(_idCounter++, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(renderObjectID), _tilemap);
 		addedObject = _tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
@@ -177,17 +178,17 @@ bool ObjectHandler::LoadLevel(int lvlIndex)
 
 	for (auto i : gameObjectData)
 	{
-		Add((Type)i._tileType, i._tileType, DirectX::XMFLOAT3(i._posX, 0, i._posZ), DirectX::XMFLOAT3(0, i._rotY, 0));
+		Add((Type)(i._tileType - 1), i._tileType - 1, DirectX::XMFLOAT3(i._posX, 0, i._posZ), DirectX::XMFLOAT3(0, i._rotY, 0));
 	}
 	return false;
 }
 
 void ObjectHandler::InitPathfinding()
 {
-	for (vector<GameObject*>::iterator i = _gameObjects[UNIT].begin();
-	i != _gameObjects[UNIT].end(); i++)
+	for (vector<GameObject*>::iterator i = _gameObjects[ENEMY].begin();
+	i != _gameObjects[ENEMY].end(); i++)
 	{
-		if ((*i)->GetType() == UNIT)																	//Handle unit movement
+		if ((*i)->GetType() == ENEMY)																//Handle unit movement
 		{
 			Unit* unit = dynamic_cast<Unit*>((*i));
 			unit->CheckAllTiles();
@@ -205,7 +206,7 @@ void ObjectHandler::Update(float deltaTime)
 		for (GameObject* g : _gameObjects[i])
 		{
 			g->Update();
-			if (g->GetType() == UNIT)																	//Handle unit movement
+			if (g->GetType() == GUARD || g->GetType() == ENEMY)																	//Handle unit movement
 			{
 				float xOffset = abs(g->GetPosition().x - g->GetTilePosition()._x);
 				float zOffset = abs(g->GetPosition().z - g->GetTilePosition()._y);
@@ -215,6 +216,20 @@ void ObjectHandler::Update(float deltaTime)
 					_tilemap->RemoveObjectFromTile(g->GetTilePosition()._x, g->GetTilePosition()._y, unit);
 					unit->Move();
 					_tilemap->AddObjectToTile(g->GetTilePosition()._x, g->GetTilePosition()._y, unit);
+				}
+			}
+			/*
+			Check if there is a unit on trap, in that case activate it.
+			Checks for both guards and enemies for debugging purposes /Seb
+			*/
+			if (g->GetType() == TRAP)
+			{
+				for (GameObject* enemy : _gameObjects[i])
+				{
+					if (enemy->GetTilePosition() == g->GetTilePosition())
+					{
+						static_cast<Trap*>(g)->Activate();
+					}
 				}
 			}
 		}
