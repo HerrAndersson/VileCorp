@@ -1,6 +1,6 @@
 #include "PlayState.h"
 
-PlayState::PlayState(InitVar initVar, const std::string& filename) : BaseState(initVar, filename, "PLAY")
+PlayState::PlayState(InitVar initVar, const std::string& filename, AssetManager* assetManager) : BaseState(initVar, filename, "PLAY", assetManager)
 {
 
 }

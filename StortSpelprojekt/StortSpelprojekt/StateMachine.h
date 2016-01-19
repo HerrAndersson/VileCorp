@@ -18,8 +18,10 @@ private:
 	void ProcessStateRequest();
 
 public:
-	StateMachine(InitVar initVar, const std::string & filename);
+	StateMachine(InitVar initVar, const std::string & filename, AssetManager* assetManager);
 	~StateMachine();
 
 	void Update(float deltaTime);
+
+	BaseState* GetCurrentState() const;
 };

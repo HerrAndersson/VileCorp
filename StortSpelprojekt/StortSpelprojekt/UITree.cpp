@@ -6,8 +6,10 @@ using namespace DirectX;
 
 namespace GUI
 {
-	UITree::UITree(const std::string& filename, const std::string& statename)
+	UITree::UITree(const std::string& filename, const std::string& statename, AssetManager* assetManager)
 	{
+		_AM = assetManager;
+
 		ifstream file(filename);
 		if (!file.good())
 		{
@@ -19,15 +21,13 @@ namespace GUI
 		Document d;
 		d.Parse(str.c_str());
 
-		_root = new GUI::Node(XMFLOAT2(0.0f, 0.0f), XMFLOAT2(1.0f, 1.0f));
-
 		bool found = false;
-		for (auto i = d.MemberBegin(); i != d.MemberEnd(); ++i)
+		for (Value::ConstMemberIterator i = d.MemberBegin(); i != d.MemberEnd(); ++i)
 		{
 			if (i->name.IsString() &&  string(i->name.GetString()) == statename)
 			{
 				found = true;
-				LoadGUITree(_root, i->value.MemberBegin(), i->value.MemberEnd());
+				_root = LoadGUITree("root", i->value.MemberBegin(), i->value.MemberEnd());
 			}
 		}
 		if (!found)
@@ -46,45 +46,48 @@ namespace GUI
 		return _root;
 	}
 
-	void UITree::LoadGUITree(Node * current, rapidjson::Value::ConstMemberIterator start, rapidjson::Value::ConstMemberIterator end)
+	Node* UITree::LoadGUITree(const std::string& name, rapidjson::Value::ConstMemberIterator start, rapidjson::Value::ConstMemberIterator end)
 	{
-		Value::ConstMemberIterator it = start;
-		for (; it != end; ++it)
+		Node* returnNode = new Node();
+		returnNode->SetId(name);
+		for (Value::ConstMemberIterator i = start; i != end; ++i)
 		{
-			string id(it->name.GetString());
-			Node* newNode = nullptr;
-			if (id == "_parent") //This is a transform node
+			if (i->name == "position")
 			{
-				XMFLOAT2 position;
-				XMFLOAT2 scale;
-				for (auto i = it->value.MemberBegin(); i != it->value.MemberEnd(); ++i)
+				if (i->value.IsArray())
 				{
-					if (i->name == "position")
-					{
-						if (i->value.IsArray())
-						{
-							position = XMFLOAT2((float)i->value[0].GetDouble(),
-								(float)i->value[1].GetDouble());
-						}
-					}
-					else if (i->name == "scale")
-					{
-						if (i->value.IsArray())
-						{
-							scale = XMFLOAT2((float)i->value[0].GetDouble(),
-								(float)i->value[1].GetDouble());
-						}
-					}
+					returnNode->SetPosition(XMFLOAT2(
+						(float)i->value[0].GetDouble(),
+						(float)i->value[1].GetDouble()
+						));
 				}
-				newNode = new Node(position, scale);
 			}
-			else //This is an element
+			else if (i->name == "scale")
 			{
-
+				if (i->value.IsArray())
+				{
+					returnNode->SetScale(XMFLOAT2(
+						(float)i->value[0].GetDouble(),
+						(float)i->value[1].GetDouble()
+						));
+				}
 			}
-
-			current->GetChildren()->push_back(newNode);
+			else if (i->name == "texture")
+			{
+				returnNode->SetTexture(_AM->GetTexture(i->value.GetString()));
+			}
+			else if (i->name == "text")
+			{
+				//Convert from utf-8 to wchar
+				std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+				returnNode->SetText(converter.from_bytes(i->value.GetString()));
+			}
+			else
+			{
+				returnNode->AddChild(LoadGUITree(i->name.GetString(), i->value.MemberBegin(), i->value.MemberEnd()));
+			}
 		}
+		return returnNode;
 	}
 
 	void UITree::Release(Node * node)

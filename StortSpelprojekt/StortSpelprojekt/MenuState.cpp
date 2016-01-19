@@ -1,6 +1,6 @@
 #include "MenuState.h"
 
-MenuState::MenuState(InitVar initVar, const std::string& filename) : BaseState (initVar, filename, "MENU")
+MenuState::MenuState(InitVar initVar, const std::string& filename, AssetManager* assetManager) : BaseState (initVar, filename, "MENU", assetManager)
 {
 	
 }

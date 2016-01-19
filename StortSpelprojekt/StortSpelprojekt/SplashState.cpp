@@ -1,6 +1,6 @@
 #include "SplashState.h"
 
-SplashState::SplashState(InitVar initVar, const std::string& filename) : BaseState(initVar, filename, "SPLASH")
+SplashState::SplashState(InitVar initVar, const std::string& filename, AssetManager* assetManager) : BaseState(initVar, filename, "SPLASH", assetManager)
 {}
 
 SplashState::~SplashState()

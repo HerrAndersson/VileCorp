@@ -245,25 +245,13 @@ namespace Renderer
 
 	void RenderModule::Render(GUI::Node* root)
 	{
-		XMMATRIX transform;
-		memcpy(&transform, root->GetModelMatrix(), sizeof(XMMATRIX));
-
-		Render(root, transform);
+		Render(root, root->GetModelMatrix());
 	}
 
-	void RenderModule::Render(GUI::Node* current, const XMMATRIX& transform)
+	void RenderModule::Render(GUI::Node* current, XMMATRIX* transform)
 	{
-		for (GUI::Node* i : *current->GetChildren())
-		{
-			XMMATRIX childTransform;
-			memcpy(&childTransform, i->GetModelMatrix(), sizeof(XMMATRIX));
-
-			XMMATRIX nextTransform = XMMatrixMultiply(transform, childTransform);
-			Render(i, nextTransform);
-		}
-
-		GUI::Element* element = dynamic_cast<GUI::Element*>(current);
-		if (element)
+		ID3D11ShaderResourceView* tex = current->GetTexture();
+		if (tex)
 		{
 			D3D11_MAPPED_SUBRESOURCE mappedResource;
 			HRESULT result;
@@ -275,43 +263,24 @@ namespace Renderer
 			}
 
 			MatrixBufferHud* dataPtr = (MatrixBufferHud*)mappedResource.pData;
-			memcpy(&dataPtr->model, &transform, sizeof(XMMATRIX));
+			dataPtr->model = XMMatrixTranspose(*transform);
 
 			_d3d->GetDeviceContext()->Unmap(_matrixBufferHUD, 0);
 
 			_d3d->GetDeviceContext()->VSSetConstantBuffers(0, 1, &_matrixBufferHUD);
-			ID3D11ShaderResourceView* tex = element->GetTexture();
 			_d3d->GetDeviceContext()->PSSetShaderResources(0, 1, &tex);
 
 			_d3d->GetDeviceContext()->Draw(6, 0);
 		}
 		//TODO: Render text
 
-		/*
-		D3D11_MAPPED_SUBRESOURCE mappedResource;
-		HRESULT result;
-
-		for (auto i : *imageData)
+		for (GUI::Node* i : *current->GetChildren())
 		{
-			result = _d3d->GetDeviceContext()->Map(_matrixBufferHUD, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-			if (FAILED(result))
-			{
-				throw std::runtime_error("RenderModule::SetResourcesPerObject: Failed to Map _matrixBufferHUD");
-			}
-
-			MatrixBufferHud* dataPtr = (MatrixBufferHud*)mappedResource.pData;
-			dataPtr->model = *(i.GetModelMatrix());
-
-			_d3d->GetDeviceContext()->Unmap(_matrixBufferHUD, 0);
-
-			_d3d->GetDeviceContext()->VSSetConstantBuffers(0, 1, &_matrixBufferHUD);
-			ID3D11ShaderResourceView* tex = i.GetTexture();
-			_d3d->GetDeviceContext()->PSSetShaderResources(0, 1, &tex);
-
-			_d3d->GetDeviceContext()->Draw(6, 0);
-		
+			XMMATRIX a = *(i->GetModelMatrix());
+			XMMATRIX t = XMMatrixMultiply(*transform, a);
+			//Render(i, XMMatrixMultiply(transform, *(i->GetModelMatrix())));
+			Render(i, &t);
 		}
-		*/
 	}
 
 	void RenderModule::RenderLightQuad()

@@ -24,9 +24,7 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	InitVar initVar;
 	initVar._objectHandler = _objectHandler;
 	initVar._inputDevice = _input;
-	_SM = new StateMachine(initVar, "Assets/gui.json");
-
-	
+	_SM = new StateMachine(initVar, "../../Output/Bin/x86/Debug/Assets/gui.json", _assetManager);
 }
 
 Game::~Game() 
@@ -166,7 +164,7 @@ void Game::Render()
 	_renderModule->RenderLightQuad();
 	
 	_renderModule->SetShaderStage(Renderer::RenderModule::HUD_PASS);
-	_UI->Render(_renderModule->GetDeviceContext());
+	_renderModule->Render(_SM->GetCurrentState()->GetUITree()->GetRootNode());
 	_renderModule->EndScene();
 }
 

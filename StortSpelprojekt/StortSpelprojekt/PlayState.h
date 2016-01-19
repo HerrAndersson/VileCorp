@@ -6,7 +6,7 @@ class PlayState : public BaseState
 {
 private:
 public:
-	PlayState(InitVar initVar, const std::string& filename);
+	PlayState(InitVar initVar, const std::string& filename, AssetManager* assetManager);
 	~PlayState();
 
 	void Update(float deltaTime);

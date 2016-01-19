@@ -8,7 +8,6 @@
 #include "RenderUtils.h"
 #include "HUDElement.h"
 #include "Node.h"
-#include "Element.h"
 
 namespace Renderer
 {
@@ -68,7 +67,7 @@ namespace Renderer
 		void BeginScene(float red, float green, float blue, float alpha);
 		void Render(DirectX::XMMATRIX* world, RenderObject* renderObject);
 		void Render(GUI::Node* root);
-		void Render(GUI::Node* current, const DirectX::XMMATRIX& transform);
+		void Render(GUI::Node* current, DirectX::XMMATRIX* transform);
 		void RenderLightQuad();
 		void EndScene();
 

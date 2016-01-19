@@ -24,12 +24,13 @@ protected:
 	
 	void ChangeState(State newState);
 public:
-	BaseState(InitVar initVar, const std::string& filename, const std::string& statename);
+	BaseState(InitVar initVar, const std::string& filename, const std::string& statename, AssetManager* assetManager);
 	virtual ~BaseState();
 
 	virtual void Update(float deltaTime) = 0;
 	virtual void OnStateEnter() = 0;
 	virtual void OnStateExit() = 0;
 
-	State GetNewStateRequest()const;
+	State GetNewStateRequest() const;
+	GUI::UITree* GetUITree();
 };

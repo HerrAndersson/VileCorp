@@ -2,7 +2,7 @@
 
 State BaseState::_newStateRequest;
 
-BaseState::BaseState(InitVar initVar, const std::string& filename, const std::string& statename) : _uiTree(filename, statename)
+BaseState::BaseState(InitVar initVar, const std::string& filename, const std::string& statename, AssetManager* assetManager) : _uiTree(filename, statename, assetManager)
 {
 	_objectHandler		= initVar._objectHandler;
 	_inputDevice		= initVar._inputDevice;
@@ -20,4 +20,9 @@ void BaseState::ChangeState(State newState)
 State BaseState::GetNewStateRequest()const
 {
 	return _newStateRequest;
+}
+
+GUI::UITree* BaseState::GetUITree()
+{
+	return &_uiTree;
 }
