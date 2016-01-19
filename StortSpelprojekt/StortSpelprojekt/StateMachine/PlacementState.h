@@ -10,6 +10,7 @@ private:
 	InitVar _initVar;
 
 	int _budget;
+	bool _trapChosen = false;
 
 
 public:

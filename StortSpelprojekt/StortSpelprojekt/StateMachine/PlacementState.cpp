@@ -17,11 +17,12 @@ void PlacementState::Update(float deltaTime)
 
 	//tempAddObj
 
-	int cost = 200;
+	int cost = 20;
 
 	//T adds Trap
 	if (_inputHandler->IsPressed(0x54))
-	{	
+	{
+		_trapChosen = true;
 		if (_budget - cost >= 0)
 		{
 			vector<GameObject*>* vec = &_objectHandler->GetGameObjects()->at(TRAP);
@@ -29,11 +30,12 @@ void PlacementState::Update(float deltaTime)
 			{
 				_levelEdit.Add(TRAP, TRAP);
 				_budget -= cost;
+
 			}
 			else
 			{
 				bool taken = false;
-				if (_levelEdit.Marked(TRAP))
+				if (_levelEdit.Marked(TRAP) || _levelEdit.Marked(WALL))
 				{
 					taken = true;
 				}
@@ -41,6 +43,7 @@ void PlacementState::Update(float deltaTime)
 				{
 					_levelEdit.Add(TRAP, TRAP);
 					_budget -= cost;
+
 				}
 			}
 		}
@@ -53,6 +56,38 @@ void PlacementState::Update(float deltaTime)
 		}
 		
 	}
+
+	if (_trapChosen == true)
+	{
+		if (_inputHandler->IsDown(System::Input::Shift))
+		{
+			if (_inputHandler->IsPressed(System::Input::LeftArrow) || _inputHandler->IsPressed(System::Input::RightArrow)
+				|| _inputHandler->IsPressed(System::Input::UpArrow) || _inputHandler->IsPressed(System::Input::DownArrow))
+			{
+				if (_budget - cost >= 0)
+				{
+					bool taken = false;
+					if (_levelEdit.Marked(TRAP) || _levelEdit.Marked(WALL)) 
+					{
+						taken = true;
+					}
+					if (!taken)
+					{
+						_levelEdit.Add(TRAP, TRAP);
+						_budget -= cost;
+
+					}
+
+				}
+			}
+		}
+	}
+
+	if (_inputHandler->IsPressed(System::Input::Enter))
+	{
+		_trapChosen = false;
+	}
+
 }
 
 void PlacementState::OnStateEnter()

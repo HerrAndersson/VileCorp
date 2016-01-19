@@ -9,6 +9,9 @@ private:
 	LevelEdit _levelEdit;
 	InitVar _initVar;
 
+	bool _floorChosen = false;
+	bool _wallChosen = false;
+
 public:
 	LevelEditState(InitVar initVar);
 	~LevelEditState();
