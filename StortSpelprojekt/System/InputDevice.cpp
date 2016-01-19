@@ -26,6 +26,8 @@ namespace System
 		_rawBufferSize = 256;
 		_rawBuffer = new BYTE[_rawBufferSize];
 		RegisterDevice(hwnd);
+
+		_lockedCursor = false;
 	}
 	InputDevice::~InputDevice()
 	{
@@ -36,7 +38,7 @@ namespace System
 	The bool in the update is for locking mouse, 
 	needed only when using free cam
 	*/
-	void InputDevice::Update(bool lockMouse)
+	void InputDevice::Update()
 	{
 		memcpy(_last, _current, sizeof(bool) * KEY_CODE_CAP);
 		memcpy(_current, _buffer, sizeof(bool) * KEY_CODE_CAP);
@@ -45,16 +47,62 @@ namespace System
 		_buffer[Input::ScrollWheelDown] = false;
 		_buffer[Input::ScrollWheelUp] = false;
 
-		//Add the delta pos to absulute pos
-		_mouseCoord._deltaPos.x = _mouseBuffer._deltaPos.x;
-		_mouseCoord._deltaPos.y = _mouseBuffer._deltaPos.y;
-		
-		_mouseBuffer._deltaPos.x = 0;
-		_mouseBuffer._deltaPos.y = 0;
 
-		_mouseCoord._pos.x += _mouseCoord._deltaPos.x;
-		_mouseCoord._pos.y += _mouseCoord._deltaPos.y;
-		//SetCursorPos(_mouseCoord._pos.x, _mouseCoord._pos.y);
+		if (!_lockedCursor)
+		{
+			//Add the delta pos to absulute pos
+			_mouseCoord._deltaPos.x = _mouseBuffer._deltaPos.x;
+			_mouseCoord._deltaPos.y = _mouseBuffer._deltaPos.y;
+
+			_mouseBuffer._deltaPos.x = 0;
+			_mouseBuffer._deltaPos.y = 0;
+
+			_mouseCoord._pos.x += _mouseCoord._deltaPos.x;
+			_mouseCoord._pos.y += _mouseCoord._deltaPos.y;
+			//SetCursorPos(_mouseCoord._pos.x, _mouseCoord._pos.y);
+		}
+		else
+		{
+			RECT rect;
+			GetWindowRect(_hwnd, &rect);
+
+			GetCursorPos(&_mouseCoord._pos);
+			_mouseCoord._deltaPos.x = _mouseCoord._pos.x - (rect.left + (rect.right - rect.left) / 2);
+			_mouseCoord._deltaPos.y = _mouseCoord._pos.y - (rect.top + (rect.bottom - rect.top) / 2);
+
+			if (GetFocus() == _hwnd)
+			{
+				//Sets mouse position to the middle of the window
+				SetCursorPos(rect.left + (rect.right - rect.left) / 2, rect.top + (rect.bottom - rect.top) / 2);
+				ClipCursor(&rect);
+			}
+		}
+
+	}
+
+	void InputDevice::ToggleCursorLock()
+	{
+		if (_lockedCursor)
+		{
+			_lockedCursor = false;
+			while (ShowCursor(true) <= 0)
+			{
+				ShowCursor(true);
+			}
+		}
+		else
+		{
+			_lockedCursor = true;
+			while (ShowCursor(false) >= 0)
+			{
+				ShowCursor(false);
+			}
+		}
+	}
+
+	bool InputDevice::CursorLocked()
+	{
+		return _lockedCursor;
 	}
 
 	void InputDevice::HandleRawInput(LPARAM lParam)

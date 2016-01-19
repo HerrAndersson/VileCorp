@@ -40,7 +40,7 @@ bool ObjectHandler::Add(Type type, /*int renderObjectID,*/ XMFLOAT3 position = X
 		addedObject = _tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
 		break;
 	case TRAP:
-		object = new Trap(_idCount, position, rotation, AI::Vec2D(1,1), type, _assetManager->GetRenderObject(type));
+		object = new Trap(_idCount, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(type));
 		addedObject = _tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
 		break;
 	case TRIGGER:
