@@ -31,6 +31,7 @@ GameObject* ObjectHandler::Add(Type type, int renderObjectID, XMFLOAT3 position 
 	case FLOOR:
 	case WALL:
 	case LOOT:
+	case SPAWN:
 		object = new Architecture(_idCounter++, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(renderObjectID));
 		_gameObjects.push_back(object);
 		_size++;
@@ -57,7 +58,10 @@ GameObject* ObjectHandler::Add(Type type, int renderObjectID, XMFLOAT3 position 
 		_tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
 		break;
 	default:
-		
+		object = new Architecture(_idCounter++, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(renderObjectID));
+		_gameObjects.push_back(object);
+		_size++;
+		_tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
 		break;
 	}
 
@@ -185,24 +189,24 @@ bool ObjectHandler::LoadLevel(int lvlIndex)
 	Type tileType = FLOOR;
 	for (auto i : gameObjectData)
 	{
-		switch (i._tileType)
-		{
-		case 0:
-			tileType = ENEMY;
-			break;
-		case 1:
-			tileType = FLOOR;
-			break;
-		case 2:
-			tileType = WALL;
-			break;
-		case 3:
-			tileType = LOOT;
-			break;
-		default:
-			break;
-		}
-		Add(tileType, tileType, DirectX::XMFLOAT3(i._posX, 0, i._posZ), DirectX::XMFLOAT3(0, i._rotY, 0));
+		//switch (i._tileType)
+		//{
+		//case 0:
+		//	tileType = ENEMY;
+		//	break;
+		//case 1:
+		//	tileType = FLOOR;
+		//	break;
+		//case 2:
+		//	tileType = WALL;
+		//	break;
+		//case 3:
+		//	tileType = LOOT;
+		//	break;
+		//default:
+		//	break;
+		//}
+		Add((Type)i._tileType, i._tileType, DirectX::XMFLOAT3(i._posX, 0, i._posZ), DirectX::XMFLOAT3(0, i._rotY, 0));
 	}
 	return false;
 }
@@ -247,7 +251,7 @@ void ObjectHandler::Update()
 
 			if (heldObject != nullptr)
 			{
-				heldObject->SetPosition(unit->GetPosition());
+				heldObject->SetPosition( DirectX::XMFLOAT3(unit->GetPosition().x, unit->GetPosition().y + 2, unit->GetPosition().z) );
 			}
 			if (unit->GetHealth() <= 0)
 			{

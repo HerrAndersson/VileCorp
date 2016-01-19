@@ -245,6 +245,7 @@ Unit::Unit()
 	_visionRadius = 0;
 	_goalTilePosition = {0,0};
 	_heldObject = nullptr;
+	_objective = nullptr;
 	_waiting = -1;
 	_health = 1;
 }
@@ -260,7 +261,7 @@ Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	_tileMap = tileMap;
 	_aStar = new AI::AStar(_tileMap->GetWidth(), _tileMap->GetHeight(), _tilePosition, {0,0}, AI::AStar::OCTILE);
 	_heldObject = nullptr;
-	
+	_objective = nullptr;
 	_waiting = -1;
 	_health = 1;					//TODO: Update constrcutor parameters to include health  --Victor
 }
