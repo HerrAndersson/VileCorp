@@ -56,6 +56,7 @@ namespace Renderer
 		DirectX::XMFLOAT3 GetRotation() const;
 		DirectX::XMFLOAT3 GetDirection() const;
 
+		DirectX::XMMATRIX* GetWorldMatrix();
 		DirectX::XMMATRIX* GetViewMatrix();
 		DirectX::XMMATRIX* GetProjectionMatrix();
 

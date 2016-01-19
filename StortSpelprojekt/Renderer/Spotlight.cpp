@@ -19,8 +19,8 @@ namespace Renderer
 
 		_color = color;
 
-		_worldMatrix = XMMatrixTranslation(_position.x, _position.y, _position.z);
 		_rotationMatrix = XMMatrixRotationRollPitchYaw(XMConvertToRadians(_rotation.x), XMConvertToRadians(_rotation.y), XMConvertToRadians(_rotation.z));
+		_worldMatrix = _rotationMatrix * XMMatrixTranslation(_position.x, _position.y, _position.z);
 
 		//Prepare vectors for Matrix initialization
 		XMVECTOR vPos = XMLoadFloat3(&_position);
@@ -30,7 +30,7 @@ namespace Renderer
 		_viewMatrix = XMMatrixLookAtLH(vPos, vPos + vDir, vUp);
 		_projectionMatrix = XMMatrixPerspectiveFovLH(fov, (float)width / (float)height, nearClip, farClip);
 
-		//Create a cone that represents the light as a volume
+		/// --------------------------------------- Create a cone that represents the light as a volume --------------------------------------- ///
 		XMVECTOR L = XMVector4Normalize(XMVectorSet(_position.x, _position.y, _position.z, 1));
 		XMVECTOR d = XMVector4Normalize(XMVectorSet(_direction.x, _direction.y, _direction.z, 1));
 		float r = range;																	
@@ -79,7 +79,7 @@ namespace Renderer
 			triangles.push_back(points[pc2]);
 			triangles.push_back(points[++pc2]);
 		}
-		//Fix the last connection between the last and the first
+		//Fix the connection between the last and the first
 		triangles.push_back(_position);
 		triangles.push_back(points[pc]);
 		triangles.push_back(points[0]);
@@ -123,6 +123,7 @@ namespace Renderer
 		_direction = dir;
 
 		_viewMatrix = DirectX::XMMatrixLookAtLH(vPos, vPos + vDir, vUp);
+		_worldMatrix = rotationMatrix * XMMatrixTranslation(_position.x, _position.y, _position.z);
 	}
 
 	void Spotlight::SetPosition(XMFLOAT3 position)
@@ -157,6 +158,11 @@ namespace Renderer
 	XMFLOAT3 Spotlight::GetDirection() const
 	{
 		return _direction;
+	}
+
+	XMMATRIX* Spotlight::GetWorldMatrix()
+	{
+		return &_worldMatrix;
 	}
 
 	XMMATRIX* Spotlight::GetViewMatrix()

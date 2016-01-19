@@ -93,7 +93,7 @@ namespace Renderer
 		void RenderScreenQuad();
 		void EndScene();
 
-		void DEBUG_RenderLightVolume(ID3D11Buffer* volume);
+		void DEBUG_RenderLightVolume(ID3D11Buffer* volume, DirectX::XMMATRIX* world);
 
 		ID3D11Device* GetDevice() const;
 		ID3D11DeviceContext* GetDeviceContext() const;

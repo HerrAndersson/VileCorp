@@ -369,11 +369,11 @@ namespace Renderer
 		deviceContext->Draw(6, 0);
 	}
 
-	void RenderModule::DEBUG_RenderLightVolume(ID3D11Buffer* volume)
+	void RenderModule::DEBUG_RenderLightVolume(ID3D11Buffer* volume, DirectX::XMMATRIX* world)
 	{
 		_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::NONE);
 
-		XMMATRIX i = XMMatrixTranspose(XMMatrixTranslation(10, 10, 10));
+		XMMATRIX i = XMMatrixTranspose(*world);
 		SetDataPerObject(&i, nullptr, nullptr);
 
 		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();

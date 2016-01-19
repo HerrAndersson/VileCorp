@@ -28,8 +28,13 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	_input = new System::InputDevice(_window->GetHWND());
 
 	//TEMP!
-	_spotlight = new Renderer::Spotlight(_renderModule->GetDevice(), 0.1f, 1000.0f, XM_PIDIV4, 256, 256, 1.0f, 10.0f, XMFLOAT3(0.0f, 1.0f, 1.0f), 36); //Ska ha samma dimensions som shadow map, som nu ligger i render module
-	_spotlight->SetPositionAndRotation(XMFLOAT3(15, 1.0f, 10), XMFLOAT3(0, 90, 0));
+	Renderer::Spotlight* spot;
+	for (int i = 0; i < 3; i++)
+	{
+		spot = new Renderer::Spotlight(_renderModule->GetDevice(), 0.1f, 1000.0f, XM_PI / 0.082673f, 256, 256, 1.0f, 10.0f, XMFLOAT3(0.0f, 1.0f, 1.0f), 36); //Ska ha samma dimensions som shadow map, som nu ligger i render module
+		spot->SetPositionAndRotation(XMFLOAT3(3*i, 1.0f, 3*i), XMFLOAT3(0, 90 + i*25, 0));
+		_spotlights.push_back(spot);
+	}
 }
 
 Game::~Game() 
@@ -41,7 +46,9 @@ Game::~Game()
 	delete _UI;
 	delete _SM;
 	delete _input;
-	delete _spotlight;
+
+	for(auto s : _spotlights)
+		delete s;
 }
 void Game::ResizeResources(System::WindowSettings settings)
 {
@@ -147,47 +154,50 @@ void Game::Render()
 		_renderModule->Render(&i->GetMatrix(), i->GetRenderObject());
 	}
 
-	_renderModule->DEBUG_RenderLightVolume(_spotlight->GetVolumeBuffer());
+	//Todo: The volume has to be rendered with its correct world matrix
+	_renderModule->DEBUG_RenderLightVolume(_spotlights[0]->GetVolumeBuffer(), _spotlights[0]->GetWorldMatrix());
+	_renderModule->DEBUG_RenderLightVolume(_spotlights[1]->GetVolumeBuffer(), _spotlights[1]->GetWorldMatrix());
+	_renderModule->DEBUG_RenderLightVolume(_spotlights[2]->GetVolumeBuffer(), _spotlights[2]->GetWorldMatrix());
 
 	///////////////////////////////////////////////////////////// Light pass /////////////////////////////////////////////////////////////
 	_renderModule->SetLightPassDataPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
-	//for (ALL SPOTLIGHTS)
-	//{
+	for (auto spot : _spotlights)
+	{
 		//Generates the shadow map for one spotlight
-		//_renderModule->SetShaderStage(Renderer::RenderModule::SHADOW_GENERATION);
-		//_renderModule->SetShadowMapDataPerSpotLight(_spotlight->GetViewMatrix(), _spotlight->GetProjectionMatrix());
+		_renderModule->SetShaderStage(Renderer::RenderModule::SHADOW_GENERATION);
+		_renderModule->SetShadowMapDataPerSpotLight(spot->GetViewMatrix(), spot->GetProjectionMatrix());
 
-		//for (auto i : *gameObjects)
-		//{
-		//	_renderModule->RenderShadowMap(&i->GetMatrix(), i->GetRenderObject());
-		//}
+		for (auto i : *gameObjects)
+		{
+			_renderModule->RenderShadowMap(&i->GetMatrix(), i->GetRenderObject());
+		}
 
-		///*
-		//Geo pass should render directly to the backbuffer.
-		//Lighting pass should for each light:
-		//	Create shadow map
-		//	Render a volume, to backbuffer with additive blending, that represents the light to only do the calculations on the pixels that might be in the light. Apply shadow maps.
+		/*
+		Geo pass should render directly to the backbuffer.
+		Lighting pass should for each light:
+			Create shadow map
+			Render a volume, to backbuffer with additive blending, that represents the light to only do the calculations on the pixels that might be in the light. Apply shadow maps.
 
-		//Then FINAL_PASS is not needed, just EndScene
-		//*/
+		Then FINAL_PASS is not needed, just EndScene
+		*/
 
-		//_renderModule->SetShaderStage(Renderer::RenderModule::LIGHT_APPLICATION);
-		//_renderModule->SetLightPassDataPerLight(_spotlight);
+		_renderModule->SetShaderStage(Renderer::RenderModule::LIGHT_APPLICATION);
+		_renderModule->SetLightPassDataPerLight(spot);
 
-	////}
+	}
 
 	////////////////////////////////////////////////// Render quad to screen //////////////////////////////////////////////////////
 	_renderModule->SetShaderStage(Renderer::RenderModule::FINAL_PASS);
 	
-	XMFLOAT3 rot = _spotlight->GetRotation();
+	XMFLOAT3 rot = _spotlights[0]->GetRotation();
 	rot.y -= 2;
-	_spotlight->SetRotation(rot);
+	_spotlights[0]->SetRotation(rot);
 
-	XMFLOAT3 color = _spotlight->GetColor();
+	XMFLOAT3 color = _spotlights[0]->GetColor();
 	color.x = sin(_timer.GetGameTime() / 1000);
 	color.y = sin(_timer.GetGameTime() / 1000 + XMConvertToRadians(120));
 	color.z = sin(_timer.GetGameTime() / 1000 + XMConvertToRadians(240));
-	_spotlight->SetColor(color);
+	_spotlights[0]->SetColor(color);
 
 	_renderModule->RenderScreenQuad();
 	_renderModule->EndScene();

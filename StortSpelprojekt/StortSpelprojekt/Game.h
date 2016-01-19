@@ -18,7 +18,7 @@
 class Game
 {
 private:
-	const float	MS_PER_FRAME = 1000 / 60;
+	const float	MS_PER_FRAME	= 1000 / 60;
 
 	StateMachine*				_SM;
 	System::Window*				_window;
@@ -27,7 +27,6 @@ private:
 	ObjectHandler*				_objectHandler;
 	UIHandler*					_UI;
 	System::Timer				_timer;
-
 	System::InputDevice*		_input;
 
 	//Resizing window, directx resources, camera
@@ -40,7 +39,7 @@ private:
 
 
 	//TEMP!
-	Renderer::Spotlight* _spotlight;
+	std::vector<Renderer::Spotlight*> _spotlights;
 
 public:
 
