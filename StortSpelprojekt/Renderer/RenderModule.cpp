@@ -15,35 +15,9 @@ namespace Renderer
 		float top = 1.0f;
 		float bottom = -1.0f;
 
-		ScreenQuadVertex quad[] = 
-		{
-			//First triangle
-			{
-				left, top, 0.0f,
-				0.0f, 0.0f
-			},
-			{
-				right, bottom, 0.0f,
-				1.0f, 1.0f
-			},
-			{
-				left, bottom, 0.0f,
-				0.0f, 1.0f
-			},
-			//Second triangle
-			{
-				left, top, 0.0f,
-				0.0f, 0.0f
-			},
-			{
-				right, top, 0.0f,
-				1.0f, 0.0f
-			},
-			{
-				right, bottom, 0.0f,
-				1.0f, 1.0f
-			}
-		};
+		ScreenQuadVertex quad[] =
+		{ { left, top, 0.0f,0.0f, 0.0f }, { right, bottom, 0.0f,1.0f, 1.0f }, { left, bottom, 0.0f,0.0f, 1.0f },
+		  { left, top, 0.0f,0.0f, 0.0f }, { right, top, 0.0f,1.0f, 0.0f }, { right, bottom, 0.0f,1.0f, 1.0f } };
 
 		D3D11_BUFFER_DESC bufferDesc;
 		ZeroMemory(&bufferDesc, sizeof(bufferDesc));
