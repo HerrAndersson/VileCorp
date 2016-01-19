@@ -18,9 +18,9 @@ void Unit::ScanOctant(int depth, int octant, double &startSlope, double endSlope
 	switch (octant)
 	{
 	case 1:
-		prevTileVec			= AI::Vec2D(-1, 0);//In what direction the previous tile was
-		endCornerVec		= AI::Vec2D(-1, -1);//Is multiplied with 0.5
-		startCornerVec		= AI::Vec2D(-1, 1);//Is multiplied with 0.5
+		prevTileVec = AI::Vec2D(-1, 0);//In what direction the previous tile was
+		endCornerVec = AI::Vec2D(-1, -1);//Is multiplied with 0.5
+		startCornerVec = AI::Vec2D(-1, 1);//Is multiplied with 0.5
 
 		y = unitPosY + depth;
 		if (y < 0)
@@ -31,12 +31,12 @@ void Unit::ScanOctant(int depth, int octant, double &startSlope, double endSlope
 		x = max(x, 0);
 		break;
 	case 2:
-		leftToRight			= -1;
-		endSlopeCompOffset	= -1;
-		startSlopeOffset	= -1;
-		prevTileVec			= AI::Vec2D(1, 0);
-		endCornerVec		= AI::Vec2D(1, -1);
-		startCornerVec		= AI::Vec2D(1, 1);
+		leftToRight = -1;
+		endSlopeCompOffset = -1;
+		startSlopeOffset = -1;
+		prevTileVec = AI::Vec2D(1, 0);
+		endCornerVec = AI::Vec2D(1, -1);
+		startCornerVec = AI::Vec2D(1, 1);
 
 		y = unitPosY + depth;
 		if (y >= _tileMap->GetHeight())
@@ -44,16 +44,16 @@ void Unit::ScanOctant(int depth, int octant, double &startSlope, double endSlope
 			return;
 		}
 		x = unitPosX + (int)((startSlope * (double)depth));
-		x = min(x , _tileMap->GetWidth() - 1);
-		break;		
+		x = min(x, _tileMap->GetWidth() - 1);
+		break;
 	case 3:
-		leftToRight			= -1;
-		rowByRow			= false;
-		endSlopeCompOffset	= -1;
-		startSlopeOffset	= -1;
-		prevTileVec			= AI::Vec2D(0, 1);
-		endCornerVec		= AI::Vec2D(-1, 1);
-		startCornerVec		= AI::Vec2D(1, 1);
+		leftToRight = -1;
+		rowByRow = false;
+		endSlopeCompOffset = -1;
+		startSlopeOffset = -1;
+		prevTileVec = AI::Vec2D(0, 1);
+		endCornerVec = AI::Vec2D(-1, 1);
+		startCornerVec = AI::Vec2D(1, 1);
 
 		x = unitPosX + depth;
 		if (x >= _tileMap->GetWidth())
@@ -64,11 +64,11 @@ void Unit::ScanOctant(int depth, int octant, double &startSlope, double endSlope
 		y = min(y, _tileMap->GetHeight() - 1);
 		break;
 	case 4:
-		rowByRow			= false;
-		startSlopeOffset	= -1;
-		prevTileVec			= AI::Vec2D(0, -1);
-		endCornerVec		= AI::Vec2D(-1, -1);
-		startCornerVec		= AI::Vec2D(1, -1);
+		rowByRow = false;
+		startSlopeOffset = -1;
+		prevTileVec = AI::Vec2D(0, -1);
+		endCornerVec = AI::Vec2D(-1, -1);
+		startCornerVec = AI::Vec2D(1, -1);
 
 		x = unitPosX + depth;
 		if (x >= _tileMap->GetWidth())
@@ -79,11 +79,11 @@ void Unit::ScanOctant(int depth, int octant, double &startSlope, double endSlope
 		y = max(y, 0);
 		break;
 	case 5:
-		leftToRight			= -1;
-		startSlopeOffset	= -1;
-		prevTileVec			= AI::Vec2D(-1, 0);
-		endCornerVec		= AI::Vec2D(1, -1);
-		startCornerVec		= AI::Vec2D(-1, -1);
+		leftToRight = -1;
+		startSlopeOffset = -1;
+		prevTileVec = AI::Vec2D(-1, 0);
+		endCornerVec = AI::Vec2D(1, -1);
+		startCornerVec = AI::Vec2D(-1, -1);
 
 		y = unitPosY - depth;
 		if (y < 0)
@@ -94,11 +94,11 @@ void Unit::ScanOctant(int depth, int octant, double &startSlope, double endSlope
 		x = min(x, _tileMap->GetWidth() - 1);
 		break;
 	case 6:
-		endSlopeCompOffset	= -1;
-		startSlopeOffset	= -1;
-		prevTileVec			= AI::Vec2D(-1, 0);
-		endCornerVec		= AI::Vec2D(1, -1);
-		startCornerVec		= AI::Vec2D(-1, -1);
+		endSlopeCompOffset = -1;
+		startSlopeOffset = -1;
+		prevTileVec = AI::Vec2D(-1, 0);
+		endCornerVec = AI::Vec2D(1, -1);
+		startCornerVec = AI::Vec2D(-1, -1);
 
 		y = unitPosY - depth;
 		if (y < 0)
@@ -109,12 +109,12 @@ void Unit::ScanOctant(int depth, int octant, double &startSlope, double endSlope
 		x = max(x, 0);
 		break;
 	case 7:
-		rowByRow			= false;
-		endSlopeCompOffset	= -1;
-		startSlopeOffset	= -1;
-		prevTileVec			= AI::Vec2D(0, -1);
-		endCornerVec		= AI::Vec2D(1, -1);
-		startCornerVec		= AI::Vec2D(-1, -1);
+		rowByRow = false;
+		endSlopeCompOffset = -1;
+		startSlopeOffset = -1;
+		prevTileVec = AI::Vec2D(0, -1);
+		endCornerVec = AI::Vec2D(1, -1);
+		startCornerVec = AI::Vec2D(-1, -1);
 
 		x = unitPosX - depth;
 		if (x < 0)
@@ -126,11 +126,11 @@ void Unit::ScanOctant(int depth, int octant, double &startSlope, double endSlope
 		y = max(y, 0);
 		break;
 	case 8:
-		leftToRight			= -1;
-		rowByRow			= false;
-		prevTileVec			= AI::Vec2D(0, 1);
-		endCornerVec		= AI::Vec2D(1, 1);
-		startCornerVec		= AI::Vec2D(-1, 1);
+		leftToRight = -1;
+		rowByRow = false;
+		prevTileVec = AI::Vec2D(0, 1);
+		endCornerVec = AI::Vec2D(1, 1);
+		startCornerVec = AI::Vec2D(-1, 1);
 
 		x = unitPosX - depth;
 		if (x < 0)
@@ -143,7 +143,7 @@ void Unit::ScanOctant(int depth, int octant, double &startSlope, double endSlope
 	};
 
 	//While within octant relevant scan area
-	while ((endSlopeCompOffset) * GetSlope(x, y, unitPosX, unitPosY, (!rowByRow)) >= endSlope)
+	while ((endSlopeCompOffset)* GetSlope(x, y, unitPosX, unitPosY, (!rowByRow)) >= endSlope)
 	{
 		if (GetVisDistance(x, y, unitPosX, unitPosY) <= visRangeSqrd)
 		{
@@ -153,15 +153,15 @@ void Unit::ScanOctant(int depth, int octant, double &startSlope, double endSlope
 				//If previous tile was in range and not a wall
 				if (_tileMap->IsValid(x, y) && !_tileMap->IsWallOnTile(x + prevTileVec._x, y + prevTileVec._y))
 				{
-						//Recurse and adjust depth with new end slope
-					ScanOctant(depth + 1, octant, startSlope, (endSlopeCompOffset) * GetSlope(x + (endCornerVec._x * 0.5), y + (endCornerVec._y * 0.5), unitPosX, unitPosY, (!rowByRow)));
+					//Recurse and adjust depth with new end slope
+					ScanOctant(depth + 1, octant, startSlope, (endSlopeCompOffset)* GetSlope(x + (endCornerVec._x * 0.5), y + (endCornerVec._y * 0.5), unitPosX, unitPosY, (!rowByRow)));
 				}
 			}
 			else
 			{
 				if ((_tileMap->IsWallOnTile(x + (prevTileVec._x), y + (prevTileVec._y))))
 				{
-					startSlope = (startSlopeOffset) * GetSlope(x + (startCornerVec._x * 0.5), y + (startCornerVec._y * 0.5), unitPosX, unitPosY, (!rowByRow));
+					startSlope = (startSlopeOffset)* GetSlope(x + (startCornerVec._x * 0.5), y + (startCornerVec._y * 0.5), unitPosX, unitPosY, (!rowByRow));
 				}
 				//Add current tile to visible
 				_visibleTiles[_nrOfVisibleTiles] = AI::Vec2D(x, y);
@@ -174,7 +174,7 @@ void Unit::ScanOctant(int depth, int octant, double &startSlope, double endSlope
 		}
 		else					//Else use y 
 		{
-			y+= leftToRight;
+			y += leftToRight;
 		}
 	}
 	if (rowByRow)				//If row by row, use x
@@ -226,8 +226,8 @@ void Unit::CalculatePath()
 	{
 		_path = nullptr;
 		_pathLength = 0;
-	//	_aStar->printMap();
-		
+		//	_aStar->printMap();
+
 	}
 }
 
@@ -243,7 +243,7 @@ Unit::Unit()
 	_aStar = new AI::AStar();
 	_visibleTiles = nullptr;
 	_visionRadius = 0;
-	_goalTilePosition = {0,0};
+	_goalTilePosition = { 0,0 };
 	_heldObject = nullptr;
 	_objective = nullptr;
 	_waiting = -1;
@@ -255,11 +255,11 @@ Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 {
 	_goalPriority = -1;
 	_visionRadius = 3;
-	_visibleTiles = new AI::Vec2D[ (2 * _visionRadius) * (2 * _visionRadius)];
+	_visibleTiles = new AI::Vec2D[(2 * _visionRadius) * (2 * _visionRadius)];
 	_nrOfVisibleTiles = 0;
 	_goalTilePosition = _tilePosition;
 	_tileMap = tileMap;
-	_aStar = new AI::AStar(_tileMap->GetWidth(), _tileMap->GetHeight(), _tilePosition, {0,0}, AI::AStar::OCTILE);
+	_aStar = new AI::AStar(_tileMap->GetWidth(), _tileMap->GetHeight(), _tilePosition, { 0,0 }, AI::AStar::OCTILE);
 	_heldObject = nullptr;
 	_objective = nullptr;
 	_waiting = -1;
@@ -317,7 +317,7 @@ void Unit::FindVisibleTiles()
 	{
 		if (_direction._x == 1)
 		{
-			octant =  2;
+			octant = 2;
 		}
 		else if (_direction._x == -1)
 		{
@@ -369,7 +369,7 @@ void Unit::FindVisibleTiles()
 }
 
 /*
-	Checks tiles that are visible to the unit
+Checks tiles that are visible to the unit
 */
 void Unit::CheckVisibleTiles()
 {
@@ -385,7 +385,12 @@ void Unit::CheckVisibleTiles()
 		}
 		if (_tileMap->UnitsOnTile(_visibleTiles[i]._x, _visibleTiles[i]._y) > 0 && !(_visibleTiles[i] == _goalTilePosition || _visibleTiles[i] == _tilePosition))	//Unit finds another unit
 		{
-			EvaluateTile(_tileMap->GetObjectOnTile(_visibleTiles[i]._x, _visibleTiles[i]._y, ENEMY));				//
+			GameObject* unit = _tileMap->GetObjectOnTile(_visibleTiles[i]._x, _visibleTiles[i]._y, ENEMY);
+			if (unit == nullptr)
+			{
+				unit = _tileMap->GetObjectOnTile(_visibleTiles[i]._x, _visibleTiles[i]._y, GUARD);
+			}
+			EvaluateTile(unit);				//
 		}
 	}
 }
@@ -395,15 +400,15 @@ void Unit::CheckAllTiles()
 	for (int i = 0; i < _tileMap->GetWidth(); i++)
 	{
 		for (int j = 0; j < _tileMap->GetHeight(); j++)
-		{ 
+		{
 			//Handle walls
- 			if (_tileMap->IsWallOnTile(i, j))
+			if (_tileMap->IsWallOnTile(i, j))
 			{
-				_aStar->SetTileCost({i, j}, -1);
+				_aStar->SetTileCost({ i, j }, -1);
 			}
 			else
 			{
-				_aStar->SetTileCost({i, j}, 1);
+				_aStar->SetTileCost({ i, j }, 1);
 			}
 		}
 	}
@@ -414,7 +419,7 @@ void Unit::CheckAllTiles()
 			//Handle objectives
 			if (_tileMap->IsObjectiveOnTile(i, j))
 			{
-				_aStar->SetTileCost({i, j}, 1);
+				_aStar->SetTileCost({ i, j }, 1);
 				EvaluateTile(_tileMap->GetObjectOnTile(i, j, LOOT));
 			}
 		}
@@ -424,7 +429,7 @@ void Unit::CheckAllTiles()
 
 
 /*
-	Moves the goal and finds the path to the new goal
+Moves the goal and finds the path to the new goal
 */
 void Unit::SetGoal(AI::Vec2D goal)
 {
@@ -446,15 +451,15 @@ void Unit::SetGoal(GameObject * objective)
 	CalculatePath();
 }
 
-/* 
-	Moves the unit to the tile it's aiming for and selects a new walking direction.
-	This should NOT update every frame. It only updates when the unit reaches a new tile. 
+/*
+Moves the unit to the tile it's aiming for and selects a new walking direction.
+This should NOT update every frame. It only updates when the unit reaches a new tile.
 
-	Name should be changed to make it clear that this is tile movement
+Name should be changed to make it clear that this is tile movement
 */
 void Unit::Move()
 {
-		
+
 	if (_pathLength <= 0)		//The unit has reached its goal and needs a new one
 	{
 		CheckAllTiles();
@@ -489,7 +494,7 @@ void Unit::Move()
 
 	if (_direction._x == 0)
 	{
- 		_rotation.y = DirectX::XM_PIDIV2 * (_direction._y + 1);
+		_rotation.y = DirectX::XM_PIDIV2 * (_direction._y + 1);
 	}
 	else if (_direction._x == -1)
 	{
@@ -533,7 +538,10 @@ void Unit::Update()
 	}
 	else
 	{
-		act(_objective);
+		if (_objective != nullptr)
+		{
+			act(_objective);
+		}
 		CheckAllTiles();
 		wait(60);
 	}

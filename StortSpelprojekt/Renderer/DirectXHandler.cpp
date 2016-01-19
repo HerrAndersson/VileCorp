@@ -213,6 +213,13 @@ namespace Renderer
 		_deviceContext->OMSetDepthStencilState(_depthDisable, 1);
 	}
 
+	void DirectXHandler::SetGridPassRTVs()
+	{
+		_deviceContext->OMSetDepthStencilState(_depthEnable, 1);
+		_deferredShader->SetRenderTargets(_deviceContext);
+		_deviceContext->RSSetState(_rasterizerStateBack);
+	}
+
 	void DirectXHandler::ResizeResources(HWND hwnd, int windowWidth, int windowHeight)
 	{
 		if (_swapChain)

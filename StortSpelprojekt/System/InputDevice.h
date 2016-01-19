@@ -3,6 +3,7 @@
 
 #define SYSTEM_EXPORT __declspec(dllexport)
 #include <Windows.h>
+#include <stdexcept>
 
 namespace System
 {
@@ -16,19 +17,28 @@ namespace System
 	{
 	private:
 		MouseCoord	_mouseCoord;
-		//136 due to 134 keycodes + 0 is skipped.
-		const static int KEY_CODE_CAP = 136;
+		MouseCoord	_mouseBuffer;
+
+		//142 due to 140 keycodes + 0 is skipped.
+		const static int KEY_CODE_CAP = 142;
 		bool _current[KEY_CODE_CAP];
 		bool _last[KEY_CODE_CAP];
+		bool _buffer[KEY_CODE_CAP];
+
+		//Raw input Data
+		BYTE* _rawBuffer;
+		UINT _rawBufferSize;
 
 		HWND _hwnd;
 
 	public:
-
 		InputDevice(HWND hwnd);
 		~InputDevice();
 
-		void Update();
+		void Update(bool lockMouse = false);
+
+		void HandleRawInput(LPARAM lparam);
+		void RegisterDevice(HWND hwnd);
 		
 		bool IsDown(int key);
 		bool IsUp(int key);
@@ -165,6 +175,12 @@ namespace System
 		const int F22 = VK_F22;
 		const int F23 = VK_F23;
 		const int F24 = VK_F24; //135
+
+		const int ScrollWheelUp		= 136;
+		const int ScrollWheelDown	= 137;
+		const int Mouse3			= 138;
+		const int Mouse4			= 139;
+		const int Mouse5			= 140;
 	}
 	
 }

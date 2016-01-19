@@ -69,9 +69,7 @@ void Trigger::ActivateTraps()
 }
 
 void Trigger::Update()
-{
-}
+{}
 
 void Trigger::Release()
-{
-}
+{}

@@ -10,17 +10,20 @@
 #include "AssetManager.h"
 #include "HUDElement.h"
 
-class UIHandler
+__declspec(align(16))class UIHandler
 {
 private:
-	std::vector<FontInfo>			_fonts;
-	int					_textId;
-	System::WindowSettings			_windowSettings;
-	ID3D11Device*				_device;
-	AssetManager*				_AM;
+	std::vector<FontInfo>				_fonts;
+	int									_textId;
+	System::WindowSettings				_windowSettings;
+	ID3D11Device*						_device;
+	AssetManager*						_AM;
 	std::vector<Renderer::HUDElement>	_textures;
-	int					_textureId;
+	int									_textureId;
+
+	Renderer::Fonts						_fontWrapper;
 	
+	std::vector<DirectX::XMFLOAT4> hitBox;
 
 public:
 	UIHandler(ID3D11Device* device, System::WindowSettings windowSettings, AssetManager* assetManager);
@@ -39,9 +42,18 @@ public:
 	bool RemoveFont(const WCHAR* filePath);
 	//Remove an individual text
 	bool RemoveText(int id);
+	// Hide button
+	void SetButtonVisibility(int id, bool visible);
+	bool GetButtonVisibility(int id);
+	// Check if mouse intersect
+	bool Intersect(POINT mousePoint, int id);
 
 
-	int Add2DTexture(std::string filePath, DirectX::XMFLOAT2 position, DirectX::XMFLOAT2 size);
-	int AddButton(std::string filePath, DirectX::XMFLOAT2 position, DirectX::XMFLOAT2 size);
+	int Add2DTexture(std::string filePath, DirectX::XMFLOAT2 position, DirectX::XMFLOAT2 size, bool visible);
+	int AddButton(std::string filePath, DirectX::XMFLOAT2 position, DirectX::XMFLOAT2 size, bool visible);
 	std::vector<Renderer::HUDElement>* GetTextureData();
+
+	//Overloading these guarantees 16B alignment of XMMATRIX
+	void* operator new(size_t i);
+	void operator delete(void* p);
 };

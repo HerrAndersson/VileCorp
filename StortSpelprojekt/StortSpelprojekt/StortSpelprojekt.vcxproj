@@ -19,20 +19,29 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Animation.cpp" />
     <ClCompile Include="Architecture.cpp" />
-    <ClCompile Include="BaseState.cpp" />
     <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="Controls.cpp" />
     <ClCompile Include="FontInfo.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="GameLogic.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Guard.cpp" />
+    <ClCompile Include="Grid.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="MenuState.cpp" />
     <ClCompile Include="ObjectHandler.cpp" />
-    <ClCompile Include="OptionsState.cpp" />
-    <ClCompile Include="PlayState.cpp" />
-    <ClCompile Include="SplashState.cpp" />
-    <ClCompile Include="StateMachine.cpp" />
+    <ClCompile Include="Player.cpp" />
+    <ClCompile Include="StateMachine\BaseState.cpp" />
+    <ClCompile Include="StateMachine\LevelEdit.cpp" />
+    <ClCompile Include="StateMachine\LevelEditState.cpp" />
+    <ClCompile Include="PickingDevice.cpp" />
+    <ClCompile Include="StateMachine\MenuState.cpp" />
+    <ClCompile Include="StateMachine\OptionsState.cpp" />
+    <ClCompile Include="StateMachine\PlacementState.cpp" />
+    <ClCompile Include="StateMachine\PlayState.cpp" />
+    <ClCompile Include="StateMachine\SplashState.cpp" />
+    <ClCompile Include="StateMachine\StateMachine.cpp" />
     <ClCompile Include="Tilemap.cpp" />
     <ClCompile Include="Trap.cpp" />
     <ClCompile Include="Trigger.cpp" />
@@ -40,20 +49,29 @@
     <ClCompile Include="Unit.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Animation.h" />
     <ClInclude Include="Architecture.h" />
-    <ClInclude Include="BaseState.h" />
     <ClInclude Include="Enemy.h" />
+    <ClInclude Include="Controls.h" />
     <ClInclude Include="FontInfo.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="GameLogic.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="Grid.h" />
     <ClInclude Include="Guard.h" />
-    <ClInclude Include="InitVar.h" />
-    <ClInclude Include="MenuState.h" />
     <ClInclude Include="ObjectHandler.h" />
-    <ClInclude Include="OptionsState.h" />
-    <ClInclude Include="PlayState.h" />
-    <ClInclude Include="SplashState.h" />
-    <ClInclude Include="StateMachine.h" />
+    <ClInclude Include="JsonStructs.h" />
+    <ClInclude Include="Player.h" />
+    <ClInclude Include="StateMachine\BaseState.h" />
+    <ClInclude Include="PickingDevice.h" />
+    <ClInclude Include="StateMachine\LevelEdit.h" />
+    <ClInclude Include="StateMachine\LevelEditState.h" />
+    <ClInclude Include="StateMachine\MenuState.h" />
+    <ClInclude Include="StateMachine\OptionsState.h" />
+    <ClInclude Include="StateMachine\PlacementState.h" />
+    <ClInclude Include="StateMachine\PlayState.h" />
+    <ClInclude Include="StateMachine\SplashState.h" />
+    <ClInclude Include="StateMachine\StateMachine.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Tilemap.h" />
     <ClInclude Include="Trap.h" />
@@ -156,7 +174,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../System;../Renderer;../AI;../AssetManager;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../include;../System;../Renderer;../AI;../AssetManager;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -165,7 +183,8 @@
     </Link>
     <PreBuildEvent>
       <Command>robocopy "C:\%HOMEPATH%\Google Drive\Stort spelprojekt\Assets" "$(OutDir)Assets" /MIR /Z /XA:H /W:5
-IF %ERRORLEVEL% LEQ 3 exit 0</Command>
+robocopy "$(SolutionDir)Renderer\Shaders" "$(OutDir)Assets\Shaders" /MIR /Z /XA:H /W:5
+if errorlevel 1 exit 0 else exit %errorlevel%</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -175,15 +194,14 @@ IF %ERRORLEVEL% LEQ 3 exit 0</Command>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../System;../Renderer;../AI;../AssetManager;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../include;../System;../Renderer;../AI;../AssetManager;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PreBuildEvent>
-      <Command>robocopy "C:\%HOMEPATH%\Google Drive\Stort spelprojekt\Assets" "$(OutDir)Assets" /MIR /Z /XA:H /W:5
-IF %ERRORLEVEL% LEQ 3 exit 0</Command>
+      <Command>robocopy "C:\%HOMEPATH%\Google Drive\Stort spelprojekt\Assets" "$(OutDir)Assets" /MIR /Z /XA:H /W:5</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -195,7 +213,7 @@ IF %ERRORLEVEL% LEQ 3 exit 0</Command>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../System;../Renderer;../AI;../AssetManager;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../include;../System;../Renderer;../AI;../AssetManager;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -206,7 +224,8 @@ IF %ERRORLEVEL% LEQ 3 exit 0</Command>
     </Link>
     <PreBuildEvent>
       <Command>robocopy "C:\%HOMEPATH%\Google Drive\Stort spelprojekt\Assets" "$(OutDir)Assets" /MIR /Z /XA:H /W:5
-IF %ERRORLEVEL% LEQ 3 exit 0</Command>
+robocopy "$(SolutionDir)Renderer\Shaders" "$(OutDir)Assets\Shaders" /MIR /Z /XA:H /W:5
+if errorlevel 1 exit 0 else exit %errorlevel%</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

@@ -28,7 +28,7 @@ Tilemap::Tilemap(int width, int height)
 		_height = height;
 		_width = width;
 		_map = new Tile*[_width];
- 		for (int i = 0; i < _width; i++)
+		for (int i = 0; i < _width; i++)
 		{
 			_map[i] = new Tile[_height];
 
@@ -83,7 +83,7 @@ bool Tilemap::AddObjectToTile(int x, int z, GameObject * obj)
 				_map[x][z]._objectsOnTile[1] = obj;
 				result = true;
 			}
-			else if(_map[x][z]._objectsOnTile[2] == nullptr)
+			else if (_map[x][z]._objectsOnTile[2] == nullptr)
 			{
 				_map[x][z]._objectsOnTile[2] = obj;
 				result = true;
@@ -161,6 +161,12 @@ bool Tilemap::RemoveObjectFromTile(int x, int z, GameObject * obj)
 	return result;
 }
 
+bool Tilemap::RemoveObjectFromTile(GameObject* obj)
+{
+	AI::Vec2D tileCoord = obj->GetTilePosition();
+	return RemoveObjectFromTile(tileCoord._x, tileCoord._y, obj);
+}
+
 void Tilemap::ClearTile(int x, int z)
 {
 	if (IsValid(x, z))
@@ -189,6 +195,25 @@ int Tilemap::GetWidth() const
 GameObject* Tilemap::GetObjectOnTile(int x, int z, int index) const
 {
 	return _map[x][z]._objectsOnTile[index];
+}
+
+std::vector<GameObject*> Tilemap::GetAllObjectsOnTile(AI::Vec2D tileCoords) const
+{
+	std::vector<GameObject*> objectsOnTile = std::vector<GameObject*>();
+	objectsOnTile.reserve(Tile::OBJECT_CAPACITY);
+
+	if (IsValid(tileCoords._x, tileCoords._y))
+	{
+		for (int i = 0; i < Tile::OBJECT_CAPACITY; i++)
+		{
+			if (_map[tileCoords._x][tileCoords._y]._objectsOnTile[i] != nullptr)
+			{
+				objectsOnTile.push_back(_map[tileCoords._x][tileCoords._y]._objectsOnTile[i]);
+			}
+		}
+	}
+
+	return objectsOnTile;
 }
 
 GameObject * Tilemap::GetObjectOnTile(int x, int z, Type type) const
@@ -264,7 +289,7 @@ int Tilemap::UnitsOnTile(int x, int z) const
 
 bool Tilemap::isGuardOnTile(int x, int z) const
 {
-	if (!IsValid(x, z) || ( _map[x][z]._objectsOnTile[1] == nullptr && _map[x][z]._objectsOnTile[2] == nullptr))
+	if (!IsValid(x, z) || (_map[x][z]._objectsOnTile[1] == nullptr && _map[x][z]._objectsOnTile[2] == nullptr))
 	{
 		return false;
 	}

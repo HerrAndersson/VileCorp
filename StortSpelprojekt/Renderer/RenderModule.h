@@ -13,7 +13,7 @@ namespace Renderer
 	class RENDERER_EXPORT RenderModule
 	{
 	private:
-		// Any point of this? Isn't used... - Zache
+		// Any point to this? Isn't used... - Zache
 		struct ScreenQuadVertex
 		{
 			float _x, _y, _z;
@@ -24,6 +24,12 @@ namespace Renderer
 		struct MatrixBufferPerObject
 		{
 			DirectX::XMMATRIX _world;
+		};
+		
+		struct MatrixBufferPerSkinnedObject
+		{
+			DirectX::XMMATRIX world;
+			DirectX::XMFLOAT4X4 bones[30];
 		};
 
 		struct MatrixBufferPerFrame
@@ -38,6 +44,7 @@ namespace Renderer
 		};
 
 		ID3D11Buffer* _matrixBufferPerObject;
+		ID3D11Buffer* _matrixBufferPerSkinnedObject;
 		ID3D11Buffer* _matrixBufferPerFrame;
 
 		DirectXHandler* _d3d;
@@ -48,12 +55,13 @@ namespace Renderer
 
 		void InitializeConstantBuffers();
 
+		void SetResourcesPerObject(DirectX::XMMATRIX* world, ID3D11ShaderResourceView* diffuse, ID3D11ShaderResourceView* specular, std::vector<DirectX::XMFLOAT4X4>* extra);
 		void SetResourcesPerObject(DirectX::XMMATRIX* world, ID3D11ShaderResourceView* diffuse, ID3D11ShaderResourceView* specular);
 		void SetResourcesPerMesh(ID3D11Buffer* vertexBuffer, int vertexSize);
 
 	public:
 
-		enum ShaderStage { GEO_PASS, LIGHT_PASS, HUD_PASS };
+		enum ShaderStage { GEO_PASS, LIGHT_PASS, ANIM_PASS, HUD_PASS, GRID_PASS};
 
 		RenderModule(HWND hwnd, int screenWidth, int screenHeight);
 		~RenderModule();
@@ -64,8 +72,9 @@ namespace Renderer
 		void SetShaderStage(ShaderStage stage);
 
 		void BeginScene(float red, float green, float blue, float alpha);
-		void Render(DirectX::XMMATRIX* world, RenderObject* renderObject);
+		void Render(DirectX::XMMATRIX* world, RenderObject* renderObject, std::vector<DirectX::XMFLOAT4X4>* extra = nullptr);
 		void Render(std::vector<HUDElement>* imageData);
+		void RenderLineList(DirectX::XMMATRIX* world, ID3D11Buffer* lineList, int nrOfPoints);
 		void RenderLightQuad();
 		void EndScene();
 

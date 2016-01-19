@@ -17,17 +17,21 @@ namespace Renderer
 		DirectX::XMFLOAT2			_scale;
 		ID3D11ShaderResourceView*	_texture;
 		DirectX::XMMATRIX			_modelMatrix;
+		bool						_visible;
 
 		void Update();
 
 	public:
 		HUDElement(DirectX::XMFLOAT2 position,
 			DirectX::XMFLOAT2 size,
-			ID3D11ShaderResourceView* texture);
+			ID3D11ShaderResourceView* texture,
+			bool visible);
 		
 		void SetPosition(DirectX::XMFLOAT2 position);
 		void SetScale(DirectX::XMFLOAT2 scale);
+		void SetVisibility(bool visible);
 		DirectX::XMMATRIX*	GetModelMatrix();
 		ID3D11ShaderResourceView*	GetTexture();
+		bool GetVisibility();
 	};
 }

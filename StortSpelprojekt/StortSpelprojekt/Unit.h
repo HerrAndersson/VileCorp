@@ -11,7 +11,7 @@ private:
 	AI::AStar* _aStar;
 	AI::Vec2D _goalTilePosition;
 	AI::Vec2D* _path;
-	
+
 	const Tilemap* _tileMap;		//Pointer to the tileMap in objectHandler(?). Units should preferably have read-, but not write-access.
 	AI::Vec2D _direction;
 	float  _moveSpeed;
@@ -46,15 +46,15 @@ public:
 	AI::Vec2D GetDirection();
 	int GetHealth();
 	GameObject* GetHeldObject()const;
-	void FindVisibleTiles();									 
-	void CheckVisibleTiles();		
-	void CheckAllTiles();				
+	void FindVisibleTiles();
+	void CheckVisibleTiles();
+	void CheckAllTiles();
 	virtual void EvaluateTile(Type objective, AI::Vec2D tile) = 0;
 	virtual void EvaluateTile(GameObject* obj) = 0;
 	void SetGoal(AI::Vec2D goal);
 	void SetGoal(GameObject* objective);
 	void Move();
-	void Update();					
+	void Update();
 	virtual void Release();
 	virtual void act(GameObject* obj) = 0;									//context specific action on the unit's objective
 	void wait(int frames);
