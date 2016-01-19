@@ -52,7 +52,7 @@ namespace Renderer
 		ID3D11ShaderResourceView* GetShadowSRV();
 		int GetSize();
 
-		void ActivateShadowRendering(ID3D11DeviceContext* deviceContext);
+		void SetShadowGenerationStage(ID3D11DeviceContext* deviceContext);
 		void SetDataPerObject(ID3D11DeviceContext* deviceContext, DirectX::XMMATRIX* modelWorld);
 		void SetDataPerFrame(ID3D11DeviceContext* deviceContext, DirectX::XMMATRIX* lightView, DirectX::XMMATRIX* lightProjection);
 	};

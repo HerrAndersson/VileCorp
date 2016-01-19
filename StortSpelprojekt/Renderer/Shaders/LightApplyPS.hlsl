@@ -50,7 +50,7 @@ float3 ReconstructWorldFromCamDepth(float2 uv)
 	return float3(worldPos.xyz / worldPos.w);
 }
 
-float4 main(VS_OUT input) : SV_Target0
+float4 main(VS_OUT input) : SV_TARGET
 {
 	float4 diffuse = diffuseTex.Sample(samplerWrap, input.uv);
 	float4 normal = normalTex.Sample(samplerWrap, input.uv);

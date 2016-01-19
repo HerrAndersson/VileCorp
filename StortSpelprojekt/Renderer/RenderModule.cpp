@@ -175,7 +175,7 @@ namespace Renderer
 	{
 		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
 		SetShadowMapDataPerObject(world);
-		_d3d->SetCullingState(DirectXHandler::CullingState::FRONT);
+		//_d3d->SetCullingState(DirectXHandler::CullingState::FRONT);
 
 		int vertexSize = sizeof(Vertex);
 
@@ -264,27 +264,35 @@ namespace Renderer
 		{
 		case GEO_PASS:
 		{
-			_d3d->SetGeometryPassRTVs();
-			_shaderHandler->SetGeometryPassShaders(deviceContext);
-			break;
-		}
-		case FINAL_PASS:
-		{
-			int nrOfSRVs =_d3d->SetFinalPassRTVs();
-			_shaderHandler->SetFinalPassShaders(deviceContext);
+			_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::DISABLE);
+			_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::BACK);
+
+			_d3d->SetGeometryStage();
+			_shaderHandler->SetGeometryStageShaders(deviceContext);
+
 			break;
 		}
 		case SHADOW_GENERATION:
 		{
-			_shadowMap->ActivateShadowRendering(deviceContext);
-			_shaderHandler->SetShadowPassShaders(deviceContext);
+			_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::DISABLE);
+			_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::FRONT);
+
+			_shadowMap->SetShadowGenerationStage(deviceContext);
+			_shaderHandler->SetShadowGenerationShaders(deviceContext);
+
+			break;
 		}
 		case LIGHT_APPLICATION:
 		{
-			int nrOfSRVs = _d3d->SetLightPassRTVs();
+			_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::ENABLE);
+			_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::BACK);
+
+			int nrOfSRVs = _d3d->SetLightStage();
 			_shaderHandler->SetLightApplicationShaders(deviceContext);
 			ID3D11ShaderResourceView* shadowMapSRV = _shadowMap->GetShadowSRV();
 			_d3d->GetDeviceContext()->PSSetShaderResources(nrOfSRVs, 1, &shadowMapSRV);
+
+			break;
 		}
 		};
 	}

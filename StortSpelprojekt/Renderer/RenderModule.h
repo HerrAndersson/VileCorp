@@ -72,7 +72,7 @@ namespace Renderer
 
 	public:
 
-		enum ShaderStage { GEO_PASS, FINAL_PASS, SHADOW_GENERATION, LIGHT_APPLICATION };
+		enum ShaderStage { GEO_PASS, SHADOW_GENERATION, LIGHT_APPLICATION };
 
 		RenderModule(HWND hwnd, int screenWidth, int screenHeight);
 		~RenderModule();

@@ -32,7 +32,7 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	for (int i = 0; i < 3; i++)
 	{
 		spot = new Renderer::Spotlight(_renderModule->GetDevice(), 0.1f, 1000.0f, XM_PI / 0.082673f, 256, 256, 1.0f, 10.0f, XMFLOAT3(0.0f, 1.0f, 1.0f), 36); //Ska ha samma dimensions som shadow map, som nu ligger i render module
-		spot->SetPositionAndRotation(XMFLOAT3(3*i, 1.0f, 3*i), XMFLOAT3(0, 90 + i*25, 0));
+		spot->SetPositionAndRotation(XMFLOAT3(4*i+3, 1.5f, 6*i+3), XMFLOAT3(0, 90 + i*25, 0));
 		_spotlights.push_back(spot);
 	}
 }
@@ -142,28 +142,35 @@ void Game::Update(float deltaTime)
 void Game::Render()
 {
 	_renderModule->BeginScene(0.0f, 1.0f, 1.0f, 1);
-
-	///////////////////////////////////////////////////////////// Geometry pass //////////////////////////////////////////////////////////
 	_renderModule->SetDataPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
+
+	/*/////////////////////////////////////////////////////////// Geometry pass //////////////////////////////////////////////////////////
+	
+	Render the objects to the diffuse and normal resource views. Camera depth is also generated here.
+			
+	*/
 	_renderModule->SetShaderStage(Renderer::RenderModule::GEO_PASS);
 	
 	std::vector<GameObject*>* gameObjects = _objectHandler->GetGameObjects();
-
 	for (auto i : *gameObjects)
 	{
 		_renderModule->Render(&i->GetMatrix(), i->GetRenderObject());
 	}
 
-	//Todo: The volume has to be rendered with its correct world matrix
 	_renderModule->DEBUG_RenderLightVolume(_spotlights[0]->GetVolumeBuffer(), _spotlights[0]->GetWorldMatrix());
 	_renderModule->DEBUG_RenderLightVolume(_spotlights[1]->GetVolumeBuffer(), _spotlights[1]->GetWorldMatrix());
 	_renderModule->DEBUG_RenderLightVolume(_spotlights[2]->GetVolumeBuffer(), _spotlights[2]->GetWorldMatrix());
 
-	///////////////////////////////////////////////////////////// Light pass /////////////////////////////////////////////////////////////
+	/*/////////////////////////////////////////////////////////// Light pass /////////////////////////////////////////////////////////////
+
+	Generate the shadow map for each spotlight, then apply the lighting/shadowing to the backbuffer render target with additive blending.
+	Instead of rendering the whole screen quad each time, the geometry pass should also output to the backbuffer directly, then the light should be applied with additive blending.
+
+	*/
+
 	_renderModule->SetLightPassDataPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
 	for (auto spot : _spotlights)
 	{
-		//Generates the shadow map for one spotlight
 		_renderModule->SetShaderStage(Renderer::RenderModule::SHADOW_GENERATION);
 		_renderModule->SetShadowMapDataPerSpotLight(spot->GetViewMatrix(), spot->GetProjectionMatrix());
 
@@ -172,35 +179,26 @@ void Game::Render()
 			_renderModule->RenderShadowMap(&i->GetMatrix(), i->GetRenderObject());
 		}
 
-		/*
-		Geo pass should render directly to the backbuffer.
-		Lighting pass should for each light:
-			Create shadow map
-			Render a volume, to backbuffer with additive blending, that represents the light to only do the calculations on the pixels that might be in the light. Apply shadow maps.
-
-		Then FINAL_PASS is not needed, just EndScene
-		*/
-
 		_renderModule->SetShaderStage(Renderer::RenderModule::LIGHT_APPLICATION);
 		_renderModule->SetLightPassDataPerLight(spot);
 
+		_renderModule->RenderScreenQuad();
 	}
 
-	////////////////////////////////////////////////// Render quad to screen //////////////////////////////////////////////////////
-	_renderModule->SetShaderStage(Renderer::RenderModule::FINAL_PASS);
-	
-	XMFLOAT3 rot = _spotlights[0]->GetRotation();
-	rot.y -= 2;
-	_spotlights[0]->SetRotation(rot);
-
-	XMFLOAT3 color = _spotlights[0]->GetColor();
-	color.x = sin(_timer.GetGameTime() / 1000);
-	color.y = sin(_timer.GetGameTime() / 1000 + XMConvertToRadians(120));
-	color.z = sin(_timer.GetGameTime() / 1000 + XMConvertToRadians(240));
-	_spotlights[0]->SetColor(color);
-
-	_renderModule->RenderScreenQuad();
 	_renderModule->EndScene();
+
+	for (int i = 0; i < _spotlights.size(); i++)
+	{
+		XMFLOAT3 rot = _spotlights[i]->GetRotation();
+		rot.y -= (float)i+1;
+		_spotlights[i]->SetRotation(rot);
+
+		XMFLOAT3 color = _spotlights[i]->GetColor();
+		color.x = sin(_timer.GetGameTime() / 1000);
+		color.y = sin(_timer.GetGameTime() / 1000 + XMConvertToRadians(120));
+		color.z = sin(_timer.GetGameTime() / 1000 + XMConvertToRadians(240));
+		_spotlights[i]->SetColor(color);
+	}
 }
 
 int Game::Run()

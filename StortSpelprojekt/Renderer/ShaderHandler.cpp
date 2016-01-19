@@ -358,7 +358,7 @@ namespace Renderer
 		deviceContext->PSSetSamplers(0, 2, samplers);
 	}
 
-	void ShaderHandler::SetGeometryPassShaders(ID3D11DeviceContext * deviceContext)
+	void ShaderHandler::SetGeometryStageShaders(ID3D11DeviceContext * deviceContext)
 	{
 		// Set vertex layout
 		deviceContext->IASetInputLayout(_geoPassVS->_inputLayout);
@@ -394,7 +394,7 @@ namespace Renderer
 		deviceContext->PSSetSamplers(0, 2, samplers);
 	}
 
-	void ShaderHandler::SetShadowPassShaders(ID3D11DeviceContext* deviceContext)
+	void ShaderHandler::SetShadowGenerationShaders(ID3D11DeviceContext* deviceContext)
 	{
 		//Set vertex layout
 		deviceContext->IASetInputLayout(_shadowMapVS->_inputLayout);

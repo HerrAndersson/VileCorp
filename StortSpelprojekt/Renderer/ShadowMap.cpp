@@ -103,7 +103,7 @@ namespace Renderer
 		_shadowShaderResourceView->Release();
 	}
 
-	void ShadowMap::ActivateShadowRendering(ID3D11DeviceContext* deviceContext)
+	void ShadowMap::SetShadowGenerationStage(ID3D11DeviceContext* deviceContext)
 	{
 		ID3D11ShaderResourceView* nullSrv = nullptr;
 		deviceContext->PSSetShaderResources(0, 1, &nullSrv);

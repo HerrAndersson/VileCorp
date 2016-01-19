@@ -60,9 +60,9 @@ namespace Renderer
 		~ShaderHandler();
 
 		void SetDefaultShaders(ID3D11DeviceContext* deviceContext);
-		void SetGeometryPassShaders(ID3D11DeviceContext* deviceContext);
+		void SetGeometryStageShaders(ID3D11DeviceContext* deviceContext);
 		void SetFinalPassShaders(ID3D11DeviceContext* deviceContext);
-		void SetShadowPassShaders(ID3D11DeviceContext* deviceContext);
+		void SetShadowGenerationShaders(ID3D11DeviceContext* deviceContext);
 		void SetLightApplicationShaders(ID3D11DeviceContext* deviceContext);
 	};
 }

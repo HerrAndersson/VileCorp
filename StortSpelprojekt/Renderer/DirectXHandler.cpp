@@ -300,43 +300,31 @@ namespace Renderer
 		return _deviceContext;
 	}
 
-	int DirectXHandler::SetGeometryPassRTVs()
+	int DirectXHandler::SetGeometryStage()
 	{
 		_deviceContext->OMSetDepthStencilState(_depthStateEnable, 1);
-		_deviceContext->RSSetState(_rasterizerStateBack);
 		_deviceContext->RSSetViewports(1, &_viewport);
 		_deviceContext->OMSetRenderTargets(BUFFER_COUNT, _deferredRTVArray, _backBufferDSV);
 		
 		return BUFFER_COUNT;
 	}
 
-	int DirectXHandler::SetFinalPassRTVs()
+	int DirectXHandler::SetShadowGenerationStage()
+	{
+		_deviceContext->OMSetDepthStencilState(_depthStateEnable, 1);
+		return 1;
+	}
+
+	int DirectXHandler::SetLightStage()
 	{
 		_deviceContext->OMSetRenderTargets(1, &_backBufferRTV, nullptr);
-		_deviceContext->RSSetState(_rasterizerStateBack);
-		_deviceContext->OMSetDepthStencilState(_depthStateDisable, 1);
 		_deviceContext->RSSetViewports(1, &_viewport);
 
+		//Setting Diffuse, Normal and Camera depth. Shadow map is set in RenderModule
 		_deferredSRVarray[BUFFER_COUNT] = _backBufferDepthSRV;
 		_deviceContext->PSSetShaderResources(0, BUFFER_COUNT + 1, _deferredSRVarray);
 
 		return BUFFER_COUNT + 1;
-	}
-
-	int DirectXHandler::SetLightPassRTVs()
-	{
-		//Set backbuffer as render target again, and activate blending
-
-		_deviceContext->RSSetState(_rasterizerStateBack);
-		_deviceContext->OMSetDepthStencilState(_depthStateDisable, 1);
-		_deviceContext->RSSetViewports(1, &_viewport);
-
-		//Set deferred srvs and cam depth srv (backbuffer depth)
-		int nrOfSRVs = 0;
-		//ID3D11ShaderResourceView** b = _deferredShader->GetShaderResourceViews(nrOfSRVs);
-		//_deviceContext->PSSetShaderResources(0, nrOfSRVs, b);
-
-		return nrOfSRVs;
 	}
 
 	void DirectXHandler::SetCullingState(CullingState state)
@@ -366,16 +354,17 @@ namespace Renderer
 	void DirectXHandler::SetBlendState(BlendState state)
 	{
 		FLOAT factor[] = { 0,0,0,0 };
+		//Passing NULL as factor gives a default value of (1,1,1,1)
 		switch (state)
 		{
 		case Renderer::DirectXHandler::BlendState::ENABLE:
 		{
-			_deviceContext->OMSetBlendState(_blendStateEnable, factor, 0);
+			_deviceContext->OMSetBlendState(_blendStateEnable, NULL, 0xffffffff);
 			break;
 		}
 		case Renderer::DirectXHandler::BlendState::DISABLE:
 		{
-			_deviceContext->OMSetBlendState(_blendStateDisable, factor, 0);
+			_deviceContext->OMSetBlendState(_blendStateDisable, NULL, 0xffffffff);
 			break;
 		}
 		default:

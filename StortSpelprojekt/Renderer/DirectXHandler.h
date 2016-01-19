@@ -21,6 +21,15 @@ namespace Renderer
 		int _textureWidth;
 		int _textureHeight;
 
+		/*
+
+		Diffuse
+		Normal
+		CamDepthMap
+		ShadowMap
+
+		*/
+
 		ID3D11RenderTargetView*		 _deferredRTVArray[BUFFER_COUNT + 2];
 		ID3D11ShaderResourceView*	 _deferredSRVarray[BUFFER_COUNT + 2];
 
@@ -57,9 +66,9 @@ namespace Renderer
 		ID3D11Device* GetDevice();
 		ID3D11DeviceContext* GetDeviceContext();
 
-		int SetGeometryPassRTVs();
-		int SetFinalPassRTVs();
-		int SetLightPassRTVs();
+		int SetGeometryStage();
+		int SetShadowGenerationStage();
+		int SetLightStage();
 
 		void SetCullingState(CullingState state);
 		void SetBlendState(BlendState state);
