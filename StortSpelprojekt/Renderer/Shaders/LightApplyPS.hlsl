@@ -101,21 +101,24 @@ float4 main(VS_OUT input) : SV_TARGET
 		float2 lerps = frac(texelPos);
 		float shadowCoeff = lerp(lerp(s0, s1, lerps.x), lerp(s2, s3, lerps.x), lerps.y);
 
+		//Needs to calculate the light cone correctly. Or will rendering with light-volume solve this?
 		if (dot(-normalize(lightToPixel), normalize(lightDirection)) > 0.93f)
 		{
 			if (shadowCoeff < depth - epsilon)
 			{
+				//Gives gray outlines where the shadow should be if no ambient is used
 				finalColor *= shadowCoeff;
+				return saturate(float4(finalColor, 1));
 			}
 			else
 			{
 				finalColor += saturate(lightColor * lightIntensity);
 				finalColor *= dot(-normalize(lightToPixel), lightDirection);
+				return saturate(float4(finalColor, 1));
 			}
 		}
 	}
 
 	//Use blending instead?
-
 	return saturate(float4(finalColor, 1));
 }

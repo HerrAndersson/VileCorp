@@ -340,6 +340,7 @@ namespace Renderer
 
 	void RenderModule::RenderScreenQuad()
 	{
+		_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::ENABLE);
 		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
 
 		UINT32 vertexSize = sizeof(ScreenQuadVertex);

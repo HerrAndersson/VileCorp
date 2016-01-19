@@ -137,12 +137,25 @@ void Game::Update(float deltaTime)
 	_UI->OnResize(_window->GetWindowSettings());
 	_SM->Update(deltaTime);
 	_objectHandler->Update();
+
+	for (int i = 0; i < _spotlights.size(); i++)
+	{
+		XMFLOAT3 rot = _spotlights[i]->GetRotation();
+		rot.y -= (float)(i + 1) / 1;
+		_spotlights[i]->SetRotation(rot);
+
+		XMFLOAT3 color = _spotlights[i]->GetColor();
+		color.x = sin(_timer.GetGameTime() / 1000);
+		color.y = sin(_timer.GetGameTime() / 1000 + XMConvertToRadians(120));
+		color.z = sin(_timer.GetGameTime() / 1000 + XMConvertToRadians(240));
+		_spotlights[i]->SetColor(color);
+	}
 }
 
 void Game::Render()
 {
 	_renderModule->BeginScene(0.0f, 1.0f, 1.0f, 1);
-	_renderModule->SetDataPerFrame(_spotlights[3]->GetViewMatrix(), _spotlights[3]->GetProjectionMatrix());
+	_renderModule->SetDataPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
 
 	/*/////////////////////////////////////////////////////////// Geometry pass //////////////////////////////////////////////////////////
 	
@@ -165,40 +178,32 @@ void Game::Render()
 	/*/////////////////////////////////////////////////////////// Light pass /////////////////////////////////////////////////////////////
 
 	Generate the shadow map for each spotlight, then apply the lighting/shadowing to the backbuffer render target with additive blending.
-	Instead of rendering the whole screen quad each time, the geometry pass should also output to the backbuffer directly, then the light should be applied with additive blending.
+	Instead of rendering the whole screen quad each time, the geometry pass should also output to the backbuffer directly,
+	then the light should be applied with additive blending.
 
 	*/
 
-	for (int i = 0; i < _spotlights.size(); i++)
-	{
-		XMFLOAT3 rot = _spotlights[i]->GetRotation();
-		rot.y -= (float)(i + 1) / 10;
-		_spotlights[i]->SetRotation(rot);
+	_renderModule->SetLightDataPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
+	//for (auto spot : _spotlights)
+	//{
 
-		XMFLOAT3 color = _spotlights[i]->GetColor();
-		color.x = sin(_timer.GetGameTime() / 1000);
-		color.y = sin(_timer.GetGameTime() / 1000 + XMConvertToRadians(120));
-		color.z = sin(_timer.GetGameTime() / 1000 + XMConvertToRadians(240));
-		_spotlights[i]->SetColor(color);
-	}
-
-	_renderModule->SetLightDataPerFrame(_spotlights[3]->GetViewMatrix(), _spotlights[3]->GetProjectionMatrix());
-	for (auto spot : _spotlights)
-	{
-		_renderModule->SetShaderStage(Renderer::RenderModule::SHADOW_GENERATION);
-		_renderModule->SetShadowMapDataPerSpotLight(spot->GetViewMatrix(), spot->GetProjectionMatrix());
-
-		for (auto i : *gameObjects)
+		for (int i = 0; i < 4; i++)
 		{
-			_renderModule->RenderShadowMap(&i->GetMatrix(), i->GetRenderObject());
+			_renderModule->SetShaderStage(Renderer::RenderModule::SHADOW_GENERATION);
+			_renderModule->SetShadowMapDataPerSpotLight(_spotlights[i]->GetViewMatrix(), _spotlights[i]->GetProjectionMatrix());
+
+			for (auto i : *gameObjects)
+			{
+				_renderModule->RenderShadowMap(&i->GetMatrix(), i->GetRenderObject());
+			}
+
+			_renderModule->SetShaderStage(Renderer::RenderModule::LIGHT_APPLICATION);
+			_renderModule->SetLightDataPerLight(_spotlights[i]);
+
+			//Render light volume here instead? Render screen quad once first to fill the screen, or just let Geo pass output to backbuffer directly?
+			_renderModule->RenderScreenQuad();
 		}
-
-		_renderModule->SetShaderStage(Renderer::RenderModule::LIGHT_APPLICATION);
-		_renderModule->SetLightDataPerLight(spot);
-
-		//Render light volume here instead? Render screen quad once first to fill the screen, or just let Geo pass output to backbuffer directly?
-		_renderModule->RenderScreenQuad();
-	}
+	//}
 
 	_renderModule->EndScene();
 }
