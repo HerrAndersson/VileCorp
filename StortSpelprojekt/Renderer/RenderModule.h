@@ -67,7 +67,7 @@ namespace Renderer
 		void SetDataPerMesh(ID3D11Buffer* vertexBuffer, int vertexSize);
 		void SetShadowMapDataPerObject(DirectX::XMMATRIX* world);
 
-		//TEMP! (?)
+		//TODO: TEMP! (?) /Jonas
 		ShadowMap* _shadowMap;
 
 	public:
@@ -82,8 +82,8 @@ namespace Renderer
 		void SetDataPerFrame(DirectX::XMMATRIX* view, DirectX::XMMATRIX* projection);
 		void SetShadowMapDataPerSpotLight(DirectX::XMMATRIX* lightView, DirectX::XMMATRIX* lightProjection);
 
-		void SetLightPassDataPerFrame(DirectX::XMMATRIX* camView, DirectX::XMMATRIX* camProjection);
-		void SetLightPassDataPerLight(Spotlight* spotlight);
+		void SetLightDataPerFrame(DirectX::XMMATRIX* camView, DirectX::XMMATRIX* camProjection);
+		void SetLightDataPerLight(Spotlight* spotlight);
 
 		void SetShaderStage(ShaderStage stage);
 

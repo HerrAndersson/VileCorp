@@ -191,7 +191,7 @@ namespace Renderer
 		}
 	}
 
-	void RenderModule::SetLightPassDataPerLight(Spotlight* spotlight)
+	void RenderModule::SetLightDataPerLight(Spotlight* spotlight)
 	{
 		HRESULT result;
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -226,7 +226,7 @@ namespace Renderer
 		deviceContext->PSSetConstantBuffers(3, 1, &_matrixBufferLightPassPerLight);
 	}
 
-	void RenderModule::SetLightPassDataPerFrame(XMMATRIX* camView, XMMATRIX* camProjection)
+	void RenderModule::SetLightDataPerFrame(XMMATRIX* camView, XMMATRIX* camProjection)
 	{
 		HRESULT result;
 		D3D11_MAPPED_SUBRESOURCE mappedResource;

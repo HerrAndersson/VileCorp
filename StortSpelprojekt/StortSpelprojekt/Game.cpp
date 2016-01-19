@@ -29,10 +29,10 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 
 	//TEMP!
 	Renderer::Spotlight* spot;
-	for (int i = 0; i < 3; i++)
+	for (int i = 0; i < 4; i++)
 	{
-		spot = new Renderer::Spotlight(_renderModule->GetDevice(), 0.1f, 1000.0f, XM_PI / 0.082673f, 256, 256, 1.0f, 10.0f, XMFLOAT3(0.0f, 1.0f, 1.0f), 36); //Ska ha samma dimensions som shadow map, som nu ligger i render module
-		spot->SetPositionAndRotation(XMFLOAT3(4*i+3, 1.5f, 6*i+3), XMFLOAT3(0, 90 + i*25, 0));
+		spot = new Renderer::Spotlight(_renderModule->GetDevice(), 0.1f, 1000.0f, XM_PIDIV4 /*XM_PI / 0.082673f*/, 256, 256, 1.0f, 10.0f, XMFLOAT3(0.0f, 1.0f, 1.0f), 36); //Ska ha samma dimensions som shadow map, som nu ligger i render module
+		spot->SetPositionAndRotation(XMFLOAT3(4*i+3, 1.5f, 3*i+3), XMFLOAT3(0, 90 + i*25, 0));
 		_spotlights.push_back(spot);
 	}
 }
@@ -142,7 +142,7 @@ void Game::Update(float deltaTime)
 void Game::Render()
 {
 	_renderModule->BeginScene(0.0f, 1.0f, 1.0f, 1);
-	_renderModule->SetDataPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
+	_renderModule->SetDataPerFrame(_spotlights[3]->GetViewMatrix(), _spotlights[3]->GetProjectionMatrix());
 
 	/*/////////////////////////////////////////////////////////// Geometry pass //////////////////////////////////////////////////////////
 	
@@ -157,9 +157,10 @@ void Game::Render()
 		_renderModule->Render(&i->GetMatrix(), i->GetRenderObject());
 	}
 
-	_renderModule->DEBUG_RenderLightVolume(_spotlights[0]->GetVolumeBuffer(), _spotlights[0]->GetWorldMatrix());
-	_renderModule->DEBUG_RenderLightVolume(_spotlights[1]->GetVolumeBuffer(), _spotlights[1]->GetWorldMatrix());
-	_renderModule->DEBUG_RenderLightVolume(_spotlights[2]->GetVolumeBuffer(), _spotlights[2]->GetWorldMatrix());
+	//for (auto spot : _spotlights)
+	//{
+	//	_renderModule->DEBUG_RenderLightVolume(spot->GetVolumeBuffer(), spot->GetWorldMatrix());
+	//}
 
 	/*/////////////////////////////////////////////////////////// Light pass /////////////////////////////////////////////////////////////
 
@@ -168,7 +169,20 @@ void Game::Render()
 
 	*/
 
-	_renderModule->SetLightPassDataPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
+	for (int i = 0; i < _spotlights.size(); i++)
+	{
+		XMFLOAT3 rot = _spotlights[i]->GetRotation();
+		rot.y -= (float)(i + 1) / 10;
+		_spotlights[i]->SetRotation(rot);
+
+		XMFLOAT3 color = _spotlights[i]->GetColor();
+		color.x = sin(_timer.GetGameTime() / 1000);
+		color.y = sin(_timer.GetGameTime() / 1000 + XMConvertToRadians(120));
+		color.z = sin(_timer.GetGameTime() / 1000 + XMConvertToRadians(240));
+		_spotlights[i]->SetColor(color);
+	}
+
+	_renderModule->SetLightDataPerFrame(_spotlights[3]->GetViewMatrix(), _spotlights[3]->GetProjectionMatrix());
 	for (auto spot : _spotlights)
 	{
 		_renderModule->SetShaderStage(Renderer::RenderModule::SHADOW_GENERATION);
@@ -180,25 +194,13 @@ void Game::Render()
 		}
 
 		_renderModule->SetShaderStage(Renderer::RenderModule::LIGHT_APPLICATION);
-		_renderModule->SetLightPassDataPerLight(spot);
+		_renderModule->SetLightDataPerLight(spot);
 
+		//Render light volume here instead? Render screen quad once first to fill the screen, or just let Geo pass output to backbuffer directly?
 		_renderModule->RenderScreenQuad();
 	}
 
 	_renderModule->EndScene();
-
-	for (int i = 0; i < _spotlights.size(); i++)
-	{
-		XMFLOAT3 rot = _spotlights[i]->GetRotation();
-		rot.y -= (float)i+1;
-		_spotlights[i]->SetRotation(rot);
-
-		XMFLOAT3 color = _spotlights[i]->GetColor();
-		color.x = sin(_timer.GetGameTime() / 1000);
-		color.y = sin(_timer.GetGameTime() / 1000 + XMConvertToRadians(120));
-		color.z = sin(_timer.GetGameTime() / 1000 + XMConvertToRadians(240));
-		_spotlights[i]->SetColor(color);
-	}
 }
 
 int Game::Run()
