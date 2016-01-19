@@ -442,7 +442,7 @@ void Unit::Move()
 		CheckAllTiles();
 	}
 
-	_tilePosition += _direction;
+	//_tilePosition += _direction;
 
 	//TODO: React to objects in same tile --Victor
 
@@ -476,13 +476,13 @@ void Unit::Update()
 	{
 		if (_direction._x == 0 || _direction._y == 0)		//Right angle movement
 		{
-			_position.x += MOVE_SPEED * _direction._x;
-			_position.z += MOVE_SPEED * _direction._y;
+			//_position.x += MOVE_SPEED * _direction._x;
+			//_position.z += MOVE_SPEED * _direction._y;
 		}
 		else												//Diagonal movement
 		{
-			_position.x += AI::SQRT2 * 0.5f * MOVE_SPEED * _direction._x;
-			_position.z += AI::SQRT2 * 0.5f *MOVE_SPEED * _direction._y;
+			//_position.x += AI::SQRT2 * 0.5f * MOVE_SPEED * _direction._x;
+			//_position.z += AI::SQRT2 * 0.5f *MOVE_SPEED * _direction._y;
 		}
 		CalculateMatrix();
 	}

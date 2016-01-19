@@ -285,7 +285,7 @@ namespace Renderer
 		if (renderObject->_isSkinned)
 		{
 			vertexSize = sizeof(WeightedVertex);
-			SetResourcesPerObject(world, diffuseData, specularData, extra);
+			SetResourcesPerObject(world, diffuseData, specularData);
 		}
 		else
 		{
