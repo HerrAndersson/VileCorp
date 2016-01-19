@@ -37,6 +37,7 @@
     <ClCompile Include="Trap.cpp" />
     <ClCompile Include="Trigger.cpp" />
     <ClCompile Include="UIHandler.cpp" />
+    <ClCompile Include="UITree.cpp" />
     <ClCompile Include="Unit.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -59,6 +60,7 @@
     <ClInclude Include="Trap.h" />
     <ClInclude Include="Trigger.h" />
     <ClInclude Include="UIHandler.h" />
+    <ClInclude Include="UITree.h" />
     <ClInclude Include="Unit.h" />
   </ItemGroup>
   <ItemGroup>

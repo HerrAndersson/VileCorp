@@ -6,7 +6,7 @@ class SplashState : public BaseState
 {
 private:
 public:
-	SplashState(InitVar initVar);
+	SplashState(InitVar initVar, const std::string& filename);
 	~SplashState();
 
 	void Update(float deltaTime);

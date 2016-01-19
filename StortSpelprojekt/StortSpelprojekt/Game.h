@@ -23,7 +23,6 @@ private:
 	Renderer::RenderModule*		_renderModule;
 	System::Camera*				_camera;
 	ObjectHandler*				_objectHandler;
-	UIHandler*					_UI;
 	System::Timer				_timer;
 
 	System::InputDevice*		_input;

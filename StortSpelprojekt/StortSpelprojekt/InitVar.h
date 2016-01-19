@@ -7,6 +7,5 @@
 struct InitVar
 {
 	ObjectHandler*		_objectHandler;
-	UIHandler*		_uiHandler;
 	System::InputDevice*	_inputDevice;
 };

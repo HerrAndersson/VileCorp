@@ -1,6 +1,6 @@
 #include "OptionsState.h"
 
-OptionsState::OptionsState(InitVar initVar) : BaseState (initVar)
+OptionsState::OptionsState(InitVar initVar, const std::string& filename) : BaseState(initVar, filename, "OPTIONS")
 {}
 
 OptionsState::~OptionsState()

@@ -1,8 +1,8 @@
 #include "MenuState.h"
 
-MenuState::MenuState(InitVar initVar) : BaseState (initVar)
+MenuState::MenuState(InitVar initVar, const std::string& filename) : BaseState (initVar, filename, "MENU")
 {
-
+	
 }
 
 MenuState::~MenuState()
@@ -19,6 +19,7 @@ void MenuState::Update(float deltaTime)
 		//Check collision with all the buttons
 		//Execute code for button
 	}
+	
 }
 
 void MenuState::OnStateEnter()

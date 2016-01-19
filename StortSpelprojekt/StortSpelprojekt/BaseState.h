@@ -1,7 +1,7 @@
-#ifndef BASESTATE_H
-#define BASESTATE_H
+#pragma once
 
 #include "InitVar.h"
+#include "UITree.h"
 
 enum State
 {
@@ -19,12 +19,12 @@ private:
 
 protected:
 	ObjectHandler*			_objectHandler;
-	UIHandler*				_uiHandler;
+	GUI::UITree				_uiTree;
 	System::InputDevice*	_inputDevice;
 	
 	void ChangeState(State newState);
 public:
-	BaseState(InitVar initVar);
+	BaseState(InitVar initVar, const std::string& filename, const std::string& statename);
 	virtual ~BaseState();
 
 	virtual void Update(float deltaTime) = 0;
@@ -33,5 +33,3 @@ public:
 
 	State GetNewStateRequest()const;
 };
-
-#endif

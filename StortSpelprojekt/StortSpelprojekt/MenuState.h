@@ -7,7 +7,7 @@ class MenuState : public BaseState
 private:
 
 public:
-	MenuState(InitVar initVar);
+	MenuState(InitVar initVar, const std::string& filename);
 	~MenuState();
 
 	void Update(float deltaTime);

@@ -18,7 +18,7 @@ private:
 	void ProcessStateRequest();
 
 public:
-	StateMachine(InitVar initVar);
+	StateMachine(InitVar initVar, const std::string & filename);
 	~StateMachine();
 
 	void Update(float deltaTime);

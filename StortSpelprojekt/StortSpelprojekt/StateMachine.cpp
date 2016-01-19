@@ -1,35 +1,13 @@
 #include "StateMachine.h"
 
-StateMachine::StateMachine(InitVar initVar)
+StateMachine::StateMachine(InitVar initVar, const std::string& filename)
 {
 	_currentState = State::SPLASHSTATE;
 
-	for (int i = 0; i < State::EXITSTATE; i++)
-	{
-		switch (i)
-		{
-		case SPLASHSTATE:
-		{
-			_baseStates.push_back(new SplashState(initVar));
-			break;
-		}
-		case MENUSTATE:
-		{
-			_baseStates.push_back(new MenuState(initVar));
-			break;
-		}
-		case PLAYSTATE:
-		{
-			_baseStates.push_back(new PlayState(initVar));
-			break;
-		}
-		case OPTIONSSTATE:
-		{
-			_baseStates.push_back(new OptionsState(initVar));
-			break;
-		}
-		}
-	}
+	_baseStates.push_back(new SplashState(initVar, filename));
+	_baseStates.push_back(new MenuState(initVar, filename));
+	_baseStates.push_back(new PlayState(initVar, filename));
+	_baseStates.push_back(new OptionsState(initVar, filename));
 
 }
 

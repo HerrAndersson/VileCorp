@@ -243,8 +243,51 @@ namespace Renderer
 		}
 	}
 
-	void RenderModule::Render(std::vector<HUDElement>* imageData)
+	void RenderModule::Render(GUI::Node* root)
 	{
+		XMMATRIX transform;
+		memcpy(&transform, root->GetModelMatrix(), sizeof(XMMATRIX));
+
+		Render(root, transform);
+	}
+
+	void RenderModule::Render(GUI::Node* current, const XMMATRIX& transform)
+	{
+		for (GUI::Node* i : *current->GetChildren())
+		{
+			XMMATRIX childTransform;
+			memcpy(&childTransform, i->GetModelMatrix(), sizeof(XMMATRIX));
+
+			XMMATRIX nextTransform = XMMatrixMultiply(transform, childTransform);
+			Render(i, nextTransform);
+		}
+
+		GUI::Element* element = dynamic_cast<GUI::Element*>(current);
+		if (element)
+		{
+			D3D11_MAPPED_SUBRESOURCE mappedResource;
+			HRESULT result;
+
+			result = _d3d->GetDeviceContext()->Map(_matrixBufferHUD, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+			if (FAILED(result))
+			{
+				throw std::runtime_error("RenderModule::SetResourcesPerObject: Failed to Map _matrixBufferHUD");
+			}
+
+			MatrixBufferHud* dataPtr = (MatrixBufferHud*)mappedResource.pData;
+			memcpy(&dataPtr->model, &transform, sizeof(XMMATRIX));
+
+			_d3d->GetDeviceContext()->Unmap(_matrixBufferHUD, 0);
+
+			_d3d->GetDeviceContext()->VSSetConstantBuffers(0, 1, &_matrixBufferHUD);
+			ID3D11ShaderResourceView* tex = element->GetTexture();
+			_d3d->GetDeviceContext()->PSSetShaderResources(0, 1, &tex);
+
+			_d3d->GetDeviceContext()->Draw(6, 0);
+		}
+		//TODO: Render text
+
+		/*
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
 		HRESULT result;
 
@@ -266,7 +309,9 @@ namespace Renderer
 			_d3d->GetDeviceContext()->PSSetShaderResources(0, 1, &tex);
 
 			_d3d->GetDeviceContext()->Draw(6, 0);
+		
 		}
+		*/
 	}
 
 	void RenderModule::RenderLightQuad()

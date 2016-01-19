@@ -2,10 +2,9 @@
 
 State BaseState::_newStateRequest;
 
-BaseState::BaseState(InitVar initVar)
+BaseState::BaseState(InitVar initVar, const std::string& filename, const std::string& statename) : _uiTree(filename, statename)
 {
 	_objectHandler		= initVar._objectHandler;
-	_uiHandler		= initVar._uiHandler;
 	_inputDevice		= initVar._inputDevice;
 	_newStateRequest	= SPLASHSTATE;
 }

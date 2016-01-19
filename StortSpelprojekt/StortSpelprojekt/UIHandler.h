@@ -3,12 +3,18 @@
 #include <d3d11.h>
 #include <vector>
 #include <DirectXMath.h>
+#include <fstream>
 
 #include "Fonts.h"
 #include "Window.h"
 #include "FontInfo.h"
 #include "AssetManager.h"
 #include "HUDElement.h"
+
+#include "Node.h"
+#include "rapidjson\rapidjson.h"
+#include "rapidjson\document.h"
+
 
 __declspec(align(16))class UIHandler
 {
@@ -24,6 +30,11 @@ private:
 	Renderer::Fonts						_fontWrapper;
 	
 
+
+	GUI::Node* _root;
+
+	void LoadGUITree(GUI::Node* current, rapidjson::Value::ConstMemberIterator start, rapidjson::Value::ConstMemberIterator end);
+	void Release(GUI::Node* node);
 public:
 	UIHandler(ID3D11Device* device, System::WindowSettings windowSettings, AssetManager* assetManager);
 	~UIHandler();
@@ -46,6 +57,9 @@ public:
 	int Add2DTexture(std::string filePath, DirectX::XMFLOAT2 position, DirectX::XMFLOAT2 size);
 	int AddButton(std::string filePath, DirectX::XMFLOAT2 position, DirectX::XMFLOAT2 size);
 	std::vector<Renderer::HUDElement>* GetTextureData();
+
+
+	GUI::Node* GetRootNode() const;
 
 	//Overloading these guarantees 16B alignment of XMMATRIX
 	void* operator new(size_t i);

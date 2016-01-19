@@ -12,7 +12,6 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	_assetManager = new AssetManager(_renderModule->GetDevice());
 	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager);
 	_input = new System::InputDevice(_window->GetHWND());
-	_UI = new UIHandler(_renderModule->GetDevice(), _window->GetWindowSettings(), _assetManager);
 
 	//Init camera
 	_camera = new System::Camera(0.1f, 1000.0f, DirectX::XM_PIDIV2, settings._width, settings._height);
@@ -23,11 +22,9 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 
 	//Init statemachine
 	InitVar initVar;
-	initVar._uiHandler = _UI;
 	initVar._objectHandler = _objectHandler;
-	initVar._uiHandler = _UI;
 	initVar._inputDevice = _input;
-	_SM = new StateMachine(initVar);
+	_SM = new StateMachine(initVar, "Assets/gui.json");
 
 	
 }
@@ -37,7 +34,6 @@ Game::~Game()
 	delete _window;
 	delete _renderModule;
 	delete _camera;
-	delete _UI;
 	delete _SM;
 	delete _input;
 	delete _assetManager;
@@ -136,8 +132,6 @@ void Game::Update(float deltaTime)
 	*/
 	//
 	_input->Update();
-	_UI->Update();
-	_UI->OnResize(_window->GetWindowSettings());
 	_SM->Update(deltaTime);
 	_objectHandler->Update();
 }
@@ -172,7 +166,6 @@ void Game::Render()
 	_renderModule->RenderLightQuad();
 	
 	_renderModule->SetShaderStage(Renderer::RenderModule::HUD_PASS);
-	_renderModule->Render(_UI->GetTextureData());
 	_UI->Render(_renderModule->GetDeviceContext());
 	_renderModule->EndScene();
 }

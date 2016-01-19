@@ -1,5 +1,9 @@
 #include "UIHandler.h"
 
+using namespace std;
+using namespace rapidjson;
+using namespace GUI;
+
 UIHandler::UIHandler(ID3D11Device* device, System::WindowSettings windowSettings, AssetManager* assetManager)
 {
 	_device			= device;
@@ -9,6 +13,63 @@ UIHandler::UIHandler(ID3D11Device* device, System::WindowSettings windowSettings
 	_textureId		= 0;
 
 	_fontWrapper.CreateFontWrapper(device);
+
+	ifstream file("../../Output/Bin/x86/Debug/Assets/gui.json");
+	if (!file.good())
+	{
+		throw std::runtime_error("Failed to open gui.json");
+	}
+	string str((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
+	file.close();
+	
+	Document d;
+	d.Parse(str.c_str());
+
+	_root = new GUI::Node(XMFLOAT2(0.0f, 0.0f), XMFLOAT2(1.0f, 1.0f));
+
+
+	LoadGUITree(_root, d.MemberBegin(), d.MemberEnd());
+}
+
+void UIHandler::LoadGUITree(GUI::Node* current, rapidjson::Value::ConstMemberIterator start, rapidjson::Value::ConstMemberIterator end)
+{
+	Value::ConstMemberIterator it = start;
+	for (; it != end; ++it)
+	{
+		string id(it->name.GetString());
+		Node* newNode = nullptr;
+		if (id == "_parent") //This is a transform node
+		{
+			XMFLOAT2 position;
+			XMFLOAT2 scale;
+			for (auto i = it->value.MemberBegin(); i != it->value.MemberEnd(); ++i)
+			{
+				if (i->name == "position")
+				{
+					if (i->value.IsArray())
+					{
+						position = XMFLOAT2((float)i->value[0].GetDouble(),
+											(float)i->value[1].GetDouble());
+					}
+				}
+				else if (i->name == "scale")
+				{
+					if (i->value.IsArray())
+					{
+						scale = XMFLOAT2(	(float)i->value[0].GetDouble(),
+											(float)i->value[1].GetDouble());
+					}
+				}
+			}
+			newNode = new Node(position, scale);
+		}
+		else //This is an element
+		{
+
+		}
+
+		current->GetChildren()->push_back(newNode);
+	}
 }
 
 UIHandler::~UIHandler()
@@ -16,6 +77,19 @@ UIHandler::~UIHandler()
 	for (auto i : _fonts)
 	{
 		i.Release();
+	}
+	Release(_root);
+}
+
+void UIHandler::Release(GUI::Node* node)
+{
+	for (Node* i : *node->GetChildren())
+	{
+		Release(i);
+	}
+	if (node != nullptr)
+	{
+		delete node;
 	}
 }
 
@@ -163,6 +237,11 @@ int UIHandler::AddButton(std::string filePath, DirectX::XMFLOAT2 position, Direc
 std::vector<Renderer::HUDElement>* UIHandler::GetTextureData()
 {
 	return &_textures;
+}
+
+GUI::Node* UIHandler::GetRootNode() const
+{
+	return _root;
 }
 
 void* UIHandler::operator new(size_t i)
