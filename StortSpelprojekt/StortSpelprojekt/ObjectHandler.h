@@ -8,6 +8,7 @@
 #include "Enemy.h"
 #include "Guard.h"
 #include "Tilemap.h"
+#include "JsonStructs.h"
 #include "AssetManager.h"
 
 /*
@@ -37,14 +38,14 @@ class ObjectHandler
 private:
 	vector<vector<GameObject*>> _gameObjects;
 	//vector<RenderList> _renderLists;
-
+	GameObjectInfo _gameObjectData;
 	short _idCounter;
 	Tilemap* _tilemap;
 
 	AssetManager* _assetManager;
 
 public:
-	ObjectHandler(ID3D11Device* device, AssetManager* assetManager);
+	ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data);
 	~ObjectHandler();
 
 	//Add a gameobject

@@ -144,7 +144,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
-    <ClInclude Include="ConfigParser.h" />
+    <ClInclude Include="JsonParser.h" />
     <ClInclude Include="InputDevice.h" />
     <ClInclude Include="Shapes.h" />
     <ClInclude Include="stdafx.h" />

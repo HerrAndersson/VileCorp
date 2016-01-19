@@ -56,6 +56,7 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameLogic.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="GameObjectDataLoader.h" />
     <ClInclude Include="Grid.h" />
     <ClInclude Include="Guard.h" />
     <ClInclude Include="LevelEdit.h" />

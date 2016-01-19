@@ -16,7 +16,7 @@ AssetManager::AssetManager(ID3D11Device* device)
 
 	SetupTilesets();
 
-	ActivateTileset("default");
+	ActivateTileset("default-24-25");
 	SetupLevelFileNameList();
 }
 

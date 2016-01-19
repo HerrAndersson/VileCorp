@@ -27,7 +27,11 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 
 	_UI = new UIHandler(_renderModule->GetDevice(), _window->GetWindowSettings(), _assetManager);
 	
-	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager);
+
+	GameObjectInfo data;
+	GameObjectDataLoader gameObjectDataLoader;
+	gameObjectDataLoader.LoadGameObjectInfo(&data);
+	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager, &data);
 	
 	
 	//Init statemachine

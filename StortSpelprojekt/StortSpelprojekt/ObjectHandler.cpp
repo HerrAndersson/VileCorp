@@ -2,11 +2,12 @@
 
 
 
-ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager)
+ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data)
 {
 	_idCounter = 0;
 	_assetManager = assetManager;
 	_tilemap = nullptr;
+	_gameObjectData = *data;
 
 	for (int i = 0; i < NR_OF_TYPES; i++)
 	{
