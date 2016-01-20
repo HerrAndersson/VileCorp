@@ -16,7 +16,6 @@ AssetManager::AssetManager(ID3D11Device* device)
 
 	SetupTilesets();
 
-	ActivateTileset("mansion");
 	SetupLevelFileNameList();
 }
 
@@ -55,7 +54,7 @@ void AssetManager::SetupRenderObjectList(Tileset* tileset)
 {
 	_modelFiles->clear();
 	vector<string>* vec = &tileset->_floors;
-	for (int i = 0; i < 7; i++)
+	for (int i = 0; i < NR_OF_TYPES; i++)
 	{
 		for (string str : *vec)
 		{
@@ -482,11 +481,11 @@ RenderObject * AssetManager::GetRenderObjectByType(Type type, uint index)
 	{
 		if (renderObject->_type == type)
 		{
-			i++;
 			if (i == index)
 			{
 				return renderObject;
 			}
+			i++;
 		}
 	}
 	return nullptr;

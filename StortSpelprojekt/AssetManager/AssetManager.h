@@ -21,6 +21,7 @@ struct Tileset
 	vector<string> _floors;
 	vector<string> _walls;
 	vector<string> _loot;
+	vector<string> _spawns;
 	vector<string> _traps;
 	vector<string> _triggers;
 	vector<string> _guards;
@@ -47,6 +48,7 @@ struct TilesetHandler
 		{
 			_tileset->_name = str;
 			_nameNext = false;
+			_cur = &_tileset->_floors;
 		}
 		else
 		{
@@ -78,6 +80,10 @@ struct TilesetHandler
 		else if (!strcmp("loot", str))
 		{
 			_cur = &_tileset->_loot;
+		}
+		else if (!strcmp("spawns", str))
+		{
+			_cur = &_tileset->_spawns;
 		}
 		else if (!strcmp("traps", str))
 		{

@@ -7,21 +7,22 @@ ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, G
 	_tilemap = nullptr;
 	_gameObjectData = *data;
 
-	ActivateTileset("default");
 
 	for (int i = 0; i < NR_OF_TYPES; i++)
 	{
 		_gameObjects.push_back(std::vector<GameObject*>());
 	}
+	ActivateTileset("default2");
 }
 
 void ObjectHandler::ActivateTileset(string name)
 {
+	Release();
 	_assetManager->ActivateTileset(name);
 
 	for (uint a = 0; a < Type::NR_OF_TYPES; a++)
 	{
-		for (uint i = 0; i < _gameObjectData._objects.size(); i++)
+		for (uint i = 0; i < _gameObjectData._objects[a]->size(); i++)
 		{
 			_gameObjectData._objects[a]->at(i)->_renderObject = _assetManager->GetRenderObjectByType((Type)a, i);
 		}
@@ -87,7 +88,7 @@ bool ObjectHandler::Remove(int ID)
 {
 	for (int i = 0; i < NR_OF_TYPES; i++)
 	{
-		for (int j = 0; j < _gameObjects[i].size(); j++)
+		for (uint j = 0; j < _gameObjects[i].size(); j++)
 		{
 			if (_gameObjects[i][j]->GetID() == ID)
 			{
@@ -138,7 +139,7 @@ bool ObjectHandler::Remove(int ID)
 
 bool ObjectHandler::Remove(Type type, int ID)
 {
-	for (int i = 0; i < _gameObjects[type].size(); i++)
+	for (uint i = 0; i < _gameObjects[type].size(); i++)
 	{
 		if (_gameObjects[type][i]->GetID() == ID)
 		{

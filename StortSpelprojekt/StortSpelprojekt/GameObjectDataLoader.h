@@ -28,23 +28,35 @@ inline bool GameObjectDataLoader::LoadGameObjectInfo(GameObjectInfo* data)
 		string folder = "Assets/Gameobjects/";
 		folder.append(typeStrings[(Type)a]);
 		GetFilenamesInDirectory((char*)folder.c_str(), ".json", filenames);
-		data->_objects[a]->resize(filenames.size());
-		for (uint i = 0; i < data->_objects[a]->size(); i++)
+		for (uint i = 0; i < filenames.size(); i++)
 		{
-			if (a = Type::FLOOR)
+			switch (a)
+			{
+			case FLOOR:
 				System::loadJSON(data->Floors(i), filenames[i]);
-			else if (a = Type::WALL)
+				break;
+			case WALL:
 				System::loadJSON(data->Walls(i), filenames[i]);
-			else if (a = Type::TRAP)
-				System::loadJSON(data->Traps(i), filenames[i]);
-			else if (a = Type::TRIGGER)
-				System::loadJSON(data->Triggers(i), filenames[i]);
-			else if (a = Type::LOOT)
+				break;
+			case LOOT:
 				System::loadJSON(data->Loot(i), filenames[i]);
-			else if (a = Type::GUARD)
+				break;
+			case SPAWN:
+				System::loadJSON(data->Spawns(i), filenames[i]);
+				break;
+			case TRAP:
+				System::loadJSON(data->Traps(i), filenames[i]);
+				break;
+			case TRIGGER:
+				System::loadJSON(data->Triggers(i), filenames[i]);
+				break;
+			case GUARD:
 				System::loadJSON(data->Guards(i), filenames[i]);
-			else if (a = Type::ENEMY)
+				break;
+			case ENEMY:
 				System::loadJSON(data->Enemies(i), filenames[i]);
+				break;
+			}
 		}
 		filenames.clear();
 	}
@@ -64,6 +76,10 @@ inline void GameObjectDataLoader::WriteSampleGameObjects()
 	{
 		GameObjectLootInfo sample;
 		System::saveJSON(&sample, "Assets/Gameobjects/Loot/sample.json", "sample");
+	}
+	{
+		GameObjectSpawnInfo sample;
+		System::saveJSON(&sample, "Assets/Gameobjects/Spawns/sample.json", "sample");
 	}
 	{
 		GameObjectTrapInfo sample;

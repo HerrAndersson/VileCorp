@@ -12,7 +12,7 @@ static std::map<Type, std::string> typeStrings =
 	{ FLOOR, "Floors/" },
 	{ WALL, "Walls/" },
 	{ LOOT, "Loot/" },
-	{ SPAWN, "" },
+	{ SPAWN, "Spawns/" },
 	{ TRAP, "Traps/" },
 	{ TRIGGER, "Triggers/" },
 	{ GUARD, "Guards/" },
