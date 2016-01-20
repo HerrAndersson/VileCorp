@@ -15,7 +15,7 @@ namespace Renderer
 	class RENDERER_EXPORT RenderModule
 	{
 	private:
-		// Any point to this? Isn't used... - Zache
+
 		struct ScreenQuadVertex
 		{
 			float _x, _y, _z;
@@ -30,8 +30,8 @@ namespace Renderer
 		
 		struct MatrixBufferPerSkinnedObject
 		{
-			DirectX::XMMATRIX world;
-			DirectX::XMFLOAT4X4 bones[30];
+			DirectX::XMMATRIX   _world;
+			DirectX::XMFLOAT4X4 _bones[30];
 		};
 
 		struct MatrixBufferPerFrame
@@ -42,25 +42,25 @@ namespace Renderer
 
 		struct MatrixBufferHud
 		{
-			DirectX::XMMATRIX model;
+			DirectX::XMMATRIX _model;
 		};
 
 		struct MatrixBufferLightPassPerFrame
 		{
-			DirectX::XMMATRIX invertedView;
-			DirectX::XMMATRIX invertedProjection;
+			DirectX::XMMATRIX _invertedView;
+			DirectX::XMMATRIX _invertedProjection;
 		};
 
 		struct MatrixBufferLightPassPerLight
 		{
-			DirectX::XMMATRIX viewMatrix;
-			DirectX::XMMATRIX projectionMatrix;
-			DirectX::XMFLOAT3 position;
-			float angle;
-			DirectX::XMFLOAT3 direction;
-			float intensity;
-			DirectX::XMFLOAT3 color;
-			float range;
+			DirectX::XMMATRIX _viewMatrix;
+			DirectX::XMMATRIX _projectionMatrix;
+			DirectX::XMFLOAT3 _position;
+			float			  _angle;
+			DirectX::XMFLOAT3 _direction;
+			float			  _intensity;
+			DirectX::XMFLOAT3 _color;
+			float			  _range;
 		};
 
 		ID3D11Buffer*		_matrixBufferPerObject;
@@ -69,11 +69,11 @@ namespace Renderer
 		ID3D11Buffer*		_matrixBufferLightPassPerFrame;
 		ID3D11Buffer*		_matrixBufferLightPassPerLight;
 		ID3D11Buffer*		_screenQuad;
+		ID3D11Buffer*		_matrixBufferHUD;
 
 		DirectXHandler*		_d3d;
 		ShaderHandler*		_shaderHandler;
 
-		ID3D11Buffer* _matrixBufferHUD;
 		void InitializeConstantBuffers();
 
 		void SetDataPerObject(DirectX::XMMATRIX* world, ID3D11ShaderResourceView* diffuse, ID3D11ShaderResourceView* specular);
@@ -109,7 +109,7 @@ namespace Renderer
 		void RenderScreenQuad();
 		void EndScene();
 
-		void DEBUG_RenderLightVolume(ID3D11Buffer* volume, DirectX::XMMATRIX* world);
+		void DEBUG_RenderLightVolume(ID3D11Buffer* volume, DirectX::XMMATRIX* world, int vertexCount, int vertexSize);
 
 		ID3D11Device* GetDevice() const;
 		ID3D11DeviceContext* GetDeviceContext() const;

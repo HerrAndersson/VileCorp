@@ -37,7 +37,7 @@ namespace Renderer
 		double a = fov;													
 
 		XMVECTOR B = L + d*r; //Center of the cone base.
-		float w = r * sin(a); //Radius of the cone base.
+		double w = r * sin(a); //Radius of the cone base.
 
 		//Calculate a vector X that is normal to direction
 		XMVECTOR T = XMVectorSet(1, 0, 0, 0);
@@ -56,11 +56,12 @@ namespace Renderer
 
 	    //The vertices of the cone base are given by: v(t) = B + w * (x * cos t + y * sin t), with t varying from 0 to 2*pi.
 		double pi2 = 2 * XM_PI;
+		resolution = 3;
 		std::vector<XMFLOAT3> points;
 		XMFLOAT3 element;
 		for (double t = 0; t < pi2; t += pi2 / resolution)
 		{
-			XMVECTOR v = B + w * (X * cos(t) + Y * sin(t));
+			XMVECTOR v = B + (float)w * (X * (float)cos(t) + Y * (float)sin(t));
 			XMStoreFloat3(&element, v);
 			points.push_back(element);
 		}
@@ -89,12 +90,14 @@ namespace Renderer
 		triangles.push_back(points[0]);
 
 		//Create buffer
-		_nrOfTriangles = resolution * 3 * 2;
+		_vertexCount = resolution * 3 * 2;
+		_vertexSize = sizeof(XMFLOAT3);
+
 		D3D11_BUFFER_DESC bufferDesc;
 		ZeroMemory(&bufferDesc, sizeof(bufferDesc));
 		bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 		bufferDesc.Usage = D3D11_USAGE_DEFAULT;
-		bufferDesc.ByteWidth = sizeof(XMFLOAT3) * _nrOfTriangles;
+		bufferDesc.ByteWidth = _vertexSize * _vertexCount;
 
 		D3D11_SUBRESOURCE_DATA data;
 		data.pSysMem = triangles.data();
@@ -207,6 +210,16 @@ namespace Renderer
 	XMFLOAT3 Spotlight::GetColor() const
 	{
 		return _color;
+	}
+
+	int Spotlight::GetVertexCount() const
+	{
+		return _vertexCount;
+	}
+
+	int Spotlight::GetVertexSize() const
+	{
+		return _vertexSize;
 	}
 
 	ID3D11Buffer* Spotlight::GetVolumeBuffer() const

@@ -6,8 +6,8 @@ namespace System
 {
 	Camera::Camera(float nearClip, float farClip, float fov, int width, int height)
 	{
-		_nearClip = nearClip; //0.5f;
-		_farClip = farClip; // 1000.0f;
+		_nearClip = nearClip;
+		_farClip = farClip;
 		_fieldOfView = fov;
 		_aspectRatio = (float)width / (float)height;
 
@@ -18,7 +18,6 @@ namespace System
 		_forward = DirectX::XMFLOAT3(0, 0, 1);
 		_rotation = DirectX::XMFLOAT3(0, 0, 0);
 		
-
 		//Prepare vectors for Matrix initialization
 		DirectX::XMVECTOR vPos, vFor, vUp;
 		vPos = DirectX::XMLoadFloat3(&_position);
@@ -34,7 +33,8 @@ namespace System
 	}
 
 	Camera::~Camera()
-	{}
+	{
+	}
 
 	void Camera::Update()
 	{
@@ -94,14 +94,6 @@ namespace System
 	DirectX::XMMATRIX* Camera::GetProjectionMatrix()
 	{
 		return &_proj;
-	}
-	DirectX::XMMATRIX* Camera::GetOrthoMatrix()
-	{
-		return &_ortho;
-	}
-	DirectX::XMMATRIX* Camera::GetBaseViewMatrix()
-	{
-		return &_baseView;
 	}
 
 	DirectX::XMFLOAT3 Camera::GetForwardVector() const

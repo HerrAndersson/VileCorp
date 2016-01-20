@@ -388,7 +388,7 @@ void LevelEdit::HandleSelected()
 			if (_lastSelected->GetType() == WALL || FLOOR || ENEMY || GUARD)
 			{
 				_lastSelected = _selectedObj;
-				_lastSelected->SetPosition(XMFLOAT3(_lastSelected->GetPosition().x, 0.1, _lastSelected->GetPosition().z));
+				_lastSelected->SetPosition(XMFLOAT3(_lastSelected->GetPosition().x, 0.1f, _lastSelected->GetPosition().z));
 				//XMFLOAT3 tempScale = temp->GetScale();
 				//temp->SetScale(XMFLOAT3(1.1, 1.1, 1.1));
 			}

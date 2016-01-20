@@ -39,6 +39,7 @@ namespace Renderer
 		delete _d3d;
 		delete _shaderHandler;
 		delete _shadowMap;
+
 		SAFE_RELEASE(_screenQuad);
 		SAFE_RELEASE(_matrixBufferPerObject);
 		SAFE_RELEASE(_matrixBufferPerSkinnedObject);
@@ -158,8 +159,8 @@ namespace Renderer
 		}
 
 		MatrixBufferPerSkinnedObject* dataPtr = (MatrixBufferPerSkinnedObject*)mappedResource.pData;
-		dataPtr->world = worldMatrixC;
-		memcpy(&dataPtr->bones, extra->data(), sizeof(DirectX::XMFLOAT4X4) * extra->size());
+		dataPtr->_world = worldMatrixC;
+		memcpy(&dataPtr->_bones, extra->data(), sizeof(DirectX::XMFLOAT4X4) * extra->size());
 		
 		deviceContext->Unmap(_matrixBufferPerSkinnedObject, 0);
 
@@ -256,14 +257,14 @@ namespace Renderer
 
 		dataPtr = (MatrixBufferLightPassPerLight*)mappedResource.pData;
 
-		dataPtr->viewMatrix = view;
-		dataPtr->projectionMatrix = proj;
-		dataPtr->position = spotlight->GetPosition();
-		dataPtr->angle = XMConvertToDegrees(spotlight->GetAngle());
-		dataPtr->direction = spotlight->GetDirection();
-		dataPtr->intensity = spotlight->GetIntensity();
-		dataPtr->color = spotlight->GetColor();
-		dataPtr->range = spotlight->GetRange();
+		dataPtr->_viewMatrix = view;
+		dataPtr->_projectionMatrix = proj;
+		dataPtr->_position = spotlight->GetPosition();
+		dataPtr->_angle = XMConvertToDegrees(spotlight->GetAngle());
+		dataPtr->_direction = spotlight->GetDirection();
+		dataPtr->_intensity = spotlight->GetIntensity();
+		dataPtr->_color = spotlight->GetColor();
+		dataPtr->_range = spotlight->GetRange();
 
 		deviceContext->Unmap(_matrixBufferLightPassPerLight, 0);
 
@@ -292,8 +293,8 @@ namespace Renderer
 
 		dataPtr = (MatrixBufferLightPassPerFrame*)mappedResource.pData;
 
-		dataPtr->invertedView = invView;
-		dataPtr->invertedProjection = invProj;
+		dataPtr->_invertedView = invView;
+		dataPtr->_invertedProjection = invProj;
 
 		deviceContext->Unmap(_matrixBufferLightPassPerFrame, 0);
 
@@ -393,12 +394,12 @@ namespace Renderer
 		if (renderObject->_isSkinned)
 		{
 			vertexSize = sizeof(WeightedVertex);
-			SetDataPerObject(world, diffuseData, specularData);
+			//SetResourcePerObject(world, diffuseData, specularData);
 		}
 		else
 		{
 			vertexSize = sizeof(Vertex);
-			SetDataPerObject(world, diffuseData, specularData);
+			//SetResourcePerObject(world, diffuseData, specularData);
 		}
 		
 		for (auto mesh : renderObject->_meshes)
@@ -424,7 +425,7 @@ namespace Renderer
 				}
 
 				MatrixBufferHud* dataPtr = (MatrixBufferHud*)mappedResource.pData;
-				dataPtr->model = *(i.GetModelMatrix());
+				dataPtr->_model = *(i.GetModelMatrix());
 
 				_d3d->GetDeviceContext()->Unmap(_matrixBufferHUD, 0);
 
@@ -470,22 +471,22 @@ namespace Renderer
 		deviceContext->Draw(6, 0);
 	}
 
-	void RenderModule::DEBUG_RenderLightVolume(ID3D11Buffer* volume, DirectX::XMMATRIX* world)
+	void RenderModule::DEBUG_RenderLightVolume(ID3D11Buffer* volume, DirectX::XMMATRIX* world, int vertexCount, int vertexSize)
 	{
+		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
 		_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::NONE);
+		_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::DISABLE);
 
 		XMMATRIX i = XMMatrixTranspose(*world);
 		SetDataPerObject(&i, nullptr, nullptr);
 
-		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
-
-		UINT32 vertexSize = sizeof(XMFLOAT3);
+		UINT32 vtxs = vertexSize;
 		UINT32 offset = 0;
 
-		deviceContext->IASetVertexBuffers(0, 1, &volume, &vertexSize, &offset);
+		deviceContext->IASetVertexBuffers(0, 1, &volume, &vtxs, &offset);
 		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		deviceContext->Draw(72*3*2, 0);
+		deviceContext->Draw(vertexCount, 0);
 	}
 
 	void RenderModule::EndScene()

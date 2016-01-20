@@ -29,7 +29,8 @@ namespace Renderer
 
 		DirectX::XMFLOAT3	_color;
 
-		int					_nrOfTriangles;
+		int					_vertexCount;
+		int					_vertexSize;
 		ID3D11Buffer*		_lightConeVolume;
 
 		void Update();
@@ -50,6 +51,8 @@ namespace Renderer
 		float GetIntensity() const;
 		float GetRange() const;
 		float GetAngle() const;
+		int GetVertexCount() const;
+		int GetVertexSize() const;
 
 		DirectX::XMFLOAT3 GetColor() const;
 		DirectX::XMFLOAT3 GetPosition() const;
