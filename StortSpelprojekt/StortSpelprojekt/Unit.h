@@ -11,35 +11,54 @@ private:
 	AI::AStar* _aStar;
 	AI::Vec2D _goalTilePosition;
 	AI::Vec2D* _path;
-	int _pathLength;
+
 	const Tilemap* _tileMap;		//Pointer to the tileMap in objectHandler(?). Units should preferably have read-, but not write-access.
 	AI::Vec2D _direction;
 	float  _moveSpeed;
 
 	int _visionRadius;
-	int nrOfVisibleTiles;
 	AI::Vec2D* _visibleTiles;
 	int _nrOfVisibleTiles;
+
+	int _waiting;					//Temporarily counting frame. Should use a timer eventually
+
+	int _health;
+
+	GameObject* _objective;
 
 	void ScanOctant(int depth, int octant, double &startSlope, double endSlope);
 	double GetSlope(double x1, double y1, double x2, double y2, bool invert);
 	int GetVisDistance(int x1, int y1, int x2, int y2);
+	void CalculatePath();
+
+protected:
+	int _goalPriority;				//Lower value means higher priority
+	int _pathLength;
+	GameObject* _heldObject;
+	int GetApproxDistance(AI::Vec2D target)const;
 
 public:
 	Unit();
 	Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject* renderObject, const Tilemap* tileMap);
-	~Unit();
-	int getPathLength()const;
-	AI::Vec2D getGoal();
-	AI::Vec2D getDirection();
+	virtual ~Unit();
+	int GetPathLength()const;
+	AI::Vec2D GetGoal();
+	AI::Vec2D GetDirection();
+	int GetHealth();
+	GameObject* GetHeldObject()const;
 	void FindVisibleTiles();
 	void CheckVisibleTiles();
 	void CheckAllTiles();
-	void CalculatePath();
-	void CalculatePath(AI::Vec2D goal);
+	virtual void EvaluateTile(Type objective, AI::Vec2D tile) = 0;
+	virtual void EvaluateTile(GameObject* obj) = 0;
+	void SetGoal(AI::Vec2D goal);
+	void SetGoal(GameObject* objective);
 	void Move();
 	void Update();
-	void Release();
+	virtual void Release();
+	virtual void act(GameObject* obj) = 0;									//context specific action on the unit's objective
+	void wait(int frames);
+	void ChangeHealth(int damage);
 
 };
 

@@ -29,6 +29,8 @@ namespace System
 		_proj = DirectX::XMMatrixPerspectiveFovLH(_fieldOfView, _aspectRatio, _nearClip, _farClip);
 		_ortho = DirectX::XMMatrixOrthographicLH((float)width, (float)height, _nearClip, _farClip);
 		_baseView = DirectX::XMMatrixLookAtLH(DirectX::XMVectorNegate(vFor), vFor, vUp);
+
+		_mode = LOCKED_CAM;
 	}
 
 	Camera::~Camera()
@@ -106,11 +108,20 @@ namespace System
 	{
 		return _rotatedForward;
 	}
-
 	DirectX::XMFLOAT3 Camera::GetRightVector() const
 	{
 		return _rotatedRight;
 	}
+
+	CamMode Camera::GetMode() const
+	{
+		return _mode;
+	}
+	void Camera::SetMode(CamMode mode)
+	{
+		_mode = mode;
+	}
+
 
 	void* Camera::operator new(size_t i)
 	{

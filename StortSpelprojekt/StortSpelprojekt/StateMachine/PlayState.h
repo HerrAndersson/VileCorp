@@ -7,10 +7,9 @@ class PlayState : public BaseState
 {
 private:
 	GameLogic _gameLogic;
-	InitVar _initVar;
 public:
-	PlayState(InitVar initVar);
-	~PlayState();
+	PlayState(System::Controls* controls, ObjectHandler* objectHandler, UIHandler* uiHandler, System::InputDevice* inputDevice, System::Camera* camera, PickingDevice* pickingDevice);
+	virtual ~PlayState();
 
 	void Update(float deltaTime);
 	void OnStateEnter();

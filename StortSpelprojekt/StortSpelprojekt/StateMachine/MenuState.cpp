@@ -1,8 +1,14 @@
 #include "MenuState.h"
 
-MenuState::MenuState(InitVar initVar) : BaseState (initVar)
+MenuState::MenuState(System::Controls* controls, ObjectHandler* objectHandler, UIHandler* uiHandler, System::InputDevice* inputDevice, System::Camera* camera, PickingDevice* pickingDevice)
+	: BaseState (_controls, _objectHandler, _uiHandler, _inputDevice, _camera, _pickingDevice)
 {
-
+	_controls = controls;
+	_objectHandler = objectHandler;
+	_uiHandler = uiHandler;
+	_inputDevice = inputDevice;
+	_camera = camera;
+	_pickingDevice = pickingDevice;
 }
 
 MenuState::~MenuState()
@@ -12,21 +18,20 @@ MenuState::~MenuState()
 
 void MenuState::Update(float deltaTime)
 {
-	if (_inputHandler->IsPressed(System::Input::LeftMouse))
+	if (_controls->IsFunctionKeyDown("DEBUG:ENABLE_FREECAM"))
 	{
 		//Get mouse coord
 		//Calculate mouse coord to screenspace
 		//Check collision with all the buttons
 		//Execute code for button
-		
 	}
 }
 
 void MenuState::OnStateEnter()
 {
-	_uiHandler->AddCustomFont(L"../../Output/Bin/x86/Debug/Assets/Fonts/Calibri.ttf", L"Calibri", XMFLOAT2(0, 0), 32.0f, 0xff0099ff, L"Continue");
-	_uiHandler->Add2DTexture("floor.png", DirectX::XMFLOAT2(-0.8f, -0.8f), DirectX::XMFLOAT2(0.2f, 0.2f));
-	_uiHandler->AddButton("floor.png", DirectX::XMFLOAT2(0.8f, -0.8f), DirectX::XMFLOAT2(0.2f, 0.2f));
+	_uiHandler->AddCustomFont(L"Assets/Fonts/Calibri.ttf", L"Calibri", XMFLOAT2(0, 0), 32.0f, 0xff0099ff, L"Continue");
+	//_uiHandler->Add2DTexture("floor.png", DirectX::XMFLOAT2(-0.8f, -0.8f), DirectX::XMFLOAT2(0.2f, 0.2f));
+	//_uiHandler->AddButton("floor.png", DirectX::XMFLOAT2(0.8f, -0.8f), DirectX::XMFLOAT2(0.2f, 0.2f));
 	
 	/*
 	_uiHandler->AddCustomFont(L"../../Output/Bin/x86/Debug/Assets/Fonts/Calibri.ttf", L"Calibri", XMFLOAT2(0, 100), 32.0f, 0xff0099ff, L"Start");

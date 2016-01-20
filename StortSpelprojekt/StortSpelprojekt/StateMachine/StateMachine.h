@@ -2,7 +2,6 @@
 
 #include "stdafx.h"
 
-#include "InitVar.h"
 #include "BaseState.h"
 #include "SplashState.h"
 #include "MenuState.h"
@@ -19,9 +18,16 @@ private:
 	std::vector<BaseState*>	_baseStates;
 	void ProcessStateRequest();
 
+	ObjectHandler*			_objectHandler;
+	UIHandler*				_uiHandler;
+	System::InputDevice*	_inputDevice;
+	System::Camera*			_camera;
+	PickingDevice*			_pickingDevice;
+
 public:
-	StateMachine(InitVar initVar);
+	StateMachine(System::Controls* controls, ObjectHandler* objectHandler, UIHandler* uiHandler, System::InputDevice* inputDevice, System::Camera* camera, PickingDevice* pickingDevice);
 	~StateMachine();
 
 	void virtual Update(float deltaTime);
+	State GetState();
 };

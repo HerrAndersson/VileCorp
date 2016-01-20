@@ -1,8 +1,14 @@
 #include "PlacementState.h"
 
-PlacementState::PlacementState(InitVar initVar) : BaseState(initVar)
+PlacementState::PlacementState(System::Controls* controls, ObjectHandler* objectHandler, UIHandler* uiHandler, System::InputDevice* inputDevice, System::Camera* camera, PickingDevice* pickingDevice)
+	: BaseState(_controls, _objectHandler, _uiHandler, _inputDevice, _camera, _pickingDevice)
 {
-	_initVar = initVar;
+	_controls = controls;
+	_objectHandler = objectHandler;
+	_uiHandler = uiHandler;
+	_inputDevice = inputDevice;
+	_camera = camera;
+	_pickingDevice = pickingDevice;
 	_budget = 1000;
 }
 
@@ -13,14 +19,14 @@ PlacementState::~PlacementState()
 
 void PlacementState::Update(float deltaTime)
 {
-	_levelEdit.Update();
+	_levelEdit.Update(deltaTime);
 
 	//tempAddObj
 
 	int cost = 20;
 
 	//T adds Trap
-	if (_inputHandler->IsPressed(0x54))
+	if (_inputDevice->IsPressed(0x54))
 	{
 		_trapChosen = true;
 		if (_budget - cost >= 0)
@@ -92,7 +98,7 @@ void PlacementState::Update(float deltaTime)
 
 void PlacementState::OnStateEnter()
 {
-	_levelEdit.Initialize(&_initVar);
+	_levelEdit.Initialize(_objectHandler, _inputDevice, _controls, _pickingDevice, _camera, _uiHandler);
 }
 
 void PlacementState::OnStateExit()

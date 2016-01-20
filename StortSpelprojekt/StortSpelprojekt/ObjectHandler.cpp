@@ -20,42 +20,35 @@ ObjectHandler::~ObjectHandler()
 	delete _tilemap;
 }
 
-GameObject* ObjectHandler::Add(Type type, /*int renderObjectID,*/ XMFLOAT3 position = XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3 rotation = XMFLOAT3(0.0f, 0.0f, 0.0f))
+bool ObjectHandler::Add(Type type, int renderObjectID, XMFLOAT3 position = XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3 rotation = XMFLOAT3(0.0f, 0.0f, 0.0f))
 {
 	GameObject* object = nullptr;
+	bool addedObject = false;
 
 	switch (type)
 	{
 	case FLOOR:
-		object = new Architecture(_idCount, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(type));
-		_gameObjects[type].push_back(object);
-		_tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
-		break;
 	case WALL:
-		object = new Architecture(_idCount, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(type));
-		_gameObjects[type].push_back(object);
-		_tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
-		break;
 	case LOOT:
+	case SPAWN:
 		object = new Architecture(_idCount, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(type));
-		_gameObjects[type].push_back(object);
-		_tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
+		addedObject = _tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
 		break;
-	case UNIT:
-		//TODO Tileposition parameters are temporary
-		object = new Unit(_idCount, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(type), _tilemap);
-		_gameObjects[type].push_back(object);
-		_tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
+	case ENEMY:
+		object = new Enemy(_idCount, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(type), _tilemap);
+		addedObject = _tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
+		break;
+	case GUARD:
+		object = new Guard(_idCount, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(type), _tilemap);
+		addedObject = _tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
 		break;
 	case TRAP:
-		object = new Trap(_idCount, position, rotation, AI::Vec2D(1,1), type, _assetManager->GetRenderObject(type));
-		_gameObjects[type].push_back(object);
-		_tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
+		object = new Trap(_idCount, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(type));
+		addedObject = _tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
 		break;
 	case TRIGGER:
 		object = new Trigger(_idCount, position, rotation, AI::Vec2D(1,1), type, _assetManager->GetRenderObject(type));
-		_gameObjects[type].push_back(object);
-		_tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
+		addedObject = _tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
 		break;
 	default:
 		
@@ -63,9 +56,20 @@ GameObject* ObjectHandler::Add(Type type, /*int renderObjectID,*/ XMFLOAT3 posit
 	}
 
 	_idCount++;
-	_objectCount++;
+	
+	if (addedObject == true)
+	{
+		_gameObjects[type].push_back(object);
+		_objectCount++;
+	}
+	else
+	{
+		//TODO: Log failed add attempts - Rikhard
+		delete object;
 
-	return object;
+	}
+
+	return addedObject;
 }
 
 bool ObjectHandler::Remove(int ID)
@@ -127,7 +131,7 @@ bool ObjectHandler::Remove(Type type, int ID)
 	{
 		if (_gameObjects[type][i]->GetID() == ID)
 		{
-			// Release object resource
+			_tilemap->RemoveObjectFromTile(_gameObjects[type].at(i));
 			_gameObjects[type][i]->Release();
 
 			delete _gameObjects[type][i];
@@ -162,6 +166,11 @@ GameObject * ObjectHandler::Find(int ID)
 	return nullptr;
 }
 
+bool ObjectHandler::Remove(GameObject* gameObject)
+{
+	return Remove(gameObject->GetType(), gameObject->GetID());
+}
+
 GameObject* ObjectHandler::Find(Type type, int ID)
 {
 	for (GameObject* g : _gameObjects[type])
@@ -174,7 +183,7 @@ GameObject* ObjectHandler::Find(Type type, int ID)
 	return nullptr;
 }
 
-GameObject* ObjectHandler::Find(Type type, short index)
+GameObject* ObjectHandler::Find(Type type, short index)//TODO why? - Fredrik
 {
 	for (GameObject* g : _gameObjects[type])
 	{
@@ -183,15 +192,14 @@ GameObject* ObjectHandler::Find(Type type, short index)
 	return nullptr;
 }
 
-vector<GameObject*> ObjectHandler::GetAll(Type type)
+vector<GameObject*> ObjectHandler::GetAllByType(Type type)
 {
 	return _gameObjects[type];
 }
 
-RenderList ObjectHandler::GetAll(int renderObjectID)
+RenderList ObjectHandler::GetAllByType(int renderObjectID)
 {
 	// TODO make it so that it returns a vector of renderlists to improve performance /Markus
-	// Har jag missförstått något? /Zache
 
 	RenderList list;
 	list._renderObject = _assetManager->GetRenderObject(renderObjectID);;
@@ -203,12 +211,12 @@ RenderList ObjectHandler::GetAll(int renderObjectID)
 		{
 			if (g->GetRenderObject() == _assetManager->GetRenderObject(renderObjectID))
 			{
-				list._modelMatrices[count] = g->GetMatrix();
+				//TODO _modelMatrices should hold XMMATRIX* instead to ensure proper alignment of the matrices |Jonas a.k.a. ] 0 |\| /-\ 5
+				list._modelMatrices[count] = *g->GetMatrix();
 			}
 			count++;
 		}
 	}
-
 
 	return list;
 }
@@ -244,45 +252,76 @@ bool ObjectHandler::LoadLevel(int lvlIndex)
 
 	for (auto i : gameObjectData)
 	{
-		Add((Type)i._tileType, DirectX::XMFLOAT3(i._posX, 0, i._posZ), DirectX::XMFLOAT3(0, i._rotY, 0));
+		Add((Type)i._tileType, i._tileType, DirectX::XMFLOAT3(i._posX, 0, i._posZ), DirectX::XMFLOAT3(0, i._rotY, 0));
 	}
 	return false;
 }
 
 void ObjectHandler::InitPathfinding()
 {
-	for (vector<GameObject*>::iterator i = _gameObjects[UNIT].begin();
-	i != _gameObjects[UNIT].end(); i++)
+	for (vector<GameObject*>::iterator i = _gameObjects[ENEMY].begin(); i != _gameObjects[ENEMY].end(); i++)
 	{
-		if ((*i)->GetType() == UNIT)																	//Handle unit movement
-		{
-			Unit* unit = dynamic_cast<Unit*>((*i));
-			unit->CheckAllTiles();
-			unit->CalculatePath(unit->getGoal());
-			unit->Move();
-		}
+		Unit* unit = dynamic_cast<Unit*>((*i));
+		//unit->CheckAllTiles();
+		unit->Move();
+	}
+	for (vector<GameObject*>::iterator i = _gameObjects[GUARD].begin(); i != _gameObjects[GUARD].end(); i++)
+	{
+
+		Unit* unit = dynamic_cast<Unit*>((*i));
+		//unit->CheckAllTiles();
+		unit->Move();
 	}
 }
 
-void ObjectHandler::Update()
+void ObjectHandler::Update(float deltaTime)
 {
 	//Update all objects gamelogic
 
 	for (int i = 0; i < NR_OF_TYPES; i++)
 	{
-		for (GameObject* g : _gameObjects[i])
+		for (int j = 0; j < _gameObjects[i].size(); j++)
 		{
+			GameObject* g = _gameObjects[i][j];
 			g->Update();
-			if (g->GetType() == UNIT)																	//Handle unit movement
+
+			if (g->GetPickUpState() == PICKINGUP)
 			{
-				float xOffset = abs(g->GetPosition().x - g->GetTilePosition()._x);
-				float zOffset = abs(g->GetPosition().z - g->GetTilePosition()._y);
-				if (xOffset > 0.98 || zOffset > 0.98)																//If unit is on a new tile	
+				_tilemap->RemoveObjectFromTile(g);
+				g->SetPickUpState(HELD);
+			}
+			else if (g->GetPickUpState() == DROPPING)
+			{
+				_tilemap->AddObjectToTile(g->GetTilePosition()._x, g->GetTilePosition()._y, g);
+				g->SetPickUpState(ONTILE);
+			}
+
+			if (g->GetType() == GUARD || g->GetType() == ENEMY)									//Handle unit movement
+			{
+				Unit* unit = dynamic_cast<Unit*>(g);
+
+				GameObject* heldObject = unit->GetHeldObject();
+
+				if (heldObject != nullptr)
 				{
-					Unit* unit = dynamic_cast<Unit*>(g);
-					_tilemap->RemoveObjectFromTile(g->GetTilePosition()._x, g->GetTilePosition()._y, unit);
-					unit->Move();
-					_tilemap->AddObjectToTile(g->GetTilePosition()._x, g->GetTilePosition()._y, unit);
+					heldObject->SetPosition(DirectX::XMFLOAT3(unit->GetPosition().x, unit->GetPosition().y + 2, unit->GetPosition().z));
+				}
+				if (unit->GetHealth() <= 0)
+				{
+					//TODO: drop held object and set its tile position --Victor
+					Remove(g);
+					j--;
+				}
+				else
+				{
+					float xOffset = abs(g->GetPosition().x - g->GetTilePosition()._x);
+					float zOffset = abs(g->GetPosition().z - g->GetTilePosition()._y);
+					if (xOffset > 0.99 || zOffset > 0.99)																		 //If unit is on a new tile	
+					{
+						_tilemap->RemoveObjectFromTile(g->GetTilePosition()._x, g->GetTilePosition()._y, unit);
+						unit->Move();
+						_tilemap->AddObjectToTile(g->GetTilePosition()._x, g->GetTilePosition()._y, unit);
+					}
 				}
 			}
 		}

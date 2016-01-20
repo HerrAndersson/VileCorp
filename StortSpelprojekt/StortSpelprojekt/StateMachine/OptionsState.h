@@ -6,8 +6,8 @@ class OptionsState : public BaseState
 {
 private:
 public:
-	OptionsState(InitVar initVar);
-	~OptionsState();
+	OptionsState(System::Controls* controls, ObjectHandler* objectHandler, UIHandler* uiHandler, System::InputDevice* inputDevice, System::Camera* camera, PickingDevice* pickingDevice);
+	virtual ~OptionsState();
 
 	void Update(float deltaTime);
 	void OnStateEnter();

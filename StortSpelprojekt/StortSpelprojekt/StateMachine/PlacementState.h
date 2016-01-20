@@ -7,14 +7,11 @@ class PlacementState : public BaseState
 {
 private:
 	LevelEdit _levelEdit;
-	InitVar _initVar;
-
 	int _budget;
 	bool _trapChosen = false;
 
-
 public:
-	PlacementState(InitVar initVar);
+	PlacementState(System::Controls* controls, ObjectHandler* objectHandler, UIHandler* uiHandler, System::InputDevice* inputDevice, System::Camera* camera, PickingDevice* pickingDevice);
 	~PlacementState();
 
 	void Update(float deltaTime);

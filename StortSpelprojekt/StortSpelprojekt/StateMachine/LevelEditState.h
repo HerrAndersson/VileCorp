@@ -7,14 +7,14 @@ class LevelEditState : public BaseState
 {
 private:
 	LevelEdit _levelEdit;
-	InitVar _initVar;
+
 
 	bool _floorChosen = false;
 	bool _wallChosen = false;
 
 public:
-	LevelEditState(InitVar initVar);
-	~LevelEditState();
+	LevelEditState(System::Controls* controls, ObjectHandler* objectHandler, UIHandler* uiHandler, System::InputDevice* inputDevice, System::Camera* camera, PickingDevice* pickingDevice);
+	virtual ~LevelEditState();
 
 	void Update(float deltaTime);
 	void OnStateEnter();

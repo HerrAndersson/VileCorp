@@ -2,7 +2,6 @@
 
 #include "stdafx.h"
 #include "StateMachine/StateMachine.h"
-#include "StateMachine/InitVar.h"
 #include "Window.h"
 #include "RenderModule.h"
 #include "Camera.h"
@@ -11,7 +10,13 @@
 #include "Timer.h"
 #include "AssetManager.h"
 #include "Trap.h"
-#include "InputDevice.h"
+#include "Controls.h"
+#include "Grid.h"
+#include "PickingDevice.h"
+#include "Spotlight.h"
+#include "ShadowMap.h"
+#include "JsonStructs.h"
+#include "ConfigParser.h"
 
 class Game
 {
@@ -25,19 +30,36 @@ private:
 	ObjectHandler*				_objectHandler;
 	UIHandler*					_UI;
 	System::Timer				_timer;
-	System::InputDevice*		_input;
+//	Animation*					_animation;
+	System::Controls*			_controls;
 	AssetManager*				_assetManager;
+	Grid*						_grid = nullptr;
+	PickingDevice*				_pickingDevice;
+	System::InputDevice*		_input;
+	PlayerInfo					_playerInfo;
+	
+	
 
 	//Resizing window, directx resources, camera
-	void HandleInput();
 	void ResizeResources(System::WindowSettings settings);
 	void Update(float deltaTime);
 	void Render();
 
-public:
 
+
+
+	//TODO: TEMP! Make this pretty
+	std::vector<Renderer::Spotlight*> _spotlights;
+	
+
+public:
 	Game(HINSTANCE hInstance, int nCmdShow);
 	~Game();
 
+	LRESULT CALLBACK MessageHandler(HWND, UINT, WPARAM, LPARAM);
+	static LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
+
 	int Run();
 };
+
+static Game* _gameHandle;

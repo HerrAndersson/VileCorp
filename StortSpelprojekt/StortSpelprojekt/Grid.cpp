@@ -32,10 +32,9 @@ Grid::Grid(ID3D11Device* device, float gridOffset, int gridSize)
 
 	for (int i = -gridSize; i <= gridSize; i++)
 	{
-		_gridMatrices.push_back(DirectX::XMMatrixTranslation(i * gridOffset, 1.0, 0.0));
-		_gridMatrices.push_back((DirectX::XMMatrixRotationY(DirectX::XM_PIDIV2) * DirectX::XMMatrixTranslation(i * gridOffset, 0.0, 0.0)));
+		_gridMatrices.push_back(DirectX::XMMatrixTranslation(0.5f, 0.01f, i * gridOffset + 0.5f));
+		_gridMatrices.push_back((DirectX::XMMatrixRotationY(DirectX::XM_PIDIV2) * DirectX::XMMatrixTranslation(i * gridOffset + 0.5f, 0.01f, 0.5f)));
 	}
-
 }
 
 Grid::~Grid()

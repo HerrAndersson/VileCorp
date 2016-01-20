@@ -5,6 +5,8 @@
 #include "Trap.h"
 #include "Architecture.h"
 #include "Trigger.h"
+#include "Enemy.h"
+#include "Guard.h"
 #include "Tilemap.h"
 #include "AssetManager.h"
 
@@ -48,18 +50,19 @@ public:
 	~ObjectHandler();
 
 	//Add a gameobject
-	GameObject* Add(Type type, XMFLOAT3 position, XMFLOAT3 rotation);
+	bool Add(Type type, int renderObjectID, XMFLOAT3 position, XMFLOAT3 rotation);
 	
 	bool Remove(int ID);
 	bool Remove(Type type, int ID);
+	bool Remove(GameObject* gameObject);
 
 	GameObject* Find(int ID);
 	GameObject* Find(Type type, int ID);
 	GameObject* Find(Type type, short index);
 	//Returns a vector containing all gameobjects with the same type
-	vector<GameObject*> GetAll(Type type);
+	vector<GameObject*> GetAllByType(Type type);
 	//Returns a list of a renderobject and matrices for all objects using the renderobject
-	RenderList GetAll(int renderObjectID);
+	RenderList GetAllByType(int renderObjectID);
 	vector<vector<GameObject*>>* GetGameObjects();
 
 	int GetObjectCount() const;
@@ -72,7 +75,7 @@ public:
 	void InitPathfinding();
 
 	//Update gamelogic of all objects
-	void Update();
+	void Update(float deltaTime);
 	//Relase all object resources
 	void Release();
 };

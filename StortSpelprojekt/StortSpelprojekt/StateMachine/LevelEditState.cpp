@@ -1,8 +1,14 @@
 #include "LevelEditState.h"
 
-LevelEditState::LevelEditState(InitVar initVar) : BaseState(initVar)
+LevelEditState::LevelEditState(System::Controls* controls, ObjectHandler* objectHandler, UIHandler* uiHandler, System::InputDevice* inputDevice, System::Camera* camera, PickingDevice* pickingDevice)
+	: BaseState(_controls, _objectHandler, _uiHandler, _inputDevice, _camera, _pickingDevice)
 {
-	_initVar = initVar;
+	_controls = controls;
+	_objectHandler = objectHandler;
+	_uiHandler = uiHandler;
+	_inputDevice = inputDevice;
+	_camera = camera;
+	_pickingDevice = pickingDevice;
 }
 
 LevelEditState::~LevelEditState()
@@ -10,12 +16,12 @@ LevelEditState::~LevelEditState()
 
 void LevelEditState::Update(float deltaTime)
 {
-	_levelEdit.Update();
+	_levelEdit.Update(deltaTime);
 
 	//tempAddObj
 
 	//R Adds Floor
-	if (_inputHandler->IsPressed(0x52))
+	if (_inputDevice->IsPressed(0x52))
 	{
 		_floorChosen = true;
 		vector<GameObject*>* vec = &_objectHandler->GetGameObjects()->at(FLOOR);
@@ -59,7 +65,7 @@ void LevelEditState::Update(float deltaTime)
 	}
 	
 	//T adds Wall
-	if (_inputHandler->IsPressed(0x54))
+	if (_inputDevice->IsPressed(0x54))
 	{
 		_wallChosen = true;
 		vector<GameObject*>* vec = &_objectHandler->GetGameObjects()->at(WALL);
@@ -109,9 +115,9 @@ void LevelEditState::Update(float deltaTime)
 	}
 
 	//Y adds Unit
-	if (_inputHandler->IsPressed(0x59))
+	if (_inputDevice->IsPressed(0x59))
 	{
-		_levelEdit.Add(UNIT, UNIT);
+		_levelEdit.Add(ENEMY, ENEMY);
 	}
 
 	//U adds loot
@@ -132,7 +138,7 @@ void LevelEditState::Update(float deltaTime)
 
 void LevelEditState::OnStateEnter()
 {
-	_levelEdit.Initialize(&_initVar);
+	_levelEdit.Initialize(_objectHandler, _inputDevice, _controls, _pickingDevice, _camera, _uiHandler);
 }
 
 void LevelEditState::OnStateExit()

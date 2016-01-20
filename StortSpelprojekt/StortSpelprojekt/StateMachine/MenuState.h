@@ -8,8 +8,8 @@ private:
 
 
 public:
-	MenuState(InitVar initVar);
-	~MenuState();
+	MenuState(System::Controls* controls, ObjectHandler* objectHandler, UIHandler* uiHandler, System::InputDevice* inputDevice, System::Camera* camera, PickingDevice* pickingDevice);
+	virtual ~MenuState();
 
 	void Update(float deltaTime);
 	void OnStateEnter();

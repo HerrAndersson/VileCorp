@@ -1,15 +1,15 @@
 #include "StateMachine.h"
 
-StateMachine::StateMachine(InitVar initVar)
+StateMachine::StateMachine(System::Controls* controls, ObjectHandler* objectHandler, UIHandler* uiHandler, System::InputDevice* inputDevice, System::Camera* camera, PickingDevice* pickingDevice)
 {
 	_currentState = State::SPLASHSTATE;
 
-	_baseStates.push_back(new SplashState(initVar));
-	_baseStates.push_back(new MenuState(initVar));
-	_baseStates.push_back(new PlayState(initVar));
-	_baseStates.push_back(new PlacementState(initVar));
-	_baseStates.push_back(new LevelEditState(initVar));
-	_baseStates.push_back(new OptionsState(initVar));
+	_baseStates.push_back(new SplashState(controls, objectHandler, uiHandler, inputDevice, camera, pickingDevice));
+	_baseStates.push_back(new MenuState(controls, objectHandler, uiHandler, inputDevice, camera, pickingDevice));
+	_baseStates.push_back(new PlayState(controls, objectHandler, uiHandler, inputDevice, camera, pickingDevice));
+	_baseStates.push_back(new PlacementState(controls, objectHandler, uiHandler, inputDevice, camera, pickingDevice));
+	_baseStates.push_back(new LevelEditState(controls, objectHandler, uiHandler, inputDevice, camera, pickingDevice));
+	_baseStates.push_back(new OptionsState(controls, objectHandler, uiHandler, inputDevice, camera, pickingDevice));
 }
 
 StateMachine::~StateMachine()
@@ -46,4 +46,9 @@ void StateMachine::ProcessStateRequest()
 		_currentState = _baseStates[_currentState]->GetNewStateRequest();
 		_baseStates[_currentState]->OnStateEnter();
 	}
+}
+
+State StateMachine::GetState() 
+{
+	return _currentState;
 }

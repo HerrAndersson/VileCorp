@@ -12,25 +12,29 @@ If the object doesn't need a _renderObject, set it to nullptr.
 If the object has a renderObject but is out of sight _visibility will be false.
 */
 
-enum Type {UNIT, FLOOR, WALL, LOOT, TRAP, TRIGGER, NR_OF_TYPES/*Has to be last*/ };
+enum Type {FLOOR, WALL, LOOT, SPAWN, TRAP, TRIGGER, GUARD, ENEMY, NR_OF_TYPES/*Has to be last*/ };
+enum PickUpState{ONTILE, HELD, PICKINGUP, DROPPING};
 
 class GameObject
 {
 protected:
+
 	unsigned short _ID;
 	DirectX::XMMATRIX _objectMatrix;
 	DirectX::XMFLOAT3 _position;
 	DirectX::XMFLOAT3 _rotation;
 	DirectX::XMFLOAT3 _scale;
 	AI::Vec2D _tilePosition;
-	//Vec2i _direction;
 	Type _type;
-	bool _visible; // OBS
+	bool _visible;
 	RenderObject* _renderObject;
+
+	PickUpState _pickUpState;
 
 	void CalculateMatrix();
 
 public:
+
 	GameObject();
 	//Type might not be necessary, depending on whether subclasses can correspond to one type or many.
 	GameObject(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject* renderObject);
@@ -41,11 +45,15 @@ public:
 	DirectX::XMFLOAT3 GetPosition() const;
 	DirectX::XMFLOAT3 GetRotation() const;
 	DirectX::XMFLOAT3 GetScale() const;
-	DirectX::XMMATRIX GetMatrix()const;
+	DirectX::XMMATRIX* GetMatrix();
 
 	void SetPosition(const DirectX::XMFLOAT3& position);
 	void SetRotation(const DirectX::XMFLOAT3& rotation);
 	void SetScale(const DirectX::XMFLOAT3& scale);
+
+	void Translate(const DirectX::XMFLOAT3& offset);
+	void Scale(const DirectX::XMFLOAT3& scale);
+	void Rotate(const DirectX::XMFLOAT3& rotate);
 
 	AI::Vec2D GetTilePosition()const;
 	void SetTilePosition(AI::Vec2D pos);
@@ -55,6 +63,9 @@ public:
 	void SetVisibility(bool visible);
 
 	RenderObject* GetRenderObject() const;
+
+	void SetPickUpState( PickUpState state);
+	PickUpState GetPickUpState()const;
 
 	//Update object gamelogic
 	void virtual Update() = 0;

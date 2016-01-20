@@ -39,6 +39,16 @@ public:
 		int textId,
 		bool custom,
 		ID3D11Device* device);
+	FontInfo(IFW1FontWrapper* fontWrapper,
+		const WCHAR* filePath,
+		const WCHAR* fontName,
+		DirectX::XMFLOAT2 position,
+		float fontSize,
+		UINT32 color,
+		std::wstring text,
+		int textId,
+		bool custom,
+		ID3D11Device* device);
 	~FontInfo();
 
 	void Release();
