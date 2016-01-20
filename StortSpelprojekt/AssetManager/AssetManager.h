@@ -20,7 +20,11 @@ struct Tileset
 	string _name;
 	vector<string> _floors;
 	vector<string> _walls;
-	vector<string> _deco;
+	vector<string> _loot;
+	vector<string> _traps;
+	vector<string> _triggers;
+	vector<string> _guards;
+	vector<string> _enemies;
 };
 
 struct TilesetHandler
@@ -71,9 +75,25 @@ struct TilesetHandler
 		{
 			_cur = &_tileset->_walls;
 		}
-		else if (!strcmp("deco", str))
+		else if (!strcmp("loot", str))
 		{
-			_cur = &_tileset->_deco;
+			_cur = &_tileset->_loot;
+		}
+		else if (!strcmp("traps", str))
+		{
+			_cur = &_tileset->_traps;
+		}
+		else if (!strcmp("triggers", str))
+		{
+			_cur = &_tileset->_triggers;
+		}
+		else if (!strcmp("guards", str))
+		{
+			_cur = &_tileset->_guards;
+		}
+		else if (!strcmp("enemies", str))
+		{
+			_cur = &_tileset->_enemies;
 		}
 		return true;
 	}
@@ -191,6 +211,7 @@ public:
 	AssetManager(ID3D11Device* device);
 	~AssetManager();
 	RenderObject* GetRenderObject(int index);
+	RenderObject* GetRenderObjectByType(Type type, uint index);
 	void UnloadModel(int index, bool force);
 	void ParseLevel(int index, vector<GameObjectData> &gameObjects, int &dimX, int &dimY);
 	bool ActivateTileset(string name);

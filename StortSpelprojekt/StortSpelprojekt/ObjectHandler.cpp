@@ -1,7 +1,5 @@
 #include "ObjectHandler.h"
 
-
-
 ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data)
 {
 	_idCounter = 0;
@@ -9,9 +7,24 @@ ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, G
 	_tilemap = nullptr;
 	_gameObjectData = *data;
 
+	ActivateTileset("default");
+
 	for (int i = 0; i < NR_OF_TYPES; i++)
 	{
 		_gameObjects.push_back(std::vector<GameObject*>());
+	}
+}
+
+void ObjectHandler::ActivateTileset(string name)
+{
+	_assetManager->ActivateTileset(name);
+
+	for (uint a = 0; a < Type::NR_OF_TYPES; a++)
+	{
+		for (uint i = 0; i < _gameObjectData._objects.size(); i++)
+		{
+			_gameObjectData._objects[a]->at(i)->_renderObject = _assetManager->GetRenderObjectByType((Type)a, i);
+		}
 	}
 }
 

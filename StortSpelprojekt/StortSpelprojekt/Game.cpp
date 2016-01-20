@@ -30,6 +30,7 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 
 	GameObjectInfo data;
 	GameObjectDataLoader gameObjectDataLoader;
+	gameObjectDataLoader.WriteSampleGameObjects();
 	gameObjectDataLoader.LoadGameObjectInfo(&data);
 	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager, &data);
 	

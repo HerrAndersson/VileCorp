@@ -112,7 +112,7 @@ namespace cereal
   void CEREAL_SERIALIZE_FUNCTION_NAME( Archive &, T * & )
   {
     static_assert(cereal::traits::detail::delay_static_assert<T>::value,
-      "Cereal does not support serializing raw pointers - please use a smart pointer");
+      "Cereal does not support serializing raw pointers - please use a smart pointer"); //You probably sent a double pointer - Fredrik
   }
 
   //! Serialization for C style arrays

@@ -39,6 +39,7 @@ private:
 	vector<vector<GameObject*>> _gameObjects;
 	//vector<RenderList> _renderLists;
 	GameObjectInfo _gameObjectData;
+	void ActivateTileset(string name);
 	short _idCounter;
 	Tilemap* _tilemap;
 

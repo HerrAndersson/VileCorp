@@ -16,7 +16,7 @@ AssetManager::AssetManager(ID3D11Device* device)
 
 	SetupTilesets();
 
-	ActivateTileset("default-24-25");
+	ActivateTileset("mansion");
 	SetupLevelFileNameList();
 }
 
@@ -53,27 +53,20 @@ AssetManager::~AssetManager()
 //Looks through the Models folder and creates an empty RenderObject for each entry
 void AssetManager::SetupRenderObjectList(Tileset* tileset)
 {
-
 	_modelFiles->clear();
-	for (string str : tileset->_floors)
+	vector<string>* vec = &tileset->_floors;
+	for (int i = 0; i < 7; i++)
 	{
-		_modelFiles->push_back(str);
-	}
-	for (string str : tileset->_walls)
-	{
-		_modelFiles->push_back(str);
-	}
-	for (string str : tileset->_deco)
-	{
-		_modelFiles->push_back(str);
+		for (string str : *vec)
+		{
+			_modelFiles->push_back(str);
+			RenderObject* renderObject = ScanModel(str);
+			renderObject->_type = (Type)i;
+			_renderObjects->push_back(renderObject);
+		}
+		vec++;
 	}
 
-
-	for (uint i = 0; i < _modelFiles->size(); i++)
-	{
-		RenderObject* renderObject = ScanModel(_modelFiles->at(i));
-		_renderObjects->push_back(renderObject);
-	}
 	_activeTileset = tileset;
 }
 
@@ -105,11 +98,10 @@ void AssetManager::SetupTilesets()
 		rapidjson::StringStream ss(&buffer[0]);
 		reader.Parse(ss, handler);
 	}
-	_activeTileset = &_tilesets->at(0);
 	SetupRenderObjectList(&_tilesets->at(0));
 }
 
-//Replaces current Tileset, do not call without clearing GameObjects - Fredrik
+//Do not call, call _objectHandler->ActivateTileset() - Fredrik
 bool AssetManager::ActivateTileset(string name)
 {
 	if (!strcmp(name.c_str(), _activeTileset->_name.c_str()))
@@ -481,6 +473,23 @@ RenderObject* AssetManager::GetRenderObject(int index)
 		renderObject->_toUnload = false;
 	}
 	return renderObject;
+}
+
+RenderObject * AssetManager::GetRenderObjectByType(Type type, uint index)
+{
+	uint i = 0;
+	for (RenderObject* renderObject : *_renderObjects)
+	{
+		if (renderObject->_type == type)
+		{
+			i++;
+			if (i == index)
+			{
+				return renderObject;
+			}
+		}
+	}
+	return nullptr;
 }
 
 ID3D11ShaderResourceView* AssetManager::GetTexture(string filename)

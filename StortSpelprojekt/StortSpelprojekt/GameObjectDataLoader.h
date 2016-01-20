@@ -22,57 +22,32 @@ inline GameObjectDataLoader::~GameObjectDataLoader()
 
 inline bool GameObjectDataLoader::LoadGameObjectInfo(GameObjectInfo* data)
 {
-	vector<std::string> filenames;
-	GetFilenamesInDirectory("Assets/Gameobjects/Floors/", ".json", filenames);
-	data->_floors.resize(filenames.size());
-	for (uint b = 0; b < filenames.size(); b++)
+	vector<string> filenames;
+	for (uint a = 0; a < Type::NR_OF_TYPES; a++)
 	{
-		System::loadJSON(&data->_floors[b], filenames[b]);
+		string folder = "Assets/Gameobjects/";
+		folder.append(typeStrings[(Type)a]);
+		GetFilenamesInDirectory((char*)folder.c_str(), ".json", filenames);
+		data->_objects[a]->resize(filenames.size());
+		for (uint i = 0; i < data->_objects[a]->size(); i++)
+		{
+			if (a = Type::FLOOR)
+				System::loadJSON(data->Floors(i), filenames[i]);
+			else if (a = Type::WALL)
+				System::loadJSON(data->Walls(i), filenames[i]);
+			else if (a = Type::TRAP)
+				System::loadJSON(data->Traps(i), filenames[i]);
+			else if (a = Type::TRIGGER)
+				System::loadJSON(data->Triggers(i), filenames[i]);
+			else if (a = Type::LOOT)
+				System::loadJSON(data->Loot(i), filenames[i]);
+			else if (a = Type::GUARD)
+				System::loadJSON(data->Guards(i), filenames[i]);
+			else if (a = Type::ENEMY)
+				System::loadJSON(data->Enemies(i), filenames[i]);
+		}
+		filenames.clear();
 	}
-	filenames.clear();
-	GetFilenamesInDirectory("Assets/Gameobjects/Walls/", ".json", filenames);
-	data->_walls.resize(filenames.size());
-	for (uint b = 0; b < filenames.size(); b++)
-	{
-		System::loadJSON(&data->_walls[b], filenames[b]);
-	}
-	filenames.clear();
-	GetFilenamesInDirectory("Assets/Gameobjects/Loot/", ".json", filenames);
-	data->_loot.resize(filenames.size());
-	for (uint b = 0; b < filenames.size(); b++)
-	{
-		System::loadJSON(&data->_loot[b], filenames[b]);
-	}
-	filenames.clear();
-	GetFilenamesInDirectory("Assets/Gameobjects/Traps/", ".json", filenames);
-	data->_traps.resize(filenames.size());
-	for (uint b = 0; b < filenames.size(); b++)
-	{
-		System::loadJSON(&data->_traps[b], filenames[b]);
-	}
-	filenames.clear();
-	GetFilenamesInDirectory("Assets/Gameobjects/Triggers/", ".json", filenames);
-	data->_triggers.resize(filenames.size());
-	for (uint b = 0; b < filenames.size(); b++)
-	{
-		System::loadJSON(&data->_triggers[b], filenames[b]);
-	}
-	filenames.clear();
-	GetFilenamesInDirectory("Assets/Gameobjects/Guards/", ".json", filenames);
-	data->_guards.resize(filenames.size());
-	for (uint b = 0; b < filenames.size(); b++)
-	{
-		System::loadJSON(&data->_guards[b], filenames[b]);
-	}
-	filenames.clear();
-	GetFilenamesInDirectory("Assets/Gameobjects/Enemies/", ".json", filenames);
-	data->_enemies.resize(filenames.size());
-	for (uint b = 0; b < filenames.size(); b++)
-	{
-		System::loadJSON(&data->_enemies[b], filenames[b]);
-	}
-	filenames.clear();
-
 	return false;
 }
 
