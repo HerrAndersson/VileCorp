@@ -41,12 +41,12 @@ namespace Renderer
 
 		int numElements = sizeof(inputDesc) / sizeof(inputDesc[0]);
 
-		_defaultVS = CreateVertexShader(device, L"../Renderer/Shaders/DefaultVS.hlsl", inputDesc, numElements);
-		_defaultPS = CreatePixelShader(device, L"../Renderer/Shaders/DefaultPS.hlsl");
+		_defaultVS = CreateVertexShader(device, L"Assets/Shaders/DefaultVS.hlsl", inputDesc, numElements);
+		_defaultPS = CreatePixelShader(device, L"Assets/Shaders/DefaultPS.hlsl");
 
 		//GEOMETRY pass init
-		_geoPassVS = CreateVertexShader(device, L"../Renderer/Shaders/GeoVS.hlsl", inputDesc, numElements);
-		_geoPassPS = CreatePixelShader(device, L"../Renderer/Shaders/GeoPS.hlsl");
+		_geoPassVS = CreateVertexShader(device, L"Assets/Shaders/GeoVS.hlsl", inputDesc, numElements);
+		_geoPassPS = CreatePixelShader(device, L"Assets/Shaders/GeoPS.hlsl");
 
 		//LIGHT pass init
 		D3D11_INPUT_ELEMENT_DESC lightInputDesc[] =
@@ -57,14 +57,41 @@ namespace Renderer
 
 		numElements = sizeof(lightInputDesc) / sizeof(lightInputDesc[0]);
 
-		_lightPassVS = CreateVertexShader(device, L"../Renderer/Shaders/LightVS.hlsl", lightInputDesc, numElements);
-		_lightPassPS = CreatePixelShader(device, L"../Renderer/Shaders/LightPS.hlsl");
+		_lightPassVS = CreateVertexShader(device, L"Assets/Shaders/LightVS.hlsl", lightInputDesc, numElements);
+		_lightPassPS = CreatePixelShader(device, L"Assets/Shaders/LightPS.hlsl");
 
+
+		//Animation pass init
+		D3D11_INPUT_ELEMENT_DESC animInputDesc[] =
+		{
+			{ "BONEINDEX", 0, DXGI_FORMAT_R32G32B32A32_UINT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "BONEWEIGHT", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		};
+
+		numElements = sizeof(animInputDesc) / sizeof(animInputDesc[0]);
+
+		_animPassVS = CreateVertexShader(device, L"Assets/Shaders/AnimVS.hlsl", animInputDesc, numElements);
+		
+		//Grid pass init
+		D3D11_INPUT_ELEMENT_DESC gridInputDesc[] =
+		{
+			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+		};
+
+		numElements = sizeof(gridInputDesc) / sizeof(gridInputDesc[0]);
+
+		_gridPassVS = CreateVertexShader(device, L"Assets/Shaders/GridVS.hlsl", gridInputDesc, numElements);
+		_gridPassPS = CreatePixelShader(device, L"Assets/Shaders/GridPS.hlsl");
+		
 		//HUD pass init
 		numElements = sizeof(lightInputDesc) / sizeof(lightInputDesc[0]);
 
-		_hudPassVS = CreateVertexShader(device, L"../Renderer/Shaders/HudVS.hlsl", lightInputDesc, numElements);
-		_hudPassPS = CreatePixelShader(device, L"../Renderer/Shaders/HudPS.hlsl");
+		_hudPassVS = CreateVertexShader(device, L"Assets/Shaders/HudVS.hlsl", lightInputDesc, numElements);
+		_hudPassPS = CreatePixelShader(device, L"Assets/Shaders/HudPS.hlsl");
 	}
 
 	ShaderHandler::~ShaderHandler()
@@ -75,6 +102,9 @@ namespace Renderer
 		SAFE_RELEASE(_geoPassPS);
 		delete _lightPassVS;
 		SAFE_RELEASE(_lightPassPS);
+		delete _animPassVS;
+		delete _gridPassVS;
+		SAFE_RELEASE(_gridPassPS);
 		delete _hudPassVS;
 		SAFE_RELEASE(_hudPassPS);
 	}
@@ -87,7 +117,7 @@ namespace Renderer
 		ID3D11VertexShader* vertexShader = nullptr;
 		ID3D11InputLayout* inputLayout = nullptr;
 
-		result = D3DCompileFromFile(fileName, NULL, NULL, "main", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, &shaderBuffer, &errorMessage);
+		result = D3DCompileFromFile(fileName, NULL, NULL, "main", "vs_5_0", D3DCOMPILE_DEBUG, 0, &shaderBuffer, &errorMessage);
 		if (FAILED(result))
 		{
 			if (errorMessage)
@@ -319,6 +349,42 @@ namespace Renderer
 		deviceContext->PSSetSamplers(0, 1, &_samplerWRAP);
 	}
 
+	void ShaderHandler::SetAnimationPassShaders(ID3D11DeviceContext* deviceContext)
+	{
+		// Set vertex layout
+		deviceContext->IASetInputLayout(_animPassVS->_inputLayout);
+
+		// Set shaders
+		deviceContext->VSSetShader(_animPassVS->_vertexShader, nullptr, 0);
+		deviceContext->HSSetShader(nullptr, nullptr, 0);
+		deviceContext->GSSetShader(nullptr, nullptr, 0);
+		deviceContext->DSSetShader(nullptr, nullptr, 0);
+		deviceContext->PSSetShader(_geoPassPS, nullptr, 0);
+
+		//Set sampler
+		deviceContext->PSSetSamplers(0, 1, &_samplerWRAP);
+	}
+
+	void ShaderHandler::SetGridPassShaders(ID3D11DeviceContext * deviceContext)
+	{
+		// Set vertex layout
+		deviceContext->IASetInputLayout(_gridPassVS->_inputLayout);
+
+		// Set shaders
+		deviceContext->VSSetShader(_gridPassVS->_vertexShader, nullptr, 0);
+		deviceContext->HSSetShader(nullptr, nullptr, 0);
+		deviceContext->GSSetShader(nullptr, nullptr, 0);
+		deviceContext->DSSetShader(nullptr, nullptr, 0);
+		deviceContext->HSSetShader(nullptr, nullptr, 0);
+		deviceContext->GSSetShader(nullptr, nullptr, 0);
+		deviceContext->DSSetShader(nullptr, nullptr, 0);
+		deviceContext->PSSetShader(_gridPassPS, nullptr, 0);
+		deviceContext->CSSetShader(nullptr, nullptr, 0);
+
+		//Set sampler
+		deviceContext->PSSetSamplers(0, 1, &_samplerWRAP);
+	}
+	
 	void ShaderHandler::SetHUDPassShaders(ID3D11DeviceContext * deviceContext)
 	{
 		//Set vertex layout

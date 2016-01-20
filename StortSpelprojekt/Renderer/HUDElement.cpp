@@ -3,11 +3,12 @@
 
 namespace Renderer
 {
-	HUDElement::HUDElement(DirectX::XMFLOAT2 position, DirectX::XMFLOAT2 scale, ID3D11ShaderResourceView* texture)
+	HUDElement::HUDElement(DirectX::XMFLOAT2 position, DirectX::XMFLOAT2 scale, ID3D11ShaderResourceView* texture, bool visible)
 	{
 		_position = position;
 		_scale = scale;
 		_texture = texture;
+		_visible = visible;
 		Update();
 	}
 
@@ -32,6 +33,11 @@ namespace Renderer
 		Update();
 	}
 
+	void HUDElement::SetVisibility(bool visible)
+	{
+		_visible = visible;
+	}
+
 	DirectX::XMMATRIX* HUDElement::GetModelMatrix()
 	{
 		return &_modelMatrix;
@@ -39,5 +45,9 @@ namespace Renderer
 	ID3D11ShaderResourceView* HUDElement::GetTexture()
 	{
 		return _texture;
+	}
+	bool HUDElement::GetVisibility()
+	{
+		return _visible;
 	}
 }

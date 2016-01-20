@@ -35,10 +35,13 @@ struct RenderList
 class ObjectHandler
 {
 private:
-	int _size;
-	std::vector<GameObject*> _gameObjects;
-	short _idCounter;
+	vector<vector<GameObject*>> _gameObjects;
+	//vector<RenderList> _renderLists;
+
 	Tilemap* _tilemap;
+
+	int _idCount = 0;
+	int _objectCount = 0;
 
 	AssetManager* _assetManager;
 
@@ -46,21 +49,23 @@ public:
 	ObjectHandler(ID3D11Device* device, AssetManager* assetManager);
 	~ObjectHandler();
 
-	int GetSize() const;
-
 	//Add a gameobject
-	GameObject* Add(Type type, int renderObjectID, XMFLOAT3 position, XMFLOAT3 rotation);
-	bool Remove(short ID);
-	void Clear();
+	bool Add(Type type, int renderObjectID, XMFLOAT3 position, XMFLOAT3 rotation);
 	
+	bool Remove(int ID);
+	bool Remove(Type type, int ID);
+	bool Remove(GameObject* gameObject);
 
-	GameObject* Find(short ID);
-	GameObject* Find(int index);
+	GameObject* Find(int ID);
+	GameObject* Find(Type type, int ID);
+	GameObject* Find(Type type, short index);
 	//Returns a vector containing all gameobjects with the same type
-	vector<GameObject*> GetAll(Type type);
+	vector<GameObject*> GetAllByType(Type type);
 	//Returns a list of a renderobject and matrices for all objects using the renderobject
-	RenderList GetAll(int renderObjectID);
-	std::vector<GameObject*>* GetGameObjects();
+	RenderList GetAllByType(int renderObjectID);
+	vector<vector<GameObject*>>* GetGameObjects();
+
+	int GetObjectCount() const;
 
 	Tilemap* GetTileMap() const;
 	void SetTileMap(Tilemap* tilemap);
@@ -70,7 +75,7 @@ public:
 	void InitPathfinding();
 
 	//Update gamelogic of all objects
-	void Update();
+	void Update(float deltaTime);
 	//Relase all object resources
 	void Release();
 };
