@@ -15,8 +15,6 @@ struct PlayerInfo
 		(CEREAL_NVP(_gold)),
 		(CEREAL_NVP(_level)));
 	}
-
-	
 };
 
 struct SettingInfo
@@ -42,11 +40,9 @@ struct SettingInfo
 		(CEREAL_NVP(_bordeless)),
 		(CEREAL_NVP(_showMouseCursor)));
 	}
-
-
 };
 
-struct ControlMapEdit
+struct ControlScheme
 {
 	struct MapEdit
 	{
@@ -60,33 +56,11 @@ struct ControlMapEdit
 		std::string zoomOut[3] = { "ZOOM_CAMERA_OUT", "X", "repeat" };
 		std::string undo[3] = { "UNDO", "Z", "ctrl" };
 		std::string redo[3] = { "REDO", "Y", "ctrl" };
-		std::string save[3] = { "SAVE", "S", "ctrl" };
-		std::string deleteUnit[2] = { "DELETE_UNIT", "delete"};
+		std::string save2[3] = { "SAVE", "S", "ctrl" };
+		std::string deleteUnit[2] = { "DELETE_UNIT", "delete" };
 	}mapEdit;
 
-	template<class A>
-	void serialize(A& a)
-	{
-		a((CEREAL_NVP(mapEdit.rotCamLeft)),
-		(CEREAL_NVP(mapEdit.rotCamRight)),
-		(CEREAL_NVP(mapEdit.moveCamUp)),
-		(CEREAL_NVP(mapEdit.moveCamDown)),
-		(CEREAL_NVP(mapEdit.moveCamLeft)),
-		(CEREAL_NVP(mapEdit.moveCamRight)),
-		(CEREAL_NVP(mapEdit.zoomIn)),
-		(CEREAL_NVP(mapEdit.zoomOut)),
-		(CEREAL_NVP(mapEdit.undo)),
-		(CEREAL_NVP(mapEdit.redo)),
-		(CEREAL_NVP(mapEdit.save)),
-		(CEREAL_NVP(mapEdit.deleteUnit)));
-	}
-
-
-};
-
-struct ControlPlay
-{
-	struct MapEdit
+	struct Play
 	{
 		std::string controlGrp0[3] = { "CONTROL_GROUP0", "0", "ctrl" };
 		std::string controlGrp1[3] = { "CONTROL_GROUP1", "1", "ctrl" };
@@ -94,15 +68,53 @@ struct ControlPlay
 		std::string controlGrp3[3] = { "CONTROL_GROUP3", "3", "ctrl" };
 		std::string controlGrp4[3] = { "CONTROL_GROUP4", "4", "ctrl" };
 		std::string controlGrp5[3] = { "CONTROL_GROUP5", "5", "ctrl" };
-	}mapEdit;
+		std::string controlGrp6[3] = { "CONTROL_GROUP6", "6", "ctrl" };
+		std::string controlGrp7[3] = { "CONTROL_GROUP7", "7", "ctrl" };
+		std::string controlGrp8[3] = { "CONTROL_GROUP8", "8", "ctrl" };
+		std::string controlGrp9[3] = { "CONTROL_GROUP9", "9", "ctrl" };
+
+		std::string meny[2] = { "MENY", "escape" };
+	}play;
+
+	struct Menu
+	{
+		std::string up[2] = { "UP", "uparrow" };
+		std::string down[2] = { "DOWN", "downarrow" };
+		std::string menu[2] = { "MENU", "escape" };
+	}menu;
 
 	template<class A>
 	void serialize(A& a)
 	{
-		a((CEREAL_NVP(mapEdit.controlGrp0)),);
+		a((CEREAL_NVP(mapEdit.rotCamLeft)),
+			(CEREAL_NVP(mapEdit.rotCamRight)),
+			(CEREAL_NVP(mapEdit.moveCamUp)),
+			(CEREAL_NVP(mapEdit.moveCamDown)),
+			(CEREAL_NVP(mapEdit.moveCamLeft)),
+			(CEREAL_NVP(mapEdit.moveCamRight)),
+			(CEREAL_NVP(mapEdit.zoomIn)),
+			(CEREAL_NVP(mapEdit.zoomOut)),
+			(CEREAL_NVP(mapEdit.undo)),
+			(CEREAL_NVP(mapEdit.redo)),
+			(CEREAL_NVP(mapEdit.save2)),
+			(CEREAL_NVP(mapEdit.deleteUnit)),
+			
+			(CEREAL_NVP(play.controlGrp0)),
+			(CEREAL_NVP(play.controlGrp1)),
+			(CEREAL_NVP(play.controlGrp2)),
+			(CEREAL_NVP(play.controlGrp3)),
+			(CEREAL_NVP(play.controlGrp4)),
+			(CEREAL_NVP(play.controlGrp5)),
+			(CEREAL_NVP(play.controlGrp6)),
+			(CEREAL_NVP(play.controlGrp7)),
+			(CEREAL_NVP(play.controlGrp8)),
+			(CEREAL_NVP(play.controlGrp9)),
+			(CEREAL_NVP(play.meny)),
+			
+			(CEREAL_NVP(menu.up)),
+			(CEREAL_NVP(menu.down)),
+			(CEREAL_NVP(menu.menu)));
 	}
-
-
 };
 
 /*

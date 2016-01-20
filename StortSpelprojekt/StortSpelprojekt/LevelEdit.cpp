@@ -5,12 +5,15 @@
 
 LevelEdit::LevelEdit()
 {
-
+	_aStar = nullptr;
 }
 
 LevelEdit::~LevelEdit()
 {
-	delete _aStar;
+	if (_aStar != nullptr)
+	{
+		delete _aStar;
+	}
 }
 
 void LevelEdit::Initialize(ObjectHandler* objectHandler, System::InputDevice* inputDevice, System::Controls* controls, PickingDevice* pickingDevice, System::Camera* camera, UIHandler* uiHandler)
