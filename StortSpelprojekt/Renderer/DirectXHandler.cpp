@@ -5,13 +5,15 @@ namespace Renderer
 	DirectXHandler::DirectXHandler(HWND hwnd, int screenWidth, int screenHeight)
 	{
 		HRESULT hResult;
+		_textureWidth = screenWidth;
+		_textureHeight = screenHeight;
 
+		//////////////////////////////////////////////////// Swap chain, back buffer RTV //////////////////////////////////////////////////// 
 		//Describe the swap chain
 		DXGI_SWAP_CHAIN_DESC swapChainDesc;
 		ZeroMemory(&swapChainDesc, sizeof(swapChainDesc));
 
 		swapChainDesc.BufferCount = 1;
-
 		swapChainDesc.BufferDesc.Width = screenWidth;
 		swapChainDesc.BufferDesc.Height = screenHeight;
 		swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -32,27 +34,11 @@ namespace Renderer
 
 		//Create swap chain
 		D3D_FEATURE_LEVEL featLvl = D3D_FEATURE_LEVEL_11_0;
-		hResult = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, 0,
-			&featLvl, 1, D3D11_SDK_VERSION, &swapChainDesc, &_swapChain, &_device, NULL, &_deviceContext);
+		hResult = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, 0, &featLvl, 1, D3D11_SDK_VERSION, &swapChainDesc, &_swapChain, &_device, NULL, &_deviceContext);
 		if (FAILED(hResult))
 		{
 			throw std::runtime_error("DirectXHandler: Error creating swap chain");
 		}
-
-		//Setup texture desctiption
-		D3D11_TEXTURE2D_DESC textureDesc;
-		ZeroMemory(&textureDesc, sizeof(textureDesc));
-
-		textureDesc.Width = screenWidth;
-		textureDesc.Height = screenHeight;
-		textureDesc.MipLevels = 1;
-		textureDesc.ArraySize = 1;
-		textureDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-		textureDesc.SampleDesc.Count = 1;
-		textureDesc.Usage = D3D11_USAGE_DEFAULT;
-		textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-		textureDesc.CPUAccessFlags = 0;
-		textureDesc.MiscFlags = 0;
 
 		//Get back buffer pointer and get render target view with it
 		ID3D11Texture2D* backBufferPointer;
@@ -62,7 +48,7 @@ namespace Renderer
 			throw std::runtime_error("DirectXHandler: Could not get swap chain pointer");
 		}
 
-		hResult = _device->CreateRenderTargetView(backBufferPointer, NULL, &_renderTargetView);
+		hResult = _device->CreateRenderTargetView(backBufferPointer, NULL, &_backBufferRTV);
 		if (FAILED(hResult))
 		{
 			throw std::runtime_error("DirectXHandler: Error creating render target view ");
@@ -71,15 +57,7 @@ namespace Renderer
 		backBufferPointer->Release();
 		backBufferPointer = nullptr;
 
-		//Setup the description of the shader resource view.
-		D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
-		ZeroMemory(&shaderResourceViewDesc, sizeof(shaderResourceViewDesc));
-
-		shaderResourceViewDesc.Format = textureDesc.Format;
-		shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-		shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
-		shaderResourceViewDesc.Texture2D.MipLevels = 1;
-
+		///////////////////////////////////////////////////////// Rasterizer-states ///////////////////////////////////////////////////////// 
 		//Rasterizer setup
 		D3D11_RASTERIZER_DESC rasterDesc;
 		ZeroMemory(&rasterDesc, sizeof(rasterDesc));
@@ -98,27 +76,21 @@ namespace Renderer
 		//Create rasterizer states
 		hResult = _device->CreateRasterizerState(&rasterDesc, &_rasterizerStateBack);
 		if (FAILED(hResult))
-		{
-			throw std::runtime_error("DirectXHandler: Error creating rasterizer state");
-		}
+			throw std::runtime_error("DirectXHandler: Error creating rasterizer state BACK");
 
 		rasterDesc.CullMode = D3D11_CULL_FRONT;
 
 		hResult = _device->CreateRasterizerState(&rasterDesc, &_rasterizerStateFront);
 		if (FAILED(hResult))
-		{
-			throw std::runtime_error("DirectXHandler: Error creating rasterizer state");
-		}
+			throw std::runtime_error("DirectXHandler: Error creating rasterizer state FRONT");
 
-		//Set up viewport
-		_viewport.Width = (float)screenWidth;
-		_viewport.Height = (float)screenHeight;
-		_viewport.MinDepth = 0.0f;
-		_viewport.MaxDepth = 1.0f;
-		_viewport.TopLeftX = 0.0f;
-		_viewport.TopLeftY = 0.0f;
+		rasterDesc.CullMode = D3D11_CULL_NONE;
 
-		//Init depth stencil states
+		hResult = _device->CreateRasterizerState(&rasterDesc, &_rasterizerStateNone);
+		if (FAILED(hResult))
+			throw std::runtime_error("DirectXHandler: Error creating rasterizer state NONE");
+
+		/////////////////////////////////////////////////////// Depth stencil states ///////////////////////////////////////////////////////
 		D3D11_DEPTH_STENCIL_DESC depthStencilDesc;
 		ZeroMemory(&depthStencilDesc, sizeof(depthStencilDesc));
 
@@ -138,39 +110,203 @@ namespace Renderer
 		depthStencilDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
 
 		//Create depth enable
-		hResult = _device->CreateDepthStencilState(&depthStencilDesc, &_depthEnable);
+		hResult = _device->CreateDepthStencilState(&depthStencilDesc, &_depthStateEnable);
 		if (FAILED(hResult))
 		{
 			throw std::runtime_error("DirectXHandler: Error creating depth stencil ENABLE");
 		}
 
+		//Create depth disable
 		depthStencilDesc.DepthEnable = false;
 
-		//Create depth disable
-		hResult = _device->CreateDepthStencilState(&depthStencilDesc, &_depthDisable);
+		hResult = _device->CreateDepthStencilState(&depthStencilDesc, &_depthStateDisable);
 		if (FAILED(hResult))
 		{
 			throw std::runtime_error("DirectXHandler: Error creating depth stencil DISABLE");
 		}
 
-		_deferredShader = new Deferred(_device, screenWidth, screenHeight);
+		////////////////////////////////////////////////////////// Blend-states //////////////////////////////////////////////////////////
+		D3D11_BLEND_DESC omDesc;
+		ZeroMemory(&omDesc, sizeof(D3D11_BLEND_DESC));
+		//omDesc.RenderTarget[0].BlendEnable = true;
+		//omDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+		//omDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+		//omDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+		//omDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+		//omDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+		//omDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+		//omDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 
-		//Set context data 
+		omDesc.RenderTarget[0].BlendEnable = true;
+		omDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+		omDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+		omDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+		omDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ZERO;
+		omDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+		omDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+		omDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+		hResult = _device->CreateBlendState(&omDesc, &_blendStateEnable);
+		if (FAILED(hResult))
+			throw std::runtime_error("DirectXHandler: Error creating blend ENABLE");
+
+		//Create blend disable
+		omDesc.RenderTarget[0].BlendEnable = false;
+
+		hResult = _device->CreateBlendState(&omDesc, &_blendStateDisable);
+		if (FAILED(hResult))
+			throw std::runtime_error("DirectXHandler: Error creating blend DISABLE");
+
+		//////////////////////////////////////////////////////////// Other ////////////////////////////////////////////////////////////
+		//Set up viewport
+		_viewport.Width = (float)screenWidth;
+		_viewport.Height = (float)screenHeight;
+		_viewport.MinDepth = 0.0f;
+		_viewport.MaxDepth = 1.0f;
+		_viewport.TopLeftX = 0.0f;
+		_viewport.TopLeftY = 0.0f;
+
+		//Set context data and other
+		InitializeDeferredBuffers();
 		_deviceContext->RSSetState(_rasterizerStateFront);
-		_deviceContext->OMSetDepthStencilState(_depthEnable, 1);
+		_deviceContext->OMSetDepthStencilState(_depthStateEnable, 1);
 		_deviceContext->RSSetViewports(1, &_viewport);
+	}
+
+	void DirectXHandler::InitializeDeferredBuffers()
+	{
+		HRESULT result;
+
+		D3D11_TEXTURE2D_DESC textureDesc;
+		ZeroMemory(&textureDesc, sizeof(textureDesc));
+		//Render target texture description
+		textureDesc.Width = _textureWidth;
+		textureDesc.Height = _textureHeight;
+		textureDesc.MipLevels = 1;
+		textureDesc.ArraySize = 1;
+		//textureDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+		textureDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+		textureDesc.SampleDesc.Count = 1;
+		textureDesc.Usage = D3D11_USAGE_DEFAULT;
+		textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+		textureDesc.CPUAccessFlags = 0;
+		textureDesc.MiscFlags = 0;
+
+		ID3D11Texture2D* _renderTargetTextureArray[BUFFER_COUNT];
+		ID3D11Texture2D* _depthStencilBuffer;
+
+		/////////////////////////////////////////////////////// Render targets ///////////////////////////////////////////////////////
+		//Create the render target textures
+		for (int i = 0; i < BUFFER_COUNT; i++)
+		{
+			result = _device->CreateTexture2D(&textureDesc, NULL, &_renderTargetTextureArray[i]);
+			if (FAILED(result))
+				throw std::runtime_error("DirectXHandler::InitializeDeferredBuffers: Error creating Render target textures");
+		}
+
+		//Description of the render target view.
+		D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
+		ZeroMemory(&renderTargetViewDesc, sizeof(renderTargetViewDesc));
+		renderTargetViewDesc.Format = textureDesc.Format;
+		renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+		renderTargetViewDesc.Texture2D.MipSlice = 0;
+
+		for (int i = 0; i < BUFFER_COUNT; i++)
+		{
+			result = _device->CreateRenderTargetView(_renderTargetTextureArray[i], &renderTargetViewDesc, &_deferredRTVArray[i]);
+			if (FAILED(result))
+				throw std::runtime_error("DirectXHandler::InitializeDeferredBuffers: Error creating Render target views");
+		}
+
+		/////////////////////////////////////////////////////// Shader resource views //////////////////////////////////////////////////////
+		//Description of the shader resource view
+		D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
+		ZeroMemory(&shaderResourceViewDesc, sizeof(shaderResourceViewDesc));
+		shaderResourceViewDesc.Format = textureDesc.Format;
+		shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+		shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
+		shaderResourceViewDesc.Texture2D.MipLevels = 1;
+
+		//Create the shader resource views
+		for (int i = 0; i < BUFFER_COUNT; i++)
+		{
+			result = _device->CreateShaderResourceView(_renderTargetTextureArray[i], &shaderResourceViewDesc, &_deferredSRVarray[i]);
+			if (FAILED(result))
+				throw std::runtime_error("DirectXHandler::InitializeDeferredBuffers: Error creating Shader resource views");
+		}
+
+		/////////////////////////////////////////////////////// Depth buffer, DSV, SRV ///////////////////////////////////////////////////////
+		D3D11_TEXTURE2D_DESC depthBufferDesc;
+		ZeroMemory(&depthBufferDesc, sizeof(depthBufferDesc));
+		depthBufferDesc.Width = _textureWidth;
+		depthBufferDesc.Height = _textureHeight;
+		depthBufferDesc.MipLevels = 1;
+		depthBufferDesc.ArraySize = 1;
+		depthBufferDesc.Format = DXGI_FORMAT_R32_TYPELESS;
+		depthBufferDesc.SampleDesc.Count = 1;
+		depthBufferDesc.SampleDesc.Quality = 0;
+		depthBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+		depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
+		depthBufferDesc.CPUAccessFlags = 0;
+		depthBufferDesc.MiscFlags = 0;
+
+		// Create the texture for the depth buffer
+		result = _device->CreateTexture2D(&depthBufferDesc, NULL, &_depthStencilBuffer);
+		if (FAILED(result))
+			throw std::runtime_error("DirectXHandler::InitializeDeferredBuffers: Error creating Depth texture");
+
+		//Stencil view description.
+		D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
+		ZeroMemory(&depthStencilViewDesc, sizeof(depthStencilViewDesc));
+		depthStencilViewDesc.Format = DXGI_FORMAT_D32_FLOAT;
+		depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+		depthStencilViewDesc.Texture2D.MipSlice = 0;
+
+		//Create the depth stencil view
+		result = _device->CreateDepthStencilView(_depthStencilBuffer, &depthStencilViewDesc, &_backBufferDSV);
+		if (FAILED(result))
+			throw std::runtime_error("DirectXHandler::InitializeDeferredBuffers: Error creating Depth stencil view");
+
+		ZeroMemory(&shaderResourceViewDesc, sizeof(shaderResourceViewDesc));
+		shaderResourceViewDesc.Format = DXGI_FORMAT_R32_FLOAT;
+		shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+		shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
+		shaderResourceViewDesc.Texture2D.MipLevels = 1;
+
+		result = _device->CreateShaderResourceView(_depthStencilBuffer, &shaderResourceViewDesc, &_backBufferDepthSRV);
+		if (FAILED(result))
+			throw std::runtime_error("DirectXHandler::InitializeDeferredBuffers: Error creating depth shader resource view");
+
+		////////////////////////////////////////////////////////// Other //////////////////////////////////////////////////////////
+		for (int i = 0; i < BUFFER_COUNT; i++)
+		{
+			SAFE_RELEASE(_renderTargetTextureArray[i]);
+		}
+		SAFE_RELEASE(_depthStencilBuffer);
 	}
 
 	DirectXHandler::~DirectXHandler()
 	{
 		_swapChain->SetFullscreenState(false, NULL);
 
-		_swapChain->Release();
-		_device->Release();
-		_deviceContext->Release();
-		_renderTargetView->Release();
+		SAFE_RELEASE(_swapChain)
+		SAFE_RELEASE(_device)
+		SAFE_RELEASE(_deviceContext)
+		SAFE_RELEASE(_backBufferRTV)
+		SAFE_RELEASE(_blendStateEnable)
+		SAFE_RELEASE(_blendStateDisable)
+		SAFE_RELEASE(_rasterizerStateNone)
+		SAFE_RELEASE(_rasterizerStateBack)
+		SAFE_RELEASE(_rasterizerStateFront)
 
-		delete _deferredShader;
+		SAFE_RELEASE(_backBufferDSV);
+		SAFE_RELEASE(_backBufferDepthSRV);
+
+		for (int i = 0; i < BUFFER_COUNT; i++)
+		{
+			SAFE_RELEASE(_deferredSRVarray[i]);
+			SAFE_RELEASE(_deferredRTVArray[i]);
+		}
 	}
 
 	ID3D11Device* DirectXHandler::GetDevice()
@@ -183,40 +319,89 @@ namespace Renderer
 		return _deviceContext;
 	}
 
-	void DirectXHandler::ClearGeometryPassRTVs(float r, float g, float b, float a)
+	int DirectXHandler::SetGeometryStage()
 	{
-		_deferredShader->ClearRenderTargets(_deviceContext, r, g, b, a);
+		_deviceContext->OMSetDepthStencilState(_depthStateEnable, 1);
+		_deviceContext->RSSetViewports(1, &_viewport);
+		_deviceContext->OMSetRenderTargets(BUFFER_COUNT, _deferredRTVArray, _backBufferDSV);
+		
+		return BUFFER_COUNT;
 	}
 
-	void DirectXHandler::SetGeometryPassRTVs()
+	int DirectXHandler::SetShadowGenerationStage()
 	{
-		_deviceContext->OMSetDepthStencilState(_depthEnable, 1);
-		_deferredShader->SetRenderTargets(_deviceContext);
-		_deviceContext->RSSetState(_rasterizerStateBack);
+		_deviceContext->OMSetDepthStencilState(_depthStateEnable, 1);
+		return 1;
 	}
 
-	void DirectXHandler::SetLightPassRTVs()
+	int DirectXHandler::SetLightStage()
 	{
-		_deviceContext->OMSetRenderTargets(1, &_renderTargetView, nullptr);
-		_deviceContext->RSSetState(_rasterizerStateBack);
-		_deviceContext->OMSetDepthStencilState(_depthDisable, 1);
+		_deviceContext->OMSetRenderTargets(1, &_backBufferRTV, nullptr);
+		_deviceContext->RSSetViewports(1, &_viewport);
 
-		int count = 0;
-		ID3D11ShaderResourceView** b = _deferredShader->GetShaderResourceViews(count);
-		_deviceContext->PSSetShaderResources(0, count, b);
+		//Setting Diffuse, Normal and Camera depth. Shadow map is set in RenderModule
+		_deferredSRVarray[BUFFER_COUNT] = _backBufferDepthSRV;
+		_deviceContext->PSSetShaderResources(0, BUFFER_COUNT + 1, _deferredSRVarray);
+
+		return BUFFER_COUNT + 1;
+	}
+
+	void DirectXHandler::SetCullingState(CullingState state)
+	{
+		switch (state)
+		{
+		case Renderer::DirectXHandler::CullingState::BACK:
+		{
+			_deviceContext->RSSetState(_rasterizerStateBack);
+			break;
+		}
+		case Renderer::DirectXHandler::CullingState::FRONT:
+		{
+			_deviceContext->RSSetState(_rasterizerStateFront);
+			break;
+		}
+		case Renderer::DirectXHandler::CullingState::NONE:
+		{
+			_deviceContext->RSSetState(_rasterizerStateNone);
+			break;
+		}
+		default:
+			break;
+		}
+	}
+
+	void DirectXHandler::SetBlendState(BlendState state)
+	{
+		FLOAT factor[] = { 0,0,0,0 };
+		//Passing NULL as factor gives a default value of (1,1,1,1)
+		switch (state)
+		{
+		case Renderer::DirectXHandler::BlendState::ENABLE:
+		{
+			_deviceContext->OMSetBlendState(_blendStateEnable, factor, 0xffffffff);
+			break;
+		}
+		case Renderer::DirectXHandler::BlendState::DISABLE:
+		{
+			_deviceContext->OMSetBlendState(_blendStateDisable, factor, 0xffffffff);
+			break;
+		}
+		default:
+			break;
+		}
 	}
 
 	void DirectXHandler::SetHUDPassRTVs()
 	{
-		_deviceContext->OMSetRenderTargets(1, &_renderTargetView, nullptr);
+		_deviceContext->OMSetRenderTargets(1, &_backBufferRTV, nullptr);
 		_deviceContext->RSSetState(_rasterizerStateBack);
-		_deviceContext->OMSetDepthStencilState(_depthDisable, 1);
+		_deviceContext->OMSetDepthStencilState(_depthStateDisable, 1);
 	}
 
 	void DirectXHandler::SetGridPassRTVs()
 	{
-		_deviceContext->OMSetDepthStencilState(_depthEnable, 1);
-		_deferredShader->SetRenderTargets(_deviceContext);
+		_deviceContext->OMSetDepthStencilState(_depthStateEnable, 1);
+		//_deferredShader->SetRenderTargets(_deviceContext);
 		_deviceContext->RSSetState(_rasterizerStateBack);
 	}
 
@@ -226,7 +411,7 @@ namespace Renderer
 		{
 			HRESULT hr;
 			_deviceContext->OMSetRenderTargets(0, 0, 0);
-			_renderTargetView->Release();
+			_backBufferRTV->Release();
 
 			DXGI_MODE_DESC modeDesc;
 			ZeroMemory(&modeDesc, sizeof(modeDesc));
@@ -248,13 +433,13 @@ namespace Renderer
 				throw std::runtime_error("DirectXHandler::ResizeResources: Error getting the buffer from the swapchain");
 
 			//Create the new renderTargetView.
-			hr = _device->CreateRenderTargetView(pBuffer, NULL, &_renderTargetView);
+			hr = _device->CreateRenderTargetView(pBuffer, NULL, &_backBufferRTV);
 			if (FAILED(hr))
 				throw std::runtime_error("DirectXHandler::ResizeResources: Error creating the renderTargetView");
 
 			pBuffer->Release();
 
-			_deviceContext->OMSetRenderTargets(1, &_renderTargetView, NULL);
+			_deviceContext->OMSetRenderTargets(1, &_backBufferRTV, NULL);
 
 			//Set up the new viewport.
 			D3D11_VIEWPORT vp;
@@ -268,7 +453,18 @@ namespace Renderer
 
 			_deviceContext->RSSetViewports(1, &_viewport);
 
-			_deferredShader->ResizeRenderTargets(_device, windowWidth, windowHeight);
+
+			SAFE_RELEASE(_backBufferDSV);
+
+			for (int i = 0; i < BUFFER_COUNT; i++)
+			{
+				SAFE_RELEASE(_deferredSRVarray[i]);
+				SAFE_RELEASE(_deferredRTVArray[i]);
+			}
+
+			_textureWidth = windowWidth;
+
+			InitializeDeferredBuffers();
 		}
 	}
 
@@ -279,10 +475,15 @@ namespace Renderer
 		_deviceContext->RSSetState(_rasterizerStateBack);
 
 		//Clear main RTV
-		_deviceContext->ClearRenderTargetView(_renderTargetView, color);
+		_deviceContext->ClearRenderTargetView(_backBufferRTV, color);
 
-		//Clear deferred RTVs
-		ClearGeometryPassRTVs(red, green, blue, alpha);
+		//Clear the render target buffers
+		for (int i = 0; i < BUFFER_COUNT; i++)
+		{
+			_deviceContext->ClearRenderTargetView(_deferredRTVArray[i], color);
+		}
+
+		_deviceContext->ClearDepthStencilView(_backBufferDSV, D3D11_CLEAR_DEPTH, 1.0f, 0);
 	}
 
 	void DirectXHandler::EndScene()

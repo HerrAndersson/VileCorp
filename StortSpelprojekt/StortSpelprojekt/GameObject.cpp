@@ -32,11 +32,10 @@ void GameObject::CalculateMatrix()
 	//	);
 
 	//DO NOT TOUCH!
-	_objectMatrix = DirectX::XMMatrixTranspose(
+	_objectMatrix = 
 		DirectX::XMMatrixScalingFromVector(DirectX::XMLoadFloat3(&_scale)) * 
 		DirectX::XMMatrixRotationRollPitchYaw(_rotation.x, _rotation.y, _rotation.z) *
-		DirectX::XMMatrixTranslationFromVector(DirectX::XMLoadFloat3(&_position))
-		);
+		DirectX::XMMatrixTranslationFromVector(DirectX::XMLoadFloat3(&_position));
 
 }
 
@@ -45,9 +44,9 @@ unsigned short GameObject::GetID() const
 	return _ID;
 }
 
-DirectX::XMMATRIX GameObject::GetMatrix() const
+DirectX::XMMATRIX* GameObject::GetMatrix()
 {
-	return _objectMatrix;
+	return &_objectMatrix;
 }
 
 DirectX::XMFLOAT3 GameObject::GetPosition() const

@@ -210,7 +210,8 @@ RenderList ObjectHandler::GetAllByType(int renderObjectID)
 		{
 			if (g->GetRenderObject() == _assetManager->GetRenderObject(renderObjectID))
 			{
-				list._modelMatrices[count] = g->GetMatrix();
+				//TODO _modelMatrices should hold XMMATRIX* instead to ensure proper alignment of the matrices |Jonas a.k.a. ] 0 |\| /-\ 5
+				list._modelMatrices[count] = *g->GetMatrix();
 			}
 			count++;
 		}

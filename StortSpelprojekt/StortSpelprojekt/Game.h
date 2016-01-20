@@ -13,6 +13,8 @@
 #include "Controls.h"
 #include "Grid.h"
 #include "PickingDevice.h"
+#include "Spotlight.h"
+#include "ShadowMap.h"
 #include "JsonStructs.h"
 #include "ConfigParser.h"
 #include "QuadTreeCulling.h"
@@ -43,6 +45,12 @@ private:
 	void ResizeResources(System::WindowSettings settings);
 	void Update(float deltaTime);
 	void Render();
+
+
+
+
+	//TODO: TEMP! Make this pretty
+	std::vector<Renderer::Spotlight*> _spotlights;
 	
 
 public:
