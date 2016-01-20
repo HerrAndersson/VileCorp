@@ -77,7 +77,8 @@ namespace System
 				ClipCursor(&rect);
 			}
 		}
-
+		GetCursorPos(&_mouseCoord._pos);
+		ScreenToClient(_hwnd, &_mouseCoord._pos);
 	}
 
 	void InputDevice::ToggleCursorLock()

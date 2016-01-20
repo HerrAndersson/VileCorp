@@ -470,6 +470,7 @@ void Unit::Move()
 	//}
 
 	_tilePosition += _direction;
+	
 
 	if (_objective != nullptr && _objective->GetPickUpState() != ONTILE)			//Check that no one took your objective
 	{
@@ -489,6 +490,12 @@ void Unit::Move()
 	}
 	else
 	{
+		_direction = {0,0};
+		if (_objective != nullptr)
+		{
+			act(_objective);
+		}
+		CheckAllTiles();
 		wait(60);
 	}
 
@@ -509,9 +516,6 @@ void Unit::Move()
 
 void Unit::Update()
 {
-	if (_direction._x == 0)
-	{
-	}
 
 	if (_waiting > 0)
 	{
@@ -522,7 +526,7 @@ void Unit::Update()
 		_waiting--;
 		Move();
 	}
-	else if (_pathLength > 0)
+	else
 	{
 		if (_direction._x == 0 || _direction._y == 0)		//Right angle movement
 		{
@@ -535,15 +539,6 @@ void Unit::Update()
 			_position.z += AI::SQRT2 * 0.5f *MOVE_SPEED * _direction._y;
 		}
 		CalculateMatrix();
-	}
-	else
-	{
-		if (_objective != nullptr)
-		{
-			act(_objective);
-		}
-		CheckAllTiles();
-		wait(60);
 	}
 }
 
