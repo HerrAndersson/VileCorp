@@ -234,11 +234,8 @@ HRESULT Texture::LoadTexture(ID3D11Device* device)
 	HRESULT res = S_OK;
 	if (!_loaded)
 	{
-#ifdef _DEBUG
 		res = DirectX::CreateWICTextureFromFile(device, _filename.c_str(), nullptr, &_data, 0);
-#else
-		res = DirectX::CreateWICTextureFromFile(device, _filename.c_str(), nullptr, &_data, 0);
-#endif
+
 		if (_data == nullptr)
 		{
 			string filenameString(_filename.begin(),_filename.end());
@@ -321,7 +318,9 @@ Texture* AssetManager::ScanTexture(string filename)
 	{
 		string str = string(texture->_filename.begin(), texture->_filename.end());
 		if (!strcmp(str.data(), filename.data()))
+		{
 			return texture;
+		}
 	}
 	Texture* texture = new Texture;
 	texture->_filename = wstring(filename.begin(), filename.end());
@@ -376,10 +375,14 @@ RenderObject* AssetManager::ScanModel(string fileName)
 		renderObject->_meshes[i]._name.resize(meshHeader._nameLength);
 
 		_infile->read((char*)renderObject->_meshes[i]._name.data(), meshHeader._nameLength);
-		if(renderObject->_isSkinned)
+		if (renderObject->_isSkinned)
+		{
 			_infile->seekg(meshHeader._numberOfVertices*sizeof(WeightedVertex), ios::cur);
+		}
 		else
+		{
 			_infile->seekg(meshHeader._numberOfVertices*sizeof(Vertex), ios::cur);
+		}
 
 		if (meshHeader._numberPointLights)
 		{
@@ -430,20 +433,28 @@ ID3D11Buffer* AssetManager::CreateVertexBuffer(vector<WeightedVertex> *weightedV
 {
 	D3D11_BUFFER_DESC vbDESC;
 	vbDESC.Usage = D3D11_USAGE_DEFAULT;
-	if(skeleton)
+	if (skeleton)
+	{
 		vbDESC.ByteWidth = sizeof(WeightedVertex)* weightedVertices->size();
+	}
 	else
+	{
 		vbDESC.ByteWidth = sizeof(Vertex)* vertices->size();
+	}
 	vbDESC.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	vbDESC.CPUAccessFlags = 0;
 	vbDESC.MiscFlags = 0;
 	vbDESC.StructureByteStride = 0;
 
 	D3D11_SUBRESOURCE_DATA vertexData;
-	if(skeleton)
+	if (skeleton)
+	{
 		vertexData.pSysMem = weightedVertices->data();
+	}
 	else
+	{
 		vertexData.pSysMem = vertices->data();
+	}
 	vertexData.SysMemPitch = 0;
 	vertexData.SysMemSlicePitch = 0;
 
