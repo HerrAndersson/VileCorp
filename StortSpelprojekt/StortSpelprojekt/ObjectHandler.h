@@ -9,6 +9,7 @@
 #include "Guard.h"
 #include "Tilemap.h"
 #include "AssetManager.h"
+#include "QuadTreeCulling.h"
 
 /*
 ObjectHandler
@@ -44,9 +45,10 @@ private:
 	int _objectCount = 0;
 
 	AssetManager* _assetManager;
+	QuadTreeCulling* _quadTreeCulling;
 
 public:
-	ObjectHandler(ID3D11Device* device, AssetManager* assetManager);
+	ObjectHandler(ID3D11Device* device, AssetManager* assetManager, QuadTreeCulling* quadTreeCulling);
 	~ObjectHandler();
 
 	//Add a gameobject

@@ -27,7 +27,7 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 
 	_UI = new UIHandler(_renderModule->GetDevice(), _window->GetWindowSettings(), _assetManager);
 	
-	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager);
+	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager, &_quadTreeCulling);
 	
 	
 	//Init statemachine

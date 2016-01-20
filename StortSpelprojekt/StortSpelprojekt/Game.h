@@ -15,6 +15,7 @@
 #include "PickingDevice.h"
 #include "JsonStructs.h"
 #include "ConfigParser.h"
+#include "QuadTreeCulling.h"
 
 class Game
 {
@@ -35,7 +36,7 @@ private:
 	PickingDevice*				_pickingDevice;
 	System::InputDevice*		_input;
 	PlayerInfo					_playerInfo;
-	
+	QuadTreeCulling				_quadTreeCulling;
 	
 
 	//Resizing window, directx resources, camera

@@ -2,10 +2,11 @@
 
 
 
-ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager)
+ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, QuadTreeCulling* quadTreeCulling)
 {
 	_idCount = 0;
 	_assetManager = assetManager;
+	_quadTreeCulling = quadTreeCulling;
 	_tilemap = nullptr;
 
 	for (int i = 0; i < NR_OF_TYPES; i++)
@@ -251,6 +252,8 @@ bool ObjectHandler::LoadLevel(int lvlIndex)
 	{
 		Add((Type)i._tileType, i._tileType, DirectX::XMFLOAT3(i._posX, 0, i._posZ), DirectX::XMFLOAT3(0, i._rotY, 0));
 	}
+	_quadTreeCulling->Initialize(_tilemap);
+
 	return false;
 }
 
