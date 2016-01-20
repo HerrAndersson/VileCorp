@@ -4,12 +4,12 @@
 
 GameLogic::GameLogic()
 {
-
+	_player = nullptr;
 }
 
 GameLogic::~GameLogic()
 {
-
+	delete _player;
 }
 
 void GameLogic::Initialize(System::InputDevice* inputDevice, ObjectHandler* objectHandler, UIHandler* uiHandler, System::Camera* camera, System::Controls*	controls, PickingDevice* pickingDevice)

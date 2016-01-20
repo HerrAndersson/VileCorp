@@ -39,8 +39,6 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	{
 		_grid = new Grid(_renderModule->GetDevice(), 1, 10);
 	}
-
-	_pickingDevice = new PickingDevice(_camera, _window);
 }
 
 Game::~Game() 
