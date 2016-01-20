@@ -42,6 +42,7 @@ Game::~Game()
 	delete _input;
 	delete _assetManager;
 	delete _pickingDevice;
+	delete _player;
 	delete _objectHandler;
 }
 void Game::ResizeResources(System::WindowSettings settings)
@@ -148,11 +149,30 @@ void Game::HandleInput()
 		if (_player->AreUnitsSelected())
 		{
 			vector<Unit*> units = _player->GetSelectedUnits();
-			for (int i = 0; i < units.size(); i++)
+			for (unsigned int i = 0; i < units.size(); i++)
 			{
 				units[i]->SetScale(DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f));
 			}
 			_player->DeselectUnits();
+		}
+	}
+
+	if (GetAsyncKeyState('I'))
+	{
+		_pickingDevice->setFirstBoxPoint(_input->GetMouseCoord()._pos);
+	}
+	if (GetAsyncKeyState('O'))
+	{
+		vector<GameObject*> pickedUnits = _pickingDevice->boxPickObjects(_input->GetMouseCoord()._pos, _objectHandler->GetAll(ENEMY));
+
+		if (!pickedUnits.empty())
+		{
+			
+			for (unsigned int i = 0; i < pickedUnits.size(); i++)
+			{
+				_player->SelectUnit((Unit*)pickedUnits[i]);
+				pickedUnits[i]->SetScale(DirectX::XMFLOAT3(1.5f, 1.5f, 1.5f));
+			}
 		}
 	}
 }

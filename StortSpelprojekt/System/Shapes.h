@@ -3,6 +3,7 @@
 #define SYSTEM_EXPORT __declspec(dllexport)
 
 #include "VectorMath.h"
+#include <vector>
 
 
 struct Ray
@@ -19,11 +20,13 @@ struct Ray
 
 struct Plane
 {
+	Vec3 _position;
 	Vec3 _normal;
 	float _offset;
 
-	Plane(Vec3 normal = Vec3(), float offset = 0.0f)
+	Plane(Vec3 position = Vec3(), Vec3 normal = Vec3(), float offset = 0.0f)
 	{
+		_position = position;
 		_normal = normal.Normalize();
 		_offset = offset;
 	}
@@ -48,15 +51,41 @@ struct Box
 	Plane _ySlab;
 	Plane _zSlab;
 
-	Box(float xLength, float yLength, float zLength, Vec3 position = Vec3(), Vec3 rotation = Vec3())
+	Box(float xLength, float yLength, float zLength, Vec3 position = Vec3(), Vec3 rotation = Vec3(0.0f, 0.0f, 0.0f))
 	{
-		XMMATRIX rotationMatrix = XMMatrixRotationRollPitchYawFromVector(rotation.convertToXMVECTOR());
+		//XMMATRIX rotationMatrix =XMMatrixTranspose(XMMatrixRotationRollPitchYawFromVector(rotation.convertToXMVECTOR()));
+		//XMMATRIX rotationMatrix = XMMatrixRotationRollPitchYawFromVector(rotation.convertToXMVECTOR());
+		//XMMATRIX rotationMatrix = XMMatrixRotationY(rotation._y);
+		//XMMATRIX rotationMatrix = XMMatrixRotationQuaternion(rotation.convertToXMVECTOR());
+		XMMATRIX rotationMatrix = XMMatrixTranspose(XMMatrixRotationQuaternion(rotation.convertToXMVECTOR()));
 
 		_position = position;
-		_xSlab = Plane(Vec3(XMVector3TransformCoord(XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f), rotationMatrix)), xLength*0.5f);
-		_ySlab = Plane(Vec3(XMVector3TransformCoord(XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f), rotationMatrix)), yLength *0.5f);
-		_zSlab = Plane(Vec3(XMVector3TransformCoord(XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f), rotationMatrix)), zLength*0.5f);
-		
+/*
+		_xSlab = Plane(position, Vec3(XMVector3TransformNormal(XMVectorSet(1.0f, 0.0f, 0.0f, 1.0f), rotationMatrix)), xLength*0.5f);
+		_ySlab = Plane(position, Vec3(XMVector3TransformNormal(XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f), rotationMatrix)), yLength *0.5f);
+		_zSlab = Plane(position, Vec3(XMVector3TransformNormal(XMVectorSet(0.0f, 0.0f, 1.0f, 1.0f), rotationMatrix)), zLength*0.5f);
+		*/
+
+		XMVECTOR vecX = XMVector3TransformNormal(XMVectorSet(1.0f, 0.0f, 0.0f, 1.0f), rotationMatrix);
+		XMVECTOR vecY = XMVector3TransformNormal(XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f), rotationMatrix);
+		XMVECTOR vecZ = XMVector3TransformNormal(XMVectorSet(0.0f, 0.0f, 1.0f, 1.0f), rotationMatrix);
+
+		_xSlab = Plane(position, Vec3(vecX), xLength*0.5f);
+		_ySlab = Plane(position, Vec3(vecY), yLength *0.5f);
+		_zSlab = Plane(position, Vec3(vecZ), zLength*0.5f);
+
+
+
+
+		/*_xSlab = Plane(position, Vec3(XMVector3TransformNormal(XMVectorSet(1.0f, 0.0f, 0.0f, 1.0f), rotationMatrix)), xLength*0.5f);
+		_ySlab = Plane(position, Vec3(0.0f, 1.0f, 0.0f), yLength *0.5f);
+		_zSlab = Plane(position, Vec3(XMVector3TransformNormal(XMVectorSet(0.0f, 0.0f, 1.0f, 1.0f), rotationMatrix)), zLength*0.5f);
+		*/
+
+		//_xSlab = Plane(position, Vec3(XMVector3Rotate(XMVectorSet(1.0f, 0.0f, 0.0f, 1.0f), rotation.convertToXMVECTOR())), xLength*0.5f);
+		//_ySlab = Plane(position, Vec3(XMVector3Rotate(XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f), rotation.convertToXMVECTOR())), yLength *0.5f);
+		//_zSlab = Plane(position, Vec3(XMVector3Rotate(XMVectorSet(0.0f, 0.0f, 1.0f, 1.0f), rotation.convertToXMVECTOR())), zLength*0.5f);
+		//
 	}
 
 };
@@ -73,6 +102,141 @@ static Vec3 Intersection(Ray ray, Plane plane)
 	return ray._origin + ray._direction * t;
 }
 
+//The Projection Formula
+static Vec3 FindClosestPointOnVector(Vec3 point, Ray vector)
+{
+	Vec3 pointVector = point - vector._origin;
+	float dotProduct = pointVector.Dot(vector._direction);
+	float denominator = vector._direction.Dot(vector._direction);
+
+	return vector._direction * (dotProduct / denominator);
+}
+
+//Separating Axis Theorem check for vectors
+static bool SATVectorCheck(Ray axis, std::vector<Vec3> firstObjectCorners, std::vector<Vec3> secondObjectCorners )
+{
+	bool collision = false;
+
+	Vec3 startingPoint = FindClosestPointOnVector(firstObjectCorners[0], axis);
+	Vec3 firstMinPoint = startingPoint;
+	Vec3 firstMaxPoint = startingPoint;
+
+	for (unsigned int i = 0; i < firstObjectCorners.size(); i++)
+	{
+		if (startingPoint.Dot(firstObjectCorners[i]) < startingPoint.Dot(firstMinPoint))
+		{
+			firstMinPoint = FindClosestPointOnVector(firstObjectCorners[i], axis);
+		}
+		else if (startingPoint.Dot(firstObjectCorners[i]) > startingPoint.Dot(firstMaxPoint))
+		{
+			firstMaxPoint = FindClosestPointOnVector(firstObjectCorners[i], axis);
+		}
+	}
+
+	startingPoint = FindClosestPointOnVector(secondObjectCorners[0], axis);
+	Vec3 secondMinPoint = startingPoint;
+	Vec3 secondMaxPoint = startingPoint;
+
+	for (unsigned int i = 0; i < secondObjectCorners.size(); i++)
+	{
+		if (startingPoint.Dot(secondObjectCorners[i]) < startingPoint.Dot(secondMinPoint))
+		{
+			secondMinPoint = FindClosestPointOnVector(secondObjectCorners[i], axis);
+		}
+		else if (startingPoint.Dot(secondObjectCorners[i]) > startingPoint.Dot(secondMaxPoint))
+		{
+			secondMaxPoint = FindClosestPointOnVector(secondObjectCorners[i], axis);
+		}
+	}
+
+
+	if (axis._direction._x != 0.0f)
+	{
+		if (firstMinPoint._x > secondMinPoint._x && firstMinPoint._x < secondMaxPoint._x)
+		{
+			collision = true;
+		}
+		else if (secondMinPoint._x > firstMinPoint._x && secondMinPoint._x < firstMaxPoint._x)
+		{
+			collision = true;
+		}
+	}
+	else if (axis._direction._y != 0.0f)
+	{
+		if (firstMinPoint._y > secondMinPoint._y && firstMinPoint._y < secondMaxPoint._y)
+		{
+			collision = true;
+		}
+		else if (secondMinPoint._y > firstMinPoint._y && secondMinPoint._y < firstMaxPoint._y)
+		{
+			collision = true;
+		}
+	}
+	else if (axis._direction._z != 0.0f)
+	{
+		if (firstMinPoint._z > secondMinPoint._z && firstMinPoint._z < secondMaxPoint._z)
+		{
+			collision = true;
+		}
+		else if (secondMinPoint._z > firstMinPoint._z && secondMinPoint._z < firstMaxPoint._z)
+		{
+			collision = true;
+		}
+	}
+
+	return collision;
+}
+
+//Finds the cornerpoints in a shape
+static std::vector<Vec3> FindCorners(Box box)
+{
+	std::vector<Vec3> corners;
+
+	corners.push_back(box._position
+		+ (box._xSlab._normal * box._xSlab._offset)
+		+ (box._ySlab._normal * box._ySlab._offset)
+		+ (box._zSlab._normal * box._zSlab._offset));
+
+	corners.push_back(box._position
+		- (box._xSlab._normal * box._xSlab._offset)
+		+ (box._ySlab._normal * box._ySlab._offset)
+		+ (box._zSlab._normal * box._zSlab._offset));
+
+	corners.push_back(box._position
+		+ (box._xSlab._normal * box._xSlab._offset)
+		- (box._ySlab._normal * box._ySlab._offset)
+		+ (box._zSlab._normal * box._zSlab._offset));
+
+	corners.push_back(box._position
+		+ (box._xSlab._normal * box._xSlab._offset)
+		+ (box._ySlab._normal * box._ySlab._offset)
+		- (box._zSlab._normal * box._zSlab._offset));
+
+	corners.push_back(box._position
+		- (box._xSlab._normal * box._xSlab._offset)
+		- (box._ySlab._normal * box._ySlab._offset)
+		+ (box._zSlab._normal * box._zSlab._offset));
+
+	corners.push_back(box._position
+		- (box._xSlab._normal * box._xSlab._offset)
+		+ (box._ySlab._normal * box._ySlab._offset)
+		- (box._zSlab._normal * box._zSlab._offset));
+
+	corners.push_back(box._position
+		+ (box._xSlab._normal * box._xSlab._offset)
+		- (box._ySlab._normal * box._ySlab._offset)
+		- (box._zSlab._normal * box._zSlab._offset));
+
+	corners.push_back(box._position
+		- (box._xSlab._normal * box._xSlab._offset)
+		- (box._ySlab._normal * box._ySlab._offset)
+		- (box._zSlab._normal * box._zSlab._offset));
+
+	return corners;
+}
+
+
+
 static bool Collision(Ray ray, Plane plane)
 {
 	return ray._direction.Dot(plane._normal) != 0;
@@ -81,10 +245,8 @@ static bool Collision(Ray ray, Plane plane)
 static bool Collision(Ray ray, Sphere sphere)
 {
 	Vec3 objectVector =  sphere._position - ray._origin;
-	float dotProduct = objectVector.Dot(ray._direction);
-	float denominator = ray._direction.Dot(ray._direction);
-	Vec3 projectedVector = ray._direction * (dotProduct / denominator);
-	float length = (objectVector - projectedVector).Length();
+	Vec3 projectedPoint = FindClosestPointOnVector(sphere._position, ray);
+	float length = (objectVector - projectedPoint).Length();
 
 	return (length <= sphere._radius);
 }
@@ -163,4 +325,43 @@ static bool Collision(Ray ray, Box box)
 
 	return (greatestTMin <= smallestTMax);
 }
+
+static bool Collision(Box box1, Box box2)
+{
+	bool collision = true;
+	std::vector<Vec3>firstBoxCorners = FindCorners(box1);
+	std::vector<Vec3>secondBoxCorners = FindCorners(box2);
+
+
+	if (!SATVectorCheck(Ray(Vec3(), box1._xSlab._normal), firstBoxCorners, secondBoxCorners))
+	{
+		collision = false;
+	}
+	else if (!SATVectorCheck(Ray(Vec3(), box1._ySlab._normal), firstBoxCorners, secondBoxCorners))
+	{
+		collision = false;
+	}
+	else if (!SATVectorCheck(Ray(Vec3(), box1._zSlab._normal), firstBoxCorners, secondBoxCorners))
+	{
+		collision = false;
+	}
+	else if (!SATVectorCheck(Ray(Vec3(), box2._xSlab._normal), firstBoxCorners, secondBoxCorners))
+	{
+		collision = false;
+	}
+	else if (!SATVectorCheck(Ray(Vec3(), box2._ySlab._normal), firstBoxCorners, secondBoxCorners))
+	{
+		collision = false;
+	}
+	else if (!SATVectorCheck(Ray(Vec3(), box2._zSlab._normal), firstBoxCorners, secondBoxCorners))
+	{
+		collision = false;
+	}
+
+	return collision;
+}
+
+
+
+
 
