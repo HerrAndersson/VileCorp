@@ -23,6 +23,7 @@
     <ClCompile Include="DirectXHandler.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Fonts.cpp" />
+    <ClCompile Include="FontWrapper.cpp" />
     <ClCompile Include="Node.cpp" />
     <ClCompile Include="HUDElement.cpp" />
     <ClCompile Include="RenderModule.cpp" />
@@ -34,6 +35,7 @@
     <ClInclude Include="DirectXHandler.h" />
     <ClInclude Include="Deferred.h" />
     <ClInclude Include="Fonts.h" />
+    <ClInclude Include="FontWrapper.h" />
     <ClInclude Include="FW\FW1FontWrapper.h" />
     <ClInclude Include="Node.h" />
     <ClInclude Include="HUDElement.h" />

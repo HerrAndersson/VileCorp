@@ -27,6 +27,7 @@ private:
 
 	System::InputDevice*		_input;
 	AssetManager*				_assetManager;
+	FontWrapper*				_fontWrapper;
 
 	//Resizing window, directx resources, camera
 	void ResizeResources(System::WindowSettings settings);

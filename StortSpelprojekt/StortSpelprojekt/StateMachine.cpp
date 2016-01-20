@@ -1,13 +1,13 @@
 #include "StateMachine.h"
 
-StateMachine::StateMachine(InitVar initVar, const std::string& filename, AssetManager* assetManager)
+StateMachine::StateMachine(InitVar initVar, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper)
 {
 	_currentState = State::SPLASHSTATE;
 
-	_baseStates.push_back(new SplashState(initVar, filename, assetManager));
-	_baseStates.push_back(new MenuState(initVar, filename, assetManager));
-	_baseStates.push_back(new PlayState(initVar, filename, assetManager));
-	_baseStates.push_back(new OptionsState(initVar, filename, assetManager));
+	_baseStates.push_back(new SplashState(initVar, filename, assetManager, fontWrapper));
+	_baseStates.push_back(new MenuState(initVar, filename, assetManager, fontWrapper));
+	_baseStates.push_back(new PlayState(initVar, filename, assetManager, fontWrapper));
+	_baseStates.push_back(new OptionsState(initVar, filename, assetManager, fontWrapper));
 }
 
 StateMachine::~StateMachine()

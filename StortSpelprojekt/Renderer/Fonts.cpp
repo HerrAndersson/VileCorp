@@ -47,11 +47,7 @@ namespace Renderer
 	{
 		HRESULT hr = S_OK;
 
-		hr = FW1CreateFactory(FW1_VERSION, &_factory);
-		IF_HR(hr);
-
-		hr = _factory->CreateFontWrapper(device, font, &_fontWrapper);
-		IF_HR(hr);
+		
 
 		return hr;
 	}
@@ -208,7 +204,7 @@ namespace Renderer
 				unsigned int uintTextSize = (UINT32)textSize;
 				DWRITE_TEXT_RANGE allText = { 0, uintTextSize };
 				_cFont.textLayout->SetFontSize(fontSize, allText);
-				_cFont.textLayout->SetWordWrapping(DWRITE_WORD_WRAPPING_NO_WRAP);
+				_cFont.textLayout->SetWordWrapping(DWRITE_WORD_WRAPPING_WRAP);
 			}
 
 			_fontWrapper->DrawTextLayout(deviceContext, _cFont.textLayout, x, y, color, FW1_RESTORESTATE);

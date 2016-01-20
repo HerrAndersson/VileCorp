@@ -243,12 +243,12 @@ namespace Renderer
 		}
 	}
 
-	void RenderModule::Render(GUI::Node* root)
+	void RenderModule::Render(GUI::Node* root, FontWrapper* fontWrapper)
 	{
-		Render(root, root->GetModelMatrix());
+		Render(root, root->GetModelMatrix(), fontWrapper);
 	}
 
-	void RenderModule::Render(GUI::Node* current, XMMATRIX* transform)
+	void RenderModule::Render(GUI::Node* current, XMMATRIX* transform, FontWrapper* fontWrapper)
 	{
 		ID3D11ShaderResourceView* tex = current->GetTexture();
 		if (tex)
@@ -272,14 +272,31 @@ namespace Renderer
 
 			_d3d->GetDeviceContext()->Draw(6, 0);
 		}
-		//TODO: Render text
+		//Render text
+		int len = current->GetText().length();
+		if (len > 0) 
+		{
+			const WCHAR* tempText = current->GetText().c_str();
+			auto fw = fontWrapper->GetFontWrapper();
+			fw->DrawString(
+				_d3d->GetDeviceContext(),
+				L"haskjhdkjas",
+				//tempText,
+				//current->GetFontSize(),
+				32.0f,
+				0.0f, 0.0f, //TODO: Set position according to position (convert to pixel coords)
+				//current->GetColor(),
+				0xff0099ff,
+				FW1_RESTORESTATE
+			);
+		}
+		
 
 		for (GUI::Node* i : *current->GetChildren())
 		{
 			XMMATRIX a = *(i->GetModelMatrix());
 			XMMATRIX t = XMMatrixMultiply(*transform, a);
-			//Render(i, XMMatrixMultiply(transform, *(i->GetModelMatrix())));
-			Render(i, &t);
+			Render(i, &t, fontWrapper);
 		}
 	}
 

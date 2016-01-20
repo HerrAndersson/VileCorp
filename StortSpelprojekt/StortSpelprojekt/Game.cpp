@@ -12,6 +12,7 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	_assetManager = new AssetManager(_renderModule->GetDevice());
 	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager);
 	_input = new System::InputDevice(_window->GetHWND());
+	_fontWrapper = new FontWrapper(_renderModule->GetDevice(), L"../../Output/Bin/x86/Debug/Assets/Fonts/Calibri.ttf", L"Calibri");
 
 	//Init camera
 	_camera = new System::Camera(0.1f, 1000.0f, DirectX::XM_PIDIV2, settings._width, settings._height);
@@ -24,7 +25,7 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	InitVar initVar;
 	initVar._objectHandler = _objectHandler;
 	initVar._inputDevice = _input;
-	_SM = new StateMachine(initVar, "../../Output/Bin/x86/Debug/Assets/gui.json", _assetManager);
+	_SM = new StateMachine(initVar, "../../Output/Bin/x86/Debug/Assets/gui.json", _assetManager, _fontWrapper);
 }
 
 Game::~Game() 
@@ -36,6 +37,7 @@ Game::~Game()
 	delete _input;
 	delete _assetManager;
 	delete _objectHandler;
+	delete _fontWrapper;
 }
 void Game::ResizeResources(System::WindowSettings settings)
 {
@@ -164,7 +166,7 @@ void Game::Render()
 	_renderModule->RenderLightQuad();
 	
 	_renderModule->SetShaderStage(Renderer::RenderModule::HUD_PASS);
-	_renderModule->Render(_SM->GetCurrentState()->GetUITree()->GetRootNode());
+	_renderModule->Render(_SM->GetCurrentState()->GetUITree()->GetRootNode(), _fontWrapper);
 	_renderModule->EndScene();
 }
 

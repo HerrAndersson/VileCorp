@@ -1,6 +1,6 @@
 #include "OptionsState.h"
 
-OptionsState::OptionsState(InitVar initVar, const std::string& filename, AssetManager* assetManager) : BaseState(initVar, filename, "OPTIONS", assetManager)
+OptionsState::OptionsState(InitVar initVar, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper) : BaseState(initVar, filename, "OPTIONS", assetManager, fontWrapper)
 {}
 
 OptionsState::~OptionsState()

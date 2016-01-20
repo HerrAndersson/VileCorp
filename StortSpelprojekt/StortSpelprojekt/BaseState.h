@@ -24,7 +24,7 @@ protected:
 	
 	void ChangeState(State newState);
 public:
-	BaseState(InitVar initVar, const std::string& filename, const std::string& statename, AssetManager* assetManager);
+	BaseState(InitVar initVar, const std::string& filename, const std::string& statename, AssetManager* assetManager, FontWrapper* fontWrapper);
 	virtual ~BaseState();
 
 	virtual void Update(float deltaTime) = 0;

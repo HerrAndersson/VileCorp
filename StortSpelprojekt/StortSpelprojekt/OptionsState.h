@@ -6,7 +6,7 @@ class OptionsState : public BaseState
 {
 private:
 public:
-	OptionsState(InitVar initVar, const std::string& filename, AssetManager* assetManager);
+	OptionsState(InitVar initVar, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper);
 	~OptionsState();
 
 	void Update(float deltaTime);

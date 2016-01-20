@@ -18,7 +18,7 @@ private:
 	void ProcessStateRequest();
 
 public:
-	StateMachine(InitVar initVar, const std::string & filename, AssetManager* assetManager);
+	StateMachine(InitVar initVar, const std::string & filename, AssetManager* assetManager, FontWrapper* fontWrapper);
 	~StateMachine();
 
 	void Update(float deltaTime);

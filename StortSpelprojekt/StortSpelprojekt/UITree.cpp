@@ -6,10 +6,10 @@ using namespace DirectX;
 
 namespace GUI
 {
-	UITree::UITree(const std::string& filename, const std::string& statename, AssetManager* assetManager)
+	UITree::UITree(const std::string& filename, const std::string& statename, AssetManager* assetManager, FontWrapper* fontWrapper)
 	{
 		_AM = assetManager;
-
+		_fontWrapper = fontWrapper;
 		ifstream file(filename);
 		if (!file.good())
 		{
@@ -48,7 +48,7 @@ namespace GUI
 
 	Node* UITree::LoadGUITree(const std::string& name, rapidjson::Value::ConstMemberIterator start, rapidjson::Value::ConstMemberIterator end)
 	{
-		Node* returnNode = new Node();
+		Node* returnNode = new Node(_fontWrapper);
 		returnNode->SetId(name);
 		for (Value::ConstMemberIterator i = start; i != end; ++i)
 		{
