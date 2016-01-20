@@ -87,8 +87,8 @@ namespace Renderer
 		int SetGeometryStage();
 		int SetShadowGenerationStage();
 		int SetLightStage();
-		void SetHUDPassRTVs();
-		void SetGridPassRTVs();
+		void SetHUDStage();
+		void SetGridStage();
 
 		void SetCullingState(CullingState state);
 		void SetBlendState(BlendState state);

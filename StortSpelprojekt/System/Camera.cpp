@@ -122,7 +122,6 @@ namespace System
 		_mode = mode;
 	}
 
-
 	void* Camera::operator new(size_t i)
 	{
 		return _mm_malloc(i, 16);

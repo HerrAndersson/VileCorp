@@ -169,17 +169,17 @@ namespace Renderer
 		delete _defaultVS;
 		delete _geoPassVS;
 		delete _lightPassVS;
+		delete _animPassVS;
 		delete _shadowMapVS;
+		delete _gridPassVS;
+		delete _hudPassVS;
 
 		SAFE_RELEASE(_defaultPS);
 		SAFE_RELEASE(_geoPassPS);
 		SAFE_RELEASE(_lightPassPS);
-		delete _animPassVS;
-		delete _gridPassVS;
 		SAFE_RELEASE(_gridPassPS);
-		delete _hudPassVS;
-		SAFE_RELEASE(_hudPassPS);
 		SAFE_RELEASE(_lightApplyPS);
+		SAFE_RELEASE(_hudPassPS);
 
 		SAFE_RELEASE(_samplerWRAP);
 		SAFE_RELEASE(_samplerPOINT);

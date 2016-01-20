@@ -97,7 +97,7 @@ void Game::Update(float deltaTime)
 	_SM->Update(deltaTime);
 	_objectHandler->Update(deltaTime);
 
-	for (int i = 0; i < _spotlights.size(); i++)
+	for (unsigned int i = 0; i < _spotlights.size(); i++)
 	{
 		XMFLOAT3 rot = _spotlights[i]->GetRotation();
 		rot.y -= (float)(i + 1) / 1;
@@ -139,13 +139,11 @@ void Game::Render()
 		std::vector<DirectX::XMMATRIX>* gridMatrices = _grid->GetGridMatrices();
 
 		for (auto &matrix : *gridMatrices)
-
-
 		{
 			_renderModule->RenderLineList(&matrix, _grid->GetLineBuffer(), 2);
 		}
 	}
-//for (auto spot : _spotlights)
+	//for (auto spot : _spotlights)
 	//{
 	//	_renderModule->DEBUG_RenderLightVolume(spot->GetVolumeBuffer(), spot->GetWorldMatrix());
 	//}
@@ -159,27 +157,30 @@ void Game::Render()
 	*/
 
 	_renderModule->SetLightDataPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
-	//for (auto spot : _spotlights)
-	//{
 
-		//for (int i = 0; i < 4; i++)
-		//{
-			_renderModule->SetShaderStage(Renderer::RenderModule::SHADOW_GENERATION);
-		//	_renderModule->SetShadowMapDataPerSpotLight(_spotlights[i]->GetViewMatrix(), _spotlights[i]->GetProjectionMatrix());
+	for (int i = 0; i < 4; i++)
+	{
+		_renderModule->SetShaderStage(Renderer::RenderModule::SHADOW_GENERATION);
+		_renderModule->SetShadowMapDataPerSpotLight(_spotlights[i]->GetViewMatrix(), _spotlights[i]->GetProjectionMatrix());
 
-		//	for (auto i : *gameObjects)
-		//	{
-		//		_renderModule->RenderShadowMap(i->GetMatrix(), i->GetRenderObject());
-		//	}
+		for (int i = 0; i < NR_OF_TYPES; i++)
+		{
+			for (GameObject* g : gameObjects->at(i))
+			{
+				_renderModule->RenderShadowMap(g->GetMatrix(), g->GetRenderObject());
+			}
+		}
 
-			_renderModule->SetShaderStage(Renderer::RenderModule::LIGHT_APPLICATION);
-		//	_renderModule->SetLightDataPerLight(_spotlights[i]);
+		_renderModule->SetShaderStage(Renderer::RenderModule::LIGHT_APPLICATION);
+		_renderModule->SetLightDataPerLight(_spotlights[i]);
 
-			//Render light volume here instead? Render screen quad once first to fill the screen, or just let Geo pass output to backbuffer directly?
+		//Render light volume here instead? Render screen quad once first to fill the screen, or just let Geo pass output to backbuffer directly?
+		_renderModule->RenderScreenQuad();
+	}
 
-		//}
-	//}
-
+	////////////////////////////////////////////////////////// Hud and other 2D //////////////////////////////////////////////////////////
+	
+	//Does not blend correctly now. When outputing the diffuse screen quad, blending should be disabled
 	_renderModule->RenderScreenQuad();
 
 	_renderModule->SetShaderStage(Renderer::RenderModule::HUD_PASS);
@@ -199,9 +200,8 @@ int Game::Run()
 			Update(_timer.GetFrameTime());
 			Render();
 
-			//string s = to_string(_timer.GetFrameTime()) + " " + to_string(_timer.GetFPS());
-
-			//SetWindowText(_window->GetHWND(), s.c_str());
+			string s = to_string(_timer.GetFrameTime()) + " " + to_string(_timer.GetFPS());
+			SetWindowText(_window->GetHWND(), s.c_str());
 
 			_timer.Reset();
 		}

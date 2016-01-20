@@ -391,14 +391,14 @@ namespace Renderer
 		}
 	}
 
-	void DirectXHandler::SetHUDPassRTVs()
+	void DirectXHandler::SetHUDStage()
 	{
 		_deviceContext->OMSetRenderTargets(1, &_backBufferRTV, nullptr);
 		_deviceContext->RSSetState(_rasterizerStateBack);
 		_deviceContext->OMSetDepthStencilState(_depthStateDisable, 1);
 	}
 
-	void DirectXHandler::SetGridPassRTVs()
+	void DirectXHandler::SetGridStage()
 	{
 		_deviceContext->OMSetDepthStencilState(_depthStateEnable, 1);
 		//_deferredShader->SetRenderTargets(_deviceContext);
@@ -453,7 +453,6 @@ namespace Renderer
 
 			_deviceContext->RSSetViewports(1, &_viewport);
 
-
 			SAFE_RELEASE(_backBufferDSV);
 
 			for (int i = 0; i < BUFFER_COUNT; i++)
@@ -473,11 +472,8 @@ namespace Renderer
 		float color[] = { red, green, blue, alpha };
 
 		_deviceContext->RSSetState(_rasterizerStateBack);
-
-		//Clear main RTV
 		_deviceContext->ClearRenderTargetView(_backBufferRTV, color);
 
-		//Clear the render target buffers
 		for (int i = 0; i < BUFFER_COUNT; i++)
 		{
 			_deviceContext->ClearRenderTargetView(_deferredRTVArray[i], color);

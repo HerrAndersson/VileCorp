@@ -138,7 +138,7 @@ namespace Renderer
 		deviceContext->VSSetConstantBuffers(0, 1, &_matrixBufferPerFrame);
 	}
 
-	void RenderModule::SetResourcesPerObject(XMMATRIX* world, ID3D11ShaderResourceView* diffuse, ID3D11ShaderResourceView* specular, std::vector<DirectX::XMFLOAT4X4>* extra)
+	void RenderModule::SetDataPerObject(XMMATRIX* world, ID3D11ShaderResourceView* diffuse, ID3D11ShaderResourceView* specular, std::vector<DirectX::XMFLOAT4X4>* extra)
 	{
 		HRESULT result;
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -161,13 +161,12 @@ namespace Renderer
 		dataPtr->world = worldMatrixC;
 		memcpy(&dataPtr->bones, extra->data(), sizeof(DirectX::XMFLOAT4X4) * extra->size());
 		
-
 		deviceContext->Unmap(_matrixBufferPerSkinnedObject, 0);
 
 		deviceContext->VSSetConstantBuffers(1, 1, &_matrixBufferPerSkinnedObject);
 	}
 
-void RenderModule::SetDataPerObject(XMMATRIX* world, ID3D11ShaderResourceView* diffuse, ID3D11ShaderResourceView* specular)
+	void RenderModule::SetDataPerObject(XMMATRIX* world, ID3D11ShaderResourceView* diffuse, ID3D11ShaderResourceView* specular)
 	{
 		HRESULT result;
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -347,13 +346,13 @@ void RenderModule::SetDataPerObject(XMMATRIX* world, ID3D11ShaderResourceView* d
 		}
 		case GRID_PASS:
 		{
-			_d3d->SetGridPassRTVs();
+			_d3d->SetGridStage();
 			_shaderHandler->SetGridPassShaders(_d3d->GetDeviceContext());
 			break;
 		}
 		case HUD_PASS:
 		{
-			_d3d->SetHUDPassRTVs();
+			_d3d->SetHUDStage();
 			_shaderHandler->SetHUDPassShaders(_d3d->GetDeviceContext());
 			break;
 		}
