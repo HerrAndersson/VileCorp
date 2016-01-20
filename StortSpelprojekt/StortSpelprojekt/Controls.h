@@ -8,8 +8,6 @@
 
 #include <fstream>
 #include <map>
-#include "JsonStructs.h"
-#include "ConfigParser.h"
 
 namespace System
 {
@@ -32,7 +30,6 @@ namespace System
 	private:
 		InputDevice* _inputDevice;
 		std::map<std::string, Key>* _keymap;
-		ControlScheme _controlScheme;
 
 		void StringToKeyMap(const std::string& key, char &mainKey, char& keyModifiers);
 	public:

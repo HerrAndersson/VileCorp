@@ -11,24 +11,30 @@ private:
 	AI::AStar* _aStar;
 	AI::Vec2D _goalTilePosition;
 	AI::Vec2D* _path;
-	int _pathLength;
+
 	const Tilemap* _tileMap;		//Pointer to the tileMap in objectHandler(?). Units should preferably have read-, but not write-access.
 	AI::Vec2D _direction;
 	float  _moveSpeed;
-
 
 	int _visionRadius;
 	AI::Vec2D* _visibleTiles;
 	int _nrOfVisibleTiles;
 
+	int _waiting;					//Temporarily counting frame. Should use a timer eventually
+
+	int _health;
+
+	GameObject* _objective;
+
 	void ScanOctant(int depth, int octant, double &startSlope, double endSlope);
 	double GetSlope(double x1, double y1, double x2, double y2, bool invert);
 	int GetVisDistance(int x1, int y1, int x2, int y2);
-
 	void CalculatePath();
 
 protected:
 	int _goalPriority;				//Lower value means higher priority
+	int _pathLength;
+	GameObject* _heldObject;
 	int GetApproxDistance(AI::Vec2D target)const;
 
 public:
@@ -38,15 +44,21 @@ public:
 	int GetPathLength()const;
 	AI::Vec2D GetGoal();
 	AI::Vec2D GetDirection();
-	void FindVisibleTiles();									 
-	void CheckVisibleTiles();									//Same for all units. Only difference is based on _visionRadius
-	void CheckAllTiles();										//Thief should evaluate objectives. Guards don't need to yet, since the player gives orders.
+	int GetHealth();
+	GameObject* GetHeldObject()const;
+	void FindVisibleTiles();
+	void CheckVisibleTiles();
+	void CheckAllTiles();
 	virtual void EvaluateTile(Type objective, AI::Vec2D tile) = 0;
+	virtual void EvaluateTile(GameObject* obj) = 0;
 	void SetGoal(AI::Vec2D goal);
-	void CalculatePath(AI::Vec2D goal);									//Same for all units
-	void Move();														//Possibly the same. Finding new objectives need to be separate.
-	void Update();														//Same as move
+	void SetGoal(GameObject* objective);
+	void Move();
+	void Update();
 	virtual void Release();
-	virtual void act(Type obj) = 0;									//context specific action on the unit's objective
+	virtual void act(GameObject* obj) = 0;									//context specific action on the unit's objective
+	void wait(int frames);
+	void ChangeHealth(int damage);
+
 };
 

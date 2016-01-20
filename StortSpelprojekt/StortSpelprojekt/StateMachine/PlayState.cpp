@@ -16,12 +16,12 @@ PlayState::~PlayState()
 
 void PlayState::Update(float deltaTime)
 {
-	_gameLogic.Update();
+	_gameLogic.Update(deltaTime);
 }
 
 void PlayState::OnStateEnter()
 {
-	_gameLogic.Initialize(_inputDevice, _objectHandler, _uiHandler, _camera);
+	_gameLogic.Initialize(_inputDevice, _objectHandler, _uiHandler, _camera, _controls, _pickingDevice);
 }
 
 void PlayState::OnStateExit()

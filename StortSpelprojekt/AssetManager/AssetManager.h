@@ -37,14 +37,17 @@ struct TilesetHandler
 	bool Int64(int64_t i) { return true; }
 	bool Uint64(uint64_t u) { return true; }
 	bool Double(double d) { return true; }
-	bool String(const char* str, rapidjson::SizeType length, bool copy) {
+	bool String(const char* str, rapidjson::SizeType length, bool copy)
+	{
 		if (_nameNext)
 		{
 			_tileset->_name = str;
 			_nameNext = false;
 		}
 		else
+		{
 			_cur->push_back(str);
+		}
 		return true;
 	}
 	bool StartObject()
@@ -54,9 +57,12 @@ struct TilesetHandler
 		_tileset = &_tilesets->back();
 		return true;
 	}
-	bool Key(const char* str, rapidjson::SizeType length, bool copy) {
+	bool Key(const char* str, rapidjson::SizeType length, bool copy)
+	{
 		if (!strcmp("name", str))
+		{
 			_nameNext = true;
+		}
 		else if (!strcmp("floors", str))
 		{
 			_cur = &_tileset->_floors;
@@ -94,6 +100,11 @@ struct MatHeader
 struct LevelHeader
 {
 	int _version, _tileGridSizeX, _tileGridSizeY, _nrOfGameObjects;
+};
+
+struct SkeletonHeader
+{
+	unsigned int _version, _framerate, _actionCount, _boneCount;
 };
 
 struct GameObjectData
@@ -140,8 +151,8 @@ static bool GetFilenamesInDirectory(char* folder, char* extension, vector<string
 	return true;
 }
 
-//AssetManager keeps lists of all assets in the game(currently meshes), and loads them onto the GPU or memory when required.
-//RenderObjects are the interface by which the assetmanager provides models to the renderer. They contain at least one mesh, two colors for diffuse and specular respectively, two handles to textures(textures not yet in), an index to its skeleton and help variables.
+//AssetManager keeps lists of all assets in the game(currently meshes, textures and skeletal animation), and loads them onto the GPU or memory when required.
+//RenderObjects are the interface by which the assetmanager provides models to the renderer. They contain at least one mesh, two colors for diffuse and specular respectively, two handles to textures, a pointer to its skeleton and various help variables.
 //Get buffers with:
 //assetManager->GetRenderObject(MY_OBJECT_RENDEROBJECT_INDEX)->meshes[SUBMESH_INDEX].vertexBuffer; Also on meshlevel lies the size of the buffer and any lights that may be present.
 //Call assetManager->UnLoad(MY_OBJECT_RENDEROBJECT_INDEX, false) if you think the mesh probably won't be needed again soon
@@ -149,13 +160,17 @@ static bool GetFilenamesInDirectory(char* folder, char* extension, vector<string
 class ASSET_MANAGER_EXPORT AssetManager
 {
 private:
-	int _meshFormatVersion = 23;
+	int _meshFormatVersion = 24;
+	int _animationFormatVersion = 10;
 	ifstream* _infile;
 	ID3D11Device* _device;
+	Tileset* _activeTileset;
+
 
 	vector<string>* _modelFiles;
 	vector<string>* _levelFileNames;
 	vector<Tileset>* _tilesets;
+	vector<Skeleton*>* _skeletons;
 
 	vector<RenderObject*>* _renderObjects;
 	vector<RenderObject*>* _renderObjectsToFlush;
@@ -167,8 +182,8 @@ private:
 	void Flush();
 	RenderObject* ScanModel(string file_path);
 	Texture* ScanTexture(string filename);
-	void DecrementUsers(Texture* texture);
-	ID3D11Buffer* CreateVertexBuffer(vector<Vertex> *vertices, int skeleton);
+	Skeleton* LoadSkeleton(string filename);
+	ID3D11Buffer* CreateVertexBuffer(vector<WeightedVertex> *weightedVertices, vector<Vertex> *vertices, int skeleton);
 	void SetupRenderObjectList(Tileset* tileset);
 	void SetupLevelFileNameList();
 	void SetupTilesets();

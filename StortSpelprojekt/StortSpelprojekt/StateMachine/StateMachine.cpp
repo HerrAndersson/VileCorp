@@ -4,37 +4,12 @@ StateMachine::StateMachine(System::Controls* controls, ObjectHandler* objectHand
 {
 	_currentState = State::SPLASHSTATE;
 
-	for (int i = 0; i < State::EXITSTATE; i++)
-	{
-		switch (i)
-		{
-		case SPLASHSTATE:
-		{
-			_baseStates.push_back(new SplashState(controls, objectHandler, uiHandler, inputDevice, camera, pickingDevice));
-			break;
-		}
-		case MENUSTATE:
-		{
-			_baseStates.push_back(new MenuState(controls, objectHandler, uiHandler, inputDevice, camera, pickingDevice));
-			break;
-		}
-		case PLAYSTATE:
-		{
-			_baseStates.push_back(new PlayState(controls, objectHandler, uiHandler, inputDevice, camera, pickingDevice));
-			break;
-		}
-		case LEVELEDITSTATE:
-		{
-			_baseStates.push_back(new LevelEditState(controls, objectHandler, uiHandler, inputDevice, camera, pickingDevice));
-			break;
-		}
-		case OPTIONSSTATE:
-		{
-			_baseStates.push_back(new OptionsState(controls, objectHandler, uiHandler, inputDevice, camera, pickingDevice));
-			break;
-		}
-		}
-	}
+	_baseStates.push_back(new SplashState(controls, objectHandler, uiHandler, inputDevice, camera, pickingDevice));
+	_baseStates.push_back(new MenuState(controls, objectHandler, uiHandler, inputDevice, camera, pickingDevice));
+	_baseStates.push_back(new PlayState(controls, objectHandler, uiHandler, inputDevice, camera, pickingDevice));
+	_baseStates.push_back(new PlacementState(controls, objectHandler, uiHandler, inputDevice, camera, pickingDevice));
+	_baseStates.push_back(new LevelEditState(controls, objectHandler, uiHandler, inputDevice, camera, pickingDevice));
+	_baseStates.push_back(new OptionsState(controls, objectHandler, uiHandler, inputDevice, camera, pickingDevice));
 }
 
 StateMachine::~StateMachine()

@@ -14,6 +14,7 @@ GameObject::GameObject(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::X
 	_tilePosition = tilePosition;
 	_type = type;
 	_renderObject = renderObject;
+	_pickUpState = ONTILE;
 	CalculateMatrix();
 }
 
@@ -31,11 +32,10 @@ void GameObject::CalculateMatrix()
 	//	);
 
 	//DO NOT TOUCH!
-	_objectMatrix = DirectX::XMMatrixTranspose(
+	_objectMatrix = 
 		DirectX::XMMatrixScalingFromVector(DirectX::XMLoadFloat3(&_scale)) * 
 		DirectX::XMMatrixRotationRollPitchYaw(_rotation.x, _rotation.y, _rotation.z) *
-		DirectX::XMMatrixTranslationFromVector(DirectX::XMLoadFloat3(&_position))
-		);
+		DirectX::XMMatrixTranslationFromVector(DirectX::XMLoadFloat3(&_position));
 
 }
 
@@ -44,9 +44,9 @@ unsigned short GameObject::GetID() const
 	return _ID;
 }
 
-DirectX::XMMATRIX GameObject::GetMatrix() const
+DirectX::XMMATRIX* GameObject::GetMatrix()
 {
-	return _objectMatrix;
+	return &_objectMatrix;
 }
 
 DirectX::XMFLOAT3 GameObject::GetPosition() const
@@ -105,7 +105,6 @@ void GameObject::Rotate(const DirectX::XMFLOAT3& rotate)
 	_rotation.z = rotate.z;
 	CalculateMatrix();
 }
-
 AI::Vec2D GameObject::GetTilePosition() const
 {
 	return _tilePosition;
@@ -134,6 +133,16 @@ void GameObject::SetVisibility(bool visible)
 RenderObject * GameObject::GetRenderObject() const
 {
 	return _renderObject;
+}
+
+void GameObject::SetPickUpState(PickUpState state)
+{
+	_pickUpState = state;
+}
+
+PickUpState GameObject::GetPickUpState()const
+{
+	return _pickUpState;
 }
 
 void* GameObject::operator new(size_t i)

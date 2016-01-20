@@ -176,7 +176,7 @@ namespace System
 	}
 	void Controls::ToggleCursorLock()
 	{
-		_inputDevice->ToggleCursorLock();
+		//_inputDevice->ToggleCursorLock();
 	}
 
 	bool Controls::IsFunctionKeyDown(const std::string& key)

@@ -1,11 +1,10 @@
 #include "Game.h"
-#include "LevelEdit.h"
 
 int WINAPI wWinMain(HINSTANCE _hInstance, HINSTANCE _hPrevInstance, LPWSTR _lpCmdLine, int _nCmdShow)
 {
 	int result = 0;
 
-	//_CrtSetBreakAlloc(474);
+	//_CrtSetBreakAlloc(1414);
 
 	try
 	{

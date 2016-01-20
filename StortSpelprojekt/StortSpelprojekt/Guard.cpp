@@ -28,14 +28,53 @@ void Guard::EvaluateTile(Type objective, AI::Vec2D tile)
 		break;
 	}
 	tempPriority;
-	if (_goalPriority <= 0 || tempPriority * GetApproxDistance(tile) < _goalPriority * GetApproxDistance(GetGoal()))
+	if (tempPriority > 0 && tile != _tilePosition && (_pathLength <= 0 || tempPriority * GetApproxDistance(tile) < _goalPriority * GetApproxDistance(GetGoal())))
 	{
+		_goalPriority = tempPriority;
 		SetGoal(tile);
 	}
 }
 
-void Guard::act(Type obj)
-{}
+void Guard::EvaluateTile(GameObject * obj)
+{
+	int tempPriority = 0;
+	switch (obj->GetType())
+	{
+	case LOOT:
+	case GUARD:
+	case TRAP:
+	case TRIGGER:				//Guards don't react to these
+		break;
+	case ENEMY:
+		tempPriority = 10;
+		break;
+	default:
+		break;
+	}
+	tempPriority;
+	if (tempPriority > 0 && obj->GetTilePosition() != _tilePosition && (_pathLength <= 0 || tempPriority * GetApproxDistance(obj->GetTilePosition()) < _goalPriority * GetApproxDistance(GetGoal())))
+	{
+		_goalPriority = tempPriority;
+		SetGoal(obj);
+	}
+}
+
+void Guard::act(GameObject* obj)
+{
+	switch (obj->GetType())
+	{
+	case LOOT:
+	case GUARD:
+	case TRAP:
+	case TRIGGER:										//Guards don't react to these (yet)
+		break;	
+	case ENEMY:											//The guard hits the enemy
+		dynamic_cast<Unit*>(obj)->ChangeHealth(1);
+		break;
+	default:
+		break;
+	}
+}
 
 void Guard::Release()
 {}

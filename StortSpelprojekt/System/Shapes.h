@@ -5,8 +5,6 @@
 #include "VectorMath.h"
 
 
-
-
 struct Ray
 {
 	Vec3 _origin;
@@ -43,102 +41,24 @@ struct Sphere
 	}
 };
 
-struct Cylinder
-{
-	Vec3 _position;
-	Vec3 _direction;
-	float _radius;
-	float _height;
-
-	Cylinder(Vec3 position = Vec3(), float radius = 0.0f, float height = 0.0f)
-	{
-		_position = position;
-		_direction = Vec3(0.0f, 1.0f, 0.0f);
-		_radius = radius;
-		_height = height;
-	}
-	Cylinder(Vec3 position, Vec3 direction, float radius, float height)
-	{
-		_position = Vec3();
-		_direction = Vec3();
-		_radius = 0.0f;
-		_height = 0.0f;
-	}
-};
-
-struct Triangle
-{
-	Vec3 _point1, _point2, _point3;
-
-	Triangle(Vec3 point1 = Vec3(), Vec3 point2 = Vec3(), Vec3 point3 = Vec3())
-	{
-		_point1 = point1;
-		_point2 = point2;
-		_point3 = point3;
-	}
-};
-
-struct Cone
-{
-	Vec3 _origin;
-	Vec3 _direction;
-	float _radius;
-
-	Cone(Vec3 origin = Vec3(), Vec3 direction = Vec3(), float radius = 0.0f)
-	{
-		_origin = origin;
-		_direction = direction;
-		_radius = radius;
-	}
-};
-
-//Aligned square
-struct Square
-{
-	Vec3 _point1, _point2;
-
-	Square(Vec3 point1 = Vec3(), Vec3 point2 = Vec3())
-	{
-		_point1 = point1;
-		_point2 = point2;
-	}
-	Square(Vec3 position, float height, float width)
-	{
-		_point1 = Vec3(position._x - (height*0.5f), position._y, position._z - (width*0.5f));
-		_point2 = Vec3(position._x + (height*0.5f), position._y, position._z + (width*0.5f));
-	}
-};
-
 struct Box
 {
-	Plane _backFace;
-	Plane _frontFace;
-	Plane _topFace;
-	Plane _bottomFace;
-	Plane _rightFace;
-	Plane _leftFace;
+	Vec3 _position;
+	Plane _xSlab;
+	Plane _ySlab;
+	Plane _zSlab;
 
-	Box(float xLength, float yLength, float zLength, Vec3 position = Vec3(), Vec3 direction = Vec3(0.0f, 0.0f, 1.0f))
+	Box(float xLength, float yLength, float zLength, Vec3 position = Vec3(), Vec3 rotation = Vec3())
 	{
-		_backFace = Plane(direction * -1.0f, position._z);
-		_frontFace = Plane(direction, position._z + (zLength));
+		XMMATRIX rotationMatrix = XMMatrixRotationRollPitchYawFromVector(rotation.convertToXMVECTOR());
 
-		_topFace = Plane(Vec3(0.0f, 1.0f, 0.0f), position._y + (yLength));
-		_bottomFace = Plane(Vec3(0.0f, -1.0f, 0.0f), position._y);
-
-		_rightFace = Plane(direction.Cross(_bottomFace._normal), position._x + (xLength));
-		_leftFace = Plane(direction.Cross(_topFace._normal), position._x);
+		_position = position;
+		_xSlab = Plane(Vec3(XMVector3TransformCoord(XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f), rotationMatrix)), xLength*0.5f);
+		_ySlab = Plane(Vec3(XMVector3TransformCoord(XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f), rotationMatrix)), yLength *0.5f);
+		_zSlab = Plane(Vec3(XMVector3TransformCoord(XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f), rotationMatrix)), zLength*0.5f);
+		
 	}
 
-	Box(Plane backFace, Plane frontFace, Plane topFace, Plane bottomFace, Plane rightFace, Plane leftFace)
-	{
-		_backFace = backFace;
-		_frontFace = frontFace;
-		_topFace = topFace;
-		_bottomFace = bottomFace;
-		_rightFace = rightFace;
-		_leftFace = leftFace;
-	}
 };
 
 //No exception for /0, always use collision() first
@@ -160,38 +80,26 @@ static bool Collision(Ray ray, Plane plane)
 
 static bool Collision(Ray ray, Sphere sphere)
 {
-
 	Vec3 objectVector =  sphere._position - ray._origin;
-
 	float dotProduct = objectVector.Dot(ray._direction);
 	float denominator = ray._direction.Dot(ray._direction);
-
 	Vec3 projectedVector = ray._direction * (dotProduct / denominator);
-
 	float length = (objectVector - projectedVector).Length();
+
 	return (length <= sphere._radius);
 }
 
-static	bool Collision(Ray ray, Cylinder cylinder)
-{
-	//TODO Stuff
-
-	return false;
-}
-
-static	bool Collision(Ray ray, Box box)
+static bool Collision(Ray ray, Box box)
 {
 	Vec3 tMax = Vec3();
 	Vec3 tMin = Vec3();
-
 	float smallestTMax = FLT_MAX;
 	float greatestTMin = -FLT_MAX;
 
-	//Front to Back
-	if (Collision(ray, box._frontFace))
+	if (Collision(ray, box._xSlab))
 	{
-		tMax._x = Intersection(ray, box._frontFace)._x;
-		tMin._x = Intersection(ray, box._backFace)._x;
+		tMax._x = ((box._position._x + box._xSlab._offset) - ray._origin._x) / ray._direction._x;
+		tMin._x = ((box._position._x - box._xSlab._offset) - ray._origin._x) / ray._direction._x;
 
 		if (tMax._x < tMin._x)
 		{
@@ -199,22 +107,21 @@ static	bool Collision(Ray ray, Box box)
 			tMax._x = tMin._x;
 			tMin._x = temp;
 		}
-
-		if (tMin._x > greatestTMin && tMin._x >= 0.0f)
+		if (tMin._x > greatestTMin && tMin._x)
 		{
 			greatestTMin = tMin._x;
 		}
-		if (tMax._x < smallestTMax && tMax._x >= 0.0f)
+		if (tMax._x < smallestTMax && tMax._x)
 		{
 			smallestTMax = tMax._x;
 		}
 	}
 
-	//Top to bottom
-	/*if (Collision(ray, box._topFace))
+	if (Collision(ray, box._ySlab))
 	{
-		tMax._y = Intersection(ray, box._topFace)._y;
-		tMin._y = Intersection(ray, box._bottomFace)._y;
+
+		tMax._y = ((box._position._y + box._ySlab._offset) - ray._origin._y) / ray._direction._y;
+		tMin._y = ((box._position._y - box._ySlab._offset) - ray._origin._y) / ray._direction._y;
 
 		if (tMax._y < tMin._y)
 		{
@@ -231,30 +138,29 @@ static	bool Collision(Ray ray, Box box)
 		{
 			smallestTMax = tMax._y;
 		}
-	}*/
+	}
 
-	//Right to left
-	if (Collision(ray, box._rightFace))
+	if (Collision(ray, box._zSlab))
 	{
+		tMax._z = ((box._position._z + box._zSlab._offset) - ray._origin._z) / ray._direction._z;
+		tMin._z = ((box._position._z - box._zSlab._offset) - ray._origin._z) / ray._direction._z;
 
-		tMax._z = Intersection(ray, box._rightFace)._z;
-		tMin._z = Intersection(ray, box._leftFace)._z;
-			
 		if (tMax._z < tMin._z)
 		{
 			float temp = tMax._z;
 			tMax._z = tMin._z;
 			tMin._z = temp;
 		}
-		if (tMin._z > greatestTMin && tMin._z >= 0.0f)
+		if (tMin._z > greatestTMin && tMin._z)
 		{
 			greatestTMin = tMin._z;
 		}
-		if (tMax._z < smallestTMax && tMax._z >= 0.0f)
+		if (tMax._z < smallestTMax && tMax._z)
 		{
 			smallestTMax = tMax._z;
 		}
 	}
+
 	return (greatestTMin <= smallestTMax);
 }
 

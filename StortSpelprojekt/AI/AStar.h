@@ -1,6 +1,7 @@
 #pragma once
 #include <cmath>
 #include <algorithm>
+#include <fstream>
 #include "Heap.h"
 #include "AIUtil.h"
 
@@ -99,6 +100,8 @@ namespace AI
 		void CleanMap();
 		void Init(Vec2D start, Vec2D goal);
 		bool FindPath();
+
+		void printMap();
 	};
 
 }

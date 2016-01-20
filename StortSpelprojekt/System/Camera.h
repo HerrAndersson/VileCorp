@@ -9,6 +9,12 @@
 
 namespace System
 {
+	enum CamMode
+	{
+		FREE_CAM,
+		LOCKED_CAM
+	};
+
 	class CAMERA_EXPORT Camera
 	{
 	private:
@@ -29,6 +35,8 @@ namespace System
 		DirectX::XMMATRIX	_proj;
 		DirectX::XMMATRIX	_ortho;
 		DirectX::XMMATRIX	_baseView;
+
+		CamMode				_mode;
 
 	public:
 
@@ -52,6 +60,9 @@ namespace System
 
 		DirectX::XMFLOAT3 GetForwardVector() const;
 		DirectX::XMFLOAT3 GetRightVector() const;
+
+		CamMode GetMode()const;
+		void SetMode(CamMode mode);
 
 		//Overloading these guarantees 16B alignment of XMMATRIX
 		void* operator new(size_t i);

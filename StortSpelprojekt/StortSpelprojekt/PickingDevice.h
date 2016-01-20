@@ -12,6 +12,8 @@
 using namespace std;
 using namespace DirectX;
 
+
+
 class PickingDevice
 {
 private:
@@ -19,6 +21,7 @@ private:
 	System::Window* _window;
 
 	Ray calculatePickRay(POINT mousePoint);
+	vector<GameObject*> sortByDistance(vector<GameObject*> pickedObjects);
 
 public:
 	PickingDevice(System::Camera* camera = nullptr, System::Window* window = nullptr);

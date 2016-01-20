@@ -1,6 +1,5 @@
-// ------------------------------------------
-//		LIGHT PASS - PIXEL SHADER
-// ------------------------------------------
+Texture2D diffuseTex : register(t0);
+SamplerState samplerWrap : register(s0);
 
 struct VS_OUT
 {
@@ -8,25 +7,12 @@ struct VS_OUT
 	float2 uv : TEXCOORD;
 };
 
-Texture2D diffuseTex : register(t0);
-Texture2D normalTex : register(t1);
-Texture2D position : register(t2);
-Texture2D worldPosTex : register(t3);
-
-SamplerState ObjSamplerState : register(s0);
-
 float4 main(VS_OUT input) : SV_TARGET
 {
-	float4 diffuse = diffuseTex.Sample(ObjSamplerState, input.uv);
-	float4 normal = normalTex.Sample(ObjSamplerState, input.uv);
+	float4 diffuse = diffuseTex.Sample(samplerWrap, input.uv);
+	//float shadowCoeff = diffuse.a;
 
-	float4 worldPos = worldPosTex.Sample(ObjSamplerState, input.uv);
-	worldPos.w = 1.0f;
+	//diffuse *= shadowCoeff;
 
-	normal.w = 0.f;
-	normal = normalize(normal);
-
-	float3 finalAmbient = diffuse.xyz;
-
-	return float4(finalAmbient, diffuse.a);
+	return saturate(float4(diffuse.xyz, 1)); // * float3(0.2f, 0.2f, 0.2f), 1));
 }
