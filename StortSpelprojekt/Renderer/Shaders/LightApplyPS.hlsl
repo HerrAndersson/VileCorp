@@ -104,20 +104,21 @@ float4 main(VS_OUT input) : SV_TARGET
 		//Needs to calculate the light cone correctly. Or will rendering with light-volume solve this?
 		if (dot(-normalize(lightToPixel), normalize(lightDirection)) > 0.93f)
 		{
-			if (shadowCoeff < depth - epsilon)
+			//In light
+			if (shadowCoeff > depth - epsilon)
+			{
+				finalColor += saturate(lightColor * lightIntensity);
+				finalColor *= dot(-normalize(lightToPixel), lightDirection);
+				return saturate(float4(finalColor, lightIntensity));
+			}
+			else //In shadow
 			{
 				//Gives gray outlines where the shadow should be if no ambient is used
 				//finalColor *= shadowCoeff;
 				//return saturate(float4(finalColor, 0.5f));
 			}
-			else
-			{
-				finalColor += saturate(lightColor * lightIntensity);
-				finalColor *= dot(-normalize(lightToPixel), lightDirection);
-				return saturate(float4(finalColor, 0.5f));
-			}
 		}
 	}
 
-	return saturate(float4(finalColor*0.2f, 0.5f));
+	return saturate(float4(finalColor*0.1f, 0.5f));
 }
