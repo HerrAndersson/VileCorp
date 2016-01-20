@@ -167,7 +167,13 @@ namespace Renderer
 
 		MatrixBufferPerSkinnedObject* dataPtr = (MatrixBufferPerSkinnedObject*)mappedResource.pData;
 		dataPtr->world = worldMatrixC;
-		memcpy(&dataPtr->bones, extra->data(), sizeof(DirectX::XMFLOAT4X4) * extra->size());
+
+		DirectX::XMFLOAT4X4 tempmatrix;														//
+		DirectX::XMStoreFloat4x4(&tempmatrix, DirectX::XMMatrixIdentity());					//
+		for (unsigned i = 0; i < 30; i++) {													//
+			memcpy(&dataPtr->bones[i], (char*)&tempmatrix, sizeof(DirectX::XMFLOAT4X4));	//
+		}																					//TODO remove - Fredrik
+//		memcpy(&dataPtr->bones, extra->data(), sizeof(DirectX::XMFLOAT4X4) * extra->size());
 		
 
 		deviceContext->Unmap(_matrixBufferPerSkinnedObject, 0);
@@ -284,11 +290,13 @@ namespace Renderer
 
 		if (renderObject->_isSkinned)
 		{
+			SetShaderStage(ANIM_PASS);
 			vertexSize = sizeof(WeightedVertex);
-			SetResourcesPerObject(world, diffuseData, specularData);
+			SetResourcesPerObject(world, diffuseData, specularData, extra);
 		}
 		else
 		{
+			SetShaderStage(GEO_PASS);
 			vertexSize = sizeof(Vertex);
 			SetResourcesPerObject(world, diffuseData, specularData);
 		}
