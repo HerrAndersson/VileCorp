@@ -29,10 +29,13 @@ AssetManager::~AssetManager()
 		}
 		delete texture;
 	}
-
 	for (uint i = 0; i < _renderObjects->size(); i++)
 	{
 		delete _renderObjects->at(i);
+	}
+	for (uint i = 0; i < _skeletons->size(); i++)
+	{
+		delete _skeletons->at(i);
 	}
 	delete _infile;
 	delete _modelFiles;
@@ -42,10 +45,6 @@ AssetManager::~AssetManager()
 	delete _texturesToFlush;
 	delete _levelFileNames;
 	delete _tilesets;
-	for (uint i = 0; i < _skeletons->size(); i++)
-	{
-		delete _skeletons->at(i);
-	}
 	delete _skeletons;
 }
 
@@ -107,8 +106,26 @@ bool AssetManager::ActivateTileset(string name)
 	{
 		return true;
 	}
-	
+
+	for (Texture* texture : *_textures)
+	{
+		if (texture->_loaded)
+		{
+			texture->_data->Release();
+		}
+		delete texture;
+	}
+	for (uint i = 0; i < _renderObjects->size(); i++)
+	{
+		delete _renderObjects->at(i);
+	}
+	for (uint i = 0; i < _skeletons->size(); i++)
+	{
+		delete _skeletons->at(i);
+	}
+	_textures->clear();
 	_renderObjects->clear();
+	_skeletons->clear();
 
 	for (Tileset set : *_tilesets)
 	{
@@ -485,21 +502,24 @@ RenderObject* AssetManager::GetRenderObject(int index)
 	return renderObject;
 }
 
-RenderObject * AssetManager::GetRenderObjectByType(Type type, uint index)
+uint AssetManager::GetRenderObjectByType(Type type, uint index)
 {
 	uint i = 0;
+	uint returnIndex = 0;
 	for (RenderObject* renderObject : *_renderObjects)
 	{
 		if (renderObject->_type == type)
 		{
 			if (i == index)
 			{
-				return renderObject;
+				return returnIndex;
 			}
 			i++;
 		}
+		i = 0;
+		returnIndex++;
 	}
-	return nullptr;
+	return 0;
 }
 
 ID3D11ShaderResourceView* AssetManager::GetTexture(string filename)

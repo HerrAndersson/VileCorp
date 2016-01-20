@@ -10,6 +10,17 @@ public:
 
 	bool LoadGameObjectInfo(GameObjectInfo* data);
 	void WriteSampleGameObjects();
+	std::map<Type, std::string> typeStrings =
+	{
+		{ FLOOR, "Floors/" },
+		{ WALL, "Walls/" },
+		{ LOOT, "Loot/" },
+		{ SPAWN, "Spawns/" },
+		{ TRAP, "Traps/" },
+		{ TRIGGER, "Triggers/" },
+		{ GUARD, "Guards/" },
+		{ ENEMY, "Enemies/" },
+	};
 };
 
 inline GameObjectDataLoader::GameObjectDataLoader()

@@ -5,7 +5,7 @@ ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, G
 	_idCount = 0;
 	_assetManager = assetManager;
 	_tilemap = nullptr;
-	_gameObjectData = *data;
+	_gameObjectData = data;
 
 
 	for (int i = 0; i < NR_OF_TYPES; i++)
@@ -15,6 +15,13 @@ ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, G
 	ActivateTileset("default2");
 }
 
+ObjectHandler::~ObjectHandler()
+{
+	Release();
+	delete _tilemap;
+	delete _gameObjectData;
+}
+
 void ObjectHandler::ActivateTileset(string name)
 {
 	Release();
@@ -22,17 +29,11 @@ void ObjectHandler::ActivateTileset(string name)
 
 	for (uint a = 0; a < Type::NR_OF_TYPES; a++)
 	{
-		for (uint i = 0; i < _gameObjectData._objects[a]->size(); i++)
+		for (uint i = 0; i < _gameObjectData->_objects[a]->size(); i++)
 		{
-			_gameObjectData._objects[a]->at(i)->_renderObject = _assetManager->GetRenderObjectByType((Type)a, i);
+			_gameObjectData->_objects[a]->at(i)->_renderObject = _assetManager->GetRenderObjectByType((Type)a, i);
 		}
 	}
-}
-
-ObjectHandler::~ObjectHandler()
-{
-	Release();
-	delete _tilemap;
 }
 
 bool ObjectHandler::Add(Type type, /*int renderObjectID,*/ XMFLOAT3 position = XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3 rotation = XMFLOAT3(0.0f, 0.0f, 0.0f))

@@ -33,7 +33,7 @@ struct PlayerInfo
 struct GameObjectBaseInfo
 {
 	std::string _name = "proto";
-	RenderObject* _renderObject;
+	unsigned _renderObject;
 };
 
 struct GameObjectFloorInfo : GameObjectBaseInfo
@@ -155,7 +155,6 @@ struct GameObjectEnemyInfo : GameObjectBaseInfo
 
 struct GameObjectInfo
 {
-//	std::vector<GameObjectSpawnInfo> _spawns;
 	std::vector<std::vector<GameObjectBaseInfo*>*> _objects;
 	GameObjectInfo()
 	{
@@ -168,6 +167,49 @@ struct GameObjectInfo
 		_objects[TRIGGER] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectTriggerInfo*>;
 		_objects[GUARD] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectGuardInfo*>;
 		_objects[ENEMY] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectEnemyInfo*>;
+	}
+	~GameObjectInfo()
+	{
+		for (GameObjectBaseInfo* obj : *_objects[FLOOR])
+		{
+			delete (GameObjectFloorInfo*)obj;
+		}
+		for (GameObjectBaseInfo* obj : *_objects[WALL])
+		{
+			delete (GameObjectWallInfo*)obj;
+		}
+		for (GameObjectBaseInfo* obj : *_objects[LOOT])
+		{
+			delete (GameObjectLootInfo*)obj;
+		}
+		for (GameObjectBaseInfo* obj : *_objects[SPAWN])
+		{
+			delete (GameObjectSpawnInfo*)obj;
+		}
+		for (GameObjectBaseInfo* obj : *_objects[TRAP])
+		{
+			delete (GameObjectTrapInfo*)obj;
+		}
+		for (GameObjectBaseInfo* obj : *_objects[TRIGGER])
+		{
+			delete (GameObjectTriggerInfo*)obj;
+		}
+		for (GameObjectBaseInfo* obj : *_objects[GUARD])
+		{
+			delete (GameObjectGuardInfo*)obj;
+		}
+		for (GameObjectBaseInfo* obj : *_objects[ENEMY])
+		{
+			delete (GameObjectEnemyInfo*)obj;
+		}
+		delete _objects[FLOOR];
+		delete _objects[WALL];
+		delete _objects[LOOT];
+		delete _objects[SPAWN];
+		delete _objects[TRAP];
+		delete _objects[TRIGGER];
+		delete _objects[GUARD];
+		delete _objects[ENEMY];
 	}
 	GameObjectFloorInfo* Floors(unsigned i)
 	{

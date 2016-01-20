@@ -7,18 +7,6 @@
 
 enum Type { FLOOR, WALL, LOOT, SPAWN, TRAP, TRIGGER, GUARD, ENEMY, NR_OF_TYPES/*Has to be last*/ };
 
-static std::map<Type, std::string> typeStrings =
-{
-	{ FLOOR, "Floors/" },
-	{ WALL, "Walls/" },
-	{ LOOT, "Loot/" },
-	{ SPAWN, "Spawns/" },
-	{ TRAP, "Traps/" },
-	{ TRIGGER, "Triggers/" },
-	{ GUARD, "Guards/" },
-	{ ENEMY, "Enemies/" },
-};
-
 struct Bone
 {
 	int _parent;

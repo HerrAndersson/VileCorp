@@ -217,7 +217,7 @@ public:
 	AssetManager(ID3D11Device* device);
 	~AssetManager();
 	RenderObject* GetRenderObject(int index);
-	RenderObject* GetRenderObjectByType(Type type, uint index);
+	uint GetRenderObjectByType(Type type, uint index);
 	void UnloadModel(int index, bool force);
 	void ParseLevel(int index, vector<GameObjectData> &gameObjects, int &dimX, int &dimY);
 	bool ActivateTileset(string name);
