@@ -15,8 +15,8 @@
 #include "PickingDevice.h"
 #include "Spotlight.h"
 #include "ShadowMap.h"
-//#include "JsonStructs.h"
-//#include "ConfigParser.h"
+#include "JsonStructs.h"
+#include "ConfigParser.h"
 
 class Game
 {
@@ -36,9 +36,9 @@ private:
 	Grid*						_grid = nullptr;
 	PickingDevice*				_pickingDevice;
 	System::InputDevice*		_input;
-	//PlayerInfo					_playerInfo;
-	//SettingInfo					_gameSettings;
-	//ControlScheme				_controlScheme;
+	PlayerInfo					_playerInfo;
+	SettingInfo					_gameSettings;
+	ControlScheme				_controlScheme;
 
 	//Resizing window, directx resources, camera
 	void ResizeResources(System::WindowSettings settings);

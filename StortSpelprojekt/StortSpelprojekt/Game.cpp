@@ -5,10 +5,6 @@
 
 Game::Game(HINSTANCE hInstance, int nCmdShow)
 {
-	//System::saveJSON(&_playerInfo, "Assets/test.json", "Player Info");
-	//System::loadJSON(&_playerInfo, "Assets/test.json");
-
-	
 	_gameHandle = this;
 	System::WindowSettings settings;
 	_window = new System::Window("Amazing game", hInstance, settings, WndProc);
@@ -42,7 +38,8 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	}
 
 	//CheckSettings();
-	//System::saveJSON(&_controlScheme, "Assets/ControlScheme.json", "Controls");
+	System::saveJSON(&_controlScheme, "Assets/ControlScheme.json", "Controls");
+	_controls->SaveKeyBindings();
 
 	//TODO: TEMP! Make this pretty
 	Renderer::Spotlight* spot;

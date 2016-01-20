@@ -30,12 +30,14 @@ namespace System
 	private:
 		InputDevice* _inputDevice;
 		std::map<std::string, Key>* _keymap;
+		std::string _allKeys;
 
 		void StringToKeyMap(const std::string& key, char &mainKey, char& keyModifiers);
 	public:
 		Controls(System::InputDevice* input);
 		~Controls();
 		void ToggleCursorLock();
+		void SaveKeyBindings();
 
 		bool IsFunctionKeyDown(const std::string& key);
 	};

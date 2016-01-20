@@ -43,15 +43,17 @@ namespace System
 		_keymap = new std::map<std::string, Key>();
 
 		_inputDevice = input;
-		ifstream file("Assets/controls.json");
+		ifstream file("Assets/controlsTEST.json");
 		if (!file.good())
 		{
 			throw std::runtime_error("Failed to open controls.json");
 		}
 		string str((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
 		file.close();
+		_allKeys = str;
 
 		Document d;
+
 		d.Parse(str.c_str());
 
 		//Loop through all the states
@@ -60,6 +62,7 @@ namespace System
 			std::string currentStateName(it->name.GetString());
 			char currentKeyMod = NONE;
 			char mainKey = 0;
+			it->value.FindMember("sdf");
 
 			//Loop through the whole keymap
 			for (Value::ConstMemberIterator i = it->value.MemberBegin(); i != it->value.MemberEnd(); ++i)
@@ -177,6 +180,30 @@ namespace System
 	void Controls::ToggleCursorLock()
 	{
 		//_inputDevice->ToggleCursorLock();
+	}
+
+	void Controls::SaveKeyBindings()
+	{
+		Document d;
+		d.Parse(_allKeys.c_str());
+		//Loop through all the states
+		for (Value::MemberIterator it = d.MemberBegin(); it != d.MemberEnd(); ++it)
+		{
+			//Loop through the whole keymap
+			for (Value::MemberIterator i = it->value.MemberBegin(); i != it->value.MemberEnd(); ++i)
+			{
+				std::string key = i->value[0].GetString();
+				if (key == "Q")
+				{
+					std::string test = "M";
+					i->name.SetString(test.c_str(), test.size(), d.GetAllocator());
+				}
+			}
+		}
+
+		std::ofstream test("Assets/controlsTEST.json");
+		test.write(_allKeys.c_str(), _allKeys.size());
+		test.close();
 	}
 
 	bool Controls::IsFunctionKeyDown(const std::string& key)
