@@ -204,11 +204,13 @@ namespace System
 		//KEYBOARD
 		if (raw->header.dwType == RIM_TYPEKEYBOARD)
 		{
-			if (raw->data.keyboard.Flags == RI_KEY_MAKE)
+			int flags = raw->data.keyboard.Flags;
+
+			if (flags == RI_KEY_MAKE || flags == RI_KEY_MAKE + RI_KEY_E0)
 			{
 				_buffer[raw->data.keyboard.VKey] = true;
 			}
-			if (raw->data.keyboard.Flags == RI_KEY_BREAK)
+			if (flags == RI_KEY_BREAK || flags == RI_KEY_BREAK + RI_KEY_E0)
 			{
 				_buffer[raw->data.keyboard.VKey] = false;
 			}
