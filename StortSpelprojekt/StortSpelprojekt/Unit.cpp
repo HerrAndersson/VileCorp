@@ -248,6 +248,8 @@ Unit::Unit()
 	_objective = nullptr;
 	_waiting = -1;
 	_health = 1;
+	_pathLength = 0;
+	_path = nullptr;
 }
 
 Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject* renderObject, const Tilemap* tileMap)
@@ -264,6 +266,8 @@ Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	_objective = nullptr;
 	_waiting = -1;
 	_health = 1;					//TODO: Update constrcutor parameters to include health  --Victor
+	_pathLength = 0;
+	_path = nullptr;
 }
 
 
@@ -496,7 +500,7 @@ void Unit::Move()
 			act(_objective);
 		}
 		CheckAllTiles();
-		wait(60);
+		Wait(60);
 	}
 
 	if (_direction._x == 0)
@@ -545,7 +549,7 @@ void Unit::Update()
 void Unit::Release()
 {}
 
-void Unit::wait(int frames)
+void Unit::Wait(int frames)
 {
 	_waiting = frames;
 }

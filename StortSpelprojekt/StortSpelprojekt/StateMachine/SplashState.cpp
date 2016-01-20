@@ -16,7 +16,7 @@ SplashState::~SplashState()
 
 void SplashState::Update(float deltaTime)
 {
-	ChangeState(State::PLACEMENTSTATE);
+	ChangeState(State::PLAYSTATE);
 
 	//_inputDevice->SetCursorLock(true);
 }
