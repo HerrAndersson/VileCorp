@@ -29,7 +29,8 @@ struct Vec2
 	{
 		XMFLOAT2 xmfloat;
 		XMStoreFloat2(&xmfloat, xmvector);
-		Vec2(xmfloat.x, xmfloat.y);
+		_x = xmfloat.x;
+		_y = xmfloat.y;
 	}
 
 	XMFLOAT2 convertToXMFLOAT()
@@ -111,7 +112,10 @@ struct Vec3
 	{
 		XMFLOAT3 xmfloat;
 		XMStoreFloat3(&xmfloat, xmvector);
-		Vec3(xmfloat.x, xmfloat.y, xmfloat.z);
+		_x = xmfloat.x;
+		_y = xmfloat.y;
+		_z = xmfloat.z;
+
 	}
 
 	XMFLOAT3 convertToXMFLOAT()
@@ -196,7 +200,10 @@ struct Vec4
 	{
 		XMFLOAT4 xmfloat;
 		XMStoreFloat4(&xmfloat, xmvector);
-		Vec4(xmfloat.x, xmfloat.y, xmfloat.z, xmfloat.w);
+		_x = xmfloat.x;
+		_y = xmfloat.y;
+		_z = xmfloat.z;
+		_w = xmfloat.w;
 	}
 
 	XMFLOAT4 convertToXMFLOAT()
