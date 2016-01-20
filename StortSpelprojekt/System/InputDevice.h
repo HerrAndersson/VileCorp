@@ -19,6 +19,8 @@ namespace System
 		MouseCoord	_mouseCoord;
 		MouseCoord	_mouseBuffer;
 
+		bool _lockedCursor;
+
 		//142 due to 140 keycodes + 0 is skipped.
 		const static int KEY_CODE_CAP = 142;
 		bool _current[KEY_CODE_CAP];
@@ -36,6 +38,9 @@ namespace System
 		~InputDevice();
 
 		void Update();
+
+		void ToggleCursorLock();
+		bool CursorLocked();
 
 		void HandleRawInput(LPARAM lparam);
 		void RegisterDevice(HWND hwnd);

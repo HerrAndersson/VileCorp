@@ -13,7 +13,6 @@
 #include "Controls.h"
 #include "Grid.h"
 #include "PickingDevice.h"
-#include "Player.h"
 #include "GameObjectDataLoader.h"
 
 class Game
@@ -21,20 +20,19 @@ class Game
 private:
 	const float	MS_PER_FRAME = 1000.0f / 60;
 
-	StateMachine*			_SM;
-	System::Window*			_window;
+	StateMachine*				_SM;
+	System::Window*				_window;
 	Renderer::RenderModule*		_renderModule;
-	System::Camera*			_camera;
-	ObjectHandler*			_objectHandler;
-	UIHandler*			_UI;
-	System::Timer			_timer;
-	Animation*			_animation;
-	System::Controls*		_controls;
-	AssetManager*			_assetManager;
+	System::Camera*				_camera;
+	ObjectHandler*				_objectHandler;
+	UIHandler*					_UI;
+	System::Timer				_timer;
+	Animation*					_animation;
+	System::Controls*			_controls;
+	AssetManager*				_assetManager;
 	Grid*						_grid = nullptr;
-	PickingDevice*			_pickingDevice;
+	PickingDevice*				_pickingDevice;
 	System::InputDevice*		_input;
-	Player*						_player;
 	PlayerInfo					_playerInfo;
 	
 	

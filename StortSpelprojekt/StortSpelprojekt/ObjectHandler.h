@@ -40,8 +40,10 @@ private:
 	//vector<RenderList> _renderLists;
 	GameObjectInfo _gameObjectData;
 	void ActivateTileset(string name);
-	short _idCounter;
 	Tilemap* _tilemap;
+
+	int _idCount = 0;
+	int _objectCount = 0;
 
 	AssetManager* _assetManager;
 
@@ -50,18 +52,22 @@ public:
 	~ObjectHandler();
 
 	//Add a gameobject
-	bool Add(Type type, int renderObjectID, XMFLOAT3 position, XMFLOAT3 rotation);
-	bool Remove(GameObject* gameObject);
+	bool Add(Type type, XMFLOAT3 position, XMFLOAT3 rotation);
+	
+	bool Remove(int ID);
 	bool Remove(Type type, int ID);
+	bool Remove(GameObject* gameObject);
 
+	GameObject* Find(int ID);
 	GameObject* Find(Type type, int ID);
 	GameObject* Find(Type type, short index);
 	//Returns a vector containing all gameobjects with the same type
 	vector<GameObject*> GetAllByType(Type type);
 	//Returns a list of a renderobject and matrices for all objects using the renderobject
 	RenderList GetAllByType(int renderObjectID);
-	int GetTotalNrOfGameObjects() const;
 	vector<vector<GameObject*>>* GetGameObjects();
+
+	int GetObjectCount() const;
 
 	Tilemap* GetTileMap() const;
 	void SetTileMap(Tilemap* tilemap);

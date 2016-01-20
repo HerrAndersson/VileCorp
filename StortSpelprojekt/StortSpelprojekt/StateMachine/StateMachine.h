@@ -6,6 +6,7 @@
 #include "SplashState.h"
 #include "MenuState.h"
 #include "PlayState.h"
+#include "PlacementState.h"
 #include "LevelEditState.h"
 #include "OptionsState.h"
 #include <vector>
@@ -27,6 +28,6 @@ public:
 	StateMachine(System::Controls* controls, ObjectHandler* objectHandler, UIHandler* uiHandler, System::InputDevice* inputDevice, System::Camera* camera, PickingDevice* pickingDevice);
 	~StateMachine();
 
-	void Update(float deltaTime);
+	void virtual Update(float deltaTime);
 	State GetState();
 };
