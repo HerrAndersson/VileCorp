@@ -34,6 +34,7 @@ void GameLogic::Initialize(System::InputDevice* inputDevice, ObjectHandler* obje
 
 void GameLogic::Update(float deltaTime)
 {
+	_inputDevice->Update();
 	HandleInput();
 	_objectHandler->Update(deltaTime);
 }
@@ -80,20 +81,45 @@ void GameLogic::HandleInput()
 	bool isMoving = false;
 	float v = 0.1f;
 
-
 	if (_controls->IsFunctionKeyDown("DEBUG:ENABLE_FREECAM"))
 	{
-		//_inputDevice->ToggleCursorLock();
+		if (_camera->GetMode() == System::LOCKED_CAM)
+		{
+			_inputDevice->ToggleCursorLock();
+			_camera->SetMode(System::FREE_CAM);
+		}
+		else
+		{
+			_inputDevice->ToggleCursorLock();
+			_camera->SetMode(System::LOCKED_CAM);
+			_camera->SetRotation(DirectX::XMFLOAT3(70, 0, 0));
+		}
 	}
 
 	if (_controls->IsFunctionKeyDown("DEBUG:MOVE_CAMERA_UP"))
 	{
-		forward = _camera->GetForwardVector();
+		if (_camera->GetMode() == System::FREE_CAM)
+		{
+			forward = _camera->GetForwardVector();
+		}
+		else if (_camera->GetMode() == System::LOCKED_CAM)
+		{
+			forward = XMFLOAT3(0.0f, 0.0f, 1.0f);
+		}
+
 		isMoving = true;
 	}
 	else if (_controls->IsFunctionKeyDown("DEBUG:MOVE_CAMERA_DOWN"))
 	{
-		forward = _camera->GetForwardVector();
+		if (_camera->GetMode() == System::FREE_CAM)
+		{
+			forward = _camera->GetForwardVector();
+		}
+		else if (_camera->GetMode() == System::LOCKED_CAM)
+		{
+			forward = XMFLOAT3(0.0f, 0.0f, 1.0f);
+		}
+
 		forward.x *= -1;
 		forward.y *= -1;
 		forward.z *= -1;
@@ -117,5 +143,14 @@ void GameLogic::HandleInput()
 	if (isMoving)
 	{
 		_camera->SetPosition(XMFLOAT3(position.x + (forward.x + right.x) * v, position.y + (forward.y + right.y) * v, position.z + (forward.z + right.z) * v));
+	}
+
+	if (_inputDevice->CursorLocked())
+	{
+		XMFLOAT3 rotation = _camera->GetRotation();
+		rotation.x += _inputDevice->GetMouseCoord()._deltaPos.y / 10.0f;
+		rotation.y += _inputDevice->GetMouseCoord()._deltaPos.x / 10.0f;
+
+		_camera->SetRotation(rotation);
 	}
 }

@@ -24,7 +24,6 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	_camera = new System::Camera(0.1f, 1000.0f, DirectX::XM_PIDIV2, settings._width, settings._height);
 	_camera->SetPosition(XMFLOAT3(3, 7, 0));
 	_camera->SetRotation(XMFLOAT3(70, 0, 0));
-	//_camera->SetMode(System::FREE_CAM);
 
 	_UI = new UIHandler(_renderModule->GetDevice(), _window->GetWindowSettings(), _assetManager);
 	
@@ -77,7 +76,7 @@ void Game::Update(float deltaTime)
 	Fetch from objecthandler or different update functions in objecthandler
 
 	*/
-	_input->Update();
+	//_input->Update();
 	_UI->Update();
 	_UI->OnResize(_window->GetWindowSettings());
 	_SM->Update(deltaTime);

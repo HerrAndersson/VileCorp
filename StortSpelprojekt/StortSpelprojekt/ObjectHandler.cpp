@@ -41,7 +41,7 @@ bool ObjectHandler::Add(Type type, int renderObjectID, XMFLOAT3 position = XMFLO
 		addedObject = _tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
 		break;
 	case TRAP:
-		object = new Trap(_idCount, position, rotation, AI::Vec2D(1,1), type, _assetManager->GetRenderObject(type));
+		object = new Trap(_idCount, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(type));
 		addedObject = _tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
 		break;
 	case TRIGGER:
@@ -249,23 +249,6 @@ bool ObjectHandler::LoadLevel(int lvlIndex)
 
 	for (auto i : gameObjectData)
 	{
-		//switch (i._tileType)
-		//{
-		//case 0:
-		//	tileType = ENEMY;
-		//	break;
-		//case 1:
-		//	tileType = FLOOR;
-		//	break;
-		//case 2:
-		//	tileType = WALL;
-		//	break;
-		//case 3:
-		//	tileType = LOOT;
-		//	break;
-		//default:
-		//	break;
-		//}
 		Add((Type)i._tileType, i._tileType, DirectX::XMFLOAT3(i._posX, 0, i._posZ), DirectX::XMFLOAT3(0, i._rotY, 0));
 	}
 	return false;
