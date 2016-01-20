@@ -42,7 +42,7 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	}
 
 	CheckSettings();
-	System::saveJSON(&_controlScheme, "Assets/ControlScheme.json", "Controls");
+	//System::saveJSON(&_controlScheme, "Assets/ControlScheme.json", "Controls");
 }
 
 void Game::CheckSettings()

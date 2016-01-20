@@ -83,6 +83,21 @@ struct ControlScheme
 		std::string menu[2] = { "MENU", "escape" };
 	}menu;
 
+	struct Debug
+	{
+		std::string moveCameraUp[3]		= { "MOVE_CAMERA_UP", "W", "repeat" };
+		std::string moveCameraDown[3]	= { "MOVE_CAMERA_DOWN", "S", "repeat" };
+		std::string moveCameraLeft[3]	= { "MOVE_CAMERA_LEFT", "A", "repeat" };
+		std::string moveCameraRight[3]	= { "MOVE_CAMERA_RIGHT", "D", "repeat" };
+
+		std::string test[4] = { "D", "ctrl", "alt", "shift" };
+		std::string freeCam[4] = { "F", "ctrl", "alt", "shift" };
+
+		std::string unlimitedMoney[3] = { "1", "ctrl", "alt" };
+		std::string instantWin[3] = { "2", "ctrl", "alt" };
+		std::string noFog[3] = { "3", "ctrl", "alt" };
+	}debug;
+
 	template<class A>
 	void serialize(A& a)
 	{
@@ -113,7 +128,17 @@ struct ControlScheme
 			
 			(CEREAL_NVP(menu.up)),
 			(CEREAL_NVP(menu.down)),
-			(CEREAL_NVP(menu.menu)));
+			(CEREAL_NVP(menu.menu)),
+			
+			(CEREAL_NVP(debug.moveCameraUp)),
+			(CEREAL_NVP(debug.moveCameraDown)),
+			(CEREAL_NVP(debug.moveCameraLeft)),
+			(CEREAL_NVP(debug.moveCameraRight)),
+			(CEREAL_NVP(debug.test)),
+			(CEREAL_NVP(debug.freeCam)),
+			(CEREAL_NVP(debug.unlimitedMoney)),
+			(CEREAL_NVP(debug.instantWin)),
+			(CEREAL_NVP(debug.noFog)));
 	}
 };
 
