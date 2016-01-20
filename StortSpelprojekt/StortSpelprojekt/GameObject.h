@@ -18,6 +18,7 @@ enum PickUpState{ONTILE, HELD, PICKINGUP, DROPPING};
 class GameObject
 {
 protected:
+
 	unsigned short _ID;
 	DirectX::XMMATRIX _objectMatrix;
 	DirectX::XMFLOAT3 _position;
@@ -33,6 +34,7 @@ protected:
 	void CalculateMatrix();
 
 public:
+
 	GameObject();
 	//Type might not be necessary, depending on whether subclasses can correspond to one type or many.
 	GameObject(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject* renderObject);
@@ -43,7 +45,7 @@ public:
 	DirectX::XMFLOAT3 GetPosition() const;
 	DirectX::XMFLOAT3 GetRotation() const;
 	DirectX::XMFLOAT3 GetScale() const;
-	DirectX::XMMATRIX GetMatrix()const;
+	DirectX::XMMATRIX* GetMatrix();
 
 	void SetPosition(const DirectX::XMFLOAT3& position);
 	void SetRotation(const DirectX::XMFLOAT3& rotation);

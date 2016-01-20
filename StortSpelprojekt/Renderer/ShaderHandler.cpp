@@ -11,7 +11,7 @@ namespace Renderer
 	ShaderHandler::ShaderHandler(ID3D11Device* device)
 	{
 
-		//Create samplers
+		////////////////////////////////////////////////////////////// Create samplers //////////////////////////////////////////////////////////////
 		D3D11_SAMPLER_DESC sampDesc;
 		ZeroMemory(&sampDesc, sizeof(sampDesc));
 
@@ -32,6 +32,66 @@ namespace Renderer
 			throw std::runtime_error("ShaderHandler::ShaderHandler: Error creating WRAP sampler");
 		}
 
+
+		HRESULT result;
+
+		D3D11_SAMPLER_DESC samplerDesc;
+		ZeroMemory(&sampDesc, sizeof(sampDesc));
+		//Create a WRAP texture sampler state description
+		samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+		samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+		samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+		samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+		samplerDesc.MipLODBias = 0.0f;
+		samplerDesc.MaxAnisotropy = 1;
+		samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+		samplerDesc.BorderColor[0] = 0;
+		samplerDesc.BorderColor[1] = 0;
+		samplerDesc.BorderColor[2] = 0;
+		samplerDesc.BorderColor[3] = 0;
+		samplerDesc.MinLOD = 0;
+		samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+		result = device->CreateSamplerState(&samplerDesc, &_samplerWRAP);
+		if (FAILED(result))
+		{
+			throw std::runtime_error("ShaderHandler: _samplerWRAP initialization failed.");
+		}
+
+		//Create a CLAMP texture sampler state description.
+		//samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+		samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+		samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+		samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+
+		result = device->CreateSamplerState(&samplerDesc, &_samplerCLAMP);
+		if (FAILED(result))
+		{
+			throw std::runtime_error("ShaderHandler: _samplerCLAMP initialization failed.");
+		}
+
+		//Create a COMPARISON sampler state
+		samplerDesc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_MIP_POINT;
+		samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
+		samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
+		samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
+		samplerDesc.BorderColor[0] = 1.0f;
+		samplerDesc.BorderColor[1] = 1.0f;
+		samplerDesc.BorderColor[2] = 1.0f;
+		samplerDesc.BorderColor[3] = 1.0f;
+		samplerDesc.MinLOD = 0.f;
+		samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+		samplerDesc.MipLODBias = 0.f;
+		samplerDesc.MaxAnisotropy = 0;
+		samplerDesc.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
+
+		result = device->CreateSamplerState(&samplerDesc, &_samplerCMP);
+		if (FAILED(result))
+		{
+			throw std::runtime_error("ShaderHandler: _samplerCMP initialization failed.");
+		}
+
+		////////////////////////////////////////////////////////////// Create Shaders ///////////////////////////////////////////////////////////////
 		D3D11_INPUT_ELEMENT_DESC inputDesc[] =
 		{
 			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
@@ -59,8 +119,18 @@ namespace Renderer
 
 		_lightPassVS = CreateVertexShader(device, L"Assets/Shaders/LightVS.hlsl", lightInputDesc, numElements);
 		_lightPassPS = CreatePixelShader(device, L"Assets/Shaders/LightPS.hlsl");
+		_lightApplyPS = CreatePixelShader(device, L"Assets/Shaders/LightApplyPS.hlsl");
 
 
+		//Shadow map shaders init
+		D3D11_INPUT_ELEMENT_DESC shadowInputDesc[] =
+		{
+			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		};
+
+		numElements = sizeof(shadowInputDesc) / sizeof(shadowInputDesc[0]);
+
+		_shadowMapVS = CreateVertexShader(device, L"Assets/Shaders/ShadowVS.hlsl", shadowInputDesc, numElements);
 		//Animation pass init
 		D3D11_INPUT_ELEMENT_DESC animInputDesc[] =
 		{
@@ -97,16 +167,24 @@ namespace Renderer
 	ShaderHandler::~ShaderHandler()
 	{
 		delete _defaultVS;
-		SAFE_RELEASE(_defaultPS);
 		delete _geoPassVS;
-		SAFE_RELEASE(_geoPassPS);
 		delete _lightPassVS;
+		delete _shadowMapVS;
+
+		SAFE_RELEASE(_defaultPS);
+		SAFE_RELEASE(_geoPassPS);
 		SAFE_RELEASE(_lightPassPS);
 		delete _animPassVS;
 		delete _gridPassVS;
 		SAFE_RELEASE(_gridPassPS);
 		delete _hudPassVS;
 		SAFE_RELEASE(_hudPassPS);
+		SAFE_RELEASE(_lightApplyPS);
+
+		SAFE_RELEASE(_samplerWRAP);
+		SAFE_RELEASE(_samplerPOINT);
+		SAFE_RELEASE(_samplerCLAMP);
+		SAFE_RELEASE(_samplerCMP);
 	}
 
 	ShaderHandler::VertexShaderData* ShaderHandler::CreateVertexShader(ID3D11Device* device, LPCWSTR fileName, D3D11_INPUT_ELEMENT_DESC* inputDesc, int inputDescSize)
@@ -117,7 +195,8 @@ namespace Renderer
 		ID3D11VertexShader* vertexShader = nullptr;
 		ID3D11InputLayout* inputLayout = nullptr;
 
-		result = D3DCompileFromFile(fileName, NULL, NULL, "main", "vs_5_0", D3DCOMPILE_DEBUG, 0, &shaderBuffer, &errorMessage);
+		result = D3DCompileFromFile(fileName, NULL, NULL, "main", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, &shaderBuffer, &errorMessage);
+		//result = D3DCompileFromFile(fileName, NULL, NULL, "main", "vs_5_0", D3DCOMPILE_DEBUG, 0, &shaderBuffer, &errorMessage);
 		if (FAILED(result))
 		{
 			if (errorMessage)
@@ -245,6 +324,7 @@ namespace Renderer
 		ID3D11PixelShader* pixelShader = nullptr;
 
 		result = D3DCompileFromFile(fileName, NULL, NULL, "main", "ps_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, &shaderBuffer, &errorMessage);
+		//result = D3DCompileFromFile(fileName, NULL, NULL, "main", "ps_5_0", D3D10_SHADER_ENABLE_STRICTNESS | D3DCOMPILE_DEBUG, 0, &shaderBuffer, &errorMessage);
 		if (FAILED(result))
 		{
 			if (errorMessage)
@@ -312,10 +392,11 @@ namespace Renderer
 		deviceContext->CSSetShader(nullptr, nullptr, 0);
 
 		//Set sampler
-		deviceContext->PSSetSamplers(0, 1, &_samplerWRAP);
+		ID3D11SamplerState* samplers[2] = { _samplerWRAP, _samplerCLAMP };
+		deviceContext->PSSetSamplers(0, 2, samplers);
 	}
 
-	void ShaderHandler::SetGeometryPassShaders(ID3D11DeviceContext * deviceContext)
+	void ShaderHandler::SetGeometryStageShaders(ID3D11DeviceContext * deviceContext)
 	{
 		// Set vertex layout
 		deviceContext->IASetInputLayout(_geoPassVS->_inputLayout);
@@ -329,10 +410,11 @@ namespace Renderer
 		deviceContext->CSSetShader(nullptr, nullptr, 0);
 
 		//Set sampler
-		deviceContext->PSSetSamplers(0, 1, &_samplerWRAP);
+		ID3D11SamplerState* samplers[2] = { _samplerWRAP, _samplerCLAMP };
+		deviceContext->PSSetSamplers(0, 2, samplers);
 	}
 
-	void ShaderHandler::SetLightPassShaders(ID3D11DeviceContext * deviceContext)
+	void ShaderHandler::SetFinalPassShaders(ID3D11DeviceContext * deviceContext)
 	{
 		//Set vertex layout
 		deviceContext->IASetInputLayout(_lightPassVS->_inputLayout);
@@ -399,6 +481,43 @@ namespace Renderer
 		deviceContext->CSSetShader(nullptr, nullptr, 0);
 
 		//Set sampler
-		deviceContext->PSSetSamplers(0, 1, &_samplerWRAP);
+		ID3D11SamplerState* samplers[2] = { _samplerWRAP, _samplerCLAMP };
+		deviceContext->PSSetSamplers(0, 2, samplers);
+	}
+
+	void ShaderHandler::SetShadowGenerationShaders(ID3D11DeviceContext* deviceContext)
+	{
+		//Set vertex layout
+		deviceContext->IASetInputLayout(_shadowMapVS->_inputLayout);
+
+		//Set shaders
+		deviceContext->VSSetShader(_shadowMapVS->_vertexShader, nullptr, 0);
+		deviceContext->HSSetShader(nullptr, nullptr, 0);
+		deviceContext->GSSetShader(nullptr, nullptr, 0);
+		deviceContext->DSSetShader(nullptr, nullptr, 0);
+		deviceContext->PSSetShader(nullptr, nullptr, 0);
+		deviceContext->CSSetShader(nullptr, nullptr, 0);
+
+		//Set sampler
+		ID3D11SamplerState* samplers[2] = { _samplerWRAP, _samplerCLAMP };
+		deviceContext->PSSetSamplers(0, 2, samplers);
+	}
+
+	void ShaderHandler::SetLightApplicationShaders(ID3D11DeviceContext* deviceContext)
+	{
+		//Set vertex layout
+		deviceContext->IASetInputLayout(_lightPassVS->_inputLayout);
+
+		//Set shaders
+		deviceContext->VSSetShader(_lightPassVS->_vertexShader, nullptr, 0);
+		deviceContext->HSSetShader(nullptr, nullptr, 0);
+		deviceContext->GSSetShader(nullptr, nullptr, 0);
+		deviceContext->DSSetShader(nullptr, nullptr, 0);
+		deviceContext->PSSetShader(_lightApplyPS, nullptr, 0);
+		deviceContext->CSSetShader(nullptr, nullptr, 0);
+
+		//Set sampler
+		ID3D11SamplerState* samplers[2] = { _samplerWRAP, _samplerCLAMP };
+		deviceContext->PSSetSamplers(0, 2, samplers);
 	}
 }
