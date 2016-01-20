@@ -35,9 +35,11 @@ bool ObjectHandler::Add(Type type, int renderObjectID, XMFLOAT3 position = XMFLO
 		addedObject = _tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
 		break;
 	case ENEMY:
-	case GUARD:
-		//TODO Tileposition parameters are temporary
 		object = new Enemy(_idCount, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(type), _tilemap);
+		addedObject = _tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
+		break;
+	case GUARD:
+		object = new Guard(_idCount, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(type), _tilemap);
 		addedObject = _tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
 		break;
 	case TRAP:
@@ -256,15 +258,18 @@ bool ObjectHandler::LoadLevel(int lvlIndex)
 
 void ObjectHandler::InitPathfinding()
 {
-	for (vector<GameObject*>::iterator i = _gameObjects[ENEMY].begin();
-	i != _gameObjects[ENEMY].end(); i++)
+	for (vector<GameObject*>::iterator i = _gameObjects[ENEMY].begin(); i != _gameObjects[ENEMY].end(); i++)
 	{
-		if ((*i)->GetType() == ENEMY)																//Handle unit movement
-		{
-			Unit* unit = dynamic_cast<Unit*>((*i));
-			unit->CheckAllTiles();
-			unit->Move();
-		}
+		Unit* unit = dynamic_cast<Unit*>((*i));
+		//unit->CheckAllTiles();
+		unit->Move();
+	}
+	for (vector<GameObject*>::iterator i = _gameObjects[GUARD].begin(); i != _gameObjects[GUARD].end(); i++)
+	{
+
+		Unit* unit = dynamic_cast<Unit*>((*i));
+		//unit->CheckAllTiles();
+		unit->Move();
 	}
 }
 
@@ -274,8 +279,9 @@ void ObjectHandler::Update(float deltaTime)
 
 	for (int i = 0; i < NR_OF_TYPES; i++)
 	{
-		for (GameObject* g : _gameObjects[i])
+		for (int j = 0; j < _gameObjects[i].size(); j++)
 		{
+			GameObject* g = _gameObjects[i][j];
 			g->Update();
 
 			if (g->GetPickUpState() == PICKINGUP)
@@ -301,10 +307,9 @@ void ObjectHandler::Update(float deltaTime)
 				}
 				if (unit->GetHealth() <= 0)
 				{
-					//drop held object and set its tile position
-					_tilemap->RemoveObjectFromTile(g->GetTilePosition()._x, g->GetTilePosition()._y, unit);
-					unit->Release();
-					delete unit;
+					//TODO: drop held object and set its tile position --Victor
+					Remove(g);
+					j--;
 				}
 				else
 				{
