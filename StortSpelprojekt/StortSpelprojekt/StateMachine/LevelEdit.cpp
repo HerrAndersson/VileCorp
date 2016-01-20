@@ -29,7 +29,7 @@ GameObject* LevelEdit::GetSelectedObject()
 
 void LevelEdit::Add(Type type, int renderObjectID)
 {
-	_objectHandler->Add(type, _marker->GetPosition(), XMFLOAT3(0.0f, 0.0f, 0.0f));	
+	_objectHandler->Add(type,-1, _marker->GetPosition(), XMFLOAT3(0.0f, 0.0f, 0.0f));	
 }
 
 bool LevelEdit::Delete(Type type)
@@ -85,7 +85,7 @@ void LevelEdit::Initialize(ObjectHandler* objectHandler, System::InputDevice* in
 	//buttonInfo[1].parent = 0;
 	//buttonInfo[2].parent = 1;
 
-	LoadLevel(9);
+	LoadLevel(5);
 
 	// Temporary hack because no mouse interface
 	_marker = _objectHandler->GetGameObjects()->at(1)[0];
@@ -104,6 +104,176 @@ void LevelEdit::LoadLevel(int levelID)
 	_tilemapWidth = _tileMap->GetWidth();
 }
 
+void LevelEdit::HandleHUD()
+{
+	/*for (int i = 0; i < buttonInfo.size(); i++)
+	{
+	if (buttonInfo[i].parent != -1)
+	{
+	if (buttonInfo[buttonInfo[i].parent].active == true)
+	{
+	_uiHandler->SetButtonVisibility(i, true);
+
+	if (_uiHandler->Intersect(mouseCoord._clientPos, i) == true)
+	{
+	buttonInfo[i].active = true;
+	}
+	}
+	else
+	{
+	_uiHandler->SetButtonVisibility(i, false);
+	}
+	}
+	else if(_uiHandler->Intersect(mouseCoord._clientPos, i) == true)
+	{
+	buttonInfo[i].active = true;
+	}
+	}*/
+}
+
+void LevelEdit::HandleInput()
+{
+	int maxObject = _objectHandler->GetObjectCount();
+	int selectedLevel = 1;
+
+	//Move tile greater distance per button press
+	//if (_inputDevice->IsPressed(VK_PRIOR))
+	//{
+	//	_tileMultiplier++;
+	//}
+
+	//if (_inputDevice->IsPressed(VK_NEXT))
+	//{
+	//	if (_tileMultiplier != 1)
+	//	{
+	//		_tileMultiplier--;
+	//	}
+	//}
+
+
+	//Check if there is a tile to move
+	if (_objectHandler->GetObjectCount() > 0)
+	{
+		//Translation and rotation controls
+		if (_controls->IsFunctionKeyDown("MAP_EDIT:MOVE_MARKER_LEFT"))
+		{
+			XMFLOAT3 tempPos = _marker->GetPosition();
+			_marker->SetPosition(XMFLOAT3(tempPos.x - 1 * _tileMultiplier, tempPos.y, tempPos.z));
+		}
+
+		if (_controls->IsFunctionKeyDown("MAP_EDIT:MOVE_MARKER_RIGHT"))
+		{
+			XMFLOAT3 tempPos = _marker->GetPosition();
+			_marker->SetPosition(XMFLOAT3(tempPos.x + 1 * _tileMultiplier, tempPos.y, tempPos.z));
+		}
+
+		if (_controls->IsFunctionKeyDown("MAP_EDIT:MOVE_MARKER_UP"))
+		{
+			XMFLOAT3 tempPos = _marker->GetPosition();
+			_marker->SetPosition(XMFLOAT3(tempPos.x, tempPos.y, tempPos.z + 1 * _tileMultiplier));
+		}
+
+		if (_controls->IsFunctionKeyDown("MAP_EDIT:MOVE_MARKER_DOWN"))
+		{
+			XMFLOAT3 tempPos = _marker->GetPosition();
+			_marker->SetPosition(XMFLOAT3(tempPos.x, tempPos.y, tempPos.z - 1 * _tileMultiplier));
+		}
+	}
+
+	//Scale Objects
+	/*
+		"SCALE_MARKER_LEFT": [""].
+	*/
+	//if (_inputDevice->IsPressed(VK_NUMPAD6))
+	//{
+	//	XMFLOAT3 tempPos = _marker->GetScale();
+	//	_marker->SetScale(XMFLOAT3(tempPos.x + 1, tempPos.y, tempPos.z));
+	//}
+
+	//if (_inputDevice->IsPressed(VK_NUMPAD4))
+	//{
+	//	XMFLOAT3 tempPos = _marker->GetScale();
+	//	_marker->SetScale(XMFLOAT3(tempPos.x - 1, tempPos.y, tempPos.z));
+	//}
+
+	//if (_inputDevice->IsPressed(VK_NUMPAD8))
+	//{
+	//	XMFLOAT3 tempPos = _marker->GetScale();
+	//	_marker->SetScale(XMFLOAT3(tempPos.x, tempPos.y, tempPos.z + 1));
+	//}
+
+	//if (_inputDevice->IsPressed(VK_NUMPAD2))
+	//{
+	//	XMFLOAT3 tempPos = _marker->GetScale();
+	//	_marker->SetScale(XMFLOAT3(tempPos.x, tempPos.y, tempPos.z - 1));
+	//}
+
+
+	if (_controls->IsFunctionKeyDown("MAP_EDIT:ROTATE_MARKER_CLOCK"))
+	{
+		XMFLOAT3 tempRot = _marker->GetRotation();
+		_marker->SetRotation(XMFLOAT3(tempRot.x, tempRot.y + (DirectX::XM_PI / 4), tempRot.z));
+	}
+	if (_controls->IsFunctionKeyDown("MAP_EDIT:ROTATE_MARKER_COUNTERCLOCK"))
+	{
+		XMFLOAT3 tempRot = _marker->GetRotation();
+		_marker->SetRotation(XMFLOAT3(tempRot.x, tempRot.y - (DirectX::XM_PI / 4), tempRot.z));
+	}
+
+	//Press C to init new level
+	if (_controls->IsFunctionKeyDown("MAP_EDIT:NEWLEVEL"))
+	{
+		InitNewLevel();
+	}
+
+	//Camera mouse control_
+	System::MouseCoord mouseCoord = _inputDevice->GetMouseCoord();
+	if (mouseCoord._deltaPos.x != 0 || mouseCoord._deltaPos.y != 0)
+	{
+		XMFLOAT3 rotation = _camera->GetRotation();
+		rotation.y += mouseCoord._deltaPos.x / 10.0f;
+		rotation.x += mouseCoord._deltaPos.y / 10.0f;
+		_camera->SetRotation(rotation);
+	}
+
+	XMFLOAT3 forward(0, 0, 0);
+	XMFLOAT3 position = _camera->GetPosition();
+	XMFLOAT3 right(0, 0, 0);
+	bool isMoving = false;
+	float v = 0.1f;
+	if (GetAsyncKeyState('W'))
+	{
+		forward = _camera->GetForwardVector();
+		isMoving = true;
+	}
+	else if (GetAsyncKeyState('S'))
+	{
+		forward = _camera->GetForwardVector();
+		forward.x *= -1;
+		forward.y *= -1;
+		forward.z *= -1;
+		isMoving = true;
+	}
+
+	if (GetAsyncKeyState('D'))
+	{
+		right = _camera->GetRightVector();
+		isMoving = true;
+	}
+	else if (GetAsyncKeyState('A'))
+	{
+		right = _camera->GetRightVector();
+		right.x *= -1;
+		right.y *= -1;
+		right.z *= -1;
+		isMoving = true;
+	}
+
+	if (isMoving)
+	{
+		_camera->SetPosition(XMFLOAT3(position.x + (forward.x + right.x) * v, position.y + (forward.y + right.y) * v, position.z + (forward.z + right.z) * v));
+	}
+}
 
 void LevelEdit::Update(float deltaTime)
 {
@@ -119,24 +289,19 @@ void LevelEdit::HandleSelected()
 {
 	if (_objectHandler->GetObjectCount() != 0)
 	{
-		if (_lastSelected != nullptr && _selectedObj->GetID() != _lastSelected->GetID())
-		if (_marker->GetID() != _lastSelected)
+		if (_lastSelected != nullptr && _marker != _lastSelected)
 		{
-			if (_lastSelected->GetType() == WALL || FLOOR || ENEMY || GUARD)
-			{
-				temp = _marker;
-				_lastSelected->SetPosition(XMFLOAT3(_lastSelected->GetPosition().x, 0.1, _lastSelected->GetPosition().z));
-				//XMFLOAT3 tempScale = temp->GetScale();
-				//temp->SetScale(XMFLOAT3(1.1, 1.1, 1.1));
-			}
+			_lastSelected->SetPosition(XMFLOAT3(_lastSelected->GetPosition().x, 0.1, _lastSelected->GetPosition().z));
+			//XMFLOAT3 tempScale = temp->GetScale();
+			//temp->SetScale(XMFLOAT3(1.1, 1.1, 1.1));
 		}
-		_lastSelected = _marker->GetID();
+		_lastSelected = _marker;
 	}
 }
 
 void LevelEdit::ResetSelectedObj()
 {
-	_selectedObj = nullptr;
+	//_marker = nullptr;
 	_lastSelected = nullptr;
 }
 
@@ -227,14 +392,14 @@ void LevelEdit::SelectObject(GameObject* selectedObject)
 {
 	float yOffset = 0.1f;
 
-	if (_selectedObj != nullptr)
+	if (_marker != nullptr)
 	{
-		_selectedObj->Translate(DirectX::XMFLOAT3(0, -yOffset, 0));
+		_marker->Translate(DirectX::XMFLOAT3(0, -yOffset, 0));
 	}
-	_selectedObj = selectedObject;
+	_marker = selectedObject;
 
-	if (_selectedObj != nullptr)
+	if (_marker != nullptr)
 	{
-		_selectedObj->Translate(DirectX::XMFLOAT3(0, yOffset, 0));
+		_marker->Translate(DirectX::XMFLOAT3(0, yOffset, 0));
 	}
 }

@@ -26,7 +26,7 @@ void PlacementState::Update(float deltaTime)
 	int cost = 20;
 
 	//T adds Trap
-	if (_inputDevice->IsPressed(0x54))
+	if (_controls->IsFunctionKeyDown("PLACEMENT:BUILD_TRAP"))
 	{
 		_trapChosen = true;
 		if (_budget - cost >= 0)
@@ -54,7 +54,7 @@ void PlacementState::Update(float deltaTime)
 			}
 		}
 	}
-	else if (_inputHandler->IsPressed(System::Input::Delete))
+	else if (_controls->IsFunctionKeyDown("PLACEMENT:DELETE"))
 	{
 		if (!_levelEdit.Delete(TRAP))
 		{
@@ -65,10 +65,12 @@ void PlacementState::Update(float deltaTime)
 
 	if (_trapChosen == true)
 	{
-		if (_inputHandler->IsDown(System::Input::Shift))
+		if (_inputDevice->IsDown(System::Input::Shift))
 		{
-			if (_inputHandler->IsPressed(System::Input::LeftArrow) || _inputHandler->IsPressed(System::Input::RightArrow)
-				|| _inputHandler->IsPressed(System::Input::UpArrow) || _inputHandler->IsPressed(System::Input::DownArrow))
+			if (_inputDevice->IsPressed(System::Input::LeftArrow) 
+				|| _inputDevice->IsPressed(System::Input::RightArrow)
+				|| _inputDevice->IsPressed(System::Input::UpArrow) 
+				|| _inputDevice->IsPressed(System::Input::DownArrow))
 			{
 				if (_budget - cost >= 0)
 				{
@@ -89,7 +91,7 @@ void PlacementState::Update(float deltaTime)
 		}
 	}
 
-	if (_inputHandler->IsPressed(System::Input::Enter))
+	if (_inputDevice->IsPressed(System::Input::Enter))
 	{
 		_trapChosen = false;
 	}

@@ -14,17 +14,15 @@ class LevelEdit
 {
 private:
 	AI::AStar*				_aStar;
-	Tilemap*				_tileMap;
-	ObjectHandler*			_objectHandler;
 	System::InputDevice*	_inputDevice;
 	System::Controls*		_controls;
-	PickingDevice*			_pickingDevice;
 	System::Camera*			_camera;
+	Tilemap*				_tileMap;
+	ObjectHandler*			_objectHandler;
+	PickingDevice*			_pickingDevice;
 	UIHandler*				_uiHandler;
 	Grid*					_grid;
 
-	GameObject* _marker;
-	
 	struct LevelHeader
 	{
 		int _version;
@@ -47,14 +45,15 @@ private:
 		bool active = false;
 	};
 
-	XMFLOAT3 _lastObjPosition = XMFLOAT3(0.0, 0.0, 0.0);
-	GameObject* _selectedObj;
+	GameObject* _marker;
 	GameObject* _lastSelected;
+
 	System::MouseCoord _mouseCoord;
 	int _tileMultiplier;
 	int _tilemapHeight, _tilemapWidth;
 	bool _isSelectionMode = true;
 	std::vector<ButtonInfo> buttonInfo;
+	
 	void HandleInput();
 	void HandleHUD();
 	void LoadLevel(int levelID);

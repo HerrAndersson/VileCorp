@@ -45,10 +45,10 @@ void LevelEditState::Update(float deltaTime)
 	}
 	if (_floorChosen == true)
 	{
-		if (_inputHandler->IsDown(System::Input::Shift))
+		if (_inputDevice->IsDown(System::Input::Shift))
 		{
-			if (_inputHandler->IsPressed(System::Input::LeftArrow) || _inputHandler->IsPressed(System::Input::RightArrow)
-				|| _inputHandler->IsPressed(System::Input::UpArrow) || _inputHandler->IsPressed(System::Input::DownArrow))
+			if (_inputDevice->IsPressed(System::Input::LeftArrow) || _inputDevice->IsPressed(System::Input::RightArrow)
+				|| _inputDevice->IsPressed(System::Input::UpArrow) || _inputDevice->IsPressed(System::Input::DownArrow))
 			{
 				bool taken = false;
 				if (_levelEdit.Marked(WALL) || _levelEdit.Marked(FLOOR)) 
@@ -89,10 +89,10 @@ void LevelEditState::Update(float deltaTime)
 	}
 	if (_wallChosen == true)
 	{
-		if (_inputHandler->IsDown(System::Input::Shift))
+		if (_inputDevice->IsDown(System::Input::Shift))
 		{
-			if (_inputHandler->IsPressed(System::Input::LeftArrow) || _inputHandler->IsPressed(System::Input::RightArrow)
-				|| _inputHandler->IsPressed(System::Input::UpArrow) || _inputHandler->IsPressed(System::Input::DownArrow))
+			if (_inputDevice->IsPressed(System::Input::LeftArrow) || _inputDevice->IsPressed(System::Input::RightArrow)
+				|| _inputDevice->IsPressed(System::Input::UpArrow) || _inputDevice->IsPressed(System::Input::DownArrow))
 			{
 				bool taken = false;
 				if (_levelEdit.Marked(WALL) || _levelEdit.Marked(FLOOR))
@@ -108,7 +108,7 @@ void LevelEditState::Update(float deltaTime)
 		}
 	}
 
-	if (_inputHandler->IsPressed(System::Input::Enter))
+	if (_inputDevice->IsPressed(System::Input::Enter))
 	{
 		_floorChosen = false;
 		_wallChosen = false;
@@ -121,12 +121,12 @@ void LevelEditState::Update(float deltaTime)
 	}
 
 	//U adds loot
-	if (_inputHandler->IsPressed(System::Input::U))
+	if (_inputDevice->IsPressed(System::Input::U))
 	{
 		_levelEdit.Add(LOOT, LOOT);
 	}
 
-	else if (_inputHandler->IsDown(System::Input::Delete))
+	else if (_inputDevice->IsDown(System::Input::Delete))
 	{
 		for (int i = 0; i < NR_OF_TYPES; i++)
 		{
