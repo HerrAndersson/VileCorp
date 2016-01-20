@@ -118,11 +118,20 @@ namespace Renderer
 		////////////////////////////////////////////////////////// Blend-states //////////////////////////////////////////////////////////
 		D3D11_BLEND_DESC omDesc;
 		ZeroMemory(&omDesc, sizeof(D3D11_BLEND_DESC));
+		//omDesc.RenderTarget[0].BlendEnable = true;
+		//omDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+		//omDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+		//omDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+		//omDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+		//omDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+		//omDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+		//omDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
 		omDesc.RenderTarget[0].BlendEnable = true;
 		omDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
 		omDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
 		omDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
-		omDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+		omDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ZERO;
 		omDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
 		omDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 		omDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
@@ -359,12 +368,12 @@ namespace Renderer
 		{
 		case Renderer::DirectXHandler::BlendState::ENABLE:
 		{
-			_deviceContext->OMSetBlendState(_blendStateEnable, NULL, 0xffffffff);
+			_deviceContext->OMSetBlendState(_blendStateEnable, factor, 0xffffffff);
 			break;
 		}
 		case Renderer::DirectXHandler::BlendState::DISABLE:
 		{
-			_deviceContext->OMSetBlendState(_blendStateDisable, NULL, 0xffffffff);
+			_deviceContext->OMSetBlendState(_blendStateDisable, factor, 0xffffffff);
 			break;
 		}
 		default:

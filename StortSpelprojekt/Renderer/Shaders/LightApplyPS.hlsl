@@ -107,18 +107,17 @@ float4 main(VS_OUT input) : SV_TARGET
 			if (shadowCoeff < depth - epsilon)
 			{
 				//Gives gray outlines where the shadow should be if no ambient is used
-				finalColor *= shadowCoeff;
-				return saturate(float4(finalColor, 1));
+				//finalColor *= shadowCoeff;
+				//return saturate(float4(finalColor, 0.5f));
 			}
 			else
 			{
 				finalColor += saturate(lightColor * lightIntensity);
 				finalColor *= dot(-normalize(lightToPixel), lightDirection);
-				return saturate(float4(finalColor, 1));
+				return saturate(float4(finalColor, 0.5f));
 			}
 		}
 	}
 
-	//Use blending instead?
-	return saturate(float4(finalColor, 1));
+	return saturate(float4(finalColor*0.2f, 0.5f));
 }

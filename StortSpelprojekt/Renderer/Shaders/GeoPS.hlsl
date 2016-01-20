@@ -27,6 +27,7 @@ PS_OUT main(VS_OUT input)
 	PS_OUT output = (PS_OUT)0;
 
 	output.color = diffuse.Sample(samplerWrap, input.uv);
+	output.color.a = 0.0f;
 	output.normal = float4(input.normal, 0.0f);
 
 	return output;

@@ -32,6 +32,10 @@ Render targets:
 |					      |   Sampled from to calculate lighting/shadows																	                  |
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+Important:
+
+~ For blending to work, never use 1.0f as alpha. The alpha value determines how much of the new color should be applied. If 1, then it simply overwrites.
+
 */
 
 namespace Renderer
