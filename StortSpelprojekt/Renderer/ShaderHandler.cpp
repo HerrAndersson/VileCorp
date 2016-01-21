@@ -32,7 +32,6 @@ namespace Renderer
 			throw std::runtime_error("ShaderHandler::ShaderHandler: Error creating WRAP sampler");
 		}
 
-
 		HRESULT result;
 
 		D3D11_SAMPLER_DESC samplerDesc;
@@ -121,7 +120,6 @@ namespace Renderer
 		_lightPassPS = CreatePixelShader(device, L"Assets/Shaders/LightPS.hlsl");
 		_lightApplyPS = CreatePixelShader(device, L"Assets/Shaders/LightApplyPS.hlsl");
 
-
 		//Shadow map shaders init
 		D3D11_INPUT_ELEMENT_DESC shadowInputDesc[] =
 		{
@@ -129,8 +127,9 @@ namespace Renderer
 		};
 
 		numElements = sizeof(shadowInputDesc) / sizeof(shadowInputDesc[0]);
-
 		_shadowMapVS = CreateVertexShader(device, L"Assets/Shaders/ShadowVS.hlsl", shadowInputDesc, numElements);
+		_lightApplyVS = CreateVertexShader(device, L"Assets/Shaders/LightApplyVS.hlsl", shadowInputDesc, numElements);
+
 		//Animation pass init
 		D3D11_INPUT_ELEMENT_DESC animInputDesc[] =
 		{
@@ -142,7 +141,6 @@ namespace Renderer
 		};
 
 		numElements = sizeof(animInputDesc) / sizeof(animInputDesc[0]);
-
 		_animPassVS = CreateVertexShader(device, L"Assets/Shaders/AnimVS.hlsl", animInputDesc, numElements);
 		
 		//Grid pass init
@@ -506,10 +504,10 @@ namespace Renderer
 	void ShaderHandler::SetLightApplicationShaders(ID3D11DeviceContext* deviceContext)
 	{
 		//Set vertex layout
-		deviceContext->IASetInputLayout(_lightPassVS->_inputLayout);
+		deviceContext->IASetInputLayout(_lightApplyVS->_inputLayout);
 
 		//Set shaders
-		deviceContext->VSSetShader(_lightPassVS->_vertexShader, nullptr, 0);
+		deviceContext->VSSetShader(_lightApplyVS->_vertexShader, nullptr, 0);
 		deviceContext->HSSetShader(nullptr, nullptr, 0);
 		deviceContext->GSSetShader(nullptr, nullptr, 0);
 		deviceContext->DSSetShader(nullptr, nullptr, 0);

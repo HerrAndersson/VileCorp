@@ -184,7 +184,7 @@ void Game::Update(float deltaTime)
 
 void Game::Render()
 {
-	_renderModule->BeginScene(0.0f, 1.0f, 1.0f, 1);
+	_renderModule->BeginScene(0.0f, 0.5f, 0.5f, 1.0f);
 	_renderModule->SetDataPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
 	/*--------------------------------------------------------- Geometry pass ------------------------------------------------------------
 	Render the objects to the diffuse and normal resource views. Camera depth is also generated here.									*/
@@ -224,7 +224,7 @@ void Game::Render()
 	//}
 
 	_renderModule->SetLightDataPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i < 1; i++)
 	{
 		_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::SHADOW_GENERATION);
 		_renderModule->SetShadowMapDataPerSpotlight(_spotlights[i]->GetViewMatrix(), _spotlights[i]->GetProjectionMatrix());
@@ -240,10 +240,9 @@ void Game::Render()
 		_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::LIGHT_APPLICATION);
 		_renderModule->SetLightDataPerSpotlight(_spotlights[i]);
 
-		//Should transform the positions with world * camView * camProj.
-		//_renderModule->DEBUG_RenderLightVolume(_spotlights[i]->GetVolumeBuffer(), _spotlights[i]->GetWorldMatrix(), _spotlights[i]->GetVertexCount(), _spotlights[i]->GetVertexSize());
+		_renderModule->DEBUG_RenderLightVolume(_spotlights[i]->GetVolumeBuffer(), _spotlights[i]->GetWorldMatrix(), _spotlights[i]->GetVertexCount(), _spotlights[i]->GetVertexSize());
 
-		_renderModule->RenderScreenQuad();
+		//_renderModule->RenderScreenQuad();
 	}
 
 	/*-------------------------------------------------------- HUD and other 2D -----------------------------------------------------------*/
