@@ -32,6 +32,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ObjectHandler.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="SpawnPoint.cpp" />
     <ClCompile Include="StateMachine\BaseState.cpp" />
     <ClCompile Include="StateMachine\LevelEdit.cpp" />
     <ClCompile Include="StateMachine\LevelEditState.cpp" />
@@ -57,6 +58,7 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameLogic.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="SpawnPoint.h" />
     <ClInclude Include="Grid.h" />
     <ClInclude Include="Guard.h" />
     <ClInclude Include="ObjectHandler.h" />

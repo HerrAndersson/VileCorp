@@ -91,6 +91,7 @@ bool Tilemap::AddObjectToTile(int x, int z, GameObject * obj)
 			break;
 		case TRAP:
 		case LOOT:
+		case SPAWN:
 			if (_map[x][z]._objectsOnTile[3] == nullptr)
 			{
 				_map[x][z]._objectsOnTile[3] = obj;

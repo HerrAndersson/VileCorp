@@ -5,6 +5,7 @@
 #include "Trap.h"
 #include "Architecture.h"
 #include "Trigger.h"
+#include "SpawnPoint.h"
 #include "Enemy.h"
 #include "Guard.h"
 #include "Tilemap.h"
