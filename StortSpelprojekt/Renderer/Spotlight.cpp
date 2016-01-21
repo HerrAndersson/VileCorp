@@ -31,27 +31,25 @@ namespace Renderer
 		_projectionMatrix = XMMatrixPerspectiveFovLH(fov, (float)width / (float)height, nearClip, farClip);
 
 		/// --------------------------------------- Create a cone that represents the light as a volume --------------------------------------- ///
-		XMVECTOR L = XMVector4Normalize(XMVectorSet(_position.x, _position.y, _position.z, 1));
-		XMVECTOR d = XMVector4Normalize(XMVectorSet(_direction.x, _direction.y, _direction.z, 1));
-		float r = range;																	
-		double a = fov;													
+		XMVECTOR pos = XMVector4Normalize(XMVectorSet(_position.x, _position.y, _position.z, 1));
+		XMVECTOR dir = XMVector4Normalize(XMVectorSet(_direction.x, _direction.y, _direction.z, 1));																												
 
-		XMVECTOR B = L + d*r; //Center of the cone base.
-		double w = r * sin(a); //Radius of the cone base.
+		XMVECTOR baseCenter = pos + dir * range; //Center of the cone base.
+		double baseRadius = range * sin(fov); //Radius of the cone base.
 
 		//Calculate a vector X that is normal to direction
 		XMVECTOR T = XMVectorSet(1, 0, 0, 0);
-		XMVECTOR X = XMVector3Cross(d, T);													
+		XMVECTOR X = XMVector3Cross(dir, T);													
 		X = XMVector4Normalize(X);
-		if (XMVectorGetX(XMVector3Length(X)) == 0)
+		if (XMVectorGetX(XMVector3Length(X)) < 0.00000001f)
 		{
 			T = XMVectorSet(0, 1, 0, 0);
-			X = XMVector3Cross(d, T);
+			X = XMVector3Cross(dir, T);
 			X = XMVector4Normalize(X);
 		}
 
 		//Given this x, calculate another vector y = cross(d, x)
-		XMVECTOR Y = XMVector3Cross(d, X);
+		XMVECTOR Y = XMVector3Cross(dir, X);
 		Y = XMVector4Normalize(Y);
 
 	    //The vertices of the cone base are given by: v(t) = B + w * (x * cos t + y * sin t), with t varying from 0 to 2*pi.
@@ -60,7 +58,7 @@ namespace Renderer
 		XMFLOAT3 element;
 		for (double t = 0; t < pi2; t += pi2 / resolution)
 		{
-			XMVECTOR v = B + (float)w * (X * (float)cos(t) + Y * (float)sin(t));
+			XMVECTOR v = baseCenter + (float)baseRadius * (X * (float)cos(t) + Y * (float)sin(t));
 			XMStoreFloat3(&element, v);
 			points.push_back(element);
 		}
@@ -68,7 +66,7 @@ namespace Renderer
 		int pc = 0, pc2 = 0;
 		std::vector<XMFLOAT3>triangles;
 		XMFLOAT3 basePos;
-		XMStoreFloat3(&basePos, B);
+		XMStoreFloat3(&basePos, baseCenter);
 		for (int i = 0; i < resolution-1; i++)
 		{
 			triangles.push_back(_position);

@@ -46,7 +46,7 @@ private:
 
 
 
-	//TODO: TEMP! Make this pretty
+	//TODO: TEMP! Move this to objectHandler
 	std::vector<Renderer::Spotlight*> _spotlights;
 
 public:

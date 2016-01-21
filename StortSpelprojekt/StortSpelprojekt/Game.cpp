@@ -45,12 +45,11 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 		_grid = nullptr;
 	}
 
-	//TODO: TEMP! Make this pretty
 	Renderer::Spotlight* spot;
 	for (int i = 0; i < 2; i++)
 	{
-		spot = new Renderer::Spotlight(_renderModule->GetDevice(), 0.1f, 1000.0f, XM_PIDIV4 /*XM_PI / 0.082673f*/, 256, 256, 1.0f, 10.0f, XMFLOAT3(0.0f, 1.0f, 1.0f), 36); //Ska ha samma dimensions som shadow map, som nu ligger i render module
-		spot->SetPositionAndRotation(XMFLOAT3(3*i+5, 1.5f, 2*i+4), XMFLOAT3(0, 90 + i*25, 0));
+		spot = new Renderer::Spotlight(_renderModule->GetDevice(), 0.1f, 1000.0f, XM_PIDIV4 /*XM_PI / 0.082673f*/, Renderer::SHADOWMAP_DIMENSIONS, Renderer::SHADOWMAP_DIMENSIONS, 1.0f, 8.0f, XMFLOAT3(0.0f, 1.0f, 1.0f), 36); //Ska ha samma dimensions som shadow map, som nu ligger i render module
+		spot->SetPositionAndRotation(XMFLOAT3(3*i+5, 1.0f, 2*i+4), XMFLOAT3(0, 90 + i*25, 0));
 		_spotlights.push_back(spot);
 	}
 }
@@ -69,7 +68,6 @@ Game::~Game()
 	SAFE_DELETE(_input);
 	SAFE_DELETE(_grid);
 	
-	//TODO: TEMP! dfhfa
 	for(auto s : _spotlights)
 	{
 		delete s;
@@ -171,6 +169,8 @@ void Game::Render()
 	{
 		for (GameObject* g : gameObjects->at(i))
 		{
+			//TODO: If type == ENEMY -> don't render. Instead check in the chosen objects for the light rendering (Functionality not done), and check if the enemies are there they should be both rendered and lit.
+			//If not, they should not be rendered nor lit /Jonas
 			_renderModule->Render(g->GetMatrix(), g->GetRenderObject());
 		}
 	}
@@ -190,14 +190,16 @@ void Game::Render()
 	/*------------------------------------------------------------ Light pass --------------------------------------------------------------
 	Generate the shadow map for each spotlight, then apply the lighting/shadowing to the backbuffer render target with additive blending. */
 
-	//Render fullscreen quad once here! Without blending etc, just output diffuse to backbuffer. Use LightVS and LightPS
+	//for (int i = 0; i < 2; i++)
+	//{
+	//	_renderModule->DEBUG_RenderLightVolume(_spotlights[i]->GetVolumeBuffer(), _spotlights[i]->GetWorldMatrix(), _spotlights[i]->GetVertexCount(), _spotlights[i]->GetVertexSize());
+	//}
 
 	_renderModule->SetLightDataPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
-
 	for (int i = 0; i < 2; i++)
 	{
 		_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::SHADOW_GENERATION);
-		_renderModule->SetShadowMapDataPerSpotLight(_spotlights[i]->GetViewMatrix(), _spotlights[i]->GetProjectionMatrix());
+		_renderModule->SetShadowMapDataPerSpotlight(_spotlights[i]->GetViewMatrix(), _spotlights[i]->GetProjectionMatrix());
 
 		for (int i = 0; i < NR_OF_TYPES; i++)
 		{
@@ -208,9 +210,9 @@ void Game::Render()
 		}
 
 		_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::LIGHT_APPLICATION);
-		_renderModule->SetLightDataPerLight(_spotlights[i]);
+		_renderModule->SetLightDataPerSpotlight(_spotlights[i]);
 
-		//Should transform the positions with world * camView * camProj. Use GeoVS? When shadowed, return (0,0,0,0)
+		//Should transform the positions with world * camView * camProj.
 		//_renderModule->DEBUG_RenderLightVolume(_spotlights[i]->GetVolumeBuffer(), _spotlights[i]->GetWorldMatrix(), _spotlights[i]->GetVertexCount(), _spotlights[i]->GetVertexSize());
 
 		_renderModule->RenderScreenQuad();

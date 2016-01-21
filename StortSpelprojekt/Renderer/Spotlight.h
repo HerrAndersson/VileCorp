@@ -13,6 +13,8 @@ namespace Renderer
 	{
 	private:
 
+		//TODO: Should hold a pointer to its GameObject parent / Jonas
+
 		DirectX::XMFLOAT3	_position;
 		DirectX::XMFLOAT3	_rotation;
 		DirectX::XMFLOAT3	_direction;
