@@ -32,6 +32,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ObjectHandler.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="QuadTreeCulling.cpp" />
     <ClCompile Include="StateMachine\BaseState.cpp" />
     <ClCompile Include="StateMachine\LevelEdit.cpp" />
     <ClCompile Include="StateMachine\LevelEditState.cpp" />
@@ -62,6 +63,7 @@
     <ClInclude Include="ObjectHandler.h" />
     <ClInclude Include="JsonStructs.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="QuadTreeCulling.h" />
     <ClInclude Include="StateMachine\BaseState.h" />
     <ClInclude Include="PickingDevice.h" />
     <ClInclude Include="StateMachine\LevelEdit.h" />
@@ -182,15 +184,10 @@
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
-      <Command>
-      </Command>
-    </PreBuildEvent>
-    <CustomBuildStep>
       <Command>robocopy "C:\%HOMEPATH%\Google Drive\Stort spelprojekt\Assets" "$(OutDir)Assets" /MIR /Z /XA:H /W:5
 robocopy "$(SolutionDir)Renderer\Shaders" "$(OutDir)Assets\Shaders" /MIR /Z /XA:H /W:5
 if errorlevel 1 exit 0 else exit %errorlevel%</Command>
-      <Outputs>a</Outputs>
-    </CustomBuildStep>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -206,15 +203,8 @@ if errorlevel 1 exit 0 else exit %errorlevel%</Command>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PreBuildEvent>
-      <Command>
-      </Command>
+      <Command>robocopy "C:\%HOMEPATH%\Google Drive\Stort spelprojekt\Assets" "$(OutDir)Assets" /MIR /Z /XA:H /W:5</Command>
     </PreBuildEvent>
-    <CustomBuildStep>
-      <Command>robocopy "C:\%HOMEPATH%\Google Drive\Stort spelprojekt\Assets" "$(OutDir)Assets" /MIR /Z /XA:H /W:5
-robocopy "$(SolutionDir)Renderer\Shaders" "$(OutDir)Assets\Shaders" /MIR /Z /XA:H /W:5
-if errorlevel 1 exit 0 else exit %errorlevel%</Command>
-      <Outputs>a</Outputs>
-    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -235,15 +225,10 @@ if errorlevel 1 exit 0 else exit %errorlevel%</Command>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
-      <Command>
-      </Command>
-    </PreBuildEvent>
-    <CustomBuildStep>
       <Command>robocopy "C:\%HOMEPATH%\Google Drive\Stort spelprojekt\Assets" "$(OutDir)Assets" /MIR /Z /XA:H /W:5
 robocopy "$(SolutionDir)Renderer\Shaders" "$(OutDir)Assets\Shaders" /MIR /Z /XA:H /W:5
 if errorlevel 1 exit 0 else exit %errorlevel%</Command>
-      <Outputs>a</Outputs>
-    </CustomBuildStep>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -263,15 +248,9 @@ if errorlevel 1 exit 0 else exit %errorlevel%</Command>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <PreBuildEvent>
-      <Command>
-      </Command>
-    </PreBuildEvent>
-    <CustomBuildStep>
       <Command>robocopy "C:\%HOMEPATH%\Google Drive\Stort spelprojekt\Assets" "$(OutDir)Assets" /MIR /Z /XA:H /W:5
-robocopy "$(SolutionDir)Renderer\Shaders" "$(OutDir)Assets\Shaders" /MIR /Z /XA:H /W:5
-if errorlevel 1 exit 0 else exit %errorlevel%</Command>
-      <Outputs>a</Outputs>
-    </CustomBuildStep>
+IF %ERRORLEVEL% LEQ 3 exit 0</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

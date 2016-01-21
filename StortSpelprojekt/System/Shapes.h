@@ -41,6 +41,18 @@ struct Sphere
 	}
 };
 
+struct Triangle
+{
+	Vec3 _pos1, _pos2, _pos3;
+
+	Triangle(Vec3 pos1, Vec3 pos2, Vec3 pos3)
+	{
+		_pos1 = pos1;
+		_pos2 = pos2;
+		_pos3 = pos3;
+	}
+};
+
 struct Box
 {
 	Vec3 _position;

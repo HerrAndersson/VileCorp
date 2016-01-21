@@ -253,7 +253,7 @@ bool ObjectHandler::LoadLevel(int lvlIndex)
 	{
 		Add((Type)i._tileType, i._tileType, DirectX::XMFLOAT3(i._posX, 0, i._posZ), DirectX::XMFLOAT3(0, i._rotY, 0));
 	}
-	_quadTreeCulling->Initialize(_tilemap);
+	_quadTreeCulling->CreateTree(_tilemap);
 
 	return false;
 }
