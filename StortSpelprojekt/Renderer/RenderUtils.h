@@ -3,6 +3,9 @@
 #include <string>
 #include <vector>
 #include <DirectXMath.h>
+#include <map>
+
+enum Type { FLOOR, WALL, LOOT, SPAWN, TRAP, TRIGGER, GUARD, ENEMY, NR_OF_TYPES/*Has to be last*/ };
 
 struct Bone
 {
@@ -94,6 +97,7 @@ struct Texture
 
 struct RenderObject
 {
+	Type _type = Type::FLOOR;
 	bool _meshLoaded, _toUnload;
 	bool _isSkinned = false;
 	std::string _skeletonName;

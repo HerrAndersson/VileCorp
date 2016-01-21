@@ -16,7 +16,6 @@ AssetManager::AssetManager(ID3D11Device* device)
 
 	SetupTilesets();
 
-	ActivateTileset("default-24-25");
 	SetupLevelFileNameList();
 }
 
@@ -30,10 +29,13 @@ AssetManager::~AssetManager()
 		}
 		delete texture;
 	}
-
 	for (uint i = 0; i < _renderObjects->size(); i++)
 	{
 		delete _renderObjects->at(i);
+	}
+	for (uint i = 0; i < _skeletons->size(); i++)
+	{
+		delete _skeletons->at(i);
 	}
 	delete _infile;
 	delete _modelFiles;
@@ -43,37 +45,26 @@ AssetManager::~AssetManager()
 	delete _texturesToFlush;
 	delete _levelFileNames;
 	delete _tilesets;
-	for (uint i = 0; i < _skeletons->size(); i++)
-	{
-		delete _skeletons->at(i);
-	}
 	delete _skeletons;
 }
 
 //Looks through the Models folder and creates an empty RenderObject for each entry
 void AssetManager::SetupRenderObjectList(Tileset* tileset)
 {
-
 	_modelFiles->clear();
-	for (string str : tileset->_floors)
+	vector<string>* vec = &tileset->_floors;
+	for (int i = 0; i < NR_OF_TYPES; i++)
 	{
-		_modelFiles->push_back(str);
-	}
-	for (string str : tileset->_walls)
-	{
-		_modelFiles->push_back(str);
-	}
-	for (string str : tileset->_deco)
-	{
-		_modelFiles->push_back(str);
+		for (string str : *vec)
+		{
+			_modelFiles->push_back(str);
+			RenderObject* renderObject = ScanModel(str);
+			renderObject->_type = (Type)i;
+			_renderObjects->push_back(renderObject);
+		}
+		vec++;
 	}
 
-
-	for (uint i = 0; i < _modelFiles->size(); i++)
-	{
-		RenderObject* renderObject = ScanModel(_modelFiles->at(i));
-		_renderObjects->push_back(renderObject);
-	}
 	_activeTileset = tileset;
 }
 
@@ -105,19 +96,36 @@ void AssetManager::SetupTilesets()
 		rapidjson::StringStream ss(&buffer[0]);
 		reader.Parse(ss, handler);
 	}
-	_activeTileset = &_tilesets->at(0);
 	SetupRenderObjectList(&_tilesets->at(0));
 }
 
-//Replaces current Tileset, do not call without clearing GameObjects - Fredrik
+//Do not call, call _objectHandler->ActivateTileset() - Fredrik
 bool AssetManager::ActivateTileset(string name)
 {
 	if (!strcmp(name.c_str(), _activeTileset->_name.c_str()))
 	{
 		return true;
 	}
-	
+
+	for (Texture* texture : *_textures)
+	{
+		if (texture->_loaded)
+		{
+			texture->_data->Release();
+		}
+		delete texture;
+	}
+	for (uint i = 0; i < _renderObjects->size(); i++)
+	{
+		delete _renderObjects->at(i);
+	}
+	for (uint i = 0; i < _skeletons->size(); i++)
+	{
+		delete _skeletons->at(i);
+	}
+	_textures->clear();
 	_renderObjects->clear();
+	_skeletons->clear();
 
 	for (Tileset set : *_tilesets)
 	{
@@ -243,11 +251,8 @@ HRESULT Texture::LoadTexture(ID3D11Device* device)
 	HRESULT res = S_OK;
 	if (!_loaded)
 	{
-#ifdef _DEBUG
 		res = DirectX::CreateWICTextureFromFile(device, _filename.c_str(), nullptr, &_data, 0);
-#else
-		res = DirectX::CreateWICTextureFromFile(device, _filename.c_str(), nullptr, &_data, 0);
-#endif
+
 		if (_data == nullptr)
 		{
 			string filenameString(_filename.begin(),_filename.end());
@@ -330,7 +335,9 @@ Texture* AssetManager::ScanTexture(string filename)
 	{
 		string str = string(texture->_filename.begin(), texture->_filename.end());
 		if (!strcmp(str.data(), filename.data()))
+		{
 			return texture;
+		}
 	}
 	Texture* texture = new Texture;
 	texture->_filename = wstring(filename.begin(), filename.end());
@@ -385,10 +392,14 @@ RenderObject* AssetManager::ScanModel(string fileName)
 		renderObject->_meshes[i]._name.resize(meshHeader._nameLength);
 
 		_infile->read((char*)renderObject->_meshes[i]._name.data(), meshHeader._nameLength);
-		if(renderObject->_isSkinned)
+		if (renderObject->_isSkinned)
+		{
 			_infile->seekg(meshHeader._numberOfVertices*sizeof(WeightedVertex), ios::cur);
+		}
 		else
+		{
 			_infile->seekg(meshHeader._numberOfVertices*sizeof(Vertex), ios::cur);
+		}
 
 		if (meshHeader._numberPointLights)
 		{
@@ -439,20 +450,28 @@ ID3D11Buffer* AssetManager::CreateVertexBuffer(vector<WeightedVertex> *weightedV
 {
 	D3D11_BUFFER_DESC vbDESC;
 	vbDESC.Usage = D3D11_USAGE_DEFAULT;
-	if(skeleton)
+	if (skeleton)
+	{
 		vbDESC.ByteWidth = sizeof(WeightedVertex)* weightedVertices->size();
+	}
 	else
+	{
 		vbDESC.ByteWidth = sizeof(Vertex)* vertices->size();
+	}
 	vbDESC.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	vbDESC.CPUAccessFlags = 0;
 	vbDESC.MiscFlags = 0;
 	vbDESC.StructureByteStride = 0;
 
 	D3D11_SUBRESOURCE_DATA vertexData;
-	if(skeleton)
+	if (skeleton)
+	{
 		vertexData.pSysMem = weightedVertices->data();
+	}
 	else
+	{
 		vertexData.pSysMem = vertices->data();
+	}
 	vertexData.SysMemPitch = 0;
 	vertexData.SysMemSlicePitch = 0;
 
@@ -481,6 +500,26 @@ RenderObject* AssetManager::GetRenderObject(int index)
 		renderObject->_toUnload = false;
 	}
 	return renderObject;
+}
+
+uint AssetManager::GetRenderObjectByType(Type type, uint index)
+{
+	uint i = 0;
+	uint returnIndex = 0;
+	for (RenderObject* renderObject : *_renderObjects)
+	{
+		if (renderObject->_type == type)
+		{
+			if (i == index)
+			{
+				return returnIndex;
+			}
+			i++;
+		}
+		i = 0;
+		returnIndex++;
+	}
+	return 0;
 }
 
 ID3D11ShaderResourceView* AssetManager::GetTexture(string filename)

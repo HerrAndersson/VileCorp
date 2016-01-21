@@ -14,7 +14,6 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	_renderModule = new Renderer::RenderModule(_window->GetHWND(), settings._width, settings._height);
 	
 	_assetManager = new AssetManager(_renderModule->GetDevice());
-	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager);
 	_input = new System::InputDevice(_window->GetHWND());
 	_controls = new System::Controls(_input);
 	_fontWrapper = new FontWrapper(_renderModule->GetDevice(), L"Assets/Fonts/Calibri.ttf", L"Calibri");
@@ -26,6 +25,12 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 
 	_timer = System::Timer();
 
+
+	GameObjectInfo* data = new GameObjectInfo();
+	GameObjectDataLoader gameObjectDataLoader;
+	gameObjectDataLoader.WriteSampleGameObjects();
+	gameObjectDataLoader.LoadGameObjectInfo(data);
+	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager, data);
 	//Init statemachine
 	//_SM = new StateMachine();
 	//Init statemachine
