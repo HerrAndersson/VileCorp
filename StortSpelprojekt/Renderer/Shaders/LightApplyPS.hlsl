@@ -18,6 +18,7 @@ cbuffer matrixBufferLightPassPerLight : register(b3)
 	float lightIntensity;
 	float3 lightColor;
 	float lightRange;
+	int shadowMapDimensions;
 }
 
 struct VS_OUT
@@ -90,14 +91,14 @@ float4 main(VS_OUT input) : SV_TARGET
 		float depth = lightSpacePos.z / lightSpacePos.w;
 
 		float epsilon = 0.00001f;
-		float dx = 1.0f / 256;
+		float dx = 1.0f / shadowMapDimensions;
 
 		float s0 = lightDepthMap.Sample(samplerClamp, smTex).r;
 		float s1 = lightDepthMap.Sample(samplerClamp, smTex + float2(dx, 0.0f)).r;
 		float s2 = lightDepthMap.Sample(samplerClamp, smTex + float2(0.0f, dx)).r;
 		float s3 = lightDepthMap.Sample(samplerClamp, smTex + float2(dx, dx)).r;
 
-		float2 texelPos = smTex * 256;
+		float2 texelPos = smTex * shadowMapDimensions;
 		float2 lerps = frac(texelPos);
 		float shadowCoeff = lerp(lerp(s0, s1, lerps.x), lerp(s2, s3, lerps.x), lerps.y);
 
@@ -107,13 +108,13 @@ float4 main(VS_OUT input) : SV_TARGET
 			//In light
 			if (shadowCoeff > depth - epsilon)
 			{
-				finalColor += saturate(lightColor * lightIntensity);
+				finalColor += saturate(lightColor * lightIntensity * diffuse.xyz);
 				finalColor *= dot(-normalize(lightToPixel), lightDirection);
 				return saturate(float4(finalColor, 1.0f));
 			}
 		}
 	}
 
-	//Alpha of 1 equals no blending.
-	return saturate(float4(finalColor*0.2f, 0.5f));
+	//Not in light
+	return float4(0, 0, 0, 0);
 }

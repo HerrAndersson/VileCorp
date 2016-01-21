@@ -9,16 +9,17 @@ SamplerState samplerWrap : register(s0);
 
 struct VS_OUT
 {
-	float4 pos		: SV_POSITION;
-	float3 normal	: NORMAL;
-	float2 uv		: TEXCOORD;
-	float4 worldPos : POSITION;
+	float4 pos			: SV_POSITION;
+	float3 normal		: NORMAL;
+	float2 uv			: TEXCOORD;
+	float3 ambientLight : AMBIENT;
 };
 
 struct PS_OUT
 {
-	float4 color	: SV_Target0;
-	float4 normal	: SV_Target1;
+	float4 diffuse		: SV_Target0;
+	float4 normal	    : SV_Target1;
+	float4 backbuffer	: SV_Target2;
 };
 
 
@@ -26,9 +27,10 @@ PS_OUT main(VS_OUT input)
 {
 	PS_OUT output = (PS_OUT)0;
 
-	output.color = diffuse.Sample(samplerWrap, input.uv);
-	output.color.a = 0.0f;
+	output.diffuse = diffuse.Sample(samplerWrap, input.uv) * 0.5f;
+	output.diffuse.a = 0.0f;
 	output.normal = float4(input.normal, 0.0f);
+	output.backbuffer = float4(output.diffuse.xyz * input.ambientLight, 0.0f);
 
 	return output;
 }

@@ -31,7 +31,7 @@ namespace Renderer
 
 		InitializeConstantBuffers();
 
-		_shadowMap = new ShadowMap(_d3d->GetDevice(), 256);
+		_shadowMap = new ShadowMap(_d3d->GetDevice(), SHADOWMAP_DIMENSIONS);
 	}
 
 	RenderModule::~RenderModule()
@@ -133,6 +133,7 @@ namespace Renderer
 
 		dataPtr->_viewMatrix = viewMatrixC;
 		dataPtr->_projectionMatrix = projectionMatrixC;
+		dataPtr->_ambientLight = XMFLOAT3(0.5f, 0.5f, 0.5f);
 
 		deviceContext->Unmap(_matrixBufferPerFrame, 0);
 
@@ -202,7 +203,7 @@ namespace Renderer
 		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	}
 
-	void RenderModule::SetShadowMapDataPerSpotLight(DirectX::XMMATRIX* lightView, DirectX::XMMATRIX* lightProjection)
+	void RenderModule::SetShadowMapDataPerSpotlight(DirectX::XMMATRIX* lightView, DirectX::XMMATRIX* lightProjection)
 	{
 		_shadowMap->SetDataPerFrame(_d3d->GetDeviceContext(), lightView, lightProjection);
 	}
@@ -227,7 +228,7 @@ namespace Renderer
 		}
 	}
 
-	void RenderModule::SetLightDataPerLight(Spotlight* spotlight)
+	void RenderModule::SetLightDataPerSpotlight(Spotlight* spotlight)
 	{
 		HRESULT result;
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -251,6 +252,7 @@ namespace Renderer
 		dataPtr->_intensity = spotlight->GetIntensity();
 		dataPtr->_color = spotlight->GetColor();
 		dataPtr->_range = spotlight->GetRange();
+		dataPtr->_shadowMapDimensions = SHADOWMAP_DIMENSIONS;
 
 		deviceContext->Unmap(_matrixBufferLightPassPerLight, 0);
 

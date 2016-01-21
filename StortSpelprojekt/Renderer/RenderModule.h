@@ -12,6 +12,8 @@
 
 namespace Renderer
 {
+	const int SHADOWMAP_DIMENSIONS = 256;
+
 	class RENDERER_EXPORT RenderModule
 	{
 	private:
@@ -22,7 +24,6 @@ namespace Renderer
 			float _u, _v;
 		};
 
-		//Constant buffers
 		struct MatrixBufferPerObject
 		{
 			DirectX::XMMATRIX _world;
@@ -38,6 +39,7 @@ namespace Renderer
 		{
 			DirectX::XMMATRIX _viewMatrix;
 			DirectX::XMMATRIX _projectionMatrix;
+			DirectX::XMFLOAT3 _ambientLight;
 		};
 
 		struct MatrixBufferHud
@@ -61,6 +63,7 @@ namespace Renderer
 			float			  _intensity;
 			DirectX::XMFLOAT3 _color;
 			float			  _range;
+			int				  _shadowMapDimensions;
 		};
 
 		ID3D11Buffer*		_matrixBufferPerObject;
@@ -81,7 +84,7 @@ namespace Renderer
 		void SetDataPerMesh(ID3D11Buffer* vertexBuffer, int vertexSize);
 		void SetShadowMapDataPerObject(DirectX::XMMATRIX* world);
 
-		//TODO: TEMP! (?) /Jonas
+		//TODO: TEMP! Should this be here? Should we have several versions with different resolution? E.g. one 256x256 for low detail and one 512x512 for higher detail /Jonas
 		ShadowMap* _shadowMap;
 
 	public:
@@ -94,10 +97,10 @@ namespace Renderer
 		void ResizeResources(HWND hwnd, int windowWidth, int windowHeight);
 
 		void SetDataPerFrame(DirectX::XMMATRIX* view, DirectX::XMMATRIX* projection);
-		void SetShadowMapDataPerSpotLight(DirectX::XMMATRIX* lightView, DirectX::XMMATRIX* lightProjection);
+		void SetShadowMapDataPerSpotlight(DirectX::XMMATRIX* lightView, DirectX::XMMATRIX* lightProjection);
 
 		void SetLightDataPerFrame(DirectX::XMMATRIX* camView, DirectX::XMMATRIX* camProjection);
-		void SetLightDataPerLight(Spotlight* spotlight);
+		void SetLightDataPerSpotlight(Spotlight* spotlight);
 
 		void SetShaderStage(ShaderStage stage);
 
