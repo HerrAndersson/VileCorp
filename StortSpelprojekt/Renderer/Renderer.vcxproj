@@ -21,7 +21,8 @@
   <ItemGroup>
     <ClCompile Include="DirectXHandler.cpp" />
     <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="Fonts.cpp" />
+    <ClCompile Include="FontWrapper.cpp" />
+    <ClCompile Include="Node.cpp" />
     <ClCompile Include="HUDElement.cpp" />
     <ClCompile Include="RenderModule.cpp" />
     <ClCompile Include="ShaderHandler.cpp" />
@@ -32,8 +33,9 @@
     <ClInclude Include="CCollectionLoader.h" />
     <ClInclude Include="CFontEnum.h" />
     <ClInclude Include="DirectXHandler.h" />
-    <ClInclude Include="Fonts.h" />
+    <ClInclude Include="FontWrapper.h" />
     <ClInclude Include="FW\FW1FontWrapper.h" />
+    <ClInclude Include="Node.h" />
     <ClInclude Include="HUDElement.h" />
     <ClInclude Include="RenderModule.h" />
     <ClInclude Include="RenderUtils.h" />

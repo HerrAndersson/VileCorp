@@ -12,11 +12,10 @@ GameLogic::~GameLogic()
 	delete _player;
 }
 
-void GameLogic::Initialize(System::InputDevice* inputDevice, ObjectHandler* objectHandler, UIHandler* uiHandler, System::Camera* camera, System::Controls*	controls, PickingDevice* pickingDevice)
+void GameLogic::Initialize(System::InputDevice* inputDevice, ObjectHandler* objectHandler, System::Camera* camera, System::Controls*	controls, PickingDevice* pickingDevice)
 {
 	_inputDevice = inputDevice;
 	_objectHandler = objectHandler;
-	_uiHandler = uiHandler;
 	_camera = camera;
 	_controls = controls;
 	_pickingDevice = pickingDevice;
