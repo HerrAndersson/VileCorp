@@ -139,7 +139,7 @@ namespace Renderer
 		deviceContext->VSSetConstantBuffers(0, 1, &_matrixBufferPerFrame);
 	}
 
-	void RenderModule::SetDataPerObject(XMMATRIX* world, ID3D11ShaderResourceView* diffuse, ID3D11ShaderResourceView* specular, std::vector<DirectX::XMFLOAT4X4>* extra)
+	void RenderModule::SetDataPerSkinnedObject(XMMATRIX* world, ID3D11ShaderResourceView* diffuse, ID3D11ShaderResourceView* specular, std::vector<DirectX::XMFLOAT4X4>* extra)
 	{
 		HRESULT result;
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -173,8 +173,6 @@ namespace Renderer
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
 		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
 
-		UINT32 offset = 0;
-
 		deviceContext->PSSetShaderResources(0, 1, &diffuse);
 		deviceContext->PSSetShaderResources(1, 1, &specular);
 
@@ -187,9 +185,7 @@ namespace Renderer
 		}
 
 		MatrixBufferPerObject* dataPtr = (MatrixBufferPerObject*)mappedResource.pData;
-
 		dataPtr->_world = worldMatrixC;
-
 		deviceContext->Unmap(_matrixBufferPerObject, 0);
 
 		deviceContext->VSSetConstantBuffers(1, 1, &_matrixBufferPerObject);
@@ -211,20 +207,15 @@ namespace Renderer
 		_shadowMap->SetDataPerFrame(_d3d->GetDeviceContext(), lightView, lightProjection);
 	}
 
-	void RenderModule::SetShadowMapDataPerObject(DirectX::XMMATRIX* world)
-	{
-		_shadowMap->SetDataPerObject(_d3d->GetDeviceContext(), world);
-	}
-
 	void RenderModule::RenderShadowMap(DirectX::XMMATRIX* world, RenderObject* renderObject)
 	{
 		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
-		SetShadowMapDataPerObject(world);
-		//_d3d->SetCullingState(DirectXHandler::CullingState::FRONT);
+		_shadowMap->SetDataPerObject(_d3d->GetDeviceContext(), world);
+		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		int vertexSize = sizeof(Vertex);
 
-		if (renderObject->_skeleton)
+		if (renderObject->_isSkinned)
 		{
 			vertexSize = sizeof(WeightedVertex);
 		}
@@ -243,17 +234,12 @@ namespace Renderer
 		MatrixBufferLightPassPerLight* dataPtr;
 		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
 
-		//View,Projection
-		XMMATRIX view, proj;
-
-		view = XMMatrixTranspose(*(spotlight->GetViewMatrix()));
-		proj = XMMatrixTranspose(*(spotlight->GetProjectionMatrix()));
+		XMMATRIX view = XMMatrixTranspose(*(spotlight->GetViewMatrix()));
+		XMMATRIX proj = XMMatrixTranspose(*(spotlight->GetProjectionMatrix()));
 
 		result = deviceContext->Map(_matrixBufferLightPassPerLight, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 		if (FAILED(result))
-		{
 			throw std::runtime_error("RenderModule::SetLightPassData: Failed to Map _matrixBufferLightPass");
-		}
 
 		dataPtr = (MatrixBufferLightPassPerLight*)mappedResource.pData;
 
@@ -278,24 +264,17 @@ namespace Renderer
 		MatrixBufferLightPassPerFrame* dataPtr;
 		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
 
-		//View,Projection
-		XMMATRIX invView, invProj;
-
 		XMVECTOR v;
-		invView = XMMatrixTranspose(XMMatrixInverse(&v, *camView));
-		invProj = XMMatrixTranspose(XMMatrixInverse(&v, *camProjection));
+		XMMATRIX invView = XMMatrixTranspose(XMMatrixInverse(&v, *camView));
+		XMMATRIX invProj = XMMatrixTranspose(XMMatrixInverse(&v, *camProjection));
 
 		result = deviceContext->Map(_matrixBufferLightPassPerFrame, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 		if (FAILED(result))
-		{
 			throw std::runtime_error("RenderModule::SetLightPassData: Failed to Map _matrixBufferLightPass");
-		}
 
 		dataPtr = (MatrixBufferLightPassPerFrame*)mappedResource.pData;
-
 		dataPtr->_invertedView = invView;
 		dataPtr->_invertedProjection = invProj;
-
 		deviceContext->Unmap(_matrixBufferLightPassPerFrame, 0);
 
 		deviceContext->PSSetConstantBuffers(2, 1, &_matrixBufferLightPassPerFrame);
@@ -477,8 +456,7 @@ namespace Renderer
 		_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::NONE);
 		_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::DISABLE);
 
-		XMMATRIX i = XMMatrixTranspose(*world);
-		SetDataPerObject(&i, nullptr, nullptr);
+		SetDataPerObject(world, nullptr, nullptr);
 
 		UINT32 vtxs = vertexSize;
 		UINT32 offset = 0;

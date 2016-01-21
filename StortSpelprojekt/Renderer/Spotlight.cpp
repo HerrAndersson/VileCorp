@@ -56,7 +56,6 @@ namespace Renderer
 
 	    //The vertices of the cone base are given by: v(t) = B + w * (x * cos t + y * sin t), with t varying from 0 to 2*pi.
 		double pi2 = 2 * XM_PI;
-		resolution = 3;
 		std::vector<XMFLOAT3> points;
 		XMFLOAT3 element;
 		for (double t = 0; t < pi2; t += pi2 / resolution)

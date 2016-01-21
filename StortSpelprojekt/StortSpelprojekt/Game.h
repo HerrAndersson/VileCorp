@@ -33,13 +33,11 @@ private:
 //	Animation*					_animation;
 	System::Controls*			_controls;
 	AssetManager*				_assetManager;
-	Grid*						_grid = nullptr;
+	Grid*						_grid;
 	PickingDevice*				_pickingDevice;
 	System::InputDevice*		_input;
 	PlayerInfo					_playerInfo;
 	
-	
-
 	//Resizing window, directx resources, camera
 	void ResizeResources(System::WindowSettings settings);
 	void Update(float deltaTime);
@@ -50,9 +48,9 @@ private:
 
 	//TODO: TEMP! Make this pretty
 	std::vector<Renderer::Spotlight*> _spotlights;
-	
 
 public:
+
 	Game(HINSTANCE hInstance, int nCmdShow);
 	~Game();
 

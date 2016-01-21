@@ -119,8 +119,7 @@ namespace Renderer
 		HRESULT hr;
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
 
-		//XMMATRIX tw = XMMatrixTranspose(*modelWorld);
-		XMMATRIX tw = *modelWorld;
+		XMMATRIX tw = XMMatrixTranspose(*modelWorld);
 
 		hr = deviceContext->Map(_matrixBufferPerObject, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 		if (FAILED(hr))

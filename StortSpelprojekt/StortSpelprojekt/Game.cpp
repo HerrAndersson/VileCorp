@@ -24,53 +24,55 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	_camera = new System::Camera(0.1f, 1000.0f, DirectX::XM_PIDIV2, settings._width, settings._height);
 	_camera->SetPosition(XMFLOAT3(3, 7, 0));
 	_camera->SetRotation(XMFLOAT3(70, 0, 0));
+	_camera->SetMode(System::FREE_CAM);
+	_input->ToggleCursorLock();
 
 	_UI = new UIHandler(_renderModule->GetDevice(), _window->GetWindowSettings(), _assetManager);
 	
 	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager);
 	
-	
 	//Init statemachine
 	_pickingDevice = new PickingDevice(_camera, _window);
-	_SM = new StateMachine(_controls, _objectHandler, _UI, _input, _camera, _pickingDevice);	/*initVar._inputDevice = _input;*/
+	_SM = new StateMachine(_controls, _objectHandler, _UI, _input, _camera, _pickingDevice);
 	_SM->Update(_timer.GetFrameTime());
+	
 	if (_SM->GetState() == LEVELEDITSTATE)
 	{
 		_grid = new Grid(_renderModule->GetDevice(), 1, 10);
 	}
+	else
+	{
+		_grid = nullptr;
+	}
 
 	//TODO: TEMP! Make this pretty
 	Renderer::Spotlight* spot;
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < 2; i++)
 	{
 		spot = new Renderer::Spotlight(_renderModule->GetDevice(), 0.1f, 1000.0f, XM_PIDIV4 /*XM_PI / 0.082673f*/, 256, 256, 1.0f, 10.0f, XMFLOAT3(0.0f, 1.0f, 1.0f), 36); //Ska ha samma dimensions som shadow map, som nu ligger i render module
-		spot->SetPositionAndRotation(XMFLOAT3(4*i+3, 1.5f, 3*i+3), XMFLOAT3(0, 90 + i*25, 0));
+		spot->SetPositionAndRotation(XMFLOAT3(3*i+5, 1.5f, 2*i+4), XMFLOAT3(0, 90 + i*25, 0));
 		_spotlights.push_back(spot);
 	}
 }
 
 Game::~Game() 
 {
-	delete _window;
-	delete _renderModule;
-	delete _camera;
-	delete _objectHandler;
-	delete _UI;
-	delete _SM;
-	delete _controls;
-	delete _assetManager;
-	delete _pickingDevice;
-	delete _input;
+	SAFE_DELETE(_window);
+	SAFE_DELETE(_renderModule);
+	SAFE_DELETE(_camera);
+	SAFE_DELETE(_objectHandler);
+	SAFE_DELETE(_UI);
+	SAFE_DELETE(_SM);
+	SAFE_DELETE(_controls);
+	SAFE_DELETE(_assetManager);
+	SAFE_DELETE(_pickingDevice);
+	SAFE_DELETE(_input);
+	SAFE_DELETE(_grid);
 	
 	//TODO: TEMP! dfhfa
 	for(auto s : _spotlights)
 	{
 		delete s;
-	}
-
-	if (_grid != nullptr)
-	{
-		delete _grid;
 	}
 }
 
@@ -80,8 +82,6 @@ void Game::ResizeResources(System::WindowSettings settings)
 	_renderModule->ResizeResources(_window->GetHWND(), settings._width, settings._height);
 	_camera->Resize(settings._width, settings._height);
 }
-
-
 
 void Game::Update(float deltaTime)
 {
@@ -109,20 +109,63 @@ void Game::Update(float deltaTime)
 		color.z = sin(_timer.GetGameTime() / 1000 + XMConvertToRadians(240));
 		_spotlights[i]->SetColor(color);
 	}
+
+	XMFLOAT3 forward(0, 0, 0);
+	XMFLOAT3 position = _camera->GetPosition();
+	XMFLOAT3 right(0, 0, 0);
+	bool isMoving = false;
+	float v = 0.1f;
+
+	if (GetAsyncKeyState(0x57) != 0) //W
+	{
+		forward = _camera->GetForwardVector();
+		isMoving = true;
+	}
+	else if (GetAsyncKeyState(0x53) != 0)//S
+	{
+		forward = _camera->GetForwardVector();
+		forward.x *= -1;
+		forward.y *= -1;
+		forward.z *= -1;
+		isMoving = true;
+	}
+
+	if (GetAsyncKeyState(0x44) != 0)//D
+	{
+		right = _camera->GetRightVector();
+		isMoving = true;
+	}
+	else if (GetAsyncKeyState(0x41) != 0)//A
+	{
+		right = _camera->GetRightVector();
+		right.x *= -1;
+		right.y *= -1;
+		right.z *= -1;
+		isMoving = true;
+	}
+
+	if (isMoving)
+	{
+		_camera->SetPosition(XMFLOAT3(position.x + (forward.x + right.x) * v, position.y + (forward.y + right.y) * v, position.z + (forward.z + right.z) * v));
+	}
+
+	XMFLOAT3 rotation = _camera->GetRotation();
+	rotation.x += _input->GetMouseCoord()._deltaPos.y / 10.0f;
+	rotation.y += _input->GetMouseCoord()._deltaPos.x / 10.0f;
+
+	_camera->SetRotation(rotation);
 }
 
 void Game::Render()
 {
 	_renderModule->BeginScene(0.0f, 1.0f, 1.0f, 1);
 	_renderModule->SetDataPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
+	/*--------------------------------------------------------- Geometry pass ------------------------------------------------------------
+	Render the objects to the diffuse and normal resource views. Camera depth is also generated here.									*/
 
-	/*/////////////////////////////////////////////////////////// Geometry pass //////////////////////////////////////////////////////////
-	
-	Render the objects to the diffuse and normal resource views. Camera depth is also generated here.
-			
-	*/
-	_renderModule->SetShaderStage(Renderer::RenderModule::GEO_PASS);
-	
+	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::GEO_PASS);
+
+	//Render all objects to the diffuse and normal buffers
 	std::vector<std::vector<GameObject*>>* gameObjects = _objectHandler->GetGameObjects();
 	for (int i = 0; i < NR_OF_TYPES; i++)
 	{
@@ -143,24 +186,17 @@ void Game::Render()
 			_renderModule->RenderLineList(&matrix, _grid->GetLineBuffer(), 2);
 		}
 	}
-	//for (auto spot : _spotlights)
-	//{
-	//	_renderModule->DEBUG_RenderLightVolume(spot->GetVolumeBuffer(), spot->GetWorldMatrix());
-	//}
 
-	/*/////////////////////////////////////////////////////////// Light pass /////////////////////////////////////////////////////////////
+	/*------------------------------------------------------------ Light pass --------------------------------------------------------------
+	Generate the shadow map for each spotlight, then apply the lighting/shadowing to the backbuffer render target with additive blending. */
 
-	Generate the shadow map for each spotlight, then apply the lighting/shadowing to the backbuffer render target with additive blending.
-	Instead of rendering the whole screen quad each time, the geometry pass should also output to the backbuffer directly,
-	then the light should be applied with additive blending.
-
-	*/
+	//Render fullscreen quad once here! Without blending etc, just output diffuse to backbuffer. Use LightVS and LightPS
 
 	_renderModule->SetLightDataPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
 
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < 2; i++)
 	{
-		_renderModule->SetShaderStage(Renderer::RenderModule::SHADOW_GENERATION);
+		_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::SHADOW_GENERATION);
 		_renderModule->SetShadowMapDataPerSpotLight(_spotlights[i]->GetViewMatrix(), _spotlights[i]->GetProjectionMatrix());
 
 		for (int i = 0; i < NR_OF_TYPES; i++)
@@ -171,22 +207,22 @@ void Game::Render()
 			}
 		}
 
-		_renderModule->SetShaderStage(Renderer::RenderModule::LIGHT_APPLICATION);
+		_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::LIGHT_APPLICATION);
 		_renderModule->SetLightDataPerLight(_spotlights[i]);
 
-		//Render light volume here instead? Render screen quad once first to fill the screen, or just let Geo pass output to backbuffer directly?
+		//Should transform the positions with world * camView * camProj. Use GeoVS? When shadowed, return (0,0,0,0)
+		//_renderModule->DEBUG_RenderLightVolume(_spotlights[i]->GetVolumeBuffer(), _spotlights[i]->GetWorldMatrix(), _spotlights[i]->GetVertexCount(), _spotlights[i]->GetVertexSize());
+
 		_renderModule->RenderScreenQuad();
 	}
 
-	////////////////////////////////////////////////////////// Hud and other 2D //////////////////////////////////////////////////////////
-	
-	//Does not blend correctly now. When outputing the diffuse screen quad, blending should be disabled
-	_renderModule->RenderScreenQuad();
+	/*-------------------------------------------------------- HUD and other 2D -----------------------------------------------------------*/
 
-	_renderModule->SetShaderStage(Renderer::RenderModule::HUD_PASS);
+	//_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::HUD_PASS);
 
-	_renderModule->Render(_UI->GetTextureData());
-	_UI->Render(_renderModule->GetDeviceContext());
+	//_renderModule->Render(_UI->GetTextureData());
+	//_UI->Render(_renderModule->GetDeviceContext());
+
 	_renderModule->EndScene();
 }
 

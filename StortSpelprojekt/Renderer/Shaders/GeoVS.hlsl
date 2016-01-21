@@ -36,11 +36,8 @@ VS_OUT main(VS_IN input)
 	pos = mul(pos, projectionMatrix);
 
 	output.pos = pos;
-
 	output.normal = mul(input.normal, (float3x3)worldMatrix);
-
 	output.uv = input.uv;
 	
-
 	return output;
 }

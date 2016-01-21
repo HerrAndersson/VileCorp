@@ -109,21 +109,11 @@ float4 main(VS_OUT input) : SV_TARGET
 			{
 				finalColor += saturate(lightColor * lightIntensity);
 				finalColor *= dot(-normalize(lightToPixel), lightDirection);
-				return saturate(float4(finalColor, lightIntensity));
-			}
-			else //In shadow
-			{
-				//Gives gray outlines where the shadow should be if no ambient is used
-				//finalColor *= shadowCoeff;
-				//return saturate(float4(finalColor, 0.5f));
-
-
-				//Sdgsdgsdg
-				//sdgdg
+				return saturate(float4(finalColor, 1.0f));
 			}
 		}
 	}
 
 	//Alpha of 1 equals no blending.
-	return saturate(float4(finalColor, 1.f));
+	return saturate(float4(finalColor*0.2f, 0.5f));
 }
