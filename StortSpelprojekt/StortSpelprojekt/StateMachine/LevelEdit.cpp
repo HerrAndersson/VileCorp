@@ -85,10 +85,9 @@ void LevelEdit::Initialize(ObjectHandler* objectHandler, System::InputDevice* in
 	//buttonInfo[1].parent = 0;
 	//buttonInfo[2].parent = 1;
 
-	LoadLevel(5);
+	LoadLevel(6);
 
-	// Temporary hack because no mouse interface
-	_marker = _objectHandler->GetGameObjects()->at(1)[0];
+	_marker = nullptr;
 
 	//_grid = new Grid(_renderModule->GetDevice(), 1, 10);
 }
@@ -131,6 +130,75 @@ void LevelEdit::HandleHUD()
 	}*/
 }
 
+
+
+void LevelEdit::DragAndDrop(Type type)
+{
+	if (_marker != nullptr && _inputDevice->IsDown(System::Input::LeftMouse))
+	{
+		AI::Vec2D pickedTile = _pickingDevice->pickTile(_inputDevice->GetMouseCoord()._pos);
+		
+		if (_objectHandler->GetTileMap()->IsValid(pickedTile._x, pickedTile._y))
+		{
+			GameObject* objectOnTile;
+			switch (type)
+			{
+			case FLOOR:
+			case WALL:
+				objectOnTile = _objectHandler->GetTileMap()->GetObjectOnTile(pickedTile._x, pickedTile._y, 0);
+				break;
+			case ENEMY:
+				objectOnTile = _objectHandler->GetTileMap()->GetObjectOnTile(pickedTile._x, pickedTile._y, 1);
+				break;
+			case GUARD:
+				objectOnTile = _objectHandler->GetTileMap()->GetObjectOnTile(pickedTile._x, pickedTile._y, 2);
+				break;
+			case TRAP:
+			case LOOT:
+				objectOnTile = _objectHandler->GetTileMap()->GetObjectOnTile(pickedTile._x, pickedTile._y, 3);
+				break;
+			case TRIGGER:
+				objectOnTile = _objectHandler->GetTileMap()->GetObjectOnTile(pickedTile._x, pickedTile._y, 4);
+				break;
+			default:
+				break;
+			}
+
+
+			if (objectOnTile == nullptr && _marker->GetType() == type)
+			{
+				// Remove from old tile
+				_objectHandler->GetTileMap()->RemoveObjectFromTile(_marker);
+
+				// Update positions
+				//_marker->Translate(pos);
+				XMFLOAT3 p = XMFLOAT3(_marker->GetPosition());
+				p.x = pickedTile._x;
+				p.z = pickedTile._y;
+
+				_marker->SetPosition(p);
+				_marker->SetTilePosition(pickedTile);
+				_objectHandler->GetTileMap()->AddObjectToTile(p.x, p.z, _marker);
+			}
+		}
+	}
+	if (_inputDevice->IsReleased(System::Input::LeftMouse))
+	{
+		if (_isSelectionMode)
+		{
+			_marker = nullptr;
+		}
+	}
+}
+
+void LevelEdit::DragAndDrop()
+{
+	if (_marker != nullptr)
+	{
+		DragAndDrop(_marker->GetType());
+	}
+}
+
 void LevelEdit::HandleInput()
 {
 	int maxObject = _objectHandler->GetObjectCount();
@@ -149,36 +217,6 @@ void LevelEdit::HandleInput()
 	//		_tileMultiplier--;
 	//	}
 	//}
-
-
-	//Check if there is a tile to move
-	if (_objectHandler->GetObjectCount() > 0)
-	{
-		//Translation and rotation controls
-		if (_controls->IsFunctionKeyDown("MAP_EDIT:MOVE_MARKER_LEFT"))
-		{
-			XMFLOAT3 tempPos = _marker->GetPosition();
-			_marker->SetPosition(XMFLOAT3(tempPos.x - 1 * _tileMultiplier, tempPos.y, tempPos.z));
-		}
-
-		if (_controls->IsFunctionKeyDown("MAP_EDIT:MOVE_MARKER_RIGHT"))
-		{
-			XMFLOAT3 tempPos = _marker->GetPosition();
-			_marker->SetPosition(XMFLOAT3(tempPos.x + 1 * _tileMultiplier, tempPos.y, tempPos.z));
-		}
-
-		if (_controls->IsFunctionKeyDown("MAP_EDIT:MOVE_MARKER_UP"))
-		{
-			XMFLOAT3 tempPos = _marker->GetPosition();
-			_marker->SetPosition(XMFLOAT3(tempPos.x, tempPos.y, tempPos.z + 1 * _tileMultiplier));
-		}
-
-		if (_controls->IsFunctionKeyDown("MAP_EDIT:MOVE_MARKER_DOWN"))
-		{
-			XMFLOAT3 tempPos = _marker->GetPosition();
-			_marker->SetPosition(XMFLOAT3(tempPos.x, tempPos.y, tempPos.z - 1 * _tileMultiplier));
-		}
-	}
 
 	//Scale Objects
 	/*
@@ -208,16 +246,36 @@ void LevelEdit::HandleInput()
 	//	_marker->SetScale(XMFLOAT3(tempPos.x, tempPos.y, tempPos.z - 1));
 	//}
 
-
-	if (_controls->IsFunctionKeyDown("MAP_EDIT:ROTATE_MARKER_CLOCK"))
+	if (_inputDevice->IsPressed(System::Input::LeftMouse))
 	{
-		XMFLOAT3 tempRot = _marker->GetRotation();
-		_marker->SetRotation(XMFLOAT3(tempRot.x, tempRot.y + (DirectX::XM_PI / 4), tempRot.z));
+		if (_isSelectionMode)
+		{
+			AI::Vec2D pickedTile = _pickingDevice->pickTile(_inputDevice->GetMouseCoord()._pos);
+			std::vector<GameObject*> objectsOnTile = _objectHandler->GetTileMap()->GetAllObjectsOnTile(pickedTile);
+			if (!objectsOnTile.empty())
+			{
+				_marker = objectsOnTile.back();
+			}
+		}
 	}
-	if (_controls->IsFunctionKeyDown("MAP_EDIT:ROTATE_MARKER_COUNTERCLOCK"))
+
+	
+
+	if (_marker != nullptr)
 	{
-		XMFLOAT3 tempRot = _marker->GetRotation();
-		_marker->SetRotation(XMFLOAT3(tempRot.x, tempRot.y - (DirectX::XM_PI / 4), tempRot.z));
+		DragAndDrop();
+
+		// Rotation
+		if (_controls->IsFunctionKeyDown("MAP_EDIT:ROTATE_MARKER_CLOCK"))
+		{
+			XMFLOAT3 tempRot = _marker->GetRotation();
+			_marker->SetRotation(XMFLOAT3(tempRot.x, tempRot.y + (DirectX::XM_PI / 4), tempRot.z));
+		}
+		if (_controls->IsFunctionKeyDown("MAP_EDIT:ROTATE_MARKER_COUNTERCLOCK"))
+		{
+			XMFLOAT3 tempRot = _marker->GetRotation();
+			_marker->SetRotation(XMFLOAT3(tempRot.x, tempRot.y - (DirectX::XM_PI / 4), tempRot.z));
+		}
 	}
 
 	//Press C to init new level
@@ -287,16 +345,16 @@ void LevelEdit::Update(float deltaTime)
 
 void LevelEdit::HandleSelected()
 {
-	if (_objectHandler->GetObjectCount() != 0)
-	{
-		if (_lastSelected != nullptr && _marker != _lastSelected)
-		{
-			_lastSelected->SetPosition(XMFLOAT3(_lastSelected->GetPosition().x, 0.1, _lastSelected->GetPosition().z));
-			//XMFLOAT3 tempScale = temp->GetScale();
-			//temp->SetScale(XMFLOAT3(1.1, 1.1, 1.1));
-		}
-		_lastSelected = _marker;
-	}
+	//if (_objectHandler->GetObjectCount() != 0)
+	//{
+	//	if (_lastSelected != nullptr && _marker != _lastSelected)
+	//	{
+	//		_lastSelected->SetPosition(XMFLOAT3(_lastSelected->GetPosition().x, 0.1, _lastSelected->GetPosition().z));
+	//		//XMFLOAT3 tempScale = temp->GetScale();
+	//		//temp->SetScale(XMFLOAT3(1.1, 1.1, 1.1));
+	//	}
+	//	_lastSelected = _marker;
+	//}
 }
 
 void LevelEdit::ResetSelectedObj()
@@ -386,20 +444,4 @@ void LevelEdit::ExportLevel()
 
 	mapData.clear();
 
-}
-
-void LevelEdit::SelectObject(GameObject* selectedObject)
-{
-	float yOffset = 0.1f;
-
-	if (_marker != nullptr)
-	{
-		_marker->Translate(DirectX::XMFLOAT3(0, -yOffset, 0));
-	}
-	_marker = selectedObject;
-
-	if (_marker != nullptr)
-	{
-		_marker->Translate(DirectX::XMFLOAT3(0, yOffset, 0));
-	}
 }

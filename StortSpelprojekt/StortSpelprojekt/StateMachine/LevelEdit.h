@@ -54,7 +54,14 @@ private:
 	bool _isSelectionMode = true;
 	std::vector<ButtonInfo> buttonInfo;
 	
+	
+	void DragAndDrop(Type type);
+	void DragAndDrop();
+
 	void HandleInput();
+
+
+
 	void HandleHUD();
 	void LoadLevel(int levelID);
 	void InitNewLevel();
@@ -62,7 +69,6 @@ private:
 	void HandleSelected();
 
 	void ExportLevel();
-	void SelectObject(GameObject* selectedObject);
 
 public:
 	LevelEdit();
