@@ -48,6 +48,7 @@ namespace System
 
 		DirectX::XMFLOAT3 GetPosition()const;
 		void SetPosition(DirectX::XMFLOAT3 position);
+		void Move(DirectX::XMFLOAT3 offset);
 		DirectX::XMFLOAT3 GetRotation()const;
 		void SetRotation(DirectX::XMFLOAT3 rotation);
 
