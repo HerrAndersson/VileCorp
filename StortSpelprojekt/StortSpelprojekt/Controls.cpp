@@ -222,8 +222,12 @@ namespace System
 			currentKeyMap++;
 		}
 
+		//Temp write to temp file
 		std::ofstream test("Assets/controlsTEST.json");
-
+		
+		//Uncomment to write to actual keybinding file.
+		//std::ofstream test("Assets/controls.json");
+		
 		StringBuffer buffer;
 		PrettyWriter<StringBuffer>writer(buffer);
 		d.Accept(writer);
