@@ -38,7 +38,7 @@ private:
 	System::InputDevice*		_input;
 	PlayerInfo					_playerInfo;
 	SettingInfo					_gameSettings;
-	ControlScheme				_controlScheme;
+	
 
 	//Resizing window, directx resources, camera
 	void ResizeResources(System::WindowSettings settings);

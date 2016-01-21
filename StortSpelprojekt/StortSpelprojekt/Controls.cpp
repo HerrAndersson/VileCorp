@@ -1,5 +1,6 @@
 #include "Controls.h"
 #include "rapidjson/writer.h"
+#include "rapidjson\prettywriter.h"
 
 using namespace std;
 using namespace rapidjson;
@@ -55,7 +56,7 @@ namespace System
 
 		Document d;
 
-		d.Parse(str.c_str());
+		d.Parse<0>(str.c_str());
 
 		//Loop through all the states
 		for (Value::ConstMemberIterator it = d.MemberBegin(); it != d.MemberEnd(); ++it)
@@ -182,7 +183,7 @@ namespace System
 		//_inputDevice->ToggleCursorLock();
 	}
 
-	void Controls::SaveKeyBindings(int keyMap, std::string action, std::string newKey)
+	void Controls::SaveKeyBindings(int keyMap, std::string action, std::string newKey, std::string newKey2, std::string newKey3, std::string newKey4)
 	{
 		Document d;
 		d.Parse(_allKeys.c_str());
@@ -199,6 +200,20 @@ namespace System
 					if (currentAction == action)
 					{
 						i->value[0].SetString(newKey.c_str(), newKey.size(), d.GetAllocator());
+
+						if (newKey2 != "")
+						{
+							i->value[1].SetString(newKey2.c_str(), newKey2.size(), d.GetAllocator());
+						}
+						if (newKey3 != "")
+						{
+							i->value[2].SetString(newKey3.c_str(), newKey3.size(), d.GetAllocator());
+						}
+						if (newKey4 != "")
+						{
+							i->value[3].SetString(newKey4.c_str(), newKey4.size(), d.GetAllocator());
+						}
+
 						break;
 					}
 				}
@@ -208,12 +223,11 @@ namespace System
 		}
 
 		std::ofstream test("Assets/controlsTEST.json");
-		
+
 		StringBuffer buffer;
-		Writer<StringBuffer>writer(buffer);
+		PrettyWriter<StringBuffer>writer(buffer);
 		d.Accept(writer);
 
-		_allKeys;
 		std::string output = buffer.GetString();
 		test.write(output.c_str(), buffer.GetSize());
 		test.close();
