@@ -51,7 +51,7 @@ void GameLogic::HandleInput()
 		}
 		else
 		{
-			vector<GameObject*> pickedUnits = _pickingDevice->pickObjects(_inputDevice->GetMouseCoord()._pos, _objectHandler->GetAllByType(ENEMY));
+			vector<GameObject*> pickedUnits = _pickingDevice->pickObjects(_inputDevice->GetMouseCoord()._pos, _objectHandler->GetAllByType(GUARD));
 
 			if (!pickedUnits.empty())
 			{
