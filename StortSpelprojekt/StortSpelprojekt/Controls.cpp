@@ -44,7 +44,7 @@ namespace System
 		_keymap = new std::map<std::string, Key>();
 
 		_inputDevice = input;
-		ifstream file("Assets/controlsTEST.json");
+		ifstream file("Assets/controls.json");
 		if (!file.good())
 		{
 			throw std::runtime_error("Failed to open controls.json");
@@ -63,7 +63,6 @@ namespace System
 			std::string currentStateName(it->name.GetString());
 			char currentKeyMod = NONE;
 			char mainKey = 0;
-			it->value.FindMember("sdf");
 
 			//Loop through the whole keymap
 			for (Value::ConstMemberIterator i = it->value.MemberBegin(); i != it->value.MemberEnd(); ++i)
@@ -183,57 +182,41 @@ namespace System
 		//_inputDevice->ToggleCursorLock();
 	}
 
-	void Controls::SaveKeyBindings()
+	void Controls::SaveKeyBindings(int keyMap, std::string action, std::string newKey)
 	{
 		Document d;
 		d.Parse(_allKeys.c_str());
-		int keyMap = 0;
+		int currentKeyMap = 0;
 		//Loop through all the states
 		for (Value::MemberIterator it = d.MemberBegin(); it != d.MemberEnd(); ++it)
 		{
-			if (keyMap == 0)
+			if (currentKeyMap == keyMap)
 			{
 				//Loop through the whole keymap
 				for (Value::MemberIterator i = it->value.MemberBegin(); i != it->value.MemberEnd(); ++i)
 				{
-					std::string key = i->name.GetString();
-					if (key == "MOVE_CAMERA_UP")
+					std::string currentAction = i->name.GetString();
+					if (currentAction == action)
 					{
-						std::string test = "M";
-						i->value[0].SetString(test.c_str(), test.size(), d.GetAllocator());
+						i->value[0].SetString(newKey.c_str(), newKey.size(), d.GetAllocator());
+						break;
 					}
 				}
+				break;
 			}
-			keyMap = 4;
+			currentKeyMap++;
 		}
 
 		std::ofstream test("Assets/controlsTEST.json");
-		test.write(_allKeys.c_str(), _allKeys.size());
-		test.close();
-
-
-
+		
 		StringBuffer buffer;
 		Writer<StringBuffer>writer(buffer);
 		d.Accept(writer);
 
-		//std::string keyMap = it->value[0].GetString();
-		//if (keyMap == "MAP_EDIT")
-		//{
-		//	//Loop through the whole keymap
-		//	for (Value::MemberIterator i = it->value.MemberBegin(); i != it->value.MemberEnd(); ++i)
-		//	{
-		//		std::string action = i->value[0].GetString();
-		//		if (action == "Q")
-		//		{
-		//			std::string test = "M";
-		//			i->name.SetString(test.c_str(), test.size(), d.GetAllocator());
-		//		}
-		//	}
-		//}
-
-		const char* output = buffer.GetString();
-
+		_allKeys;
+		std::string output = buffer.GetString();
+		test.write(output.c_str(), buffer.GetSize());
+		test.close();
 	}
 
 	bool Controls::IsFunctionKeyDown(const std::string& key)

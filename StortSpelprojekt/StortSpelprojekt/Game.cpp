@@ -39,7 +39,7 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 
 	//CheckSettings();
 	System::saveJSON(&_controlScheme, "Assets/ControlScheme.json", "Controls");
-	_controls->SaveKeyBindings();
+	_controls->SaveKeyBindings(System::MAP_EDIT_KEYMAP, "MOVE_CAMERA_UP", "M");
 
 	//TODO: TEMP! Make this pretty
 	Renderer::Spotlight* spot;
