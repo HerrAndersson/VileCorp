@@ -7,7 +7,6 @@ class Player
 private:
 	vector<Unit*> _selectedUnits;
 
-
 public:
 	Player();
 	~Player();

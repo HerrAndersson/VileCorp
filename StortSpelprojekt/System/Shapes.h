@@ -51,20 +51,11 @@ struct Box
 	Plane _ySlab;
 	Plane _zSlab;
 
-	Box(float xLength, float yLength, float zLength, Vec3 position = Vec3(), Vec3 rotation = Vec3(0.0f, 0.0f, 0.0f))
+	Box(float xLength = 0.0f, float yLength = 0.0f , float zLength = 0.0f, Vec3 position = Vec3(), Vec3 rotation = Vec3())
 	{
-		//XMMATRIX rotationMatrix =XMMatrixTranspose(XMMatrixRotationRollPitchYawFromVector(rotation.convertToXMVECTOR()));
-		//XMMATRIX rotationMatrix = XMMatrixRotationRollPitchYawFromVector(rotation.convertToXMVECTOR());
-		//XMMATRIX rotationMatrix = XMMatrixRotationY(rotation._y);
-		//XMMATRIX rotationMatrix = XMMatrixRotationQuaternion(rotation.convertToXMVECTOR());
-		XMMATRIX rotationMatrix = XMMatrixTranspose(XMMatrixRotationQuaternion(rotation.convertToXMVECTOR()));
-
 		_position = position;
-/*
-		_xSlab = Plane(position, Vec3(XMVector3TransformNormal(XMVectorSet(1.0f, 0.0f, 0.0f, 1.0f), rotationMatrix)), xLength*0.5f);
-		_ySlab = Plane(position, Vec3(XMVector3TransformNormal(XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f), rotationMatrix)), yLength *0.5f);
-		_zSlab = Plane(position, Vec3(XMVector3TransformNormal(XMVectorSet(0.0f, 0.0f, 1.0f, 1.0f), rotationMatrix)), zLength*0.5f);
-		*/
+
+		XMMATRIX rotationMatrix = XMMatrixTranspose(XMMatrixRotationQuaternion(rotation.convertToXMVECTOR()));
 
 		XMVECTOR vecX = XMVector3TransformNormal(XMVectorSet(1.0f, 0.0f, 0.0f, 1.0f), rotationMatrix);
 		XMVECTOR vecY = XMVector3TransformNormal(XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f), rotationMatrix);
@@ -73,20 +64,16 @@ struct Box
 		_xSlab = Plane(position, Vec3(vecX), xLength*0.5f);
 		_ySlab = Plane(position, Vec3(vecY), yLength *0.5f);
 		_zSlab = Plane(position, Vec3(vecZ), zLength*0.5f);
-
-
-
-
-		/*_xSlab = Plane(position, Vec3(XMVector3TransformNormal(XMVectorSet(1.0f, 0.0f, 0.0f, 1.0f), rotationMatrix)), xLength*0.5f);
-		_ySlab = Plane(position, Vec3(0.0f, 1.0f, 0.0f), yLength *0.5f);
-		_zSlab = Plane(position, Vec3(XMVector3TransformNormal(XMVectorSet(0.0f, 0.0f, 1.0f, 1.0f), rotationMatrix)), zLength*0.5f);
-		*/
-
-		//_xSlab = Plane(position, Vec3(XMVector3Rotate(XMVectorSet(1.0f, 0.0f, 0.0f, 1.0f), rotation.convertToXMVECTOR())), xLength*0.5f);
-		//_ySlab = Plane(position, Vec3(XMVector3Rotate(XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f), rotation.convertToXMVECTOR())), yLength *0.5f);
-		//_zSlab = Plane(position, Vec3(XMVector3Rotate(XMVectorSet(0.0f, 0.0f, 1.0f, 1.0f), rotation.convertToXMVECTOR())), zLength*0.5f);
-		//
 	}
+	Box(Vec3 position, float xLength = 0.0f, float yLength = 0.0f, float zLength = 0.0f, Vec3 xNormal = Vec3(1.0f, 0.0f,0.0f), Vec3 yNormal = Vec3(0.0f, 1.0f, 0.0f), Vec3 zNormal = Vec3(0.0f, 0.0f, 1.0f))
+	{
+		_position = position;
+
+		_xSlab = Plane(position, xNormal, xLength*0.5f);
+		_ySlab = Plane(position, yNormal, yLength *0.5f);
+		_zSlab = Plane(position, zNormal, zLength*0.5f);
+	}
+
 
 };
 
@@ -360,8 +347,3 @@ static bool Collision(Box box1, Box box2)
 
 	return collision;
 }
-
-
-
-
-

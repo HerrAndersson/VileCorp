@@ -42,26 +42,54 @@ void GameLogic::Update(float deltaTime)
 void GameLogic::HandleInput()
 {
 
-	//Picking control
+	//Selecting a Unit
 	if (_inputDevice->IsPressed(System::Input::LeftMouse))
 	{
-		if (_player->AreUnitsSelected())
+		vector<GameObject*> pickedUnits = _pickingDevice->pickObjects(_inputDevice->GetMouseCoord()._pos, _objectHandler->GetAllByType(GUARD));
+
+
+		if (pickedUnits.empty())
 		{
-			_player->MoveUnits(_pickingDevice->pickTile(_inputDevice->GetMouseCoord()._pos));
+			if (_player->AreUnitsSelected())
+			{
+				_player->MoveUnits(_pickingDevice->pickTile(_inputDevice->GetMouseCoord()._pos));
+			}
 		}
 		else
 		{
-			vector<GameObject*> pickedUnits = _pickingDevice->pickObjects(_inputDevice->GetMouseCoord()._pos, _objectHandler->GetAllByType(GUARD));
-
-			if (!pickedUnits.empty())
+			vector<Unit*> units = _player->GetSelectedUnits();
+			for (int i = 0; i < units.size(); i++)
 			{
-				Unit* unit = (Unit*)pickedUnits[0];
-				_player->SelectUnit(unit);
-
-				unit->SetScale(DirectX::XMFLOAT3(1.5f, 1.5f, 1.5f));
+				units[i]->SetScale(DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f));
 			}
+			_player->DeselectUnits();
+
+
+			Unit* unit = (Unit*)pickedUnits[0];
+			_player->SelectUnit(unit);
+
+			unit->SetScale(DirectX::XMFLOAT3(1.5f, 1.5f, 1.5f));	
 		}
 	}
+
+	//Boxselecting Units
+	if (_inputDevice->IsPressed(System::Input::LeftMouse) && _inputDevice->IsDown(System::Input::Shift))
+	{
+		_pickingDevice->setFirstBoxPoint(_inputDevice->GetMouseCoord()._pos);
+	}
+
+	if (_inputDevice->IsReleased(System::Input::LeftMouse) && _inputDevice->IsDown(System::Input::Shift))
+	{
+		vector<GameObject*> pickedUnits = _pickingDevice->boxPickObjects(_inputDevice->GetMouseCoord()._pos, _objectHandler->GetAllByType(GUARD));
+
+		for (int i = 0; i < pickedUnits.size(); i++)
+		{
+			_player->SelectUnit((Unit*)pickedUnits[i]);
+			pickedUnits[i]->SetScale(DirectX::XMFLOAT3(1.5f, 1.5f, 1.5f));
+		}
+
+	}
+
 	if (_inputDevice->IsPressed(System::Input::RightMouse))
 	{
 		if (_player->AreUnitsSelected())
