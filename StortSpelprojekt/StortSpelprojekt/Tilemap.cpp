@@ -239,8 +239,9 @@ GameObject * Tilemap::GetObjectOnTile(int x, int z, Type type) const
 				result = _map[x][z]._objectsOnTile[2];
 			}
 			break;
-		case TRAP:
 		case LOOT:
+		case SPAWN:
+		case TRAP:
 			result = _map[x][z]._objectsOnTile[3];
 			break;
 		case TRIGGER:

@@ -312,6 +312,10 @@ void ObjectHandler::Update(float deltaTime)
 				if (unit->GetHealth() <= 0)
 				{
 					//TODO: drop held object and set its tile position --Victor
+					if (heldObject != nullptr)
+					{
+						Remove(heldObject);
+					}
 					Remove(g);
 					j--;
 				}

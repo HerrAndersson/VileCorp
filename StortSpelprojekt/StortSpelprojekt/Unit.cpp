@@ -276,6 +276,8 @@ Unit::~Unit()
 	delete[] _visibleTiles;
 	delete _aStar;
 	_aStar = nullptr;
+	//delete _heldObject;
+	//_heldObject = nullptr;
 }
 
 int Unit::GetPathLength() const
@@ -426,6 +428,10 @@ void Unit::CheckAllTiles()
 				_aStar->SetTileCost({ i, j }, 1);
 				EvaluateTile(_tileMap->GetObjectOnTile(i, j, LOOT));
 			}
+			else if (_tileMap->IsTypeOnTile(i, j, SPAWN))
+			{
+				EvaluateTile(_tileMap->GetObjectOnTile(i, j, SPAWN));
+			}
 		}
 	}
 	//_aStar->printMap();
@@ -466,24 +472,25 @@ void Unit::Move()
 
 	if (_pathLength <= 0)		//The unit has reached its goal and needs a new one
 	{
+		if (_objective != nullptr)
+		{
+			act(_objective);
+		}
 		CheckAllTiles();
 	}
 	//if (_goalTilePosition == _tilePosition)
 	//{
 	//	CheckAllTiles();
 	//}
-
-	_tilePosition += _direction;
-	
+	_tilePosition += _direction;	
 
 	if (_objective != nullptr && _objective->GetPickUpState() != ONTILE)			//Check that no one took your objective
 	{
 		_objective = nullptr;
-		_pathLength = 0;														//reseting _pathLength to indicate that a new path needs to be found_objecti
+		_pathLength = 0;														//reseting _pathLength to indicate that a new path needs to be found
 	}
 
 	//TODO: React to objects in same tile --Victor
-
 
 	FindVisibleTiles();
 	CheckVisibleTiles();
@@ -495,10 +502,6 @@ void Unit::Move()
 	else
 	{
 		_direction = {0,0};
-		if (_objective != nullptr)
-		{
-			act(_objective);
-		}
 		CheckAllTiles();
 		Wait(60);
 	}
