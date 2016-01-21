@@ -14,10 +14,10 @@
 Constant buffer registers setup:
 ----Reg--------Resource----------------------------------------------------------------------------------------------------------------------------------------
 |    0	  |	   GeoPerFrame. Camera view and projection matrices. Used when rendering objects to give them the correct position from the view of the camera.   |
-|         |    ShadowMapPerFrame. Light view and projection matrices. Used to generate the shadow map.                                                        |
 |    1	  |	   PerObject. World matrix of the object.																				                          |
 |    2	  |	   LightPerFrame. Inverted camera view and projection. Used to reconstruct world position from the cam depth map.			                      |
 |    3	  |    LightPerLight. Spotlight data such as angle and range etc.															                          |
+|    4    |    ShadowMapPerFrame. Light view and projection matrices. Used to generate the shadow map.                                                        |
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Render targets:

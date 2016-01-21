@@ -151,7 +151,7 @@ namespace Renderer
 		matrixDataBuffer->lightProjection = tp;
 
 		deviceContext->Unmap(_matrixBufferPerFrame, 0);
-		deviceContext->VSSetConstantBuffers(0, 1, &_matrixBufferPerFrame);
+		deviceContext->VSSetConstantBuffers(4, 1, &_matrixBufferPerFrame);
 	}
 
 	ID3D11ShaderResourceView* ShadowMap::GetShadowSRV()

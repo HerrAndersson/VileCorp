@@ -325,8 +325,6 @@ namespace Renderer
 		_deviceContext->RSSetViewports(1, &_viewport);
 		_deferredRTVArray[2] = _backBufferRTV;
 		_deviceContext->OMSetRenderTargets(BUFFER_COUNT + 1, _deferredRTVArray, _backBufferDSV);
-
-		//_deviceContext->OMSetRenderTargets(BUFFER_COUNT, _deferredRTVArray, _backBufferDSV);
 		
 		return BUFFER_COUNT + 1;
 	}
@@ -339,6 +337,7 @@ namespace Renderer
 
 	int DirectXHandler::SetLightStage()
 	{
+		//TODO: Should the final rendering of the light volumes use depth testing? /Jonas
 		_deviceContext->OMSetRenderTargets(1, &_backBufferRTV, nullptr);
 		_deviceContext->RSSetViewports(1, &_viewport);
 

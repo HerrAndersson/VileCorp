@@ -454,11 +454,24 @@ namespace Renderer
 
 	void RenderModule::DEBUG_RenderLightVolume(ID3D11Buffer* volume, DirectX::XMMATRIX* world, int vertexCount, int vertexSize)
 	{
+		HRESULT result;
+		D3D11_MAPPED_SUBRESOURCE mappedResource;
 		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
+
 		_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::NONE);
 		_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::DISABLE);
 
-		SetDataPerObject(world, nullptr, nullptr);
+		XMMATRIX worldMatrixC = XMMatrixTranspose(*world);
+
+		result = deviceContext->Map(_matrixBufferPerObject, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+		if (FAILED(result))
+			throw std::runtime_error("RenderModule::SetDataPerObject: Failed to Map _matrixBufferPerObject");
+
+		MatrixBufferPerObject* dataPtr = (MatrixBufferPerObject*)mappedResource.pData;
+		dataPtr->_world = worldMatrixC;
+		deviceContext->Unmap(_matrixBufferPerObject, 0);
+
+		deviceContext->VSSetConstantBuffers(1, 1, &_matrixBufferPerObject);
 
 		UINT32 vtxs = vertexSize;
 		UINT32 offset = 0;
