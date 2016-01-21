@@ -220,6 +220,8 @@ void Unit::CalculatePath()
 	{
 		_path = _aStar->GetPath();
 		_pathLength = _aStar->GetPathLength();
+		//_isMoving = true;
+		//_direction = _path[--_pathLength] - _tilePosition;
 		//_aStar->printMap();
 	}
 	else
@@ -250,6 +252,7 @@ Unit::Unit()
 	_health = 1;
 	_pathLength = 0;
 	_path = nullptr;
+	_isMoving = false;
 }
 
 Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject* renderObject, const Tilemap* tileMap)
@@ -268,6 +271,7 @@ Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	_health = 1;					//TODO: Update constrcutor parameters to include health  --Victor
 	_pathLength = 0;
 	_path = nullptr;
+	_isMoving = false;
 }
 
 
@@ -470,20 +474,22 @@ Name should be changed to make it clear that this is tile movement
 void Unit::Move()
 {
 
-	if (_pathLength <= 0)		//The unit has reached its goal and needs a new one
-	{
-		if (_objective != nullptr)
-		{
-			act(_objective);
-		}
-		CheckAllTiles();
-	}
+	//if (_pathLength <= 0)		//The unit has reached its goal and needs a new one
+	//{
+	//	if (_objective != nullptr)
+	//	{
+	//		act(_objective);
+	//	}
+	//	CheckAllTiles();
+	//}
 	//if (_goalTilePosition == _tilePosition)
 	//{
 	//	CheckAllTiles();
 	//}
-	_tilePosition += _direction;	
-
+	if (_isMoving)
+	{
+		_tilePosition += _direction;
+	}
 	if (_objective != nullptr && _objective->GetPickUpState() != ONTILE)			//Check that no one took your objective
 	{
 		_objective = nullptr;
@@ -494,16 +500,23 @@ void Unit::Move()
 
 	FindVisibleTiles();
 	CheckVisibleTiles();
+
 	if (_pathLength > 0)
 	{
+		_isMoving = true;
 		AI::Vec2D nextTile = _path[--_pathLength];
 		_direction = nextTile - _tilePosition;
 	}
 	else
 	{
-		_direction = {0,0};
+		_isMoving = false;
+		if (_objective != nullptr)
+		{
+			act(_objective);
+		}
+		//_direction = {0,0};
 		CheckAllTiles();
-		Wait(60);
+		//Wait(10);
 	}
 
 	if (_direction._x == 0)
@@ -533,12 +546,16 @@ void Unit::Update()
 		_waiting--;
 		Move();
 	}
-	else
+	if(_isMoving)
 	{
 		if (_direction._x == 0 || _direction._y == 0)		//Right angle movement
 		{
 			_position.x += MOVE_SPEED * _direction._x;
 			_position.z += MOVE_SPEED * _direction._y;
+		}
+		else if (_direction._x == 0 && _direction._y == 0)	
+		{
+			CheckVisibleTiles();
 		}
 		else												//Diagonal movement
 		{
