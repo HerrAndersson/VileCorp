@@ -15,6 +15,7 @@ class RENDERER_EXPORT FontWrapper
 {
 private:
 	IFW1FontWrapper*	_fontWrapper;
+	IFW1Factory*		_factory;
 	IDWriteFactory*		_writeFactory;
 	IDWriteFontCollection*	_fontCollection;
 	LPCWSTR					_fontName;

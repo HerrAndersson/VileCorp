@@ -12,29 +12,42 @@ namespace GUI
 {
 	class __declspec(dllexport) Node
 	{
-		
+	public:
+		struct NodeInfo
+		{
+			FontWrapper* _fontWrapper;
+			int _screenWidth;
+			int _screenHeight;
+
+			NodeInfo(FontWrapper* fontWrapper, int screenWidth, int screenHeight)
+			{
+				_fontWrapper = fontWrapper;
+				_screenWidth = screenWidth;
+				_screenHeight = screenHeight;
+			}
+		};
 	private:
 		DirectX::XMFLOAT2 _position;
 		DirectX::XMFLOAT2 _scale;
 		DirectX::XMMATRIX _modelMatrix;
 
 		std::string _id;
+		NodeInfo* _info;
+
 		//Text info
 		std::wstring _text;
 		UINT32 _color;
 		float _fontSize;
-
 		FontWrapper::CustomFont _font;
-		FontWrapper* _fontWrapper;
+
 		//Image info
 		ID3D11ShaderResourceView* _texture;
 
 		void UpdateMatrix();
-		void UpdateFont();
 	protected:
 		std::vector<Node*> _children;
 	public:
-		Node(FontWrapper* fontWrapper, DirectX::XMFLOAT2 position = DirectX::XMFLOAT2(0.0f, 0.0f),
+		Node(NodeInfo* info, DirectX::XMFLOAT2 position = DirectX::XMFLOAT2(0.0f, 0.0f),
 			DirectX::XMFLOAT2 scale = DirectX::XMFLOAT2(1.0f, 1.0f),
 			ID3D11ShaderResourceView* texture = nullptr,
 			const std::string& id = "parent",
@@ -57,12 +70,13 @@ namespace GUI
 		std::wstring& GetText();
 		UINT32 GetColor() const;
 		float GetFontSize() const;
+		FontWrapper::CustomFont* GetFont();
 		ID3D11ShaderResourceView* GetTexture();
-
 		DirectX::XMMATRIX* Node::GetModelMatrix();
 		std::vector<GUI::Node*>* GetChildren();
 
 		void AddChild(Node* child);
+		void UpdateFont();
 		//Overloading these guarantees 16B alignment of XMMATRIX
 		void* operator new(size_t i);
 		void operator delete(void* p);

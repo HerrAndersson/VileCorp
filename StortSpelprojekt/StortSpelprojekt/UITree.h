@@ -8,6 +8,7 @@
 #include <locale>
 #include <codecvt>
 #include <string>
+#include <sstream>
 
 namespace GUI
 {
@@ -16,14 +17,16 @@ namespace GUI
 	private:
 		Node* _root;
 		AssetManager* _AM;
-		FontWrapper* _fontWrapper;
+		Node::NodeInfo _info;
 	private:
 		Node* LoadGUITree(const std::string& name, rapidjson::Value::ConstMemberIterator start, rapidjson::Value::ConstMemberIterator end);
 		void Release(Node* node);
 	public:
-		UITree(const std::string& filename, const std::string& statename, AssetManager* assetManager, FontWrapper* fontWrapper);
+		UITree(const std::string& filename, const std::string& statename, AssetManager* assetManager, FontWrapper* fontWrapper, int width, int height);
 		~UITree();
 
 		GUI::Node* GetRootNode() const;
+		void Resize(int width, int height);
+		void Resize(Node* current);
 	};
 }

@@ -48,6 +48,9 @@ namespace Renderer
 		ID3D11Buffer* _screenQuad;
 		ID3D11Buffer* _matrixBufferHUD;
 
+		int _screenWidth;
+		int _screenHeight;
+
 		void InitializeConstantBuffers();
 
 		void SetResourcesPerObject(DirectX::XMMATRIX* world, ID3D11ShaderResourceView* diffuse, ID3D11ShaderResourceView* specular);

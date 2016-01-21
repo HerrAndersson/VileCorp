@@ -25,7 +25,7 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	InitVar initVar;
 	initVar._objectHandler = _objectHandler;
 	initVar._inputDevice = _input;
-	_SM = new StateMachine(initVar, "../../Output/Bin/x86/Debug/Assets/gui.json", _assetManager, _fontWrapper);
+	_SM = new StateMachine(initVar, "../../Output/Bin/x86/Debug/Assets/gui.json", _assetManager, _fontWrapper, settings._width, settings._height);
 }
 
 Game::~Game() 
@@ -44,6 +44,7 @@ void Game::ResizeResources(System::WindowSettings settings)
 	_window->ResizeWindow(settings);
 	_renderModule->ResizeResources(_window->GetHWND(), settings._width, settings._height);
 	_camera->Resize(settings._width, settings._height);
+	_SM->Resize(settings._width, settings._height);
 }
 
 void Game::HandleInput()

@@ -1,13 +1,13 @@
 #include "StateMachine.h"
 
-StateMachine::StateMachine(InitVar initVar, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper)
+StateMachine::StateMachine(InitVar initVar, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, int width, int height)
 {
 	_currentState = State::SPLASHSTATE;
 
-	_baseStates.push_back(new SplashState(initVar, filename, assetManager, fontWrapper));
-	_baseStates.push_back(new MenuState(initVar, filename, assetManager, fontWrapper));
-	_baseStates.push_back(new PlayState(initVar, filename, assetManager, fontWrapper));
-	_baseStates.push_back(new OptionsState(initVar, filename, assetManager, fontWrapper));
+	_baseStates.push_back(new SplashState(initVar, filename, assetManager, fontWrapper, width, height));
+	_baseStates.push_back(new MenuState(initVar, filename, assetManager, fontWrapper, width, height));
+	_baseStates.push_back(new PlayState(initVar, filename, assetManager, fontWrapper, width, height));
+	_baseStates.push_back(new OptionsState(initVar, filename, assetManager, fontWrapper, width, height));
 }
 
 StateMachine::~StateMachine()
@@ -20,35 +20,7 @@ StateMachine::~StateMachine()
 
 void StateMachine::Update(float deltaTime)
 {
-	switch (_currentState)
-	{
-	case SPLASHSTATE:
-	{
-		_baseStates[_currentState]->Update(deltaTime);
-		break;
-	}
-	case MENUSTATE:
-	{
-		_baseStates[_currentState]->Update(deltaTime);
-		break;
-	}
-	case PLAYSTATE:
-	{
-		_baseStates[_currentState]->Update(deltaTime);
-		break;
-	}
-
-	case OPTIONSSTATE:
-	{
-		_baseStates[_currentState]->Update(deltaTime);
-		break;
-	}
-	case EXITSTATE:
-	{
-
-		break;
-	}
-	}
+	_baseStates[_currentState]->Update(deltaTime);
 	ProcessStateRequest();
 }
 
@@ -66,4 +38,12 @@ void StateMachine::ProcessStateRequest()
 BaseState* StateMachine::GetCurrentState() const
 {
 	return _baseStates[_currentState];
+}
+
+void StateMachine::Resize(int width, int height)
+{
+	for (auto i: _baseStates)
+	{
+		i->Resize(width, height);
+	}
 }

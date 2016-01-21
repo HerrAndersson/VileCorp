@@ -18,10 +18,10 @@ private:
 	void ProcessStateRequest();
 
 public:
-	StateMachine(InitVar initVar, const std::string & filename, AssetManager* assetManager, FontWrapper* fontWrapper);
+	StateMachine(InitVar initVar, const std::string & filename, AssetManager* assetManager, FontWrapper* fontWrapper, int width, int height);
 	~StateMachine();
 
 	void Update(float deltaTime);
-
 	BaseState* GetCurrentState() const;
+	void Resize(int width, int height);
 };

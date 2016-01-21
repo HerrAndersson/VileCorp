@@ -7,6 +7,8 @@ namespace Renderer
 	RenderModule::RenderModule(HWND hwnd, int screenWidth, int screenHeight)
 	{
 		_d3d = new DirectXHandler(hwnd, screenWidth, screenHeight);
+		_screenWidth = screenWidth;
+		_screenHeight = screenHeight;
 		_shaderHandler = new ShaderHandler(_d3d->GetDevice());
 		_shaderHandler->SetDefaultShaders(_d3d->GetDeviceContext());
 
@@ -106,6 +108,8 @@ namespace Renderer
 	void RenderModule::ResizeResources(HWND hwnd, int windowWidth, int windowHeight)
 	{
 		_d3d->ResizeResources(hwnd, windowWidth, windowHeight);
+		_screenWidth = windowWidth;
+		_screenHeight = windowHeight;
 	}
 
 	void RenderModule::SetResourcesPerFrame(DirectX::XMMATRIX* view, DirectX::XMMATRIX* projection)
@@ -262,8 +266,13 @@ namespace Renderer
 				throw std::runtime_error("RenderModule::SetResourcesPerObject: Failed to Map _matrixBufferHUD");
 			}
 
+			XMFLOAT2 s = current->GetScale();
+			DirectX::XMMATRIX scale = DirectX::XMMatrixScaling(s.x, s.y, 1);
+
+			XMMATRIX t = DirectX::XMMatrixMultiply(scale, *transform); 
+
 			MatrixBufferHud* dataPtr = (MatrixBufferHud*)mappedResource.pData;
-			dataPtr->model = XMMatrixTranspose(*transform);
+			dataPtr->model = XMMatrixTranspose(t);
 
 			_d3d->GetDeviceContext()->Unmap(_matrixBufferHUD, 0);
 
@@ -276,21 +285,23 @@ namespace Renderer
 		int len = current->GetText().length();
 		if (len > 0) 
 		{
-			const WCHAR* tempText = current->GetText().c_str();
-			auto fw = fontWrapper->GetFontWrapper();
-			fw->DrawString(
-				_d3d->GetDeviceContext(),
-				L"haskjhdkjas",
-				//tempText,
-				//current->GetFontSize(),
-				32.0f,
-				0.0f, 0.0f, //TODO: Set position according to position (convert to pixel coords)
-				//current->GetColor(),
-				0xff0099ff,
-				FW1_RESTORESTATE
-			);
+			XMFLOAT4X4 temp;
+			float x, y;
+			XMFLOAT2 pos;
+
+			XMStoreFloat4x4(&temp, *transform);
+			pos.x = temp._41;
+			pos.y = temp._42;
+			XMFLOAT2 scale = current->GetScale();
+			x = pos.x - scale.x;
+			y = pos.y*-1.0f - scale.y;
+			//x and y is in -1,1 coordinate system
+			//Convert to pixel coordinate system
+			x = (x + 1.0f) * 0.5f * _screenWidth;
+			y = (y + 1.0f) * 0.5f * _screenHeight;
+			//x and y is in pixel coordinates
+			fontWrapper->GetFontWrapper()->DrawTextLayout(_d3d->GetDeviceContext(), current->GetFont()->_textLayout, x, y, current->GetColor(), FW1_RESTORESTATE);
 		}
-		
 
 		for (GUI::Node* i : *current->GetChildren())
 		{

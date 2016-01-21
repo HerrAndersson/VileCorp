@@ -7,14 +7,13 @@ FontWrapper::FontWrapper(ID3D11Device* device, LPWSTR fontPath, LPWSTR fontName)
 	_fontName = fontName;
 
 	//Create _fontWrapper
-	IFW1Factory* factory;
-	FW1CreateFactory(FW1_VERSION, &factory);
-	hr = factory->CreateFontWrapper(device, NULL, &_fontWrapper);
+	FW1CreateFactory(FW1_VERSION, &_factory);
+	hr = _factory->CreateFontWrapper(device, NULL, &_fontWrapper);
 	if (FAILED(hr))
 	{
 		throw std::runtime_error("Failed to create font wrapper");
 	}
-	factory->Release();
+	
 
 	//Create custom font
 	hr = _fontWrapper->GetDWriteFactory(&_writeFactory);
@@ -34,7 +33,6 @@ FontWrapper::FontWrapper(ID3D11Device* device, LPWSTR fontPath, LPWSTR fontName)
 
 	hr = _writeFactory->CreateCustomFontCollection(pCollectionLoader, NULL, 0, &_fontCollection);
 	_writeFactory->UnregisterFontCollectionLoader(pCollectionLoader);
-
 	pCollectionLoader->Release();
 
 	if (FAILED(hr))
@@ -46,6 +44,7 @@ FontWrapper::FontWrapper(ID3D11Device* device, LPWSTR fontPath, LPWSTR fontName)
 FontWrapper::~FontWrapper()
 {
 	_fontWrapper->Release();
+	_factory->Release();
 }
 
 IFW1FontWrapper* FontWrapper::GetFontWrapper()

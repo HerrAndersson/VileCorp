@@ -6,10 +6,9 @@ using namespace DirectX;
 
 namespace GUI
 {
-	UITree::UITree(const std::string& filename, const std::string& statename, AssetManager* assetManager, FontWrapper* fontWrapper)
+	UITree::UITree(const std::string& filename, const std::string& statename, AssetManager* assetManager, FontWrapper* fontWrapper, int width, int height) : _info(fontWrapper, width, height)
 	{
 		_AM = assetManager;
-		_fontWrapper = fontWrapper;
 		ifstream file(filename);
 		if (!file.good())
 		{
@@ -46,9 +45,25 @@ namespace GUI
 		return _root;
 	}
 
+	void UITree::Resize(int width, int height)
+	{
+		_info._screenWidth = width;
+		_info._screenHeight = height;
+		Resize(_root);
+	}
+
+	void UITree::Resize(Node* current)
+	{
+		for (Node* i : *current->GetChildren())
+		{
+			Resize(i);
+		}
+		current->UpdateFont();
+	}
+
 	Node* UITree::LoadGUITree(const std::string& name, rapidjson::Value::ConstMemberIterator start, rapidjson::Value::ConstMemberIterator end)
 	{
-		Node* returnNode = new Node(_fontWrapper);
+		Node* returnNode = new Node(&_info);
 		returnNode->SetId(name);
 		for (Value::ConstMemberIterator i = start; i != end; ++i)
 		{
@@ -82,6 +97,18 @@ namespace GUI
 				std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
 				returnNode->SetText(converter.from_bytes(i->value.GetString()));
 			}
+			else if (i->name == "color")
+			{
+				UINT color;
+				std::stringstream ss;
+				ss << std::hex << i->value.GetString();
+				ss >> color;
+				returnNode->SetColor(color);
+			}
+			else if (i->name == "fontsize")
+			{
+				returnNode->SetFontSize((float)i->value.GetDouble());
+			}
 			else
 			{
 				returnNode->AddChild(LoadGUITree(i->name.GetString(), i->value.MemberBegin(), i->value.MemberEnd()));
@@ -96,9 +123,6 @@ namespace GUI
 		{
 			Release(i);
 		}
-		if (node != nullptr)
-		{
-			delete node;
-		}
+		delete node;
 	}
 }

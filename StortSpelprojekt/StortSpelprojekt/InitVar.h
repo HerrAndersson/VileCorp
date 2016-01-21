@@ -1,6 +1,5 @@
 #pragma once
 
-#include "UIHandler.h"
 #include "ObjectHandler.h"
 #include "InputDevice.h"
 

@@ -22,7 +22,6 @@
     <ClCompile Include="Deferred.cpp" />
     <ClCompile Include="DirectXHandler.cpp" />
     <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="Fonts.cpp" />
     <ClCompile Include="FontWrapper.cpp" />
     <ClCompile Include="Node.cpp" />
     <ClCompile Include="HUDElement.cpp" />
@@ -34,7 +33,6 @@
     <ClInclude Include="CFontEnum.h" />
     <ClInclude Include="DirectXHandler.h" />
     <ClInclude Include="Deferred.h" />
-    <ClInclude Include="Fonts.h" />
     <ClInclude Include="FontWrapper.h" />
     <ClInclude Include="FW\FW1FontWrapper.h" />
     <ClInclude Include="Node.h" />

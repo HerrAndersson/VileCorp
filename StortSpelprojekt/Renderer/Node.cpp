@@ -2,7 +2,7 @@
 
 namespace GUI
 {
-	Node::Node(FontWrapper* fontWrapper,
+	Node::Node(NodeInfo* info,
 		DirectX::XMFLOAT2 position,
 		DirectX::XMFLOAT2 scale,
 		ID3D11ShaderResourceView* texture,
@@ -11,7 +11,7 @@ namespace GUI
 		UINT32 color,
 		float fontSize)
 	{
-		_fontWrapper = fontWrapper;
+		_info = info;
 		_position = position;
 		_scale = scale;
 		_id = id;
@@ -31,15 +31,12 @@ namespace GUI
 
 	void Node::UpdateMatrix()
 	{
-		DirectX::XMMATRIX transform = DirectX::XMMatrixTranslation(_position.x, _position.y, 0);
-		DirectX::XMMATRIX scale = DirectX::XMMatrixScaling(_scale.x, _scale.y, 1);
-
-		_modelMatrix = DirectX::XMMatrixMultiply(scale, transform);
+		_modelMatrix = DirectX::XMMatrixTranslation(_position.x, _position.y, 0);
 	}
 
 	void Node::UpdateFont()
 	{
-		IDWriteFactory* writeFactory = _fontWrapper->GetWriteFactory();
+		IDWriteFactory* writeFactory = _info->_fontWrapper->GetWriteFactory();
 
 		HRESULT hr;
 		if (_font._textFormat)
@@ -47,13 +44,13 @@ namespace GUI
 			_font._textFormat->Release();
 		}
 		hr = writeFactory->CreateTextFormat(
-				_fontWrapper->GetFontName(),
-				_fontWrapper->GetFontCollection(),
+				_info->_fontWrapper->GetFontName(),
+				_info->_fontWrapper->GetFontCollection(),
 				DWRITE_FONT_WEIGHT_NORMAL,
 				DWRITE_FONT_STYLE_NORMAL,
 				DWRITE_FONT_STRETCH_NORMAL,
 				_fontSize,
-				_fontWrapper->GetFontName(),
+				_info->_fontWrapper->GetFontName(),
 				&_font._textFormat
 			);
 		if (FAILED(hr))
@@ -65,13 +62,15 @@ namespace GUI
 		{
 			_font._textLayout->Release();
 		}
+		
+		float x = _scale.x * _info->_screenWidth;
+		float y = _scale.y * _info->_screenHeight;
 		hr = writeFactory->CreateTextLayout(
 				_text.c_str(),
 				_text.length(),
 				_font._textFormat,
-				//TODO: Set text bounding box
-				0.0f,
-				0.0f,
+				x,
+				y,
 				&_font._textLayout
 			);
 		if (FAILED(hr))
@@ -81,8 +80,8 @@ namespace GUI
 
 		unsigned int uintTextSize = (UINT32)_text.length();
 		DWRITE_TEXT_RANGE allText = { 0, uintTextSize };
-		_font._textLayout->SetFontSize(uintTextSize, allText);
-		_font._textLayout->SetWordWrapping(DWRITE_WORD_WRAPPING_NO_WRAP);
+		_font._textLayout->SetFontSize(_fontSize, allText);
+		_font._textLayout->SetWordWrapping(DWRITE_WORD_WRAPPING_WHOLE_WORD);
 	}
 
 	void Node::SetPosition(DirectX::XMFLOAT2 position)
@@ -147,6 +146,11 @@ namespace GUI
 		return _fontSize;
 	}
 
+	FontWrapper::CustomFont* Node::GetFont()
+	{
+		return &_font;
+	}
+
 	ID3D11ShaderResourceView* Node::GetTexture()
 	{
 		return _texture;
@@ -165,6 +169,7 @@ namespace GUI
 	{
 		_children.push_back(child);
 	}
+
 	void* Node::operator new(size_t i)
 	{
 		return _mm_malloc(i, 16);

@@ -22,7 +22,6 @@
     <ClCompile Include="Architecture.cpp" />
     <ClCompile Include="BaseState.cpp" />
     <ClCompile Include="Enemy.cpp" />
-    <ClCompile Include="FontInfo.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Guard.cpp" />
@@ -43,7 +42,6 @@
     <ClInclude Include="Architecture.h" />
     <ClInclude Include="BaseState.h" />
     <ClInclude Include="Enemy.h" />
-    <ClInclude Include="FontInfo.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="Guard.h" />

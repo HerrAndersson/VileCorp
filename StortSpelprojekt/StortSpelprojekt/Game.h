@@ -5,7 +5,6 @@
 #include "Window.h"
 #include "RenderModule.h"
 #include "Camera.h"
-#include "UIHandler.h"
 #include "ObjectHandler.h"
 #include "Timer.h"
 #include "AssetManager.h"
