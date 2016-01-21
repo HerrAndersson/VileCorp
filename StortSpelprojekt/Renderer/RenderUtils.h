@@ -3,6 +3,9 @@
 #include <string>
 #include <vector>
 #include <DirectXMath.h>
+#include <map>
+
+enum Type { FLOOR, WALL, LOOT, SPAWN, TRAP, TRIGGER, GUARD, ENEMY, NR_OF_TYPES/*Has to be last*/ };
 
 struct Bone
 {
@@ -70,7 +73,6 @@ struct Point
 
 struct Mesh
 {
-	std::string _name;
 	ID3D11Buffer* _vertexBuffer;
 	int _vertexBufferSize, _toMesh;
 	std::vector<PointLight> _pointLights;
@@ -94,31 +96,29 @@ struct Texture
 
 struct RenderObject
 {
+	Type _type = Type::FLOOR;
 	bool _meshLoaded, _toUnload;
 	bool _isSkinned = false;
+	std::string _name;
 	std::string _skeletonName;
 	Skeleton* _skeleton;
 	float _diffuse[4], _specular[4];
 	Texture* _diffuseTexture = nullptr;
 	Texture* _specularTexture = nullptr;
-	std::vector<Mesh> _meshes;
+	Mesh _mesh;
 	~RenderObject()
 	{
-		for (unsigned int i = 0; i < _meshes.size(); i++)
+		if (_diffuseTexture != nullptr)
 		{
-			if (_diffuseTexture != nullptr)
-			{
-				_diffuseTexture->DecrementUsers();
-			}
-			if (_specularTexture != nullptr)
-			{
-				_specularTexture->DecrementUsers();
-			}
-			if (_meshLoaded && _meshes[i]._vertexBuffer != nullptr)
-			{
-				_meshes[i]._vertexBuffer->Release();
-			}
+			_diffuseTexture->DecrementUsers();
 		}
-		_meshes.clear();
+		if (_specularTexture != nullptr)
+		{
+			_specularTexture->DecrementUsers();
+		}
+		if (_meshLoaded && _mesh._vertexBuffer != nullptr)
+		{
+			_mesh._vertexBuffer->Release();
+		}
 	}
 };

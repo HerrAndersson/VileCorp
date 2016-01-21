@@ -66,7 +66,7 @@ void GameLogic::HandleInput()
 		if (_player->AreUnitsSelected())
 		{
 			vector<Unit*> units = _player->GetSelectedUnits();
-			for (int i = 0; i < units.size(); i++)
+			for (uint i = 0; i < units.size(); i++)
 			{
 				units[i]->SetScale(DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f));
 			}
