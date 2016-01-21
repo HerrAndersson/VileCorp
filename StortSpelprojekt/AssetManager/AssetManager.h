@@ -20,7 +20,12 @@ struct Tileset
 	string _name;
 	vector<string> _floors;
 	vector<string> _walls;
-	vector<string> _deco;
+	vector<string> _loot;
+	vector<string> _spawns;
+	vector<string> _traps;
+	vector<string> _triggers;
+	vector<string> _guards;
+	vector<string> _enemies;
 };
 
 struct TilesetHandler
@@ -43,6 +48,7 @@ struct TilesetHandler
 		{
 			_tileset->_name = str;
 			_nameNext = false;
+			_cur = &_tileset->_floors;
 		}
 		else
 		{
@@ -71,9 +77,29 @@ struct TilesetHandler
 		{
 			_cur = &_tileset->_walls;
 		}
-		else if (!strcmp("deco", str))
+		else if (!strcmp("loot", str))
 		{
-			_cur = &_tileset->_deco;
+			_cur = &_tileset->_loot;
+		}
+		else if (!strcmp("spawns", str))
+		{
+			_cur = &_tileset->_spawns;
+		}
+		else if (!strcmp("traps", str))
+		{
+			_cur = &_tileset->_traps;
+		}
+		else if (!strcmp("triggers", str))
+		{
+			_cur = &_tileset->_triggers;
+		}
+		else if (!strcmp("guards", str))
+		{
+			_cur = &_tileset->_guards;
+		}
+		else if (!strcmp("enemies", str))
+		{
+			_cur = &_tileset->_enemies;
 		}
 		return true;
 	}
@@ -82,14 +108,14 @@ struct TilesetHandler
 	bool EndArray(rapidjson::SizeType elementCount) { return true; }
 };
 
-struct MainHeader 
-{
-	int _version, _meshCount;
-};
-
-struct MeshHeader
+struct MeshHeader24
 {
 	int _nameLength, _numberOfVertices, _subMeshID, _numberPointLights, _numberSpotLights;
+};
+
+struct MeshHeader26
+{
+	int _numberOfVertices, _numberPointLights, _numberSpotLights;
 };
 
 struct MatHeader 
@@ -160,12 +186,13 @@ static bool GetFilenamesInDirectory(char* folder, char* extension, vector<string
 class ASSET_MANAGER_EXPORT AssetManager
 {
 private:
-	int _meshFormatVersion = 24;
+	typedef RenderObject* (AssetManager::*_scanFunc)(string file_path, ifstream* _infile);
+	typedef std::map<int, AssetManager::_scanFunc> _scanFuncMap;
+	_scanFuncMap _meshFormatVersion;
 	int _animationFormatVersion = 10;
 	ifstream* _infile;
 	ID3D11Device* _device;
 	Tileset* _activeTileset;
-
 
 	vector<string>* _modelFiles;
 	vector<string>* _levelFileNames;
@@ -180,6 +207,8 @@ private:
 
 	void LoadModel(string file_path, RenderObject* renderObject);
 	void Flush();
+	RenderObject* ScanModel24(string file_path, ifstream* _infile);
+	RenderObject* ScanModel26(string file_path, ifstream* _infile);
 	RenderObject* ScanModel(string file_path);
 	Texture* ScanTexture(string filename);
 	Skeleton* LoadSkeleton(string filename);
@@ -191,11 +220,11 @@ public:
 	AssetManager(ID3D11Device* device);
 	~AssetManager();
 	RenderObject* GetRenderObject(int index);
+	uint GetRenderObjectByType(Type type, uint index);
 	void UnloadModel(int index, bool force);
 	void ParseLevel(int index, vector<GameObjectData> &gameObjects, int &dimX, int &dimY);
 	bool ActivateTileset(string name);
 	ID3D11ShaderResourceView* GetTexture(string filename);
-	
 };
 
 
