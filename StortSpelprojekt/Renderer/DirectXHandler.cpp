@@ -323,9 +323,12 @@ namespace Renderer
 	{
 		_deviceContext->OMSetDepthStencilState(_depthStateEnable, 1);
 		_deviceContext->RSSetViewports(1, &_viewport);
-		_deviceContext->OMSetRenderTargets(BUFFER_COUNT, _deferredRTVArray, _backBufferDSV);
+		_deferredRTVArray[2] = _backBufferRTV;
+		_deviceContext->OMSetRenderTargets(BUFFER_COUNT + 1, _deferredRTVArray, _backBufferDSV);
+
+		//_deviceContext->OMSetRenderTargets(BUFFER_COUNT, _deferredRTVArray, _backBufferDSV);
 		
-		return BUFFER_COUNT;
+		return BUFFER_COUNT + 1;
 	}
 
 	int DirectXHandler::SetShadowGenerationStage()
