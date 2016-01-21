@@ -32,6 +32,34 @@ struct Plane
 	}
 };
 
+struct Triangle
+{
+	Vec3 _pos1, _pos2, _pos3;
+
+	Triangle(Vec3 pos1 = Vec3(), Vec3 pos2 = Vec3(), Vec3 pos3 = Vec3())
+	{
+		_pos1 = pos1;
+		_pos2 = pos2;
+		_pos3 = pos3;
+	}
+};
+
+struct Square
+{
+	Vec2 _minPos, _maxPos;
+
+	Square(Vec2 position = Vec2(), float height = 0.0f, float width = 0.0f)
+	{
+		_minPos = Vec2(position._x - width, position._y - height);
+		_maxPos = Vec2(position._x + width, position._y + height);
+	}
+	Square(Vec2 minPos, Vec2 maxPos)
+	{
+		_minPos = minPos;
+		_maxPos = maxPos;
+	}
+};
+
 struct Sphere
 {
 	Vec3 _position;
@@ -347,3 +375,24 @@ static bool Collision(Box box1, Box box2)
 
 	return collision;
 }
+
+static bool Collision(Vec3 point, Square square)
+{
+	return (point._x < square._maxPos._x && point._x > square._minPos._x &&
+		point._z < square._maxPos._y && point._z > square._minPos._y);
+}
+
+static bool Collision(Triangle triangle, Square square)
+{
+	bool collision = false;
+
+	if (Collision(triangle._pos1, square) || Collision(triangle._pos2, square) || Collision(triangle._pos3, square))
+	{
+		collision = true;
+	}
+
+	//TODO add more cases
+
+	return collision;
+}
+
