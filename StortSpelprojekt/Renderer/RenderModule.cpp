@@ -239,11 +239,8 @@ void RenderModule::SetDataPerObject(XMMATRIX* world, ID3D11ShaderResourceView* d
 			vertexSize = sizeof(WeightedVertex);
 		}
 
-		for (auto mesh : renderObject->_meshes)
-		{
-			SetDataPerMesh(mesh._vertexBuffer, vertexSize);
-			deviceContext->Draw(mesh._vertexBufferSize, 0);
-		}
+		SetDataPerMesh(renderObject->_mesh._vertexBuffer, vertexSize);
+		deviceContext->Draw(renderObject->_mesh._vertexBufferSize, 0);
 	}
 
 	void RenderModule::SetLightDataPerLight(Spotlight* spotlight)
@@ -414,11 +411,9 @@ void RenderModule::SetDataPerObject(XMMATRIX* world, ID3D11ShaderResourceView* d
 			SetDataPerObject(world, diffuseData, specularData);
 		}
 		
-		for (auto mesh : renderObject->_meshes)
-		{
-			SetDataPerMesh(mesh._vertexBuffer, vertexSize);
-			deviceContext->Draw(mesh._vertexBufferSize, 0);
-		}
+		SetDataPerMesh(renderObject->_mesh._vertexBuffer, vertexSize);
+		deviceContext->Draw(renderObject->_mesh._vertexBufferSize, 0);
+		
 	}
 
 	void RenderModule::Render(GUI::Node* root, FontWrapper* fontWrapper)

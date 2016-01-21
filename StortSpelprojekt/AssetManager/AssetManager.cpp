@@ -14,6 +14,9 @@ AssetManager::AssetManager(ID3D11Device* device)
 	_tilesets = new vector<Tileset>;
 	_skeletons = new vector<Skeleton*>;
 
+	_meshFormatVersion[24] = &AssetManager::ScanModel24;
+	_meshFormatVersion[26] = &AssetManager::ScanModel26;
+
 	SetupTilesets();
 
 	SetupLevelFileNameList();
@@ -148,10 +151,7 @@ void AssetManager::UnloadModel(int index, bool force)
 	}
 	if (force)
 	{
-		for (auto m : renderObject->_meshes)
-		{
-			m._vertexBuffer->Release();
-		}
+		renderObject->_mesh._vertexBuffer->Release();
 		renderObject->_toUnload = false;
 		renderObject->_meshLoaded = false;
 		if (renderObject->_diffuseTexture != nullptr)
@@ -212,10 +212,7 @@ void AssetManager::Flush()
 	{
 		if (renderObject->_toUnload)
 		{
-			for (Mesh m : renderObject->_meshes)
-			{
-				m._vertexBuffer->Release();
-			}
+			renderObject->_mesh._vertexBuffer->Release();
 			renderObject->_toUnload = false;
 			renderObject->_meshLoaded = false;
 			if (renderObject->_diffuseTexture != nullptr)
@@ -287,26 +284,21 @@ void AssetManager::LoadModel(string fileName, RenderObject* renderObject) {
 		return;
 	}
 
-	Mesh* mesh;
 	vector<Vertex> vertices;
 	vector<WeightedVertex> weightedVertices;
 
-	for (uint i = 0; i < renderObject->_meshes.size(); i++)
+	_infile->seekg(renderObject->_mesh._toMesh);
+	if(renderObject->_isSkinned)
 	{
-		mesh = &renderObject->_meshes[i];
-		_infile->seekg(mesh->_toMesh);
-		if(renderObject->_isSkinned)
-		{
-			weightedVertices.resize(mesh->_vertexBufferSize);
-			_infile->read((char*)weightedVertices.data(), mesh->_vertexBufferSize*sizeof(WeightedVertex));
-		}
-		else
-		{
-			vertices.resize(mesh->_vertexBufferSize);
-			_infile->read((char*)vertices.data(), mesh->_vertexBufferSize*sizeof(Vertex));
-		}
-		mesh->_vertexBuffer = CreateVertexBuffer(&weightedVertices, &vertices, renderObject->_isSkinned);
+		weightedVertices.resize(renderObject->_mesh._vertexBufferSize);
+		_infile->read((char*)weightedVertices.data(), renderObject->_mesh._vertexBufferSize*sizeof(WeightedVertex));
 	}
+	else
+	{
+		vertices.resize(renderObject->_mesh._vertexBufferSize);
+		_infile->read((char*)vertices.data(), renderObject->_mesh._vertexBufferSize*sizeof(Vertex));
+	}
+		renderObject->_mesh._vertexBuffer = CreateVertexBuffer(&weightedVertices, &vertices, renderObject->_isSkinned);
 
 	if (renderObject->_diffuseTexture != nullptr)
 	{
@@ -355,65 +347,24 @@ RenderObject* AssetManager::ScanModel(string fileName)
 	string file_path = "Assets/Models/";
 
 	file_path.append(fileName);
-	RenderObject* renderObject = new RenderObject;
 	_infile->open(file_path.c_str(), ifstream::binary);
 
 	if (!_infile->is_open())
 	{
-		return renderObject;
+		throw std::runtime_error("Failed to open " + file_path);
 	}
 
-	MainHeader mainHeader;
-	_infile->read((char*)&mainHeader, sizeof(MainHeader));
-	mainHeader._meshCount++;
-	if (mainHeader._version != _meshFormatVersion)
+	int version;
+	_infile->read((char*)&version, 4);
+
+	RenderObject* renderObject = (this->*(_meshFormatVersion[version]))(fileName, _infile);
+	if (renderObject == nullptr)
 	{
 		throw std::runtime_error("Failed to load " + file_path + ":\nIncorrect fileversion");
 	}
-	int skeletonStringLength;
-	_infile->read((char*)&skeletonStringLength, 4);
-	renderObject->_skeletonName.resize(skeletonStringLength);
-	_infile->read((char*)renderObject->_skeletonName.data(), skeletonStringLength);
 
-	renderObject->_isSkinned = strcmp(renderObject->_skeletonName.data(), "Unrigged") != 0;
+	renderObject->_name = fileName;
 
-	for (int i = 0; i < mainHeader._meshCount; i++)
-	{
-		Mesh mesh;
-		_infile->read((char*)&mesh._toMesh, 4);
-		renderObject->_meshes.push_back(mesh);
-	}
-
-	for (int i = 0; i < mainHeader._meshCount; i++)
-	{
-		MeshHeader meshHeader;
-		_infile->read((char*)&meshHeader, sizeof(MeshHeader));
-
-		renderObject->_meshes[i]._name.resize(meshHeader._nameLength);
-
-		_infile->read((char*)renderObject->_meshes[i]._name.data(), meshHeader._nameLength);
-		if (renderObject->_isSkinned)
-		{
-			_infile->seekg(meshHeader._numberOfVertices*sizeof(WeightedVertex), ios::cur);
-		}
-		else
-		{
-			_infile->seekg(meshHeader._numberOfVertices*sizeof(Vertex), ios::cur);
-		}
-
-		if (meshHeader._numberPointLights)
-		{
-			renderObject->_meshes[i]._pointLights.resize(sizeof(PointLight)*meshHeader._numberPointLights);
-			_infile->read((char*)renderObject->_meshes[i]._pointLights.data(), sizeof(PointLight)*meshHeader._numberPointLights);
-		}
-
-		if (meshHeader._numberSpotLights)
-		{
-			renderObject->_meshes[i]._spotLights.resize(sizeof(SpotLight)*meshHeader._numberSpotLights);
-			_infile->read((char*)renderObject->_meshes[i]._spotLights.data(), sizeof(SpotLight)*meshHeader._numberSpotLights);
-		}
-		renderObject->_meshes[i]._vertexBufferSize = meshHeader._numberOfVertices;
-	}
 	MatHeader matHeader;
 	_infile->read((char*)&matHeader, sizeof(MatHeader));
 	_infile->read((char*)&renderObject->_diffuse, 16);
@@ -443,6 +394,118 @@ RenderObject* AssetManager::ScanModel(string fileName)
 
 	renderObject->_meshLoaded = false;
 
+	return renderObject;
+}
+
+RenderObject* AssetManager::ScanModel26(string fileName, ifstream* _infile)
+{
+	RenderObject* renderObject = new RenderObject;
+	int skeletonStringLength;
+	_infile->read((char*)&skeletonStringLength, 4);
+	renderObject->_skeletonName.resize(skeletonStringLength);
+	_infile->read((char*)renderObject->_skeletonName.data(), skeletonStringLength);
+
+	renderObject->_isSkinned = strcmp(renderObject->_skeletonName.data(), "Unrigged") != 0;
+
+	_infile->read((char*)&renderObject->_mesh._toMesh, 4);
+
+	MeshHeader26 meshHeader;
+	_infile->read((char*)&meshHeader, sizeof(MeshHeader26));
+
+	if (renderObject->_isSkinned)
+	{
+		_infile->seekg(meshHeader._numberOfVertices*sizeof(WeightedVertex), ios::cur);
+	}
+	else
+	{
+		_infile->seekg(meshHeader._numberOfVertices*sizeof(Vertex), ios::cur);
+	}
+
+	if (meshHeader._numberPointLights)
+	{
+		renderObject->_mesh._pointLights.resize(sizeof(PointLight)*meshHeader._numberPointLights);
+		_infile->read((char*)renderObject->_mesh._pointLights.data(), sizeof(PointLight)*meshHeader._numberPointLights);
+	}
+
+	if (meshHeader._numberSpotLights)
+	{
+		renderObject->_mesh._spotLights.resize(sizeof(SpotLight)*meshHeader._numberSpotLights);
+		_infile->read((char*)renderObject->_mesh._spotLights.data(), sizeof(SpotLight)*meshHeader._numberSpotLights);
+	}
+	renderObject->_mesh._vertexBufferSize = meshHeader._numberOfVertices;
+	return renderObject;
+}
+
+RenderObject* AssetManager::ScanModel24(string fileName, ifstream* _infile)
+{
+	RenderObject* renderObject = new RenderObject;
+	int meshes;
+	_infile->read((char*)&meshes, 4);
+	meshes++;
+	int skeletonStringLength;
+	_infile->read((char*)&skeletonStringLength, 4);
+	renderObject->_skeletonName.resize(skeletonStringLength);
+	_infile->read((char*)renderObject->_skeletonName.data(), skeletonStringLength);
+
+	renderObject->_isSkinned = strcmp(renderObject->_skeletonName.data(), "Unrigged") != 0;
+	_infile->read((char*)&renderObject->_mesh._toMesh, 4);
+
+	for (int i = 0; i < meshes; i++)
+	{
+		if (i == 0)
+		{
+			MeshHeader24 meshHeader;
+			_infile->read((char*)&meshHeader, sizeof(MeshHeader24));
+
+			_infile->seekg(meshHeader._nameLength, ios::cur);
+			if (renderObject->_isSkinned)
+			{
+				_infile->seekg(meshHeader._numberOfVertices*sizeof(WeightedVertex), ios::cur);
+			}
+			else
+			{
+				_infile->seekg(meshHeader._numberOfVertices*sizeof(Vertex), ios::cur);
+			}
+
+			if (meshHeader._numberPointLights)
+			{
+				renderObject->_mesh._pointLights.resize(sizeof(PointLight)*meshHeader._numberPointLights);
+				_infile->read((char*)renderObject->_mesh._pointLights.data(), sizeof(PointLight)*meshHeader._numberPointLights);
+			}
+
+			if (meshHeader._numberSpotLights)
+			{
+				renderObject->_mesh._spotLights.resize(sizeof(SpotLight)*meshHeader._numberSpotLights);
+				_infile->read((char*)renderObject->_mesh._spotLights.data(), sizeof(SpotLight)*meshHeader._numberSpotLights);
+			}
+			renderObject->_mesh._vertexBufferSize = meshHeader._numberOfVertices;
+		}
+		else
+		{
+			MeshHeader24 meshHeader;
+			_infile->read((char*)&meshHeader, sizeof(MeshHeader24));
+
+			_infile->seekg(meshHeader._nameLength, ios::cur);
+			if (renderObject->_isSkinned)
+			{
+				_infile->seekg(meshHeader._numberOfVertices*sizeof(WeightedVertex), ios::cur);
+			}
+			else
+			{
+				_infile->seekg(meshHeader._numberOfVertices*sizeof(Vertex), ios::cur);
+			}
+
+			if (meshHeader._numberPointLights)
+			{
+				_infile->seekg(sizeof(PointLight)*meshHeader._numberPointLights, ios::cur);
+			}
+
+			if (meshHeader._numberSpotLights)
+			{
+				_infile->seekg(sizeof(SpotLight)*meshHeader._numberSpotLights, ios::cur);
+			}
+		}
+	}
 	return renderObject;
 }
 
