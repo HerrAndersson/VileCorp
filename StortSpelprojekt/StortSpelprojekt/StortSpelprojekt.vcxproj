@@ -208,9 +208,8 @@ if errorlevel 1 exit 0 else exit %errorlevel%</Command>
       </Command>
     </PreBuildEvent>
     <CustomBuildStep>
-      <Command>robocopy "C:\%HOMEPATH%\Google Drive\Stort spelprojekt\Assets" "$(OutDir)Assets" /MIR /Z /XA:H /W:5
-robocopy "$(SolutionDir)Renderer\Shaders" "$(OutDir)Assets\Shaders" /MIR /Z /XA:H /W:5
-if errorlevel 1 exit 0 else exit %errorlevel%</Command>
+      <Command>
+      </Command>
       <Outputs>a</Outputs>
     </CustomBuildStep>
   </ItemDefinitionGroup>
@@ -237,9 +236,8 @@ if errorlevel 1 exit 0 else exit %errorlevel%</Command>
       </Command>
     </PreBuildEvent>
     <CustomBuildStep>
-      <Command>robocopy "C:\%HOMEPATH%\Google Drive\Stort spelprojekt\Assets" "$(OutDir)Assets" /MIR /Z /XA:H /W:5
-robocopy "$(SolutionDir)Renderer\Shaders" "$(OutDir)Assets\Shaders" /MIR /Z /XA:H /W:5
-if errorlevel 1 exit 0 else exit %errorlevel%</Command>
+      <Command>
+      </Command>
       <Outputs>a</Outputs>
     </CustomBuildStep>
   </ItemDefinitionGroup>
@@ -265,9 +263,8 @@ if errorlevel 1 exit 0 else exit %errorlevel%</Command>
       </Command>
     </PreBuildEvent>
     <CustomBuildStep>
-      <Command>robocopy "C:\%HOMEPATH%\Google Drive\Stort spelprojekt\Assets" "$(OutDir)Assets" /MIR /Z /XA:H /W:5
-robocopy "$(SolutionDir)Renderer\Shaders" "$(OutDir)Assets\Shaders" /MIR /Z /XA:H /W:5
-if errorlevel 1 exit 0 else exit %errorlevel%</Command>
+      <Command>
+      </Command>
       <Outputs>a</Outputs>
     </CustomBuildStep>
   </ItemDefinitionGroup>

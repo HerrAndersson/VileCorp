@@ -5,9 +5,6 @@
 
 Game::Game(HINSTANCE hInstance, int nCmdShow)
 {
-	System::saveJSON(&_playerInfo, "test.json", "Player Info");
-	System::loadJSON(&_playerInfo, "test.json");
-	
 	_gameHandle = this;
 	System::WindowSettings settings;
 	_window = new System::Window("Amazing game", hInstance, settings, WndProc);
@@ -34,20 +31,51 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	//Init statemachine
 	_pickingDevice = new PickingDevice(_camera, _window);
 	_SM = new StateMachine(_controls, _objectHandler, _input, _camera, _pickingDevice, "Assets/gui.json", _assetManager, _fontWrapper, settings._width, settings._height);
+
 	_SM->Update(_timer.GetFrameTime());
 	if (_SM->GetState() == LEVELEDITSTATE)
 	{
 		_grid = new Grid(_renderModule->GetDevice(), 1, 10);
 	}
 
+	//CheckSettings();
+	_controls->SaveKeyBindings(System::MAP_EDIT_KEYMAP, "MOVE_CAMERA_UP", "M");
+
 	//TODO: TEMP! Make this pretty
 	Renderer::Spotlight* spot;
 	for (int i = 0; i < 4; i++)
 	{
 		spot = new Renderer::Spotlight(_renderModule->GetDevice(), 0.1f, 1000.0f, XM_PIDIV4 /*XM_PI / 0.082673f*/, 256, 256, 1.0f, 10.0f, XMFLOAT3(0.0f, 1.0f, 1.0f), 36); //Ska ha samma dimensions som shadow map, som nu ligger i render module
-		spot->SetPositionAndRotation(XMFLOAT3(4*i+3, 1.5f, 3*i+3), XMFLOAT3(0, 90 + i*25, 0));
+		spot->SetPositionAndRotation(XMFLOAT3(4 * i + 3, 1.5f, 3 * i + 3), XMFLOAT3(0, 90 + i * 25, 0));
 		_spotlights.push_back(spot);
 	}
+}
+
+void Game::CheckSettings()
+{
+	////System::saveJSON(&_gameSettings, "Assets/GameSettings.json", "Game Settings");
+	//System::loadJSON(&_gameSettings, "Assets/GameSettings.json");
+
+	//if (_gameSettings._default == false)
+	//{
+	//	System::WindowSettings winSettings = _window->GetWindowSettings();
+	//	winSettings._width = _gameSettings._resX;
+	//	winSettings._height = _gameSettings._resY;
+	//	winSettings._flags = 0;
+	//	if (_gameSettings._fullScreen == true)
+	//	{
+	//		winSettings._flags += 1;
+	//	}
+	//	else if (_gameSettings._bordeless == true)
+	//	{
+	//		winSettings._flags += 2;
+	//	}
+	//	else if (_gameSettings._showMouseCursor == true)
+	//	{
+	//		winSettings._flags += 4;
+	//	}
+	//	_window->ResizeWindow(winSettings);
+	//}
 }
 
 Game::~Game() 
