@@ -4,8 +4,6 @@
 
 namespace System
 {
-
-
 	template<class T> void loadJSON(T data, std::string path)
 	{
 		std::ifstream inStream(path);

@@ -22,6 +22,7 @@ void GameLogic::Initialize(System::InputDevice* inputDevice, ObjectHandler* obje
 	_pickingDevice = pickingDevice;
 
 	_objectHandler->LoadLevel(9);
+	_objectHandler->LoadLevel(9);
 
 	_objectHandler->InitPathfinding();
 
@@ -46,7 +47,7 @@ void GameLogic::HandleInput()
 		}
 		else
 		{
-			vector<GameObject*> pickedUnits = _pickingDevice->pickObjects(_inputDevice->GetMouseCoord()._pos, _objectHandler->GetAllByType(ENEMY));
+			vector<GameObject*> pickedUnits = _pickingDevice->pickObjects(_inputDevice->GetMouseCoord()._pos, _objectHandler->GetAllByType(GUARD));
 
 			if (!pickedUnits.empty())
 			{

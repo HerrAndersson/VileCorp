@@ -11,6 +11,7 @@ namespace System
 	{
 		POINT _pos;
 		POINT _deltaPos;
+		POINT _clientPos;
 	};
 
 	class SYSTEM_EXPORT InputDevice

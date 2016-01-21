@@ -44,6 +44,14 @@ private:
 		int parent;
 		bool active = false;
 	};
+	int someOneActive = false;
+	std::vector<bool> _rootInfo;
+	int _rootAmount;
+	bool _root = true;
+	int _floorAmount;
+	bool _floor = false;
+	int _wallAmount;
+	bool _wall = false;
 
 	XMFLOAT3 _lastObjPosition = XMFLOAT3(0.0, 0.0, 0.0);
 	GameObject* _selectedObj;

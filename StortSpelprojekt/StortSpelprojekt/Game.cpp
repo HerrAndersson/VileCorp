@@ -5,9 +5,6 @@
 
 Game::Game(HINSTANCE hInstance, int nCmdShow)
 {
-	System::saveJSON(&_playerInfo, "test.json", "Player Info");
-	System::loadJSON(&_playerInfo, "test.json");
-	
 	_gameHandle = this;
 	System::WindowSettings settings;
 	_window = new System::Window("Amazing game", hInstance, settings, WndProc);
@@ -34,6 +31,7 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	//Init statemachine
 	_pickingDevice = new PickingDevice(_camera, _window);
 	_SM = new StateMachine(_controls, _objectHandler, _UI, _input, _camera, _pickingDevice);
+
 	_SM->Update(_timer.GetFrameTime());
 	
 	if (_SM->GetState() == LEVELEDITSTATE)
@@ -45,6 +43,9 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 		_grid = nullptr;
 	}
 
+	//CheckSettings();
+	_controls->SaveKeyBindings(System::MAP_EDIT_KEYMAP, "MOVE_CAMERA_UP", "M");
+
 	Renderer::Spotlight* spot;
 	for (int i = 0; i < 2; i++)
 	{
@@ -52,6 +53,33 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 		spot->SetPositionAndRotation(XMFLOAT3(3*i+5, 1.0f, 2*i+4), XMFLOAT3(0, 90 + i*25, 0));
 		_spotlights.push_back(spot);
 	}
+}
+
+void Game::CheckSettings()
+{
+	////System::saveJSON(&_gameSettings, "Assets/GameSettings.json", "Game Settings");
+	//System::loadJSON(&_gameSettings, "Assets/GameSettings.json");
+
+	//if (_gameSettings._default == false)
+	//{
+	//	System::WindowSettings winSettings = _window->GetWindowSettings();
+	//	winSettings._width = _gameSettings._resX;
+	//	winSettings._height = _gameSettings._resY;
+	//	winSettings._flags = 0;
+	//	if (_gameSettings._fullScreen == true)
+	//	{
+	//		winSettings._flags += 1;
+	//	}
+	//	else if (_gameSettings._bordeless == true)
+	//	{
+	//		winSettings._flags += 2;
+	//	}
+	//	else if (_gameSettings._showMouseCursor == true)
+	//	{
+	//		winSettings._flags += 4;
+	//	}
+	//	_window->ResizeWindow(winSettings);
+	//}
 }
 
 Game::~Game() 

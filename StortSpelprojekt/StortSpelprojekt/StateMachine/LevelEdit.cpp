@@ -47,7 +47,7 @@ void LevelEdit::Initialize(ObjectHandler* objectHandler, System::InputDevice* in
 	//buttonInfo[1].parent = 0;
 	//buttonInfo[2].parent = 1;
 
-	LoadLevel(3);
+	LoadLevel(9);
 
 	// Temporary hack because no mouse interface
 	_selectedObj = _objectHandler->GetGameObjects()->at(1)[0];
@@ -364,6 +364,11 @@ void LevelEdit::HandleInput()
 		isMoving = true;
 	}
 
+	if (_controls->IsFunctionKeyDown("MAP_EDIT:MOVE_MARKER_LEFT"))
+	{
+
+	}
+
 	if (isMoving)
 	{
 		_camera->SetPosition(XMFLOAT3(position.x + (forward.x + right.x) * v, position.y + (forward.y + right.y) * v, position.z + (forward.z + right.z) * v));
@@ -372,6 +377,7 @@ void LevelEdit::HandleInput()
 
 void LevelEdit::Update(float deltaTime)
 {
+	_inputDevice->Update();
 	_mouseCoord = _inputDevice->GetMouseCoord();
 	HandleHUD();
 	HandleSelected();
