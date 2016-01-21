@@ -15,8 +15,7 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	
 	_assetManager = new AssetManager(_renderModule->GetDevice());
 	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager);
-	_input = new System::InputDevice(_window->GetHWND());
-	_controls = new System::Controls(_input);
+	_controls = new System::Controls(_window->GetHWND());
 	_fontWrapper = new FontWrapper(_renderModule->GetDevice(), L"Assets/Fonts/Calibri.ttf", L"Calibri");
 
 	//Init camera
@@ -30,7 +29,7 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	//_SM = new StateMachine();
 	//Init statemachine
 	_pickingDevice = new PickingDevice(_camera, _window);
-	_SM = new StateMachine(_controls, _objectHandler, _input, _camera, _pickingDevice, "Assets/gui.json", _assetManager, _fontWrapper, settings._width, settings._height);
+	_SM = new StateMachine(_controls, _objectHandler, _camera, _pickingDevice, "Assets/gui.json", _assetManager, _fontWrapper, settings._width, settings._height);
 
 	_SM->Update(_timer.GetFrameTime());
 	if (_SM->GetState() == LEVELEDITSTATE)
@@ -88,7 +87,7 @@ Game::~Game()
 	delete _controls;
 	delete _assetManager;
 	delete _pickingDevice;
-	delete _input;
+	
 	delete _fontWrapper;
 
 	
@@ -122,7 +121,7 @@ void Game::Update(float deltaTime)
 	Fetch from objecthandler or different update functions in objecthandler
 
 	*/
-	//_input->Update();
+	_controls->Update();
 	_SM->Update(deltaTime);
 	_objectHandler->Update(deltaTime);
 
@@ -225,10 +224,9 @@ int Game::Run()
 		{
 			Update(_timer.GetFrameTime());
 			Render();
+			string s = to_string(_timer.GetFrameTime()) + " " + to_string(_timer.GetFPS());
 
-			//string s = to_string(_timer.GetFrameTime()) + " " + to_string(_timer.GetFPS());
-
-			//SetWindowText(_window->GetHWND(), s.c_str());
+			SetWindowText(_window->GetHWND(), s.c_str());
 
 			_timer.Reset();
 		}
@@ -264,7 +262,7 @@ LRESULT CALLBACK Game::WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM l
 	}
 	case WM_INPUT:
 	{
-		_gameHandle->_input->HandleRawInput(lparam);
+		_gameHandle->_controls->HandleRawInput(lparam);
 	}
 
 	default:

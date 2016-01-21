@@ -34,7 +34,6 @@ private:
 	Grid*						_grid = nullptr;
 	FontWrapper*				_fontWrapper;
 	PickingDevice*				_pickingDevice;
-	System::InputDevice*		_input;
 	PlayerInfo					_playerInfo;
 	SettingInfo					_gameSettings;
 	

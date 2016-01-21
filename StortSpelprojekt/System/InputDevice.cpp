@@ -226,12 +226,12 @@ namespace System
 		const int numberOfDevices = 2;
 		RAWINPUTDEVICE rid[numberOfDevices];
 
-		rid[0].dwFlags = 0;//RIDEV_CAPTUREMOUSE
+		rid[0].dwFlags = RIDEV_NOLEGACY;//RIDEV_CAPTUREMOUSE
 		rid[0].hwndTarget = hwnd;
 		rid[0].usUsage = 0x02 ; //0x02 == MOUSE
 		rid[0].usUsagePage = 0x01;
 
-		rid[1].dwFlags = 0;
+		rid[1].dwFlags = RIDEV_NOLEGACY;
 		rid[1].hwndTarget = hwnd;
 		rid[1].usUsage = 0x06; //0x06 == KEYBOARD
 		rid[1].usUsagePage = 0x01;
