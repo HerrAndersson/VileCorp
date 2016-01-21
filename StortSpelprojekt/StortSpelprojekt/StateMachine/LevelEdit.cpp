@@ -23,7 +23,7 @@ void LevelEdit::Add(Type type, int renderObjectID)
 	_objectHandler->Add(type, (int)type, _selectedObj->GetPosition(), XMFLOAT3(0.0f, 0.0f, 0.0f));
 }
 
-void LevelEdit::Initialize(ObjectHandler* objectHandler, System::InputDevice* inputDevice, System::Controls* controls, PickingDevice* pickingDevice, System::Camera* camera, UIHandler* uiHandler)
+void LevelEdit::Initialize(ObjectHandler* objectHandler, System::InputDevice* inputDevice, System::Controls* controls, PickingDevice* pickingDevice, System::Camera* camera)
 {
 	_objectHandler = objectHandler;
 	_inputDevice = inputDevice;
@@ -31,7 +31,7 @@ void LevelEdit::Initialize(ObjectHandler* objectHandler, System::InputDevice* in
 	_pickingDevice = pickingDevice;
 	_camera = camera;
 	_aStar = new AI::AStar();
-	_uiHandler = uiHandler;
+	
 
 	_lastSelected = nullptr;
 	_tileMultiplier = 1;
@@ -39,9 +39,10 @@ void LevelEdit::Initialize(ObjectHandler* objectHandler, System::InputDevice* in
 
 	// Add all buttons and hide them
 	//buttonInfo.resize(3);
-	_uiHandler->AddButton("floor3.png", DirectX::XMFLOAT2(-0.9f, 0.95f), DirectX::XMFLOAT2(0.1f, 0.05f), true);
-	_uiHandler->AddButton("floor.png", DirectX::XMFLOAT2(-0.9f, 0.85f), DirectX::XMFLOAT2(0.1f, 0.05f), false);
-	_uiHandler->AddButton("floor2.png", DirectX::XMFLOAT2(-0.7f, 0.85f), DirectX::XMFLOAT2(0.1f, 0.05f), false);
+	//TODO: Re-add these buttons //Mattias
+	//_uiHandler->AddButton("floor3.png", DirectX::XMFLOAT2(-0.9f, 0.95f), DirectX::XMFLOAT2(0.1f, 0.05f), true);
+	//_uiHandler->AddButton("floor.png", DirectX::XMFLOAT2(-0.9f, 0.85f), DirectX::XMFLOAT2(0.1f, 0.05f), false);
+	//_uiHandler->AddButton("floor2.png", DirectX::XMFLOAT2(-0.7f, 0.85f), DirectX::XMFLOAT2(0.1f, 0.05f), false);
 
 	//buttonInfo[0].parent = -1;
 	//buttonInfo[1].parent = 0;

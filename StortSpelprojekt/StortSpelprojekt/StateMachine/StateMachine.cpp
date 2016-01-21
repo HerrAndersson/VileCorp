@@ -1,15 +1,24 @@
 #include "StateMachine.h"
 
-StateMachine::StateMachine(System::Controls* controls, ObjectHandler* objectHandler, UIHandler* uiHandler, System::InputDevice* inputDevice, System::Camera* camera, PickingDevice* pickingDevice)
+StateMachine::StateMachine(System::Controls* controls,
+	ObjectHandler* objectHandler,
+	System::InputDevice* inputDevice,
+	System::Camera* camera,
+	PickingDevice* pickingDevice,
+	const std::string& filename,
+	AssetManager* assetManager,
+	FontWrapper* fontWrapper,
+	int width,
+	int height)
 {
 	_currentState = State::SPLASHSTATE;
 
-	_baseStates.push_back(new SplashState(controls, objectHandler, uiHandler, inputDevice, camera, pickingDevice));
-	_baseStates.push_back(new MenuState(controls, objectHandler, uiHandler, inputDevice, camera, pickingDevice));
-	_baseStates.push_back(new PlayState(controls, objectHandler, uiHandler, inputDevice, camera, pickingDevice));
-	_baseStates.push_back(new PlacementState(controls, objectHandler, uiHandler, inputDevice, camera, pickingDevice));
-	_baseStates.push_back(new LevelEditState(controls, objectHandler, uiHandler, inputDevice, camera, pickingDevice));
-	_baseStates.push_back(new OptionsState(controls, objectHandler, uiHandler, inputDevice, camera, pickingDevice));
+	_baseStates.push_back(new SplashState(controls, objectHandler, inputDevice, camera, pickingDevice, filename, assetManager, fontWrapper, width, height));
+	_baseStates.push_back(new MenuState(controls, objectHandler, inputDevice, camera, pickingDevice, filename, assetManager, fontWrapper, width, height));
+	_baseStates.push_back(new PlayState(controls, objectHandler, inputDevice, camera, pickingDevice, filename, assetManager, fontWrapper, width, height));
+	_baseStates.push_back(new PlacementState(controls, objectHandler, inputDevice, camera, pickingDevice, filename, assetManager, fontWrapper, width, height));
+	_baseStates.push_back(new LevelEditState(controls, objectHandler, inputDevice, camera, pickingDevice, filename, assetManager, fontWrapper, width, height));
+	_baseStates.push_back(new OptionsState(controls, objectHandler, inputDevice, camera, pickingDevice, filename, assetManager, fontWrapper, width, height));
 }
 
 StateMachine::~StateMachine()
@@ -51,4 +60,17 @@ void StateMachine::ProcessStateRequest()
 State StateMachine::GetState() 
 {
 	return _currentState;
+}
+
+BaseState* StateMachine::GetCurrentStatePointer() const
+{
+	return _baseStates[_currentState];
+}
+
+void StateMachine::Resize(int width, int height)
+{
+	for (auto i : _baseStates)
+	{
+		i->Resize(width, height);
+	}
 }

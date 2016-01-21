@@ -5,7 +5,6 @@
 #include "Window.h"
 #include "RenderModule.h"
 #include "Camera.h"
-#include "UIHandler.h"
 #include "ObjectHandler.h"
 #include "Timer.h"
 #include "AssetManager.h"
@@ -28,12 +27,12 @@ private:
 	Renderer::RenderModule*		_renderModule;
 	System::Camera*				_camera;
 	ObjectHandler*				_objectHandler;
-	UIHandler*					_UI;
 	System::Timer				_timer;
 //	Animation*					_animation;
 	System::Controls*			_controls;
 	AssetManager*				_assetManager;
 	Grid*						_grid = nullptr;
+	FontWrapper*				_fontWrapper;
 	PickingDevice*				_pickingDevice;
 	System::InputDevice*		_input;
 	PlayerInfo					_playerInfo;
