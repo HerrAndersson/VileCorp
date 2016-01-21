@@ -1,4 +1,5 @@
 #include "Controls.h"
+#include "rapidjson/writer.h"
 
 using namespace std;
 using namespace rapidjson;
@@ -186,24 +187,53 @@ namespace System
 	{
 		Document d;
 		d.Parse(_allKeys.c_str());
+		int keyMap = 0;
 		//Loop through all the states
 		for (Value::MemberIterator it = d.MemberBegin(); it != d.MemberEnd(); ++it)
 		{
-			//Loop through the whole keymap
-			for (Value::MemberIterator i = it->value.MemberBegin(); i != it->value.MemberEnd(); ++i)
+			if (keyMap == 0)
 			{
-				std::string key = i->value[0].GetString();
-				if (key == "Q")
+				//Loop through the whole keymap
+				for (Value::MemberIterator i = it->value.MemberBegin(); i != it->value.MemberEnd(); ++i)
 				{
-					std::string test = "M";
-					i->name.SetString(test.c_str(), test.size(), d.GetAllocator());
+					std::string key = i->name.GetString();
+					if (key == "MOVE_CAMERA_UP")
+					{
+						std::string test = "M";
+						i->value[0].SetString(test.c_str(), test.size(), d.GetAllocator());
+					}
 				}
 			}
+			keyMap = 4;
 		}
 
 		std::ofstream test("Assets/controlsTEST.json");
 		test.write(_allKeys.c_str(), _allKeys.size());
 		test.close();
+
+
+
+		StringBuffer buffer;
+		Writer<StringBuffer>writer(buffer);
+		d.Accept(writer);
+
+		//std::string keyMap = it->value[0].GetString();
+		//if (keyMap == "MAP_EDIT")
+		//{
+		//	//Loop through the whole keymap
+		//	for (Value::MemberIterator i = it->value.MemberBegin(); i != it->value.MemberEnd(); ++i)
+		//	{
+		//		std::string action = i->value[0].GetString();
+		//		if (action == "Q")
+		//		{
+		//			std::string test = "M";
+		//			i->name.SetString(test.c_str(), test.size(), d.GetAllocator());
+		//		}
+		//	}
+		//}
+
+		const char* output = buffer.GetString();
+
 	}
 
 	bool Controls::IsFunctionKeyDown(const std::string& key)
