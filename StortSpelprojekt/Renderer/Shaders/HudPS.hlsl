@@ -10,5 +10,5 @@ SamplerState ObjSamplerState : register(s0);
 
 float4 main(VS_OUT input) : SV_TARGET
 {
-	return float4(tex.Sample(ObjSamplerState, input.uv).xyz, 1.0f);
+	return float4(tex.Sample(ObjSamplerState, input.uv));
 }

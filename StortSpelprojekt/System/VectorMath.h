@@ -4,10 +4,7 @@
 
 #include <DirectXMath.h>
 
-
-
 using namespace DirectX;
-
 
 struct Vec2
 {
