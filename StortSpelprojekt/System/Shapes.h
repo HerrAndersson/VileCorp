@@ -60,6 +60,18 @@ struct Square
 	}
 };
 
+struct Circle
+{
+	Vec2 _position;
+	float _radius;
+
+	Circle(Vec2 position = Vec2(), float radius = 0.0f)
+	{
+		_position = position;
+		_radius = radius;
+	}
+};
+
 struct Sphere
 {
 	Vec3 _position;
@@ -250,7 +262,23 @@ static std::vector<Vec3> FindCorners(Box box)
 	return corners;
 }
 
+static bool Collision(Vec2 point, Square square)
+{
+	return (point._x < square._maxPos._x &&
+		point._x > square._minPos._x &&
+		point._y < square._maxPos._y &&
+		point._y > square._minPos._y);
+}
 
+static bool Collision(Vec2 point, Circle circle)
+{
+	return (point - circle._position).Length() < circle._radius;
+}
+
+static bool Collision(Vec3 point, Sphere sphere)
+{
+	return (point - sphere._position).Length() < sphere._radius;
+}
 
 static bool Collision(Ray ray, Plane plane)
 {
@@ -376,37 +404,63 @@ static bool Collision(Box box1, Box box2)
 	return collision;
 }
 
-static bool Collision(Vec3 point, Square square)
-{
-	return (point._x < square._maxPos._x && point._x > square._minPos._x &&
-		point._z < square._maxPos._y && point._z > square._minPos._y);
-}
-
 static bool Collision(Triangle triangle, Square square)
 {
-	bool collision = false;
+	bool simpleCollision = false;
+	bool satCollision = true;
 
 	if (Collision(triangle._pos1, square) || Collision(triangle._pos2, square) || Collision(triangle._pos3, square))
 	{
-		collision = true;
+		simpleCollision = true;
 	}
 
 	// SAT check
-	if (!collision)
+	if (!simpleCollision)
 	{
+		std::vector<Vec3> trianglePoints;
+		std::vector<Vec3> squarePoints;
 
+		trianglePoints.push_back(Vec3(triangle._pos1._x, 0.0f, triangle._pos1._y));
+		trianglePoints.push_back(Vec3(triangle._pos2._x, 0.0f, triangle._pos2._y));
+		trianglePoints.push_back(Vec3(triangle._pos3._x, 0.0f, triangle._pos3._y));
 
+		squarePoints.push_back(Vec3(square._minPos._x, 0.0f, square._minPos._y));
+		squarePoints.push_back(Vec3(square._maxPos._x, 0.0f, square._minPos._y));
+		squarePoints.push_back(Vec3(square._minPos._x, 0.0f, square._maxPos._y));
+		squarePoints.push_back(Vec3(square._maxPos._x, 0.0f, square._maxPos._y));
 
+		if (!SATVectorCheck(Ray(Vec3(), Vec3(triangle._pos1 - triangle._pos2).Cross(Vec3(0.0f, 1.0f, 0.0f))), trianglePoints, squarePoints))
+		{
+			satCollision = false;
+		}
 
+		else if (!SATVectorCheck(Ray(Vec3(), Vec3(triangle._pos1 - triangle._pos3).Cross(Vec3(0.0f, 1.0f, 0.0f))), trianglePoints, squarePoints))
+		{
+			satCollision = false;
+		}
+
+		else if (!SATVectorCheck(Ray(Vec3(), Vec3(triangle._pos2 - triangle._pos3).Cross(Vec3(0.0f, 1.0f, 0.0f))), trianglePoints, squarePoints))
+		{
+			satCollision = false;
+		}
+
+		else if (!SATVectorCheck(Ray(Vec3(), Vec3(1.0f, 0.0f, 0.0f)) , trianglePoints, squarePoints))
+		{
+			satCollision = false;
+		}
+
+		else if (!SATVectorCheck(Ray(Vec3(), Vec3(0.0f, 0.0f, 1.0f)), trianglePoints, squarePoints))
+		{
+			satCollision = false;
+		}
 
 	}
 
+	return simpleCollision || satCollision;
+}
 
-
-
-
-
-
-	return collision;
+static bool Collision(Circle circle, Square square)
+{
+	return (Collision(square._maxPos, circle) || Collision(square._minPos, circle) || Collision(Vec2(square._maxPos._x, square._minPos._y), circle) || Collision(Vec2(square._minPos._x, square._maxPos._y), circle));
 }
 
