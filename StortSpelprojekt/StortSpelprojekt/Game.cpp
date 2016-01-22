@@ -244,12 +244,6 @@ int Game::Run()
 		}
 		else
 		{
-			float delay = 0;
-			for (int i = 0; i < 5000000; i++)
-			{
-				delay += 1.0f / 2 + 0.6f;
-			}
-
 			_timer.Update();
 			if (_timer.GetFrameTime() >= MS_PER_FRAME)
 			{
