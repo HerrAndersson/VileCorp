@@ -115,7 +115,6 @@ struct GameObjectTrapInfo : GameObjectBaseInfo
 {
 	int _type = 0;
 	int _cost = 40;
-	int _speed = 200;
 	int _hitpoints = 30;
 	int _damage = 80;
 	int _radius = 50;
@@ -126,7 +125,6 @@ struct GameObjectTrapInfo : GameObjectBaseInfo
 		a(CEREAL_NVP(_name)),
 		a(CEREAL_NVP(_type)),
 		a(CEREAL_NVP(_cost)),
-		a(CEREAL_NVP(_speed)),
 		a(CEREAL_NVP(_hitpoints)),
 		a(CEREAL_NVP(_damage)),
 		a(CEREAL_NVP(_radius));
@@ -240,6 +238,7 @@ struct GameObjectInfo
 		delete _objects[GUARD];
 		delete _objects[ENEMY];
 	}
+
 	GameObjectFloorInfo* Floors(unsigned i)
 	{
 		if (_objects[FLOOR]->size() < i + 1)

@@ -579,7 +579,6 @@ uint AssetManager::GetRenderObjectByType(Type type, uint index)
 			}
 			i++;
 		}
-		i = 0;
 		returnIndex++;
 	}
 	return 0;

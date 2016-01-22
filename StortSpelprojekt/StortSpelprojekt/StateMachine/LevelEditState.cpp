@@ -16,7 +16,6 @@ LevelEditState::~LevelEditState()
 void LevelEditState::Update(float deltaTime)
 {
 	_levelEdit.Update(deltaTime);
-	*/
 }
 
 void LevelEditState::OnStateEnter()
