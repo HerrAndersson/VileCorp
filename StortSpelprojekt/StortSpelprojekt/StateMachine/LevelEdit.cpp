@@ -29,7 +29,7 @@ GameObject* LevelEdit::GetSelectedObject()
 
 bool LevelEdit::Add(Type type)
 {
-	return _objectHandler->Add(type, -1, _marker->GetPosition(), XMFLOAT3(0.0f, 0.0f, 0.0f));
+	return _objectHandler->Add(type, _marker->GetPosition(), XMFLOAT3(0.0f, 0.0f, 0.0f));
 }
 
 bool LevelEdit::Delete(Type type)
@@ -135,9 +135,9 @@ void LevelEdit::HandleHUD()
 void LevelEdit::DragAndDrop(Type type)
 {
 	////if (_marker != nullptr && _inputDevice->IsDown(System::Input::LeftMouse))
-	if (_marker != nullptr && _controls->IsFunctionKeyDown("PLACEMENT:GRAB"))
+	if (_marker != nullptr && _controls->IsFunctionKeyDown("PLACEMENT:SELECT"))
 	{
-		AI::Vec2D pickedTile = _pickingDevice->pickTile(_inputDevice->GetMouseCoord()._pos);
+		AI::Vec2D pickedTile = _pickingDevice->pickTile(_controls->GetMouseCoord()._pos);
 		
 		if (_objectHandler->GetTileMap()->IsValid(pickedTile._x, pickedTile._y))
 		{
@@ -184,7 +184,7 @@ void LevelEdit::DragAndDrop(Type type)
 			}
 		}
 	}
-	if (_inputDevice->IsReleased(System::Input::LeftMouse))
+	if (_controls->IsFunctionKeyDown("PLACEMENT:SELECT"))
 	{
 		if (_isSelectionMode)
 		{
@@ -248,12 +248,12 @@ void LevelEdit::HandleInput()
 	//	_marker->SetScale(XMFLOAT3(tempPos.x, tempPos.y, tempPos.z - 1));
 	//}
 
-	/*
-	if (_inputDevice->IsPressed(System::Input::LeftMouse))
+	
+	if (_controls->IsFunctionKeyDown("PLACEMENT:SELECT"))
 	{
 		if (_isSelectionMode)
 		{
-			AI::Vec2D pickedTile = _pickingDevice->pickTile(_inputDevice->GetMouseCoord()._pos);
+			AI::Vec2D pickedTile = _pickingDevice->pickTile(_controls->GetMouseCoord()._pos);
 			std::vector<GameObject*> objectsOnTile = _objectHandler->GetTileMap()->GetAllObjectsOnTile(pickedTile);
 			if (!objectsOnTile.empty())
 			{
@@ -288,15 +288,15 @@ void LevelEdit::HandleInput()
 	}
 
 	//Camera mouse control_
-	System::MouseCoord mouseCoord = _inputDevice->GetMouseCoord();
+	/*System::MouseCoord mouseCoord = _inputDevice->GetMouseCoord();
 	if (mouseCoord._deltaPos.x != 0 || mouseCoord._deltaPos.y != 0)
 	{
 		XMFLOAT3 rotation = _camera->GetRotation();
 		rotation.y += mouseCoord._deltaPos.x / 10.0f;
 		rotation.x += mouseCoord._deltaPos.y / 10.0f;
 		_camera->SetRotation(rotation);
-	}
-	*/
+	}*/
+	
 	/*
 	if (_camera->GetMode() == System::LOCKED_CAM)
 	{

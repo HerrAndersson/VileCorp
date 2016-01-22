@@ -36,7 +36,7 @@ void ObjectHandler::ActivateTileset(string name)
 	}
 }
 
-bool ObjectHandler::Add(Type type, int renderObjectID, XMFLOAT3 position = XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3 rotation = XMFLOAT3(0.0f, 0.0f, 0.0f))
+bool ObjectHandler::Add(Type type, XMFLOAT3 position = XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3 rotation = XMFLOAT3(0.0f, 0.0f, 0.0f))
 {
 	GameObject* object = nullptr;
 	bool addedObject = false;
@@ -271,7 +271,7 @@ bool ObjectHandler::LoadLevel(int lvlIndex)
 
 	for (auto i : gameObjectData)
 	{
-		Add((Type)i._tileType, i._tileType, DirectX::XMFLOAT3(i._posX, 0, i._posZ), DirectX::XMFLOAT3(0, i._rotY, 0));
+		Add((Type)i._tileType, DirectX::XMFLOAT3(i._posX, 0, i._posZ), DirectX::XMFLOAT3(0, i._rotY, 0));
 	}
 	return false;
 }

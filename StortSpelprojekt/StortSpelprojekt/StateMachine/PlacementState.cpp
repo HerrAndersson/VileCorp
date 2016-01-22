@@ -24,72 +24,67 @@ void PlacementState::Update(float deltaTime)
 
 	int cost = 20;
 
-	if (_levelEdit.GetSelectedObject() != nullptr)
+	//T adds Trap
+	if (_controls->IsFunctionKeyDown("PLACEMENT:BUILD_TRAP") && _budget - cost >= 0)
 	{
-		//T adds Trap
-		if (_controls->IsFunctionKeyDown("PLACEMENT:BUILD_TRAP"))
+		AI::Vec2D pickedTileCoord = _pickingDevice->pickTile(_controls->GetMouseCoord()._pos);
+		bool added = _objectHandler->Add(TRAP, XMFLOAT3(pickedTileCoord._x, 0, pickedTileCoord._y), XMFLOAT3(0, 0, 0));
+
+		if (added)
 		{
-			if (_budget - cost >= 0)
-			{
-				vector<GameObject*>* vec = &_objectHandler->GetGameObjects()->at(TRAP);
-				if (vec->empty() && _levelEdit.Add(TRAP))
-				{
-					_budget -= cost;
-				}
-				else
-				{
-					bool taken = false;
-					if (_levelEdit.TypeOn(WALL))
-					{
-						taken = true;
-					}
-					if (!taken && _levelEdit.Add(TRAP))
-					{
-						_budget -= cost;
-					}
-				}
-			}
+			_budget -= cost;
 		}
-		else if (_controls->IsFunctionKeyDown("PLACEMENT:HIRE_GUARD"))
+		/*else
 		{
-			if (_budget - cost >= 0)
+			bool taken = false;
+			if (_levelEdit.TypeOn(WALL))
 			{
-				vector<GameObject*>* vec = &_objectHandler->GetGameObjects()->at(GUARD);
-				if (vec->empty() && _levelEdit.Add(GUARD))
-				{
-					_budget -= cost;
-				}
-				else
-				{
-					bool taken = false;
-					if (_levelEdit.TypeOn(WALL))
-					{
-						taken = true;
-					}
-					if (!taken && _levelEdit.Add(GUARD))
-					{
-						_budget -= cost;
-					}
-				}
+				taken = true;
 			}
+			if (!taken && _levelEdit.Add(TRAP))
+			{
+				_budget -= cost;
+			}
+		}*/
+	}
+	else if (_controls->IsFunctionKeyDown("PLACEMENT:HIRE_GUARD") && _budget - cost >= 0)
+	{
+		AI::Vec2D pickedTileCoord = _pickingDevice->pickTile(_controls->GetMouseCoord()._pos);
+		bool added = _objectHandler->Add(GUARD, XMFLOAT3(pickedTileCoord._x, 0, pickedTileCoord._y), XMFLOAT3(0, 0, 0));
+
+		if (added)
+		{
+			_budget -= cost;
 		}
-		else if (_controls->IsFunctionKeyDown("PLACEMENT:DELETE"))
+		/*else
 		{
-			if (!_levelEdit.Delete(TRAP))
+			bool taken = false;
+			if (_levelEdit.TypeOn(WALL))
 			{
-				_budget += cost;
+				taken = true;
 			}
-			if (!_levelEdit.Delete(GUARD))
+			if (!taken && _levelEdit.Add(GUARD))
 			{
-				_budget += cost;
+				_budget -= cost;
 			}
+		}*/
+	}
+	else if (_controls->IsFunctionKeyDown("PLACEMENT:DELETE"))
+	{
+		if (!_levelEdit.Delete(TRAP))
+		{
+			_budget += cost;
+		}
+		if (!_levelEdit.Delete(GUARD))
+		{
+			_budget += cost;
 		}
 	}
 
-	if (_controls->IsFunctionKeyDown("PLACEMENT:CHANGE_TO_PLAY") == true)
-	{
-		ChangeState(State::PLAYSTATE);
-	}
+if (_controls->IsFunctionKeyDown("PLACEMENT:CHANGE_TO_PLAY") == true)
+{
+	ChangeState(State::PLAYSTATE);
+}
 }
 
 void PlacementState::OnStateEnter()

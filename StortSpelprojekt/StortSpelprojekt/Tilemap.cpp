@@ -77,13 +77,14 @@ bool Tilemap::AddObjectToTile(int x, int z, GameObject * obj)
 			result = true;
 			break;
 		case ENEMY:
-		case GUARD:
 			if (_map[x][z]._objectsOnTile[1] == nullptr)
 			{
 				_map[x][z]._objectsOnTile[1] = obj;
 				result = true;
 			}
-			else if (_map[x][z]._objectsOnTile[2] == nullptr)
+			break;
+		case GUARD:
+			if (_map[x][z]._objectsOnTile[2] == nullptr)
 			{
 				_map[x][z]._objectsOnTile[2] = obj;
 				result = true;

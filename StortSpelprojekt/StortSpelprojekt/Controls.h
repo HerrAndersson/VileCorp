@@ -49,7 +49,10 @@ namespace System
 		void HandleRawInput(LPARAM lparam);
 		void SaveKeyBindings(int keyMap, std::string action, std::string newKey, std::string newKey2 = std::string(), std::string newKey3 = std::string(), std::string newKey4 = std::string());
 		bool IsFunctionKeyDown(const std::string& key);
+		bool IsFunctionKeyUp(const std::string& key);
 		void ToggleCursorLock();
+
+		MouseCoord GetMouseCoord();
 	};
 
 }

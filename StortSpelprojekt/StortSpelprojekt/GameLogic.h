@@ -21,3 +21,6 @@ public:
 	void Initialize(ObjectHandler* objectHandler, System::Camera* camera, System::Controls* controls, PickingDevice* pickingDevice);
 	void Update(float deltaTime);
 };
+
+
+

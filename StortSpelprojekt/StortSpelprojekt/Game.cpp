@@ -175,14 +175,13 @@ void Game::Render()
 	{
 		_renderModule->SetShaderStage(Renderer::RenderModule::GRID_PASS);
 
-		std::vector<DirectX::XMMATRIX>* gridMatrices = _grid->GetGridMatrices();
+		//TODO: GetGridMatrices() returns a nullptr /Rikhard
+		//std::vector<DirectX::XMMATRIX>* gridMatrices = _grid->GetGridMatrices();
 
-		for (auto &matrix : *gridMatrices)
-
-
-		{
-			_renderModule->RenderLineList(&matrix, _grid->GetLineBuffer(), 2);
-		}
+		//for (auto &matrix : *gridMatrices)
+		//{
+		//	_renderModule->RenderLineList(&matrix, _grid->GetLineBuffer(), 2);
+		//}
 	}
 //for (auto spot : _spotlights)
 	//{
