@@ -125,4 +125,54 @@ namespace GUI
 		}
 		delete node;
 	}
+
+	bool UITree::IsButtonColliding(Node* current, const std::string& id, int x, int y, float px, float py, bool& found)
+	{
+		if (current->_id == id)
+		{
+			XMFLOAT2 topLeft;
+			XMFLOAT2 size;
+
+			XMFLOAT2 pos = current->GetPosition();
+			XMFLOAT2 scale = current->GetScale();
+			//(px, py) == center position
+			//Calculate bouding box in pixels from scale and (px, py)
+			topLeft.x = px - scale.x;
+			topLeft.y = py*-1.0f - scale.y;
+
+			//Convert coordinates to pixel coordinate system
+			topLeft.x = (topLeft.x + 1.0f) * 0.5f * _info._screenWidth;
+			topLeft.y = (topLeft.y + 1.0f) * 0.5f * _info._screenHeight;
+
+			size.x = scale.x * _info._screenWidth;
+			size.y = scale.y * _info._screenHeight;
+
+			//Check collision with mouse coord and return the result
+			found = true;
+			return (
+				(y > topLeft.y && y < topLeft.y + size.y) &&
+				(x > topLeft.x && x < topLeft.x + size.x)
+				);
+		}
+		for (Node* i : *current->GetChildren())
+		{
+			XMFLOAT2 pos = i->GetPosition();
+			bool f;
+			bool ret = IsButtonColliding(i, id, x, y, px + pos.x, py + pos.y, f);
+			if (f)
+			{
+				found = true;
+				return ret;
+			}
+		}
+		found = false;
+		return false;
+	}
+
+	bool UITree::IsButtonColliding(const std::string& id, int x, int y)
+	{
+		XMFLOAT2 pos = _root->GetPosition();
+		bool f;
+		return IsButtonColliding(_root, id, x, y, pos.x, pos.y, f);
+	}
 }

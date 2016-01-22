@@ -12,6 +12,7 @@ namespace GUI
 {
 	class __declspec(dllexport) Node
 	{
+		friend class UITree;
 	public:
 		struct NodeInfo
 		{

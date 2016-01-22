@@ -18,14 +18,7 @@ MenuState::~MenuState()
 
 void MenuState::Update(float deltaTime)
 {
-	if (_controls->IsFunctionKeyDown("DEBUG:ENABLE_FREECAM"))
-	{
-		//Get mouse coord
-		//Calculate mouse coord to screenspace
-		//Check collision with all the buttons
-		//Execute code for button
-	}
-	
+	bool val = _uiTree.IsButtonColliding("playbutton", 100, 260);
 }
 
 void MenuState::OnStateEnter()
