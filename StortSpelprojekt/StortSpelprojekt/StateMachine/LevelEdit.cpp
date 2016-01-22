@@ -23,10 +23,9 @@ void LevelEdit::Add(Type type, int renderObjectID)
 	_objectHandler->Add(type, (int)type, _selectedObj->GetPosition(), XMFLOAT3(0.0f, 0.0f, 0.0f));
 }
 
-void LevelEdit::Initialize(ObjectHandler* objectHandler, System::InputDevice* inputDevice, System::Controls* controls, PickingDevice* pickingDevice, System::Camera* camera)
+void LevelEdit::Initialize(ObjectHandler* objectHandler, System::Controls* controls, PickingDevice* pickingDevice, System::Camera* camera)
 {
 	_objectHandler = objectHandler;
-	_inputDevice = inputDevice;
 	_controls = controls;
 	_pickingDevice = pickingDevice;
 	_camera = camera;
@@ -301,7 +300,7 @@ void LevelEdit::HandleInput()
 	{
 		//_inputDevice->ToggleCursorLock();
 	}
-
+	/*
 	if (_inputDevice->IsPressed(System::Input::LeftMouse))
 	{
 		if (_isSelectionMode)
@@ -330,7 +329,8 @@ void LevelEdit::HandleInput()
 			_isSelectionMode = true;
 		}
 	}
-
+	*/
+	/*
 	if (_camera->GetMode() == System::LOCKED_CAM)
 	{
 		if (_inputDevice->IsDown(System::Input::ScrollWheelUp) &&
@@ -344,6 +344,7 @@ void LevelEdit::HandleInput()
 			_camera->Move(XMFLOAT3(0.0f, 1.0f, 0.0f));
 		}
 	}
+	*/
 
 	XMFLOAT3 forward(0, 0, 0);
 	XMFLOAT3 position = _camera->GetPosition();
@@ -392,8 +393,6 @@ void LevelEdit::HandleInput()
 
 void LevelEdit::Update(float deltaTime)
 {
-	_inputDevice->Update();
-	_mouseCoord = _inputDevice->GetMouseCoord();
 	HandleHUD();
 	HandleSelected();
 	HandleInput();

@@ -19,7 +19,6 @@ private:
 	void ProcessStateRequest();
 
 	ObjectHandler*			_objectHandler;
-	System::InputDevice*	_inputDevice;
 	System::Camera*			_camera;
 	PickingDevice*			_pickingDevice;
 
@@ -27,7 +26,6 @@ public:
 	StateMachine(
 		System::Controls* controls,
 		ObjectHandler* objectHandler,
-		System::InputDevice* inputDevice,
 		System::Camera* camera,
 		PickingDevice* pickingDevice,
 		const std::string& filename,
