@@ -14,8 +14,6 @@
 
 namespace Renderer
 {
-	const int SHADOWMAP_DIMENSIONS = 256;
-
 	class RENDERER_EXPORT RenderModule
 	{
 	private:
@@ -93,6 +91,9 @@ namespace Renderer
 		ShadowMap* _shadowMap;
 
 	public:
+
+		const int SHADOWMAP_DIMENSIONS = 256;
+		const DirectX::XMFLOAT3 AMBIENT_LIGHT = DirectX::XMFLOAT3(0.3f, 0.3f, 0.3f);
 
 		enum ShaderStage { GEO_PASS, SHADOW_GENERATION, LIGHT_APPLICATION, GRID_PASS, ANIM_PASS, HUD_PASS };
 

@@ -52,7 +52,8 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	Renderer::Spotlight* spot;
 	for (int i = 0; i < 2; i++)
 	{
-		spot = new Renderer::Spotlight(_renderModule->GetDevice(), 0.1f, 1000.0f, XM_PIDIV4 /*XM_PI / 0.082673f*/, Renderer::SHADOWMAP_DIMENSIONS, Renderer::SHADOWMAP_DIMENSIONS, 1.0f, 8.0f, XMFLOAT3(0.0f, 1.0f, 1.0f), 36); //Ska ha samma dimensions som shadow map, som nu ligger i render module
+		int d = _renderModule->SHADOWMAP_DIMENSIONS;
+		spot = new Renderer::Spotlight(_renderModule->GetDevice(), 0.1f, 1000.0f, XM_PIDIV4 /*XM_PI / 0.082673f*/, d, d, 1.0f / (i+1), 8.0f, XMFLOAT3(0.0f, 1.0f, 1.0f), 36);
 		spot->SetPositionAndRotation(XMFLOAT3(3*i+5, 1.0f, 2*i+4), XMFLOAT3(0, 90 + i*25, 0));
 		_spotlights.push_back(spot);
 	}
@@ -126,32 +127,32 @@ void Game::Update(float deltaTime)
 
 	std::vector<GameObject*> e = _objectHandler->GetAllByType(GUARD);
 
-	//if (e.size() > 0)
-	//{
-	//	XMFLOAT3 p = e[0]->GetPosition();
-	//	XMFLOAT3 r = e[0]->GetRotation();
-	//	XMFLOAT3 d = _spotlights[0]->GetDirection();
-
-	//	p.y += 0.15f;
-	//	p.x += d.x * 0.5f;
-	//	p.z += d.z * 0.5f;
-
-	//	r = XMFLOAT3(XMConvertToDegrees(r.x), -XMConvertToDegrees(r.y), XMConvertToDegrees(r.z));
-	//	_spotlights[0]->SetPositionAndRotation(p, r);
-	//}
-
-	for (unsigned int i = 0; i < _spotlights.size(); i++)
+	if (e.size() > 0)
 	{
-		XMFLOAT3 rot = _spotlights[i]->GetRotation();
-		rot.y -= (float)(i + 1) / 1;
-		_spotlights[i]->SetRotation(rot);
+		XMFLOAT3 p = e[0]->GetPosition();
+		XMFLOAT3 r = e[0]->GetRotation();
+		XMFLOAT3 d = _spotlights[0]->GetDirection();
 
-		XMFLOAT3 color = _spotlights[i]->GetColor();
-		color.x = sin(_timer.GetGameTime() / 1000);
-		color.y = sin(_timer.GetGameTime() / 1000 + XMConvertToRadians(120));
-		color.z = sin(_timer.GetGameTime() / 1000 + XMConvertToRadians(240));
-		_spotlights[i]->SetColor(color);
+		p.y += 0.15f;
+		p.x += d.x * 0.5f;
+		p.z += d.z * 0.5f;
+
+		r = XMFLOAT3(XMConvertToDegrees(r.x), -XMConvertToDegrees(r.y), XMConvertToDegrees(r.z));
+		_spotlights[0]->SetPositionAndRotation(p, r);
 	}
+
+	//for (unsigned int i = 0; i < _spotlights.size(); i++)
+	//{
+	//	XMFLOAT3 rot = _spotlights[i]->GetRotation();
+	//	rot.y -= (float)(i + 1) / 1;
+	//	_spotlights[i]->SetRotation(rot);
+
+	//	XMFLOAT3 color = _spotlights[i]->GetColor();
+	//	color.x = sin(_timer.GetGameTime() / 1000);
+	//	color.y = sin(_timer.GetGameTime() / 1000 + XMConvertToRadians(120));
+	//	color.z = sin(_timer.GetGameTime() / 1000 + XMConvertToRadians(240));
+	//	_spotlights[i]->SetColor(color);
+	//}
 }
 
 void Game::Render()
@@ -171,6 +172,7 @@ void Game::Render()
 		{
 			//TODO: If type == ENEMY -> don't render. Instead check in the chosen objects for the light rendering (Functionality not done), and check if the enemies are there they should be both rendered and lit.
 			//If not, they should not be rendered nor lit /Jonas
+
 			_renderModule->Render(g->GetMatrix(), g->GetRenderObject());
 		}
 	}
@@ -212,9 +214,9 @@ void Game::Render()
 		_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::LIGHT_APPLICATION);
 		_renderModule->SetLightDataPerSpotlight(_spotlights[i]);
 
-		//_renderModule->DEBUG_RenderLightVolume(_spotlights[i]->GetVolumeBuffer(), _spotlights[i]->GetWorldMatrix(), _spotlights[i]->GetVertexCount(), _spotlights[i]->GetVertexSize());
+		_renderModule->DEBUG_RenderLightVolume(_spotlights[i]->GetVolumeBuffer(), _spotlights[i]->GetWorldMatrix(), _spotlights[i]->GetVertexCount(), _spotlights[i]->GetVertexSize());
 
-		_renderModule->RenderScreenQuad();
+		//_renderModule->RenderScreenQuad();
 	}
 
 	/*-------------------------------------------------------- HUD and other 2D -----------------------------------------------------------*/

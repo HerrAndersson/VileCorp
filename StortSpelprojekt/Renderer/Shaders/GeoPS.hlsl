@@ -27,8 +27,8 @@ PS_OUT main(VS_OUT input)
 {
 	PS_OUT output = (PS_OUT)0;
 
-	output.diffuse = diffuse.Sample(samplerWrap, input.uv) * 0.5f;
-	output.diffuse.a = 0.0f;
+	float4 color = diffuse.Sample(samplerWrap, input.uv);
+	output.diffuse = float4(color.xyz * input.ambientLight, 0.0f);
 	output.normal = float4(input.normal, 0.0f);
 	output.backbuffer = float4(output.diffuse.xyz * input.ambientLight, 0.0f);
 

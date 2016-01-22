@@ -108,8 +108,8 @@ float4 main(VS_OUT input) : SV_TARGET
 			//In light
 			if (shadowCoeff > depth - epsilon)
 			{
-				finalColor += saturate(lightColor * lightIntensity);
-				finalColor *= dot(-normalize(lightToPixel), lightDirection);
+				finalColor += saturate(lightColor * diffuse);
+				finalColor *= dot(-normalize(lightToPixel), lightDirection) * lightIntensity * 2;
 				return saturate(float4(finalColor, 1.0f));
 			}
 		}

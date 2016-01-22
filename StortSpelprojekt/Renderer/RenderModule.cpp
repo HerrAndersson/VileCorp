@@ -137,7 +137,7 @@ namespace Renderer
 
 		dataPtr->_viewMatrix = viewMatrixC;
 		dataPtr->_projectionMatrix = projectionMatrixC;
-		dataPtr->_ambientLight = XMFLOAT3(0.5f, 0.5f, 0.5f);
+		dataPtr->_ambientLight = AMBIENT_LIGHT;
 
 		deviceContext->Unmap(_matrixBufferPerFrame, 0);
 
@@ -327,7 +327,7 @@ namespace Renderer
 			_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::BACK);
 
 			int nrOfSRVs = _d3d->SetLightStage();
-			_shaderHandler->SetLightApplicationShaders(deviceContext);
+			_shaderHandler->SetLightApplicationShaders(deviceContext, 2);
 			ID3D11ShaderResourceView* shadowMapSRV = _shadowMap->GetShadowSRV();
 			_d3d->GetDeviceContext()->PSSetShaderResources(nrOfSRVs, 1, &shadowMapSRV);
 
@@ -383,13 +383,13 @@ namespace Renderer
 		{
 			SetShaderStage(ANIM_PASS);
 			vertexSize = sizeof(WeightedVertex);
-			//SetResourcesPerObject(world, diffuseData, specularData, extra);
+			SetDataPerSkinnedObject(world, diffuseData, specularData, extra);
 		}
 		else
 		{
 			SetShaderStage(GEO_PASS);
 			vertexSize = sizeof(Vertex);
-			//SetResourcePerObject(world, diffuseData, specularData);
+			SetDataPerObject(world, diffuseData, specularData);
 		}
 		
 		SetDataPerMesh(renderObject->_mesh._vertexBuffer, vertexSize);
@@ -529,7 +529,7 @@ namespace Renderer
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
 		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
 
-		_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::NONE);
+		_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::BACK);
 		_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::DISABLE);
 
 		XMMATRIX worldMatrixC = XMMatrixTranspose(*world);
