@@ -2,6 +2,7 @@
 #include <d3dcompiler.h>
 #include <stdexcept>
 #include <string>
+#include <atlstr.h>
 
 #pragma comment (lib, "d3d11.lib")
 #pragma comment (lib, "d3dcompiler.lib")
@@ -118,7 +119,8 @@ namespace Renderer
 
 		_lightPassVS = CreateVertexShader(device, L"Assets/Shaders/LightVS.hlsl", lightInputDesc, numElements);
 		_lightPassPS = CreatePixelShader(device, L"Assets/Shaders/LightPS.hlsl");
-		_lightApplyPS = CreatePixelShader(device, L"Assets/Shaders/LightApplyPS.hlsl");
+		_lightApplyLightVolumePS = CreatePixelShader(device, L"Assets/Shaders/LightApplyLightVolumePS.hlsl");
+		_lightApplyScreenQuadPS = CreatePixelShader(device, L"Assets/Shaders/LightApplyScreenQuadPS.hlsl");
 
 		//Shadow map shaders init
 		D3D11_INPUT_ELEMENT_DESC shadowInputDesc[] =
@@ -128,7 +130,7 @@ namespace Renderer
 
 		numElements = sizeof(shadowInputDesc) / sizeof(shadowInputDesc[0]);
 		_shadowMapVS = CreateVertexShader(device, L"Assets/Shaders/ShadowVS.hlsl", shadowInputDesc, numElements);
-		_lightApplyVS = CreateVertexShader(device, L"Assets/Shaders/LightApplyVS.hlsl", shadowInputDesc, numElements);
+		_lightApplyLightVolumeVS = CreateVertexShader(device, L"Assets/Shaders/LightApplyLightVolumeVS.hlsl", shadowInputDesc, numElements);
 
 		//Animation pass init
 		D3D11_INPUT_ELEMENT_DESC animInputDesc[] =
@@ -171,12 +173,14 @@ namespace Renderer
 		delete _shadowMapVS;
 		delete _gridPassVS;
 		delete _hudPassVS;
+		delete _lightApplyLightVolumeVS;
 
 		SAFE_RELEASE(_defaultPS);
 		SAFE_RELEASE(_geoPassPS);
 		SAFE_RELEASE(_lightPassPS);
 		SAFE_RELEASE(_gridPassPS);
-		SAFE_RELEASE(_lightApplyPS);
+		SAFE_RELEASE(_lightApplyLightVolumePS);
+		SAFE_RELEASE(_lightApplyScreenQuadPS);
 		SAFE_RELEASE(_hudPassPS);
 
 		SAFE_RELEASE(_samplerWRAP);
@@ -203,14 +207,16 @@ namespace Renderer
 			}
 			else
 			{
-				throw std::runtime_error("ShaderHandler::CreateVertexShader: Shader file not found");
+				std::string s = ATL::CW2A (fileName);
+				throw std::runtime_error("ShaderHandler::CreateVertexShader: Shader file not found. Filename: " + s);
 			}
 		}
 
 		result = device->CreateVertexShader(shaderBuffer->GetBufferPointer(), shaderBuffer->GetBufferSize(), NULL, &vertexShader);
 		if (FAILED(result))
 		{
-			throw std::runtime_error("ShaderHandler::CreateVertexShader: Shader file not found.");
+			std::string s = ATL::CW2A(fileName);
+			throw std::runtime_error("ShaderHandler::CreateVertexShader: Shader file not found. Filename: " + s);
 		}
 
 		result = device->CreateInputLayout(inputDesc, inputDescSize, shaderBuffer->GetBufferPointer(), shaderBuffer->GetBufferSize(), &inputLayout);
@@ -237,14 +243,16 @@ namespace Renderer
 			}
 			else
 			{
-				throw std::runtime_error("ShaderHandler::CreateHullShader: Shader file not found");
+				std::string s = ATL::CW2A(fileName);
+				throw std::runtime_error("ShaderHandler::CreateHullShader: Shader file not found. Filename: " + s);
 			}
 		}
 		
 		result = device->CreateHullShader(shaderBuffer->GetBufferPointer(), shaderBuffer->GetBufferSize(), NULL, &hullShader);
 		if (FAILED(result))
 		{
-			throw std::runtime_error("ShaderHandler::CreateHullShader: Shader file not found.");
+			std::string s = ATL::CW2A(fileName);
+			throw std::runtime_error("ShaderHandler::CreateHullShader: Shader file not found. Filename: " + s);
 		}
 
 		SAFE_RELEASE(errorMessage);
@@ -268,14 +276,16 @@ namespace Renderer
 			}
 			else
 			{
-				throw std::runtime_error("ShaderHandler::CreateGeometryShader: Shader file not found");
+				std::string s = ATL::CW2A(fileName);
+				throw std::runtime_error("ShaderHandler::CreateGeometryShader: Shader file not found. Filename: " + s);
 			}
 		}
 		
 		result = device->CreateGeometryShader(shaderBuffer->GetBufferPointer(), shaderBuffer->GetBufferSize(), NULL, &geometryShader);
 		if (FAILED(result))
 		{
-			throw std::runtime_error("ShaderHandler::CreateGeometryShader: Shader file not found.");
+			std::string s = ATL::CW2A(fileName);
+			throw std::runtime_error("ShaderHandler::CreateGeometryShader: Shader file not found.. Filename: " + s);
 		}
 
 		SAFE_RELEASE(errorMessage);
@@ -299,14 +309,16 @@ namespace Renderer
 			}
 			else
 			{
-				throw std::runtime_error("ShaderHandler::CreateDomainShader: Shader file not found");
+				std::string s = ATL::CW2A(fileName);
+				throw std::runtime_error("ShaderHandler::CreateDomainShader: Shader file not found. Filename: " + s);
 			}
 		}
 
 		result = device->CreateDomainShader(shaderBuffer->GetBufferPointer(), shaderBuffer->GetBufferSize(), NULL, &domainShader);
 		if (FAILED(result))
 		{
-			throw std::runtime_error("ShaderHandler::CreateDomainShader: Shader file not found.");
+			std::string s = ATL::CW2A(fileName);
+			throw std::runtime_error("ShaderHandler::CreateDomainShader: Shader file not found. Filename: " + s);
 		}
 
 		SAFE_RELEASE(errorMessage);
@@ -331,14 +343,16 @@ namespace Renderer
 			}
 			else
 			{
-				throw std::runtime_error("ShaderHandler::CreatePixelShader: Shader file not found");
+				std::string s = ATL::CW2A(fileName);
+				throw std::runtime_error("ShaderHandler::CreatePixelShader: Shader file not found. Filename: " + s);
 			}
 		}
 
 		result = device->CreatePixelShader(shaderBuffer->GetBufferPointer(), shaderBuffer->GetBufferSize(), NULL, &pixelShader);
 		if (FAILED(result))
 		{
-			throw std::runtime_error("ShaderHandler::CreatePixelShader: Shader file not found.");
+			std::string s = ATL::CW2A(fileName);
+			throw std::runtime_error("ShaderHandler::CreatePixelShader: Shader file not found. Filename: " + s);
 		}
 
 		SAFE_RELEASE(errorMessage);
@@ -362,14 +376,16 @@ namespace Renderer
 			}
 			else
 			{
-				throw std::runtime_error("ShaderHandler::CreateComputeShader: Shader file not found");
+				std::string s = ATL::CW2A(fileName);
+				throw std::runtime_error("ShaderHandler::CreateComputeShader: Shader file not found. Filename: " + s);
 			}
 		}
 
 		result = device->CreateComputeShader(shaderBuffer->GetBufferPointer(), shaderBuffer->GetBufferSize(), NULL, &computeShader);
 		if (FAILED(result))
 		{
-			throw std::runtime_error("ShaderHandler::CreateComputeShader: Shader file not found.");
+			std::string s = ATL::CW2A(fileName);
+			throw std::runtime_error("ShaderHandler::CreateComputeShader: Shader file not found. Filename: " + s);
 		}
 
 		SAFE_RELEASE(errorMessage);
@@ -501,18 +517,35 @@ namespace Renderer
 		deviceContext->PSSetSamplers(0, 2, samplers);
 	}
 
-	void ShaderHandler::SetLightApplicationShaders(ID3D11DeviceContext* deviceContext)
+	void ShaderHandler::SetLightApplicationShaders(ID3D11DeviceContext* deviceContext, int screenOrVolume)
 	{
-		//Set vertex layout
-		deviceContext->IASetInputLayout(_lightApplyVS->_inputLayout);
 
-		//Set shaders
-		deviceContext->VSSetShader(_lightApplyVS->_vertexShader, nullptr, 0);
-		deviceContext->HSSetShader(nullptr, nullptr, 0);
-		deviceContext->GSSetShader(nullptr, nullptr, 0);
-		deviceContext->DSSetShader(nullptr, nullptr, 0);
-		deviceContext->PSSetShader(_lightApplyPS, nullptr, 0);
-		deviceContext->CSSetShader(nullptr, nullptr, 0);
+		if (screenOrVolume == 1)
+		{
+			//Set vertex layout
+			deviceContext->IASetInputLayout(_lightPassVS->_inputLayout);
+
+			//Set shaders
+			deviceContext->VSSetShader(_lightPassVS->_vertexShader, nullptr, 0);
+			deviceContext->HSSetShader(nullptr, nullptr, 0);
+			deviceContext->GSSetShader(nullptr, nullptr, 0);
+			deviceContext->DSSetShader(nullptr, nullptr, 0);
+			deviceContext->PSSetShader(_lightApplyScreenQuadPS, nullptr, 0);
+			deviceContext->CSSetShader(nullptr, nullptr, 0);
+		}
+		else if (screenOrVolume == 2)
+		{
+			//Set vertex layout
+			deviceContext->IASetInputLayout(_lightApplyLightVolumeVS->_inputLayout);
+
+			//Set shaders
+			deviceContext->VSSetShader(_lightApplyLightVolumeVS->_vertexShader, nullptr, 0);
+			deviceContext->HSSetShader(nullptr, nullptr, 0);
+			deviceContext->GSSetShader(nullptr, nullptr, 0);
+			deviceContext->DSSetShader(nullptr, nullptr, 0);
+			deviceContext->PSSetShader(_lightApplyLightVolumePS, nullptr, 0);
+			deviceContext->CSSetShader(nullptr, nullptr, 0);
+		}
 
 		//Set sampler
 		ID3D11SamplerState* samplers[2] = { _samplerWRAP, _samplerCLAMP };
