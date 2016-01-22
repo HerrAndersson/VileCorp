@@ -17,14 +17,21 @@ MenuState::~MenuState()
 
 void MenuState::Update(float deltaTime)
 {
-	
-
 	if (_controls->IsFunctionKeyDown("MENU:CLICK"))
 	{
 		System::MouseCoord coord = _controls->GetMouseCoord();
 		if (_uiTree.IsButtonColliding("playbutton", coord._pos.x, coord._pos.y))
 		{
 			ChangeState(State::PLAYSTATE);
+		}
+		if (_uiTree.IsButtonColliding("optionsbutton", coord._pos.x, coord._pos.y))
+		{
+			ChangeState(State::PLACEMENTSTATE);
+		}
+		if (_uiTree.IsButtonColliding("exitbutton", coord._pos.x, coord._pos.y))
+		{
+			//TODO: This is a hack, this fuction should instead return a value if the game should quit //Mattias
+			PostQuitMessage(0);
 		}
 	}
 }
