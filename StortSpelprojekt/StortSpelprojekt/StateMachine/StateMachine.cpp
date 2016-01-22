@@ -2,7 +2,6 @@
 
 StateMachine::StateMachine(System::Controls* controls,
 	ObjectHandler* objectHandler,
-	System::InputDevice* inputDevice,
 	System::Camera* camera,
 	PickingDevice* pickingDevice,
 	const std::string& filename,
@@ -13,12 +12,12 @@ StateMachine::StateMachine(System::Controls* controls,
 {
 	_currentState = State::SPLASHSTATE;
 
-	_baseStates.push_back(new SplashState(controls, objectHandler, inputDevice, camera, pickingDevice, filename, assetManager, fontWrapper, width, height));
-	_baseStates.push_back(new MenuState(controls, objectHandler, inputDevice, camera, pickingDevice, filename, assetManager, fontWrapper, width, height));
-	_baseStates.push_back(new PlayState(controls, objectHandler, inputDevice, camera, pickingDevice, filename, assetManager, fontWrapper, width, height));
-	_baseStates.push_back(new PlacementState(controls, objectHandler, inputDevice, camera, pickingDevice, filename, assetManager, fontWrapper, width, height));
-	_baseStates.push_back(new LevelEditState(controls, objectHandler, inputDevice, camera, pickingDevice, filename, assetManager, fontWrapper, width, height));
-	_baseStates.push_back(new OptionsState(controls, objectHandler, inputDevice, camera, pickingDevice, filename, assetManager, fontWrapper, width, height));
+	_baseStates.push_back(new SplashState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, width, height));
+	_baseStates.push_back(new MenuState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, width, height));
+	_baseStates.push_back(new PlayState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, width, height));
+	_baseStates.push_back(new PlacementState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, width, height));
+	_baseStates.push_back(new LevelEditState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, width, height));
+	_baseStates.push_back(new OptionsState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, width, height));
 }
 
 StateMachine::~StateMachine()

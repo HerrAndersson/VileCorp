@@ -4,7 +4,6 @@
 #include <ShlObj.h>
 
 #include "../ObjectHandler.h"
-#include "../System/InputDevice.h"
 #include "../Grid.h"
 #include "AStar.h"
 #include "../Controls.h"
@@ -17,7 +16,6 @@ private:
 	AI::AStar*				_aStar;
 	Tilemap*				_tileMap;
 	ObjectHandler*			_objectHandler;
-	System::InputDevice*	_inputDevice;
 	System::Controls*		_controls;
 	PickingDevice*			_pickingDevice;
 	System::Camera*			_camera;
@@ -78,6 +76,6 @@ public:
 
 	GameObject* GetSelectedObject();
 	void Add(Type type, int renderObjectID);
-	void Initialize(ObjectHandler* objectHandler, System::InputDevice* inputDevice, System::Controls* controls, PickingDevice* pickingDevice, System::Camera* camera);
+	void Initialize(ObjectHandler* objectHandler, System::Controls* controls, PickingDevice* pickingDevice, System::Camera* camera);
 	void Update(float deltaTime);
 };

@@ -33,7 +33,6 @@ private:
 	Grid*						_grid;
 	FontWrapper*				_fontWrapper;
 	PickingDevice*				_pickingDevice;
-	System::InputDevice*		_input;
 	PlayerInfo					_playerInfo;
 	SettingInfo					_gameSettings;
 	//Resizing window, directx resources, camera
