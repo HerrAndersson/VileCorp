@@ -100,21 +100,21 @@ void GameLogic::HandleInput()
 	}
 
 
-	/*
+	
 	if (_camera->GetMode() == System::LOCKED_CAM)
 	{
-		if (_inputDevice->IsDown(System::Input::ScrollWheelUp) &&
+		if (_controls->IsFunctionKeyDown("PLAY:SCROLLDOWN") &&
 			_camera->GetPosition().y > 4.0f)
 		{
 			_camera->Move(XMFLOAT3(0.0f, -1.0f, 0.0f));
 		}
-		else if (_inputDevice->IsDown(System::Input::ScrollWheelDown) &&
+		else if (_controls->IsFunctionKeyDown("PLAY:SCROLLUP") &&
 			_camera->GetPosition().y < 12.0f)
 		{
 			_camera->Move(XMFLOAT3(0.0f, 1.0f, 0.0f));
 		}
 	}
-	*/
+	
 
 	XMFLOAT3 forward(0, 0, 0);
 	XMFLOAT3 position = _camera->GetPosition();
@@ -185,14 +185,14 @@ void GameLogic::HandleInput()
 	{
 		_camera->SetPosition(XMFLOAT3(position.x + (forward.x + right.x) * v, position.y + (forward.y + right.y) * v, position.z + (forward.z + right.z) * v));
 	}
-	/*
-	if (_inputDevice->CursorLocked())
+	
+	if (_controls->CursorLocked())
 	{
 		XMFLOAT3 rotation = _camera->GetRotation();
-		rotation.x += _inputDevice->GetMouseCoord()._deltaPos.y / 10.0f;
-		rotation.y += _inputDevice->GetMouseCoord()._deltaPos.x / 10.0f;
+		rotation.x += _controls->GetMouseCoord()._deltaPos.y / 10.0f;
+		rotation.y += _controls->GetMouseCoord()._deltaPos.x / 10.0f;
 
 		_camera->SetRotation(rotation);
 	}
-	*/
+	
 }

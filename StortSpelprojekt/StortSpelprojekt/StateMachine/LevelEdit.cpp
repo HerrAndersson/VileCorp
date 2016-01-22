@@ -249,6 +249,10 @@ void LevelEdit::HandleInput()
 	//}
 
 	
+	//if (_controls->IsFunctionKeyDown("DEBUG:ENABLE_FREECAM"))
+	//{
+		//_controls->ToggleCursorLock();
+	//}
 	if (_controls->IsFunctionKeyDown("PLACEMENT:SELECT"))
 	{
 		if (_isSelectionMode)
@@ -259,6 +263,10 @@ void LevelEdit::HandleInput()
 			{
 				_marker = objectsOnTile.back();
 			}
+		}
+		else
+		{
+
 		}
 	}
 
@@ -297,35 +305,65 @@ void LevelEdit::HandleInput()
 		_camera->SetRotation(rotation);
 	}*/
 	
-	/*
 	if (_camera->GetMode() == System::LOCKED_CAM)
 	{
-		if (_inputDevice->IsDown(System::Input::ScrollWheelUp) &&
+		if (_controls->IsFunctionKeyDown("PLAY:SCROLLDOWN") &&
 			_camera->GetPosition().y > 4.0f)
 		{
 			_camera->Move(XMFLOAT3(0.0f, -1.0f, 0.0f));
 		}
-		else if (_inputDevice->IsDown(System::Input::ScrollWheelDown) &&
+		else if (_controls->IsFunctionKeyDown("PLAY:SCROLLUP") &&
 			_camera->GetPosition().y < 12.0f)
 		{
 			_camera->Move(XMFLOAT3(0.0f, 1.0f, 0.0f));
 		}
 	}
-	*/
+
 
 	XMFLOAT3 forward(0, 0, 0);
 	XMFLOAT3 position = _camera->GetPosition();
 	XMFLOAT3 right(0, 0, 0);
 	bool isMoving = false;
 	float v = 0.06f + (_camera->GetPosition().y * 0.01);
-	if (GetAsyncKeyState('W'))
+	if (_controls->IsFunctionKeyDown("DEBUG:ENABLE_FREECAM"))
 	{
-		forward = _camera->GetForwardVector();
+		if (_camera->GetMode() == System::LOCKED_CAM)
+		{
+			_controls->ToggleCursorLock();
+			_camera->SetMode(System::FREE_CAM);
+		}
+		else
+		{
+			_controls->ToggleCursorLock();
+			_camera->SetMode(System::LOCKED_CAM);
+			_camera->SetRotation(DirectX::XMFLOAT3(70, 0, 0));
+		}
+	}
+
+	if (_controls->IsFunctionKeyDown("MAP_EDIT:MOVE_CAMERA_UP"))
+	{
+		if (_camera->GetMode() == System::FREE_CAM)
+		{
+			forward = _camera->GetForwardVector();
+		}
+		else if (_camera->GetMode() == System::LOCKED_CAM)
+		{
+			forward = XMFLOAT3(0.0f, 0.0f, 1.0f);
+		}
+
 		isMoving = true;
 	}
 	else if (GetAsyncKeyState('S'))
 	{
-		forward = _camera->GetForwardVector();
+		if (_camera->GetMode() == System::FREE_CAM)
+		{
+			forward = _camera->GetForwardVector();
+		}
+		else if (_camera->GetMode() == System::LOCKED_CAM)
+		{
+			forward = XMFLOAT3(0.0f, 0.0f, 1.0f);
+		}
+
 		forward.x *= -1;
 		forward.y *= -1;
 		forward.z *= -1;
@@ -346,9 +384,23 @@ void LevelEdit::HandleInput()
 		isMoving = true;
 	}
 
+	if (_controls->IsFunctionKeyDown("MAP_EDIT:MOVE_MARKER_LEFT"))
+	{
+
+	}
+
 	if (isMoving)
 	{
 		_camera->SetPosition(XMFLOAT3(position.x + (forward.x + right.x) * v, position.y + (forward.y + right.y) * v, position.z + (forward.z + right.z) * v));
+	}
+
+	if (_controls->CursorLocked())
+	{
+		XMFLOAT3 rotation = _camera->GetRotation();
+		rotation.x += _controls->GetMouseCoord()._deltaPos.y / 10.0f;
+		rotation.y += _controls->GetMouseCoord()._deltaPos.x / 10.0f;
+
+		_camera->SetRotation(rotation);
 	}
 }
 
@@ -461,4 +513,20 @@ void LevelEdit::ExportLevel()
 
 	mapData.clear();
 
+}
+
+void LevelEdit::SelectObject(GameObject* selectedObject)
+{
+	//float yOffset = 0.1f;
+
+	//if (_selectedObj != nullptr)
+	//{
+	//	_selectedObj->Translate(DirectX::XMFLOAT3(0, -yOffset, 0));
+	//}
+	//_selectedObj = selectedObject;
+
+	//if (_selectedObj != nullptr)
+	//{
+	//	_selectedObj->Translate(DirectX::XMFLOAT3(0, yOffset, 0));
+	//}
 }

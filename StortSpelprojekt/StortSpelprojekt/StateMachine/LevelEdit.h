@@ -73,6 +73,7 @@ private:
 	void InitNewLevel();
 	void ResetSelectedObj();
 	void HandleSelected();
+	void SelectObject(GameObject* selectedObject);
 
 	void ExportLevel();
 
