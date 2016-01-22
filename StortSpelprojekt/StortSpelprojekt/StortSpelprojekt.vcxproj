@@ -23,7 +23,6 @@
     <ClCompile Include="Architecture.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Controls.cpp" />
-    <ClCompile Include="FontInfo.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameLogic.cpp" />
     <ClCompile Include="GameObject.cpp" />
@@ -45,7 +44,7 @@
     <ClCompile Include="Tilemap.cpp" />
     <ClCompile Include="Trap.cpp" />
     <ClCompile Include="Trigger.cpp" />
-    <ClCompile Include="UIHandler.cpp" />
+    <ClCompile Include="UITree.cpp" />
     <ClCompile Include="Unit.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -53,10 +52,10 @@
     <ClInclude Include="Architecture.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="Controls.h" />
-    <ClInclude Include="FontInfo.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameLogic.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="GameObjectDataLoader.h" />
     <ClInclude Include="Grid.h" />
     <ClInclude Include="Guard.h" />
     <ClInclude Include="ObjectHandler.h" />
@@ -76,7 +75,7 @@
     <ClInclude Include="Tilemap.h" />
     <ClInclude Include="Trap.h" />
     <ClInclude Include="Trigger.h" />
-    <ClInclude Include="UIHandler.h" />
+    <ClInclude Include="UITree.h" />
     <ClInclude Include="Unit.h" />
   </ItemGroup>
   <ItemGroup>
@@ -186,10 +185,10 @@
       </Command>
     </PreBuildEvent>
     <CustomBuildStep>
-      <Command>robocopy "C:\%HOMEPATH%\Google Drive\Stort spelprojekt\Assets" "$(OutDir)Assets" /MIR /Z /XA:H /W:5
-robocopy "$(SolutionDir)Renderer\Shaders" "$(OutDir)Assets\Shaders" /MIR /Z /XA:H /W:5
-if errorlevel 1 exit 0 else exit %errorlevel%</Command>
-      <Outputs>a</Outputs>
+      <Outputs>
+      </Outputs>
+      <Command>
+      </Command>
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -210,10 +209,10 @@ if errorlevel 1 exit 0 else exit %errorlevel%</Command>
       </Command>
     </PreBuildEvent>
     <CustomBuildStep>
-      <Command>robocopy "C:\%HOMEPATH%\Google Drive\Stort spelprojekt\Assets" "$(OutDir)Assets" /MIR /Z /XA:H /W:5
-robocopy "$(SolutionDir)Renderer\Shaders" "$(OutDir)Assets\Shaders" /MIR /Z /XA:H /W:5
-if errorlevel 1 exit 0 else exit %errorlevel%</Command>
-      <Outputs>a</Outputs>
+      <Command>
+      </Command>
+      <Outputs>
+      </Outputs>
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -239,10 +238,10 @@ if errorlevel 1 exit 0 else exit %errorlevel%</Command>
       </Command>
     </PreBuildEvent>
     <CustomBuildStep>
-      <Command>robocopy "C:\%HOMEPATH%\Google Drive\Stort spelprojekt\Assets" "$(OutDir)Assets" /MIR /Z /XA:H /W:5
-robocopy "$(SolutionDir)Renderer\Shaders" "$(OutDir)Assets\Shaders" /MIR /Z /XA:H /W:5
-if errorlevel 1 exit 0 else exit %errorlevel%</Command>
-      <Outputs>a</Outputs>
+      <Command>
+      </Command>
+      <Outputs>
+      </Outputs>
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -267,10 +266,10 @@ if errorlevel 1 exit 0 else exit %errorlevel%</Command>
       </Command>
     </PreBuildEvent>
     <CustomBuildStep>
-      <Command>robocopy "C:\%HOMEPATH%\Google Drive\Stort spelprojekt\Assets" "$(OutDir)Assets" /MIR /Z /XA:H /W:5
-robocopy "$(SolutionDir)Renderer\Shaders" "$(OutDir)Assets\Shaders" /MIR /Z /XA:H /W:5
-if errorlevel 1 exit 0 else exit %errorlevel%</Command>
-      <Outputs>a</Outputs>
+      <Command>
+      </Command>
+      <Outputs>
+      </Outputs>
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

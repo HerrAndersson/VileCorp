@@ -6,7 +6,7 @@ class SplashState : public BaseState
 {
 private:
 public:
-	SplashState(System::Controls* controls, ObjectHandler* objectHandler, UIHandler* uiHandler, System::InputDevice* inputDevice, System::Camera* camera, PickingDevice* pickingDevice);
+	SplashState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, int width, int height);
 	virtual ~SplashState();
 
 	void Update(float deltaTime);

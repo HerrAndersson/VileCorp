@@ -57,7 +57,7 @@ public:
 	void Update();
 	virtual void Release();
 	virtual void act(GameObject* obj) = 0;									//context specific action on the unit's objective
-	void wait(int frames);
+	void Wait(int frames);
 	void ChangeHealth(int damage);
 
 };

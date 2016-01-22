@@ -73,6 +73,7 @@ bool Tilemap::AddObjectToTile(int x, int z, GameObject * obj)
 		{
 		case FLOOR:
 		case WALL:
+		case SPAWN:
 			_map[x][z]._objectsOnTile[0] = obj;
 			result = true;
 			break;

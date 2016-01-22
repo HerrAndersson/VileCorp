@@ -11,6 +11,15 @@
 
 namespace System
 {
+	enum KeyMapMode
+	{
+		MAP_EDIT_KEYMAP,
+		PLACEMENT_KEYMAP,
+		PLAY_KEYMAP,
+		MENU_KEYMAP,
+		DEBUG_KEYMAP
+	};
+
 	class SYSTEM_EXPORT Controls
 	{
 		struct Key
@@ -30,14 +39,17 @@ namespace System
 	private:
 		InputDevice* _inputDevice;
 		std::map<std::string, Key>* _keymap;
+		std::string _allKeys;
 
 		void StringToKeyMap(const std::string& key, char &mainKey, char& keyModifiers);
 	public:
-		Controls(System::InputDevice* input);
+		Controls(HWND hwnd);
 		~Controls();
-		void ToggleCursorLock();
-
+		void Update();
+		void HandleRawInput(LPARAM lparam);
+		void SaveKeyBindings(int keyMap, std::string action, std::string newKey, std::string newKey2 = std::string(), std::string newKey3 = std::string(), std::string newKey4 = std::string());
 		bool IsFunctionKeyDown(const std::string& key);
+		void ToggleCursorLock();
 	};
 
 }

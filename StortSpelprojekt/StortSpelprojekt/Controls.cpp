@@ -1,4 +1,6 @@
 #include "Controls.h"
+#include "rapidjson/writer.h"
+#include "rapidjson\prettywriter.h"
 
 using namespace std;
 using namespace rapidjson;
@@ -38,11 +40,11 @@ namespace System
 		}
 		//Mattias
 	*/
-	Controls::Controls(System::InputDevice* input)
+	Controls::Controls(HWND hwnd)
 	{
 		_keymap = new std::map<std::string, Key>();
 
-		_inputDevice = input;
+		_inputDevice = new InputDevice(hwnd);
 		ifstream file("Assets/controls.json");
 		if (!file.good())
 		{
@@ -50,9 +52,11 @@ namespace System
 		}
 		string str((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
 		file.close();
+		_allKeys = str;
 
 		Document d;
-		d.Parse(str.c_str());
+
+		d.Parse<0>(str.c_str());
 
 		//Loop through all the states
 		for (Value::ConstMemberIterator it = d.MemberBegin(); it != d.MemberEnd(); ++it)
@@ -92,6 +96,17 @@ namespace System
 	Controls::~Controls()
 	{
 		delete _keymap;
+		delete _inputDevice;
+	}
+
+	void Controls::Update()
+	{
+		_inputDevice->Update();
+	}
+
+	void Controls::HandleRawInput(LPARAM lparam)
+	{
+		_inputDevice->HandleRawInput(lparam);
 	}
 
 	void Controls::StringToKeyMap(const std::string& key, char &mainKey, char& keyModifiers)
@@ -174,9 +189,59 @@ namespace System
 			throw std::runtime_error("Undefined keyword \"" + key + "\"");
 		}
 	}
-	void Controls::ToggleCursorLock()
+
+	void Controls::SaveKeyBindings(int keyMap, std::string action, std::string newKey, std::string newKey2, std::string newKey3, std::string newKey4)
 	{
-		//_inputDevice->ToggleCursorLock();
+		Document d;
+		d.Parse(_allKeys.c_str());
+		int currentKeyMap = 0;
+		//Loop through all the states
+		for (Value::MemberIterator it = d.MemberBegin(); it != d.MemberEnd(); ++it)
+		{
+			if (currentKeyMap == keyMap)
+			{
+				//Loop through the whole keymap
+				for (Value::MemberIterator i = it->value.MemberBegin(); i != it->value.MemberEnd(); ++i)
+				{
+					std::string currentAction = i->name.GetString();
+					if (currentAction == action)
+					{
+						i->value[0].SetString(newKey.c_str(), newKey.size(), d.GetAllocator());
+
+						if (newKey2 != "")
+						{
+							i->value[1].SetString(newKey2.c_str(), newKey2.size(), d.GetAllocator());
+						}
+						if (newKey3 != "")
+						{
+							i->value[2].SetString(newKey3.c_str(), newKey3.size(), d.GetAllocator());
+						}
+						if (newKey4 != "")
+						{
+							i->value[3].SetString(newKey4.c_str(), newKey4.size(), d.GetAllocator());
+						}
+
+						break;
+					}
+				}
+				break;
+			}
+			currentKeyMap++;
+		}
+
+		//Temp write to temp file
+		std::ofstream test("Assets/controlsTEST.json");
+		
+		//Uncomment to write to actual keybinding file.
+		//std::ofstream test("Assets/controls.json");
+		
+		StringBuffer buffer;
+		PrettyWriter<StringBuffer>writer(buffer);
+		d.Accept(writer);
+
+		std::string output = buffer.GetString();
+		test.write(output.c_str(), buffer.GetSize());
+		test.close();
 	}
 
 	bool Controls::IsFunctionKeyDown(const std::string& key)
@@ -205,5 +270,10 @@ namespace System
 			ret = _inputDevice->IsPressed((*_keymap)[key].mainKey);
 		}
 		return ret && (*_keymap)[key].keyModifier == modifersActivated;
+	}
+
+	void Controls::ToggleCursorLock()
+	{
+		_inputDevice->ToggleCursorLock();
 	}
 }

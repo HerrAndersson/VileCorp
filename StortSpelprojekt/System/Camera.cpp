@@ -76,6 +76,14 @@ namespace System
 		Update();
 	}
 
+	void Camera::Move(DirectX::XMFLOAT3 offset)
+	{
+		_position.x += offset.x;
+		_position.y += offset.y;
+		_position.z += offset.z;
+		Update();
+	}
+
 	DirectX::XMFLOAT3 Camera::GetRotation()const
 	{
 		return _rotation;

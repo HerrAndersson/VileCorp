@@ -61,15 +61,14 @@ bool LevelEdit::TypeOn(Type type)
 	return false;
 }
 
-void LevelEdit::Initialize(ObjectHandler* objectHandler, System::InputDevice* inputDevice, System::Controls* controls, PickingDevice* pickingDevice, System::Camera* camera, UIHandler* uiHandler)
+void LevelEdit::Initialize(ObjectHandler* objectHandler, System::Controls* controls, PickingDevice* pickingDevice, System::Camera* camera)
 {
 	_objectHandler = objectHandler;
-	_inputDevice = inputDevice;
 	_controls = controls;
 	_pickingDevice = pickingDevice;
 	_camera = camera;
 	_aStar = new AI::AStar();
-	_uiHandler = uiHandler;
+	
 
 	_lastSelected = nullptr;
 	_tileMultiplier = 1;
@@ -77,9 +76,10 @@ void LevelEdit::Initialize(ObjectHandler* objectHandler, System::InputDevice* in
 
 	// Add all buttons and hide them
 	//buttonInfo.resize(3);
-	_uiHandler->AddButton("floor3.png", DirectX::XMFLOAT2(-0.9f, 0.95f), DirectX::XMFLOAT2(0.1f, 0.05f), true);
-	_uiHandler->AddButton("floor.png", DirectX::XMFLOAT2(-0.9f, 0.85f), DirectX::XMFLOAT2(0.1f, 0.05f), false);
-	_uiHandler->AddButton("floor2.png", DirectX::XMFLOAT2(-0.7f, 0.85f), DirectX::XMFLOAT2(0.1f, 0.05f), false);
+	//TODO: Re-add these buttons //Mattias
+	//_uiHandler->AddButton("floor3.png", DirectX::XMFLOAT2(-0.9f, 0.95f), DirectX::XMFLOAT2(0.1f, 0.05f), true);
+	//_uiHandler->AddButton("floor.png", DirectX::XMFLOAT2(-0.9f, 0.85f), DirectX::XMFLOAT2(0.1f, 0.05f), false);
+	//_uiHandler->AddButton("floor2.png", DirectX::XMFLOAT2(-0.7f, 0.85f), DirectX::XMFLOAT2(0.1f, 0.05f), false);
 
 	//buttonInfo[0].parent = -1;
 	//buttonInfo[1].parent = 0;
@@ -247,6 +247,7 @@ void LevelEdit::HandleInput()
 	//	_marker->SetScale(XMFLOAT3(tempPos.x, tempPos.y, tempPos.z - 1));
 	//}
 
+
 	if (_inputDevice->IsPressed(System::Input::LeftMouse))
 	{
 		if (_isSelectionMode)
@@ -294,12 +295,28 @@ void LevelEdit::HandleInput()
 		rotation.x += mouseCoord._deltaPos.y / 10.0f;
 		_camera->SetRotation(rotation);
 	}
+	*/
+	/*
+	if (_camera->GetMode() == System::LOCKED_CAM)
+	{
+		if (_inputDevice->IsDown(System::Input::ScrollWheelUp) &&
+			_camera->GetPosition().y > 4.0f)
+		{
+			_camera->Move(XMFLOAT3(0.0f, -1.0f, 0.0f));
+		}
+		else if (_inputDevice->IsDown(System::Input::ScrollWheelDown) &&
+			_camera->GetPosition().y < 12.0f)
+		{
+			_camera->Move(XMFLOAT3(0.0f, 1.0f, 0.0f));
+		}
+	}
+	*/
 
 	XMFLOAT3 forward(0, 0, 0);
 	XMFLOAT3 position = _camera->GetPosition();
 	XMFLOAT3 right(0, 0, 0);
 	bool isMoving = false;
-	float v = 0.1f;
+	float v = 0.06f + (_camera->GetPosition().y * 0.01);
 	if (GetAsyncKeyState('W'))
 	{
 		forward = _camera->GetForwardVector();
@@ -336,8 +353,6 @@ void LevelEdit::HandleInput()
 
 void LevelEdit::Update(float deltaTime)
 {
-	_inputDevice->Update();
-	_mouseCoord = _inputDevice->GetMouseCoord();
 	HandleHUD();
 	HandleSelected();
 	HandleInput();

@@ -19,15 +19,24 @@ private:
 	void ProcessStateRequest();
 
 	ObjectHandler*			_objectHandler;
-	UIHandler*				_uiHandler;
-	System::InputDevice*	_inputDevice;
 	System::Camera*			_camera;
 	PickingDevice*			_pickingDevice;
 
 public:
-	StateMachine(System::Controls* controls, ObjectHandler* objectHandler, UIHandler* uiHandler, System::InputDevice* inputDevice, System::Camera* camera, PickingDevice* pickingDevice);
+	StateMachine(
+		System::Controls* controls,
+		ObjectHandler* objectHandler,
+		System::Camera* camera,
+		PickingDevice* pickingDevice,
+		const std::string& filename,
+		AssetManager* assetManager,
+		FontWrapper* fontWrapper,
+		int width,
+		int height);
 	~StateMachine();
 
 	void virtual Update(float deltaTime);
 	State GetState();
+	BaseState* GetCurrentStatePointer() const;
+	void Resize(int width, int height);
 };

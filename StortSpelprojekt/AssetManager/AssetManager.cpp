@@ -14,9 +14,11 @@ AssetManager::AssetManager(ID3D11Device* device)
 	_tilesets = new vector<Tileset>;
 	_skeletons = new vector<Skeleton*>;
 
+	_meshFormatVersion[24] = &AssetManager::ScanModel24;
+	_meshFormatVersion[26] = &AssetManager::ScanModel26;
+
 	SetupTilesets();
 
-	ActivateTileset("default-24-25");
 	SetupLevelFileNameList();
 }
 
@@ -30,10 +32,13 @@ AssetManager::~AssetManager()
 		}
 		delete texture;
 	}
-
 	for (uint i = 0; i < _renderObjects->size(); i++)
 	{
 		delete _renderObjects->at(i);
+	}
+	for (uint i = 0; i < _skeletons->size(); i++)
+	{
+		delete _skeletons->at(i);
 	}
 	delete _infile;
 	delete _modelFiles;
@@ -43,37 +48,26 @@ AssetManager::~AssetManager()
 	delete _texturesToFlush;
 	delete _levelFileNames;
 	delete _tilesets;
-	for (uint i = 0; i < _skeletons->size(); i++)
-	{
-		delete _skeletons->at(i);
-	}
 	delete _skeletons;
 }
 
 //Looks through the Models folder and creates an empty RenderObject for each entry
 void AssetManager::SetupRenderObjectList(Tileset* tileset)
 {
-
 	_modelFiles->clear();
-	for (string str : tileset->_floors)
+	vector<string>* vec = &tileset->_floors;
+	for (int i = 0; i < NR_OF_TYPES; i++)
 	{
-		_modelFiles->push_back(str);
-	}
-	for (string str : tileset->_walls)
-	{
-		_modelFiles->push_back(str);
-	}
-	for (string str : tileset->_deco)
-	{
-		_modelFiles->push_back(str);
+		for (string str : *vec)
+		{
+			_modelFiles->push_back(str);
+			RenderObject* renderObject = ScanModel(str);
+			renderObject->_type = (Type)i;
+			_renderObjects->push_back(renderObject);
+		}
+		vec++;
 	}
 
-
-	for (uint i = 0; i < _modelFiles->size(); i++)
-	{
-		RenderObject* renderObject = ScanModel(_modelFiles->at(i));
-		_renderObjects->push_back(renderObject);
-	}
 	_activeTileset = tileset;
 }
 
@@ -105,19 +99,36 @@ void AssetManager::SetupTilesets()
 		rapidjson::StringStream ss(&buffer[0]);
 		reader.Parse(ss, handler);
 	}
-	_activeTileset = &_tilesets->at(0);
 	SetupRenderObjectList(&_tilesets->at(0));
 }
 
-//Replaces current Tileset, do not call without clearing GameObjects - Fredrik
+//Do not call, call _objectHandler->ActivateTileset() - Fredrik
 bool AssetManager::ActivateTileset(string name)
 {
 	if (!strcmp(name.c_str(), _activeTileset->_name.c_str()))
 	{
 		return true;
 	}
-	
+
+	for (Texture* texture : *_textures)
+	{
+		if (texture->_loaded)
+		{
+			texture->_data->Release();
+		}
+		delete texture;
+	}
+	for (uint i = 0; i < _renderObjects->size(); i++)
+	{
+		delete _renderObjects->at(i);
+	}
+	for (uint i = 0; i < _skeletons->size(); i++)
+	{
+		delete _skeletons->at(i);
+	}
+	_textures->clear();
 	_renderObjects->clear();
+	_skeletons->clear();
 
 	for (Tileset set : *_tilesets)
 	{
@@ -140,10 +151,7 @@ void AssetManager::UnloadModel(int index, bool force)
 	}
 	if (force)
 	{
-		for (auto m : renderObject->_meshes)
-		{
-			m._vertexBuffer->Release();
-		}
+		renderObject->_mesh._vertexBuffer->Release();
 		renderObject->_toUnload = false;
 		renderObject->_meshLoaded = false;
 		if (renderObject->_diffuseTexture != nullptr)
@@ -204,10 +212,7 @@ void AssetManager::Flush()
 	{
 		if (renderObject->_toUnload)
 		{
-			for (Mesh m : renderObject->_meshes)
-			{
-				m._vertexBuffer->Release();
-			}
+			renderObject->_mesh._vertexBuffer->Release();
 			renderObject->_toUnload = false;
 			renderObject->_meshLoaded = false;
 			if (renderObject->_diffuseTexture != nullptr)
@@ -243,11 +248,8 @@ HRESULT Texture::LoadTexture(ID3D11Device* device)
 	HRESULT res = S_OK;
 	if (!_loaded)
 	{
-#ifdef _DEBUG
 		res = DirectX::CreateWICTextureFromFile(device, _filename.c_str(), nullptr, &_data, 0);
-#else
-		res = DirectX::CreateWICTextureFromFile(device, _filename.c_str(), nullptr, &_data, 0);
-#endif
+
 		if (_data == nullptr)
 		{
 			string filenameString(_filename.begin(),_filename.end());
@@ -282,26 +284,21 @@ void AssetManager::LoadModel(string fileName, RenderObject* renderObject) {
 		return;
 	}
 
-	Mesh* mesh;
 	vector<Vertex> vertices;
 	vector<WeightedVertex> weightedVertices;
 
-	for (uint i = 0; i < renderObject->_meshes.size(); i++)
+	_infile->seekg(renderObject->_mesh._toMesh);
+	if(renderObject->_isSkinned)
 	{
-		mesh = &renderObject->_meshes[i];
-		_infile->seekg(mesh->_toMesh);
-		if(renderObject->_isSkinned)
-		{
-			weightedVertices.resize(mesh->_vertexBufferSize);
-			_infile->read((char*)weightedVertices.data(), mesh->_vertexBufferSize*sizeof(WeightedVertex));
-		}
-		else
-		{
-			vertices.resize(mesh->_vertexBufferSize);
-			_infile->read((char*)vertices.data(), mesh->_vertexBufferSize*sizeof(Vertex));
-		}
-		mesh->_vertexBuffer = CreateVertexBuffer(&weightedVertices, &vertices, renderObject->_isSkinned);
+		weightedVertices.resize(renderObject->_mesh._vertexBufferSize);
+		_infile->read((char*)weightedVertices.data(), renderObject->_mesh._vertexBufferSize*sizeof(WeightedVertex));
 	}
+	else
+	{
+		vertices.resize(renderObject->_mesh._vertexBufferSize);
+		_infile->read((char*)vertices.data(), renderObject->_mesh._vertexBufferSize*sizeof(Vertex));
+	}
+		renderObject->_mesh._vertexBuffer = CreateVertexBuffer(&weightedVertices, &vertices, renderObject->_isSkinned);
 
 	if (renderObject->_diffuseTexture != nullptr)
 	{
@@ -330,7 +327,9 @@ Texture* AssetManager::ScanTexture(string filename)
 	{
 		string str = string(texture->_filename.begin(), texture->_filename.end());
 		if (!strcmp(str.data(), filename.data()))
+		{
 			return texture;
+		}
 	}
 	Texture* texture = new Texture;
 	texture->_filename = wstring(filename.begin(), filename.end());
@@ -348,61 +347,24 @@ RenderObject* AssetManager::ScanModel(string fileName)
 	string file_path = "Assets/Models/";
 
 	file_path.append(fileName);
-	RenderObject* renderObject = new RenderObject;
 	_infile->open(file_path.c_str(), ifstream::binary);
 
 	if (!_infile->is_open())
 	{
-		return renderObject;
+		throw std::runtime_error("Failed to open " + file_path);
 	}
 
-	MainHeader mainHeader;
-	_infile->read((char*)&mainHeader, sizeof(MainHeader));
-	mainHeader._meshCount++;
-	if (mainHeader._version != _meshFormatVersion)
+	int version;
+	_infile->read((char*)&version, 4);
+
+	RenderObject* renderObject = (this->*(_meshFormatVersion[version]))(fileName, _infile);
+	if (renderObject == nullptr)
 	{
 		throw std::runtime_error("Failed to load " + file_path + ":\nIncorrect fileversion");
 	}
-	int skeletonStringLength;
-	_infile->read((char*)&skeletonStringLength, 4);
-	renderObject->_skeletonName.resize(skeletonStringLength);
-	_infile->read((char*)renderObject->_skeletonName.data(), skeletonStringLength);
 
-	renderObject->_isSkinned = strcmp(renderObject->_skeletonName.data(), "Unrigged") != 0;
+	renderObject->_name = fileName;
 
-	for (int i = 0; i < mainHeader._meshCount; i++)
-	{
-		Mesh mesh;
-		_infile->read((char*)&mesh._toMesh, 4);
-		renderObject->_meshes.push_back(mesh);
-	}
-
-	for (int i = 0; i < mainHeader._meshCount; i++)
-	{
-		MeshHeader meshHeader;
-		_infile->read((char*)&meshHeader, sizeof(MeshHeader));
-
-		renderObject->_meshes[i]._name.resize(meshHeader._nameLength);
-
-		_infile->read((char*)renderObject->_meshes[i]._name.data(), meshHeader._nameLength);
-		if(renderObject->_isSkinned)
-			_infile->seekg(meshHeader._numberOfVertices*sizeof(WeightedVertex), ios::cur);
-		else
-			_infile->seekg(meshHeader._numberOfVertices*sizeof(Vertex), ios::cur);
-
-		if (meshHeader._numberPointLights)
-		{
-			renderObject->_meshes[i]._pointLights.resize(sizeof(PointLight)*meshHeader._numberPointLights);
-			_infile->read((char*)renderObject->_meshes[i]._pointLights.data(), sizeof(PointLight)*meshHeader._numberPointLights);
-		}
-
-		if (meshHeader._numberSpotLights)
-		{
-			renderObject->_meshes[i]._spotLights.resize(sizeof(SpotLight)*meshHeader._numberSpotLights);
-			_infile->read((char*)renderObject->_meshes[i]._spotLights.data(), sizeof(SpotLight)*meshHeader._numberSpotLights);
-		}
-		renderObject->_meshes[i]._vertexBufferSize = meshHeader._numberOfVertices;
-	}
 	MatHeader matHeader;
 	_infile->read((char*)&matHeader, sizeof(MatHeader));
 	_infile->read((char*)&renderObject->_diffuse, 16);
@@ -435,24 +397,144 @@ RenderObject* AssetManager::ScanModel(string fileName)
 	return renderObject;
 }
 
+RenderObject* AssetManager::ScanModel26(string fileName, ifstream* _infile)
+{
+	RenderObject* renderObject = new RenderObject;
+	int skeletonStringLength;
+	_infile->read((char*)&skeletonStringLength, 4);
+	renderObject->_skeletonName.resize(skeletonStringLength);
+	_infile->read((char*)renderObject->_skeletonName.data(), skeletonStringLength);
+
+	renderObject->_isSkinned = strcmp(renderObject->_skeletonName.data(), "Unrigged") != 0;
+
+	_infile->read((char*)&renderObject->_mesh._toMesh, 4);
+
+	MeshHeader26 meshHeader;
+	_infile->read((char*)&meshHeader, sizeof(MeshHeader26));
+
+	if (renderObject->_isSkinned)
+	{
+		_infile->seekg(meshHeader._numberOfVertices*sizeof(WeightedVertex), ios::cur);
+	}
+	else
+	{
+		_infile->seekg(meshHeader._numberOfVertices*sizeof(Vertex), ios::cur);
+	}
+
+	if (meshHeader._numberPointLights)
+	{
+		renderObject->_mesh._pointLights.resize(sizeof(PointLight)*meshHeader._numberPointLights);
+		_infile->read((char*)renderObject->_mesh._pointLights.data(), sizeof(PointLight)*meshHeader._numberPointLights);
+	}
+
+	if (meshHeader._numberSpotLights)
+	{
+		renderObject->_mesh._spotLights.resize(sizeof(SpotLight)*meshHeader._numberSpotLights);
+		_infile->read((char*)renderObject->_mesh._spotLights.data(), sizeof(SpotLight)*meshHeader._numberSpotLights);
+	}
+	renderObject->_mesh._vertexBufferSize = meshHeader._numberOfVertices;
+	return renderObject;
+}
+
+RenderObject* AssetManager::ScanModel24(string fileName, ifstream* _infile)
+{
+	RenderObject* renderObject = new RenderObject;
+	int meshes;
+	_infile->read((char*)&meshes, 4);
+	meshes++;
+	int skeletonStringLength;
+	_infile->read((char*)&skeletonStringLength, 4);
+	renderObject->_skeletonName.resize(skeletonStringLength);
+	_infile->read((char*)renderObject->_skeletonName.data(), skeletonStringLength);
+
+	renderObject->_isSkinned = strcmp(renderObject->_skeletonName.data(), "Unrigged") != 0;
+	_infile->read((char*)&renderObject->_mesh._toMesh, 4);
+
+	for (int i = 0; i < meshes; i++)
+	{
+		if (i == 0)
+		{
+			MeshHeader24 meshHeader;
+			_infile->read((char*)&meshHeader, sizeof(MeshHeader24));
+
+			_infile->seekg(meshHeader._nameLength, ios::cur);
+			if (renderObject->_isSkinned)
+			{
+				_infile->seekg(meshHeader._numberOfVertices*sizeof(WeightedVertex), ios::cur);
+			}
+			else
+			{
+				_infile->seekg(meshHeader._numberOfVertices*sizeof(Vertex), ios::cur);
+			}
+
+			if (meshHeader._numberPointLights)
+			{
+				renderObject->_mesh._pointLights.resize(sizeof(PointLight)*meshHeader._numberPointLights);
+				_infile->read((char*)renderObject->_mesh._pointLights.data(), sizeof(PointLight)*meshHeader._numberPointLights);
+			}
+
+			if (meshHeader._numberSpotLights)
+			{
+				renderObject->_mesh._spotLights.resize(sizeof(SpotLight)*meshHeader._numberSpotLights);
+				_infile->read((char*)renderObject->_mesh._spotLights.data(), sizeof(SpotLight)*meshHeader._numberSpotLights);
+			}
+			renderObject->_mesh._vertexBufferSize = meshHeader._numberOfVertices;
+		}
+		else
+		{
+			MeshHeader24 meshHeader;
+			_infile->read((char*)&meshHeader, sizeof(MeshHeader24));
+
+			_infile->seekg(meshHeader._nameLength, ios::cur);
+			if (renderObject->_isSkinned)
+			{
+				_infile->seekg(meshHeader._numberOfVertices*sizeof(WeightedVertex), ios::cur);
+			}
+			else
+			{
+				_infile->seekg(meshHeader._numberOfVertices*sizeof(Vertex), ios::cur);
+			}
+
+			if (meshHeader._numberPointLights)
+			{
+				_infile->seekg(sizeof(PointLight)*meshHeader._numberPointLights, ios::cur);
+			}
+
+			if (meshHeader._numberSpotLights)
+			{
+				_infile->seekg(sizeof(SpotLight)*meshHeader._numberSpotLights, ios::cur);
+			}
+		}
+	}
+	return renderObject;
+}
+
 ID3D11Buffer* AssetManager::CreateVertexBuffer(vector<WeightedVertex> *weightedVertices, vector<Vertex> *vertices, int skeleton)
 {
 	D3D11_BUFFER_DESC vbDESC;
 	vbDESC.Usage = D3D11_USAGE_DEFAULT;
-	if(skeleton)
+	if (skeleton)
+	{
 		vbDESC.ByteWidth = sizeof(WeightedVertex)* weightedVertices->size();
+	}
 	else
+	{
 		vbDESC.ByteWidth = sizeof(Vertex)* vertices->size();
+	}
 	vbDESC.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	vbDESC.CPUAccessFlags = 0;
 	vbDESC.MiscFlags = 0;
 	vbDESC.StructureByteStride = 0;
 
 	D3D11_SUBRESOURCE_DATA vertexData;
-	if(skeleton)
+	if (skeleton)
+	{
 		vertexData.pSysMem = weightedVertices->data();
+	}
 	else
+	{
 		vertexData.pSysMem = vertices->data();
+	}
 	vertexData.SysMemPitch = 0;
 	vertexData.SysMemSlicePitch = 0;
 
@@ -481,6 +563,26 @@ RenderObject* AssetManager::GetRenderObject(int index)
 		renderObject->_toUnload = false;
 	}
 	return renderObject;
+}
+
+uint AssetManager::GetRenderObjectByType(Type type, uint index)
+{
+	uint i = 0;
+	uint returnIndex = 0;
+	for (RenderObject* renderObject : *_renderObjects)
+	{
+		if (renderObject->_type == type)
+		{
+			if (i == index)
+			{
+				return returnIndex;
+			}
+			i++;
+		}
+		i = 0;
+		returnIndex++;
+	}
+	return 0;
 }
 
 ID3D11ShaderResourceView* AssetManager::GetTexture(string filename)

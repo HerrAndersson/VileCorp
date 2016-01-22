@@ -5,7 +5,6 @@
 #include "Window.h"
 #include "RenderModule.h"
 #include "Camera.h"
-#include "UIHandler.h"
 #include "ObjectHandler.h"
 #include "Timer.h"
 #include "AssetManager.h"
@@ -14,9 +13,8 @@
 #include "Grid.h"
 #include "PickingDevice.h"
 #include "Spotlight.h"
+#include "GameObjectDataLoader.h"
 #include "ShadowMap.h"
-#include "JsonStructs.h"
-#include "ConfigParser.h"
 
 class Game
 {
@@ -28,23 +26,22 @@ private:
 	Renderer::RenderModule*		_renderModule;
 	System::Camera*				_camera;
 	ObjectHandler*				_objectHandler;
-	UIHandler*					_UI;
 	System::Timer				_timer;
 //	Animation*					_animation;
 	System::Controls*			_controls;
 	AssetManager*				_assetManager;
 	Grid*						_grid = nullptr;
+	FontWrapper*				_fontWrapper;
 	PickingDevice*				_pickingDevice;
-	System::InputDevice*		_input;
 	PlayerInfo					_playerInfo;
-	
+	SettingInfo					_gameSettings;
 	
 
 	//Resizing window, directx resources, camera
 	void ResizeResources(System::WindowSettings settings);
 	void Update(float deltaTime);
 	void Render();
-
+	void CheckSettings();
 
 
 

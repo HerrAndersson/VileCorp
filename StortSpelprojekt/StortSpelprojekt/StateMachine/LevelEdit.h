@@ -2,25 +2,23 @@
 
 #include <cstdio>
 #include <ShlObj.h>
-#include "../UIHandler.h"
+
 #include "../ObjectHandler.h"
-#include "../System/InputDevice.h"
 #include "../Grid.h"
 #include "AStar.h"
 #include "../Controls.h"
 #include "../PickingDevice.h"
+#include "../System/Camera.h"
 
 class LevelEdit
 {
 private:
 	AI::AStar*				_aStar;
-	System::InputDevice*	_inputDevice;
 	System::Controls*		_controls;
 	System::Camera*			_camera;
 	Tilemap*				_tileMap;
 	ObjectHandler*			_objectHandler;
 	PickingDevice*			_pickingDevice;
-	UIHandler*				_uiHandler;
 	Grid*					_grid;
 
 	struct LevelHeader
@@ -44,6 +42,14 @@ private:
 		int parent;
 		bool active = false;
 	};
+	int someOneActive = false;
+	std::vector<bool> _rootInfo;
+	int _rootAmount;
+	bool _root = true;
+	int _floorAmount;
+	bool _floor = false;
+	int _wallAmount;
+	bool _wall = false;
 
 	GameObject* _marker;
 	GameObject* _lastSelected;
@@ -74,12 +80,7 @@ public:
 	LevelEdit();
 	~LevelEdit();
 
-	void Initialize(ObjectHandler* objectHandler, 
-		System::InputDevice* inputDevice, 
-		System::Controls* controls, 
-		PickingDevice* pickingDevice, 
-		System::Camera* camera, 
-		UIHandler* uiHandler);
+	void Initialize(ObjectHandler* objectHandler, System::Controls* controls, PickingDevice* pickingDevice, System::Camera* camera);
 
 	GameObject* GetSelectedObject();
 	bool Add(Type type);
