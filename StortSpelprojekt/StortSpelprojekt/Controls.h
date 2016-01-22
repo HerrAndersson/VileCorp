@@ -24,8 +24,8 @@ namespace System
 	{
 		struct Key
 		{
-			char mainKey;
-			char keyModifier;
+			unsigned char mainKey;
+			unsigned char keyModifier;
 		};
 		enum KeyModifiers
 		{
@@ -41,7 +41,7 @@ namespace System
 		std::map<std::string, Key>* _keymap;
 		std::string _allKeys;
 
-		void StringToKeyMap(const std::string& key, char &mainKey, char& keyModifiers);
+		void StringToKeyMap(const std::string& key, unsigned char &mainKey, unsigned char& keyModifiers);
 	public:
 		Controls(HWND hwnd);
 		~Controls();

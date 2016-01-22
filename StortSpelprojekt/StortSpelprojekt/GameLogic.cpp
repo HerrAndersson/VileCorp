@@ -101,21 +101,21 @@ void GameLogic::HandleInput()
 	}
 
 
-	/*
+	
 	if (_camera->GetMode() == System::LOCKED_CAM)
 	{
-		if (_inputDevice->IsDown(System::Input::ScrollWheelUp) &&
+		if (_controls->IsFunctionKeyDown("PLAY:SCROLLDOWN") &&
 			_camera->GetPosition().y > 4.0f)
 		{
 			_camera->Move(XMFLOAT3(0.0f, -1.0f, 0.0f));
 		}
-		else if (_inputDevice->IsDown(System::Input::ScrollWheelDown) &&
+		else if (_controls->IsFunctionKeyDown("PLAY:SCROLLUP") &&
 			_camera->GetPosition().y < 12.0f)
 		{
 			_camera->Move(XMFLOAT3(0.0f, 1.0f, 0.0f));
 		}
 	}
-	*/
+	
 
 	XMFLOAT3 forward(0, 0, 0);
 	XMFLOAT3 position = _camera->GetPosition();
