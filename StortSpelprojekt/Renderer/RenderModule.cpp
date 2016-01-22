@@ -327,7 +327,11 @@ namespace Renderer
 			_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::BACK);
 
 			int nrOfSRVs = _d3d->SetLightStage();
-			_shaderHandler->SetLightApplicationShaders(deviceContext, 2);
+
+			//TODO: SetLightApplicationShaders GETS A VALUES THAT DETERMINES WHICH SHADERS TO USE! 
+			//SHOULD USE VOLUME WHEN IT WORKS /Jonas
+
+			_shaderHandler->SetLightApplicationShaders(deviceContext, 1);
 			ID3D11ShaderResourceView* shadowMapSRV = _shadowMap->GetShadowSRV();
 			_d3d->GetDeviceContext()->PSSetShaderResources(nrOfSRVs, 1, &shadowMapSRV);
 
@@ -530,7 +534,7 @@ namespace Renderer
 		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
 
 		_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::BACK);
-		_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::DISABLE);
+		_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::ENABLE);
 
 		XMMATRIX worldMatrixC = XMMatrixTranspose(*world);
 

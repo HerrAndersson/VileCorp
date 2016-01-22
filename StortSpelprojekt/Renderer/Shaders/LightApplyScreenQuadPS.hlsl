@@ -115,5 +115,5 @@ float4 main(VS_OUT input) : SV_TARGET
 		}
 	}
 
-	return float4(diffuse.xyz, 0.8f);
+	return float4(diffuse.xyz, 0.0f);
 }

@@ -40,7 +40,6 @@ float3 ReconstructWorldFromCamDepth(float2 uv)
 	// Get the depth value for this pixel
 	float z = camDepthMap.Sample(samplerWrap, uv).r;
 
-	// Get x/w and y/w from the viewport position
 	float x = uv.x * 2 - 1;
 	float y = (1 - uv.y) * 2 - 1;
 
@@ -54,23 +53,26 @@ float3 ReconstructWorldFromCamDepth(float2 uv)
 
 float4 main(VS_OUT input) : SV_TARGET
 {
-	float4 diffuse = diffuseTex.Sample(samplerWrap, input.uv);
-	float4 normal = normalTex.Sample(samplerWrap, input.uv);
+	float2 uv = float2((input.pos.x / 1280), (input.pos.y / 720));
+	//float2 uv = float2(0.5f + (input.pos.x / 1280 / input.pos.w * 0.5f), 0.5f - (input.pos.y / input.pos.w * 0.5f));
+
+	float4 diffuse = diffuseTex.Sample(samplerWrap, uv);
+	float4 normal = normalTex.Sample(samplerWrap, uv);
 	normal.w = 0.0f;
 	normal = normalize(normal);
 
 	float3 finalColor = diffuse.xyz;
 
-	if (input.uv.x < 0.75f && input.uv.y < 0.75f && input.uv.x > 0.25f && input.uv.y > 0.25f)
-	{
-		return pow(camDepthMap.Sample(samplerWrap, input.uv).r,10);
-	}
+	//if (input.uv.x < 0.75f && input.uv.y < 0.75f && input.uv.x > 0.25f && input.uv.y > 0.25f)
+	//{
+	//	return pow(camDepthMap.Sample(samplerWrap, input.uv).r,10);
+	//}
 	//if (input.uv.x > 0.8f && input.uv.y < 0.2f)
 	//{
 	//	return pow(lightDepthMap.Sample(samplerWrap, input.uv*5.0f).r,10);
 	//}
 
-	float3 worldPos = ReconstructWorldFromCamDepth(input.uv);
+	float3 worldPos = ReconstructWorldFromCamDepth(uv);
 	float3 lightToPixel = lightPosition - worldPos;
 	
 	float l = length(lightToPixel);
@@ -90,7 +92,7 @@ float4 main(VS_OUT input) : SV_TARGET
 
 		float depth = lightSpacePos.z / lightSpacePos.w;
 
-		float epsilon = 0.00001f;
+		float epsilon = 0.0001f;
 		float dx = 1.0f / shadowMapDimensions;
 
 		float s0 = lightDepthMap.Sample(samplerClamp, smTex).r;
@@ -111,6 +113,6 @@ float4 main(VS_OUT input) : SV_TARGET
 		}
 	}
 
-	//Not in light. Should return Nothing, but now it returns black
+	//Not in light
 	return float4(0, 0, 0, 0);
 }

@@ -214,9 +214,11 @@ void Game::Render()
 		_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::LIGHT_APPLICATION);
 		_renderModule->SetLightDataPerSpotlight(_spotlights[i]);
 
-		_renderModule->DEBUG_RenderLightVolume(_spotlights[i]->GetVolumeBuffer(), _spotlights[i]->GetWorldMatrix(), _spotlights[i]->GetVertexCount(), _spotlights[i]->GetVertexSize());
+		//Use when SetLightApplicationShaders takes 1 as input (using light volume shaders)
+		//_renderModule->DEBUG_RenderLightVolume(_spotlights[i]->GetVolumeBuffer(), _spotlights[i]->GetWorldMatrix(), _spotlights[i]->GetVertexCount(), _spotlights[i]->GetVertexSize());
 
-		//_renderModule->RenderScreenQuad();
+		//Use when SetLightApplicationShaders takes 2 as input (using screen quad shaders)
+		_renderModule->RenderScreenQuad();
 	}
 
 	/*-------------------------------------------------------- HUD and other 2D -----------------------------------------------------------*/
