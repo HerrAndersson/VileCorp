@@ -27,9 +27,9 @@ GameObject* LevelEdit::GetSelectedObject()
 	return _marker;
 }
 
-void LevelEdit::Add(Type type, int renderObjectID)
+bool LevelEdit::Add(Type type)
 {
-	_objectHandler->Add(type,-1, _marker->GetPosition(), XMFLOAT3(0.0f, 0.0f, 0.0f));	
+	return _objectHandler->Add(type, -1, _marker->GetPosition(), XMFLOAT3(0.0f, 0.0f, 0.0f));
 }
 
 bool LevelEdit::Delete(Type type)
@@ -47,7 +47,7 @@ bool LevelEdit::Delete(Type type)
 	return false;
 }
 
-bool LevelEdit::Marked(Type type)
+bool LevelEdit::TypeOn(Type type)
 {
 	vector<GameObject*>* vec = &_objectHandler->GetGameObjects()->at(type);
 	for (GameObject* g : *vec)

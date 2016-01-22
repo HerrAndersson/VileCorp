@@ -74,15 +74,17 @@ public:
 	LevelEdit();
 	~LevelEdit();
 
-	GameObject* GetSelectedObject();
-	void Add(Type type, int renderObjectID);
-	bool Delete(Type type);
-	bool Marked(Type type);
 	void Initialize(ObjectHandler* objectHandler, 
 		System::InputDevice* inputDevice, 
 		System::Controls* controls, 
 		PickingDevice* pickingDevice, 
 		System::Camera* camera, 
 		UIHandler* uiHandler);
+
+	GameObject* GetSelectedObject();
+	bool Add(Type type);
+	bool Delete(Type type);
+	bool TypeOn(Type type);
+
 	void Update(float deltaTime);
 };
