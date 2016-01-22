@@ -108,6 +108,8 @@ bool Tilemap::AddObjectToTile(int x, int z, GameObject * obj)
 			break;
 		}
 	}
+	obj->SetTilePosition(AI::Vec2D(x, z));
+
 	return result;
 }
 

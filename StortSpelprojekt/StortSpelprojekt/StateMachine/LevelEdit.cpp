@@ -148,9 +148,12 @@ void LevelEdit::DragAndDrop(Type type)
 				objectOnTile = _objectHandler->GetTileMap()->GetObjectOnTile(pickedTile._x, pickedTile._y, 0);
 				break;
 			case ENEMY:
-				objectOnTile = _objectHandler->GetTileMap()->GetObjectOnTile(pickedTile._x, pickedTile._y, 1);
-				break;
 			case GUARD:
+				objectOnTile = _objectHandler->GetTileMap()->GetObjectOnTile(pickedTile._x, pickedTile._y, 1);
+				if (objectOnTile == nullptr)
+				{
+					break;
+				}
 				objectOnTile = _objectHandler->GetTileMap()->GetObjectOnTile(pickedTile._x, pickedTile._y, 2);
 				break;
 			case TRAP:
@@ -164,7 +167,6 @@ void LevelEdit::DragAndDrop(Type type)
 				break;
 			}
 
-
 			if (objectOnTile == nullptr && _marker->GetType() == type)
 			{
 				// Remove from old tile
@@ -177,7 +179,6 @@ void LevelEdit::DragAndDrop(Type type)
 				p.z = pickedTile._y;
 
 				_marker->SetPosition(p);
-				_marker->SetTilePosition(pickedTile);
 				_objectHandler->GetTileMap()->AddObjectToTile(p.x, p.z, _marker);
 			}
 		}
