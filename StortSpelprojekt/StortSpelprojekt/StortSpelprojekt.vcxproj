@@ -185,10 +185,10 @@
       </Command>
     </PreBuildEvent>
     <CustomBuildStep>
-      <Outputs>a</Outputs>
-      <Command>robocopy "C:\%HOMEPATH%\Google Drive\Stort spelprojekt\Assets" "$(OutDir)Assets" /MIR /Z /XA:H /W:5
-robocopy "$(SolutionDir)Renderer\Shaders" "$(OutDir)Assets\Shaders" /MIR /Z /XA:H /W:5
-if errorlevel 1 exit 0 else exit %errorlevel%</Command>
+      <Outputs>
+      </Outputs>
+      <Command>
+      </Command>
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -211,7 +211,8 @@ if errorlevel 1 exit 0 else exit %errorlevel%</Command>
     <CustomBuildStep>
       <Command>
       </Command>
-      <Outputs>a</Outputs>
+      <Outputs>
+      </Outputs>
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -239,7 +240,8 @@ if errorlevel 1 exit 0 else exit %errorlevel%</Command>
     <CustomBuildStep>
       <Command>
       </Command>
-      <Outputs>a</Outputs>
+      <Outputs>
+      </Outputs>
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -266,7 +268,8 @@ if errorlevel 1 exit 0 else exit %errorlevel%</Command>
     <CustomBuildStep>
       <Command>
       </Command>
-      <Outputs>a</Outputs>
+      <Outputs>
+      </Outputs>
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
