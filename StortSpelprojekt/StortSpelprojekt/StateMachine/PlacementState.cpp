@@ -9,12 +9,12 @@ bool compareFloat3(XMFLOAT3 a, XMFLOAT3 b)
 	return false;
 }
 
-PlacementState::PlacementState(System::Controls* controls, ObjectHandler* objectHandler, UIHandler* uiHandler, System::InputDevice* inputDevice, System::Camera* camera, PickingDevice* pickingDevice)
-	: BaseState(_controls, _objectHandler, _uiHandler, _inputDevice, _camera, _pickingDevice)
+PlacementState::PlacementState(System::Controls* controls, ObjectHandler* objectHandler, System::InputDevice* inputDevice, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, int width, int height)
+	: BaseState(controls, objectHandler, inputDevice, camera, pickingDevice, filename, "PLACEMENT", assetManager, fontWrapper, width, height)
 {
 	_controls = controls;
 	_objectHandler = objectHandler;
-	_uiHandler = uiHandler;
+	
 	_inputDevice = inputDevice;
 	_camera = camera;
 	_pickingDevice = pickingDevice;
@@ -84,7 +84,7 @@ void PlacementState::Update(float deltaTime)
 
 void PlacementState::OnStateEnter()
 {
-	_levelEdit.Initialize(_objectHandler, _inputDevice, _controls, _pickingDevice, _camera, _uiHandler);
+	_levelEdit.Initialize(_objectHandler, _inputDevice, _controls, _pickingDevice, _camera);
 }
 
 void PlacementState::OnStateExit()

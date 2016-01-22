@@ -2,6 +2,7 @@
 #include <DirectXMath.h>
 #include "RenderUtils.h"
 #include "AIUtil.h"
+#include "Animation.h"
 
 /*
 GameObject class
@@ -12,9 +13,7 @@ If the object doesn't need a _renderObject, set it to nullptr.
 If the object has a renderObject but is out of sight _visibility will be false.
 */
 
-enum Type {FLOOR, WALL, LOOT, SPAWN, TRAP, TRIGGER, GUARD, ENEMY, NR_OF_TYPES/*Has to be last*/ };
 enum PickUpState{ONTILE, HELD, PICKINGUP, DROPPING};
-
 class GameObject
 {
 protected:
@@ -28,6 +27,7 @@ protected:
 	Type _type;
 	bool _visible;
 	RenderObject* _renderObject;
+	Animation* _animation = nullptr;
 
 	PickUpState _pickUpState;
 
@@ -63,6 +63,7 @@ public:
 	void SetVisibility(bool visible);
 
 	RenderObject* GetRenderObject() const;
+	Animation* GetAnimation() const;
 
 	void SetPickUpState( PickUpState state);
 	PickUpState GetPickUpState()const;

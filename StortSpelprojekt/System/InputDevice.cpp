@@ -16,7 +16,7 @@ namespace System
 		GetWindowRect(_hwnd, &rect);
 		_mouseCoord._pos.x = (rect.left + (rect.right - rect.left)) / 2;
 		_mouseCoord._pos.y = (rect.top + (rect.bottom - rect.top)) / 2;
-		SetCursorPos(_mouseCoord._pos.x, _mouseCoord._pos.y);
+		ScreenToClient(_hwnd, &_mouseCoord._pos);
 
 		_mouseBuffer._pos.x = _mouseCoord._pos.x;
 		_mouseBuffer._pos.y = _mouseCoord._pos.y;

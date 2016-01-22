@@ -9,6 +9,8 @@
 #include "HUDElement.h"
 #include "ShadowMap.h"
 #include "Spotlight.h"
+#include "Node.h"
+#include "FontWrapper.h"
 
 namespace Renderer
 {
@@ -77,6 +79,9 @@ namespace Renderer
 		DirectXHandler*		_d3d;
 		ShaderHandler*		_shaderHandler;
 
+		int _screenWidth;
+		int _screenHeight;
+
 		void InitializeConstantBuffers();
 
 		void SetDataPerObject(DirectX::XMMATRIX* world, ID3D11ShaderResourceView* diffuse, ID3D11ShaderResourceView* specular);
@@ -107,7 +112,9 @@ namespace Renderer
 		void BeginScene(float red, float green, float blue, float alpha);
 		void Render(DirectX::XMMATRIX* world, RenderObject* renderObject, std::vector<DirectX::XMFLOAT4X4>* extra = nullptr);
 		void Render(std::vector<HUDElement>* imageData);
+		void Render(GUI::Node* root, FontWrapper* fontWrapper);
 		void RenderLineList(DirectX::XMMATRIX* world, ID3D11Buffer* lineList, int nrOfPoints);
+		void Render(GUI::Node* current, DirectX::XMMATRIX* transform, FontWrapper* fontWrapper);
 		void RenderShadowMap(DirectX::XMMATRIX* world, RenderObject* renderObject);
 		void RenderScreenQuad();
 		void EndScene();

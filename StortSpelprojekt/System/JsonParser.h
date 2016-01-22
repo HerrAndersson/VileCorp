@@ -14,6 +14,7 @@ namespace System
 		}
 	}
 
+	//Error C2100: Illegal Indirection means you passed a nonpointer in data
 	template<class T> void saveJSON(T data, std::string path, std::string title)
 	{
 		std::ofstream outStream(path);

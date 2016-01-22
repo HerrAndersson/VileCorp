@@ -47,6 +47,7 @@ namespace System
 		void Resize(int width, int height);
 
 		void SetPosition(DirectX::XMFLOAT3 position);
+		void Move(DirectX::XMFLOAT3 offset);
 		void SetRotation(DirectX::XMFLOAT3 rotation);
 
 		DirectX::XMFLOAT3 GetPosition()const;

@@ -16,21 +16,28 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	_assetManager = new AssetManager(_renderModule->GetDevice());
 	_input = new System::InputDevice(_window->GetHWND());
 	_controls = new System::Controls(_input);
+	_fontWrapper = new FontWrapper(_renderModule->GetDevice(), L"Assets/Fonts/Calibri.ttf", L"Calibri");
 
 	//Init camera
 	_camera = new System::Camera(0.1f, 1000.0f, DirectX::XM_PIDIV2, settings._width, settings._height);
-	_camera->SetPosition(XMFLOAT3(3, 7, 0));
-	_camera->SetRotation(XMFLOAT3(70, 0, 0));
+	_camera->SetPosition(XMFLOAT3(3, 10, 0));
+	_camera->SetRotation(XMFLOAT3(60, 0, 0));
 	_camera->SetMode(System::FREE_CAM);
 	_input->ToggleCursorLock();
 
-	_UI = new UIHandler(_renderModule->GetDevice(), _window->GetWindowSettings(), _assetManager);
-	
-	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager);
-	
+	_timer = System::Timer();
+
+
+	GameObjectInfo* data = new GameObjectInfo();
+	GameObjectDataLoader gameObjectDataLoader;
+	gameObjectDataLoader.WriteSampleGameObjects();
+	gameObjectDataLoader.LoadGameObjectInfo(data);
+	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager, data);
+	//Init statemachine
+	//_SM = new StateMachine();
 	//Init statemachine
 	_pickingDevice = new PickingDevice(_camera, _window);
-	_SM = new StateMachine(_controls, _objectHandler, _UI, _input, _camera, _pickingDevice);
+	_SM = new StateMachine(_controls, _objectHandler, _input, _camera, _pickingDevice, "Assets/gui.json", _assetManager, _fontWrapper, settings._width, settings._height);
 
 	_SM->Update(_timer.GetFrameTime());
 	
@@ -95,6 +102,8 @@ Game::~Game()
 	SAFE_DELETE(_pickingDevice);
 	SAFE_DELETE(_input);
 	SAFE_DELETE(_grid);
+	delete _fontWrapper;
+
 	
 	for(auto s : _spotlights)
 	{
@@ -107,6 +116,7 @@ void Game::ResizeResources(System::WindowSettings settings)
 	_window->ResizeWindow(settings);
 	_renderModule->ResizeResources(_window->GetHWND(), settings._width, settings._height);
 	_camera->Resize(settings._width, settings._height);
+	_SM->Resize(settings._width, settings._height);
 }
 
 void Game::Update(float deltaTime)
@@ -118,8 +128,6 @@ void Game::Update(float deltaTime)
 
 	*/
 	//_input->Update();
-	_UI->Update();
-	_UI->OnResize(_window->GetWindowSettings());
 	_SM->Update(deltaTime);
 	_objectHandler->Update(deltaTime);
 
@@ -266,8 +274,7 @@ void Game::Render()
 	//_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::HUD_PASS);
 
 	//_renderModule->Render(_UI->GetTextureData());
-	//_UI->Render(_renderModule->GetDeviceContext());
-
+	_renderModule->Render(_SM->GetCurrentStatePointer()->GetUITree()->GetRootNode(), _fontWrapper);
 	_renderModule->EndScene();
 }
 
