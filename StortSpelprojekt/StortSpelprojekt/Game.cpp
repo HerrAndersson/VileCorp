@@ -22,7 +22,7 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	_camera->SetPosition(XMFLOAT3(3, 10, 0));
 	_camera->SetRotation(XMFLOAT3(60, 0, 0));
 	_camera->SetMode(System::FREE_CAM);
-	_input->ToggleCursorLock();
+	_controls->ToggleCursorLock();
 
 	_timer = System::Timer();
 

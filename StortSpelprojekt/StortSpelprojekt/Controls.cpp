@@ -276,4 +276,13 @@ namespace System
 	{
 		_inputDevice->ToggleCursorLock();
 	}
+	bool Controls::CursorLocked()
+	{
+		return _inputDevice->CursorLocked();
+	}
+
+	System::MouseCoord Controls::GetMouseCoord()
+	{
+		return _inputDevice->GetMouseCoord();
+	}
 }
