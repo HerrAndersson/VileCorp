@@ -38,6 +38,9 @@ namespace System
 		void ToggleCursorLock();
 
 		bool IsFunctionKeyDown(const std::string& key);
+		bool IsFunctionKeyUp(const std::string& key);
+
+		MouseCoord getMouseCoord();
 	};
 
 }

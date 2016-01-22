@@ -391,7 +391,21 @@ static bool Collision(Triangle triangle, Square square)
 		collision = true;
 	}
 
-	//TODO add more cases
+	// SAT check
+	if (!collision)
+	{
+
+
+
+
+
+	}
+
+
+
+
+
+
 
 	return collision;
 }

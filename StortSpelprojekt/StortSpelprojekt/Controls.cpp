@@ -24,6 +24,8 @@ namespace System
 		rightarrow
 		downarrow
 		delete
+		leftmouse
+		rightmouse
 	Valid modifers are:
 		ctrl
 		alt
@@ -160,6 +162,14 @@ namespace System
 		{
 			mainKey = VK_DELETE;
 		}
+		else if (key == "leftmouse")
+		{
+			mainKey = VK_LBUTTON;
+		}
+		else if (key == "rightmouse")
+		{
+			mainKey = VK_RBUTTON;
+		}
 		else if (key.length() == 1) //Map the key directly to the ascii code
 		{
 			mainKey = key[0];
@@ -205,5 +215,38 @@ namespace System
 			ret = _inputDevice->IsPressed((*_keymap)[key].mainKey);
 		}
 		return ret && (*_keymap)[key].keyModifier == modifersActivated;
+	}
+
+	bool Controls::IsFunctionKeyUp(const std::string& key)
+	{
+		bool ret = false;
+		int modifersActivated = NONE;
+		if (_inputDevice->IsDown(Input::Shift))
+		{
+			modifersActivated |= SHIFT;
+		}
+		if (_inputDevice->IsDown(Input::Control))
+		{
+			modifersActivated |= CTRL;
+		}
+		if (_inputDevice->IsDown(Input::Alt))
+		{
+			modifersActivated |= ALT;
+		}
+		if ((*_keymap)[key].keyModifier & REPEAT)
+		{
+			ret = _inputDevice->IsUp((*_keymap)[key].mainKey);
+			modifersActivated |= REPEAT;
+		}
+		else
+		{
+			ret = _inputDevice->IsReleased((*_keymap)[key].mainKey);
+		}
+		return ret && (*_keymap)[key].keyModifier == modifersActivated;
+	}
+
+	MouseCoord Controls::getMouseCoord()
+	{
+		return _inputDevice->GetMouseCoord();
 	}
 }
