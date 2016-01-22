@@ -13,9 +13,8 @@
 #include "Grid.h"
 #include "PickingDevice.h"
 #include "Spotlight.h"
+#include "GameObjectDataLoader.h"
 #include "ShadowMap.h"
-#include "JsonStructs.h"
-#include "ConfigParser.h"
 
 class Game
 {
