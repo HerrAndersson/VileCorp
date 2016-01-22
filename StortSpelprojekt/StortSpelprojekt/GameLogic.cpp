@@ -70,6 +70,12 @@ void GameLogic::HandleInput()
 		}
 	}
 
+	XMFLOAT3 forward(0, 0, 0);
+	XMFLOAT3 position = _camera->GetPosition();
+	XMFLOAT3 right(0, 0, 0);
+	bool isMoving = false;
+	float v = 0.06f + (_camera->GetPosition().y * 0.01);
+
 	if (_camera->GetMode() == System::LOCKED_CAM)
 	{
 		if (_inputDevice->IsDown(System::Input::ScrollWheelUp) &&
@@ -83,8 +89,6 @@ void GameLogic::HandleInput()
 			_camera->Move(XMFLOAT3(0.0f, 1.0f, 0.0f));
 		}
 	}
-
-	float v = 0.06f + (_camera->GetPosition().y * 0.01);
 
 	if (_controls->IsFunctionKeyDown("DEBUG:ENABLE_FREECAM"))
 	{

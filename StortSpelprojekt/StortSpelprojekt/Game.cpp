@@ -27,15 +27,12 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 
 	_timer = System::Timer();
 
-
 	GameObjectInfo* data = new GameObjectInfo();
 	GameObjectDataLoader gameObjectDataLoader;
 	gameObjectDataLoader.WriteSampleGameObjects();
 	gameObjectDataLoader.LoadGameObjectInfo(data);
+
 	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager, data);
-	//Init statemachine
-	//_SM = new StateMachine();
-	//Init statemachine
 	_pickingDevice = new PickingDevice(_camera, _window);
 	_SM = new StateMachine(_controls, _objectHandler, _input, _camera, _pickingDevice, "Assets/gui.json", _assetManager, _fontWrapper, settings._width, settings._height);
 
@@ -95,7 +92,6 @@ Game::~Game()
 	SAFE_DELETE(_renderModule);
 	SAFE_DELETE(_camera);
 	SAFE_DELETE(_objectHandler);
-	SAFE_DELETE(_UI);
 	SAFE_DELETE(_SM);
 	SAFE_DELETE(_controls);
 	SAFE_DELETE(_assetManager);
@@ -104,7 +100,6 @@ Game::~Game()
 	SAFE_DELETE(_grid);
 	delete _fontWrapper;
 
-	
 	for(auto s : _spotlights)
 	{
 		delete s;
@@ -133,77 +128,32 @@ void Game::Update(float deltaTime)
 
 	std::vector<GameObject*> e = _objectHandler->GetAllByType(GUARD);
 
-	if (e.size() > 0)
-	{
-		XMFLOAT3 p = e[0]->GetPosition();
-		XMFLOAT3 r = e[0]->GetRotation();
-		XMFLOAT3 d = _spotlights[0]->GetDirection();
-
-		p.y += 0.15f;
-		p.x += d.x * 0.5f;
-		p.z += d.z * 0.5f;
-
-		r = XMFLOAT3(XMConvertToDegrees(r.x), -XMConvertToDegrees(r.y), XMConvertToDegrees(r.z));
-		_spotlights[0]->SetPositionAndRotation(p, r);
-	}
-
-	//for (unsigned int i = 0; i < _spotlights.size(); i++)
+	//if (e.size() > 0)
 	//{
-	//	XMFLOAT3 rot = _spotlights[i]->GetRotation();
-	//	rot.y -= (float)(i + 1) / 1;
-	//	_spotlights[i]->SetRotation(rot);
+	//	XMFLOAT3 p = e[0]->GetPosition();
+	//	XMFLOAT3 r = e[0]->GetRotation();
+	//	XMFLOAT3 d = _spotlights[0]->GetDirection();
 
-	//	XMFLOAT3 color = _spotlights[i]->GetColor();
-	//	color.x = sin(_timer.GetGameTime() / 1000);
-	//	color.y = sin(_timer.GetGameTime() / 1000 + XMConvertToRadians(120));
-	//	color.z = sin(_timer.GetGameTime() / 1000 + XMConvertToRadians(240));
-	//	_spotlights[i]->SetColor(color);
+	//	p.y += 0.15f;
+	//	p.x += d.x * 0.5f;
+	//	p.z += d.z * 0.5f;
+
+	//	r = XMFLOAT3(XMConvertToDegrees(r.x), -XMConvertToDegrees(r.y), XMConvertToDegrees(r.z));
+	//	_spotlights[0]->SetPositionAndRotation(p, r);
 	//}
 
-	XMFLOAT3 forward(0, 0, 0);
-	XMFLOAT3 position = _camera->GetPosition();
-	XMFLOAT3 right(0, 0, 0);
-	bool isMoving = false;
-	float v = 0.1f;
-
-	if (GetAsyncKeyState(0x57) != 0) //W
+	for (unsigned int i = 0; i < _spotlights.size(); i++)
 	{
-		forward = _camera->GetForwardVector();
-		isMoving = true;
-	}
-	else if (GetAsyncKeyState(0x53) != 0)//S
-	{
-		forward = _camera->GetForwardVector();
-		forward.x *= -1;
-		forward.y *= -1;
-		forward.z *= -1;
-		isMoving = true;
-	}
+		XMFLOAT3 rot = _spotlights[i]->GetRotation();
+		rot.y -= (float)(i + 1) / 1;
+		_spotlights[i]->SetRotation(rot);
 
-	if (GetAsyncKeyState(0x44) != 0)//D
-	{
-		right = _camera->GetRightVector();
-		isMoving = true;
+		XMFLOAT3 color = _spotlights[i]->GetColor();
+		color.x = sin(_timer.GetGameTime() / 1000);
+		color.y = sin(_timer.GetGameTime() / 1000 + XMConvertToRadians(120));
+		color.z = sin(_timer.GetGameTime() / 1000 + XMConvertToRadians(240));
+		_spotlights[i]->SetColor(color);
 	}
-	else if (GetAsyncKeyState(0x41) != 0)//A
-	{
-		right = _camera->GetRightVector();
-		right.x *= -1;
-		right.y *= -1;
-		right.z *= -1;
-		isMoving = true;
-	}
-
-	if (isMoving)
-	{
-		_camera->SetPosition(XMFLOAT3(position.x + (forward.x + right.x) * v, position.y + (forward.y + right.y) * v, position.z + (forward.z + right.z) * v));
-	}
-
-	XMFLOAT3 rotation = _camera->GetRotation();
-	rotation.x += _input->GetMouseCoord()._deltaPos.y / 10.0f;
-	rotation.y += _input->GetMouseCoord()._deltaPos.x / 10.0f;
-
-	_camera->SetRotation(rotation);
 }
 
 void Game::Render()
@@ -248,7 +198,7 @@ void Game::Render()
 	//}
 
 	_renderModule->SetLightDataPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
-	for (int i = 0; i < 1; i++)
+	for (int i = 0; i < 2; i++)
 	{
 		_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::SHADOW_GENERATION);
 		_renderModule->SetShadowMapDataPerSpotlight(_spotlights[i]->GetViewMatrix(), _spotlights[i]->GetProjectionMatrix());

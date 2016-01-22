@@ -169,7 +169,7 @@ namespace Renderer
 		DirectX::XMFLOAT4X4 tempmatrix;														//
 		DirectX::XMStoreFloat4x4(&tempmatrix, DirectX::XMMatrixIdentity());					//
 		for (unsigned i = 0; i < 30; i++) {													//
-			memcpy(&dataPtr->bones[i], (char*)&tempmatrix, sizeof(DirectX::XMFLOAT4X4));	//
+			memcpy(&dataPtr->_bones[i], (char*)&tempmatrix, sizeof(DirectX::XMFLOAT4X4));	//
 		}																					//TODO remove - Fredrik
 //		memcpy(&dataPtr->bones, extra->data(), sizeof(DirectX::XMFLOAT4X4) * extra->size());
 		
@@ -422,7 +422,7 @@ namespace Renderer
 			XMMATRIX t = DirectX::XMMatrixMultiply(scale, *transform); 
 
 			MatrixBufferHud* dataPtr = (MatrixBufferHud*)mappedResource.pData;
-			dataPtr->model = XMMatrixTranspose(t);
+			dataPtr->_model = XMMatrixTranspose(t);
 
 			_d3d->GetDeviceContext()->Unmap(_matrixBufferHUD, 0);
 
