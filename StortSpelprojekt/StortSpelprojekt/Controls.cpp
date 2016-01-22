@@ -40,11 +40,11 @@ namespace System
 		}
 		//Mattias
 	*/
-	Controls::Controls(System::InputDevice* input)
+	Controls::Controls(HWND hwnd)
 	{
 		_keymap = new std::map<std::string, Key>();
 
-		_inputDevice = input;
+		_inputDevice = new InputDevice(hwnd);
 		ifstream file("Assets/controls.json");
 		if (!file.good())
 		{
@@ -96,6 +96,17 @@ namespace System
 	Controls::~Controls()
 	{
 		delete _keymap;
+		delete _inputDevice;
+	}
+
+	void Controls::Update()
+	{
+		_inputDevice->Update();
+	}
+
+	void Controls::HandleRawInput(LPARAM lparam)
+	{
+		_inputDevice->HandleRawInput(lparam);
 	}
 
 	void Controls::StringToKeyMap(const std::string& key, char &mainKey, char& keyModifiers)
@@ -178,10 +189,6 @@ namespace System
 			throw std::runtime_error("Undefined keyword \"" + key + "\"");
 		}
 	}
-	void Controls::ToggleCursorLock()
-	{
-		//_inputDevice->ToggleCursorLock();
-	}
 
 	void Controls::SaveKeyBindings(int keyMap, std::string action, std::string newKey, std::string newKey2, std::string newKey3, std::string newKey4)
 	{
@@ -263,5 +270,10 @@ namespace System
 			ret = _inputDevice->IsPressed((*_keymap)[key].mainKey);
 		}
 		return ret && (*_keymap)[key].keyModifier == modifersActivated;
+	}
+
+	void Controls::ToggleCursorLock()
+	{
+		_inputDevice->ToggleCursorLock();
 	}
 }

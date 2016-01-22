@@ -61,10 +61,9 @@ bool LevelEdit::TypeOn(Type type)
 	return false;
 }
 
-void LevelEdit::Initialize(ObjectHandler* objectHandler, System::InputDevice* inputDevice, System::Controls* controls, PickingDevice* pickingDevice, System::Camera* camera)
+void LevelEdit::Initialize(ObjectHandler* objectHandler, System::Controls* controls, PickingDevice* pickingDevice, System::Camera* camera)
 {
 	_objectHandler = objectHandler;
-	_inputDevice = inputDevice;
 	_controls = controls;
 	_pickingDevice = pickingDevice;
 	_camera = camera;
@@ -135,6 +134,7 @@ void LevelEdit::HandleHUD()
 
 void LevelEdit::DragAndDrop(Type type)
 {
+	/*
 	if (_marker != nullptr && _inputDevice->IsDown(System::Input::LeftMouse))
 	{
 		AI::Vec2D pickedTile = _pickingDevice->pickTile(_inputDevice->GetMouseCoord()._pos);
@@ -191,6 +191,7 @@ void LevelEdit::DragAndDrop(Type type)
 			_marker = nullptr;
 		}
 	}
+	*/
 }
 
 void LevelEdit::DragAndDrop()
@@ -248,6 +249,7 @@ void LevelEdit::HandleInput()
 	//	_marker->SetScale(XMFLOAT3(tempPos.x, tempPos.y, tempPos.z - 1));
 	//}
 
+	/*
 	if (_inputDevice->IsPressed(System::Input::LeftMouse))
 	{
 		if (_isSelectionMode)
@@ -295,7 +297,8 @@ void LevelEdit::HandleInput()
 		rotation.x += mouseCoord._deltaPos.y / 10.0f;
 		_camera->SetRotation(rotation);
 	}
-
+	*/
+	/*
 	if (_camera->GetMode() == System::LOCKED_CAM)
 	{
 		if (_inputDevice->IsDown(System::Input::ScrollWheelUp) &&
@@ -309,6 +312,7 @@ void LevelEdit::HandleInput()
 			_camera->Move(XMFLOAT3(0.0f, 1.0f, 0.0f));
 		}
 	}
+	*/
 
 	XMFLOAT3 forward(0, 0, 0);
 	XMFLOAT3 position = _camera->GetPosition();
@@ -351,8 +355,6 @@ void LevelEdit::HandleInput()
 
 void LevelEdit::Update(float deltaTime)
 {
-	_inputDevice->Update();
-	_mouseCoord = _inputDevice->GetMouseCoord();
 	HandleHUD();
 	HandleSelected();
 	HandleInput();

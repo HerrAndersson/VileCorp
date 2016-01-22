@@ -3,7 +3,6 @@
 #include <cstdio>
 #include <ShlObj.h>
 #include "../ObjectHandler.h"
-#include "../System/InputDevice.h"
 #include "../Grid.h"
 #include "AStar.h"
 #include "../Controls.h"
@@ -14,7 +13,6 @@ class LevelEdit
 {
 private:
 	AI::AStar*				_aStar;
-	System::InputDevice*	_inputDevice;
 	System::Controls*		_controls;
 	System::Camera*			_camera;
 	Tilemap*				_tileMap;
@@ -81,7 +79,7 @@ public:
 	LevelEdit();
 	~LevelEdit();
 
-	void Initialize(ObjectHandler* objectHandler, System::InputDevice* inputDevice, System::Controls* controls, PickingDevice* pickingDevice, System::Camera* camera);
+	void Initialize(ObjectHandler* objectHandler, System::Controls* controls, PickingDevice* pickingDevice, System::Camera* camera);
 
 	GameObject* GetSelectedObject();
 	bool Add(Type type);

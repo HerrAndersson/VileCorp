@@ -1,0 +1,72 @@
+{
+  "MAP_EDIT": {
+    "MOVE_MARKER_LEFT": [ "leftarrow" ],
+    "MOVE_MARKER_RIGHT": [ "rightarrow" ],
+    "MOVE_MARKER_UP": [ "uparrow" ],
+    "MOVE_MARKER_DOWN": [ "downarrow" ],
+    "ROTATE_MARKER_COUNTERCLOCK": [ "Q" ],
+    "ROTATE_MARKER_CLOCK": [ "E" ],
+    "ROTATE_CAMERA_LEFT": [ "Q" ],
+    "ROTATE_CAMERA_RIGHT": [ "E" ],
+    "MOVE_CAMERA_UP": [ "W", "repeat" ],
+    "MOVE_CAMERA_DOWN": [ "S", "repeat" ],
+    "MOVE_CAMERA_LEFT": [ "A", "repeat" ],
+    "MOVE_CAMERA_RIGHT": [ "D", "repeat" ],
+    "ZOOM_CAMERA_IN": [ "Z", "repeat" ],
+    "ZOOM_CAMERA_OUT": [ "X", "repeat" ],
+    "UNDO": [ "Z", "ctrl" ],
+    "REDO": [ "Y", "ctrl" ],
+    "SAVE": [ "S", "ctrl" ],
+    "DELETE_UNIT": [ "delete" ],
+
+    "MENU": [ "escape" ],
+
+    "NEWLEVEL": [ "C" ]
+  },
+
+  "PLACEMENT": {
+
+    "BUILD_TRAP": [ "T" ],
+	"HIRE_GUARD": [ "U" ],
+    "DELETE": [ "delete" ],
+	"CHANGE_TO_PLAY": [ "P" ]
+  },
+
+  "PLAY": {
+    "CONTROL_GROUP0": [ "0", "ctrl" ],
+    "CONTROL_GROUP1": [ "1", "ctrl" ],
+    "CONTROL_GROUP2": [ "2", "ctrl" ],
+    "CONTROL_GROUP3": [ "3", "ctrl" ],
+    "CONTROL_GROUP4": [ "4", "ctrl" ],
+    "CONTROL_GROUP5": [ "5", "ctrl" ],
+    "CONTROL_GROUP6": [ "6", "ctrl" ],
+    "CONTROL_GROUP7": [ "7", "ctrl" ],
+    "CONTROL_GROUP8": [ "8", "ctrl" ],
+    "CONTROL_GROUP9": [ "9", "ctrl" ],
+
+
+
+    "MENU": [ "escape" ]
+  },
+	
+	"MENU": {
+		"UP": ["uparrow"],
+		"DOWN": ["downarrow"],
+		
+		"MENU": ["escape"]
+    },
+	
+    "DEBUG": {
+		"MOVE_CAMERA_UP": ["W", "repeat"],
+		"MOVE_CAMERA_DOWN": ["S", "repeat"],
+		"MOVE_CAMERA_LEFT": ["A", "repeat"],
+		"MOVE_CAMERA_RIGHT": ["D", "repeat"],
+		
+		"TEST": ["D", "ctrl", "alt", "shift"],
+		"ENABLE_FREECAM": ["F", "ctrl", "shift"],
+		
+		"UNLIMITED_MONEY": ["1", "ctrl", "alt"],
+		"INSTANT_WIN": ["2", "ctrl", "alt"],
+		"NO_FOG": ["3", "ctrl", "alt"]
+	}
+}
