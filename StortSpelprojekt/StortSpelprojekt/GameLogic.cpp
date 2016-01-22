@@ -186,14 +186,14 @@ void GameLogic::HandleInput()
 	{
 		_camera->SetPosition(XMFLOAT3(position.x + (forward.x + right.x) * v, position.y + (forward.y + right.y) * v, position.z + (forward.z + right.z) * v));
 	}
-	/*
-	if (_inputDevice->CursorLocked())
+	
+	if (_controls->CursorLocked())
 	{
 		XMFLOAT3 rotation = _camera->GetRotation();
-		rotation.x += _inputDevice->GetMouseCoord()._deltaPos.y / 10.0f;
-		rotation.y += _inputDevice->GetMouseCoord()._deltaPos.x / 10.0f;
+		rotation.x += _controls->GetMouseCoord()._deltaPos.y / 10.0f;
+		rotation.y += _controls->GetMouseCoord()._deltaPos.x / 10.0f;
 
 		_camera->SetRotation(rotation);
 	}
-	*/
+	
 }
