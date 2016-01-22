@@ -123,18 +123,34 @@ void Game::Update(float deltaTime)
 	_SM->Update(deltaTime);
 	_objectHandler->Update(deltaTime);
 
-	for (unsigned int i = 0; i < _spotlights.size(); i++)
-	{
-		XMFLOAT3 rot = _spotlights[i]->GetRotation();
-		rot.y -= (float)(i + 1) / 1;
-		_spotlights[i]->SetRotation(rot);
+	std::vector<GameObject*> e = _objectHandler->GetAllByType(GUARD);
 
-		XMFLOAT3 color = _spotlights[i]->GetColor();
-		color.x = sin(_timer.GetGameTime() / 1000);
-		color.y = sin(_timer.GetGameTime() / 1000 + XMConvertToRadians(120));
-		color.z = sin(_timer.GetGameTime() / 1000 + XMConvertToRadians(240));
-		_spotlights[i]->SetColor(color);
+	if (e.size() > 0)
+	{
+		XMFLOAT3 p = e[0]->GetPosition();
+		XMFLOAT3 r = e[0]->GetRotation();
+		XMFLOAT3 d = _spotlights[0]->GetDirection();
+
+		p.y += 0.15f;
+		p.x += d.x * 0.5f;
+		p.z += d.z * 0.5f;
+
+		r = XMFLOAT3(XMConvertToDegrees(r.x), -XMConvertToDegrees(r.y), XMConvertToDegrees(r.z));
+		_spotlights[0]->SetPositionAndRotation(p, r);
 	}
+
+	//for (unsigned int i = 0; i < _spotlights.size(); i++)
+	//{
+	//	XMFLOAT3 rot = _spotlights[i]->GetRotation();
+	//	rot.y -= (float)(i + 1) / 1;
+	//	_spotlights[i]->SetRotation(rot);
+
+	//	XMFLOAT3 color = _spotlights[i]->GetColor();
+	//	color.x = sin(_timer.GetGameTime() / 1000);
+	//	color.y = sin(_timer.GetGameTime() / 1000 + XMConvertToRadians(120));
+	//	color.z = sin(_timer.GetGameTime() / 1000 + XMConvertToRadians(240));
+	//	_spotlights[i]->SetColor(color);
+	//}
 
 	XMFLOAT3 forward(0, 0, 0);
 	XMFLOAT3 position = _camera->GetPosition();
@@ -240,9 +256,9 @@ void Game::Render()
 		_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::LIGHT_APPLICATION);
 		_renderModule->SetLightDataPerSpotlight(_spotlights[i]);
 
-		_renderModule->DEBUG_RenderLightVolume(_spotlights[i]->GetVolumeBuffer(), _spotlights[i]->GetWorldMatrix(), _spotlights[i]->GetVertexCount(), _spotlights[i]->GetVertexSize());
+		//_renderModule->DEBUG_RenderLightVolume(_spotlights[i]->GetVolumeBuffer(), _spotlights[i]->GetWorldMatrix(), _spotlights[i]->GetVertexCount(), _spotlights[i]->GetVertexSize());
 
-		//_renderModule->RenderScreenQuad();
+		_renderModule->RenderScreenQuad();
 	}
 
 	/*-------------------------------------------------------- HUD and other 2D -----------------------------------------------------------*/
