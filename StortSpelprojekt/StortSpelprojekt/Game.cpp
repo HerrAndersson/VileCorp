@@ -217,18 +217,50 @@ void Game::Render()
 
 int Game::Run()
 {
-	while (_window->Run())
+	bool run = true;
+
+	// Setting up delta time
+		__int64 cntsPerSec = 0;
+	QueryPerformanceFrequency((LARGE_INTEGER*)&cntsPerSec);
+	float secsPerCnt = 1.0f / (float)cntsPerSec;
+
+	__int64 prevTimeStamp = 0;
+	QueryPerformanceCounter((LARGE_INTEGER*)&prevTimeStamp);
+	//
+
+	MSG msg;
+	ZeroMemory(&msg, sizeof(MSG));
+
+	while (run)
 	{
-		_timer.Update();
-		if (_timer.GetFrameTime() >= MS_PER_FRAME)
+		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 		{
-			Update(_timer.GetFrameTime());
-			Render();
-			string s = to_string(_timer.GetFrameTime()) + " " + to_string(_timer.GetFPS());
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+			if (msg.message == WM_QUIT)
+			{
+				run = false;
+			}
+		}
+		else
+		{
+			float delay = 0;
+			for (int i = 0; i < 5000000; i++)
+			{
+				delay += 1.0f / 2 + 0.6f;
+			}
 
-			SetWindowText(_window->GetHWND(), s.c_str());
+			_timer.Update();
+			if (_timer.GetFrameTime() >= MS_PER_FRAME)
+			{
+				Update(_timer.GetFrameTime());
+				Render();
+				string s = to_string(_timer.GetFrameTime()) + " " + to_string(_timer.GetFPS());
 
-			_timer.Reset();
+				SetWindowText(_window->GetHWND(), s.c_str());
+
+				_timer.Reset();
+			}
 		}
 	}
 
