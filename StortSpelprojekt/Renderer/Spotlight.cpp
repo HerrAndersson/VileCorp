@@ -69,19 +69,19 @@ namespace Renderer
 		XMStoreFloat3(&basePos, baseCenter);
 		for (int i = 0; i < resolution-1; i++)
 		{
-			triangles.push_back(_position);
-			triangles.push_back(points[pc]);
 			triangles.push_back(points[++pc]);
-
+			triangles.push_back(points[pc - 1]);
+			triangles.push_back(_position);
+			
 			triangles.push_back(basePos);
 			triangles.push_back(points[pc2]);
 			triangles.push_back(points[++pc2]);
 		}
 		//Fix the connection between the last and the first
-		triangles.push_back(_position);
-		triangles.push_back(points[pc]);
 		triangles.push_back(points[0]);
-
+		triangles.push_back(points[pc]);
+		triangles.push_back(_position);
+		
 		triangles.push_back(basePos);
 		triangles.push_back(points[pc2]);
 		triangles.push_back(points[0]);
