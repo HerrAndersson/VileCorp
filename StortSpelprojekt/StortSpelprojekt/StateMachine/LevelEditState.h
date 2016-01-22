@@ -9,6 +9,9 @@ private:
 	LevelEdit _levelEdit;
 
 
+	bool _floorChosen = false;
+	bool _wallChosen = false;
+
 public:
 	LevelEditState(System::Controls* controls, ObjectHandler* objectHandler, System::InputDevice* inputDevice, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, int width, int height);
 	virtual ~LevelEditState();

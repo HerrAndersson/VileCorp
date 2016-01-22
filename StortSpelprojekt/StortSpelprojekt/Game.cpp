@@ -162,7 +162,14 @@ void Game::Render()
 	{
 		for (GameObject* g : gameObjects->at(i))
 		{
-			_renderModule->Render(g->GetMatrix(), g->GetRenderObject());
+			if (g->GetAnimation() != nullptr)
+			{
+				_renderModule->Render(g->GetMatrix(), g->GetRenderObject(), g->GetAnimation()->GetTransforms());
+			}
+			else
+			{
+				_renderModule->Render(g->GetMatrix(), g->GetRenderObject());
+			}
 		}
 	}
 

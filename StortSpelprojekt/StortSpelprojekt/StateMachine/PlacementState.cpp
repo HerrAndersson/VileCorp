@@ -1,14 +1,5 @@
 #include "PlacementState.h"
 
-bool compareFloat3(XMFLOAT3 a, XMFLOAT3 b)
-{
-	if (a.x == b.x && a.z == b.z)
-	{
-		return true;
-	}
-	return false;
-}
-
 PlacementState::PlacementState(System::Controls* controls, ObjectHandler* objectHandler, System::InputDevice* inputDevice, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, int width, int height)
 	: BaseState(controls, objectHandler, inputDevice, camera, pickingDevice, filename, "PLACEMENT", assetManager, fontWrapper, width, height)
 {
@@ -32,54 +23,79 @@ void PlacementState::Update(float deltaTime)
 
 	//tempAddObj
 
-	int cost = 200;
+	int cost = 20;
 
 	//T adds Trap
-	if (_inputDevice->IsPressed(0x54))
-	{	
+	if (_controls->IsFunctionKeyDown("PLACEMENT:BUILD_TRAP"))
+	{
+		_trapChosen = true;
 		if (_budget - cost >= 0)
 		{
-			Trap* selected = (Trap*)_levelEdit.GetSelectedObject();
 			vector<GameObject*>* vec = &_objectHandler->GetGameObjects()->at(TRAP);
-			
 			if (vec->empty())
 			{
 				_levelEdit.Add(TRAP, TRAP);
 				_budget -= cost;
+
 			}
 			else
 			{
 				bool taken = false;
-				for (GameObject* g : *vec)
+				if (_levelEdit.Marked(TRAP) || _levelEdit.Marked(WALL))
 				{
-					if (selected != g && compareFloat3(selected->GetPosition(), g->GetPosition()))
-					{
-						taken = true;
-						break;
-					}
+					taken = true;
 				}
 				if (!taken)
 				{
 					_levelEdit.Add(TRAP, TRAP);
 					_budget -= cost;
+
 				}
 			}
 		}
 	}
-	else if (_inputDevice->IsPressed(System::Input::Backspace))
+	else if (_controls->IsFunctionKeyDown("PLACEMENT:DELETE"))
 	{
-		Trap* selected = (Trap*)_levelEdit.GetSelectedObject();
-		vector<GameObject*>* vec = &_objectHandler->GetGameObjects()->at(TRAP);
-		for (GameObject* g : *vec)
+		if (!_levelEdit.Delete(TRAP))
 		{
-			if (selected != g && compareFloat3(selected->GetPosition(), g->GetPosition()))
+			_budget += cost;
+		}
+		
+	}
+
+	if (_trapChosen == true)
+	{
+		if (_inputDevice->IsDown(System::Input::Shift))
+		{
+			if (_inputDevice->IsPressed(System::Input::LeftArrow) 
+				|| _inputDevice->IsPressed(System::Input::RightArrow)
+				|| _inputDevice->IsPressed(System::Input::UpArrow) 
+				|| _inputDevice->IsPressed(System::Input::DownArrow))
 			{
-				_budget += cost;
-				_objectHandler->Remove(g->GetID());
-				break;
+				if (_budget - cost >= 0)
+				{
+					bool taken = false;
+					if (_levelEdit.Marked(TRAP) || _levelEdit.Marked(WALL)) 
+					{
+						taken = true;
+					}
+					if (!taken)
+					{
+						_levelEdit.Add(TRAP, TRAP);
+						_budget -= cost;
+
+					}
+
+				}
 			}
 		}
 	}
+
+	if (_inputDevice->IsPressed(System::Input::Enter))
+	{
+		_trapChosen = false;
+	}
+
 }
 
 void PlacementState::OnStateEnter()

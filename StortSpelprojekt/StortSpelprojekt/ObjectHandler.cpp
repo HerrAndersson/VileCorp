@@ -299,7 +299,7 @@ void ObjectHandler::Update(float deltaTime)
 		for (int j = 0; j < _gameObjects[i].size(); j++)
 		{
 			GameObject* g = _gameObjects[i][j];
-			g->Update();
+			g->Update(deltaTime);
 
 			if (g->GetPickUpState() == PICKINGUP)
 			{

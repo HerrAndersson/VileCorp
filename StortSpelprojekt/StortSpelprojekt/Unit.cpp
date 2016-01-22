@@ -268,6 +268,10 @@ Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	_health = 1;					//TODO: Update constrcutor parameters to include health  --Victor
 	_pathLength = 0;
 	_path = nullptr;
+	if (_renderObject->_isSkinned)
+	{
+		_animation = new Animation(_renderObject->_skeleton);
+	}
 }
 
 
@@ -276,6 +280,10 @@ Unit::~Unit()
 	delete[] _visibleTiles;
 	delete _aStar;
 	_aStar = nullptr;
+	if (_animation != nullptr)
+	{
+		delete _animation;
+	}
 }
 
 int Unit::GetPathLength() const
@@ -518,8 +526,12 @@ void Unit::Move()
 	CalculateMatrix();
 }
 
-void Unit::Update()
+void Unit::Update(float deltaTime)
 {
+	if (_animation != nullptr)
+	{
+		_animation->Update(deltaTime);
+	}
 
 	if (_waiting > 0)
 	{

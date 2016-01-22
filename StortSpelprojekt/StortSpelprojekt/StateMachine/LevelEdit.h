@@ -15,12 +15,12 @@ class LevelEdit
 {
 private:
 	AI::AStar*				_aStar;
-	Tilemap*				_tileMap;
-	ObjectHandler*			_objectHandler;
 	System::InputDevice*	_inputDevice;
 	System::Controls*		_controls;
-	PickingDevice*			_pickingDevice;
 	System::Camera*			_camera;
+	Tilemap*				_tileMap;
+	ObjectHandler*			_objectHandler;
+	PickingDevice*			_pickingDevice;
 	Grid*					_grid;
 
 	struct LevelHeader
@@ -53,16 +53,23 @@ private:
 	int _wallAmount;
 	bool _wall = false;
 
-	XMFLOAT3 _lastObjPosition = XMFLOAT3(0.0, 0.0, 0.0);
-	GameObject* _selectedObj;
+	GameObject* _marker;
 	GameObject* _lastSelected;
+
 	System::MouseCoord _mouseCoord;
 	int _tileMultiplier;
 	int _tilemapHeight, _tilemapWidth;
 	bool _isSelectionMode = true;
 	std::vector<ButtonInfo> buttonInfo;
+	
+	
+	void DragAndDrop(Type type);
+	void DragAndDrop();
 
 	void HandleInput();
+
+
+
 	void HandleHUD();
 	void LoadLevel(int levelID);
 	void InitNewLevel();
@@ -70,7 +77,6 @@ private:
 	void HandleSelected();
 
 	void ExportLevel();
-	void SelectObject(GameObject* selectedObject);
 
 public:
 	LevelEdit();
@@ -79,5 +85,7 @@ public:
 	GameObject* GetSelectedObject();
 	void Add(Type type, int renderObjectID);
 	void Initialize(ObjectHandler* objectHandler, System::InputDevice* inputDevice, System::Controls* controls, PickingDevice* pickingDevice, System::Camera* camera);
+	bool Delete(Type type);
+	bool Marked(Type type);
 	void Update(float deltaTime);
 };

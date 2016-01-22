@@ -54,7 +54,7 @@ public:
 	void SetGoal(AI::Vec2D goal);
 	void SetGoal(GameObject* objective);
 	void Move();
-	void Update();
+	void Update(float deltaTime);
 	virtual void Release();
 	virtual void act(GameObject* obj) = 0;									//context specific action on the unit's objective
 	void Wait(int frames);
