@@ -26,6 +26,8 @@ namespace System
 		rightarrow
 		downarrow
 		delete
+		leftmouse
+		rightmouse
 	Valid modifers are:
 		ctrl
 		alt
@@ -175,6 +177,22 @@ namespace System
 		{
 			mainKey = VK_DELETE;
 		}
+		else if (key == "leftmouse")
+		{
+			mainKey = VK_LBUTTON;
+		}
+		else if (key == "rightmouse")
+		{
+			mainKey = VK_RBUTTON;
+		}
+		else if (key == "scrollup")
+		{
+			mainKey = System::Input::ScrollWheelUp;
+		}
+		else if (key == "scrolldown")
+		{
+			mainKey = System::Input::ScrollWheelDown;
+		}
 		else if (key.length() == 1) //Map the key directly to the ascii code
 		{
 			mainKey = key[0];
@@ -188,6 +206,10 @@ namespace System
 		{
 			throw std::runtime_error("Undefined keyword \"" + key + "\"");
 		}
+	}
+	void Controls::ToggleCursorLock()
+	{
+		_inputDevice->ToggleCursorLock();
 	}
 
 	void Controls::SaveKeyBindings(int keyMap, std::string action, std::string newKey, std::string newKey2, std::string newKey3, std::string newKey4)
@@ -272,8 +294,36 @@ namespace System
 		return ret && (*_keymap)[key].keyModifier == modifersActivated;
 	}
 
-	void Controls::ToggleCursorLock()
+	bool Controls::IsFunctionKeyUp(const std::string& key)
 	{
-		_inputDevice->ToggleCursorLock();
+		bool ret = false;
+		int modifersActivated = NONE;
+		if (_inputDevice->IsDown(Input::Shift))
+		{
+			modifersActivated |= SHIFT;
+		}
+		if (_inputDevice->IsDown(Input::Control))
+		{
+			modifersActivated |= CTRL;
+		}
+		if (_inputDevice->IsDown(Input::Alt))
+		{
+			modifersActivated |= ALT;
+		}
+		if ((*_keymap)[key].keyModifier & REPEAT)
+		{
+			ret = _inputDevice->IsUp((*_keymap)[key].mainKey);
+			modifersActivated |= REPEAT;
+		}
+		else
+		{
+			ret = _inputDevice->IsReleased((*_keymap)[key].mainKey);
+		}
+		return ret && (*_keymap)[key].keyModifier == modifersActivated;
+	}
+
+	MouseCoord Controls::GetMouseCoord()
+	{
+		return _inputDevice->GetMouseCoord();
 	}
 }
