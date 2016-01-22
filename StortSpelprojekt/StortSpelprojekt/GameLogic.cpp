@@ -78,7 +78,6 @@ void GameLogic::HandleInput()
 			_player->DeselectUnits();
 		}
 	}
-	*/
 	
 	XMFLOAT3 forward(0, 0, 0);
 	XMFLOAT3 position = _camera->GetPosition();

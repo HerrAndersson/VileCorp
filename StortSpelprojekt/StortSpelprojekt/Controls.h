@@ -53,7 +53,7 @@ namespace System
 		void ToggleCursorLock();
 		bool CursorLocked();
 
-		System::MouseCoord GetMouseCoord();
+		MouseCoord GetMouseCoord();
 	};
 
 }
