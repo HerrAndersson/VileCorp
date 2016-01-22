@@ -1,0 +1,75 @@
+{
+	"MENU": {
+		"position": [0.0, 0.0],
+		"scale": [1.0, 1.0],
+		
+		"background" :
+		{
+			"position": [0.0, 0.0],
+			"scale": [1.0, 1.0],
+			"texture": "../Menues/menu1.png"
+		},
+		
+		"files":
+		{
+			"position": [0.64, 0.0],
+			"play":
+			{
+				"position": [0.0, -0.1],
+				"scale": [1.0, 1.0],
+				"texture": "../Menues/menu2.png",
+				
+				"playbutton":
+				{
+					"position" : [-0.46, 0.36],
+					"scale": [0.15, 0.06],
+					"text": "Play",
+					"color": "FF000000",
+					"fontsize" : 30.0
+				}
+			},
+			"options":
+			{
+				"position": [-0.03, -0.3],
+				"scale": [1.0, 1.0],
+				"texture": "../Menues/menu2.png",
+				
+				"optionsbutton":
+				{
+					"position" : [-0.46, 0.36],
+					"scale": [0.15, 0.06],
+					"text": "Options",
+					"color": "FF000000",
+					"fontsize" : 30.0
+				}
+			},
+			"exit":
+			{
+				"position": [-0.06, -0.5],
+				"scale": [1.0, 1.0],
+				"texture": "../Menues/menu2.png",
+				
+				"exitbutton":
+				{
+					"position" : [-0.46, 0.36],
+					"scale": [0.15, 0.06],
+					"text": "Exit",
+					"color": "FF000000",
+					"fontsize" : 30.0
+				}
+			}
+		},
+		
+		"foreground" :
+		{
+			"position": [0.0, 0.0],
+			"scale": [1.0, 1.0],
+			"texture": "../Menues/menu3.png"
+		}
+  },
+  "SPLASH" : {},
+  "PLAY" : {},
+  "OPTIONS" : {},
+  "PLACEMENT" : {},
+  "LEVELEDIT" : {}
+}
