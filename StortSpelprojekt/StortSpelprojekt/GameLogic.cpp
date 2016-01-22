@@ -44,14 +44,14 @@ void GameLogic::HandleInput()
 	//Selecting a Unit
 	if (_controls->IsFunctionKeyDown("PLAY:SELECT"))
 	{
-		vector<GameObject*> pickedUnits = _pickingDevice->pickObjects(_controls->getMouseCoord()._pos, _objectHandler->GetAllByType(GUARD));
+		vector<GameObject*> pickedUnits = _pickingDevice->pickObjects(_controls->GetMouseCoord()._pos, _objectHandler->GetAllByType(GUARD));
 
 
 		if (pickedUnits.empty())
 		{
 			if (_player->AreUnitsSelected())
 			{
-				_player->MoveUnits(_pickingDevice->pickTile(_controls->getMouseCoord()._pos));
+				_player->MoveUnits(_pickingDevice->pickTile(_controls->GetMouseCoord()._pos));
 			}
 		}
 		else
@@ -87,12 +87,12 @@ void GameLogic::HandleInput()
 	//Boxselecting Units
 	if(_controls->IsFunctionKeyDown("PLAY:BOX_SELECT"))
 	{
-		_pickingDevice->setFirstBoxPoint(_controls->getMouseCoord()._pos);
+		_pickingDevice->setFirstBoxPoint(_controls->GetMouseCoord()._pos);
 	}
 
 	if (_controls->IsFunctionKeyUp("PLAY:BOX_SELECT"))
 	{
-		vector<GameObject*> pickedUnits = _pickingDevice->boxPickObjects(_controls->getMouseCoord()._pos, _objectHandler->GetAllByType(GUARD));
+		vector<GameObject*> pickedUnits = _pickingDevice->boxPickObjects(_controls->GetMouseCoord()._pos, _objectHandler->GetAllByType(GUARD));
 
 		for (int i = 0; i < pickedUnits.size(); i++)
 		{

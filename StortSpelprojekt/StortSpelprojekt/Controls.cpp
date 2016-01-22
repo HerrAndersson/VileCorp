@@ -174,6 +174,14 @@ namespace System
 		{
 			mainKey = VK_RBUTTON;
 		}
+		else if (key == "scrollup")
+		{
+			mainKey = System::Input::ScrollWheelUp;
+		}
+		else if (key == "scrolldown")
+		{
+			mainKey = System::Input::ScrollWheelDown;
+		}
 		else if (key.length() == 1) //Map the key directly to the ascii code
 		{
 			mainKey = key[0];
@@ -303,7 +311,7 @@ namespace System
 		return ret && (*_keymap)[key].keyModifier == modifersActivated;
 	}
 
-	MouseCoord Controls::getMouseCoord()
+	MouseCoord Controls::GetMouseCoord()
 	{
 		return _inputDevice->GetMouseCoord();
 	}

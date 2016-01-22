@@ -51,7 +51,7 @@ namespace System
 		bool IsFunctionKeyDown(const std::string& key);
 		bool IsFunctionKeyUp(const std::string& key);
 
-		MouseCoord getMouseCoord();
+		MouseCoord GetMouseCoord();
 	};
 
 }
