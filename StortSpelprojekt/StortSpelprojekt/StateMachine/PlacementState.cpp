@@ -25,77 +25,72 @@ void PlacementState::Update(float deltaTime)
 
 	int cost = 20;
 
-	//T adds Trap
-	if (_controls->IsFunctionKeyDown("PLACEMENT:BUILD_TRAP"))
+	if (_levelEdit.GetSelectedObject() != nullptr)
 	{
-		_trapChosen = true;
-		if (_budget - cost >= 0)
+		//T adds Trap
+		if (_controls->IsFunctionKeyDown("PLACEMENT:BUILD_TRAP"))
 		{
-			vector<GameObject*>* vec = &_objectHandler->GetGameObjects()->at(TRAP);
-			if (vec->empty())
+			if (_budget - cost >= 0)
 			{
-				_levelEdit.Add(TRAP, TRAP);
-				_budget -= cost;
-
-			}
-			else
-			{
-				bool taken = false;
-				if (_levelEdit.Marked(TRAP) || _levelEdit.Marked(WALL))
+				vector<GameObject*>* vec = &_objectHandler->GetGameObjects()->at(TRAP);
+				if (vec->empty() && _levelEdit.Add(TRAP))
 				{
-					taken = true;
-				}
-				if (!taken)
-				{
-					_levelEdit.Add(TRAP, TRAP);
 					_budget -= cost;
-
 				}
-			}
-		}
-	}
-	else if (_controls->IsFunctionKeyDown("PLACEMENT:DELETE"))
-	{
-		if (!_levelEdit.Delete(TRAP))
-		{
-			_budget += cost;
-		}
-		
-	}
-
-	if (_trapChosen == true)
-	{
-		if (_inputDevice->IsDown(System::Input::Shift))
-		{
-			if (_inputDevice->IsPressed(System::Input::LeftArrow) 
-				|| _inputDevice->IsPressed(System::Input::RightArrow)
-				|| _inputDevice->IsPressed(System::Input::UpArrow) 
-				|| _inputDevice->IsPressed(System::Input::DownArrow))
-			{
-				if (_budget - cost >= 0)
+				else
 				{
 					bool taken = false;
-					if (_levelEdit.Marked(TRAP) || _levelEdit.Marked(WALL)) 
+					if (_levelEdit.TypeOn(WALL))
 					{
 						taken = true;
 					}
-					if (!taken)
+					if (!taken && _levelEdit.Add(TRAP))
 					{
-						_levelEdit.Add(TRAP, TRAP);
 						_budget -= cost;
-
 					}
-
 				}
+			}
+		}
+		else if (_controls->IsFunctionKeyDown("PLACEMENT:HIRE_GUARD"))
+		{
+			if (_budget - cost >= 0)
+			{
+				vector<GameObject*>* vec = &_objectHandler->GetGameObjects()->at(GUARD);
+				if (vec->empty() && _levelEdit.Add(GUARD))
+				{
+					_budget -= cost;
+				}
+				else
+				{
+					bool taken = false;
+					if (_levelEdit.TypeOn(WALL))
+					{
+						taken = true;
+					}
+					if (!taken && _levelEdit.Add(GUARD))
+					{
+						_budget -= cost;
+					}
+				}
+			}
+		}
+		else if (_controls->IsFunctionKeyDown("PLACEMENT:DELETE"))
+		{
+			if (!_levelEdit.Delete(TRAP))
+			{
+				_budget += cost;
+			}
+			if (!_levelEdit.Delete(GUARD))
+			{
+				_budget += cost;
 			}
 		}
 	}
 
-	if (_inputDevice->IsPressed(System::Input::Enter))
+	if (_controls->IsFunctionKeyDown("PLACEMENT:CHANGE_TO_PLAY") == true)
 	{
-		_trapChosen = false;
+		ChangeState(State::PLAYSTATE);
 	}
-
 }
 
 void PlacementState::OnStateEnter()
@@ -107,5 +102,3 @@ void PlacementState::OnStateExit()
 {
 
 }
-
-

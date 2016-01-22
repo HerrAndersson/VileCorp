@@ -44,7 +44,7 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	}
 
 	//CheckSettings();
-	_controls->SaveKeyBindings(System::MAP_EDIT_KEYMAP, "MOVE_CAMERA_UP", "M");
+	//_controls->SaveKeyBindings(System::MAP_EDIT_KEYMAP, "MOVE_CAMERA_UP", "M");
 
 	//TODO: TEMP! Make this pretty
 	Renderer::Spotlight* spot;

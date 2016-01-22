@@ -12,7 +12,7 @@ GameLogic::~GameLogic()
 	delete _player;
 }
 
-void GameLogic::Initialize(System::InputDevice* inputDevice, ObjectHandler* objectHandler, System::Camera* camera, System::Controls*	controls, PickingDevice* pickingDevice)
+void GameLogic::Initialize(System::InputDevice* inputDevice, ObjectHandler* objectHandler, System::Camera* camera, System::Controls* controls, PickingDevice* pickingDevice)
 {
 	_inputDevice = inputDevice;
 	_objectHandler = objectHandler;
@@ -24,7 +24,6 @@ void GameLogic::Initialize(System::InputDevice* inputDevice, ObjectHandler* obje
 	//_objectHandler->Add(TRAP, 0, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
 
 	//_objectHandler->Add(TRAP, 0, XMFLOAT3(0.5f, -1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
-	_objectHandler->LoadLevel(9);
 
 	_objectHandler->InitPathfinding();
 
