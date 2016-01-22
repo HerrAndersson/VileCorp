@@ -5,11 +5,13 @@
 #include "Trap.h"
 #include "Architecture.h"
 #include "Trigger.h"
+#include "SpawnPoint.h"
 #include "Enemy.h"
 #include "Guard.h"
 #include "Tilemap.h"
 #include "JsonStructs.h"
 #include "AssetManager.h"
+#include "StateMachine\States.h"
 
 /*
 ObjectHandler
@@ -77,7 +79,7 @@ public:
 	void InitPathfinding();
 
 	//Update gamelogic of all objects
-	void Update(float deltaTime);
+	void Update(float deltaTime, int currentState);
 	//Relase all object resources
 	void Release();
 };

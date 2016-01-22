@@ -85,7 +85,7 @@ void LevelEdit::Initialize(ObjectHandler* objectHandler, System::Controls* contr
 	//buttonInfo[1].parent = 0;
 	//buttonInfo[2].parent = 1;
 
-	LoadLevel(6);
+	LoadLevel(7);
 
 	_marker = nullptr;
 
@@ -134,8 +134,8 @@ void LevelEdit::HandleHUD()
 
 void LevelEdit::DragAndDrop(Type type)
 {
-	/*
-	if (_marker != nullptr && _inputDevice->IsDown(System::Input::LeftMouse))
+	////if (_marker != nullptr && _inputDevice->IsDown(System::Input::LeftMouse))
+	if (_marker != nullptr && _controls->IsFunctionKeyDown("PLACEMENT:GRAB"))
 	{
 		AI::Vec2D pickedTile = _pickingDevice->pickTile(_inputDevice->GetMouseCoord()._pos);
 		
@@ -191,7 +191,6 @@ void LevelEdit::DragAndDrop(Type type)
 			_marker = nullptr;
 		}
 	}
-	*/
 }
 
 void LevelEdit::DragAndDrop()
@@ -358,7 +357,7 @@ void LevelEdit::Update(float deltaTime)
 	HandleHUD();
 	HandleSelected();
 	HandleInput();
-	_objectHandler->Update(deltaTime);
+	//_objectHandler->Update(deltaTime);
 }
 
 void LevelEdit::HandleSelected()

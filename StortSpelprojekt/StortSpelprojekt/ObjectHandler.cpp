@@ -46,8 +46,11 @@ bool ObjectHandler::Add(Type type, int renderObjectID, XMFLOAT3 position = XMFLO
 	case FLOOR:
 	case WALL:
 	case LOOT:
-	case SPAWN:
 		object = new Architecture(_idCount, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(type));
+		addedObject = _tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
+		break;
+	case SPAWN:
+		object = new SpawnPoint(_idCount, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(type), 180,1);
 		addedObject = _tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
 		break;
 	case ENEMY:
@@ -290,7 +293,7 @@ void ObjectHandler::InitPathfinding()
 	}
 }
 
-void ObjectHandler::Update(float deltaTime)
+void ObjectHandler::Update(float deltaTime, int currentState)
 {
 	//Update all objects gamelogic
 
@@ -325,6 +328,10 @@ void ObjectHandler::Update(float deltaTime)
 				if (unit->GetHealth() <= 0)
 				{
 					//TODO: drop held object and set its tile position --Victor
+					if (heldObject != nullptr)
+					{
+						Remove(heldObject);
+					}
 					Remove(g);
 					j--;
 				}
@@ -337,6 +344,23 @@ void ObjectHandler::Update(float deltaTime)
 						_tilemap->RemoveObjectFromTile(g->GetTilePosition()._x, g->GetTilePosition()._y, unit);
 						unit->Move();
 						_tilemap->AddObjectToTile(g->GetTilePosition()._x, g->GetTilePosition()._y, unit);
+					}
+				}
+			}
+			else if (g->GetType() == SPAWN)															//Manage enemy spawning
+			{
+				if (currentState == State::PLAYSTATE && static_cast<SpawnPoint*>(g)->isSpawning())
+				{
+					GameObject* object = new Enemy(_idCount, g->GetPosition(), g->GetRotation(), g->GetTilePosition(), ENEMY, _assetManager->GetRenderObject(ENEMY), _tilemap);
+					if (_tilemap->AddObjectToTile(g->GetTilePosition()._x, g->GetTilePosition()._y, object))
+					{
+						_gameObjects[ENEMY].push_back(object);
+						_objectCount++;
+						static_cast<Unit*>(object)->Move();
+					}
+					else
+					{
+						delete object;
 					}
 				}
 			}

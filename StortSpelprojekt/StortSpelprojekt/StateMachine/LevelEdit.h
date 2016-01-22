@@ -8,6 +8,7 @@
 #include "../Controls.h"
 #include "../PickingDevice.h"
 #include "../System/Camera.h"
+#include "..\StateMachine\States.h"
 
 class LevelEdit
 {
