@@ -30,6 +30,7 @@ VS_OUT main(VS_IN input)
 	pos = mul(pos, projectionMatrix);
 
 	output.pos = pos;
+
 	output.uv = float2(0.5f + (pos.x / pos.w * 0.5f), 0.5f - (pos.y / pos.w * 0.5f));
 
 	return output;

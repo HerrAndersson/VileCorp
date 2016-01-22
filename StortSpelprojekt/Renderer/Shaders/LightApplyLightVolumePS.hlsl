@@ -41,8 +41,9 @@ float3 ReconstructWorldFromCamDepth(float2 uv)
 	float z = camDepthMap.Sample(samplerWrap, uv).r;
 
 	// Get x/w and y/w from the viewport position
-	float x = uv.x * 2 - 1;											
+	float x = uv.x * 2 - 1;
 	float y = (1 - uv.y) * 2 - 1;
+
 	float4 projectedPos = float4(x, y, z, 1.0f);
 
 	float4 worldPos = mul(projectedPos, invCamProj);
@@ -60,11 +61,10 @@ float4 main(VS_OUT input) : SV_TARGET
 
 	float3 finalColor = diffuse.xyz;
 
-	//if (input.uv.x < 0.2f && input.uv.y < 0.2f)
-	//{
-	//	return pow(camDepthMap.Sample(samplerWrap, input.uv*5.0f).r,10);
-	//}
-
+	if (input.uv.x < 0.75f && input.uv.y < 0.75f && input.uv.x > 0.25f && input.uv.y > 0.25f)
+	{
+		return pow(camDepthMap.Sample(samplerWrap, input.uv).r,10);
+	}
 	//if (input.uv.x > 0.8f && input.uv.y < 0.2f)
 	//{
 	//	return pow(lightDepthMap.Sample(samplerWrap, input.uv*5.0f).r,10);
@@ -106,11 +106,11 @@ float4 main(VS_OUT input) : SV_TARGET
 		if (shadowCoeff > depth - epsilon)
 		{
 			finalColor += saturate(lightColor * lightIntensity);
-			finalColor *= dot(-normalize(lightToPixel), lightDirection);
+			//finalColor *= dot(-normalize(lightToPixel), lightDirection);
 			return saturate(float4(finalColor, 1.0f));
 		}
 	}
 
-	//Not in light
+	//Not in light. Should return Nothing, but now it returns black
 	return float4(0, 0, 0, 0);
 }
