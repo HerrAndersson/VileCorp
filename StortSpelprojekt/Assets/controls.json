@@ -54,7 +54,7 @@
 	"MENU": {
 		"UP": ["uparrow"],
 		"DOWN": ["downarrow"],
-		
+		"CLICK": ["leftmouse"],
 		"MENU": ["escape"]
     },
 	
