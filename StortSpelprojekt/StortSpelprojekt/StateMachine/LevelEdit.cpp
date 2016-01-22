@@ -330,6 +330,7 @@ void LevelEdit::HandleInput()
 		}
 	}
 	*/
+	/*
 	if (_camera->GetMode() == System::LOCKED_CAM)
 	{
 		if (_inputDevice->IsDown(System::Input::ScrollWheelUp) &&
@@ -343,6 +344,7 @@ void LevelEdit::HandleInput()
 			_camera->Move(XMFLOAT3(0.0f, 1.0f, 0.0f));
 		}
 	}
+	*/
 
 	XMFLOAT3 forward(0, 0, 0);
 	XMFLOAT3 position = _camera->GetPosition();
