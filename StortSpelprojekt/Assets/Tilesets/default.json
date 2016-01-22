@@ -1,0 +1,19 @@
+{
+  "name": "default",
+  "deco": [
+    "floor.bin",
+    "wall.bin",
+    "objective.bin",
+    "floor.bin",
+	"Trap.bin",
+    "floor.bin",
+    "basemanBody.bin",
+    "basemanBody.bin"
+  ],
+  "floor": [
+    
+  ],
+  "wall": [
+
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "name": "default2",
+  "floors": [
+    "floor24.bin"
+    
+  ],
+  "walls": [
+    "wall24.bin"
+
+  ],
+  "loot": [
+    "objective24.bin"
+    
+  ],
+  "spawns": [
+    "entry.bin"
+    
+  ],
+  "traps": [
+    "Trap.bin"
+
+  ],
+  "triggers": [
+    "Trigger.bin"
+    
+  ],
+  "guards": [
+    "Guard.bin"
+
+  ],
+  "enemies": [
+    "Enemy.bin"
+    
+  ]
+}

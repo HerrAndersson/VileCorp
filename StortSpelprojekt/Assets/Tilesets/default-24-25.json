@@ -1,0 +1,19 @@
+{
+  "name": "default-24-25",
+  "deco": [
+    "floor24.bin",
+    "wall24.bin",
+    "objective24.bin",
+    "entry.bin",
+	"Trap.bin",
+    "Trigger.bin",
+    "Guard.bin",
+    "Enemy.bin"
+  ],
+  "floor": [
+    
+  ],
+  "wall": [
+
+  ]
+}

@@ -12,11 +12,10 @@ GameLogic::~GameLogic()
 	delete _player;
 }
 
-void GameLogic::Initialize(System::InputDevice* inputDevice, ObjectHandler* objectHandler, UIHandler* uiHandler, System::Camera* camera, System::Controls*	controls, PickingDevice* pickingDevice)
+void GameLogic::Initialize(System::InputDevice* inputDevice, ObjectHandler* objectHandler, System::Camera* camera, System::Controls*	controls, PickingDevice* pickingDevice)
 {
 	_inputDevice = inputDevice;
 	_objectHandler = objectHandler;
-	_uiHandler = uiHandler;
 	_camera = camera;
 	_controls = controls;
 	_pickingDevice = pickingDevice;
@@ -77,7 +76,7 @@ void GameLogic::HandleInput()
 		if (_player->AreUnitsSelected())
 		{
 			vector<Unit*> units = _player->GetSelectedUnits();
-			for (int i = 0; i < units.size(); i++)
+			for (uint i = 0; i < units.size(); i++)
 			{
 				units[i]->SetScale(DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f));
 			}
@@ -105,11 +104,25 @@ void GameLogic::HandleInput()
 
 
 
+	if (_camera->GetMode() == System::LOCKED_CAM)
+	{
+		if (_inputDevice->IsDown(System::Input::ScrollWheelUp) &&
+			_camera->GetPosition().y > 4.0f)
+		{
+			_camera->Move(XMFLOAT3(0.0f, -1.0f, 0.0f));
+		}
+		else if (_inputDevice->IsDown(System::Input::ScrollWheelDown) &&
+			_camera->GetPosition().y < 12.0f)
+		{
+			_camera->Move(XMFLOAT3(0.0f, 1.0f, 0.0f));
+		}
+	}
+
 	XMFLOAT3 forward(0, 0, 0);
 	XMFLOAT3 position = _camera->GetPosition();
 	XMFLOAT3 right(0, 0, 0);
 	bool isMoving = false;
-	float v = 0.1f;
+	float v = 0.06f + (_camera->GetPosition().y * 0.01);
 
 	if (_controls->IsFunctionKeyDown("DEBUG:ENABLE_FREECAM"))
 	{
