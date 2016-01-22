@@ -38,7 +38,7 @@
 				{
 					"position" : [-0.46, 0.36],
 					"scale": [0.15, 0.06],
-					"text": "Options",
+					"text": "Level editor",
 					"color": "FF000000",
 					"fontsize" : 30.0
 				}

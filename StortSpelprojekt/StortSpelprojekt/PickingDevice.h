@@ -20,7 +20,7 @@ private:
 	System::Camera* _camera;
 	System::Window* _window;
 
-	POINT _firstBoxPoint;
+	
 
 	Ray calculatePickRay(long x, long y);
 	Box createPickBox(Vec3 points[4]);
@@ -30,10 +30,11 @@ private:
 public:
 	PickingDevice(System::Camera* camera = nullptr, System::Window* window = nullptr);
 	~PickingDevice();
-
+	POINT _firstBoxPoint;
 	//This function only works if the level is aligned worldspace, must check x&y>=0 && <height&width /Markus
 	AI::Vec2D pickTile(POINT mousePoint);
 
+	XMFLOAT3 pickPoint(POINT mousePoint);
 	vector<GameObject*> pickObjects(POINT mousePoint, vector<GameObject*> pickableObjects);
 	vector<GameObject*> boxPickObjects(POINT mousePoint, vector<GameObject*> pickableObjects);
 	vector<GameObject*> pickTilemap(POINT mousePoint, Tilemap* tilemap);

@@ -24,8 +24,8 @@ namespace System
 	{
 		struct Key
 		{
-			char mainKey;
-			char keyModifier;
+			unsigned char mainKey;
+			unsigned char keyModifier;
 		};
 		enum KeyModifiers
 		{
@@ -41,7 +41,7 @@ namespace System
 		std::map<std::string, Key>* _keymap;
 		std::string _allKeys;
 
-		void StringToKeyMap(const std::string& key, char &mainKey, char& keyModifiers);
+		void StringToKeyMap(const std::string& key, unsigned char &mainKey, unsigned char& keyModifiers);
 	public:
 		Controls(HWND hwnd);
 		~Controls();
@@ -49,7 +49,10 @@ namespace System
 		void HandleRawInput(LPARAM lparam);
 		void SaveKeyBindings(int keyMap, std::string action, std::string newKey, std::string newKey2 = std::string(), std::string newKey3 = std::string(), std::string newKey4 = std::string());
 		bool IsFunctionKeyDown(const std::string& key);
+		bool IsFunctionKeyUp(const std::string& key);
 		void ToggleCursorLock();
+
+		MouseCoord GetMouseCoord();
 	};
 
 }

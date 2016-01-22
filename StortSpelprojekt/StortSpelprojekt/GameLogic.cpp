@@ -38,28 +38,38 @@ void GameLogic::Update(float deltaTime)
 
 void GameLogic::HandleInput()
 {
-	/*
-	//Picking control
-	if (_inputDevice->IsPressed(System::Input::LeftMouse))
+	
+	//Selecting a Unit
+	if (_controls->IsFunctionKeyDown("PLAY:SELECT"))
 	{
-		if (_player->AreUnitsSelected())
+		vector<GameObject*> pickedUnits = _pickingDevice->pickObjects(_controls->GetMouseCoord()._pos, _objectHandler->GetAllByType(GUARD));
+
+
+		if (pickedUnits.empty())
 		{
-			_player->MoveUnits(_pickingDevice->pickTile(_inputDevice->GetMouseCoord()._pos));
+			if (_player->AreUnitsSelected())
+			{
+				_player->MoveUnits(_pickingDevice->pickTile(_controls->GetMouseCoord()._pos));
+			}
 		}
 		else
 		{
-			vector<GameObject*> pickedUnits = _pickingDevice->pickObjects(_inputDevice->GetMouseCoord()._pos, _objectHandler->GetAllByType(GUARD));
-
-			if (!pickedUnits.empty())
+			vector<Unit*> units = _player->GetSelectedUnits();
+			for (int i = 0; i < units.size(); i++)
 			{
-				Unit* unit = (Unit*)pickedUnits[0];
-				_player->SelectUnit(unit);
-
-				unit->SetScale(DirectX::XMFLOAT3(1.5f, 1.5f, 1.5f));
+				units[i]->SetScale(DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f));
 			}
+			_player->DeselectUnits();
+
+
+			Unit* unit = (Unit*)pickedUnits[0];
+			_player->SelectUnit(unit);
+
+			unit->SetScale(DirectX::XMFLOAT3(1.2f, 1.2f, 1.2f));
 		}
 	}
-	if (_inputDevice->IsPressed(System::Input::RightMouse))
+	//Deselect units
+	if (_controls->IsFunctionKeyDown("PLAY:DESELECT"))
 	{
 		if (_player->AreUnitsSelected())
 		{
@@ -71,21 +81,41 @@ void GameLogic::HandleInput()
 			_player->DeselectUnits();
 		}
 	}
+
+	//Boxselecting Units
+	if(_controls->IsFunctionKeyDown("PLAY:BOX_SELECT"))
+	{
+		_pickingDevice->setFirstBoxPoint(_controls->GetMouseCoord()._pos);
+	}
+
+	if (_controls->IsFunctionKeyUp("PLAY:BOX_SELECT"))
+	{
+		vector<GameObject*> pickedUnits = _pickingDevice->boxPickObjects(_controls->GetMouseCoord()._pos, _objectHandler->GetAllByType(GUARD));
+
+		for (int i = 0; i < pickedUnits.size(); i++)
+		{
+			_player->SelectUnit((Unit*)pickedUnits[i]);
+			pickedUnits[i]->SetScale(DirectX::XMFLOAT3(1.2f, 1.2f, 1.2f));
+		}
+
+	}
+
+
 	
 	if (_camera->GetMode() == System::LOCKED_CAM)
 	{
-		if (_inputDevice->IsDown(System::Input::ScrollWheelUp) &&
+		if (_controls->IsFunctionKeyDown("PLAY:SCROLLDOWN") &&
 			_camera->GetPosition().y > 4.0f)
 		{
 			_camera->Move(XMFLOAT3(0.0f, -1.0f, 0.0f));
 		}
-		else if (_inputDevice->IsDown(System::Input::ScrollWheelDown) &&
+		else if (_controls->IsFunctionKeyDown("PLAY:SCROLLUP") &&
 			_camera->GetPosition().y < 12.0f)
 		{
 			_camera->Move(XMFLOAT3(0.0f, 1.0f, 0.0f));
 		}
 	}
-	*/
+	
 
 	XMFLOAT3 forward(0, 0, 0);
 	XMFLOAT3 position = _camera->GetPosition();

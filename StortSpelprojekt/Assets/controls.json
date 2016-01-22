@@ -19,6 +19,9 @@
     "SAVE": [ "S", "ctrl" ],
     "DELETE_UNIT": [ "delete" ],
 
+	"SELECT": ["leftmouse"],
+	"DRAG": ["leftmouse", "repeat"],
+	
     "MENU": [ "escape" ],
 
     "NEWLEVEL": [ "C" ]
@@ -27,10 +30,17 @@
   "PLACEMENT": {
 
     "BUILD_TRAP": [ "T" ],
+	"HIRE_GUARD": [ "U" ],
     "DELETE": [ "delete" ]
   },
 
   "PLAY": {
+    "SELECT": ["leftmouse"],
+    "DESELECT" : ["rightmouse"],
+    "BOX_SELECT": [ "leftmouse", "shift" ],
+	"SCROLLUP" : ["scrollup", "repeat"],
+	"SCROLLDOWN" : ["scrolldown", "repeat"],
+
     "CONTROL_GROUP0": [ "0", "ctrl" ],
     "CONTROL_GROUP1": [ "1", "ctrl" ],
     "CONTROL_GROUP2": [ "2", "ctrl" ],
@@ -43,14 +53,13 @@
     "CONTROL_GROUP9": [ "9", "ctrl" ],
 
 
-
     "MENU": [ "escape" ]
   },
 	
 	"MENU": {
 		"UP": ["uparrow"],
 		"DOWN": ["downarrow"],
-		
+		"CLICK": ["leftmouse"],
 		"MENU": ["escape"]
     },
 	

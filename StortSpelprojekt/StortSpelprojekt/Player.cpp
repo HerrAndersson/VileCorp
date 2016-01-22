@@ -14,8 +14,6 @@ Player::~Player()
 
 void Player::SelectUnit(Unit* pickedUnit)
 {
-	//Will for now only select the unit closest amongst the picked units
-	//DeselectUnits();
 	_selectedUnits.push_back(pickedUnit);
 }
 

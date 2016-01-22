@@ -23,7 +23,7 @@ void PlacementState::Update(float deltaTime)
 	//tempAddObj
 
 	int cost = 20;
-	/*
+
 	if (_levelEdit.GetSelectedObject() != nullptr)
 	{
 		//T adds Trap
@@ -32,7 +32,7 @@ void PlacementState::Update(float deltaTime)
 			if (_budget - cost >= 0)
 			{
 				vector<GameObject*>* vec = &_objectHandler->GetGameObjects()->at(TRAP);
-				if (vec->empty() && _levelEdit.Add(TRAP))
+				if (vec->empty() && _levelEdit.Add(TRAP, "trap_proto"))
 				{
 					_budget -= cost;
 				}
@@ -43,7 +43,7 @@ void PlacementState::Update(float deltaTime)
 					{
 						taken = true;
 					}
-					if (!taken && _levelEdit.Add(TRAP))
+					if (!taken && _levelEdit.Add(TRAP, "trap_proto"))
 					{
 						_budget -= cost;
 					}
@@ -55,7 +55,7 @@ void PlacementState::Update(float deltaTime)
 			if (_budget - cost >= 0)
 			{
 				vector<GameObject*>* vec = &_objectHandler->GetGameObjects()->at(GUARD);
-				if (vec->empty() && _levelEdit.Add(GUARD))
+				if (vec->empty() && _levelEdit.Add(GUARD, "proto"))
 				{
 					_budget -= cost;
 				}
@@ -66,7 +66,7 @@ void PlacementState::Update(float deltaTime)
 					{
 						taken = true;
 					}
-					if (!taken && _levelEdit.Add(GUARD))
+					if (!taken && _levelEdit.Add(GUARD, "proto"))
 					{
 						_budget -= cost;
 					}
@@ -85,7 +85,6 @@ void PlacementState::Update(float deltaTime)
 			}
 		}
 	}
-	*/
 }
 
 void PlacementState::OnStateEnter()

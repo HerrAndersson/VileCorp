@@ -83,7 +83,7 @@ public:
 	void Initialize(ObjectHandler* objectHandler, System::Controls* controls, PickingDevice* pickingDevice, System::Camera* camera);
 
 	GameObject* GetSelectedObject();
-	bool Add(Type type);
+	bool Add(Type type, std::string name);
 	bool Delete(Type type);
 	bool TypeOn(Type type);
 
