@@ -8,7 +8,8 @@
 #include "../Controls.h"
 #include "../PickingDevice.h"
 #include "../System/Camera.h"
-#include "..\StateMachine\States.h"
+#include "../StateMachine/States.h"
+#include "../UITree.h"
 
 class LevelEdit
 {
@@ -20,7 +21,8 @@ private:
 	ObjectHandler*			_objectHandler;
 	PickingDevice*			_pickingDevice;
 	Grid*					_grid;
-
+	GUI::UITree*			_uiTree;
+	
 	struct LevelHeader
 	{
 		int _version;
@@ -62,10 +64,7 @@ private:
 	std::vector<ButtonInfo> buttonInfo;
 	
 	void DragAndDrop();
-
 	void HandleInput();
-
-
 
 	void HandleHUD();
 	void LoadLevel(int levelID);
@@ -80,7 +79,7 @@ public:
 	LevelEdit();
 	~LevelEdit();
 
-	void Initialize(ObjectHandler* objectHandler, System::Controls* controls, PickingDevice* pickingDevice, System::Camera* camera);
+	void Initialize(ObjectHandler* objectHandler, System::Controls* controls, PickingDevice* pickingDevice, System::Camera* camera, GUI::UITree* uiTree);
 
 	GameObject* GetSelectedObject();
 	bool Add(Type type);

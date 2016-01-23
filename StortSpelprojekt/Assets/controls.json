@@ -22,6 +22,7 @@
     "NEWLEVEL": [ "C" ]
   },
   "PLACEMENT": {
+	"CLICK": ["leftmouse"],
     "BUILD_TRAP": [ "T" ],
 	"HIRE_GUARD": [ "U" ],
     "DELETE": [ "delete" ],

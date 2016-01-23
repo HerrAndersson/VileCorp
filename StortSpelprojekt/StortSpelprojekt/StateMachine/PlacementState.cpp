@@ -18,10 +18,6 @@ PlacementState::~PlacementState()
 
 void PlacementState::Update(float deltaTime)
 {
-	_levelEdit.Update(deltaTime);
-
-	//tempAddObj
-
 	int cost = 20;
 
 	//T adds Trap
@@ -88,11 +84,21 @@ void PlacementState::Update(float deltaTime)
 	{
 		ChangeState(MENUSTATE);
 	}
+	else if (_controls->IsFunctionKeyDown("PLACEMENT:CLICK"))
+	{
+		System::MouseCoord coord = _controls->GetMouseCoord();
+		if (_uiTree.IsButtonColliding("PlayButton", coord._pos.x, coord._pos.y))
+		{
+			ChangeState(PLAYSTATE);
+		}
+	}
+
+	_levelEdit.Update(deltaTime);
 }
 
 void PlacementState::OnStateEnter()
 {
-	_levelEdit.Initialize(_objectHandler, _controls, _pickingDevice, _camera);
+	_levelEdit.Initialize(_objectHandler, _controls, _pickingDevice, _camera, &_uiTree);
 }
 
 void PlacementState::OnStateExit()

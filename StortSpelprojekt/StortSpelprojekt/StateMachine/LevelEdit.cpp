@@ -61,14 +61,14 @@ bool LevelEdit::TypeOn(Type type)
 	return false;
 }
 
-void LevelEdit::Initialize(ObjectHandler* objectHandler, System::Controls* controls, PickingDevice* pickingDevice, System::Camera* camera)
+void LevelEdit::Initialize(ObjectHandler* objectHandler, System::Controls* controls, PickingDevice* pickingDevice, System::Camera* camera, GUI::UITree* uiTree)
 {
 	_objectHandler = objectHandler;
 	_controls = controls;
 	_pickingDevice = pickingDevice;
 	_camera = camera;
 	_aStar = new AI::AStar();
-	
+	_uiTree = uiTree;
 
 	_lastSelected = nullptr;
 	_tileMultiplier = 1;
@@ -210,7 +210,21 @@ void LevelEdit::HandleInput()
 	//{
 		//_controls->ToggleCursorLock();
 	//}
-	if (_controls->IsFunctionKeyDown("PLACEMENT:SELECT"))
+
+
+	if (_controls->IsFunctionKeyDown("PLACEMENT:CLICK"))
+	{
+		System::MouseCoord coord = _controls->GetMouseCoord();
+		if (_uiTree->IsButtonColliding("GuardButton", coord._pos.x, coord._pos.y))
+		{
+
+		}
+		if (_uiTree->IsButtonColliding("TrapButton", coord._pos.x, coord._pos.y))
+		{
+
+		}
+	}
+	else if (_controls->IsFunctionKeyDown("PLACEMENT:SELECT"))
 	{
 		if (_isSelectionMode)
 		{
@@ -226,8 +240,6 @@ void LevelEdit::HandleInput()
 
 		}
 	}
-
-	
 
 	if (_marker != nullptr)
 	{
