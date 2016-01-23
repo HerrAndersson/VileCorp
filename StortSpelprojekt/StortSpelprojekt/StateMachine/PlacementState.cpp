@@ -87,7 +87,7 @@ void PlacementState::Update(float deltaTime)
 	else if (_controls->IsFunctionKeyDown("PLACEMENT:CLICK"))
 	{
 		System::MouseCoord coord = _controls->GetMouseCoord();
-		if (_uiTree.IsButtonColliding("PlayButton", coord._pos.x, coord._pos.y))
+		if (_uiTree.IsButtonColliding("Play", coord._pos.x, coord._pos.y))
 		{
 			ChangeState(PLAYSTATE);
 		}
