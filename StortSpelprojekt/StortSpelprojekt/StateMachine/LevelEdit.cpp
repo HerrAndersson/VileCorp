@@ -398,7 +398,7 @@ void LevelEdit::HandleInput()
 
 		isMoving = true;
 	}
-	else if (GetAsyncKeyState('S'))
+	if (_controls->IsFunctionKeyDown("MAP_EDIT:MOVE_CAMERA_DOWN"))
 	{
 		if (_camera->GetMode() == System::FREE_CAM)
 		{
@@ -414,13 +414,12 @@ void LevelEdit::HandleInput()
 		forward.z *= -1;
 		isMoving = true;
 	}
-
-	if (GetAsyncKeyState('D'))
+	if (_controls->IsFunctionKeyDown("MAP_EDIT:MOVE_CAMERA_RIGHT"))
 	{
 		right = _camera->GetRightVector();
 		isMoving = true;
 	}
-	else if (GetAsyncKeyState('A'))
+	if (_controls->IsFunctionKeyDown("MAP_EDIT:MOVE_CAMERA_LEFT"))
 	{
 		right = _camera->GetRightVector();
 		right.x *= -1;

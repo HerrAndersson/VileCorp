@@ -55,6 +55,8 @@ public:
 
 	GameObject* GetObjectOnTile(int x, int z, int index) const; // More thinking
 	GameObject* GetObjectOnTile(int x, int z, Type type) const;
+	GameObject* GetUnitOnTile(int x, int z) const;
+
 	std::vector<GameObject*> GetAllObjectsOnTile(AI::Vec2D tileCoords) const;
 	bool IsValid(int x, int z) const;
 	bool IsTileEmpty(int x, int z)const;

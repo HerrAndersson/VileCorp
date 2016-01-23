@@ -36,6 +36,7 @@ private:
 	PlayerInfo					_playerInfo;
 	SettingInfo					_gameSettings;
 	
+	bool						_hasFocus;
 
 	//Resizing window, directx resources, camera
 	void ResizeResources(System::WindowSettings settings);
@@ -43,12 +44,9 @@ private:
 	void Render();
 	void CheckSettings();
 
-
-
 	//TODO: TEMP! Make this pretty
 	std::vector<Renderer::Spotlight*> _spotlights;
 	
-
 public:
 	Game(HINSTANCE hInstance, int nCmdShow);
 	~Game();

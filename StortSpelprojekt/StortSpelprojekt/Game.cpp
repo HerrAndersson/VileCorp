@@ -55,6 +55,9 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 		spot->SetPositionAndRotation(XMFLOAT3(4 * i + 3, 1.5f, 3 * i + 3), XMFLOAT3(0, 90 + i * 25, 0));
 		_spotlights.push_back(spot);
 	}
+
+	settings._flags = settings.FULLSCREEN;
+	ResizeResources(settings);
 }
 
 void Game::CheckSettings()
@@ -266,7 +269,10 @@ int Game::Run()
 			_timer.Update();
 			if (_timer.GetFrameTime() >= MS_PER_FRAME)
 			{
-				Update(_timer.GetFrameTime());
+				if (_hasFocus)
+				{
+					Update(_timer.GetFrameTime());
+				}
 				Render();
 				string s = to_string(_timer.GetFrameTime()) + " " + to_string(_timer.GetFPS());
 
@@ -308,6 +314,18 @@ LRESULT CALLBACK Game::WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM l
 	case WM_INPUT:
 	{
 		_gameHandle->_controls->HandleRawInput(lparam);
+		break;
+	}
+	case WM_SETFOCUS:
+	{
+		_gameHandle->_hasFocus = true;
+		break;
+	}
+	case WM_KILLFOCUS:
+	{
+		_gameHandle->_controls->ResetInputBuffers();
+		_gameHandle->_hasFocus = false;
+		break;
 	}
 
 	default:

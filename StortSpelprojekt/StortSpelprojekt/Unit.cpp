@@ -593,7 +593,7 @@ void Unit::Wait(int frames)
 	_waiting = frames;
 }
 
-void Unit::ChangeHealth(int damage)
+void Unit::TakeDamage(int damage)
 {
 	_health -= damage;
 }

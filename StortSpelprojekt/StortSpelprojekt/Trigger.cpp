@@ -64,7 +64,7 @@ void Trigger::ActivateTraps()
 {
 	for (int i = 0; i < _size; i++)
 	{
-		_traps[i]->Activate();
+		//_traps[i]->Activate();
 	}
 }
 

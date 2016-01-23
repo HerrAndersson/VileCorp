@@ -344,6 +344,11 @@ void ObjectHandler::Update(float deltaTime)
 						_tilemap->RemoveObjectFromTile(g->GetTilePosition()._x, g->GetTilePosition()._y, unit);
 						unit->Move();
 						_tilemap->AddObjectToTile(g->GetTilePosition()._x, g->GetTilePosition()._y, unit);
+
+						if (_tilemap->IsTrapOnTile(g->GetTilePosition()._x, g->GetTilePosition()._y))
+						{
+							static_cast<Trap*>(_tilemap->GetObjectOnTile(g->GetTilePosition()._x, g->GetTilePosition()._y, TRAP))->Activate(unit);
+						}
 					}
 				}
 			}
@@ -364,6 +369,15 @@ void ObjectHandler::Update(float deltaTime)
 					}
 				}
 			}
+			//else if (g->GetType() == TRAP)
+			//{
+			//	Unit* unit = static_cast<Unit*>(_tilemap->GetUnitOnTile(g->GetTilePosition()._x, g->GetTilePosition()._y));
+			//	//Enemy walks over trap
+			//	if (unit != nullptr)
+			//	{
+			//		static_cast<Trap*>(g)->Activate(unit);
+			//	}
+			//}
 		}
 	}
 }
