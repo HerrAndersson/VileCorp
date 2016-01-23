@@ -31,6 +31,7 @@ private:
 	double GetSlope(double x1, double y1, double x2, double y2, bool invert);
 	int GetVisDistance(int x1, int y1, int x2, int y2);
 	void CalculatePath();
+	void Rotate();
 
 protected:
 	int _goalPriority;				//Lower value means higher priority

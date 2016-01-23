@@ -127,7 +127,7 @@ void Game::Update(float deltaTime)
 	*/
 	_controls->Update();
 	_SM->Update(deltaTime);
-	_objectHandler->Update(deltaTime, _SM->GetState());
+	
 
 	for (int i = 0; i < _spotlights.size(); i++)
 	{

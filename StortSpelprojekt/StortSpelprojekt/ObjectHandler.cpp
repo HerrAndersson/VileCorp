@@ -50,7 +50,7 @@ bool ObjectHandler::Add(Type type, XMFLOAT3 position = XMFLOAT3(0.0f, 0.0f, 0.0f
 		addedObject = _tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
 		break;
 	case SPAWN:
-		object = new SpawnPoint(_idCount, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(type), 180,1);
+		object = new SpawnPoint(_idCount, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(type), 180,2);
 		addedObject = _tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
 		break;
 	case ENEMY:
@@ -293,7 +293,7 @@ void ObjectHandler::InitPathfinding()
 	}
 }
 
-void ObjectHandler::Update(float deltaTime, int currentState)
+void ObjectHandler::Update(float deltaTime)
 {
 	//Update all objects gamelogic
 
@@ -317,7 +317,7 @@ void ObjectHandler::Update(float deltaTime, int currentState)
 
 			if (g->GetType() == GUARD || g->GetType() == ENEMY)									//Handle unit movement
 			{
-				Unit* unit = dynamic_cast<Unit*>(g);
+				Unit* unit = static_cast<Unit*>(g);
 
 				GameObject* heldObject = unit->GetHeldObject();
 
@@ -349,7 +349,7 @@ void ObjectHandler::Update(float deltaTime, int currentState)
 			}
 			else if (g->GetType() == SPAWN)															//Manage enemy spawning
 			{
-				if (currentState == State::PLAYSTATE && static_cast<SpawnPoint*>(g)->isSpawning())
+				if (static_cast<SpawnPoint*>(g)->isSpawning())
 				{
 					GameObject* object = new Enemy(_idCount, g->GetPosition(), g->GetRotation(), g->GetTilePosition(), ENEMY, _assetManager->GetRenderObject(ENEMY), _tilemap);
 					if (_tilemap->AddObjectToTile(g->GetTilePosition()._x, g->GetTilePosition()._y, object))

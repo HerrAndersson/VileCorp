@@ -79,7 +79,7 @@ public:
 	void InitPathfinding();
 
 	//Update gamelogic of all objects
-	void Update(float deltaTime, int currentState);
+	void Update(float deltaTime);
 	//Relase all object resources
 	void Release();
 };
