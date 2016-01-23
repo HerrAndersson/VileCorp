@@ -34,6 +34,10 @@ void MenuState::Update(float deltaTime)
 			PostQuitMessage(0);
 		}
 	}
+	if (_controls->IsFunctionKeyDown("MENU:MENU"))
+	{
+		PostQuitMessage(0);
+	}
 }
 
 void MenuState::OnStateEnter()
