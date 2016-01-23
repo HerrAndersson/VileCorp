@@ -59,9 +59,10 @@ private:
 	bool _place = false;
 	bool _guardPlace = false;
 	bool _trapPlace = false;
-	int _budget = 1000;
-	int _trapCost = 20;
-	int _guardCost = 20;
+	int _budget = 100;
+	int _trapCost = 25;
+	int _guardCost = 50;
+	GUI::Node* _uiNode;
 
 	System::MouseCoord _mouseCoord;
 	int _tileMultiplier;
