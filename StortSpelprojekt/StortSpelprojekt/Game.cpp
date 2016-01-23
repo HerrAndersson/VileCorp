@@ -55,6 +55,9 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 		spot->SetPositionAndRotation(XMFLOAT3(4 * i + 3, 1.5f, 3 * i + 3), XMFLOAT3(0, 90 + i * 25, 0));
 		_spotlights.push_back(spot);
 	}
+
+	settings._flags = settings.FULLSCREEN;
+	ResizeResources(settings);
 }
 
 void Game::CheckSettings()
