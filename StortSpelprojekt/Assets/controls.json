@@ -28,6 +28,7 @@
     "DELETE": [ "delete" ],
 	"CHANGE_TO_PLAY": [ "P" ],
 	"SELECT": ["leftmouse"],
+	"DESELECT": ["rightmouse"],
 	"MENU": [ "escape" ]
   },
   "PLAY": {

@@ -56,6 +56,12 @@ private:
 	GameObject* _marker;
 	GameObject* _lastSelected;
 	std::vector<GameObject*> _objects;
+	bool _place = false;
+	bool _guardPlace = false;
+	bool _trapPlace = false;
+	int _budget = 1000;
+	int _trapCost = 20;
+	int _guardCost = 20;
 
 	System::MouseCoord _mouseCoord;
 	int _tileMultiplier;
