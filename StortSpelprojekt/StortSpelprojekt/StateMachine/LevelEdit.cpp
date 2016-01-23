@@ -217,7 +217,7 @@ void LevelEdit::HandleInput()
 		System::MouseCoord coord = _controls->GetMouseCoord();
 		if (_uiTree->IsButtonColliding("GuardButton", coord._pos.x, coord._pos.y))
 		{
-
+			
 		}
 		if (_uiTree->IsButtonColliding("TrapButton", coord._pos.x, coord._pos.y))
 		{
