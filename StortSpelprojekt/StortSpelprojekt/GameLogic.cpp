@@ -32,7 +32,7 @@ void GameLogic::Initialize(ObjectHandler* objectHandler, System::Camera* camera,
 void GameLogic::Update(float deltaTime)
 {
 	HandleInput();
-	//_objectHandler->Update(deltaTime);
+	_objectHandler->Update(deltaTime);
 }
 
 void GameLogic::HandleInput()

@@ -220,8 +220,9 @@ void Unit::CalculatePath()
 	{
 		_path = _aStar->GetPath();
 		_pathLength = _aStar->GetPathLength();
-		//_isMoving = true;
-		//_direction = _path[--_pathLength] - _tilePosition;
+		_isMoving = true;
+		_direction = _path[--_pathLength] - _tilePosition;
+		Rotate();
 		//_aStar->printMap();
 	}
 	else
@@ -230,6 +231,26 @@ void Unit::CalculatePath()
 		_pathLength = 0;
 		//	_aStar->printMap();
 
+	}
+}
+
+void Unit::Rotate()
+{
+	if (_direction._x != 0 || _direction._y != 0)
+	{
+		if (_direction._x == 0)
+		{
+			_rotation.y = DirectX::XM_PIDIV2 * (_direction._y + 1);
+		}
+		else if (_direction._x == -1)
+		{
+			_rotation.y = DirectX::XM_PIDIV2 + DirectX::XM_PIDIV4 * _direction._y;
+		}
+		else
+		{
+			_rotation.y = 3 * DirectX::XM_PIDIV2 - DirectX::XM_PIDIV4 * _direction._y;
+		}
+		CalculateMatrix();
 	}
 }
 
@@ -525,20 +546,7 @@ void Unit::Move()
 		CheckAllTiles();
 		//Wait(10);
 	}
-
-	if (_direction._x == 0)
-	{
-		_rotation.y = DirectX::XM_PIDIV2 * (_direction._y + 1);
-	}
-	else if (_direction._x == -1)
-	{
-		_rotation.y = DirectX::XM_PIDIV2 + DirectX::XM_PIDIV4 * _direction._y;
-	}
-	else
-	{
-		_rotation.y = 3 * DirectX::XM_PIDIV2 - DirectX::XM_PIDIV4 * _direction._y;
-	}
-	CalculateMatrix();
+	Rotate();
 }
 
 void Unit::Update(float deltaTime)
