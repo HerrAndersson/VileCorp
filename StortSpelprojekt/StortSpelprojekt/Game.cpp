@@ -266,7 +266,10 @@ int Game::Run()
 			_timer.Update();
 			if (_timer.GetFrameTime() >= MS_PER_FRAME)
 			{
-				Update(_timer.GetFrameTime());
+				if (_hasFocus)
+				{
+					Update(_timer.GetFrameTime());
+				}
 				Render();
 				string s = to_string(_timer.GetFrameTime()) + " " + to_string(_timer.GetFPS());
 
@@ -308,6 +311,18 @@ LRESULT CALLBACK Game::WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM l
 	case WM_INPUT:
 	{
 		_gameHandle->_controls->HandleRawInput(lparam);
+		break;
+	}
+	case WM_SETFOCUS:
+	{
+		_gameHandle->_hasFocus = true;
+		break;
+	}
+	case WM_KILLFOCUS:
+	{
+		_gameHandle->_controls->ResetInputBuffers();
+		_gameHandle->_hasFocus = false;
+		break;
 	}
 
 	default:
