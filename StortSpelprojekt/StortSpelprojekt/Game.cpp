@@ -20,8 +20,8 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	_fontWrapper = new FontWrapper(_renderModule->GetDevice(), L"Assets/Fonts/Calibri.ttf", L"Calibri");
 
 	//Init camera
-	_camera = new System::Camera(0.1f, 1000.0f, DirectX::XM_PIDIV2, settings._width, settings._height);
-	_camera->SetPosition(XMFLOAT3(3, 10, 0));
+	_camera = new System::Camera(0.1f, 1000.0f, DirectX::XM_PIDIV4, settings._width, settings._height);
+	_camera->SetPosition(XMFLOAT3(3, 20, 0));
 	_camera->SetRotation(XMFLOAT3(60, 0, 0));
 
 	_timer = System::Timer();
