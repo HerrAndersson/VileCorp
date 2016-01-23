@@ -257,6 +257,20 @@ GameObject * Tilemap::GetObjectOnTile(int x, int z, Type type) const
 	return result;
 }
 
+GameObject * Tilemap::GetUnitOnTile(int x, int z) const
+{
+	GameObject* result = nullptr;
+	if (_map[x][z]._objectsOnTile[1] != nullptr)
+	{
+		result = _map[x][z]._objectsOnTile[1];
+	}
+	else if (_map[x][z]._objectsOnTile[2] != nullptr)
+	{
+		result = _map[x][z]._objectsOnTile[2];
+	}
+	return result;
+}
+
 bool Tilemap::IsTileEmpty(int x, int z) const
 {
 	return IsValid(x, z) && _map[x][z]._objectsOnTile[0] == nullptr;
