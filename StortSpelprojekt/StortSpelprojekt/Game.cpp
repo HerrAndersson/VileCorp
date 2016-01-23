@@ -7,6 +7,8 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 {
 	_gameHandle = this;
 	System::WindowSettings settings;
+	settings._height = 1080;
+	settings._width = 1920;
 	_window = new System::Window("Amazing game", hInstance, settings, WndProc);
 
 	_timer = System::Timer();
@@ -126,6 +128,13 @@ void Game::Update(float deltaTime)
 
 	*/
 	_controls->Update();
+
+	if (_controls->IsFunctionKeyDown("EVERYWHERE:FULLSCREEN"))
+	{
+		System::WindowSettings windowSettings = _window->GetWindowSettings();
+		_window->ResizeWindow(windowSettings);
+	}
+
 	_SM->Update(deltaTime);
 	_objectHandler->Update(deltaTime, _SM->GetState());
 

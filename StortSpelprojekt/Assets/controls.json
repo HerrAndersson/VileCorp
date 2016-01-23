@@ -74,5 +74,9 @@
 		"UNLIMITED_MONEY": ["1", "ctrl", "alt"],
 		"INSTANT_WIN": ["2", "ctrl", "alt"],
 		"NO_FOG": ["3", "ctrl", "alt"]
-	}
+	},
+	
+	"EVERYWHERE": {
+		"FULLSCREEN": ["enter", "alt"]
+    }
 }

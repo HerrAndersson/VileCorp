@@ -134,6 +134,10 @@ namespace System
 		{
 			mainKey = VK_SPACE;
 		}
+		else if (key == "enter" || key == "return")
+		{
+			mainKey = VK_RETURN;
+		}
 		else if (key == "escape")
 		{
 			mainKey = VK_ESCAPE;
