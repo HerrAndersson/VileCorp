@@ -7,7 +7,6 @@ class PlacementState : public BaseState
 {
 private:
 	LevelEdit _levelEdit;
-	int _budget;
 	bool _trapChosen = false;
 
 public:

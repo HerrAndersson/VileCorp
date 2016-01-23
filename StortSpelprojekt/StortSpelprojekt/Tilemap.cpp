@@ -367,6 +367,63 @@ bool Tilemap::IsTypeOnTile(int x, int z, Type type) const
 	return false;
 }
 
+bool Tilemap::IsTypeOnTile(int x, int z, Type type0, Type type1, Type type2, Type type3, Type type4, Type type5, Type type6, Type type7)
+{
+	bool exist = false;
+	if (IsValid(x, z))
+	{
+		for (int i = 0; i < Tile::OBJECT_CAPACITY; i++)
+		{
+			if (_map[x][z]._objectsOnTile[i] != nullptr && _map[x][z]._objectsOnTile[i]->GetType() == type0)
+			{
+				return true;
+			}
+			if (type1 != NR_OF_TYPES)
+			{
+				exist = CheckTypeOnTile(x, z, type1);
+			}
+			if (type2 != NR_OF_TYPES)
+			{
+				exist = CheckTypeOnTile(x, z, type2);
+			}
+			if (type3 != NR_OF_TYPES)
+			{
+				exist = CheckTypeOnTile(x, z, type3);
+			}
+			if (type4 != NR_OF_TYPES)
+			{
+				exist = CheckTypeOnTile(x, z, type4);
+			}
+			if (type5 != NR_OF_TYPES)
+			{
+				exist = CheckTypeOnTile(x, z, type5);
+			}
+			if (type6 != NR_OF_TYPES)
+			{
+				exist = CheckTypeOnTile(x, z, type6);
+			}
+			if (type7 != NR_OF_TYPES)
+			{
+				exist = CheckTypeOnTile(x, z, type7);
+			}
+			return exist;
+		}
+	}
+	return exist;
+}
+
+bool Tilemap::CheckTypeOnTile(int x, int z, Type type)
+{
+	for (int i = 0; i < Tile::OBJECT_CAPACITY; i++)
+	{
+		if (_map[x][z]._objectsOnTile[i] != nullptr && _map[x][z]._objectsOnTile[i]->GetType() == type)
+		{
+			return true;
+		}
+		return false;
+	}
+}
+
 bool Tilemap::IsTileVisible(int x, int z) const
 {
 	return _map[x][z]._isVisible;

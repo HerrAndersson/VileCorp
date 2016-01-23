@@ -86,6 +86,7 @@ void LevelEdit::Initialize(ObjectHandler* objectHandler, System::Controls* contr
 	//buttonInfo[2].parent = 1;
 
 	LoadLevel(7);
+	_budget = 100;
 	_uiNode = _uiTree->GetNode("BudgetValue");
 	_uiNode->SetText(std::to_wstring(_budget));
 
@@ -132,14 +133,27 @@ void LevelEdit::HandleHUD()
 	}*/
 }
 
-
-
 void LevelEdit::DragAndDrop()
 {
+	_objects.clear();
+	AI::Vec2D tilePos = _pickingDevice->pickTile(_controls->GetMouseCoord()._pos);
+	bool validObject = _objectHandler->GetTileMap()->IsTypeOnTile(tilePos._x, tilePos._y, GUARD, TRIGGER, TRAP);
 	// Get existing objects
 	if (_controls->IsFunctionKeyDown("PLACEMENT:SELECT"))
 	{
-		_objects = _objectHandler->GetTileMap()->GetAllObjectsOnTile(_pickingDevice->pickTile(_controls->GetMouseCoord()._pos));
+		_selectedObject = nullptr;
+		_objects = _objectHandler->GetTileMap()->GetAllObjectsOnTile(tilePos);
+		for (int i = 1; i < _objects.size(); i++)
+		{
+			if (_objects[i]->GetType() == GUARD || _objects[i]->GetType() == TRIGGER || _objects[i]->GetType() == TRAP)
+			{
+				_selectedObject = _objects[i];
+			}
+			else
+			{
+				_objects.clear();
+			}
+		}
 	}
 	else if (_controls->IsFunctionKeyUp("PLACEMENT:SELECT"))
 	{
@@ -154,6 +168,7 @@ void LevelEdit::DragAndDrop()
 
 				_objects[i]->SetPosition(p);
 				_objectHandler->GetTileMap()->AddObjectToTile(p.x, p.z, _objects[i]);
+				_objects.clear();
 				break;
 			}
 		}
@@ -163,7 +178,7 @@ void LevelEdit::DragAndDrop()
 	System::MouseCoord coord = _controls->GetMouseCoord();
 	if (!_uiTree->IsButtonColliding("Guard", coord._pos.x, coord._pos.y) && !_uiTree->IsButtonColliding("Trap", coord._pos.x, coord._pos.y))
 	{
-		if (_trapPlace == true && _controls->IsFunctionKeyDown("PLACEMENT:SELECT") && _budget - _trapCost >= 0)
+		if (_trapPlace == true && _controls->IsFunctionKeyDown("PLACEMENT:SELECT") && _budget - _trapCost >= 0 && _objects.size() == 0)
 		{
 			AI::Vec2D pickedTileCoord = _pickingDevice->pickTile(_controls->GetMouseCoord()._pos);
 			bool added = _objectHandler->Add(TRAP, XMFLOAT3(pickedTileCoord._x, 0, pickedTileCoord._y), XMFLOAT3(0, 0, 0));
@@ -194,6 +209,26 @@ void LevelEdit::DragAndDrop()
 	{
 		_trapPlace = false;
 		_guardPlace = false;
+	}
+
+	// Delete objects
+	if (_controls->IsFunctionKeyDown("PLACEMENT:DELETE"))
+	{
+		if (_objectHandler != nullptr)
+		{
+			_uiNode = _uiTree->GetNode("BudgetValue");
+
+			if (_selectedObject->GetType() == GUARD)
+			{
+				_uiNode->SetText(std::to_wstring(_budget + _guardCost));
+			}
+			else if (_selectedObject->GetType() == TRAP)
+			{
+				_uiNode->SetText(std::to_wstring(_budget + _trapCost));
+			}
+
+			_objectHandler->Remove(_selectedObject->GetType(), _selectedObject->GetID());
+		}
 	}
 }
 

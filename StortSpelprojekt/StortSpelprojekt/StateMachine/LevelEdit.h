@@ -56,6 +56,7 @@ private:
 	GameObject* _marker;
 	GameObject* _lastSelected;
 	std::vector<GameObject*> _objects;
+	GameObject* _selectedObject = nullptr;
 	bool _place = false;
 	bool _guardPlace = false;
 	bool _trapPlace = false;
