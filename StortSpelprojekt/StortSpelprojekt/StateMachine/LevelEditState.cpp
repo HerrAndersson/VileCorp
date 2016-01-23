@@ -15,9 +15,12 @@ LevelEditState::~LevelEditState()
 
 void LevelEditState::Update(float deltaTime)
 {
+	if (_controls->IsFunctionKeyDown("MAP_EDIT:MENU"))
+	{
+		ChangeState(MENUSTATE);
+	}
+
 	_levelEdit.Update(deltaTime);
-	/*
-	*/
 }
 
 void LevelEditState::OnStateEnter()

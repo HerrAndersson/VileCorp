@@ -80,11 +80,14 @@ void PlacementState::Update(float deltaTime)
 			_budget += cost;
 		}
 	}
-
-if (_controls->IsFunctionKeyDown("PLACEMENT:CHANGE_TO_PLAY") == true)
-{
-	ChangeState(State::PLAYSTATE);
-}
+	else if (_controls->IsFunctionKeyDown("PLACEMENT:CHANGE_TO_PLAY") == true)
+	{
+		ChangeState(State::PLAYSTATE);
+	}
+	else if (_controls->IsFunctionKeyDown("PLACEMENT:MENU"))
+	{
+		ChangeState(MENUSTATE);
+	}
 }
 
 void PlacementState::OnStateEnter()
