@@ -132,72 +132,28 @@ void LevelEdit::HandleHUD()
 
 
 
-void LevelEdit::DragAndDrop(Type type)
+void LevelEdit::DragAndDrop()
 {
-	////if (_marker != nullptr && _inputDevice->IsDown(System::Input::LeftMouse))
-	if (_marker != nullptr && _controls->IsFunctionKeyDown("PLACEMENT:SELECT"))
+	if (_controls->IsFunctionKeyDown("PLACEMENT:SELECT"))
 	{
-		AI::Vec2D pickedTile = _pickingDevice->pickTile(_controls->GetMouseCoord()._pos);
-		
-		if (_objectHandler->GetTileMap()->IsValid(pickedTile._x, pickedTile._y))
+		_objects = _objectHandler->GetTileMap()->GetAllObjectsOnTile(_pickingDevice->pickTile(_controls->GetMouseCoord()._pos));
+	}
+	else if (_controls->IsFunctionKeyUp("PLACEMENT:SELECT"))
+	{
+		for (int i = 1; i < _objects.size(); i++)
 		{
-			GameObject* objectOnTile;
-			switch (type)
+			if (_objects[i]->GetType() == GUARD || _objects[i]->GetType() == TRIGGER || _objects[i]->GetType() == TRAP)
 			{
-			case FLOOR:
-			case WALL:
-				objectOnTile = _objectHandler->GetTileMap()->GetObjectOnTile(pickedTile._x, pickedTile._y, 0);
-				break;
-			case ENEMY:
-			case GUARD:
-				objectOnTile = _objectHandler->GetTileMap()->GetObjectOnTile(pickedTile._x, pickedTile._y, 1);
-				if (objectOnTile == nullptr)
-				{
-					break;
-				}
-				objectOnTile = _objectHandler->GetTileMap()->GetObjectOnTile(pickedTile._x, pickedTile._y, 2);
-				break;
-			case TRAP:
-			case LOOT:
-				objectOnTile = _objectHandler->GetTileMap()->GetObjectOnTile(pickedTile._x, pickedTile._y, 3);
-				break;
-			case TRIGGER:
-				objectOnTile = _objectHandler->GetTileMap()->GetObjectOnTile(pickedTile._x, pickedTile._y, 4);
-				break;
-			default:
-				break;
-			}
-
-			if (objectOnTile == nullptr && _marker->GetType() == type)
-			{
-				// Remove from old tile
-				_objectHandler->GetTileMap()->RemoveObjectFromTile(_marker);
-
-				// Update positions
-				//_marker->Translate(pos);
-				XMFLOAT3 p = XMFLOAT3(_marker->GetPosition());
+				XMFLOAT3 p = XMFLOAT3(_objects[i]->GetPosition());
+				AI::Vec2D pickedTile = _pickingDevice->pickTile(_controls->GetMouseCoord()._pos);
 				p.x = pickedTile._x;
 				p.z = pickedTile._y;
 
-				_marker->SetPosition(p);
-				_objectHandler->GetTileMap()->AddObjectToTile(p.x, p.z, _marker);
+				_objects[i]->SetPosition(p);
+				_objectHandler->GetTileMap()->AddObjectToTile(p.x, p.z, _objects[i]);
+				break;
 			}
 		}
-	}
-	if (_controls->IsFunctionKeyDown("PLACEMENT:SELECT"))
-	{
-		if (_isSelectionMode)
-		{
-			_marker = nullptr;
-		}
-	}
-}
-
-void LevelEdit::DragAndDrop()
-{
-	if (_marker != nullptr)
-	{
-		DragAndDrop(_marker->GetType());
 	}
 }
 
@@ -205,6 +161,7 @@ void LevelEdit::HandleInput()
 {
 	int maxObject = _objectHandler->GetObjectCount();
 	int selectedLevel = 1;
+	DragAndDrop();
 
 	//Move tile greater distance per button press
 	//if (_inputDevice->IsPressed(VK_PRIOR))

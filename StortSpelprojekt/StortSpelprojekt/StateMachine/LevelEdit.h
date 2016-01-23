@@ -53,6 +53,7 @@ private:
 
 	GameObject* _marker;
 	GameObject* _lastSelected;
+	std::vector<GameObject*> _objects;
 
 	System::MouseCoord _mouseCoord;
 	int _tileMultiplier;
@@ -60,8 +61,6 @@ private:
 	bool _isSelectionMode = true;
 	std::vector<ButtonInfo> buttonInfo;
 	
-	
-	void DragAndDrop(Type type);
 	void DragAndDrop();
 
 	void HandleInput();
