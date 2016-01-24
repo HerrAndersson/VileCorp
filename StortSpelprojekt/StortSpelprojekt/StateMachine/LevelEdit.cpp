@@ -146,6 +146,7 @@ void LevelEdit::DragAndDrop()
 			if (_objects[i]->GetType() == GUARD || _objects[i]->GetType() == TRIGGER || _objects[i]->GetType() == TRAP)
 			{
 				_selectedObject = _objects[i];
+				_selectedObject->SetScale(DirectX::XMFLOAT3(1.2f, 1.2f, 1.2f));
 			}
 			else
 			{
@@ -164,6 +165,7 @@ void LevelEdit::DragAndDrop()
 				p.z = tilePos._y;
 
 				_objects[i]->SetPosition(p);
+				_objects[i]->SetScale(DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f));
 				_objectHandler->GetTileMap()->AddObjectToTile(p.x, p.z, _objects[i]);
 				_objects.clear();
 				break;
