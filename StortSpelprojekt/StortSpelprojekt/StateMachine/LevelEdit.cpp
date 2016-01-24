@@ -140,47 +140,41 @@ void LevelEdit::DragAndDrop()
 {
 	AI::Vec2D tilePos = _pickingDevice->pickTile(_controls->GetMouseCoord()._pos);
 	// Get existing objects
-	if (_controls->IsFunctionKeyDown("PLACEMENT:SELECT"))
+	if (_controls->IsFunctionKeyDown("PLACEMENT:CLICK"))
 	{
-		_selectedObject = nullptr;
+		_objects.clear();
 		_objects = _objectHandler->GetTileMap()->GetAllObjectsOnTile(tilePos);
 		for (int i = 1; i < _objects.size(); i++)
 		{
 			if (_objects[i]->GetType() == GUARD || _objects[i]->GetType() == TRIGGER || _objects[i]->GetType() == TRAP)
 			{
+				// Get object on tile
 				_selectedObject = _objects[i];
-				_selectedObject->SetScale(DirectX::XMFLOAT3(1.2f, 1.2f, 1.2f));
-			}
-			else
-			{
-				_objects.clear();
-			}
-		}
-	}
-	else if (_controls->IsFunctionKeyUp("PLACEMENT:SELECT"))
-	{
-		for (int i = 1; i < _objects.size(); i++)
-		{
-			if (_objects[i]->GetType() == GUARD || _objects[i]->GetType() == TRIGGER || _objects[i]->GetType() == TRAP)
-			{
-				XMFLOAT3 p = XMFLOAT3(_objects[i]->GetPosition());
-				p.x = tilePos._x;
-				p.z = tilePos._y;
-
-				_objects[i]->SetPosition(p);
-				_objects[i]->SetScale(DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f));
-				_objectHandler->GetTileMap()->AddObjectToTile(p.x, p.z, _objects[i]);
-				_objects.clear();
 				break;
 			}
 		}
+	}
+	else if (_selectedObject != nullptr && _controls->IsFunctionKeyDown("PLACEMENT:SELECT"))
+	{
+		_objectHandler->GetTileMap()->RemoveObjectFromTile(_selectedObject);
+		// Move object
+		XMFLOAT3 p = XMFLOAT3(_selectedObject->GetPosition());
+		p.x = tilePos._x;
+		p.z = tilePos._y;
+
+		_selectedObject->SetPosition(p);
+		_objectHandler->GetTileMap()->AddObjectToTile(p.x, p.z, _selectedObject);
+	}
+	if (_controls->IsFunctionKeyUp("PLACEMENT:SELECT"))
+	{
+		_selectedObject = nullptr;
 	}
 
 	// Place new object
 	System::MouseCoord coord = _controls->GetMouseCoord();
 	if (!_uiTree->IsButtonColliding("Guard", coord._pos.x, coord._pos.y) && !_uiTree->IsButtonColliding("Trap", coord._pos.x, coord._pos.y))
 	{
-		if (_trapPlace == true && _controls->IsFunctionKeyDown("PLACEMENT:SELECT") && _budget - _trapCost >= 0)
+		if (_trapPlace == true && _controls->IsFunctionKeyDown("PLACEMENT:CLICK") && _budget - _trapCost >= 0)
 		{
 			bool added = _objectHandler->Add(TRAP, XMFLOAT3(tilePos._x, 0, tilePos._y), XMFLOAT3(0, 0, 0));
 
@@ -192,7 +186,7 @@ void LevelEdit::DragAndDrop()
 				_uiNode->SetText(std::to_wstring(_budget));
 			}
 		}
-		if (_guardPlace == true && _controls->IsFunctionKeyDown("PLACEMENT:SELECT") && _budget - _guardCost >= 0)
+		if (_guardPlace == true && _controls->IsFunctionKeyDown("PLACEMENT:CLICK") && _budget - _guardCost >= 0)
 		{
 			bool added = _objectHandler->Add(GUARD, XMFLOAT3(tilePos._x, 0, tilePos._y), XMFLOAT3(0, 0, 0));
 
@@ -207,6 +201,7 @@ void LevelEdit::DragAndDrop()
 	}
 	if (_controls->IsFunctionKeyDown("PLACEMENT:DESELECT"))
 	{
+		_selectedObject = nullptr;
 		_trapPlace = false;
 		_guardPlace = false;
 	}

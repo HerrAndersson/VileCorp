@@ -27,7 +27,7 @@
 	"HIRE_GUARD": [ "U" ],
     "DELETE": [ "delete" ],
 	"CHANGE_TO_PLAY": [ "P" ],
-	"SELECT": ["leftmouse"],
+	"SELECT": ["leftmouse", "repeat"],
 	"DESELECT": ["rightmouse"],
 	"MENU": [ "escape" ]
   },
