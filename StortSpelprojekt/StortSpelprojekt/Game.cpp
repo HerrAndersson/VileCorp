@@ -56,8 +56,8 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 		_spotlights.push_back(spot);
 	}
 
-	settings._flags = settings.FULLSCREEN;
-	ResizeResources(settings);
+	//settings._flags = settings.FULLSCREEN;
+	//ResizeResources(settings);
 }
 
 void Game::CheckSettings()
