@@ -68,14 +68,5 @@ public:
 	bool IsTriggerOnTile(int x, int z) const;
 	bool IsObjectiveOnTile(int x, int z)const;
 	bool IsTypeOnTile(int x, int z, Type type)const;
-	bool IsTypeOnTile(int x, int z, Type type0, 
-		Type type1 = NR_OF_TYPES, 
-		Type type2 = NR_OF_TYPES, 
-		Type type3 = NR_OF_TYPES, 
-		Type type4 = NR_OF_TYPES, 
-		Type type5 = NR_OF_TYPES,
-		Type type6 = NR_OF_TYPES,
-		Type type7 = NR_OF_TYPES);
-	bool CheckTypeOnTile(int x, int z, Type type);
 	bool IsTileVisible(int x, int z) const;
 };
