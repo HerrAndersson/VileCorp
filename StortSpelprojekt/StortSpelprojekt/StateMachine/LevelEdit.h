@@ -10,6 +10,8 @@
 #include "../System/Camera.h"
 #include "../StateMachine/States.h"
 #include "../UITree.h"
+#include "..\JsonStructs.h"
+#include "..\..\System\JsonParser.h"
 
 class LevelEdit
 {
@@ -22,6 +24,7 @@ private:
 	PickingDevice*			_pickingDevice;
 	Grid*					_grid;
 	GUI::UITree*			_uiTree;
+	LevelLoad				_levelLoad;
 	
 	struct LevelHeader
 	{

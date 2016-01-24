@@ -2,6 +2,17 @@
 #include <cereal/cereal.hpp>
 #include <cereal\types\vector.hpp>
 
+struct LevelLoad
+{
+	int level = 7;
+
+	template<class A>
+	void serialize(A& a)
+	{
+		a((CEREAL_NVP(level)));
+	}
+};
+
 struct PlayerInfo
 {
 	std::string _name = "Jonas";
