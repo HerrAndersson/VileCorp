@@ -117,6 +117,7 @@ struct Box
 
 };
 
+
 //No exception for /0, always use collision() first
 static Vec3 Intersection(Ray ray, Plane plane)
 {
@@ -261,6 +262,7 @@ static std::vector<Vec3> FindCorners(Box box)
 
 	return corners;
 }
+
 
 static bool Collision(Vec2 point, Square square)
 {
@@ -453,7 +455,6 @@ static bool Collision(Triangle triangle, Square square)
 		{
 			satCollision = false;
 		}
-
 	}
 
 	return simpleCollision || satCollision;
@@ -461,6 +462,31 @@ static bool Collision(Triangle triangle, Square square)
 
 static bool Collision(Circle circle, Square square)
 {
-	return (Collision(square._maxPos, circle) || Collision(square._minPos, circle) || Collision(Vec2(square._maxPos._x, square._minPos._y), circle) || Collision(Vec2(square._minPos._x, square._maxPos._y), circle));
+	bool collision = false;
+	//Hit if any of the corners are in the circle
+	if (Collision(square._maxPos, circle))
+	{
+		collision = true;
+	}
+	else if (Collision(square._minPos, circle))
+	{
+		collision = true;
+	}
+	else if (Collision(Vec2(square._maxPos._x, square._minPos._y), circle))
+	{
+		collision = true;
+	}
+	else if (Collision(Vec2(square._minPos._x, square._maxPos._y), circle))
+	{
+		collision = true;
+	}
+	//if the circle is inside the square and don't touch any corners
+	else if (	(circle._position._x + circle._radius<square._maxPos._x || circle._position._x - circle._radius > square._minPos._x) && 
+				(circle._position._y + circle._radius<square._maxPos._y || circle._position._y - circle._radius > square._minPos._y))
+	{
+		collision = true;
+	}
+
+	return collision;
 }
 
