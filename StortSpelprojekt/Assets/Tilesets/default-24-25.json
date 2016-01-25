@@ -3,7 +3,7 @@
   "deco": [
     "floor24.bin",
     "wall24.bin",
-    "objective24.bin",
+    "Diamond.bin",
     "entry.bin",
 	"Trap.bin",
     "Trigger.bin",
