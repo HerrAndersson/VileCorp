@@ -538,7 +538,7 @@ void Unit::Move()
 	else
 	{
 		_isMoving = false;
-		if (_objective != nullptr)
+		if (_objective != nullptr && _objective->GetTilePosition() == _tilePosition)
 		{
 			act(_objective);
 		}

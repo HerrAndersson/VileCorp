@@ -361,6 +361,7 @@ void ObjectHandler::Update(float deltaTime)
 					{
 						_gameObjects[ENEMY].push_back(object);
 						_objectCount++;
+						_idCount++;
 						static_cast<Unit*>(object)->Move();
 					}
 					else
