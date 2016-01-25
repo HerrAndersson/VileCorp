@@ -1,5 +1,8 @@
 #include "ObjectHandler.h"
 
+
+
+
 ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data)
 {
 	_idCount = 0;
