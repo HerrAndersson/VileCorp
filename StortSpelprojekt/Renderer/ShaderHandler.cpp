@@ -27,13 +27,11 @@ namespace Renderer
 		sampDesc.MinLOD = 0;
 		sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
-		HRESULT hResult = device->CreateSamplerState(&sampDesc, &_samplerWRAP);
-		if (FAILED(hResult))
+		HRESULT result = device->CreateSamplerState(&sampDesc, &_samplerWRAP);
+		if (FAILED(result))
 		{
 			throw std::runtime_error("ShaderHandler::ShaderHandler: Error creating WRAP sampler");
 		}
-
-		HRESULT result;
 
 		D3D11_SAMPLER_DESC samplerDesc;
 		ZeroMemory(&sampDesc, sizeof(sampDesc));

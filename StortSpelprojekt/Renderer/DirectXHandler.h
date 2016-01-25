@@ -85,7 +85,7 @@ namespace Renderer
 		ID3D11DeviceContext* GetDeviceContext();
 
 		int SetGeometryStage();
-		int SetShadowGenerationStage();
+		void SetShadowGenerationStage();
 		int SetLightStage();
 		void SetHUDStage();
 		void SetGridStage();

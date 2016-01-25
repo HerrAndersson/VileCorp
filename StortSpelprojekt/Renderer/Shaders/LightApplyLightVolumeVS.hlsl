@@ -18,7 +18,6 @@ struct VS_IN
 struct VS_OUT
 {
 	float4 pos			: SV_POSITION;
-	float2 uv			: TEXCOORD;
 };
 
 VS_OUT main(VS_IN input)
@@ -29,11 +28,7 @@ VS_OUT main(VS_IN input)
 	pos = mul(pos, viewMatrix);
 	pos = mul(pos, projectionMatrix);
 
-	output.uv = float2(0.5f + (pos.x / pos.w * 0.5f), 0.5f - (pos.y / pos.w * 0.5f));
-
 	output.pos = pos;
-	//output.uv = pos.xy;
-	
 
 	return output;
 }

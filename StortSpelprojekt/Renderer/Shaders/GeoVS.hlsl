@@ -12,6 +12,7 @@ cbuffer matrixBufferPerFrame : register(b0)
 cbuffer matrixBufferPerObject : register(b1)
 {
 	matrix worldMatrix;
+	float3 colorOffset;
 };
 
 struct VS_IN

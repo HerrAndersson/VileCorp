@@ -22,6 +22,11 @@ namespace Renderer
 		_rotationMatrix = XMMatrixRotationRollPitchYaw(XMConvertToRadians(_rotation.x), XMConvertToRadians(_rotation.y), XMConvertToRadians(_rotation.z));
 		_worldMatrix = _rotationMatrix * XMMatrixTranslation(_position.x, _position.y, _position.z);
 
+		if (height < 1)
+		{
+			throw std::runtime_error("Spotlight::Spotlight: Height must be bigger than 0");
+		}
+
 		//Prepare vectors for Matrix initialization
 		XMVECTOR vPos = XMLoadFloat3(&_position);
 		XMVECTOR vDir = XMVector3TransformCoord(XMLoadFloat3(&_direction), _rotationMatrix);

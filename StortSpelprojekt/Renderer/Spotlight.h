@@ -4,7 +4,7 @@
 
 #define RENDERER_EXPORT __declspec(dllexport)
 
-//Disable warning about DirectX  FLOAT3/MATRIX
+//Disable warning about DirectX XMFLOAT3/XMMATRIX etc
 #pragma warning( disable: 4251 )
 
 namespace Renderer

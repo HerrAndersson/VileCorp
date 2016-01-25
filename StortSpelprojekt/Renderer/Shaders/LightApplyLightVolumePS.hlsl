@@ -24,7 +24,6 @@ cbuffer matrixBufferLightPassPerLight : register(b3)
 struct VS_OUT
 {
 	float4 pos : SV_POSITION;
-	float2 uv : TEXCOORD;
 };
 
 Texture2D diffuseTex : register(t0);
@@ -53,7 +52,7 @@ float3 ReconstructWorldFromCamDepth(float2 uv)
 
 float4 main(VS_OUT input) : SV_TARGET
 {
-	float2 uv = float2((input.pos.x / 1280), (input.pos.y / 720));
+	float2 uv = float2((input.pos.x) / 1280, (input.pos.y) / 720);
 	//float2 uv = float2(0.5f + (input.pos.x / 1280 / input.pos.w * 0.5f), 0.5f - (input.pos.y / input.pos.w * 0.5f));
 
 	float4 diffuse = diffuseTex.Sample(samplerWrap, uv);

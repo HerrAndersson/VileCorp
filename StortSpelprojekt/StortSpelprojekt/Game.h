@@ -35,8 +35,9 @@ private:
 	PickingDevice*				_pickingDevice;
 	PlayerInfo					_playerInfo;
 	SettingInfo					_gameSettings;
+
 	//Resizing window, directx resources, camera
-	void ResizeResources(System::WindowSettings settings);
+	void ResizeResources(System::WindowSettings settings); //TODO: Test all scenarios and fix bugs /Jonas
 	void Update(float deltaTime);
 	void Render();
 	void CheckSettings();

@@ -57,6 +57,8 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 		spot->SetPositionAndRotation(XMFLOAT3(3*i+5, 1.0f, 2*i+4), XMFLOAT3(0, 90 + i*25, 0));
 		_spotlights.push_back(spot);
 	}
+
+
 }
 
 void Game::CheckSettings()
@@ -131,14 +133,17 @@ void Game::Update(float deltaTime)
 	{
 		XMFLOAT3 p = e[0]->GetPosition();
 		XMFLOAT3 r = e[0]->GetRotation();
+
+		r = XMFLOAT3(XMConvertToDegrees(r.x), -XMConvertToDegrees(r.y), XMConvertToDegrees(r.z));
+		_spotlights[0]->SetRotation(r);
+
 		XMFLOAT3 d = _spotlights[0]->GetDirection();
 
 		p.y += 0.15f;
 		p.x += d.x * 0.5f;
 		p.z += d.z * 0.5f;
 
-		r = XMFLOAT3(XMConvertToDegrees(r.x), -XMConvertToDegrees(r.y), XMConvertToDegrees(r.z));
-		_spotlights[0]->SetPositionAndRotation(p, r);
+		_spotlights[0]->SetPosition(p);
 	}
 
 	//for (unsigned int i = 0; i < _spotlights.size(); i++)
@@ -179,7 +184,7 @@ void Game::Render()
 
 	if (_SM->GetState() == LEVELEDITSTATE)
 	{
-		_renderModule->SetShaderStage(Renderer::RenderModule::GRID_PASS);
+		_renderModule->SetShaderStage(Renderer::RenderModule::GRID_STAGE);
 
 		std::vector<DirectX::XMMATRIX>* gridMatrices = _grid->GetGridMatrices();
 
@@ -215,15 +220,15 @@ void Game::Render()
 		_renderModule->SetLightDataPerSpotlight(_spotlights[i]);
 
 		//Use when SetLightApplicationShaders takes 1 as input (using light volume shaders)
-		//_renderModule->DEBUG_RenderLightVolume(_spotlights[i]->GetVolumeBuffer(), _spotlights[i]->GetWorldMatrix(), _spotlights[i]->GetVertexCount(), _spotlights[i]->GetVertexSize());
+		_renderModule->DEBUG_RenderLightVolume(_spotlights[i]->GetVolumeBuffer(), _spotlights[i]->GetWorldMatrix(), _spotlights[i]->GetVertexCount(), _spotlights[i]->GetVertexSize());
 
 		//Use when SetLightApplicationShaders takes 2 as input (using screen quad shaders)
-		_renderModule->RenderScreenQuad();
+		//_renderModule->RenderScreenQuad();
 	}
 
 	/*-------------------------------------------------------- HUD and other 2D -----------------------------------------------------------*/
 
-	//_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::HUD_PASS);
+	//_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::HUD_STAGE);
 
 	//_renderModule->Render(_UI->GetTextureData());
 	_renderModule->Render(_SM->GetCurrentStatePointer()->GetUITree()->GetRootNode(), _fontWrapper);

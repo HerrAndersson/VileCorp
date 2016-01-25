@@ -27,11 +27,14 @@ namespace Renderer
 		struct MatrixBufferPerObject
 		{
 			DirectX::XMMATRIX _world;
+			DirectX::XMFLOAT3 _colorOffset;
 		};
 		
 		struct MatrixBufferPerSkinnedObject
 		{
 			DirectX::XMMATRIX   _world;
+
+			//TODO: Should be in a separate buffer to enable world matrix update per object. /Jonas - Assigned to Fredrik
 			DirectX::XMFLOAT4X4 _bones[30];
 		};
 
@@ -42,10 +45,11 @@ namespace Renderer
 			DirectX::XMFLOAT3 _ambientLight;
 		};
 
-		struct MatrixBufferHud
-		{
-			DirectX::XMMATRIX _model;
-		};
+		//struct MatrixBufferHud
+		//{
+		//	//TODO: Instead of using this, use MatrixBufferPerObject /Jonas
+		//	DirectX::XMMATRIX _model;
+		//};
 
 		struct MatrixBufferLightPassPerFrame
 		{
@@ -81,21 +85,25 @@ namespace Renderer
 		int _screenHeight;
 
 		void InitializeConstantBuffers();
+		void InitializeScreenQuadBuffer();
 
-		void SetDataPerObject(DirectX::XMMATRIX* world, ID3D11ShaderResourceView* diffuse, ID3D11ShaderResourceView* specular);
-		void SetDataPerSkinnedObject(DirectX::XMMATRIX* world, ID3D11ShaderResourceView* diffuse, ID3D11ShaderResourceView* specular, std::vector<DirectX::XMFLOAT4X4>* extra);
+		void SetDataPerObject(DirectX::XMMATRIX* world, ID3D11ShaderResourceView* diffuse, ID3D11ShaderResourceView* specular, DirectX::XMFLOAT3 colorOffset = DirectX::XMFLOAT3(0, 0, 0));
+		void SetDataPerSkinnedObject(DirectX::XMMATRIX* world, ID3D11ShaderResourceView* diffuse, ID3D11ShaderResourceView* specular, std::vector<DirectX::XMFLOAT4X4>* extra, DirectX::XMFLOAT3 colorOffset = DirectX::XMFLOAT3(0, 0, 0));
 		void SetDataPerMesh(ID3D11Buffer* vertexBuffer, int vertexSize);
 		void SetShadowMapDataPerObject(DirectX::XMMATRIX* world);
+
+		void Render(GUI::Node* current, DirectX::XMMATRIX* transform, FontWrapper* fontWrapper);
 
 		//TODO: TEMP! Should this be here? Should we have several versions with different resolution? E.g. one 256x256 for low detail and one 512x512 for higher detail /Jonas
 		ShadowMap* _shadowMap;
 
 	public:
 
+		//TODO: Import these from settings file
 		const int SHADOWMAP_DIMENSIONS = 256;
-		const DirectX::XMFLOAT3 AMBIENT_LIGHT = DirectX::XMFLOAT3(0.3f, 0.3f, 0.3f);
+		const DirectX::XMFLOAT3 AMBIENT_LIGHT = DirectX::XMFLOAT3(0.4f, 0.4f, 0.4f);
 
-		enum ShaderStage { GEO_PASS, SHADOW_GENERATION, LIGHT_APPLICATION, GRID_PASS, ANIM_PASS, HUD_PASS };
+		enum ShaderStage { GEO_PASS, SHADOW_GENERATION, LIGHT_APPLICATION, GRID_STAGE, ANIM_STAGE, HUD_STAGE };
 
 		RenderModule(HWND hwnd, int screenWidth, int screenHeight);
 		~RenderModule();
@@ -111,11 +119,10 @@ namespace Renderer
 		void SetShaderStage(ShaderStage stage);
 
 		void BeginScene(float red, float green, float blue, float alpha);
-		void Render(DirectX::XMMATRIX* world, RenderObject* renderObject, std::vector<DirectX::XMFLOAT4X4>* extra = nullptr);
+		void Render(DirectX::XMMATRIX* world, RenderObject* renderObject, DirectX::XMFLOAT3 colorOffset = DirectX::XMFLOAT3(0, 0, 0), std::vector<DirectX::XMFLOAT4X4>* extra = nullptr);
 		void Render(std::vector<HUDElement>* imageData);
 		void Render(GUI::Node* root, FontWrapper* fontWrapper);
-		void RenderLineList(DirectX::XMMATRIX* world, ID3D11Buffer* lineList, int nrOfPoints);
-		void Render(GUI::Node* current, DirectX::XMMATRIX* transform, FontWrapper* fontWrapper);
+		void RenderLineList(DirectX::XMMATRIX* world, ID3D11Buffer* lineList, int nrOfPoints, DirectX::XMFLOAT3 colorOffset = DirectX::XMFLOAT3(0,0,0)); //TODO: Test if grid can be rendered /Jonas
 		void RenderShadowMap(DirectX::XMMATRIX* world, RenderObject* renderObject);
 		void RenderScreenQuad();
 		void EndScene();
