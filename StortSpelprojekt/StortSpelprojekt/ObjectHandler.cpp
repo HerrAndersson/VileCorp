@@ -333,6 +333,7 @@ void ObjectHandler::Update(float deltaTime)
 						Remove(heldObject);
 					}
 					Remove(g);
+					g = nullptr;
 					j--;
 				}
 				else
@@ -349,6 +350,10 @@ void ObjectHandler::Update(float deltaTime)
 						{
 							static_cast<Trap*>(_tilemap->GetObjectOnTile(g->GetTilePosition()._x, g->GetTilePosition()._y, TRAP))->Activate(unit);
 						}
+					}
+					if (unit->GetType() == GUARD && _tilemap->IsEnemyOnTile(g->GetTilePosition()._x, g->GetTilePosition()._y))
+					{
+						unit->act(_tilemap->GetObjectOnTile(g->GetTilePosition()._x, g->GetTilePosition()._y, ENEMY));
 					}
 				}
 			}
