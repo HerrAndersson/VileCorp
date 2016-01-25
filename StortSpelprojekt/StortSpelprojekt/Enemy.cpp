@@ -22,7 +22,6 @@ void Enemy::EvaluateTile(Type objective, AI::Vec2D tile)
 		tempPriority = 2;
 	case GUARD:
 	case TRAP:
-	case TRIGGER:
 		break;
 	case ENEMY:
 		break;
@@ -55,8 +54,6 @@ void Enemy::EvaluateTile(GameObject* obj)
 			}
 			break;
 		case TRAP:
-			break;
-		case TRIGGER:
 			break;
 		case GUARD:
 			break;
@@ -91,8 +88,6 @@ void Enemy::act(GameObject* obj)
 		}
 		break;
 	case TRAP:
-		break;
-	case TRIGGER:
 		break;
 	case GUARD:
 		break;
