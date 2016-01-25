@@ -64,11 +64,11 @@ void Trigger::ActivateTraps()
 {
 	for (int i = 0; i < _size; i++)
 	{
-		_traps[i]->Activate();
+		//_traps[i]->Activate();
 	}
 }
 
-void Trigger::Update()
+void Trigger::Update(float deltaTime)
 {}
 
 void Trigger::Release()

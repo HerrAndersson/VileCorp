@@ -1,20 +1,10 @@
 #pragma once
+#include "States.h"
 #include "../Controls.h"
 #include "../ObjectHandler.h"
 #include "../../System/Camera.h"
 #include "../PickingDevice.h"
 #include "../UITree.h"
-
-enum State
-{
-	SPLASHSTATE,
-	MENUSTATE,
-	PLAYSTATE,
-	PLACEMENTSTATE,
-	LEVELEDITSTATE,
-	OPTIONSSTATE,
-	EXITSTATE,
-};
 
 class BaseState
 {

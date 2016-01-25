@@ -36,13 +36,12 @@ private:
 	PlayerInfo					_playerInfo;
 	SettingInfo					_gameSettings;
 
+	bool						_hasFocus;
 	//Resizing window, directx resources, camera
 	void ResizeResources(System::WindowSettings settings); //TODO: Test all scenarios and fix bugs /Jonas
 	void Update(float deltaTime);
 	void Render();
 	void CheckSettings();
-
-
 
 	//TODO: TEMP! Move this to objectHandler
 	std::vector<Renderer::Spotlight*> _spotlights;

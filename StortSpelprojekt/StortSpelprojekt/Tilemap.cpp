@@ -73,18 +73,18 @@ bool Tilemap::AddObjectToTile(int x, int z, GameObject * obj)
 		{
 		case FLOOR:
 		case WALL:
-		case SPAWN:
 			_map[x][z]._objectsOnTile[0] = obj;
 			result = true;
 			break;
 		case ENEMY:
-		case GUARD:
 			if (_map[x][z]._objectsOnTile[1] == nullptr)
 			{
 				_map[x][z]._objectsOnTile[1] = obj;
 				result = true;
 			}
-			else if (_map[x][z]._objectsOnTile[2] == nullptr)
+			break;
+		case GUARD:
+			if (_map[x][z]._objectsOnTile[2] == nullptr)
 			{
 				_map[x][z]._objectsOnTile[2] = obj;
 				result = true;
@@ -92,6 +92,7 @@ bool Tilemap::AddObjectToTile(int x, int z, GameObject * obj)
 			break;
 		case TRAP:
 		case LOOT:
+		case SPAWN:
 			if (_map[x][z]._objectsOnTile[3] == nullptr)
 			{
 				_map[x][z]._objectsOnTile[3] = obj;
@@ -109,6 +110,8 @@ bool Tilemap::AddObjectToTile(int x, int z, GameObject * obj)
 			break;
 		}
 	}
+	obj->SetTilePosition(AI::Vec2D(x, z));
+
 	return result;
 }
 
@@ -239,8 +242,9 @@ GameObject * Tilemap::GetObjectOnTile(int x, int z, Type type) const
 				result = _map[x][z]._objectsOnTile[2];
 			}
 			break;
-		case TRAP:
 		case LOOT:
+		case SPAWN:
+		case TRAP:
 			result = _map[x][z]._objectsOnTile[3];
 			break;
 		case TRIGGER:
@@ -249,6 +253,20 @@ GameObject * Tilemap::GetObjectOnTile(int x, int z, Type type) const
 		default:
 			break;
 		}
+	}
+	return result;
+}
+
+GameObject * Tilemap::GetUnitOnTile(int x, int z) const
+{
+	GameObject* result = nullptr;
+	if (_map[x][z]._objectsOnTile[1] != nullptr)
+	{
+		result = _map[x][z]._objectsOnTile[1];
+	}
+	else if (_map[x][z]._objectsOnTile[2] != nullptr)
+	{
+		result = _map[x][z]._objectsOnTile[2];
 	}
 	return result;
 }

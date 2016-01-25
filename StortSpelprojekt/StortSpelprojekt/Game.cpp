@@ -7,6 +7,8 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 {
 	_gameHandle = this;
 	System::WindowSettings settings;
+	settings._height = 1080;
+	settings._width = 1920;
 	_window = new System::Window("Amazing game", hInstance, settings, WndProc);
 
 	_timer = System::Timer();
@@ -18,8 +20,8 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	_fontWrapper = new FontWrapper(_renderModule->GetDevice(), L"Assets/Fonts/Calibri.ttf", L"Calibri");
 
 	//Init camera
-	_camera = new System::Camera(0.1f, 1000.0f, DirectX::XM_PIDIV2, settings._width, settings._height);
-	_camera->SetPosition(XMFLOAT3(3, 10, 0));
+	_camera = new System::Camera(0.1f, 1000.0f, DirectX::XM_PIDIV4, settings._width, settings._height);
+	_camera->SetPosition(XMFLOAT3(3, 20, 0));
 	_camera->SetRotation(XMFLOAT3(60, 0, 0));
 	//_camera->SetMode(System::FREE_CAM);
 	//_controls->ToggleCursorLock();
@@ -47,7 +49,7 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	}
 
 	//CheckSettings();
-	_controls->SaveKeyBindings(System::MAP_EDIT_KEYMAP, "MOVE_CAMERA_UP", "M");
+	//_controls->SaveKeyBindings(System::MAP_EDIT_KEYMAP, "MOVE_CAMERA_UP", "M");
 
 	Renderer::Spotlight* spot;
 	for (int i = 0; i < 2; i++)
@@ -58,7 +60,8 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 		_spotlights.push_back(spot);
 	}
 
-
+	//settings._flags = settings.FULLSCREEN;
+	//ResizeResources(settings);
 }
 
 void Game::CheckSettings()
@@ -124,8 +127,15 @@ void Game::Update(float deltaTime)
 
 	*/
 	_controls->Update();
+
+	if (_controls->IsFunctionKeyDown("EVERYWHERE:FULLSCREEN"))
+	{
+		System::WindowSettings windowSettings = _window->GetWindowSettings();
+		_window->ResizeWindow(windowSettings);
+	}
+
 	_SM->Update(deltaTime);
-	_objectHandler->Update(deltaTime);
+	
 
 	std::vector<GameObject*> e = _objectHandler->GetAllByType(GUARD);
 
@@ -178,7 +188,14 @@ void Game::Render()
 			//TODO: If type == ENEMY -> don't render. Instead check in the chosen objects for the light rendering (Functionality not done), and check if the enemies are there they should be both rendered and lit.
 			//If not, they should not be rendered nor lit /Jonas
 
-			_renderModule->Render(g->GetMatrix(), g->GetRenderObject());
+			if (g->GetAnimation() != nullptr)
+			{
+				_renderModule->Render(g->GetMatrix(), g->GetRenderObject(), XMFLOAT3(0,0,0), g->GetAnimation()->GetTransforms());
+			}
+			else
+			{
+				_renderModule->Render(g->GetMatrix(), g->GetRenderObject());
+			}
 		}
 	}
 
@@ -186,12 +203,12 @@ void Game::Render()
 	{
 		_renderModule->SetShaderStage(Renderer::RenderModule::GRID_STAGE);
 
-		std::vector<DirectX::XMMATRIX>* gridMatrices = _grid->GetGridMatrices();
-
-		for (auto &matrix : *gridMatrices)
-		{
-			_renderModule->RenderLineList(&matrix, _grid->GetLineBuffer(), 2);
-		}
+		//TODO: GetGridMatrices() returns a nullptr /Rikhard
+		//std::vector<DirectX::XMMATRIX>* gridMatrices = _grid->GetGridMatrices();
+		//for (auto &matrix : *gridMatrices)
+		//{
+		//	_renderModule->RenderLineList(&matrix, _grid->GetLineBuffer(), 2);
+		//}
 	}
 
 	/*------------------------------------------------------------ Light pass --------------------------------------------------------------
@@ -228,7 +245,7 @@ void Game::Render()
 
 	/*-------------------------------------------------------- HUD and other 2D -----------------------------------------------------------*/
 
-	//_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::HUD_STAGE);
+	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::HUD_STAGE);
 
 	//_renderModule->Render(_UI->GetTextureData());
 	_renderModule->Render(_SM->GetCurrentStatePointer()->GetUITree()->GetRootNode(), _fontWrapper);
@@ -267,7 +284,10 @@ int Game::Run()
 			_timer.Update();
 			if (_timer.GetFrameTime() >= MS_PER_FRAME)
 			{
-				Update(_timer.GetFrameTime());
+				if (_hasFocus)
+				{
+					Update(_timer.GetFrameTime());
+				}
 				Render();
 				string s = to_string(_timer.GetFrameTime()) + " " + to_string(_timer.GetFPS());
 
@@ -309,6 +329,18 @@ LRESULT CALLBACK Game::WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM l
 	case WM_INPUT:
 	{
 		_gameHandle->_controls->HandleRawInput(lparam);
+		break;
+	}
+	case WM_SETFOCUS:
+	{
+		_gameHandle->_hasFocus = true;
+		break;
+	}
+	case WM_KILLFOCUS:
+	{
+		_gameHandle->_controls->ResetInputBuffers();
+		_gameHandle->_hasFocus = false;
+		break;
 	}
 
 	default:

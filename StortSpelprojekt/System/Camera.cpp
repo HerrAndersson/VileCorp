@@ -117,6 +117,7 @@ namespace System
 	{
 		return _mode;
 	}
+
 	void Camera::SetMode(CamMode mode)
 	{
 		_mode = mode;

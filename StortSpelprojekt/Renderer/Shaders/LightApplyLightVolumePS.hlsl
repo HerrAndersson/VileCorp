@@ -52,7 +52,7 @@ float3 ReconstructWorldFromCamDepth(float2 uv)
 
 float4 main(VS_OUT input) : SV_TARGET
 {
-	float2 uv = float2((input.pos.x) / 1280, (input.pos.y) / 720);
+	float2 uv = float2((input.pos.x) / 1920, (input.pos.y) / 1080);
 	//float2 uv = float2(0.5f + (input.pos.x / 1280 / input.pos.w * 0.5f), 0.5f - (input.pos.y / input.pos.w * 0.5f));
 
 	float4 diffuse = diffuseTex.Sample(samplerWrap, uv);
@@ -91,7 +91,7 @@ float4 main(VS_OUT input) : SV_TARGET
 
 		float depth = lightSpacePos.z / lightSpacePos.w;
 
-		float epsilon = 0.0001f;
+		float epsilon = 0.000001f;
 		float dx = 1.0f / shadowMapDimensions;
 
 		float s0 = lightDepthMap.Sample(samplerClamp, smTex).r;

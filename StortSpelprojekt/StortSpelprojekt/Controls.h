@@ -47,12 +47,13 @@ namespace System
 		~Controls();
 		void Update();
 		void HandleRawInput(LPARAM lparam);
+		void ResetInputBuffers();
 		void SaveKeyBindings(int keyMap, std::string action, std::string newKey, std::string newKey2 = std::string(), std::string newKey3 = std::string(), std::string newKey4 = std::string());
 		bool IsFunctionKeyDown(const std::string& key);
 		bool IsFunctionKeyUp(const std::string& key);
 		void ToggleCursorLock();
-		bool CursorLocked();
 
+		bool CursorLocked();
 		MouseCoord GetMouseCoord();
 	};
 

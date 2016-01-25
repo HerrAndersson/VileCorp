@@ -69,7 +69,7 @@ void Guard::act(GameObject* obj)
 	case TRIGGER:										//Guards don't react to these (yet)
 		break;	
 	case ENEMY:											//The guard hits the enemy
-		dynamic_cast<Unit*>(obj)->ChangeHealth(1);
+		dynamic_cast<Unit*>(obj)->TakeDamage(1);
 		break;
 	default:
 		break;

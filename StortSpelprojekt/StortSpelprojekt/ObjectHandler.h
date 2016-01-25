@@ -5,11 +5,13 @@
 #include "Trap.h"
 #include "Architecture.h"
 #include "Trigger.h"
+#include "SpawnPoint.h"
 #include "Enemy.h"
 #include "Guard.h"
 #include "Tilemap.h"
 #include "JsonStructs.h"
 #include "AssetManager.h"
+#include "StateMachine\States.h"
 
 /*
 ObjectHandler
@@ -52,7 +54,7 @@ public:
 	~ObjectHandler();
 
 	//Add a gameobject
-	bool Add(Type type, int renderObjectID, XMFLOAT3 position, XMFLOAT3 rotation);
+	bool Add(Type type, XMFLOAT3 position, XMFLOAT3 rotation);
 	
 	bool Remove(int ID);
 	bool Remove(Type type, int ID);

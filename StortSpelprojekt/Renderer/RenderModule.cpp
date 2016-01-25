@@ -171,11 +171,11 @@ namespace Renderer
 		dataPtr->_world = worldMatrixC;
 		//dataPtr->_colorOffset = colorOffset;
 
-		DirectX::XMFLOAT4X4 tempmatrix;														//
-		DirectX::XMStoreFloat4x4(&tempmatrix, DirectX::XMMatrixIdentity());					//
-		for (unsigned i = 0; i < 30; i++) {													//
-			memcpy(&dataPtr->_bones[i], (char*)&tempmatrix, sizeof(DirectX::XMFLOAT4X4));	//
-		}																					//TODO remove - Fredrik
+//		DirectX::XMFLOAT4X4 tempmatrix;														//
+//		DirectX::XMStoreFloat4x4(&tempmatrix, DirectX::XMMatrixIdentity());					//
+//		for (unsigned i = 0; i < 30; i++) {													//
+//			memcpy(&dataPtr->bones[i], (char*)&tempmatrix, sizeof(DirectX::XMFLOAT4X4));	//
+//		}																					//TODO remove - Fredrik
 //		memcpy(&dataPtr->bones, extra->data(), sizeof(DirectX::XMFLOAT4X4) * extra->size());
 		
 		deviceContext->Unmap(_matrixBufferPerSkinnedObject, 0);
@@ -439,6 +439,7 @@ namespace Renderer
 
 			MatrixBufferPerObject* dataPtr = (MatrixBufferPerObject*)mappedResource.pData;
 			dataPtr->_world = XMMatrixTranspose(t);
+			dataPtr->_colorOffset = XMFLOAT3(0, 0, 0);
 
 			_d3d->GetDeviceContext()->Unmap(_matrixBufferHUD, 0);
 

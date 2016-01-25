@@ -15,6 +15,11 @@ PlayState::~PlayState()
 
 void PlayState::Update(float deltaTime)
 {
+	if(_controls->IsFunctionKeyDown("PLAY:MENU"))
+	{
+		ChangeState(MENUSTATE);
+	}
+
 	_gameLogic.Update(deltaTime);
 }
 

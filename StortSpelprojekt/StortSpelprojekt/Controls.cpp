@@ -112,6 +112,11 @@ namespace System
 		_inputDevice->HandleRawInput(lparam);
 	}
 
+	void Controls::ResetInputBuffers()
+	{
+		_inputDevice->ResetInputBuffers();
+	}
+
 	void Controls::StringToKeyMap(const std::string& key, unsigned char &mainKey, unsigned char& keyModifiers)
 	{
 		if (key == "ctrl")
@@ -133,6 +138,10 @@ namespace System
 		else if (key == "spacebar")
 		{
 			mainKey = VK_SPACE;
+		}
+		else if (key == "enter" || key == "return")
+		{
+			mainKey = VK_RETURN;
 		}
 		else if (key == "escape")
 		{
@@ -207,10 +216,6 @@ namespace System
 		{
 			throw std::runtime_error("Undefined keyword \"" + key + "\"");
 		}
-	}
-	void Controls::ToggleCursorLock()
-	{
-		_inputDevice->ToggleCursorLock();
 	}
 
 	void Controls::SaveKeyBindings(int keyMap, std::string action, std::string newKey, std::string newKey2, std::string newKey3, std::string newKey4)
@@ -323,13 +328,18 @@ namespace System
 		return ret && (*_keymap)[key].keyModifier == modifersActivated;
 	}
 
-	MouseCoord Controls::GetMouseCoord()
+	void Controls::ToggleCursorLock()
 	{
-		return _inputDevice->GetMouseCoord();
+		_inputDevice->ToggleCursorLock();
 	}
 
 	bool Controls::CursorLocked()
 	{
 		return _inputDevice->CursorLocked();
+	}
+
+	MouseCoord Controls::GetMouseCoord()
+	{
+		return _inputDevice->GetMouseCoord();
 	}
 }
