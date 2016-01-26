@@ -2,7 +2,7 @@
 
 namespace Renderer
 {
-	DirectXHandler::DirectXHandler(HWND hwnd, int screenWidth, int screenHeight)
+	DirectXHandler::DirectXHandler(HWND hwnd, int screenWidth, int screenHeight, bool fullScreen)
 	{
 		HRESULT hResult;
 		_textureWidth = screenWidth;
@@ -25,7 +25,14 @@ namespace Renderer
 		swapChainDesc.SampleDesc.Count = 1;
 		swapChainDesc.SampleDesc.Quality = 0;
 
-		swapChainDesc.Windowed = true;
+		if (fullScreen)
+		{
+			swapChainDesc.Windowed = false;
+		}
+		else
+		{
+			swapChainDesc.Windowed = true;
+		}
 
 		swapChainDesc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
 		swapChainDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;

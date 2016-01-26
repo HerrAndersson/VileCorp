@@ -9,6 +9,8 @@
 #include "../Controls.h"
 #include "../PickingDevice.h"
 #include "../System/Camera.h"
+#include "../JsonStructs.h"
+#include "..\System\JsonParser.h"
 
 class LevelEdit
 {
@@ -20,6 +22,7 @@ private:
 	PickingDevice*			_pickingDevice;
 	System::Camera*			_camera;
 	Grid*					_grid;
+	LevelLoad				_levelLoad;
 
 	struct LevelHeader
 	{

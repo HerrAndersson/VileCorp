@@ -4,9 +4,9 @@ using namespace DirectX;
 
 namespace Renderer
 {
-	RenderModule::RenderModule(HWND hwnd, int screenWidth, int screenHeight)
+	RenderModule::RenderModule(HWND hwnd, int screenWidth, int screenHeight, bool fullScreen)
 	{
-		_d3d = new DirectXHandler(hwnd, screenWidth, screenHeight);
+		_d3d = new DirectXHandler(hwnd, screenWidth, screenHeight, fullScreen);
 		_screenWidth = screenWidth;
 		_screenHeight = screenHeight;
 		_shaderHandler = new ShaderHandler(_d3d->GetDevice());

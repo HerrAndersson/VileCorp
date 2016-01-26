@@ -47,7 +47,8 @@ void LevelEdit::Initialize(ObjectHandler* objectHandler, System::Controls* contr
 	//buttonInfo[1].parent = 0;
 	//buttonInfo[2].parent = 1;
 
-	LoadLevel(9);
+	System::loadJSON(&_levelLoad, "LevelLoad.json");
+	LoadLevel(_levelLoad.editLevel);
 
 	// Temporary hack because no mouse interface
 	_selectedObj = _objectHandler->GetGameObjects()->at(1)[0];

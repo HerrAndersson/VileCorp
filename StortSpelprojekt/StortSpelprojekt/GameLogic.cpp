@@ -23,7 +23,8 @@ void GameLogic::Initialize(ObjectHandler* objectHandler, System::Camera* camera,
 	//_objectHandler->Add(TRAP, 0, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
 
 	//_objectHandler->Add(TRAP, 0, XMFLOAT3(0.5f, -1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
-	_objectHandler->LoadLevel(9);
+	System::loadJSON(&_levelLoad, "Assets/LevelLoad.json");
+	_objectHandler->LoadLevel(_levelLoad.level);
 
 	_objectHandler->InitPathfinding();
 

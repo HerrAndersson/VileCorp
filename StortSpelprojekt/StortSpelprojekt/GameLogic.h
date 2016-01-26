@@ -4,6 +4,8 @@
 #include "Controls.h"
 #include "PickingDevice.h"
 #include "Player.h"
+#include "JsonStructs.h"
+#include "..\System\JsonParser.h"
 
 class GameLogic
 {
@@ -13,6 +15,7 @@ private:
 	System::Controls*		_controls;
 	PickingDevice*			_pickingDevice;
 	Player*					_player;
+	LevelLoad				_levelLoad;
 
 	void HandleInput();
 public:
