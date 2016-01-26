@@ -285,6 +285,7 @@ void LevelEdit::HandleInput()
 		{
 			_guardPlace = true;
 			_trapPlace = false;
+
 		}
 		if (_uiTree->IsButtonColliding("Trap", coord._pos.x, coord._pos.y))
 		{
