@@ -17,7 +17,7 @@ void OptionsState::Update(float deltaTime)
 {
 	if (_controls->IsFunctionKeyDown("DEBUG:RELOAD_GUI"))
 	{
-		_uiTree.ReloadTree("Assets/gui.json", "OPTIONS");
+		_uiTree.ReloadTree("../../../../StortSpelprojekt/Assets/gui.json", "OPTIONS");
 	}
 	_uiTree.IsButtonColliding("res_right", 0, 0);
 }
