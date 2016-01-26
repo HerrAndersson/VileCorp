@@ -39,7 +39,6 @@ void GameLogic::Update(float deltaTime)
 
 void GameLogic::HandleInput()
 {
-	
 	//Selecting a Unit and moving selected units
 	if (_controls->IsFunctionKeyDown("PLAY:SELECT"))
 	{
