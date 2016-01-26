@@ -60,20 +60,13 @@ private:
 	bool _isSelectionMode = true;
 	std::vector<ButtonInfo> buttonInfo;
 	
-	
-	void DragAndDrop(Type type);
-	void DragAndDrop();
 
 	void HandleInput();
 
 
-
-	void HandleHUD();
+	// Flytta på funktionerna
 	void LoadLevel(int levelID);
 	void InitNewLevel();
-	void ResetSelectedObj();
-	void HandleSelected();
-
 	void ExportLevel();
 
 public:
@@ -83,9 +76,13 @@ public:
 	void Initialize(ObjectHandler* objectHandler, System::Controls* controls, PickingDevice* pickingDevice, System::Camera* camera);
 
 	GameObject* GetSelectedObject();
+	void ResetSelectedObj();
 	bool Add(Type type, std::string name);
 	bool Delete(Type type);
 	bool TypeOn(Type type);
+	void DragAndDrop(Type type);
+	void DragAndDrop();
+
 
 	void Update(float deltaTime);
 };

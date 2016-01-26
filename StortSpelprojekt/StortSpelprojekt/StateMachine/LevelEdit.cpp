@@ -3,16 +3,7 @@
 #include <DirectXMath.h>
 #include <sstream>
 
-LevelEdit::LevelEdit()
-{
-	_aStar = nullptr;
-}
-
-LevelEdit::~LevelEdit()
-{
-	delete _aStar;
-}
-
+// local function
 bool compareFloat3(XMFLOAT3 a, XMFLOAT3 b)
 {
 	if (a.x == b.x && a.z == b.z)
@@ -22,9 +13,47 @@ bool compareFloat3(XMFLOAT3 a, XMFLOAT3 b)
 	return false;
 }
 
+// Instancing
+LevelEdit::LevelEdit()
+{
+	_aStar = nullptr;
+}
+
+void LevelEdit::Initialize(ObjectHandler* objectHandler, System::Controls* controls, PickingDevice* pickingDevice, System::Camera* camera)
+{
+	_objectHandler = objectHandler;
+	_controls = controls;
+	_pickingDevice = pickingDevice;
+	_camera = camera;
+	_aStar = new AI::AStar();
+
+
+	_lastSelected = nullptr;
+	_tileMultiplier = 1;
+	_isSelectionMode = true;
+
+	LoadLevel(1);
+
+	_marker = nullptr;
+
+	//_grid = new Grid(_renderModule->GetDevice(), 1, 10);
+}
+
+LevelEdit::~LevelEdit()
+{
+	delete _aStar;
+}
+
+// Other functions
 GameObject* LevelEdit::GetSelectedObject()
 {
 	return _marker;
+}
+
+void LevelEdit::ResetSelectedObj()
+{
+	//_marker = nullptr;
+	_lastSelected = nullptr;
 }
 
 bool LevelEdit::Add(Type type, std::string name)
@@ -60,77 +89,6 @@ bool LevelEdit::TypeOn(Type type)
 
 	return false;
 }
-
-void LevelEdit::Initialize(ObjectHandler* objectHandler, System::Controls* controls, PickingDevice* pickingDevice, System::Camera* camera)
-{
-	_objectHandler = objectHandler;
-	_controls = controls;
-	_pickingDevice = pickingDevice;
-	_camera = camera;
-	_aStar = new AI::AStar();
-	
-
-	_lastSelected = nullptr;
-	_tileMultiplier = 1;
-	_isSelectionMode = true;
-
-	// Add all buttons and hide them
-	//buttonInfo.resize(3);
-	//TODO: Re-add these buttons //Mattias
-	//_uiHandler->AddButton("floor3.png", DirectX::XMFLOAT2(-0.9f, 0.95f), DirectX::XMFLOAT2(0.1f, 0.05f), true);
-	//_uiHandler->AddButton("floor.png", DirectX::XMFLOAT2(-0.9f, 0.85f), DirectX::XMFLOAT2(0.1f, 0.05f), false);
-	//_uiHandler->AddButton("floor2.png", DirectX::XMFLOAT2(-0.7f, 0.85f), DirectX::XMFLOAT2(0.1f, 0.05f), false);
-
-	//buttonInfo[0].parent = -1;
-	//buttonInfo[1].parent = 0;
-	//buttonInfo[2].parent = 1;
-
-	LoadLevel(6);
-
-	_marker = nullptr;
-
-	//_grid = new Grid(_renderModule->GetDevice(), 1, 10);
-}
-
-void LevelEdit::LoadLevel(int levelID)
-{
-	//load existing level.
-	_objectHandler->Release();
-	ResetSelectedObj();
-	_objectHandler->LoadLevel(levelID);
-	_tileMap = _objectHandler->GetTileMap();
-	_tilemapHeight = _tileMap->GetHeight();
-	_tilemapWidth = _tileMap->GetWidth();
-}
-
-void LevelEdit::HandleHUD()
-{
-	/*for (int i = 0; i < buttonInfo.size(); i++)
-	{
-	if (buttonInfo[i].parent != -1)
-	{
-	if (buttonInfo[buttonInfo[i].parent].active == true)
-	{
-	_uiHandler->SetButtonVisibility(i, true);
-
-	if (_uiHandler->Intersect(mouseCoord._clientPos, i) == true)
-	{
-	buttonInfo[i].active = true;
-	}
-	}
-	else
-	{
-	_uiHandler->SetButtonVisibility(i, false);
-	}
-	}
-	else if(_uiHandler->Intersect(mouseCoord._clientPos, i) == true)
-	{
-	buttonInfo[i].active = true;
-	}
-	}*/
-}
-
-
 
 void LevelEdit::DragAndDrop(Type type)
 {
@@ -204,20 +162,6 @@ void LevelEdit::HandleInput()
 {
 	int maxObject = _objectHandler->GetObjectCount();
 	int selectedLevel = 1;
-
-	//Move tile greater distance per button press
-	//if (_inputDevice->IsPressed(VK_PRIOR))
-	//{
-	//	_tileMultiplier++;
-	//}
-
-	//if (_inputDevice->IsPressed(VK_NEXT))
-	//{
-	//	if (_tileMultiplier != 1)
-	//	{
-	//		_tileMultiplier--;
-	//	}
-	//}
 
 	//Scale Objects
 	/*
@@ -333,9 +277,6 @@ void LevelEdit::HandleInput()
 			_camera->SetMode(System::LOCKED_CAM);
 			_camera->SetRotation(DirectX::XMFLOAT3(70, 0, 0));
 		}
-	}
-
-	{
 		if (_camera->GetMode() == System::FREE_CAM)
 		{
 			forward = _camera->GetForwardVector();
@@ -395,32 +336,11 @@ void LevelEdit::HandleInput()
 
 void LevelEdit::Update(float deltaTime)
 {
-	HandleHUD();
-	HandleSelected();
 	HandleInput();
 	_objectHandler->Update(deltaTime);
 }
 
-void LevelEdit::HandleSelected()
-{
-	//if (_objectHandler->GetObjectCount() != 0)
-	//{
-	//	if (_lastSelected != nullptr && _marker != _lastSelected)
-	//	{
-	//		_lastSelected->SetPosition(XMFLOAT3(_lastSelected->GetPosition().x, 0.1, _lastSelected->GetPosition().z));
-	//		//XMFLOAT3 tempScale = temp->GetScale();
-	//		//temp->SetScale(XMFLOAT3(1.1, 1.1, 1.1));
-	//	}
-	//	_lastSelected = _marker;
-	//}
-}
-
-void LevelEdit::ResetSelectedObj()
-{
-	//_marker = nullptr;
-	_lastSelected = nullptr;
-}
-
+// kanske level edit state
 void LevelEdit::InitNewLevel()
 {
 	_objectHandler->Release();
@@ -497,9 +417,20 @@ void LevelEdit::ExportLevel()
 		fwrite(buf, 1, size, dest);
 	}
 
-	fclose(source);
-	fclose(dest);
+	//fclose(source);
+	//fclose(dest);
 
 	mapData.clear();
 
+}
+
+void LevelEdit::LoadLevel(int levelID)
+{
+	//load existing level.
+	_objectHandler->Release();
+	ResetSelectedObj();
+	_objectHandler->LoadLevel(levelID);
+	_tileMap = _objectHandler->GetTileMap();
+	_tilemapHeight = _tileMap->GetHeight();
+	_tilemapWidth = _tileMap->GetWidth();
 }
