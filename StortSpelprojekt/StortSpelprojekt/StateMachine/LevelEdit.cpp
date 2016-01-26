@@ -30,11 +30,16 @@ void LevelEdit::Initialize(ObjectHandler* objectHandler, System::Controls* contr
 
 	_lastSelected = nullptr;
 	_tileMultiplier = 1;
-	_isSelectionMode = true;
+
+	// Don´t let both be true
+	_isSelectionMode = false;
+	_isDragAndPlaceMode = true;
+	_isPlace = true;
 
 	LoadLevel(1);
 
 	_marker = nullptr;
+	_markedTile = nullptr;
 
 	//_grid = new Grid(_renderModule->GetDevice(), 1, 10);
 }
@@ -158,6 +163,96 @@ void LevelEdit::DragAndDrop()
 	}
 }
 
+void LevelEdit::DragAndPlace()
+{
+	Type type = TRAP;
+
+	//if (_marker != nullptr && _controls->IsFunctionKeyDown("MAP_EDIT:DRAG"))
+	//{
+	//	AI::Vec2D pickedTile = _pickingDevice->pickTile(_controls->GetMouseCoord()._pos);
+
+	//	if (_objectHandler->GetTileMap()->IsValid(pickedTile._x, pickedTile._y))
+	//	{
+	//		
+	//	}
+	//}
+	if (_controls->IsFunctionKeyUp("MAP_EDIT:SELECT"))
+	{
+		if (_isDragAndPlaceMode)
+		{
+			AI::Vec2D pickedTile = _pickingDevice->pickTile(_controls->GetMouseCoord()._pos);
+
+			if (_objectHandler->GetTileMap()->IsValid(pickedTile._x, pickedTile._y))
+			{
+				// Calculate min and max
+				int minX, maxX;
+				if (_markedTile->_x < pickedTile._x)
+				{
+					minX = _markedTile->_x;
+					maxX = pickedTile._x;
+				}
+				else
+				{
+					minX = pickedTile._x;
+					maxX = _markedTile->_x;
+				}
+				int minY, maxY;
+				if (_markedTile->_y < pickedTile._y)
+				{
+					minY = _markedTile->_y;
+					maxY = pickedTile._y;
+				}
+				else
+				{
+					minY = pickedTile._y;
+					maxY = _markedTile->_y;
+				}
+
+				// Check tiles
+				GameObject* objectOnTile;
+				if (_isPlace) // Place
+				{
+					for (int x = minX; x <= maxX; x++)
+					{
+						for (int y = minY; y <= maxY; y++)
+						{
+							// 3 - TRAP/LOOT OBS!
+							objectOnTile = _objectHandler->GetTileMap()->GetObjectOnTile(x, y, 3);
+
+							if (objectOnTile == nullptr)
+							{
+								// Add to valid place
+								_objectHandler->Add(type, "trap_proto", XMFLOAT3(x, 0, y), XMFLOAT3(0.0f, 0.0f, 0.0f));
+							}
+						}
+					}
+				}
+				else // Remove
+				{
+					for (int x = minX; x <= maxX; x++)
+					{
+						for (int y = minY; y <= maxY; y++)
+						{
+							// 3 - TRAP/LOOT OBS!
+							objectOnTile = _objectHandler->GetTileMap()->GetObjectOnTile(x, y, 3);
+
+							if (objectOnTile != nullptr && type == objectOnTile->GetType())
+							{
+								// Remove
+								_objectHandler->Remove(objectOnTile);
+							}
+						}
+					}
+				}
+
+			}
+
+			delete _markedTile;
+			_markedTile = nullptr;
+		}
+	}
+}
+
 void LevelEdit::HandleInput()
 {
 	int maxObject = _objectHandler->GetObjectCount();
@@ -205,13 +300,34 @@ void LevelEdit::HandleInput()
 				_marker = objectsOnTile.back();
 			}
 		}
+		if (_isDragAndPlaceMode)
+		{
+			_isPlace = true;
+			_markedTile = new AI::Vec2D(_pickingDevice->pickTile(_controls->GetMouseCoord()._pos));
+		}
 	}
 
-	
+	if (_controls->IsFunctionKeyDown("MAP_EDIT:REMOVE"))
+	{
+		if (_isDragAndPlaceMode)
+		{
+			_isPlace = false;
+			_markedTile = new AI::Vec2D(_pickingDevice->pickTile(_controls->GetMouseCoord()._pos));
+		}
+	}
+
+
+	if (_isSelectionMode)
+	{
+		DragAndDrop();
+	}
+	if (_isDragAndPlaceMode)
+	{
+		DragAndPlace();
+	}
 
 	if (_marker != nullptr)
 	{
-		DragAndDrop();
 
 		// Rotation
 		if (_controls->IsFunctionKeyDown("MAP_EDIT:ROTATE_MARKER_CLOCK"))

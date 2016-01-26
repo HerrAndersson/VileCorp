@@ -42,24 +42,20 @@ private:
 		int parent;
 		bool active = false;
 	};
-	int someOneActive = false;
-	std::vector<bool> _rootInfo;
-	int _rootAmount;
-	bool _root = true;
-	int _floorAmount;
-	bool _floor = false;
-	int _wallAmount;
-	bool _wall = false;
 
 	GameObject* _marker;
 	GameObject* _lastSelected;
+	AI::Vec2D* _markedTile;
 
 	System::MouseCoord _mouseCoord;
 	int _tileMultiplier;
 	int _tilemapHeight, _tilemapWidth;
-	bool _isSelectionMode = true;
 	std::vector<ButtonInfo> buttonInfo;
 	
+	// FLAGS
+	bool _isSelectionMode;
+	bool _isDragAndPlaceMode;
+	bool _isPlace;
 
 	void HandleInput();
 
@@ -82,6 +78,7 @@ public:
 	bool TypeOn(Type type);
 	void DragAndDrop(Type type);
 	void DragAndDrop();
+	void DragAndPlace();
 
 
 	void Update(float deltaTime);

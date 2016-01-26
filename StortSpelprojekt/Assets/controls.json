@@ -20,6 +20,8 @@
     "DELETE_UNIT": [ "delete" ],
 
 	"SELECT": ["leftmouse"],
+	"REMOVE": ["rightmouse"],
+	
 	"DRAG": ["leftmouse", "repeat"],
 	
     "MENU": [ "escape" ],
