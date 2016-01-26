@@ -66,10 +66,57 @@
 			"scale": [1.0, 1.0],
 			"texture": "../Menues/menu3.png"
 		}
-  },
-  "SPLASH" : {},
-  "PLAY" : {},
-  "OPTIONS" : {},
-  "PLACEMENT" : {},
-  "LEVELEDIT" : {}
+	},
+	"SPLASH" : {},
+	"PLAY" : {},
+	"OPTIONS" : {
+		"." :
+		{
+			"position": [0.0, 0.0],
+			"scale": [1.0, 1.0],
+			"res_left" :
+			{
+				"position": [-0.4, 0.0],
+				"scale": [0.1, 0.1],
+				"texture" : "../Menues/left.png"
+			},
+			"res_right" :
+			{
+				"position": [0.4, 0.0],
+				"scale": [0.1, 0.1],
+				"texture" : "../Menues/left.png"
+			},
+			"res_content":
+			{
+				"scale": [0.3, 0.1],
+				"texture" : "../Menues/left.png",
+				"text" : "Hey",
+				"centered" : true
+			}
+		},
+		"." :
+		{
+			"position": [0.0, 0.2],
+			"scale": [1.0, 1.0],
+			"res_left" :
+			{
+				"position": [-0.4, 0.0],
+				"scale": [0.1, 0.1],
+				"texture" : "../Menues/left.png"
+			},
+			"res_right" :
+			{
+				"position": [0.4, 0.0],
+				"scale": [0.1, 0.1],
+				"texture" : "../Menues/left.png"
+			},
+			"res_content":
+			{
+				"scale": [0.3, 0.1],
+				"texture" : "floor.png"
+			}
+		}
+	},
+	"PLACEMENT" : {},
+	"LEVELEDIT" : {}
 }

@@ -31,5 +31,6 @@ namespace GUI
 		void Resize(Node* current);
 
 		bool IsButtonColliding(const std::string& id, int x, int y);
+		void ReloadTree(const std::string& filename, const std::string& statename);
 	};
 }
