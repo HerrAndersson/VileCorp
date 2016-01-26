@@ -85,7 +85,7 @@ void LevelEdit::Initialize(ObjectHandler* objectHandler, System::Controls* contr
 	//buttonInfo[1].parent = 0;
 	//buttonInfo[2].parent = 1;
 
-	LoadLevel(6);
+	LoadLevel(3);
 
 	_marker = nullptr;
 
@@ -320,22 +320,23 @@ void LevelEdit::HandleInput()
 	bool isMoving = false;
 	float v = 0.06f + (_camera->GetPosition().y * 0.01);
 	if (GetAsyncKeyState('W'))
-	if (_controls->IsFunctionKeyDown("DEBUG:ENABLE_FREECAM"))
 	{
-		if (_camera->GetMode() == System::LOCKED_CAM)
+		if (_controls->IsFunctionKeyDown("DEBUG:ENABLE_FREECAM"))
 		{
-			_controls->ToggleCursorLock();
-			_camera->SetMode(System::FREE_CAM);
+			if (_camera->GetMode() == System::LOCKED_CAM)
+			{
+				_controls->ToggleCursorLock();
+				_camera->SetMode(System::FREE_CAM);
+			}
+			else
+			{
+				_controls->ToggleCursorLock();
+				_camera->SetMode(System::LOCKED_CAM);
+				_camera->SetRotation(DirectX::XMFLOAT3(70, 0, 0));
+			}
 		}
-		else
-		{
-			_controls->ToggleCursorLock();
-			_camera->SetMode(System::LOCKED_CAM);
-			_camera->SetRotation(DirectX::XMFLOAT3(70, 0, 0));
-		}
-	}
 
-	{
+	
 		if (_camera->GetMode() == System::FREE_CAM)
 		{
 			forward = _camera->GetForwardVector();
