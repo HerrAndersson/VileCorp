@@ -11,7 +11,7 @@
 #include "../System/Camera.h"
 //#include "../Renderer/RenderModule.h"
 
-class LevelEdit
+class BaseEdit
 {
 private:
 	AI::AStar*				_aStar;
@@ -47,8 +47,8 @@ private:
 	void LoadLevel(int levelID);
 
 public:
-	LevelEdit();
-	~LevelEdit();
+	BaseEdit();
+	~BaseEdit();
 
 	void Initialize(ObjectHandler* objectHandler, System::Controls* controls, PickingDevice* pickingDevice, System::Camera* camera);
 

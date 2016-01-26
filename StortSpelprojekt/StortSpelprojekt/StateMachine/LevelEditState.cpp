@@ -16,12 +16,12 @@ LevelEditState::~LevelEditState()
 void LevelEditState::Update(float deltaTime)
 {
 	HandleInput();
-	_levelEdit.Update(deltaTime);
+	_baseEdit.Update(deltaTime);
 }
 
 void LevelEditState::OnStateEnter()
 {
-	_levelEdit.Initialize(_objectHandler, _controls, _pickingDevice, _camera);
+	_baseEdit.Initialize(_objectHandler, _controls, _pickingDevice, _camera);
 }
 
 void LevelEditState::OnStateExit()
@@ -38,30 +38,30 @@ void LevelEditState::HandleInput()
 	///*
 	//"SCALE_MARKER_LEFT": [""].
 	//*/
-	if (_levelEdit.GetSelectedObject() != nullptr)
+	if (_baseEdit.GetSelectedObject() != nullptr)
 	{
 		if (_controls->IsFunctionKeyDown("MAP_EDIT:SCALE_MARKER_XPOSITIVE"))
 		{
-			XMFLOAT3 tempPos = _levelEdit.GetSelectedObject()->GetScale();
-			_levelEdit.GetSelectedObject()->SetScale(XMFLOAT3(tempPos.x + 1, tempPos.y, tempPos.z));
+			XMFLOAT3 tempPos = _baseEdit.GetSelectedObject()->GetScale();
+			_baseEdit.GetSelectedObject()->SetScale(XMFLOAT3(tempPos.x + 1, tempPos.y, tempPos.z));
 		}
 
 		if (_controls->IsFunctionKeyDown("MAP_EDIT:SCALE_MARKER_XNEGATIVE"))
 		{
-			XMFLOAT3 tempPos = _levelEdit.GetSelectedObject()->GetScale();
-			_levelEdit.GetSelectedObject()->SetScale(XMFLOAT3(tempPos.x - 1, tempPos.y, tempPos.z));
+			XMFLOAT3 tempPos = _baseEdit.GetSelectedObject()->GetScale();
+			_baseEdit.GetSelectedObject()->SetScale(XMFLOAT3(tempPos.x - 1, tempPos.y, tempPos.z));
 		}
 
 		if (_controls->IsFunctionKeyDown("MAP_EDIT:SCALE_MARKER_YPOSITIVE"))
 		{
-			XMFLOAT3 tempPos = _levelEdit.GetSelectedObject()->GetScale();
-			_levelEdit.GetSelectedObject()->SetScale(XMFLOAT3(tempPos.x, tempPos.y, tempPos.z + 1));
+			XMFLOAT3 tempPos = _baseEdit.GetSelectedObject()->GetScale();
+			_baseEdit.GetSelectedObject()->SetScale(XMFLOAT3(tempPos.x, tempPos.y, tempPos.z + 1));
 		}
 
 		if (_controls->IsFunctionKeyDown("MAP_EDIT:SCALE_MARKER_YNEGATIVE"))
 		{
-			XMFLOAT3 tempPos = _levelEdit.GetSelectedObject()->GetScale();
-			_levelEdit.GetSelectedObject()->SetScale(XMFLOAT3(tempPos.x, tempPos.y, tempPos.z - 1));
+			XMFLOAT3 tempPos = _baseEdit.GetSelectedObject()->GetScale();
+			_baseEdit.GetSelectedObject()->SetScale(XMFLOAT3(tempPos.x, tempPos.y, tempPos.z - 1));
 		}
 	}
 
@@ -76,7 +76,7 @@ void LevelEditState::InitNewLevel()
 {
 	_objectHandler->Release();
 
-	_levelEdit.ResetSelectedObj();
+	_baseEdit.ResetSelectedObj();
 }
 
 void LevelEditState::ExportLevel()

@@ -1,4 +1,4 @@
-#include "LevelEdit.h"
+#include "BaseEdit.h"
 #include <stdexcept>
 #include <DirectXMath.h>
 #include <sstream>
@@ -14,12 +14,12 @@ bool compareFloat3(XMFLOAT3 a, XMFLOAT3 b)
 }
 
 // Instancing
-LevelEdit::LevelEdit()
+BaseEdit::BaseEdit()
 {
 	_aStar = nullptr;
 }
 
-void LevelEdit::Initialize(ObjectHandler* objectHandler, System::Controls* controls, PickingDevice* pickingDevice, System::Camera* camera)
+void BaseEdit::Initialize(ObjectHandler* objectHandler, System::Controls* controls, PickingDevice* pickingDevice, System::Camera* camera)
 {
 	_objectHandler = objectHandler;
 	_controls = controls;
@@ -44,29 +44,29 @@ void LevelEdit::Initialize(ObjectHandler* objectHandler, System::Controls* contr
 	//_grid = new Grid(_renderModule->GetDevice(), 1, 10);
 }
 
-LevelEdit::~LevelEdit()
+BaseEdit::~BaseEdit()
 {
 	delete _aStar;
 }
 
 // Other functions
-GameObject* LevelEdit::GetSelectedObject()
+GameObject* BaseEdit::GetSelectedObject()
 {
 	return _marker;
 }
 
-void LevelEdit::ResetSelectedObj()
+void BaseEdit::ResetSelectedObj()
 {
 	//_marker = nullptr;
 	_lastSelected = nullptr;
 }
 
-bool LevelEdit::Add(Type type, std::string name)
+bool BaseEdit::Add(Type type, std::string name)
 {
 	return _objectHandler->Add(type, name, _marker->GetPosition(), XMFLOAT3(0.0f, 0.0f, 0.0f));
 }
 
-bool LevelEdit::Delete(Type type)
+bool BaseEdit::Delete(Type type)
 {
 	vector<GameObject*>* vec = &_objectHandler->GetGameObjects()->at(type);
 	for (GameObject* g : *vec)
@@ -81,7 +81,7 @@ bool LevelEdit::Delete(Type type)
 	return false;
 }
 
-bool LevelEdit::TypeOn(Type type)
+bool BaseEdit::TypeOn(Type type)
 {
 	vector<GameObject*>* vec = &_objectHandler->GetGameObjects()->at(type);
 	for (GameObject* g : *vec)
@@ -95,7 +95,7 @@ bool LevelEdit::TypeOn(Type type)
 	return false;
 }
 
-void LevelEdit::DragAndDrop(Type type)
+void BaseEdit::DragAndDrop(Type type)
 {
 	if (_marker != nullptr && _controls->IsFunctionKeyDown("MAP_EDIT:DRAG"))
 	{
@@ -155,7 +155,7 @@ void LevelEdit::DragAndDrop(Type type)
 	}
 }
 
-void LevelEdit::DragAndDrop()
+void BaseEdit::DragAndDrop()
 {
 	if (_marker != nullptr)
 	{
@@ -163,7 +163,7 @@ void LevelEdit::DragAndDrop()
 	}
 }
 
-void LevelEdit::DragAndPlace()
+void BaseEdit::DragAndPlace()
 {
 	Type type = TRAP;
 
@@ -244,7 +244,7 @@ void LevelEdit::DragAndPlace()
 	}
 }
 
-void LevelEdit::HandleInput()
+void BaseEdit::HandleInput()
 {
 	if (_controls->IsFunctionKeyDown("MAP_EDIT:SELECT"))
 	{
@@ -415,13 +415,13 @@ void LevelEdit::HandleInput()
 	}
 }
 
-void LevelEdit::Update(float deltaTime)
+void BaseEdit::Update(float deltaTime)
 {
 	HandleInput();
 	_objectHandler->Update(deltaTime);
 }
 
-void LevelEdit::LoadLevel(int levelID)
+void BaseEdit::LoadLevel(int levelID)
 {
 	//load existing level.
 	_objectHandler->Release();

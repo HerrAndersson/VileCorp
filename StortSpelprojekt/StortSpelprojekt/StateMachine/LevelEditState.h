@@ -1,12 +1,12 @@
 #pragma once
 
 #include "BaseState.h"
-#include "LevelEdit.h"
+#include "BaseEdit.h"
 
 class LevelEditState : public BaseState
 {
 private:
-	LevelEdit _levelEdit;
+	BaseEdit _baseEdit;
 
 	struct LevelHeader
 	{

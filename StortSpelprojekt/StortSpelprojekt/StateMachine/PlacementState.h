@@ -1,12 +1,12 @@
 #pragma once
 
 #include "BaseState.h"
-#include "LevelEdit.h"
+#include "BaseEdit.h"
 
 class PlacementState : public BaseState
 {
 private:
-	LevelEdit _levelEdit;
+	BaseEdit _baseEdit;
 	int _budget;
 	bool _trapChosen = false;
 

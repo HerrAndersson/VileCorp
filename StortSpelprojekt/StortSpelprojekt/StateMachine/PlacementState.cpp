@@ -18,13 +18,13 @@ PlacementState::~PlacementState()
 
 void PlacementState::Update(float deltaTime)
 {
-	_levelEdit.Update(deltaTime);
+	_baseEdit.Update(deltaTime);
 
 	//tempAddObj
 
 	int cost = 20;
 
-	if (_levelEdit.GetSelectedObject() != nullptr)
+	if (_baseEdit.GetSelectedObject() != nullptr)
 	{
 		//T adds Trap
 		if (_controls->IsFunctionKeyDown("PLACEMENT:BUILD_TRAP"))
@@ -32,18 +32,18 @@ void PlacementState::Update(float deltaTime)
 			if (_budget - cost >= 0)
 			{
 				vector<GameObject*>* vec = &_objectHandler->GetGameObjects()->at(TRAP);
-				if (vec->empty() && _levelEdit.Add(TRAP, "trap_proto"))
+				if (vec->empty() && _baseEdit.Add(TRAP, "trap_proto"))
 				{
 					_budget -= cost;
 				}
 				else
 				{
 					bool taken = false;
-					if (_levelEdit.TypeOn(WALL))
+					if (_baseEdit.TypeOn(WALL))
 					{
 						taken = true;
 					}
-					if (!taken && _levelEdit.Add(TRAP, "trap_proto"))
+					if (!taken && _baseEdit.Add(TRAP, "trap_proto"))
 					{
 						_budget -= cost;
 					}
@@ -55,18 +55,18 @@ void PlacementState::Update(float deltaTime)
 			if (_budget - cost >= 0)
 			{
 				vector<GameObject*>* vec = &_objectHandler->GetGameObjects()->at(GUARD);
-				if (vec->empty() && _levelEdit.Add(GUARD, "proto"))
+				if (vec->empty() && _baseEdit.Add(GUARD, "proto"))
 				{
 					_budget -= cost;
 				}
 				else
 				{
 					bool taken = false;
-					if (_levelEdit.TypeOn(WALL))
+					if (_baseEdit.TypeOn(WALL))
 					{
 						taken = true;
 					}
-					if (!taken && _levelEdit.Add(GUARD, "proto"))
+					if (!taken && _baseEdit.Add(GUARD, "proto"))
 					{
 						_budget -= cost;
 					}
@@ -75,11 +75,11 @@ void PlacementState::Update(float deltaTime)
 		}
 		else if (_controls->IsFunctionKeyDown("PLACEMENT:DELETE"))
 		{
-			if (!_levelEdit.Delete(TRAP))
+			if (!_baseEdit.Delete(TRAP))
 			{
 				_budget += cost;
 			}
-			if (!_levelEdit.Delete(GUARD))
+			if (!_baseEdit.Delete(GUARD))
 			{
 				_budget += cost;
 			}
@@ -89,7 +89,7 @@ void PlacementState::Update(float deltaTime)
 
 void PlacementState::OnStateEnter()
 {
-	_levelEdit.Initialize(_objectHandler, _controls, _pickingDevice, _camera);
+	_baseEdit.Initialize(_objectHandler, _controls, _pickingDevice, _camera);
 }
 
 void PlacementState::OnStateExit()
