@@ -47,9 +47,7 @@
     "CONTROL_GROUP7": [ "7", "ctrl" ],
     "CONTROL_GROUP8": [ "8", "ctrl" ],
     "CONTROL_GROUP9": [ "9", "ctrl" ],
-
-
-    "MENU": [ "escape" ]
+	"SHOWMENU": ["escape"]
   },
 	
 	"MENU": {

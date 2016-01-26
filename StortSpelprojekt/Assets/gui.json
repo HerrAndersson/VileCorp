@@ -68,7 +68,50 @@
 		}
 	},
 	"SPLASH" : {},
-	"PLAY" : {},
+	"PLAY" : {
+		"position": [0.0, 0.0],
+		"scale": [1.0, 1.0],
+		"paused":
+			{
+				"position" : [0.0, 0.7],
+				"scale": [0.0, 0.0],
+				"text": "PAUSED",
+				"color": "FF000000",
+				"fontsize" : 80.0,
+				"centered" : true
+			},
+		"resume" :
+			{
+				"position": [0.0, 0.3],
+				"scale": [0.1, 0.1],
+				"text": "Resume Game",
+				"color": "FF000000",
+				"fontsize" : 30.0,
+				"centered" : true,
+				"texture" : "../Menues/Button.png"
+			},
+		"mainmenu" :
+			{
+				"position": [0.0, 0.0],
+				"scale": [0.1, 0.1],
+				"text": "Main Menu",
+				"color": "FF000000",
+				"fontsize" : 30.0,
+				"centered" : true,
+				"texture" : "../Menues/Button.png"
+			},
+		"quit" :
+			{
+				"position": [0.0, -0.3],
+				"scale": [0.1, 0.1],
+				"text": "Quit Game",
+				"color": "FF000000",
+				"fontsize" : 30.0,
+				"centered" : true,
+				"texture" : "../Menues/Budget.png"
+			}
+				
+	},
 	"OPTIONS" : {
 		"." :
 		{
@@ -90,7 +133,7 @@
 			{
 				"scale": [0.3, 0.1],
 				"texture" : "../Menues/left.png",
-				"text" : "Hey",
+				"text" : "LADY GsdasdasdGA",
 				"centered" : true
 			}
 		},

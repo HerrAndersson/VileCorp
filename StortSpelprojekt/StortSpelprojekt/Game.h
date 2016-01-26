@@ -39,7 +39,7 @@ private:
 
 	//Resizing window, directx resources, camera
 	void ResizeResources(System::WindowSettings settings);
-	void Update(float deltaTime);
+	bool Update(float deltaTime);
 	void Render();
 	void CheckSettings();
 
