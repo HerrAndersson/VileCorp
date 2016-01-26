@@ -274,6 +274,39 @@ void LevelEdit::HandleInput()
 
 		_camera->SetRotation(rotation);
 	}
+
+	if (_controls->IsFunctionKeyDown("MAP_EDIT:MOVE_CAMERA_RIGHT"))
+	{
+		right = _camera->GetRightVector();
+		isMoving = true;
+	}
+	else if (_controls->IsFunctionKeyDown("MAP_EDIT:MOVE_CAMERA_LEFT"))
+	{
+		right = _camera->GetRightVector();
+		right.x *= -1;
+		right.y *= -1;
+		right.z *= -1;
+		isMoving = true;
+	}
+
+	if (_controls->IsFunctionKeyDown("MAP_EDIT:MOVE_CAMERA_UP"))
+	{
+		forward = _camera->GetForwardVector();
+		isMoving = true;
+	}
+	else if (_controls->IsFunctionKeyDown("MAP_EDIT:MOVE_CAMERA_DOWN"))
+	{
+		forward = _camera->GetForwardVector();
+		forward.x *= -1;
+		forward.y *= -1;
+		forward.z *= -1;
+		isMoving = true;
+	}
+
+	if (isMoving)
+	{
+		_camera->SetPosition(XMFLOAT3(position.x + (forward.x + right.x) * v, position.y + (forward.y + right.y) * v, position.z + (forward.z + right.z) * v));
+	}
 }
 
 void LevelEdit::Update(float deltaTime)

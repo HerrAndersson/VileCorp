@@ -70,31 +70,6 @@ void LevelEditState::HandleInput()
 	{
 		InitNewLevel();
 	}
-
-	XMFLOAT3 forward(0, 0, 0);
-	XMFLOAT3 position = _camera->GetPosition();
-	XMFLOAT3 right(0, 0, 0);
-	bool isMoving = false;
-	float v = 0.06f + (_camera->GetPosition().y * 0.01);
-
-	if (_controls->IsFunctionKeyDown("MAP_EDIT:MOVE_CAMERA_RIGHT"))
-	{
-		right = _camera->GetRightVector();
-		isMoving = true;
-	}
-	else if (_controls->IsFunctionKeyDown("MAP_EDIT:MOVE_CAMERA_LEFT"))
-	{
-		right = _camera->GetRightVector();
-		right.x *= -1;
-		right.y *= -1;
-		right.z *= -1;
-		isMoving = true;
-	}
-
-	if (isMoving)
-	{
-		_camera->SetPosition(XMFLOAT3(position.x + (forward.x + right.x) * v, position.y + (forward.y + right.y) * v, position.z + (forward.z + right.z) * v));
-	}
 }
 
 void LevelEditState::InitNewLevel()
