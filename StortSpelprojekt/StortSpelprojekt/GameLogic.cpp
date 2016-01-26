@@ -12,7 +12,7 @@ GameLogic::~GameLogic()
 	delete _player;
 }
 
-void GameLogic::Initialize(ObjectHandler* objectHandler, System::Camera* camera, System::Controls*	controls, PickingDevice* pickingDevice)
+void GameLogic::Initialize(ObjectHandler* objectHandler, System::Camera* camera, System::Controls* controls, PickingDevice* pickingDevice)
 {
 	_objectHandler = objectHandler;
 	_camera = camera;
@@ -23,7 +23,8 @@ void GameLogic::Initialize(ObjectHandler* objectHandler, System::Camera* camera,
 	//_objectHandler->Add(TRAP, 0, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
 
 	//_objectHandler->Add(TRAP, 0, XMFLOAT3(0.5f, -1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
-	_objectHandler->LoadLevel(1);
+	System::loadJSON(&_levelLoad, "../../../../StortSpelprojekt/Assets/LevelLoad.json");
+	_objectHandler->LoadLevel(_levelLoad.level);
 
 	_objectHandler->InitPathfinding();
 
@@ -39,7 +40,7 @@ void GameLogic::Update(float deltaTime)
 void GameLogic::HandleInput()
 {
 	
-	//Selecting a Unit
+	//Selecting a Unit and moving selected units
 	if (_controls->IsFunctionKeyDown("PLAY:SELECT"))
 	{
 		vector<GameObject*> pickedUnits = _pickingDevice->pickObjects(_controls->GetMouseCoord()._pos, _objectHandler->GetAllByType(GUARD));
@@ -68,7 +69,7 @@ void GameLogic::HandleInput()
 			unit->SetScale(DirectX::XMFLOAT3(1.2f, 1.2f, 1.2f));
 		}
 	}
-	//Deselect units
+	//Deselect Units
 	if (_controls->IsFunctionKeyDown("PLAY:DESELECT"))
 	{
 		if (_player->AreUnitsSelected())
@@ -82,7 +83,7 @@ void GameLogic::HandleInput()
 		}
 	}
 
-	//Boxselecting Units
+	//Boxselect Units
 	if(_controls->IsFunctionKeyDown("PLAY:BOX_SELECT"))
 	{
 		_pickingDevice->setFirstBoxPoint(_controls->GetMouseCoord()._pos);
@@ -100,17 +101,26 @@ void GameLogic::HandleInput()
 
 	}
 
+	//Set Guard Patrol Route if a Guard is Selected
+	if (_controls->IsFunctionKeyDown("PLAY:SET_PATROL"))
+	{
+		if (_player->AreUnitsSelected())
+		{
+			_player->PatrolUnits(_pickingDevice->pickTile(_controls->GetMouseCoord()._pos));
+		}
+	}
 
-	
+
+
 	if (_camera->GetMode() == System::LOCKED_CAM)
 	{
 		if (_controls->IsFunctionKeyDown("PLAY:SCROLLDOWN") &&
-			_camera->GetPosition().y > 4.0f)
+			_camera->GetPosition().y > 10.0f)
 		{
 			_camera->Move(XMFLOAT3(0.0f, -1.0f, 0.0f));
 		}
 		else if (_controls->IsFunctionKeyDown("PLAY:SCROLLUP") &&
-			_camera->GetPosition().y < 12.0f)
+			_camera->GetPosition().y < 30.0f)
 		{
 			_camera->Move(XMFLOAT3(0.0f, 1.0f, 0.0f));
 		}

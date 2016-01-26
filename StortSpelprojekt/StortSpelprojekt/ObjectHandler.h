@@ -4,12 +4,13 @@
 #include "Unit.h"
 #include "Trap.h"
 #include "Architecture.h"
-#include "Trigger.h"
+#include "SpawnPoint.h"
 #include "Enemy.h"
 #include "Guard.h"
 #include "Tilemap.h"
 #include "JsonStructs.h"
 #include "AssetManager.h"
+#include "StateMachine\States.h"
 
 /*
 ObjectHandler
@@ -47,22 +48,12 @@ private:
 
 	AssetManager* _assetManager;
 
-	Architecture*	MakeFloor(GameObjectFloorInfo* data, XMFLOAT3 position, XMFLOAT3 rotation);
-	Architecture*	MakeWall(GameObjectWallInfo* data, XMFLOAT3 position, XMFLOAT3 rotation);
-	Architecture*	MakeLoot(GameObjectLootInfo* data, XMFLOAT3 position, XMFLOAT3 rotation);
-	Architecture*	MakeSpawn(GameObjectSpawnInfo* data, XMFLOAT3 position, XMFLOAT3 rotation);
-	Trap*			MakeTrap(GameObjectTrapInfo* data, XMFLOAT3 position, XMFLOAT3 rotation);
-	Trigger*		MakeTrigger(GameObjectTriggerInfo* data, XMFLOAT3 position, XMFLOAT3 rotation);
-	Guard*			MakeGuard(GameObjectGuardInfo* data, XMFLOAT3 position, XMFLOAT3 rotation);
-	Enemy*			MakeEnemy(GameObjectEnemyInfo* data, XMFLOAT3 position, XMFLOAT3 rotation);
-
 public:
 	ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data);
 	~ObjectHandler();
 
 	//Add a gameobject
-	bool Add(Type type, int index, XMFLOAT3 position, XMFLOAT3 rotation);
-	bool Add(Type type, std::string name, XMFLOAT3 position, XMFLOAT3 rotation);
+	bool Add(Type type, XMFLOAT3 position, XMFLOAT3 rotation);
 	
 	bool Remove(int ID);
 	bool Remove(Type type, int ID);
@@ -76,8 +67,6 @@ public:
 	//Returns a list of a renderobject and matrices for all objects using the renderobject
 	RenderList GetAllByType(int renderObjectID);
 	vector<vector<GameObject*>>* GetGameObjects();
-
-	GameObjectInfo* GetBlueprints();
 
 	int GetObjectCount() const;
 

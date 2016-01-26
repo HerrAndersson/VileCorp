@@ -8,7 +8,6 @@ PlacementState::PlacementState(System::Controls* controls, ObjectHandler* object
 	
 	_camera = camera;
 	_pickingDevice = pickingDevice;
-	_budget = 1000;
 }
 
 
@@ -18,83 +17,28 @@ PlacementState::~PlacementState()
 
 void PlacementState::Update(float deltaTime)
 {
-	_levelEdit.Update(deltaTime);
-
-	//tempAddObj
-
-	int cost = 20;
-
-	if (_levelEdit.GetSelectedObject() != nullptr)
+	if (_controls->IsFunctionKeyDown("PLACEMENT:MENU"))
 	{
-		//T adds Trap
-		if (_controls->IsFunctionKeyDown("PLACEMENT:BUILD_TRAP"))
+		ChangeState(MENUSTATE);
+	}
+	else if (_controls->IsFunctionKeyDown("PLACEMENT:CLICK"))
+	{
+		System::MouseCoord coord = _controls->GetMouseCoord();
+		if (_uiTree.IsButtonColliding("Play", coord._pos.x, coord._pos.y))
 		{
-			if (_budget - cost >= 0)
-			{
-				vector<GameObject*>* vec = &_objectHandler->GetGameObjects()->at(TRAP);
-				if (vec->empty() && _levelEdit.Add(TRAP, "trap_proto"))
-				{
-					_budget -= cost;
-				}
-				else
-				{
-					bool taken = false;
-					if (_levelEdit.TypeOn(WALL))
-					{
-						taken = true;
-					}
-					if (!taken && _levelEdit.Add(TRAP, "trap_proto"))
-					{
-						_budget -= cost;
-					}
-				}
-			}
-		}
-		else if (_controls->IsFunctionKeyDown("PLACEMENT:HIRE_GUARD"))
-		{
-			if (_budget - cost >= 0)
-			{
-				vector<GameObject*>* vec = &_objectHandler->GetGameObjects()->at(GUARD);
-				if (vec->empty() && _levelEdit.Add(GUARD, "proto"))
-				{
-					_budget -= cost;
-				}
-				else
-				{
-					bool taken = false;
-					if (_levelEdit.TypeOn(WALL))
-					{
-						taken = true;
-					}
-					if (!taken && _levelEdit.Add(GUARD, "proto"))
-					{
-						_budget -= cost;
-					}
-				}
-			}
-		}
-		else if (_controls->IsFunctionKeyDown("PLACEMENT:DELETE"))
-		{
-			if (!_levelEdit.Delete(TRAP))
-			{
-				_budget += cost;
-			}
-			if (!_levelEdit.Delete(GUARD))
-			{
-				_budget += cost;
-			}
+			ChangeState(PLAYSTATE);
 		}
 	}
+
+	_levelEdit.Update(deltaTime);
 }
 
 void PlacementState::OnStateEnter()
 {
-	_levelEdit.Initialize(_objectHandler, _controls, _pickingDevice, _camera);
+	_levelEdit.Initialize(_objectHandler, _controls, _pickingDevice, _camera, &_uiTree);
 }
 
 void PlacementState::OnStateExit()
 {
 
 }
-
-

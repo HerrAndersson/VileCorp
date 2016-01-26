@@ -22,6 +22,7 @@ namespace GUI
 		Node* LoadGUITree(const std::string& name, rapidjson::Value::ConstMemberIterator start, rapidjson::Value::ConstMemberIterator end);
 		void Release(Node* node);
 		bool IsButtonColliding(Node* current, const std::string& id, int x, int y, float px, float py, bool& found);
+		Node* FindNode(Node* current, const std::string& id);
 	public:
 		UITree(const std::string& filename, const std::string& statename, AssetManager* assetManager, FontWrapper* fontWrapper, int width, int height);
 		~UITree();
@@ -31,5 +32,6 @@ namespace GUI
 		void Resize(Node* current);
 
 		bool IsButtonColliding(const std::string& id, int x, int y);
+		Node* GetNode(const std::string& id);
 	};
 }

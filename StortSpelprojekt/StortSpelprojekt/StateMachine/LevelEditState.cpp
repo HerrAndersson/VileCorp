@@ -15,12 +15,17 @@ LevelEditState::~LevelEditState()
 
 void LevelEditState::Update(float deltaTime)
 {
+	if (_controls->IsFunctionKeyDown("MAP_EDIT:MENU"))
+	{
+		ChangeState(MENUSTATE);
+	}
+
 	_levelEdit.Update(deltaTime);
 }
 
 void LevelEditState::OnStateEnter()
 {
-	_levelEdit.Initialize(_objectHandler, _controls, _pickingDevice, _camera);
+	_levelEdit.Initialize(_objectHandler, _controls, _pickingDevice, _camera, &_uiTree);
 }
 
 void LevelEditState::OnStateExit()
