@@ -24,7 +24,7 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	_camera->SetPosition(XMFLOAT3(3, 20, 0));
 	_camera->SetRotation(XMFLOAT3(60, 0, 0));
 	//_camera->SetMode(System::FREE_CAM);
-	//_controls->ToggleCursorLock();
+	//
 
 	_timer = System::Timer();
 
@@ -52,11 +52,11 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	//_controls->SaveKeyBindings(System::MAP_EDIT_KEYMAP, "MOVE_CAMERA_UP", "M");
 
 	Renderer::Spotlight* spot;
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i < 1; i++)
 	{
 		int d = _renderModule->SHADOWMAP_DIMENSIONS;
-		spot = new Renderer::Spotlight(_renderModule->GetDevice(), 0.1f, 1000.0f, XM_PIDIV4 /*XM_PI / 0.082673f*/, d, d, 1.0f / (i+1), 8.0f, XMFLOAT3(0.0f, 1.0f, 1.0f), 36);
-		spot->SetPositionAndRotation(XMFLOAT3(3*i+5, 1.0f, 2*i+4), XMFLOAT3(0, 90 + i*25, 0));
+		spot = new Renderer::Spotlight(_renderModule->GetDevice(), 0.1f, 1000.0f, XM_PIDIV4 /*XM_PI / 0.082673f*/, d, d, 1.0f / (i+1), 9.5f, XMFLOAT3(1.0f, 1.0f, 1.0f), 36);
+		spot->SetPositionAndRotation(XMFLOAT3(6, 1, 2), XMFLOAT3(0,0,0));
 		_spotlights.push_back(spot);
 	}
 
@@ -190,11 +190,11 @@ void Game::Render()
 
 			if (g->GetAnimation() != nullptr)
 			{
-				_renderModule->Render(g->GetMatrix(), g->GetRenderObject(), XMFLOAT3(0,0,0), g->GetAnimation()->GetTransforms());
+				_renderModule->Render(g->GetMatrix(), g->GetRenderObject(), XMFLOAT3(0,1,0), g->GetAnimation()->GetTransforms());
 			}
 			else
 			{
-				_renderModule->Render(g->GetMatrix(), g->GetRenderObject());
+				_renderModule->Render(g->GetMatrix(), g->GetRenderObject(), XMFLOAT3(0, 1, 0));
 			}
 		}
 	}
@@ -214,13 +214,10 @@ void Game::Render()
 	/*------------------------------------------------------------ Light pass --------------------------------------------------------------
 	Generate the shadow map for each spotlight, then apply the lighting/shadowing to the backbuffer render target with additive blending. */
 
-	//for (int i = 0; i < 2; i++)
-	//{
-	//	_renderModule->DEBUG_RenderLightVolume(_spotlights[i]->GetVolumeBuffer(), _spotlights[i]->GetWorldMatrix(), _spotlights[i]->GetVertexCount(), _spotlights[i]->GetVertexSize());
-	//}
+	//_renderModule->DEBUG_RenderLightVolume(_spotlights[0]->GetVolumeBuffer(), _spotlights[0]->GetWorldMatrix(), _spotlights[0]->GetVertexCount(), _spotlights[0]->GetVertexSize());
 
 	_renderModule->SetLightDataPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i < 1; i++)
 	{
 		_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::SHADOW_GENERATION);
 		_renderModule->SetShadowMapDataPerSpotlight(_spotlights[i]->GetViewMatrix(), _spotlights[i]->GetProjectionMatrix());
@@ -244,11 +241,10 @@ void Game::Render()
 	}
 
 	/*-------------------------------------------------------- HUD and other 2D -----------------------------------------------------------*/
-
+	_renderModule->RenderScreenQuad();
 	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::HUD_STAGE);
-
-	//_renderModule->Render(_UI->GetTextureData());
 	_renderModule->Render(_SM->GetCurrentStatePointer()->GetUITree()->GetRootNode(), _fontWrapper);
+
 	_renderModule->EndScene();
 }
 

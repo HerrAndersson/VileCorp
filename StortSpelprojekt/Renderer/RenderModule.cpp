@@ -88,8 +88,7 @@ namespace Renderer
 			throw std::runtime_error("RenderModule::InitializeConstantBuffers: Failed to create MatrixBufferPerFrame");
 		}
 
-		//Matrix buffer HUD
-		matrixBufferDesc.ByteWidth = sizeof(DirectX::XMFLOAT4X4);
+		matrixBufferDesc.ByteWidth = sizeof(MatrixBufferHud);
 		result = device->CreateBuffer(&matrixBufferDesc, NULL, &_matrixBufferHUD);
 		if (FAILED(result))
 		{
@@ -267,7 +266,7 @@ namespace Renderer
 		dataPtr->_viewMatrix = view;
 		dataPtr->_projectionMatrix = proj;
 		dataPtr->_position = spotlight->GetPosition();
-		dataPtr->_angle = XMConvertToDegrees(spotlight->GetAngle());
+		dataPtr->_angle = spotlight->GetAngle();
 		dataPtr->_direction = spotlight->GetDirection();
 		dataPtr->_intensity = spotlight->GetIntensity();
 		dataPtr->_color = spotlight->GetColor();
@@ -415,6 +414,13 @@ namespace Renderer
 
 	void RenderModule::Render(GUI::Node* root, FontWrapper* fontWrapper)
 	{
+		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
+		UINT32 vertexSize = sizeof(ScreenQuadVertex);
+		UINT32 offset = 0;
+
+		deviceContext->IASetVertexBuffers(0, 1, &_screenQuad, &vertexSize, &offset);
+		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
 		Render(root, root->GetModelMatrix(), fontWrapper);
 	}
 
@@ -435,22 +441,21 @@ namespace Renderer
 			XMFLOAT2 s = current->GetScale();
 			DirectX::XMMATRIX scale = DirectX::XMMatrixScaling(s.x, s.y, 1);
 
-			XMMATRIX t = DirectX::XMMatrixMultiply(scale, *transform); 
+			XMMATRIX t = DirectX::XMMatrixMultiply(scale, *transform);
 
-			MatrixBufferPerObject* dataPtr = (MatrixBufferPerObject*)mappedResource.pData;
-			dataPtr->_world = XMMatrixTranspose(t);
-			dataPtr->_colorOffset = XMFLOAT3(0, 0, 0);
+			MatrixBufferHud* dataPtr = (MatrixBufferHud*)mappedResource.pData;
+			dataPtr->_model = XMMatrixTranspose(t);
 
 			_d3d->GetDeviceContext()->Unmap(_matrixBufferHUD, 0);
 
-			_d3d->GetDeviceContext()->VSSetConstantBuffers(0, 1, &_matrixBufferHUD);
+			_d3d->GetDeviceContext()->VSSetConstantBuffers(1, 1, &_matrixBufferHUD);
 			_d3d->GetDeviceContext()->PSSetShaderResources(0, 1, &tex);
 
 			_d3d->GetDeviceContext()->Draw(6, 0);
 		}
 		//Render text
 		int len = current->GetText().length();
-		if (len > 0) 
+		if (len > 0)
 		{
 			XMFLOAT4X4 temp;
 			float x, y;
@@ -477,7 +482,7 @@ namespace Renderer
 			Render(i, &t, fontWrapper);
 		}
 	}
-	
+
 	void RenderModule::Render(std::vector<HUDElement>* imageData)
 	{
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -493,12 +498,12 @@ namespace Renderer
 					throw std::runtime_error("RenderModule::SetResourcesPerObject: Failed to Map _matrixBufferHUD");
 				}
 
-				MatrixBufferPerObject* dataPtr = (MatrixBufferPerObject*)mappedResource.pData;
-				dataPtr->_world = *(i.GetModelMatrix());
+				MatrixBufferHud* dataPtr = (MatrixBufferHud*)mappedResource.pData;
+				dataPtr->_model = *(i.GetModelMatrix());
 
 				_d3d->GetDeviceContext()->Unmap(_matrixBufferHUD, 0);
 
-				_d3d->GetDeviceContext()->VSSetConstantBuffers(0, 1, &_matrixBufferHUD);
+				_d3d->GetDeviceContext()->VSSetConstantBuffers(1, 1, &_matrixBufferHUD);
 				ID3D11ShaderResourceView* tex = i.GetTexture();
 				_d3d->GetDeviceContext()->PSSetShaderResources(0, 1, &tex);
 
@@ -544,8 +549,11 @@ namespace Renderer
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
 		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
 
-		_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::BACK);
+		_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::NONE);
 		_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::ENABLE);
+
+		//_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::NONE);
+		//_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::DISABLE);
 
 		XMMATRIX worldMatrixC = XMMatrixTranspose(*world);
 

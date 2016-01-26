@@ -28,6 +28,7 @@ struct VS_OUT
 	float3 normal		: NORMAL;
 	float2 uv			: TEXCOORD;
 	float3 ambientLight : AMBIENT;
+	float3 colorOffset  : COLOROFFSET;
 };
 
 VS_OUT main(VS_IN input)

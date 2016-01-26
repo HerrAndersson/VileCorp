@@ -22,9 +22,9 @@ namespace Renderer
 		_rotationMatrix = XMMatrixRotationRollPitchYaw(XMConvertToRadians(_rotation.x), XMConvertToRadians(_rotation.y), XMConvertToRadians(_rotation.z));
 		_worldMatrix = _rotationMatrix * XMMatrixTranslation(_position.x, _position.y, _position.z);
 
-		if (height < 1)
+		if (height <= 0 || range < std::numeric_limits<float>::epsilon())
 		{
-			throw std::runtime_error("Spotlight::Spotlight: Height must be bigger than 0");
+			throw std::runtime_error("Spotlight::Spotlight: Division by Zero");
 		}
 
 		//Prepare vectors for Matrix initialization
@@ -33,29 +33,37 @@ namespace Renderer
 		XMVECTOR vUp = XMLoadFloat3(&_up);
 
 		_viewMatrix = XMMatrixLookAtLH(vPos, vPos + vDir, vUp);
-		_projectionMatrix = XMMatrixPerspectiveFovLH(fov, (float)width / (float)height, nearClip, farClip);
-
+		
 		/// --------------------------------------- Create a cone that represents the light as a volume --------------------------------------- ///
-		XMVECTOR pos = XMVector4Normalize(XMVectorSet(_position.x, _position.y, _position.z, 1));
-		XMVECTOR dir = XMVector4Normalize(XMVectorSet(_direction.x, _direction.y, _direction.z, 1));																												
+		XMVECTOR pos = XMVectorSet(_position.x, _position.y, _position.z, 0);
+		XMVECTOR dir = XMVector4Normalize(XMVectorSet(_direction.x, _direction.y, _direction.z, 0));																												
 
 		XMVECTOR baseCenter = pos + dir * range; //Center of the cone base.
-		double baseRadius = range * sin(fov); //Radius of the cone base.
+		double baseRadius = range * sin(fov/2.0f);	 //Radius of the cone base.
 
-		//Calculate a vector X that is normal to direction
-		XMVECTOR T = XMVectorSet(1, 0, 0, 0);
-		XMVECTOR X = XMVector3Cross(dir, T);													
-		X = XMVector4Normalize(X);
-		if (XMVectorGetX(XMVector3Length(X)) < 0.00000001f)
-		{
-			T = XMVectorSet(0, 1, 0, 0);
-			X = XMVector3Cross(dir, T);
-			X = XMVector4Normalize(X);
-		}
+		double shadowMapFov = std::tan(baseRadius / range);
+		_projectionMatrix = XMMatrixPerspectiveFovLH(fov, (float)width / (float)height, nearClip, farClip);
 
-		//Given this x, calculate another vector y = cross(d, x)
-		XMVECTOR Y = XMVector3Cross(dir, X);
-		Y = XMVector4Normalize(Y);
+		/*//Use if direction isn't hardcoded
+		////Calculate a vector X that is normal to direction
+		//XMVECTOR T = XMVectorSet(1, 0, 0, 0);
+		//XMVECTOR X = XMVector3Cross(dir, T);													
+		//X = XMVector4Normalize(X);
+
+		//if (XMVectorGetX(XMVector3Length(X)) < std::numeric_limits<float>::epsilon())
+		//{
+		//	T = XMVectorSet(0, 1, 0, 0);
+		//	X = XMVector3Cross(dir, T);
+		//	X = XMVector4Normalize(X);
+		//}
+
+		////Given this x, calculate another vector y = cross(d, x)
+		//XMVECTOR Y = XMVector3Cross(dir, X);
+		//Y = XMVector4Normalize(Y);
+		*/
+
+		XMVECTOR X = XMVectorSet(1, 0, 0, 0);
+		XMVECTOR Y = XMVectorSet(0, 1, 0, 0);
 
 	    //The vertices of the cone base are given by: v(t) = B + w * (x * cos t + y * sin t), with t varying from 0 to 2*pi.
 		double pi2 = 2 * XM_PI;

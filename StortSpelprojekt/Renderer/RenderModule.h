@@ -45,11 +45,10 @@ namespace Renderer
 			DirectX::XMFLOAT3 _ambientLight;
 		};
 
-		//struct MatrixBufferHud
-		//{
-		//	//TODO: Instead of using this, use MatrixBufferPerObject /Jonas
-		//	DirectX::XMMATRIX _model;
-		//};
+		struct MatrixBufferHud
+		{
+			DirectX::XMMATRIX _model;
+		};
 
 		struct MatrixBufferLightPassPerFrame
 		{
@@ -101,7 +100,7 @@ namespace Renderer
 
 		//TODO: Import these from settings file
 		const int SHADOWMAP_DIMENSIONS = 256;
-		const DirectX::XMFLOAT3 AMBIENT_LIGHT = DirectX::XMFLOAT3(0.4f, 0.4f, 0.4f);
+		const DirectX::XMFLOAT3 AMBIENT_LIGHT = DirectX::XMFLOAT3(0.1f, 0.1f, 0.1f);
 
 		enum ShaderStage { GEO_PASS, SHADOW_GENERATION, LIGHT_APPLICATION, GRID_STAGE, ANIM_STAGE, HUD_STAGE };
 
