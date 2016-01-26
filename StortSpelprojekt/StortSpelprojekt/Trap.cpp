@@ -172,6 +172,18 @@ Trap::~Trap()
 
 void Trap::Activate( Unit* target)
 {
+	switch (_trapType)
+	{
+	case SPIKE:
+
+		break;
+	case TESLACOIL:
+		break;
+	case SHARK:
+		break;
+	default:
+		break;
+	}
 	if (_isActive && target->GetType() == ENEMY)
 	{
 		target->TakeDamage(3);
@@ -185,7 +197,15 @@ void Trap::Activate( Unit* target)
 }
 
 void Trap::Update(float deltaTime)
-{}
+{
+	for (int i = 0; i < _nrOfAOETiles; i++)
+	{
+		if (_tileMap->IsEnemyOnTile(_areaOfEffect[i]._x, _areaOfEffect[i]._y))
+		{
+			Activate(static_cast<Unit*>(_tileMap->GetObjectOnTile(_areaOfEffect[i]._x, _areaOfEffect[i]._y, ENEMY)));
+		}
+	}
+}
 
 void Trap::Release()
 {
