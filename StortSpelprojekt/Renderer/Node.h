@@ -34,6 +34,7 @@ namespace GUI
 
 		std::string _id;
 		NodeInfo* _info;
+		bool _hidden;
 
 		//Text info
 		std::wstring _text;
@@ -56,7 +57,8 @@ namespace GUI
 			const std::wstring& text = L"",
 			UINT32 color = 0xFF0000FF,
 			float fontSize = 32.0f,
-			bool centered = false);
+			bool centered = false,
+			bool hidden = false);
 		virtual ~Node();
 
 		void SetPosition(DirectX::XMFLOAT2 position);
@@ -67,6 +69,7 @@ namespace GUI
 		void SetFontSize(float fontSize);
 		void SetTexture(ID3D11ShaderResourceView* texture);
 		void SetCentered(bool centered);
+		void SetHidden(bool hidden);
 
 		DirectX::XMFLOAT2 GetPosition() const;
 		DirectX::XMFLOAT2 GetScale() const;
@@ -77,6 +80,8 @@ namespace GUI
 		FontWrapper::CustomFont* GetFont();
 		ID3D11ShaderResourceView* GetTexture();
 		bool GetCentered() const;
+		bool GetHidden() const;
+
 		DirectX::XMMATRIX* Node::GetModelMatrix();
 		std::vector<GUI::Node*>* GetChildren();
 
