@@ -43,6 +43,7 @@ VS_OUT main(VS_IN input)
 	output.normal = mul(input.normal, (float3x3)worldMatrix);
 	output.uv = input.uv;
 	output.ambientLight = ambientLight;
+	output.colorOffset = colorOffset;
 	
 	return output;
 }

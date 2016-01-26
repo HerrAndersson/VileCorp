@@ -190,11 +190,11 @@ void Game::Render()
 
 			if (g->GetAnimation() != nullptr)
 			{
-				_renderModule->Render(g->GetMatrix(), g->GetRenderObject(), XMFLOAT3(0,1,0), g->GetAnimation()->GetTransforms());
+				_renderModule->Render(g->GetMatrix(), g->GetRenderObject(), g->GetColorOffset(), g->GetAnimation()->GetTransforms());
 			}
 			else
 			{
-				_renderModule->Render(g->GetMatrix(), g->GetRenderObject(), XMFLOAT3(0, 1, 0));
+				_renderModule->Render(g->GetMatrix(), g->GetRenderObject(), g->GetColorOffset());
 			}
 		}
 	}

@@ -5,11 +5,12 @@ GameObject::GameObject()
 
 }
 
-GameObject::GameObject(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation,  AI::Vec2D tilePosition, Type type, RenderObject * renderObject)
+GameObject::GameObject(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation,  AI::Vec2D tilePosition, Type type, RenderObject * renderObject, DirectX::XMFLOAT3 colorOffset)
 {
 	_ID = ID;
 	_position = position;
 	_rotation = rotation;
+	_colorOffset = colorOffset;
 	_scale = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
 	_tilePosition = tilePosition;
 	_type = type;
@@ -138,6 +139,16 @@ void GameObject::SetPickUpState(PickUpState state)
 PickUpState GameObject::GetPickUpState()const
 {
 	return _pickUpState;
+}
+
+DirectX::XMFLOAT3 GameObject::GetColorOffset() const
+{
+	return _colorOffset;
+}
+
+void GameObject::SetColorOffset(DirectX::XMFLOAT3 colorOffset)
+{
+	_colorOffset = colorOffset;
 }
 
 void* GameObject::operator new(size_t i)
