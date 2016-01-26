@@ -214,7 +214,7 @@ void Game::Render()
 	/*------------------------------------------------------------ Light pass --------------------------------------------------------------
 	Generate the shadow map for each spotlight, then apply the lighting/shadowing to the backbuffer render target with additive blending. */
 
-	//_renderModule->DEBUG_RenderLightVolume(_spotlights[0]->GetVolumeBuffer(), _spotlights[0]->GetWorldMatrix(), _spotlights[0]->GetVertexCount(), _spotlights[0]->GetVertexSize());
+	//_renderModule->RenderLightVolume(_spotlights[0]->GetVolumeBuffer(), _spotlights[0]->GetWorldMatrix(), _spotlights[0]->GetVertexCount(), _spotlights[0]->GetVertexSize());
 
 	_renderModule->SetLightDataPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
 	for (int i = 0; i < 1; i++)
@@ -234,7 +234,7 @@ void Game::Render()
 		_renderModule->SetLightDataPerSpotlight(_spotlights[i]);
 
 		//Use when SetLightApplicationShaders takes 1 as input (using light volume shaders)
-		_renderModule->DEBUG_RenderLightVolume(_spotlights[i]->GetVolumeBuffer(), _spotlights[i]->GetWorldMatrix(), _spotlights[i]->GetVertexCount(), _spotlights[i]->GetVertexSize());
+		_renderModule->RenderLightVolume(_spotlights[i]->GetVolumeBuffer(), _spotlights[i]->GetWorldMatrix(), _spotlights[i]->GetVertexCount(), _spotlights[i]->GetVertexSize());
 
 		//Use when SetLightApplicationShaders takes 2 as input (using screen quad shaders)
 		//_renderModule->RenderScreenQuad();

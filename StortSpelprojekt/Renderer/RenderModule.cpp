@@ -215,7 +215,6 @@ namespace Renderer
 		UINT32 vs = vertexSize;
 
 		deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &vs, &offset);
-		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	}
 
 	void RenderModule::SetShadowMapDataPerSpotlight(DirectX::XMMATRIX* lightView, DirectX::XMMATRIX* lightProjection)
@@ -227,7 +226,6 @@ namespace Renderer
 	{
 		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
 		_shadowMap->SetDataPerObject(_d3d->GetDeviceContext(), world);
-		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		int vertexSize = sizeof(Vertex);
 
@@ -317,9 +315,6 @@ namespace Renderer
 		}
 		case GEO_PASS:
 		{
-			_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::DISABLE);
-			_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::BACK);
-
 			_d3d->SetGeometryStage();
 			_shaderHandler->SetGeometryStageShaders(deviceContext);
 
@@ -341,9 +336,6 @@ namespace Renderer
 			_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::BACK);
 
 			int nrOfSRVs = _d3d->SetLightStage();
-
-			//TODO: SetLightApplicationShaders GETS A VALUE THAT DETERMINES WHICH SHADERS TO USE! 
-			//SHOULD USE VOLUME WHEN IT WORKS /Jonas
 
 			_shaderHandler->SetLightApplicationShaders(deviceContext, 2);
 			ID3D11ShaderResourceView* shadowMapSRV = _shadowMap->GetShadowSRV();
@@ -368,6 +360,9 @@ namespace Renderer
 
 	void RenderModule::BeginScene(float red, float green, float blue, float alpha)
 	{
+		_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::DISABLE);
+		_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::BACK);
+		_d3d->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		_d3d->BeginScene(red, green, blue, alpha);
 	}
 
@@ -380,8 +375,6 @@ namespace Renderer
 
 		Texture* diffuse = renderObject->_diffuseTexture;
 		Texture* specular = renderObject->_specularTexture;
-
-		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		if (diffuse)
 		{
@@ -418,8 +411,7 @@ namespace Renderer
 		UINT32 vertexSize = sizeof(ScreenQuadVertex);
 		UINT32 offset = 0;
 
-		deviceContext->IASetVertexBuffers(0, 1, &_screenQuad, &vertexSize, &offset);
-		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		SetDataPerMesh(_screenQuad, vertexSize);
 
 		Render(root, root->GetModelMatrix(), fontWrapper);
 	}
@@ -518,7 +510,6 @@ namespace Renderer
 
 		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
 
-		//World
 		XMMATRIX worldMatrix = XMMatrixTranspose(*world);
 
 		SetDataPerObject(&worldMatrix, nullptr, nullptr, colorOffset);
@@ -531,19 +522,17 @@ namespace Renderer
 
 	void RenderModule::RenderScreenQuad()
 	{
-		_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::ENABLE);
 		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
 
 		UINT32 vertexSize = sizeof(ScreenQuadVertex);
 		UINT32 offset = 0;
 
 		deviceContext->IASetVertexBuffers(0, 1, &_screenQuad, &vertexSize, &offset);
-		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		deviceContext->Draw(6, 0);
 	}
 
-	void RenderModule::DEBUG_RenderLightVolume(ID3D11Buffer* volume, DirectX::XMMATRIX* world, int vertexCount, int vertexSize)
+	void RenderModule::RenderLightVolume(ID3D11Buffer* volume, DirectX::XMMATRIX* world, int vertexCount, int vertexSize)
 	{
 		HRESULT result;
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -573,7 +562,6 @@ namespace Renderer
 		UINT32 offset = 0;
 
 		deviceContext->IASetVertexBuffers(0, 1, &volume, &vtxs, &offset);
-		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		deviceContext->Draw(vertexCount, 0);
 	}

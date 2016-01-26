@@ -92,8 +92,8 @@ namespace Renderer
 		void SetShadowMapDataPerObject(DirectX::XMMATRIX* world);
 
 		void Render(GUI::Node* current, DirectX::XMMATRIX* transform, FontWrapper* fontWrapper);
+		void Render(std::vector<HUDElement>* imageData);
 
-		//TODO: TEMP! Should this be here? Should we have several versions with different resolution? E.g. one 256x256 for low detail and one 512x512 for higher detail /Jonas
 		ShadowMap* _shadowMap;
 
 	public:
@@ -119,14 +119,13 @@ namespace Renderer
 
 		void BeginScene(float red, float green, float blue, float alpha);
 		void Render(DirectX::XMMATRIX* world, RenderObject* renderObject, DirectX::XMFLOAT3 colorOffset = DirectX::XMFLOAT3(0, 0, 0), std::vector<DirectX::XMFLOAT4X4>* extra = nullptr);
-		void Render(std::vector<HUDElement>* imageData);
 		void Render(GUI::Node* root, FontWrapper* fontWrapper);
 		void RenderLineList(DirectX::XMMATRIX* world, ID3D11Buffer* lineList, int nrOfPoints, DirectX::XMFLOAT3 colorOffset = DirectX::XMFLOAT3(0,0,0)); //TODO: Test if grid can be rendered /Jonas
 		void RenderShadowMap(DirectX::XMMATRIX* world, RenderObject* renderObject);
 		void RenderScreenQuad();
 		void EndScene();
 
-		void DEBUG_RenderLightVolume(ID3D11Buffer* volume, DirectX::XMMATRIX* world, int vertexCount, int vertexSize);
+		void RenderLightVolume(ID3D11Buffer* volume, DirectX::XMMATRIX* world, int vertexCount, int vertexSize);
 
 		ID3D11Device* GetDevice() const;
 		ID3D11DeviceContext* GetDeviceContext() const;

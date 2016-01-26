@@ -490,7 +490,6 @@ namespace Renderer
 	{
 		float color[] = { red, green, blue, alpha };
 
-		_deviceContext->RSSetState(_rasterizerStateBack);
 		_deviceContext->ClearRenderTargetView(_backBufferRTV, color);
 
 		for (int i = 0; i < BUFFER_COUNT; i++)
