@@ -8,6 +8,21 @@ class LevelEditState : public BaseState
 private:
 	LevelEdit _levelEdit;
 
+	struct LevelHeader
+	{
+		int _version;
+		int _levelSizeX;
+		int _levelSizeY;
+		int _nrOfGameObjects;
+	};
+
+	struct MapData
+	{
+		int _posX;
+		int _posZ;
+		float _rotY;
+		int _tileType;
+	};
 
 	bool _floorChosen = false;
 	bool _wallChosen = false;
@@ -19,4 +34,7 @@ public:
 	void Update(float deltaTime);
 	void OnStateEnter();
 	void OnStateExit();
+	void HandleInput();
+	void InitNewLevel();
+	void ExportLevel();
 };

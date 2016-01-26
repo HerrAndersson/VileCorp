@@ -9,6 +9,7 @@
 #include "../Controls.h"
 #include "../PickingDevice.h"
 #include "../System/Camera.h"
+//#include "../Renderer/RenderModule.h"
 
 class LevelEdit
 {
@@ -20,22 +21,7 @@ private:
 	ObjectHandler*			_objectHandler;
 	PickingDevice*			_pickingDevice;
 	Grid*					_grid;
-
-	struct LevelHeader
-	{
-		int _version;
-		int _levelSizeX;
-		int _levelSizeY;
-		int _nrOfGameObjects;
-	};
-
-	struct MapData
-	{
-		int _posX;
-		int _posZ;
-		float _rotY;
-		int _tileType;
-	};
+	//Renderer::RenderModule*	_renderModule;
 
 	struct ButtonInfo
 	{
@@ -62,12 +48,7 @@ private:
 	
 
 	void HandleInput();
-
-
-	// Flytta på funktionerna
 	void LoadLevel(int levelID);
-	void InitNewLevel();
-	void ExportLevel();
 
 public:
 	LevelEdit();

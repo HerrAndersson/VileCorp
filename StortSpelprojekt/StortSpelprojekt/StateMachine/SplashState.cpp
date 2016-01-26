@@ -15,7 +15,7 @@ SplashState::~SplashState()
 
 void SplashState::Update(float deltaTime)
 {
-	ChangeState(State::MENUSTATE);
+	ChangeState(State::LEVELEDITSTATE);
 }
 
 void SplashState::OnStateEnter()
