@@ -167,15 +167,6 @@ void LevelEdit::DragAndPlace()
 {
 	Type type = TRAP;
 
-	//if (_marker != nullptr && _controls->IsFunctionKeyDown("MAP_EDIT:DRAG"))
-	//{
-	//	AI::Vec2D pickedTile = _pickingDevice->pickTile(_controls->GetMouseCoord()._pos);
-
-	//	if (_objectHandler->GetTileMap()->IsValid(pickedTile._x, pickedTile._y))
-	//	{
-	//		
-	//	}
-	//}
 	if (_controls->IsFunctionKeyUp("MAP_EDIT:SELECT"))
 	{
 		if (_isDragAndPlaceMode)
@@ -255,40 +246,6 @@ void LevelEdit::DragAndPlace()
 
 void LevelEdit::HandleInput()
 {
-	int maxObject = _objectHandler->GetObjectCount();
-	int selectedLevel = 1;
-
-	//Scale Objects
-	/*
-		"SCALE_MARKER_LEFT": [""].
-	*/
-	//if (_inputDevice->IsPressed(VK_NUMPAD6))
-	//{
-	//	XMFLOAT3 tempPos = _marker->GetScale();
-	//	_marker->SetScale(XMFLOAT3(tempPos.x + 1, tempPos.y, tempPos.z));
-	//}
-
-	//if (_inputDevice->IsPressed(VK_NUMPAD4))
-	//{
-	//	XMFLOAT3 tempPos = _marker->GetScale();
-	//	_marker->SetScale(XMFLOAT3(tempPos.x - 1, tempPos.y, tempPos.z));
-	//}
-
-	//if (_inputDevice->IsPressed(VK_NUMPAD8))
-	//{
-	//	XMFLOAT3 tempPos = _marker->GetScale();
-	//	_marker->SetScale(XMFLOAT3(tempPos.x, tempPos.y, tempPos.z + 1));
-	//}
-
-	//if (_inputDevice->IsPressed(VK_NUMPAD2))
-	//{
-	//	XMFLOAT3 tempPos = _marker->GetScale();
-	//	_marker->SetScale(XMFLOAT3(tempPos.x, tempPos.y, tempPos.z - 1));
-	//}
-	if (_controls->IsFunctionKeyDown("DEBUG:ENABLE_FREECAM"))
-	{
-		//_inputDevice->ToggleCursorLock();
-	}
 	if (_controls->IsFunctionKeyDown("MAP_EDIT:SELECT"))
 	{
 		if (_isSelectionMode)
@@ -316,19 +273,19 @@ void LevelEdit::HandleInput()
 		}
 	}
 
-
 	if (_isSelectionMode)
 	{
 		DragAndDrop();
 	}
+
 	if (_isDragAndPlaceMode)
 	{
 		DragAndPlace();
 	}
 
+
 	if (_marker != nullptr)
 	{
-
 		// Rotation
 		if (_controls->IsFunctionKeyDown("MAP_EDIT:ROTATE_MARKER_CLOCK"))
 		{
@@ -342,11 +299,6 @@ void LevelEdit::HandleInput()
 		}
 	}
 
-	//Press C to init new level
-	if (_controls->IsFunctionKeyDown("MAP_EDIT:NEWLEVEL"))
-	{
-		InitNewLevel();
-	}
 
 	//Camera mouse control_
 	System::MouseCoord mouseCoord = _controls->GetMouseCoord();
@@ -357,7 +309,6 @@ void LevelEdit::HandleInput()
 		rotation.x += mouseCoord._deltaPos.y / 10.0f;
 		_camera->SetRotation(rotation);
 	}
-
 
 	if (_camera->GetMode() == System::LOCKED_CAM)
 	{
@@ -421,25 +372,6 @@ void LevelEdit::HandleInput()
 		isMoving = true;
 	}
 
-	if (GetAsyncKeyState('D'))
-	{
-		right = _camera->GetRightVector();
-		isMoving = true;
-	}
-	else if (GetAsyncKeyState('A'))
-	{
-		right = _camera->GetRightVector();
-		right.x *= -1;
-		right.y *= -1;
-		right.z *= -1;
-		isMoving = true;
-	}
-
-	if (isMoving)
-	{
-		_camera->SetPosition(XMFLOAT3(position.x + (forward.x + right.x) * v, position.y + (forward.y + right.y) * v, position.z + (forward.z + right.z) * v));
-	}
-
 	if (_controls->CursorLocked())
 	{
 		XMFLOAT3 rotation = _camera->GetRotation();
@@ -448,96 +380,45 @@ void LevelEdit::HandleInput()
 
 		_camera->SetRotation(rotation);
 	}
+
+	if (_controls->IsFunctionKeyDown("MAP_EDIT:MOVE_CAMERA_RIGHT"))
+	{
+		right = _camera->GetRightVector();
+		isMoving = true;
+	}
+	else if (_controls->IsFunctionKeyDown("MAP_EDIT:MOVE_CAMERA_LEFT"))
+	{
+		right = _camera->GetRightVector();
+		right.x *= -1;
+		right.y *= -1;
+		right.z *= -1;
+		isMoving = true;
+	}
+
+	if (_controls->IsFunctionKeyDown("MAP_EDIT:MOVE_CAMERA_UP"))
+	{
+		forward = _camera->GetForwardVector();
+		isMoving = true;
+	}
+	else if (_controls->IsFunctionKeyDown("MAP_EDIT:MOVE_CAMERA_DOWN"))
+	{
+		forward = _camera->GetForwardVector();
+		forward.x *= -1;
+		forward.y *= -1;
+		forward.z *= -1;
+		isMoving = true;
+	}
+
+	if (isMoving)
+	{
+		_camera->SetPosition(XMFLOAT3(position.x + (forward.x + right.x) * v, position.y + (forward.y + right.y) * v, position.z + (forward.z + right.z) * v));
+	}
 }
 
 void LevelEdit::Update(float deltaTime)
 {
 	HandleInput();
 	_objectHandler->Update(deltaTime);
-}
-
-// kanske level edit state
-void LevelEdit::InitNewLevel()
-{
-	_objectHandler->Release();
-
-	ResetSelectedObj();
-}
-
-void LevelEdit::ExportLevel()
-{
-	LevelHeader levelHead;
-	levelHead._version = 10;
-	Tilemap* tileMap = _objectHandler->GetTileMap();
-	levelHead._levelSizeY = tileMap->GetHeight();
-	levelHead._levelSizeX = tileMap->GetWidth();
-	levelHead._nrOfGameObjects = _objectHandler->GetObjectCount();
-
-	//Iterating through all game objects and saving only the relevant data for exporting.
-	std::vector<MapData> mapData;
-	mapData.reserve(levelHead._nrOfGameObjects);
-	std::vector<std::vector<GameObject*>>* gameObjects = _objectHandler->GetGameObjects();
-
-	for (uint i = 0; i < gameObjects->size(); i++)
-	{
-		for (uint y = 0; y < gameObjects[i].size(); y++)
-		{
-			GameObject *gameObj = (*gameObjects)[i][y];
-			MapData mapD;
-
-			mapD._tileType = gameObj->GetType();
-			DirectX::XMFLOAT3 position = gameObj->GetPosition();
-			mapD._posX = position.x;
-			mapD._posZ = position.z;
-			mapD._rotY = gameObj->GetRotation().y;
-
-			mapData.push_back(mapD);
-		}
-	}
-
-	char userPath[MAX_PATH];
-	SHGetFolderPathA(NULL, CSIDL_PROFILE, NULL, 0, userPath);
-
-	string outputPath, copyPath;
-	string levelName = "exportedLevel.lvl";
-
-	//Setting the output folder depending on if running debug or release mode.
-
-	outputPath = ("/Assets/Levels/");
-
-	outputPath += levelName;
-	copyPath += levelName;
-
-	ofstream outputFile;
-
-	outputFile.open(outputPath, ios::out | ios::binary);
-
-	outputFile.write((const char*)&levelHead, sizeof(levelHead));
-
-	for (auto md : mapData)
-	{
-		outputFile.write((const char*)&md, sizeof(mapData));
-	}
-
-	outputFile.close();
-
-	char buf[BUFSIZ];
-	size_t size;
-	FILE* source;
-	FILE* dest;
-	fopen_s(&source, outputPath.c_str(), "rb");
-	fopen_s(&dest, copyPath.c_str(), "wb");
-
-	while (size = fread(buf, 1, BUFSIZ, source))
-	{
-		fwrite(buf, 1, size, dest);
-	}
-
-	//fclose(source);
-	//fclose(dest);
-
-	mapData.clear();
-
 }
 
 void LevelEdit::LoadLevel(int levelID)
