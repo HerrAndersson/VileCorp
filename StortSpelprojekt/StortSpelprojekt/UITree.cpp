@@ -113,6 +113,10 @@ namespace GUI
 			{
 				returnNode->SetCentered(i->value.GetBool());
 			}
+			else if (i->name == "hidden")
+			{
+				returnNode->SetHidden(i->value.GetBool());
+			}
 			else
 			{
 				returnNode->AddChild(LoadGUITree(i->name.GetString(), i->value.MemberBegin(), i->value.MemberEnd()));

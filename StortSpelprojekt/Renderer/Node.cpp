@@ -10,7 +10,8 @@ namespace GUI
 		const std::wstring& text,
 		UINT32 color,
 		float fontSize,
-		bool centered)
+		bool centered,
+		bool hidden)
 	{
 		_info = info;
 		_position = position;
@@ -21,6 +22,7 @@ namespace GUI
 		_fontSize = fontSize;
 		_color = color;
 		_centered = centered;
+		_hidden = hidden;
 
 		UpdateMatrix();
 		UpdateFont();
@@ -133,6 +135,11 @@ namespace GUI
 		UpdateFont();
 	}
 
+	void Node::SetHidden(bool hidden)
+	{
+		_hidden = hidden;
+	}
+
 	DirectX::XMFLOAT2 Node::GetPosition() const
 	{
 		return _position;
@@ -171,6 +178,11 @@ namespace GUI
 	bool Node::GetCentered() const
 	{
 		return _centered;
+	}
+
+	bool Node::GetHidden() const
+	{
+		return _hidden;
 	}
 
 	DirectX::XMMATRIX* Node::GetModelMatrix()
