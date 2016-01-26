@@ -52,6 +52,7 @@ namespace System
 		bool IsFunctionKeyUp(const std::string& key);
 		void ToggleCursorLock();
 
+		bool CursorLocked();
 		MouseCoord GetMouseCoord();
 	};
 
