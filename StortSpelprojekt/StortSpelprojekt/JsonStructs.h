@@ -21,6 +21,8 @@ struct SettingInfo
 {
 	int _resX = 1920;
 	int _resY = 1080;
+	int _shadowResX = 256;
+	int _shadowResY = 256;
 	bool _default = true;
 	bool _shadowmap = true;
 	bool _fullScreen = true;
@@ -34,6 +36,8 @@ struct SettingInfo
 		a((CEREAL_NVP(_default)),
 		(CEREAL_NVP(_resX)),
 		(CEREAL_NVP(_resY)),
+		(CEREAL_NVP(_shadowResX)),
+		(CEREAL_NVP(_shadowResY)),
 		(CEREAL_NVP(_shadowmap)),
 		(CEREAL_NVP(_fullScreen)),
 		(CEREAL_NVP(_debugMode)),

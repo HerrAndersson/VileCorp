@@ -117,8 +117,9 @@ void Game::ResizeResources(System::WindowSettings settings)
 
 
 
-void Game::Update(float deltaTime)
+bool Game::Update(float deltaTime)
 {
+	bool run = true;
 	/*
 	Object handler update
 
@@ -126,7 +127,7 @@ void Game::Update(float deltaTime)
 
 	*/
 	_controls->Update();
-	_SM->Update(deltaTime);
+	run = _SM->Update(deltaTime);
 	_objectHandler->Update(deltaTime);
 
 	for (int i = 0; i < _spotlights.size(); i++)
@@ -141,6 +142,7 @@ void Game::Update(float deltaTime)
 		color.z = sin(_timer.GetGameTime() / 1000 + XMConvertToRadians(240));
 		_spotlights[i]->SetColor(color);
 	}
+	return run;
 }
 
 void Game::Render()
@@ -251,13 +253,16 @@ int Game::Run()
 			_timer.Update();
 			if (_timer.GetFrameTime() >= MS_PER_FRAME)
 			{
-				Update(_timer.GetFrameTime());
-				Render();
-				string s = to_string(_timer.GetFrameTime()) + " " + to_string(_timer.GetFPS());
+				run = Update(_timer.GetFrameTime());
+				if (run)
+				{
+					Render();
+					string s = to_string(_timer.GetFrameTime()) + " " + to_string(_timer.GetFPS());
 
-				SetWindowText(_window->GetHWND(), s.c_str());
+					SetWindowText(_window->GetHWND(), s.c_str());
 
-				_timer.Reset();
+					_timer.Reset();
+				}
 			}
 		}
 	}
