@@ -44,6 +44,8 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 		_grid = new Grid(_renderModule->GetDevice(), 1, 10);
 	}
 
+	_enemiesHasSpawned = false;
+
 	//CheckSettings();
 	//_controls->SaveKeyBindings(System::MAP_EDIT_KEYMAP, "MOVE_CAMERA_UP", "M");
 
@@ -140,7 +142,27 @@ void Game::Update(float deltaTime)
 
 	_SM->Update(deltaTime);
 	
+	_enemies = _objectHandler->GetAllByType(ENEMY);
+	_loot = _objectHandler->GetAllByType(LOOT);
 
+	if (_enemies.size() > 0)
+	{
+		_enemiesHasSpawned = true;
+	}
+
+	if (_enemies.size() == 0 && _enemiesHasSpawned == true)
+	{
+		if (_loot.size() >= 1)
+		{
+			//TODO: Add something to notify the player that they've beat the level
+			int a = 2;
+		}
+		else
+		{
+			//TODO: Add something to notify the player that they've SUCK and they can replay the level
+			int a = 2;
+		}
+	}
 	for (int i = 0; i < _spotlights.size(); i++)
 	{
 		XMFLOAT3 rot = _spotlights[i]->GetRotation();
