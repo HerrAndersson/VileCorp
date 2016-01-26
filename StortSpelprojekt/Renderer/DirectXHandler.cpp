@@ -495,6 +495,6 @@ namespace Renderer
 
 	void DirectXHandler::EndScene()
 	{
-		_swapChain->Present(0, 0);
+		_swapChain->Present(1, 0);
 	}
 }

@@ -10,7 +10,8 @@ struct LevelLoad
 	template<class A>
 	void serialize(A& a)
 	{
-		a((CEREAL_NVP(level)));
+		a((CEREAL_NVP(level)),
+			(CEREAL_NVP(editLevel)));
 	}
 };
 

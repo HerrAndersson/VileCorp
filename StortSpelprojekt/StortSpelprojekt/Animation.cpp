@@ -22,7 +22,7 @@ Animation::~Animation()
 
 void Animation::Update(float time)
 {
-	_animTime += time;
+	_animTime += time/1000;
 	if (_currentAction != -1)
 	{
 		if (_skeleton->_actions[_currentAction]._frameTime.back() < _animTime)

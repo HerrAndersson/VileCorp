@@ -4,7 +4,7 @@
         "_resX": 1920,
         "_resY": 1080,
         "_shadowmap": true,
-        "_fullScreen": true,
+        "_fullScreen": false,
         "_debugMode": false,
         "_bordeless": true,
         "_showMouseCursor": true

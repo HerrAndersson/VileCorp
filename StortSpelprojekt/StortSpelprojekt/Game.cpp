@@ -19,7 +19,7 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 
 	//Init camera
 	_camera = new System::Camera(0.1f, 1000.0f, DirectX::XM_PIDIV2, _windowSettings._width, _windowSettings._height);
-	_camera->SetPosition(XMFLOAT3(3, 10, 0));
+	_camera->SetPosition(XMFLOAT3(3, 20, 0));
 	_camera->SetRotation(XMFLOAT3(60, 0, 0));
 
 	_timer = System::Timer();
@@ -42,7 +42,7 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 		_grid = new Grid(_renderModule->GetDevice(), 1, 10);
 	}
 
-	_controls->SaveKeyBindings(System::MAP_EDIT_KEYMAP, "MOVE_CAMERA_UP", "M");
+	//_controls->SaveKeyBindings(System::MAP_EDIT_KEYMAP, "MOVE_CAMERA_UP", "M");
 
 	//TODO: TEMP! Make this pretty
 	Renderer::Spotlight* spot;
@@ -52,6 +52,9 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 		spot->SetPositionAndRotation(XMFLOAT3(4 * i + 3, 1.5f, 3 * i + 3), XMFLOAT3(0, 90 + i * 25, 0));
 		_spotlights.push_back(spot);
 	}
+
+	//settings._flags = settings.FULLSCREEN;
+	//ResizeResources(settings);
 }
 
 void Game::CheckSettings()
@@ -123,8 +126,15 @@ void Game::Update(float deltaTime)
 
 	*/
 	_controls->Update();
+
+	if (_controls->IsFunctionKeyDown("EVERYWHERE:FULLSCREEN"))
+	{
+		System::WindowSettings windowSettings = _window->GetWindowSettings();
+		_window->ResizeWindow(windowSettings);
+	}
+
 	_SM->Update(deltaTime);
-	_objectHandler->Update(deltaTime);
+	
 
 	for (int i = 0; i < _spotlights.size(); i++)
 	{
@@ -157,7 +167,14 @@ void Game::Render()
 	{
 		for (GameObject* g : gameObjects->at(i))
 		{
-			_renderModule->Render(g->GetMatrix(), g->GetRenderObject());
+			if (g->GetAnimation() != nullptr)
+			{
+				_renderModule->Render(g->GetMatrix(), g->GetRenderObject(), g->GetAnimation()->GetTransforms());
+			}
+			else
+			{
+				_renderModule->Render(g->GetMatrix(), g->GetRenderObject());
+			}
 		}
 	}
 
@@ -165,14 +182,13 @@ void Game::Render()
 	{
 		_renderModule->SetShaderStage(Renderer::RenderModule::GRID_PASS);
 
-		std::vector<DirectX::XMMATRIX>* gridMatrices = _grid->GetGridMatrices();
+		//TODO: GetGridMatrices() returns a nullptr /Rikhard
+		//std::vector<DirectX::XMMATRIX>* gridMatrices = _grid->GetGridMatrices();
 
-		for (auto &matrix : *gridMatrices)
-
-
-		{
-			_renderModule->RenderLineList(&matrix, _grid->GetLineBuffer(), 2);
-		}
+		//for (auto &matrix : *gridMatrices)
+		//{
+		//	_renderModule->RenderLineList(&matrix, _grid->GetLineBuffer(), 2);
+		//}
 	}
 //for (auto spot : _spotlights)
 	//{
@@ -248,7 +264,10 @@ int Game::Run()
 			_timer.Update();
 			if (_timer.GetFrameTime() >= MS_PER_FRAME)
 			{
-				Update(_timer.GetFrameTime());
+				if (_hasFocus)
+				{
+					Update(_timer.GetFrameTime());
+				}
 				Render();
 				string s = to_string(_timer.GetFrameTime()) + " " + to_string(_timer.GetFPS());
 
@@ -290,6 +309,18 @@ LRESULT CALLBACK Game::WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM l
 	case WM_INPUT:
 	{
 		_gameHandle->_controls->HandleRawInput(lparam);
+		break;
+	}
+	case WM_SETFOCUS:
+	{
+		_gameHandle->_hasFocus = true;
+		break;
+	}
+	case WM_KILLFOCUS:
+	{
+		_gameHandle->_controls->ResetInputBuffers();
+		_gameHandle->_hasFocus = false;
+		break;
 	}
 
 	default:

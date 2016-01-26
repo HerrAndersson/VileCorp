@@ -15,33 +15,17 @@ LevelEditState::~LevelEditState()
 
 void LevelEditState::Update(float deltaTime)
 {
+	if (_controls->IsFunctionKeyDown("MAP_EDIT:MENU"))
+	{
+		ChangeState(MENUSTATE);
+	}
+
 	_levelEdit.Update(deltaTime);
-
-	//tempAddObj
-	/*
-	//R Adds Floor
-	if (_inputDevice->IsPressed(0x52))
-	{
-		_levelEdit.Add(FLOOR, FLOOR);
-	}
-
-	//T adds Wall
-	if (_inputDevice->IsPressed(0x54))
-	{
-		_levelEdit.Add(WALL, WALL);
-	}
-
-	//Y adds Unit
-	if (_inputDevice->IsPressed(0x59))
-	{
-		_levelEdit.Add(ENEMY, ENEMY);
-	}
-	*/
 }
 
 void LevelEditState::OnStateEnter()
 {
-	_levelEdit.Initialize(_objectHandler, _controls, _pickingDevice, _camera);
+	_levelEdit.Initialize(_objectHandler, _controls, _pickingDevice, _camera, &_uiTree);
 }
 
 void LevelEditState::OnStateExit()
