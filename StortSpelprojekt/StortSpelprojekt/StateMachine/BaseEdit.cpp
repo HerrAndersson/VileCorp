@@ -32,9 +32,9 @@ void BaseEdit::Initialize(ObjectHandler* objectHandler, System::Controls* contro
 	_tileMultiplier = 1;
 
 	// Don´t let both be true
-	_isSelectionMode = false;
-	_isDragAndPlaceMode = true;
-	_isPlace = true;
+	_isSelectionMode = true;
+	_isDragAndPlaceMode = false;
+	_isPlace = false;
 
 	LoadLevel(1);
 
@@ -97,7 +97,7 @@ bool BaseEdit::TypeOn(Type type)
 
 void BaseEdit::DragAndDrop(Type type)
 {
-	if (_marker != nullptr && _controls->IsFunctionKeyDown("MAP_EDIT:DRAG"))
+	if (_marker != nullptr && _isSelectionMode && _controls->IsFunctionKeyDown("MAP_EDIT:DRAG"))
 	{
 		AI::Vec2D pickedTile = _pickingDevice->pickTile(_controls->GetMouseCoord()._pos);
 		
@@ -167,7 +167,7 @@ void BaseEdit::DragAndPlace()
 {
 	Type type = TRAP;
 
-	if (_controls->IsFunctionKeyUp("MAP_EDIT:SELECT"))
+	if (_isDragAndPlaceMode && _controls->IsFunctionKeyUp("MAP_EDIT:SELECT"))
 	{
 		if (_isDragAndPlaceMode)
 		{
@@ -244,8 +244,29 @@ void BaseEdit::DragAndPlace()
 	}
 }
 
+void BaseEdit::ChangePlaceState()
+{
+	if (_isSelectionMode)
+	{
+		_isSelectionMode = false;
+		_isDragAndPlaceMode = true;
+		_isPlace = true;
+	}
+	else
+	{
+		_isSelectionMode = true;
+		_isDragAndPlaceMode = false;
+		_isPlace = true;
+	}
+}
+
 void BaseEdit::HandleInput()
 {
+	if (_controls->IsFunctionKeyDown("MAP_EDIT:PLACEMENTFLAG"))
+	{
+		ChangePlaceState();
+	}
+
 	if (_controls->IsFunctionKeyDown("MAP_EDIT:SELECT"))
 	{
 		if (_isSelectionMode)
@@ -273,15 +294,8 @@ void BaseEdit::HandleInput()
 		}
 	}
 
-	if (_isSelectionMode)
-	{
-		DragAndDrop();
-	}
-
-	if (_isDragAndPlaceMode)
-	{
-		DragAndPlace();
-	}
+	DragAndDrop();
+	DragAndPlace();
 
 
 	if (_marker != nullptr)

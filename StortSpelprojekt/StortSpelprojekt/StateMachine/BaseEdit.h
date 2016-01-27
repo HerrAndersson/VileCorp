@@ -43,6 +43,7 @@ private:
 	bool _isDragAndPlaceMode;
 	bool _isPlace;
 
+	void ChangePlaceState();
 	void HandleInput();
 	void LoadLevel(int levelID);
 

@@ -25,6 +25,7 @@
 
 	"SELECT": ["leftmouse"],
 	"REMOVE": ["rightmouse"],
+	"PLACEMENTFLAG": ["F"],
 	
 	"DRAG": ["leftmouse", "repeat"],
 	
