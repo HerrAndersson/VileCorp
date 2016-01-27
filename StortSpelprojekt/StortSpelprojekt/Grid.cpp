@@ -1,21 +1,15 @@
 #include "Grid.h"
 
-Grid::Grid(ID3D11Device* device, float gridOffset, int gridSize, DirectX::XMFLOAT3 colorOffset)
+Grid::Grid(ID3D11Device* device, float gridOffset, int gridSizeX, int gridSizeY, DirectX::XMFLOAT3 colorOffset)
 {
-	float lineOffset = (gridOffset * gridSize);
-	DirectX::XMFLOAT3 lineVertices[2] =
-	{
-		{
-			lineOffset, 0.0f, 0.0f
-		},
-		{
-			-lineOffset, 0.0f, 0.0f
-		},
-	};
-
 	_vertexSize = sizeof(DirectX::XMFLOAT3);
 	_nrOfPoints = 2;
 	_colorOffset = colorOffset;
+	_gridSizeX = gridSizeX;
+	_gridSizeY = gridSizeY;
+	_gridOffset = gridOffset;
+
+	DirectX::XMFLOAT3 lineVertices[2] = { { 0.0f, 0.0f, 0.0f },{ 1.0f, 0.0f, 0.0f } };
 
 	D3D11_BUFFER_DESC bufferDesc;
 	ZeroMemory(&bufferDesc, sizeof(bufferDesc));
@@ -31,19 +25,27 @@ Grid::Grid(ID3D11Device* device, float gridOffset, int gridSize, DirectX::XMFLOA
 		throw std::runtime_error("Grid: could not create buffer.");
 	}
 
-	_gridMatrices = std::vector<DirectX::XMMATRIX>();
-	_gridMatrices.reserve(gridSize * 4 + 2);
-
-	for (int i = -gridSize; i <= gridSize; i++)
-	{
-		_gridMatrices.push_back(DirectX::XMMatrixTranslation(0.5f, 0.01f, i * gridOffset + 0.5f));
-		_gridMatrices.push_back((DirectX::XMMatrixRotationY(DirectX::XM_PIDIV2) * DirectX::XMMatrixTranslation(i * gridOffset + 0.5f, 0.01f, 0.5f)));
-	}
+	CreateGrid();
 }
 
 Grid::~Grid()
 {
 	_lineBuffer->Release();
+}
+
+void Grid::CreateGrid()
+{
+	_gridMatrices = std::vector<DirectX::XMMATRIX>();
+	_gridMatrices.reserve(_gridSizeY * 4 + 2);
+
+	for (int i = -1; i <= _gridSizeY; i++)
+	{
+		_gridMatrices.push_back(DirectX::XMMatrixScaling(_gridSizeX + 1, 1, 1) * DirectX::XMMatrixTranslation(-0.5f, 0.01f, i * _gridOffset + 0.5f));
+	}
+	for (int i = -1; i <= _gridSizeX; i++)
+	{
+		_gridMatrices.push_back(DirectX::XMMatrixScaling(-_gridSizeY - 1, 1, 1) * (DirectX::XMMatrixRotationY(DirectX::XM_PIDIV2) * DirectX::XMMatrixTranslation(i * _gridOffset + 0.5f, 0.01f, -0.5f)));
+	}
 }
 
 std::vector<DirectX::XMMATRIX>* Grid::GetGridMatrices()
@@ -69,6 +71,15 @@ int Grid::GetNrOfPoints() const
 DirectX::XMFLOAT3 Grid::GetColorOffset() const
 {
 	return _colorOffset;
+}
+
+void Grid::ChangeGridSize(int gridSizeX, int gridSizeY, int gridOffset)
+{
+	_gridSizeX = gridSizeX;
+	_gridSizeY = gridSizeY;
+	_gridOffset = gridOffset;
+
+	CreateGrid();
 }
 
 void* Grid::operator new(size_t i)

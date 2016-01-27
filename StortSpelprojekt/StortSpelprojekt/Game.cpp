@@ -37,7 +37,8 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	
 	if (_SM->GetState() == LEVELEDITSTATE)
 	{
-		_grid = new Grid(_renderModule->GetDevice(), 1, 10);
+		//TODO: Use dimensions from the tilemap /Jonas
+		_grid = new Grid(_renderModule->GetDevice(), 1, 1, 1, DirectX::XMFLOAT3(0.4f, 1.0f, 0.3f));
 	}
 	else
 	{
@@ -53,12 +54,9 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	{
 		int d = _renderModule->SHADOWMAP_DIMENSIONS;
 		spot = new Renderer::Spotlight(_renderModule->GetDevice(), 0.1f, 1000.0f, XM_PIDIV4, d, d, 1.0f, 9.5f, XMFLOAT3(1.0f, 1.0f, 1.0f), 72);
-		spot->SetPositionAndRotation(XMFLOAT3(rand() % 20, 1, rand() % 20), XMFLOAT3(0,-35*i,0));
+		spot->SetPositionAndRotation(XMFLOAT3(rand() % 35, 1, rand() % 35), XMFLOAT3(0,-35*i,0));
 		_spotlights.push_back(spot);
 	}
-
-	//settings._flags = settings.FULLSCREEN;
-	//ResizeResources(settings);
 }
 
 void Game::CheckSettings()
@@ -145,33 +143,16 @@ void Game::Update(float deltaTime)
 		}
 	}
 
-	//if (e.size() > 0)
-	//{
-	//	XMFLOAT3 p = e[0]->GetPosition();
-	//	XMFLOAT3 r = e[0]->GetRotation();
-
-	//	r = XMFLOAT3(XMConvertToDegrees(r.x), -XMConvertToDegrees(r.y), XMConvertToDegrees(r.z));
-	//	_spotlights[0]->SetRotation(r);
-
-	//	XMFLOAT3 d = _spotlights[0]->GetDirection();
-
-	//	p.y += 1.0f;
-	//	p.x += d.x * 0.5f;
-	//	p.z += d.z * 0.5f;
-
-	//	_spotlights[0]->SetPosition(p);
-	//}
-
 	for (unsigned int i = 0; i < _spotlights.size(); i++)
 	{
 		XMFLOAT3 rot = _spotlights[i]->GetRotation();
-		rot.y -= 2;
+		rot.y -= 15;
 		_spotlights[i]->SetRotation(rot);
 
 		XMFLOAT3 color = _spotlights[i]->GetColor();
-		color.x = sin(_timer.GetGameTime() / 1000);
-		color.y = sin(_timer.GetGameTime() / 1000 + XMConvertToRadians(120));
-		color.z = sin(_timer.GetGameTime() / 1000 + XMConvertToRadians(240));
+		color.x = sin(_timer.GetGameTime() / 1000 + 100 * i);
+		color.y = sin(_timer.GetGameTime() / 1000 + 100 * i + XMConvertToRadians(120));
+		color.z = sin(_timer.GetGameTime() / 1000 + 100 * i + XMConvertToRadians(240));
 		_spotlights[i]->SetColor(color);
 	}
 }
@@ -234,15 +215,12 @@ void Game::Render()
 		_renderModule->SetShaderStage(Renderer::RenderModule::GRID_STAGE);
 		_renderModule->SetDataPerLineList(_grid->GetLineBuffer(), _grid->GetVertexSize());
 
-		//TODO: GetGridMatrices() returns a nullptr /Rikhard
 		std::vector<DirectX::XMMATRIX>* gridMatrices = _grid->GetGridMatrices();
 		for (auto &matrix : *gridMatrices)
 		{
 			_renderModule->RenderLineList(&matrix, _grid->GetNrOfPoints(), _grid->GetColorOffset());
 		}
 	}
-
-
 
 	/*------------------------------------------------------------ Light pass --------------------------------------------------------------
 	Generate the shadow map for each spotlight, then apply the lighting/shadowing to the backbuffer render target with additive blending. */
