@@ -50,7 +50,7 @@ namespace Renderer
 		enum CullingState { BACK, FRONT, NONE };
 		enum BlendState { ENABLE, DISABLE };
 
-		DirectXHandler(HWND hwnd, int screenWidth, int screenHeight);
+		DirectXHandler(HWND hwnd, int screenWidth, int screenHeight, bool fullScreen);
 		~DirectXHandler();
 
 		ID3D11Device* GetDevice();

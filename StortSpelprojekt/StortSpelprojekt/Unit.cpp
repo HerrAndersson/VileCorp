@@ -274,6 +274,8 @@ Unit::Unit()
 	_pathLength = 0;
 	_path = nullptr;
 	_isMoving = false;
+	_direction = {0, -1};
+	Rotate();
 }
 
 Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject* renderObject, const Tilemap* tileMap)
@@ -293,6 +295,8 @@ Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	_pathLength = 0;
 	_path = nullptr;
 	_isMoving = false;
+	_direction = {0, 1};
+	Rotate();
 	if (_renderObject->_isSkinned)
 	{
 		_animation = new Animation(_renderObject->_skeleton);
@@ -424,6 +428,7 @@ void Unit::CheckVisibleTiles()
 		}
 		if (_tileMap->UnitsOnTile(_visibleTiles[i]._x, _visibleTiles[i]._y) > 0 && !(_visibleTiles[i] == _goalTilePosition || _visibleTiles[i] == _tilePosition))	//Unit finds another unit
 		{
+			int nrOfUnits = _tileMap->UnitsOnTile(_visibleTiles[i]._x, _visibleTiles[i]._y);
 			GameObject* unit = _tileMap->GetObjectOnTile(_visibleTiles[i]._x, _visibleTiles[i]._y, ENEMY);
 			if (unit == nullptr)
 			{
@@ -526,8 +531,7 @@ void Unit::Move()
 
 	//TODO: React to objects in same tile --Victor
 
-	FindVisibleTiles();
-	CheckVisibleTiles();
+
 
 	if (_pathLength > 0)
 	{
@@ -544,8 +548,10 @@ void Unit::Move()
 		}
 		//_direction = {0,0};
 		CheckAllTiles();
-		//Wait(10);
+		Wait(10);
 	}
+	FindVisibleTiles();
+	CheckVisibleTiles();
 	Rotate();
 }
 

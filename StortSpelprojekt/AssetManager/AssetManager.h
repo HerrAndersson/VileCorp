@@ -1,5 +1,4 @@
-#ifndef ASSET_MANAGER
-#define ASSET_MANAGER
+#pragma once
 #define ASSET_MANAGER_EXPORT __declspec(dllexport)
 #define uint unsigned int
 
@@ -20,15 +19,16 @@ using namespace DirectX;
 
 struct Tileset
 {
+	Tileset()
+	{
+		for (int i = 0; i < NR_OF_TYPES; i++)
+		{
+			vector<string> type;
+			_objects.push_back(type);
+		}
+	}
 	string _name;
-	vector<string> _floors;
-	vector<string> _walls;
-	vector<string> _loot;
-	vector<string> _spawns;
-	vector<string> _traps;
-	vector<string> _triggers;
-	vector<string> _guards;
-	vector<string> _enemies;
+	vector<vector<string>> _objects;
 };
 
 struct TilesetHandler
@@ -51,7 +51,7 @@ struct TilesetHandler
 		{
 			_tileset->_name = str;
 			_nameNext = false;
-			_cur = &_tileset->_floors;
+			_cur = &_tileset->_objects[FLOOR];
 		}
 		else
 		{
@@ -74,35 +74,35 @@ struct TilesetHandler
 		}
 		else if (!strcmp("floors", str))
 		{
-			_cur = &_tileset->_floors;
+			_cur = &_tileset->_objects[FLOOR];
 		}
 		else if (!strcmp("walls", str))
 		{
-			_cur = &_tileset->_walls;
+			_cur = &_tileset->_objects[WALL];
 		}
 		else if (!strcmp("loot", str))
 		{
-			_cur = &_tileset->_loot;
+			_cur = &_tileset->_objects[LOOT];
 		}
 		else if (!strcmp("spawns", str))
 		{
-			_cur = &_tileset->_spawns;
+			_cur = &_tileset->_objects[SPAWN];
 		}
 		else if (!strcmp("traps", str))
 		{
-			_cur = &_tileset->_traps;
+			_cur = &_tileset->_objects[TRAP];
 		}
 		else if (!strcmp("triggers", str))
 		{
-			_cur = &_tileset->_triggers;
+			_cur = &_tileset->_objects[TRIGGER];
 		}
 		else if (!strcmp("guards", str))
 		{
-			_cur = &_tileset->_guards;
+			_cur = &_tileset->_objects[GUARD];
 		}
 		else if (!strcmp("enemies", str))
 		{
-			_cur = &_tileset->_enemies;
+			_cur = &_tileset->_objects[ENEMY];
 		}
 		return true;
 	}
@@ -143,47 +143,37 @@ struct GameObjectData
 	int _tileType;
 };
 
-static void splitStringToVector(string input, vector<string> &output, string delimiter) {
-	size_t pos = 0;
-	string token;
-	while ((pos = input.find(delimiter)) != string::npos)
-	{
-		token = input.substr(0, pos);
-		if (!token.empty())
-		{
-			output.push_back(token);
-		}
-		input.erase(0, pos + delimiter.length());
-	}
-	output.push_back(input);
-};
-
 static bool GetFilenamesInDirectory(char* folder, char* extension, vector<string> &listToFill)
 {
-	ofstream testout;
-	string search_path = folder;
-	search_path.append("*");
-	search_path.append(extension);
-	WIN32_FIND_DATA fd;
-	HANDLE hFind = FindFirstFile(search_path.c_str(), &fd);
-	if (hFind != INVALID_HANDLE_VALUE)
+	bool result = false;
+	if (folder != nullptr && extension != nullptr)
 	{
-		do {
-			if (!(fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
-			{
-				string path = fd.cFileName;
-				listToFill.push_back(folder + path);
-			}
-		} while (FindNextFile(hFind, &fd));
-		FindClose(hFind);
+		ofstream testout;
+		string search_path = folder;
+		search_path.append("*");
+		search_path.append(extension);
+		WIN32_FIND_DATA fd;
+		HANDLE hFind = FindFirstFile(search_path.c_str(), &fd);
+		if (hFind != INVALID_HANDLE_VALUE)
+		{
+			result = true;
+			do {
+				if (!(fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
+				{
+					string path = fd.cFileName;
+					listToFill.push_back(folder + path);
+				}
+			} while (FindNextFile(hFind, &fd));
+			FindClose(hFind);
+		}
 	}
-	return true;
+	return result;
 }
 
 //AssetManager keeps lists of all assets in the game(currently meshes, textures and skeletal animation), and loads them onto the GPU or memory when required.
 //RenderObjects are the interface by which the assetmanager provides models to the renderer. They contain at least one mesh, two colors for diffuse and specular respectively, two handles to textures, a pointer to its skeleton and various help variables.
 //Get buffers with:
-//assetManager->GetRenderObject(MY_OBJECT_RENDEROBJECT_INDEX)->meshes[SUBMESH_INDEX].vertexBuffer; Also on meshlevel lies the size of the buffer and any lights that may be present.
+//assetManager->GetRenderObject(MY_OBJECT_RENDEROBJECT_INDEX).vertexBuffer; Also on meshlevel lies the size of the buffer and any lights that may be present.
 //Call assetManager->UnLoad(MY_OBJECT_RENDEROBJECT_INDEX, false) if you think the mesh probably won't be needed again soon
 //Unless otherwise signed all comments are by Fredrik
 class ASSET_MANAGER_EXPORT AssetManager
@@ -210,7 +200,7 @@ private:
 	vector<Texture*>* _textures;
 	vector<Texture*>* _texturesToFlush;
 
-	void LoadModel(string file_path, RenderObject* renderObject);
+	bool LoadModel(string file_path, RenderObject* renderObject);
 	void Flush();
 	RenderObject* ScanModel24(string file_path, ifstream* _infile);
 	RenderObject* ScanModel26(string file_path, ifstream* _infile);
@@ -218,8 +208,7 @@ private:
 	Texture* ScanTexture(string filename);
 	Skeleton* LoadSkeleton(string filename);
 	ID3D11Buffer* CreateVertexBuffer(vector<WeightedVertex> *weightedVertices, vector<Vertex> *vertices, int skeleton);
-	void SetupRenderObjectList(Tileset* tileset);
-	void SetupLevelFileNameList();
+	bool SetupRenderObjectList(Tileset* tileset);
 	void SetupTilesets();
 public:
 	AssetManager(ID3D11Device* device);
@@ -227,10 +216,7 @@ public:
 	RenderObject* GetRenderObject(int index);
 	uint GetRenderObjectByType(Type type, uint index);
 	void UnloadModel(int index, bool force);
-	void ParseLevel(int index, vector<GameObjectData> &gameObjects, int &dimX, int &dimY);
+	bool ParseLevel(int index, vector<GameObjectData> &gameObjects, int &dimX, int &dimY);
 	bool ActivateTileset(string name);
 	ID3D11ShaderResourceView* GetTexture(string filename);
 };
-
-
-#endif

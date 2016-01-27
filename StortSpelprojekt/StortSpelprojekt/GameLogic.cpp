@@ -19,6 +19,10 @@ void GameLogic::Initialize(ObjectHandler* objectHandler, System::Camera* camera,
 	_controls = controls;
 	_pickingDevice = pickingDevice;
 
+	//Either import the level here or in the LevelEdit.cpp, otherwise the level will be loaded twice
+	//System::loadJSON(&_levelLoad, "../../../../StortSpelprojekt/Assets/LevelLoad.json");
+	//_objectHandler->LoadLevel(_levelLoad.level);
+
 	_objectHandler->InitPathfinding();
 
 	_player = new Player();
@@ -33,7 +37,7 @@ void GameLogic::Update(float deltaTime)
 void GameLogic::HandleInput()
 {
 	
-	//Selecting a Unit
+	//Selecting a Unit and moving selected units
 	if (_controls->IsFunctionKeyDown("PLAY:SELECT"))
 	{
 		vector<GameObject*> pickedUnits = _pickingDevice->pickObjects(_controls->GetMouseCoord()._pos, _objectHandler->GetAllByType(GUARD));
@@ -62,7 +66,7 @@ void GameLogic::HandleInput()
 			unit->SetScale(DirectX::XMFLOAT3(1.2f, 1.2f, 1.2f));
 		}
 	}
-	//Deselect units
+	//Deselect Units
 	if (_controls->IsFunctionKeyDown("PLAY:DESELECT"))
 	{
 		if (_player->AreUnitsSelected())
@@ -76,13 +80,13 @@ void GameLogic::HandleInput()
 		}
 	}
 	
+	//Boxselect Units
 	XMFLOAT3 forward(0, 0, 0);
 	XMFLOAT3 position = _camera->GetPosition();
 	XMFLOAT3 right(0, 0, 0);
 	bool isMoving = false;
 	float v = 0.06f + (_camera->GetPosition().y * 0.01);
 
-	//Boxselecting Units
 	if(_controls->IsFunctionKeyDown("PLAY:BOX_SELECT"))
 	{
 		_pickingDevice->setFirstBoxPoint(_controls->GetMouseCoord()._pos);
@@ -100,8 +104,17 @@ void GameLogic::HandleInput()
 
 	}
 
+	//Set Guard Patrol Route if a Guard is Selected
+	if (_controls->IsFunctionKeyDown("PLAY:SET_PATROL"))
+	{
+		if (_player->AreUnitsSelected())
+		{
+			_player->PatrolUnits(_pickingDevice->pickTile(_controls->GetMouseCoord()._pos));
+		}
+	}
 
-	
+
+
 	if (_camera->GetMode() == System::LOCKED_CAM)
 	{
 		if (_controls->IsFunctionKeyDown("PLAY:SCROLLDOWN") &&
