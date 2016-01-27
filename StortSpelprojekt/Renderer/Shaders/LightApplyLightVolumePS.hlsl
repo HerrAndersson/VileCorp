@@ -110,22 +110,22 @@ float4 main(VS_OUT input) : SV_TARGET
 		//In light
 		if (shadowCoeff > depth - epsilon)
 		{
-			float3 finalColor = diffuse.xyz * lightColor * lightIntensity;
+			float4 finalColor = float4((diffuse.xyz * lightColor * lightIntensity), 1.0f);
 
-			//if (pixToLightAngle > lightAngleDiv2 * 0.85)
-			//{
-			//	finalColor *= float4(0.1, 0.1, 0.1, 1.0);
-			//}
-			//else if (pixToLightAngle > lightAngleDiv2 * 0.75)
-			//{
-			//	finalColor *= float4(0.35, 0.35, 0.35, 1.0);
-			//}
-			//else if (pixToLightAngle > lightAngleDiv2 * 0.65)
-			//{
-			//	finalColor *= float4(0.7, 0.7, 0.7, 1.0);
-			//}
+			if (pixToLightAngle > lightAngleDiv2 * 0.85)
+			{
+				finalColor *= float4(0.1f, 0.1f, 0.1f, 0.1f);
+			}
+			else if (pixToLightAngle > lightAngleDiv2 * 0.75)
+			{
+				finalColor *= float4(0.35f, 0.35f, 0.35f, 0.35f);
+			}
+			else if (pixToLightAngle > lightAngleDiv2 * 0.65)
+			{
+				finalColor *= float4(0.7f, 0.7f, 0.7f, 0.65f);
+			}
 
-			return float4(finalColor, 0.5f);
+			return finalColor;
 		}
 		else
 		{

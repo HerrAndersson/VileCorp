@@ -118,12 +118,6 @@ void Game::ResizeResources(System::WindowSettings settings)
 
 void Game::Update(float deltaTime)
 {
-	/*
-	Object handler update
-
-	Fetch from objecthandler or different update functions in objecthandler
-
-	*/
 	_controls->Update();
 
 	if (_controls->IsFunctionKeyDown("EVERYWHERE:FULLSCREEN"))
@@ -133,26 +127,6 @@ void Game::Update(float deltaTime)
 	}
 
 	_SM->Update(deltaTime);
-	
-
-	std::vector<GameObject*> e = _objectHandler->GetAllByType(GUARD);
-
-	if (e.size() > 0)
-	{
-		XMFLOAT3 p = e[0]->GetPosition();
-		XMFLOAT3 r = e[0]->GetRotation();
-
-		r = XMFLOAT3(XMConvertToDegrees(r.x), -XMConvertToDegrees(r.y), XMConvertToDegrees(r.z));
-		_spotlights[0]->SetRotation(r);
-
-		XMFLOAT3 d = _spotlights[0]->GetDirection();
-
-		p.y += 0.15f;
-		p.x += d.x * 0.5f;
-		p.z += d.z * 0.5f;
-
-		_spotlights[0]->SetPosition(p);
-	}
 
 	//for (unsigned int i = 0; i < _spotlights.size(); i++)
 	//{
@@ -177,10 +151,11 @@ void Game::Render()
 
 	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::GEO_PASS);
 
-	//Render all objects to the diffuse and normal buffers
 	std::vector<std::vector<GameObject*>>* gameObjects = _objectHandler->GetGameObjects();
-	std::vector<std::vector<GameObject*>> animatedObjects;
-	for (int i = 0; i < gameObjects->size(); i++)
+
+	//TODO: store this in object handler instead of building each frame? /Jonas
+	std::vector<std::vector<GameObject*>> animatedObjects; 
+	for (unsigned int i = 0; i < gameObjects->size(); i++)
 	{
 		if (gameObjects->at(i).size() > 0)
 		{
@@ -202,23 +177,23 @@ void Game::Render()
 		}
 	}
 
-	//TODO: Check if this works. /Jonas
-	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::ANIM_STAGE);
-	for (int i = 0; i < animatedObjects.size(); i++)
-	{
-		if (animatedObjects.at(i).size() > 0)
-		{
-			RenderObject* renderObject = animatedObjects.at(i).at(0)->GetRenderObject();
+	////TODO: Check if this works. /Jonas
+	//_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::ANIM_STAGE);
+	//for (unsigned int i = 0; i < animatedObjects.size(); i++)
+	//{
+	//	if (animatedObjects.at(i).size() > 0)
+	//	{
+	//		RenderObject* renderObject = animatedObjects.at(i).at(0)->GetRenderObject();
 
-			_renderModule->SetDataPerObjectType(renderObject);
-			int vertexBufferSize = renderObject->_mesh._vertexBufferSize;
+	//		_renderModule->SetDataPerObjectType(renderObject);
+	//		int vertexBufferSize = renderObject->_mesh._vertexBufferSize;
 
-			for (GameObject* a : animatedObjects.at(i))
-			{
-				_renderModule->Render(a->GetMatrix(), vertexBufferSize, a->GetColorOffset());
-			}
-		}
-	}
+	//		for (GameObject* a : animatedObjects.at(i))
+	//		{
+	//			_renderModule->Render(a->GetMatrix(), vertexBufferSize, a->GetColorOffset());
+	//		}
+	//	}
+	//}
 
 	if (_SM->GetState() == LEVELEDITSTATE)
 	{
@@ -270,7 +245,6 @@ void Game::Render()
 	}
 
 	/*-------------------------------------------------------- HUD and other 2D -----------------------------------------------------------*/
-	_renderModule->RenderScreenQuad();
 	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::HUD_STAGE);
 	_renderModule->Render(_SM->GetCurrentStatePointer()->GetUITree()->GetRootNode(), _fontWrapper);
 
