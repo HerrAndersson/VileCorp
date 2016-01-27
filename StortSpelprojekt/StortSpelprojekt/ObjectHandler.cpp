@@ -260,6 +260,9 @@ int ObjectHandler::GetObjectCount() const
 	return _objectCount;
 }
 
+
+/*Tilemap handling*/
+
 Tilemap * ObjectHandler::GetTileMap() const
 {
 	return _tilemap;
@@ -267,8 +270,67 @@ Tilemap * ObjectHandler::GetTileMap() const
 
 void ObjectHandler::SetTileMap(Tilemap * tilemap)
 {
+	if (_tilemap != nullptr)
+	{
+		delete _tilemap;
+	}
 	_tilemap = tilemap;
 }
+
+void ObjectHandler::MinimizeTileMap()
+{
+	int minX = 0, maxX;
+	for (int y = 0; y < _tilemap->GetHeight(); y++)
+	{
+		for (int x = 0; x < _tilemap->GetWidth(); x++)
+		{
+			// Check if something is on the tile
+			// if true set minX = x and break
+		}
+		for (int x = _tilemap->GetWidth() - 1; x > 1; x--)
+		{
+			// Check if something is on the tile
+			// if true set maxX = x and break
+		}
+	}
+
+	// Do for Y
+}
+
+void ObjectHandler::EnlargeTilemap(int offset)
+{
+	if (offset > 0)
+	{
+		int o = 2 * offset;
+		Tilemap* large = new Tilemap(_tilemap->GetWidth() + o, _tilemap->GetHeight() + o);
+
+		for (int x = offset; x < _tilemap->GetWidth() + offset; x++)
+		{
+			for (int y = offset; y < _tilemap->GetHeight() + offset; y++)
+			{
+				AI::Vec2D pos;
+				pos._x = x - offset;
+				pos._y = y - offset;
+				std::vector<GameObject*> temp = _tilemap->GetAllObjectsOnTile(pos);
+
+				for (GameObject* g : temp)
+				{
+					// Update real pos
+					g->SetPosition(XMFLOAT3(x, g->GetPosition().y, y));
+
+					// Update tile
+					large->AddObjectToTile(x, y, g);
+				}
+			}
+		}
+
+		delete _tilemap;
+		_tilemap = large;
+	}
+}
+
+
+
 
 bool ObjectHandler::LoadLevel(int lvlIndex)
 {
@@ -283,6 +345,7 @@ bool ObjectHandler::LoadLevel(int lvlIndex)
 	{
 		Add((Type)i._tileType, 0, DirectX::XMFLOAT3(i._posX, 0, i._posZ), DirectX::XMFLOAT3(0, i._rotY, 0));
 	}
+
 	return false;
 }
 
@@ -371,6 +434,9 @@ void ObjectHandler::Release()
 	_idCount = 0;
 	_objectCount = 0;
 }
+
+
+/*Make object*/
 
 Architecture * ObjectHandler::MakeFloor(GameObjectFloorInfo * data, XMFLOAT3 position, XMFLOAT3 rotation)
 {
