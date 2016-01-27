@@ -19,8 +19,6 @@ void GameLogic::Initialize(ObjectHandler* objectHandler, System::Camera* camera,
 	_controls = controls;
 	_pickingDevice = pickingDevice;
 
-	_objectHandler->LoadLevel(9);
-
 	_objectHandler->InitPathfinding();
 
 	_player = new Player();

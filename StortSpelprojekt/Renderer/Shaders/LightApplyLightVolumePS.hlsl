@@ -131,7 +131,7 @@ float4 main(VS_OUT input) : SV_TARGET
 		{
 			//In shadow
 			//Test how far away the lit parts are to generate the "toon" falloff
-			return float4(diffuse.xyz * float3(0.1, 0.1, 0.1), 0.5f);
+			/*return float4(diffuse.xyz * float3(0.1, 0.1, 0.1), 0.5f);*/
 		}
 	}
 
