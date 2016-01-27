@@ -8,6 +8,9 @@ class LevelEditState : public BaseState
 private:
 	LevelEdit _levelEdit;
 
+	bool _trapButtonClick = false;
+	bool _unitButtonClick = false;
+	bool _decButtonClick = false;
 
 	bool _floorChosen = false;
 	bool _wallChosen = false;
