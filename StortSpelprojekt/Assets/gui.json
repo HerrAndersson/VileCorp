@@ -94,13 +94,13 @@
   
   "Traps" :
 		{
-			"position": [-0.9, 0.9],	
-			"scale": [0.1, 0.1],
-			"texture": "../Menues/Button.png",
+			"position": [-0.96, 0.9],	
+			"scale": [0.05, 0.1],
+			"texture": "../Menues/LEVELEDIT1.png",
 			
 			"TrapsText":
 			{
-				"position" : [0.97, -0.96],
+				"position" : [0.96, -0.96],
 				"scale": [1.0, 1.0],
 				"text": "Traps",
 				"color": "FF000000",
@@ -112,9 +112,9 @@
 		{
 			 "Trap1" :
 			{
-				"position": [-0.7, 0.9],	
-				"scale": [0.1, 0.1],
-				"texture": "../Menues/Button.png",
+				"position": [-0.859, 0.9],	
+				"scale": [0.05, 0.1],
+				"texture": "../Menues/LEVELEDIT1.png",
 				
 				"TrapsText":
 				{
@@ -128,9 +128,9 @@
 			
 			 "Trap2" :
 			{
-				"position": [-0.7, 0.7],	
-				"scale": [0.1, 0.1],
-				"texture": "../Menues/Button.png",
+				"position": [-0.859, 0.7],	
+				"scale": [0.05, 0.1],
+				"texture": "../Menues/LEVELEDIT1.png",
 				
 				"TrapsText":
 				{
@@ -147,9 +147,9 @@
 		
 	"Units" :
 		{
-			"position": [-0.9, 0.7],	
-			"scale": [0.1, 0.1],
-			"texture": "../Menues/Button.png",
+			"position": [-0.96, 0.7],	
+			"scale": [0.05, 0.1],
+			"texture": "../Menues/LEVELEDIT1.png",
 			
 			"UnitsText":
 			{
@@ -165,9 +165,9 @@
 		{
 			 "Unit1" :
 			{
-				"position": [-0.7, 0.7],	
-				"scale": [0.1, 0.1],
-				"texture": "../Menues/Button.png",
+				"position": [-0.859, 0.7],	
+				"scale": [0.05, 0.1],
+				"texture": "../Menues/LEVELEDIT1.png",
 				
 				"UnitText":
 				{
@@ -181,9 +181,9 @@
 			
 			 "Unit2" :
 			{
-				"position": [-0.7, 0.5],	
-				"scale": [0.1, 0.1],
-				"texture": "../Menues/Button.png",
+				"position": [-0.859, 0.5],	
+				"scale": [0.05, 0.1],
+				"texture": "../Menues/LEVELEDIT1.png",
 				
 				"UnitText":
 				{
@@ -201,9 +201,9 @@
   
   "Decorations" :
 		{
-			"position": [-0.9, 0.5],	
-			"scale": [0.1, 0.1],
-			"texture": "../Menues/Button.png",
+			"position": [-0.96, 0.5],	
+			"scale": [0.05, 0.1],
+			"texture": "../Menues/LEVELEDIT1.png",
 			
 			"DecorationsText":
 			{
@@ -220,9 +220,9 @@
 		{
 			 "Dec1" :
 			{
-				"position": [-0.7, 0.5],	
-				"scale": [0.1, 0.1],
-				"texture": "../Menues/Button.png",
+				"position": [-0.859, 0.5],	
+				"scale": [0.05, 0.1],
+				"texture": "../Menues/LEVELEDIT1.png",
 				
 				"DecText":
 				{
@@ -236,9 +236,9 @@
 			
 			 "Dec2" :
 			{
-				"position": [-0.7, 0.3],	
-				"scale": [0.1, 0.1],
-				"texture": "../Menues/Button.png",
+				"position": [-0.859, 0.3],	
+				"scale": [0.05, 0.1],
+				"texture": "../Menues/LEVELEDIT1.png",
 				
 				"DecText":
 				{
