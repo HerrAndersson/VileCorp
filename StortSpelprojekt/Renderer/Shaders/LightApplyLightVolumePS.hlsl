@@ -6,6 +6,8 @@ cbuffer matrixBufferLightPassPerFrame : register(b2)
 {
 	matrix invCamView;
 	matrix invCamProj;
+	int screenWidth;
+	int screenHeight;
 };
 
 cbuffer matrixBufferLightPassPerLight : register(b3)
@@ -53,7 +55,7 @@ float3 ReconstructWorldFromCamDepth(float2 uv)
 float4 main(VS_OUT input) : SV_TARGET
 {
 	float lightAngleDiv2 = lightAngle / 2;
-	float2 uv = float2((input.pos.x) / 1920, (input.pos.y) / 1080);
+	float2 uv = float2((input.pos.x) / screenWidth, (input.pos.y) / screenHeight);
 	//float2 uv = float2(0.5f + (input.pos.x / 1280 / input.pos.w * 0.5f), 0.5f - (input.pos.y / input.pos.w * 0.5f));
 
 	float4 normal = normalize(float4(normalTex.Sample(samplerWrap, uv).xyz, 0.0f));

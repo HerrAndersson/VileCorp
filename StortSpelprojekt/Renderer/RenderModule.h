@@ -54,6 +54,8 @@ namespace Renderer
 		{
 			DirectX::XMMATRIX _invertedView;
 			DirectX::XMMATRIX _invertedProjection;
+			int _screenWidth;
+			int _screenHeight;
 		};
 
 		struct MatrixBufferLightPassPerLight

@@ -296,6 +296,8 @@ namespace Renderer
 		dataPtr = static_cast<MatrixBufferLightPassPerFrame*>(mappedResource.pData);
 		dataPtr->_invertedView = invView;
 		dataPtr->_invertedProjection = invProj;
+		dataPtr->_screenHeight = _screenHeight;
+		dataPtr->_screenWidth = _screenWidth;
 		deviceContext->Unmap(_matrixBufferLightPassPerFrame, 0);
 
 		deviceContext->PSSetConstantBuffers(2, 1, &_matrixBufferLightPassPerFrame);
