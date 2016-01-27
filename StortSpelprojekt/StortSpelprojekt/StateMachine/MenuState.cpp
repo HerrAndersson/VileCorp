@@ -26,6 +26,10 @@ void MenuState::Update(float deltaTime)
 		}
 		if (_uiTree.IsButtonColliding("optionsbutton", coord._pos.x, coord._pos.y))
 		{
+			ChangeState(State::OPTIONSSTATE);
+		}
+		if (_uiTree.IsButtonColliding("leveleditbutton", coord._pos.x, coord._pos.y))
+		{
 			ChangeState(State::LEVELEDITSTATE);
 		}
 		if (_uiTree.IsButtonColliding("exitbutton", coord._pos.x, coord._pos.y))

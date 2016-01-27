@@ -184,29 +184,6 @@ namespace GUI
 		return IsButtonColliding(_root, id, x, y, pos.x, pos.y, f);
 	}
 
-	Node* UITree::FindNode(Node* current, const std::string& id)
-	{
-		if (current->GetId() == id)
-		{
-			return current;
-		}
-		for (Node* i : *current->GetChildren())
-		{
-			Node* node = FindNode(i, id);
-			if (node != nullptr)
-			{
-				return node;
-			}
-		}
-		return nullptr;
-	}
-
-	Node* UITree::GetNode(const std::string& id)
-	{
-		Node* node = _root;
-		return FindNode(_root, id);
-	}
-
 	void UITree::ReloadTree(const std::string& filename, const std::string& statename)
 	{
 		Release(_root);

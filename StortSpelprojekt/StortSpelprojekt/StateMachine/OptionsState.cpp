@@ -1,5 +1,7 @@
 #include "OptionsState.h"
 
+#include "../Game.h"
+
 OptionsState::OptionsState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, int width, int height)
 	: BaseState (controls, objectHandler, camera, pickingDevice, filename, "OPTIONS", assetManager, fontWrapper, width, height)
 {
@@ -17,9 +19,9 @@ OptionsState::OptionsState(System::Controls* controls, ObjectHandler* objectHand
 	_resolutionOption = 0;
 
 	//Window options
-	_window[0] = { L"Fullscreen", System::WindowSettings::FULLSCREEN, 0 };
-	_window[1] = { L"Borderless window", System::WindowSettings::BORDERLESS, 0 };
-	_window[2] = { L"Windowed", 0, 0 };
+	_window[0] = { L"Fullscreen", System::WindowSettings::FULLSCREEN | System::WindowSettings::SHOW_CURSOR, 0 };
+	_window[1] = { L"Borderless window", System::WindowSettings::BORDERLESS | System::WindowSettings::SHOW_CURSOR, 0 };
+	_window[2] = { L"Windowed", System::WindowSettings::SHOW_CURSOR, 0 };
 	_windowOption = 0;
 
 	//Window options
@@ -40,7 +42,7 @@ OptionsState::OptionsState(System::Controls* controls, ObjectHandler* objectHand
 OptionsState::~OptionsState()
 {}
 
-void OptionsState::HandleOptionSwitch(const std::string& leftId, const std::string& rightId, const std::string& contentId, int& optionValue, Options* options, int optionsMax)
+bool OptionsState::HandleOptionSwitch(const std::string& leftId, const std::string& rightId, const std::string& contentId, int& optionValue, Options* options, int optionsMax)
 {
 	System::MouseCoord coord = _controls->GetMouseCoord();
 	bool leftClicked = _uiTree.IsButtonColliding(leftId, coord._pos.x, coord._pos.y);
@@ -69,6 +71,7 @@ void OptionsState::HandleOptionSwitch(const std::string& leftId, const std::stri
 			text->SetText(options[optionValue]._text);
 		}
 	}
+	return leftClicked || rightClicked;
 }
 
 void OptionsState::Update(float deltaTime)
@@ -77,12 +80,22 @@ void OptionsState::Update(float deltaTime)
 	{
 		_uiTree.ReloadTree("../../../../StortSpelprojekt/Assets/gui.json", "OPTIONS");
 	}
+	if (_controls->IsFunctionKeyDown("MENU:MENU"))
+	{
+		ChangeState(State::MENUSTATE);
+	}
 	if (_controls->IsFunctionKeyDown("MENU:CLICK"))
 	{
-		HandleOptionSwitch("res_left", "res_right", "res_content", _resolutionOption, _resolution, RESOLUTION_MAX);
-		HandleOptionSwitch("win_left", "win_right", "win_content", _windowOption, _window, WINDOW_MAX);
-		HandleOptionSwitch("aa_left", "aa_right", "aa_content", _aaOption, _aa, AA_MAX);
-		HandleOptionSwitch("shadow_left", "shadow_right", "shadow_content", _shadowmapOption, _shadowmap, SHADOWMAP_MAX);
+		bool showApplyButton = false;
+		showApplyButton = showApplyButton || HandleOptionSwitch("res_left", "res_right", "res_content", _resolutionOption, _resolution, RESOLUTION_MAX);
+		showApplyButton = showApplyButton || HandleOptionSwitch("win_left", "win_right", "win_content", _windowOption, _window, WINDOW_MAX);
+		showApplyButton = showApplyButton || HandleOptionSwitch("aa_left", "aa_right", "aa_content", _aaOption, _aa, AA_MAX);
+		showApplyButton = showApplyButton || HandleOptionSwitch("shadow_left", "shadow_right", "shadow_content", _shadowmapOption, _shadowmap, SHADOWMAP_MAX);
+
+		if (showApplyButton)
+		{
+			_uiTree.GetNode("apply")->SetHidden(false);
+		}
 
 		//Check it the apply button was pressed and change settings file and update the window resolution if needed
 		System::MouseCoord coord = _controls->GetMouseCoord();
@@ -101,11 +114,15 @@ void OptionsState::Update(float deltaTime)
 			_outputSettings._shadowmap = true;
 
 			System::saveJSON(&_outputSettings, "../../../../StortSpelprojekt/Assets/GameSettings.json", "Game Settings");
+			_uiTree.GetNode("apply")->SetHidden(true);
+
+			//TODO: Apply to the game in runtime with ResizeResources
+		}
+		if (_uiTree.IsButtonColliding("cancel", coord._pos.x, coord._pos.y))
+		{
+			ChangeState(State::MENUSTATE);
 		}
 	}
-	
-
-	
 }
 
 void OptionsState::OnStateEnter()
