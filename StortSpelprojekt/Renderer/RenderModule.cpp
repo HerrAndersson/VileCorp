@@ -241,6 +241,14 @@ namespace Renderer
 		deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &vs, &offset);
 	}
 
+	void RenderModule::SetDataPerLineList(ID3D11Buffer* lineList, int vertexSize)
+	{
+		//This might seem like a useless function, but SteDataPerMesh should be private to prevent people from using it the wrong way.
+		//This is a special case function that is public, and should only be used for the grid, or other lines.
+
+		SetDataPerMesh(lineList, vertexSize);
+	}
+
 	void RenderModule::SetShadowMapDataPerSpotlight(DirectX::XMMATRIX* lightView, DirectX::XMMATRIX* lightProjection)
 	{
 		_shadowMap->SetDataPerFrame(_d3d->GetDeviceContext(), lightView, lightProjection);
@@ -355,6 +363,8 @@ namespace Renderer
 		}
 		case SHADOW_GENERATION:
 		{
+			//Topology has to be set here because GRID_STAGE, which is the previous stage, will change to LINELIST
+			deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 			_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::DISABLE);
 			_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::FRONT);
 
@@ -462,11 +472,10 @@ namespace Renderer
 			XMFLOAT2 scale = current->GetScale();
 			x = pos.x - scale.x;
 			y = pos.y*-1.0f - scale.y;
-			//x and y is in -1,1 coordinate system
-			//Convert to pixel coordinate system
+			
+			//x and y is in -1,1 coordinate system, convert to pixel coordinate system
 			x = (x + 1.0f) * 0.5f * _screenWidth;
 			y = (y + 1.0f) * 0.5f * _screenHeight;
-			//x and y is in pixel coordinates
 			fontWrapper->GetFontWrapper()->DrawTextLayout(_d3d->GetDeviceContext(), current->GetFont()->_textLayout, x, y, current->GetColor(), FW1_RESTORESTATE);
 		}
 
@@ -507,20 +516,17 @@ namespace Renderer
 		}
 	}
 
-	void RenderModule::RenderLineList(XMMATRIX* world, ID3D11Buffer* lineList, int nrOfPoints, XMFLOAT3 colorOffset)
+	void RenderModule::RenderLineList(XMMATRIX* world, int nrOfPoints, XMFLOAT3 colorOffset)
 	{
-		//ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
+		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
 
-		//deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
 
-		//XMMATRIX worldMatrix = XMMatrixTranspose(*world);
+		SetDataPerObject(world, colorOffset);
 
-		//SetDataPerObject(&worldMatrix, nullptr, nullptr, colorOffset);
+		int pointSize = sizeof(XMFLOAT3);
 
-		//int pointSize = sizeof(XMFLOAT3);
-
-		//SetDataPerMesh(lineList, pointSize);
-		//deviceContext->Draw(nrOfPoints, 0);
+		deviceContext->Draw(nrOfPoints, 0);
 	}
 
 	void RenderModule::RenderScreenQuad()

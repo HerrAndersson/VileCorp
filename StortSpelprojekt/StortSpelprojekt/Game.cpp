@@ -50,11 +50,11 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	//_controls->SaveKeyBindings(System::MAP_EDIT_KEYMAP, "MOVE_CAMERA_UP", "M");
 
 	Renderer::Spotlight* spot;
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i < 5; i++)
 	{
 		int d = _renderModule->SHADOWMAP_DIMENSIONS;
-		spot = new Renderer::Spotlight(_renderModule->GetDevice(), 0.1f, 1000.0f, XM_PIDIV4, d, d, 1.0f / (i+1), 9.5f, XMFLOAT3(1.0f, 1.0f, 1.0f), 36);
-		spot->SetPositionAndRotation(XMFLOAT3(6 + 2*i, 1, 2 + 2*i), XMFLOAT3(0,-35*i,0));
+		spot = new Renderer::Spotlight(_renderModule->GetDevice(), 0.1f, 1000.0f, XM_PIDIV4, d, d, 1.0f, 9.5f, XMFLOAT3(1.0f, 1.0f, 1.0f), 72);
+		spot->SetPositionAndRotation(XMFLOAT3(rand() % 20, 1, rand() % 20), XMFLOAT3(0,-35*i,0));
 		_spotlights.push_back(spot);
 	}
 
@@ -128,18 +128,37 @@ void Game::Update(float deltaTime)
 
 	_SM->Update(deltaTime);
 
-	//for (unsigned int i = 0; i < _spotlights.size(); i++)
-	//{
-	//	XMFLOAT3 rot = _spotlights[i]->GetRotation();
-	//	rot.y -= (float)(i + 1) / 1;
-	//	_spotlights[i]->SetRotation(rot);
+	std::vector<GameObject*> e = _objectHandler->GetAllByType(GUARD);
 
-	//	XMFLOAT3 color = _spotlights[i]->GetColor();
-	//	color.x = sin(_timer.GetGameTime() / 1000);
-	//	color.y = sin(_timer.GetGameTime() / 1000 + XMConvertToRadians(120));
-	//	color.z = sin(_timer.GetGameTime() / 1000 + XMConvertToRadians(240));
-	//	_spotlights[i]->SetColor(color);
+	//if (e.size() > 0)
+	//{
+	//	XMFLOAT3 p = e[0]->GetPosition();
+	//	XMFLOAT3 r = e[0]->GetRotation();
+
+	//	r = XMFLOAT3(XMConvertToDegrees(r.x), -XMConvertToDegrees(r.y), XMConvertToDegrees(r.z));
+	//	_spotlights[0]->SetRotation(r);
+
+	//	XMFLOAT3 d = _spotlights[0]->GetDirection();
+
+	//	p.y += 1.0f;
+	//	p.x += d.x * 0.5f;
+	//	p.z += d.z * 0.5f;
+
+	//	_spotlights[0]->SetPosition(p);
 	//}
+
+	for (unsigned int i = 0; i < _spotlights.size(); i++)
+	{
+		XMFLOAT3 rot = _spotlights[i]->GetRotation();
+		rot.y -= 2;
+		_spotlights[i]->SetRotation(rot);
+
+		XMFLOAT3 color = _spotlights[i]->GetColor();
+		color.x = sin(_timer.GetGameTime() / 1000);
+		color.y = sin(_timer.GetGameTime() / 1000 + XMConvertToRadians(120));
+		color.z = sin(_timer.GetGameTime() / 1000 + XMConvertToRadians(240));
+		_spotlights[i]->SetColor(color);
+	}
 }
 
 void Game::Render()
@@ -154,25 +173,25 @@ void Game::Render()
 	std::vector<std::vector<GameObject*>>* gameObjects = _objectHandler->GetGameObjects();
 
 	//TODO: store this in object handler instead of building each frame? /Jonas
-	std::vector<std::vector<GameObject*>> animatedObjects; 
-	for (unsigned int i = 0; i < gameObjects->size(); i++)
+	std::vector<std::vector<GameObject*>> animatedObjects;
+	for (auto i : *gameObjects)
 	{
-		if (gameObjects->at(i).size() > 0)
+		if (i.size() > 0)
 		{
-			RenderObject* renderObject = gameObjects->at(i).at(0)->GetRenderObject();
+			RenderObject* renderObject = i.at(0)->GetRenderObject();
 			if (!renderObject->_isSkinned)
 			{
 				_renderModule->SetDataPerObjectType(renderObject);
 				int vertexBufferSize = renderObject->_mesh._vertexBufferSize;
 
-				for (GameObject* g : gameObjects->at(i))
+				for (GameObject* g : i)
 				{
 					_renderModule->Render(g->GetMatrix(), vertexBufferSize, g->GetColorOffset());
 				}
 			}
 			else
 			{
-				animatedObjects.push_back((*gameObjects).at(i));
+				animatedObjects.push_back(i);
 			}
 		}
 	}
@@ -198,13 +217,14 @@ void Game::Render()
 	if (_SM->GetState() == LEVELEDITSTATE)
 	{
 		_renderModule->SetShaderStage(Renderer::RenderModule::GRID_STAGE);
+		_renderModule->SetDataPerLineList(_grid->GetLineBuffer(), _grid->GetVertexSize());
 
 		//TODO: GetGridMatrices() returns a nullptr /Rikhard
-		//std::vector<DirectX::XMMATRIX>* gridMatrices = _grid->GetGridMatrices();
-		//for (auto &matrix : *gridMatrices)
-		//{
-		//	_renderModule->RenderLineList(&matrix, _grid->GetLineBuffer(), 2);
-		//}
+		std::vector<DirectX::XMMATRIX>* gridMatrices = _grid->GetGridMatrices();
+		for (auto &matrix : *gridMatrices)
+		{
+			_renderModule->RenderLineList(&matrix, _grid->GetNrOfPoints(), _grid->GetColorOffset());
+		}
 	}
 
 
@@ -218,20 +238,20 @@ void Game::Render()
 
 	//TODO: Get vector of objects in light to use instead of gameObjects. Or use a vector (one for each light) of vectors (one for each object type) of vectors (he objects itself. 
 	//May be ugly, but this way you have more flexibility of which objects should be rendered. For example, just render the enemies found in these vectors, since they are in light.
-	for (int i = 0; i < 2; i++)
+	for (auto spot : _spotlights)
 	{
 		_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::SHADOW_GENERATION);
-		_renderModule->SetShadowMapDataPerSpotlight(_spotlights[i]->GetViewMatrix(), _spotlights[i]->GetProjectionMatrix());
+		_renderModule->SetShadowMapDataPerSpotlight(spot->GetViewMatrix(), spot->GetProjectionMatrix());
 
-		for (int i = 0; i < gameObjects->size(); i++)
+		for (auto i : *gameObjects)
 		{
-			if (gameObjects->at(i).size() > 0)
+			if (i.size() > 0)
 			{
-				RenderObject* renderObject = gameObjects->at(i).at(0)->GetRenderObject();
+				RenderObject* renderObject = i.at(0)->GetRenderObject();
 				_renderModule->SetShadowMapDataPerObjectType(renderObject);
 				int vertexBufferSize = renderObject->_mesh._vertexBufferSize;
 
-				for (GameObject* g : gameObjects->at(i))
+				for (GameObject* g : i)
 				{
 					_renderModule->RenderShadowMap(g->GetMatrix(), vertexBufferSize);
 				}
@@ -239,9 +259,9 @@ void Game::Render()
 		}
 
 		_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::LIGHT_APPLICATION);
-		_renderModule->SetLightDataPerSpotlight(_spotlights[i]);
+		_renderModule->SetLightDataPerSpotlight(spot);
 
-		_renderModule->RenderLightVolume(_spotlights[i]->GetVolumeBuffer(), _spotlights[i]->GetWorldMatrix(), _spotlights[i]->GetVertexCount(), _spotlights[i]->GetVertexSize());
+		_renderModule->RenderLightVolume(spot->GetVolumeBuffer(), spot->GetWorldMatrix(), spot->GetVertexCount(), spot->GetVertexSize());
 	}
 
 	/*-------------------------------------------------------- HUD and other 2D -----------------------------------------------------------*/
