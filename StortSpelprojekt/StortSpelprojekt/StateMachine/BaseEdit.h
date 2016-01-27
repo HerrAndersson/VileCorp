@@ -43,7 +43,6 @@ private:
 	bool _isDragAndPlaceMode;
 	bool _isPlace;
 
-	void ChangePlaceState();
 	void HandleInput();
 	void LoadLevel(int levelID);
 
@@ -61,6 +60,7 @@ public:
 	void DragAndDrop(Type type);
 	void DragAndDrop();
 	void DragAndPlace();
+	void ChangePlaceState();
 
 
 	void Update(float deltaTime);

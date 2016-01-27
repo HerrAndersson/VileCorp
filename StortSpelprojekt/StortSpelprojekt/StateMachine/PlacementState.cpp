@@ -20,6 +20,9 @@ void PlacementState::Update(float deltaTime)
 {
 	_baseEdit.Update(deltaTime);
 
+	_baseEdit.DragAndDrop(TRAP);
+	_baseEdit.DragAndDrop(GUARD);
+
 	//tempAddObj
 
 	int cost = 20;

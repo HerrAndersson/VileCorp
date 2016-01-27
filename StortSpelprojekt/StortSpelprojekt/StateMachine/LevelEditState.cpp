@@ -15,8 +15,12 @@ LevelEditState::~LevelEditState()
 
 void LevelEditState::Update(float deltaTime)
 {
-	HandleInput();
+	if (_controls->IsFunctionKeyDown("MAP_EDIT:PLACEMENTFLAG"))
+	{
+		_baseEdit.ChangePlaceState();
+	}
 	_baseEdit.Update(deltaTime);
+	HandleInput();
 }
 
 void LevelEditState::OnStateEnter()
@@ -31,8 +35,8 @@ void LevelEditState::OnStateExit()
 
 void LevelEditState::HandleInput()
 {
-	int maxObject = _objectHandler->GetObjectCount();
-	int selectedLevel = 1;
+	_baseEdit.DragAndDrop();
+	_baseEdit.DragAndPlace();
 
 	////Scale Objects
 	///*
