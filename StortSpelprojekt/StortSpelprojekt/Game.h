@@ -35,6 +35,7 @@ private:
 	PickingDevice*				_pickingDevice;
 	PlayerInfo					_playerInfo;
 	SettingInfo					_gameSettings;
+	System::WindowSettings		_windowSettings;
 	
 	bool						_hasFocus;
 	

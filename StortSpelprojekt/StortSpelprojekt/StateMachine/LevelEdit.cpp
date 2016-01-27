@@ -85,9 +85,7 @@ void LevelEdit::Initialize(ObjectHandler* objectHandler, System::Controls* contr
 	//buttonInfo[1].parent = 0;
 	//buttonInfo[2].parent = 1;
 
-	//System::saveJSON(&_levelLoad, "Assets/LevelLoad.json", "Level_Load");
-	System::loadJSON(&_levelLoad, "Assets/LevelLoad.json");
-
+	System::loadJSON(&_levelLoad, "../../../../StortSpelprojekt/Assets/LevelLoad.json");
 	LoadLevel(_levelLoad.level);
 	_budget = 100;
 	_uiNode = _uiTree->GetNode("BudgetValue");

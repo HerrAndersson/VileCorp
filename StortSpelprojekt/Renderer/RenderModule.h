@@ -92,7 +92,7 @@ namespace Renderer
 
 		enum ShaderStage { GEO_PASS, SHADOW_GENERATION, LIGHT_APPLICATION, GRID_PASS, ANIM_PASS, HUD_PASS };
 
-		RenderModule(HWND hwnd, int screenWidth, int screenHeight);
+		RenderModule(HWND hwnd, int screenWidth, int screenHeight, bool fullScreen);
 		~RenderModule();
 
 		void ResizeResources(HWND hwnd, int windowWidth, int windowHeight);

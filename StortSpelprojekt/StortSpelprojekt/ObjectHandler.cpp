@@ -1,5 +1,8 @@
 #include "ObjectHandler.h"
 
+
+
+
 ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data)
 {
 	_idCount = 0;
@@ -197,7 +200,7 @@ GameObject* ObjectHandler::Find(Type type, int ID)
 	return nullptr;
 }
 
-GameObject* ObjectHandler::Find(Type type, short index)//TODO why? - Fredrik
+GameObject* ObjectHandler::Find(Type type, short index)
 {
 	for (GameObject* g : _gameObjects[type])
 	{
@@ -259,16 +262,18 @@ bool ObjectHandler::LoadLevel(int lvlIndex)
 {
 	int dimX, dimY;
 	vector<GameObjectData> gameObjectData;
-	_assetManager->ParseLevel(lvlIndex, gameObjectData, dimX, dimY);
-
-	delete _tilemap;
-	_tilemap = new Tilemap(dimX, dimY);
-
-	for (auto i : gameObjectData)
+	bool result = _assetManager->ParseLevel(lvlIndex, gameObjectData, dimX, dimY);
+	if (result)
 	{
-		Add((Type)i._tileType, DirectX::XMFLOAT3(i._posX, 0, i._posZ), DirectX::XMFLOAT3(0, i._rotY, 0));
+		delete _tilemap;
+		_tilemap = new Tilemap(dimX, dimY);
+
+		for (auto i : gameObjectData)
+		{
+			Add((Type)i._tileType, DirectX::XMFLOAT3(i._posX, 0, i._posZ), DirectX::XMFLOAT3(0, i._rotY, 0));
+		}
 	}
-	return false;
+	return result;
 }
 
 void ObjectHandler::InitPathfinding()
