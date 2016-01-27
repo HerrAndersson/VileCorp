@@ -112,6 +112,11 @@ namespace System
 		_inputDevice->HandleRawInput(lparam);
 	}
 
+	void Controls::ResetInputBuffers()
+	{
+		_inputDevice->ResetInputBuffers();
+	}
+
 	void Controls::StringToKeyMap(const std::string& key, unsigned char &mainKey, unsigned char& keyModifiers)
 	{
 		if (key == "ctrl")
@@ -133,6 +138,10 @@ namespace System
 		else if (key == "spacebar")
 		{
 			mainKey = VK_SPACE;
+		}
+		else if (key == "enter" || key == "return")
+		{
+			mainKey = VK_RETURN;
 		}
 		else if (key == "escape")
 		{

@@ -4,9 +4,9 @@ using namespace DirectX;
 
 namespace Renderer
 {
-	RenderModule::RenderModule(HWND hwnd, int screenWidth, int screenHeight)
+	RenderModule::RenderModule(HWND hwnd, int screenWidth, int screenHeight, bool fullScreen)
 	{
-		_d3d = new DirectXHandler(hwnd, screenWidth, screenHeight);
+		_d3d = new DirectXHandler(hwnd, screenWidth, screenHeight, fullScreen);
 		_screenWidth = screenWidth;
 		_screenHeight = screenHeight;
 		_shaderHandler = new ShaderHandler(_d3d->GetDevice());
@@ -164,12 +164,12 @@ namespace Renderer
 		MatrixBufferPerSkinnedObject* dataPtr = (MatrixBufferPerSkinnedObject*)mappedResource.pData;
 		dataPtr->world = worldMatrixC;
 
-		DirectX::XMFLOAT4X4 tempmatrix;														//
-		DirectX::XMStoreFloat4x4(&tempmatrix, DirectX::XMMatrixIdentity());					//
-		for (unsigned i = 0; i < 30; i++) {													//
-			memcpy(&dataPtr->bones[i], (char*)&tempmatrix, sizeof(DirectX::XMFLOAT4X4));	//
-		}																					//TODO remove - Fredrik
-//		memcpy(&dataPtr->bones, extra->data(), sizeof(DirectX::XMFLOAT4X4) * extra->size());
+//		DirectX::XMFLOAT4X4 tempmatrix;														//
+//		DirectX::XMStoreFloat4x4(&tempmatrix, DirectX::XMMatrixIdentity());					//
+//		for (unsigned i = 0; i < 30; i++) {													//
+//			memcpy(&dataPtr->bones[i], (char*)&tempmatrix, sizeof(DirectX::XMFLOAT4X4));	//
+//		}																					//TODO remove - Fredrik
+		memcpy(&dataPtr->bones, extra->data(), sizeof(DirectX::XMFLOAT4X4) * extra->size());
 		
 
 		deviceContext->Unmap(_matrixBufferPerSkinnedObject, 0);

@@ -1,0 +1,12 @@
+{
+    "Game Settings": {
+        "_default": false,
+        "_resX": 1920,
+        "_resY": 1080,
+        "_shadowmap": true,
+        "_fullScreen": false,
+        "_debugMode": false,
+        "_bordeless": true,
+        "_showMouseCursor": true
+    }
+}

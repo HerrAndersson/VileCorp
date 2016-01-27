@@ -23,7 +23,7 @@ namespace GUI
 		bool found = false;
 		for (Value::ConstMemberIterator i = d.MemberBegin(); i != d.MemberEnd(); ++i)
 		{
-			if (i->name.IsString() &&  string(i->name.GetString()) == statename)
+			if (i->name.IsString() && string(i->name.GetString()) == statename)
 			{
 				found = true;
 				_root = LoadGUITree("root", i->value.MemberBegin(), i->value.MemberEnd());
@@ -234,5 +234,28 @@ namespace GUI
 		{
 			throw std::runtime_error("Could not find " + statename + " in " + filename);
 		}
+	}
+
+	Node* UITree::GetNode(const std::string& id)
+	{
+		Node* node = _root;
+		return FindNode(_root, id);
+	}
+
+	Node* UITree::FindNode(Node* current, const std::string& id)
+	{
+		if (current->GetId() == id)
+		{
+			return current;
+		}
+		for (Node* i : *current->GetChildren())
+		{
+			Node* node = FindNode(i, id);
+			if (node != nullptr)
+			{
+				return node;
+			}
+		}
+		return nullptr;
 	}
 }

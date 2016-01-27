@@ -220,6 +220,9 @@ void Unit::CalculatePath()
 	{
 		_path = _aStar->GetPath();
 		_pathLength = _aStar->GetPathLength();
+		_isMoving = true;
+		_direction = _path[--_pathLength] - _tilePosition;
+		Rotate();
 		//_aStar->printMap();
 	}
 	else
@@ -228,6 +231,26 @@ void Unit::CalculatePath()
 		_pathLength = 0;
 		//	_aStar->printMap();
 
+	}
+}
+
+void Unit::Rotate()
+{
+	if (_direction._x != 0 || _direction._y != 0)
+	{
+		if (_direction._x == 0)
+		{
+			_rotation.y = DirectX::XM_PIDIV2 * (_direction._y + 1);
+		}
+		else if (_direction._x == -1)
+		{
+			_rotation.y = DirectX::XM_PIDIV2 + DirectX::XM_PIDIV4 * _direction._y;
+		}
+		else
+		{
+			_rotation.y = 3 * DirectX::XM_PIDIV2 - DirectX::XM_PIDIV4 * _direction._y;
+		}
+		CalculateMatrix();
 	}
 }
 
@@ -250,6 +273,9 @@ Unit::Unit()
 	_health = 1;
 	_pathLength = 0;
 	_path = nullptr;
+	_isMoving = false;
+	_direction = {0, -1};
+	Rotate();
 }
 
 Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject* renderObject, const Tilemap* tileMap)
@@ -268,6 +294,13 @@ Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	_health = 1;					//TODO: Update constrcutor parameters to include health  --Victor
 	_pathLength = 0;
 	_path = nullptr;
+	_isMoving = false;
+	_direction = {0, 1};
+	Rotate();
+	if (_renderObject->_isSkinned)
+	{
+		_animation = new Animation(_renderObject->_skeleton);
+	}
 }
 
 
@@ -276,6 +309,12 @@ Unit::~Unit()
 	delete[] _visibleTiles;
 	delete _aStar;
 	_aStar = nullptr;
+	//delete _heldObject;
+	//_heldObject = nullptr;
+	if (_animation != nullptr)
+	{
+		delete _animation;
+	}
 }
 
 int Unit::GetPathLength() const
@@ -389,6 +428,7 @@ void Unit::CheckVisibleTiles()
 		}
 		if (_tileMap->UnitsOnTile(_visibleTiles[i]._x, _visibleTiles[i]._y) > 0 && !(_visibleTiles[i] == _goalTilePosition || _visibleTiles[i] == _tilePosition))	//Unit finds another unit
 		{
+			int nrOfUnits = _tileMap->UnitsOnTile(_visibleTiles[i]._x, _visibleTiles[i]._y);
 			GameObject* unit = _tileMap->GetObjectOnTile(_visibleTiles[i]._x, _visibleTiles[i]._y, ENEMY);
 			if (unit == nullptr)
 			{
@@ -425,6 +465,10 @@ void Unit::CheckAllTiles()
 			{
 				_aStar->SetTileCost({ i, j }, 1);
 				EvaluateTile(_tileMap->GetObjectOnTile(i, j, LOOT));
+			}
+			else if (_tileMap->IsTypeOnTile(i, j, SPAWN))
+			{
+				EvaluateTile(_tileMap->GetObjectOnTile(i, j, SPAWN));
 			}
 		}
 	}
@@ -463,63 +507,60 @@ Name should be changed to make it clear that this is tile movement
 */
 void Unit::Move()
 {
-
-	if (_pathLength <= 0)		//The unit has reached its goal and needs a new one
-	{
-		CheckAllTiles();
-	}
+	//if (_pathLength <= 0)		//The unit has reached its goal and needs a new one
+	//{
+	//	if (_objective != nullptr)
+	//	{
+	//		act(_objective);
+	//	}
+	//	CheckAllTiles();
+	//}
 	//if (_goalTilePosition == _tilePosition)
 	//{
 	//	CheckAllTiles();
 	//}
-
-	_tilePosition += _direction;
-	
-
+	if (_isMoving)
+	{
+		_tilePosition += _direction;
+	}
 	if (_objective != nullptr && _objective->GetPickUpState() != ONTILE)			//Check that no one took your objective
 	{
 		_objective = nullptr;
-		_pathLength = 0;														//reseting _pathLength to indicate that a new path needs to be found_objecti
+		_pathLength = 0;														//reseting _pathLength to indicate that a new path needs to be found
 	}
 
 	//TODO: React to objects in same tile --Victor
 
 
-	FindVisibleTiles();
-	CheckVisibleTiles();
+
 	if (_pathLength > 0)
 	{
+		_isMoving = true;
 		AI::Vec2D nextTile = _path[--_pathLength];
 		_direction = nextTile - _tilePosition;
 	}
 	else
 	{
-		_direction = {0,0};
-		if (_objective != nullptr)
+		_isMoving = false;
+		if (_objective != nullptr && _objective->GetTilePosition() == _tilePosition)
 		{
 			act(_objective);
 		}
+		//_direction = {0,0};
 		CheckAllTiles();
-		Wait(60);
+		Wait(10);
 	}
-
-	if (_direction._x == 0)
-	{
-		_rotation.y = DirectX::XM_PIDIV2 * (_direction._y + 1);
-	}
-	else if (_direction._x == -1)
-	{
-		_rotation.y = DirectX::XM_PIDIV2 + DirectX::XM_PIDIV4 * _direction._y;
-	}
-	else
-	{
-		_rotation.y = 3 * DirectX::XM_PIDIV2 - DirectX::XM_PIDIV4 * _direction._y;
-	}
-	CalculateMatrix();
+	FindVisibleTiles();
+	CheckVisibleTiles();
+	Rotate();
 }
 
-void Unit::Update()
+void Unit::Update(float deltaTime)
 {
+	if (_animation != nullptr)
+	{
+		_animation->Update(deltaTime);
+	}
 
 	if (_waiting > 0)
 	{
@@ -530,12 +571,16 @@ void Unit::Update()
 		_waiting--;
 		Move();
 	}
-	else
+	if(_isMoving)
 	{
 		if (_direction._x == 0 || _direction._y == 0)		//Right angle movement
 		{
 			_position.x += MOVE_SPEED * _direction._x;
 			_position.z += MOVE_SPEED * _direction._y;
+		}
+		else if (_direction._x == 0 && _direction._y == 0)	
+		{
+			CheckVisibleTiles();
 		}
 		else												//Diagonal movement
 		{
@@ -554,7 +599,7 @@ void Unit::Wait(int frames)
 	_waiting = frames;
 }
 
-void Unit::ChangeHealth(int damage)
+void Unit::TakeDamage(int damage)
 {
 	_health -= damage;
 }

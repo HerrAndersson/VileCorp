@@ -5,21 +5,21 @@
 
 Game::Game(HINSTANCE hInstance, int nCmdShow)
 {
+	CheckSettings();
 	_gameHandle = this;
-	System::WindowSettings settings;
-	_window = new System::Window("Amazing game", hInstance, settings, WndProc);
+	_window = new System::Window("Amazing game", hInstance, _windowSettings, WndProc);
 
 	_timer = System::Timer();
 
-	_renderModule = new Renderer::RenderModule(_window->GetHWND(), settings._width, settings._height);
+	_renderModule = new Renderer::RenderModule(_window->GetHWND(), _windowSettings._width, _windowSettings._height, _gameSettings._fullScreen);
 	
 	_assetManager = new AssetManager(_renderModule->GetDevice());
 	_controls = new System::Controls(_window->GetHWND());
 	_fontWrapper = new FontWrapper(_renderModule->GetDevice(), L"Assets/Fonts/Calibri.ttf", L"Calibri");
 
 	//Init camera
-	_camera = new System::Camera(0.1f, 1000.0f, DirectX::XM_PIDIV2, settings._width, settings._height);
-	_camera->SetPosition(XMFLOAT3(3, 10, 0));
+	_camera = new System::Camera(0.1f, 1000.0f, DirectX::XM_PIDIV2, _windowSettings._width, _windowSettings._height);
+	_camera->SetPosition(XMFLOAT3(3, 20, 0));
 	_camera->SetRotation(XMFLOAT3(60, 0, 0));
 
 	_timer = System::Timer();
@@ -34,7 +34,7 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	//_SM = new StateMachine();
 	//Init statemachine
 	_pickingDevice = new PickingDevice(_camera, _window);
-	_SM = new StateMachine(_controls, _objectHandler, _camera, _pickingDevice, "Assets/gui.json", _assetManager, _fontWrapper, settings._width, settings._height);
+	_SM = new StateMachine(_controls, _objectHandler, _camera, _pickingDevice, "Assets/gui.json", _assetManager, _fontWrapper, _windowSettings._width, _windowSettings._height);
 
 	_SM->Update(_timer.GetFrameTime());
 	if (_SM->GetState() == LEVELEDITSTATE)
@@ -42,8 +42,7 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 		_grid = new Grid(_renderModule->GetDevice(), 1, 10);
 	}
 
-	//CheckSettings();
-	_controls->SaveKeyBindings(System::MAP_EDIT_KEYMAP, "MOVE_CAMERA_UP", "M");
+	//_controls->SaveKeyBindings(System::MAP_EDIT_KEYMAP, "MOVE_CAMERA_UP", "M");
 
 	//TODO: TEMP! Make this pretty
 	Renderer::Spotlight* spot;
@@ -53,33 +52,34 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 		spot->SetPositionAndRotation(XMFLOAT3(4 * i + 3, 1.5f, 3 * i + 3), XMFLOAT3(0, 90 + i * 25, 0));
 		_spotlights.push_back(spot);
 	}
+
+	//settings._flags = settings.FULLSCREEN;
+	//ResizeResources(settings);
 }
 
 void Game::CheckSettings()
 {
-	////System::saveJSON(&_gameSettings, "Assets/GameSettings.json", "Game Settings");
-	//System::loadJSON(&_gameSettings, "Assets/GameSettings.json");
+	//System::saveJSON(&_gameSettings, "Assets/GameSettings.json", "Game Settings");
+	System::loadJSON(&_gameSettings, "Assets/GameSettings.json");
 
-	//if (_gameSettings._default == false)
-	//{
-	//	System::WindowSettings winSettings = _window->GetWindowSettings();
-	//	winSettings._width = _gameSettings._resX;
-	//	winSettings._height = _gameSettings._resY;
-	//	winSettings._flags = 0;
-	//	if (_gameSettings._fullScreen == true)
-	//	{
-	//		winSettings._flags += 1;
-	//	}
-	//	else if (_gameSettings._bordeless == true)
-	//	{
-	//		winSettings._flags += 2;
-	//	}
-	//	else if (_gameSettings._showMouseCursor == true)
-	//	{
-	//		winSettings._flags += 4;
-	//	}
-	//	_window->ResizeWindow(winSettings);
-	//}
+	if (_gameSettings._default == false)
+	{
+		_windowSettings._width = _gameSettings._resX;
+		_windowSettings._height = _gameSettings._resY;
+		_windowSettings._flags = 0;
+		if (_gameSettings._fullScreen == true)
+		{
+			_windowSettings._flags |= System::WindowSettings::FULLSCREEN;
+		}
+		if (_gameSettings._bordeless == true)
+		{
+			_windowSettings._flags |= System::WindowSettings::BORDERLESS;
+		}
+		if (_gameSettings._showMouseCursor == true)
+		{
+			_windowSettings._flags |= System::WindowSettings::SHOW_CURSOR;
+		}
+	}
 }
 
 Game::~Game() 
@@ -128,7 +128,13 @@ bool Game::Update(float deltaTime)
 	*/
 	_controls->Update();
 	run = _SM->Update(deltaTime);
-	_objectHandler->Update(deltaTime);
+	if (_controls->IsFunctionKeyDown("EVERYWHERE:FULLSCREEN"))
+	{
+		System::WindowSettings windowSettings = _window->GetWindowSettings();
+		_window->ResizeWindow(windowSettings);
+	}
+
+	
 
 	for (int i = 0; i < _spotlights.size(); i++)
 	{
@@ -162,7 +168,14 @@ void Game::Render()
 	{
 		for (GameObject* g : gameObjects->at(i))
 		{
-			_renderModule->Render(g->GetMatrix(), g->GetRenderObject());
+			if (g->GetAnimation() != nullptr)
+			{
+				_renderModule->Render(g->GetMatrix(), g->GetRenderObject(), g->GetAnimation()->GetTransforms());
+			}
+			else
+			{
+				_renderModule->Render(g->GetMatrix(), g->GetRenderObject());
+			}
 		}
 	}
 
@@ -170,14 +183,13 @@ void Game::Render()
 	{
 		_renderModule->SetShaderStage(Renderer::RenderModule::GRID_PASS);
 
-		std::vector<DirectX::XMMATRIX>* gridMatrices = _grid->GetGridMatrices();
+		//TODO: GetGridMatrices() returns a nullptr /Rikhard
+		//std::vector<DirectX::XMMATRIX>* gridMatrices = _grid->GetGridMatrices();
 
-		for (auto &matrix : *gridMatrices)
-
-
-		{
-			_renderModule->RenderLineList(&matrix, _grid->GetLineBuffer(), 2);
-		}
+		//for (auto &matrix : *gridMatrices)
+		//{
+		//	_renderModule->RenderLineList(&matrix, _grid->GetLineBuffer(), 2);
+		//}
 	}
 //for (auto spot : _spotlights)
 	//{
@@ -252,10 +264,11 @@ int Game::Run()
 		{
 			_timer.Update();
 			if (_timer.GetFrameTime() >= MS_PER_FRAME)
-			{
-				run = Update(_timer.GetFrameTime());
-				if (run)
+			{				
+				if (_hasFocus)
 				{
+					Update(_timer.GetFrameTime());
+				}			{
 					Render();
 					string s = to_string(_timer.GetFrameTime()) + " " + to_string(_timer.GetFPS());
 
@@ -298,6 +311,18 @@ LRESULT CALLBACK Game::WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM l
 	case WM_INPUT:
 	{
 		_gameHandle->_controls->HandleRawInput(lparam);
+		break;
+	}
+	case WM_SETFOCUS:
+	{
+		_gameHandle->_hasFocus = true;
+		break;
+	}
+	case WM_KILLFOCUS:
+	{
+		_gameHandle->_controls->ResetInputBuffers();
+		_gameHandle->_hasFocus = false;
+		break;
 	}
 
 	default:

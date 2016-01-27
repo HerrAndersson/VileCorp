@@ -5,12 +5,7 @@ namespace System
 	InputDevice::InputDevice(HWND hwnd)
 	{
 		_hwnd = hwnd;
-		for (int i = 0; i < KEY_CODE_CAP; i++)
-		{
-			_current[i] = false;
-			_last[i] = false;
-			_buffer[i] = false;
-		}
+		ResetInputBuffers();
 
 		RECT rect;
 		GetWindowRect(_hwnd, &rect);
@@ -79,6 +74,16 @@ namespace System
 		}
 		GetCursorPos(&_mouseCoord._pos);
 		ScreenToClient(_hwnd, &_mouseCoord._pos);
+	}
+
+	void InputDevice::ResetInputBuffers()
+	{
+		for (int i = 0; i < KEY_CODE_CAP; i++)
+		{
+			_current[i] = false;
+			_last[i] = false;
+			_buffer[i] = false;
+		}
 	}
 
 	void InputDevice::ToggleCursorLock()
