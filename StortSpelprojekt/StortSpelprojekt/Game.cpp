@@ -155,14 +155,13 @@ void Game::Update(float deltaTime)
 		if (_loot.size() >= 1)
 		{
 			//TODO: Add something to notify the player that they've beat the level
-			int a = 2;
 		}
 		else
 		{
 			//TODO: Add something to notify the player that they've SUCK and they can replay the level
-			int a = 2;
 		}
 	}
+
 	for (int i = 0; i < _spotlights.size(); i++)
 	{
 		XMFLOAT3 rot = _spotlights[i]->GetRotation();
