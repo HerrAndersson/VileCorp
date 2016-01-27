@@ -473,13 +473,14 @@ void RenderModule::SetDataPerObject(XMMATRIX* world, ID3D11ShaderResourceView* d
 				//x and y is in pixel coordinates
 				fontWrapper->GetFontWrapper()->DrawTextLayout(_d3d->GetDeviceContext(), current->GetFont()->_textLayout, x, y, current->GetColor(), FW1_RESTORESTATE);
 			}
+			for (GUI::Node* i : *current->GetChildren())
+			{
+				XMMATRIX a = *(i->GetModelMatrix());
+				XMMATRIX t = XMMatrixMultiply(*transform, a);
+				Render(i, &t, fontWrapper);
+			}
 		}
-		for (GUI::Node* i : *current->GetChildren())
-		{
-			XMMATRIX a = *(i->GetModelMatrix());
-			XMMATRIX t = XMMatrixMultiply(*transform, a);
-			Render(i, &t, fontWrapper);
-		}
+		
 	}
 	
 	void RenderModule::Render(std::vector<HUDElement>* imageData)

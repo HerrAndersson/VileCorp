@@ -19,6 +19,33 @@ void LevelEditState::Update(float deltaTime)
 	{
 		ChangeState(MENUSTATE);
 	}
+	
+	System::MouseCoord coord = _controls->GetMouseCoord();
+	if (_uiTree.IsButtonColliding("Traps", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("PLACEMENT:CLICK"))
+	{
+		_uiTree.GetNode("TrapLeaf")->SetHidden(false);
+		_uiTree.GetNode("UnitLeaf")->SetHidden(true);
+		_uiTree.GetNode("DecLeaf")->SetHidden(true);
+	}
+	
+	if (_uiTree.IsButtonColliding("Units", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("PLACEMENT:CLICK"))
+	{
+		_uiTree.GetNode("UnitLeaf")->SetHidden(false);
+		_uiTree.GetNode("TrapLeaf")->SetHidden(true);
+		_uiTree.GetNode("DecLeaf")->SetHidden(true);
+	}
+
+
+	if (_uiTree.IsButtonColliding("Decorations", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("PLACEMENT:CLICK"))
+	{
+		_uiTree.GetNode("DecLeaf")->SetHidden(false);
+		_uiTree.GetNode("TrapLeaf")->SetHidden(true);
+		_uiTree.GetNode("UnitLeaf")->SetHidden(true);
+	}
+
+
+	
+
 
 	_levelEdit.Update(deltaTime);
 }
@@ -26,6 +53,9 @@ void LevelEditState::Update(float deltaTime)
 void LevelEditState::OnStateEnter()
 {
 	_levelEdit.Initialize(_objectHandler, _controls, _pickingDevice, _camera, &_uiTree);
+	_uiTree.GetNode("TrapLeaf")->SetHidden(true);
+	_uiTree.GetNode("UnitLeaf")->SetHidden(true);
+	_uiTree.GetNode("DecLeaf")->SetHidden(true);
 }
 
 void LevelEditState::OnStateExit()
