@@ -23,8 +23,6 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	_camera = new System::Camera(0.1f, 1000.0f, DirectX::XM_PIDIV4, settings._width, settings._height);
 	_camera->SetPosition(XMFLOAT3(3, 20, 0));
 	_camera->SetRotation(XMFLOAT3(60, 0, 0));
-	//_camera->SetMode(System::FREE_CAM);
-	//
 
 	_timer = System::Timer();
 
@@ -52,11 +50,11 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	//_controls->SaveKeyBindings(System::MAP_EDIT_KEYMAP, "MOVE_CAMERA_UP", "M");
 
 	Renderer::Spotlight* spot;
-	for (int i = 0; i < 1; i++)
+	for (int i = 0; i < 2; i++)
 	{
 		int d = _renderModule->SHADOWMAP_DIMENSIONS;
-		spot = new Renderer::Spotlight(_renderModule->GetDevice(), 0.1f, 1000.0f, XM_PIDIV4 /*XM_PI / 0.082673f*/, d, d, 1.0f / (i+1), 9.5f, XMFLOAT3(1.0f, 1.0f, 1.0f), 36);
-		spot->SetPositionAndRotation(XMFLOAT3(6, 1, 2), XMFLOAT3(0,0,0));
+		spot = new Renderer::Spotlight(_renderModule->GetDevice(), 0.1f, 1000.0f, XM_PIDIV4, d, d, 1.0f / (i+1), 9.5f, XMFLOAT3(1.0f, 1.0f, 1.0f), 36);
+		spot->SetPositionAndRotation(XMFLOAT3(6 + 2*i, 1, 2 + 2*i), XMFLOAT3(0,-35*i,0));
 		_spotlights.push_back(spot);
 	}
 
@@ -181,20 +179,43 @@ void Game::Render()
 
 	//Render all objects to the diffuse and normal buffers
 	std::vector<std::vector<GameObject*>>* gameObjects = _objectHandler->GetGameObjects();
-	for (int i = 0; i < NR_OF_TYPES; i++)
+	std::vector<std::vector<GameObject*>> animatedObjects;
+	for (int i = 0; i < gameObjects->size(); i++)
 	{
-		for (GameObject* g : gameObjects->at(i))
+		if (gameObjects->at(i).size() > 0)
 		{
-			//TODO: If type == ENEMY -> don't render. Instead check in the chosen objects for the light rendering (Functionality not done), and check if the enemies are there they should be both rendered and lit.
-			//If not, they should not be rendered nor lit /Jonas
-
-			if (g->GetAnimation() != nullptr)
+			RenderObject* renderObject = gameObjects->at(i).at(0)->GetRenderObject();
+			if (!renderObject->_isSkinned)
 			{
-				_renderModule->Render(g->GetMatrix(), g->GetRenderObject(), g->GetColorOffset(), g->GetAnimation()->GetTransforms());
+				_renderModule->SetDataPerObjectType(renderObject);
+				int vertexBufferSize = renderObject->_mesh._vertexBufferSize;
+
+				for (GameObject* g : gameObjects->at(i))
+				{
+					_renderModule->Render(g->GetMatrix(), vertexBufferSize, g->GetColorOffset());
+				}
 			}
 			else
 			{
-				_renderModule->Render(g->GetMatrix(), g->GetRenderObject(), g->GetColorOffset());
+				animatedObjects.push_back((*gameObjects).at(i));
+			}
+		}
+	}
+
+	//TODO: Check if this works. /Jonas
+	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::ANIM_STAGE);
+	for (int i = 0; i < animatedObjects.size(); i++)
+	{
+		if (animatedObjects.at(i).size() > 0)
+		{
+			RenderObject* renderObject = animatedObjects.at(i).at(0)->GetRenderObject();
+
+			_renderModule->SetDataPerObjectType(renderObject);
+			int vertexBufferSize = renderObject->_mesh._vertexBufferSize;
+
+			for (GameObject* a : animatedObjects.at(i))
+			{
+				_renderModule->Render(a->GetMatrix(), vertexBufferSize, a->GetColorOffset());
 			}
 		}
 	}
@@ -211,33 +232,41 @@ void Game::Render()
 		//}
 	}
 
+
+
 	/*------------------------------------------------------------ Light pass --------------------------------------------------------------
 	Generate the shadow map for each spotlight, then apply the lighting/shadowing to the backbuffer render target with additive blending. */
 
 	//_renderModule->RenderLightVolume(_spotlights[0]->GetVolumeBuffer(), _spotlights[0]->GetWorldMatrix(), _spotlights[0]->GetVertexCount(), _spotlights[0]->GetVertexSize());
 
 	_renderModule->SetLightDataPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
-	for (int i = 0; i < 1; i++)
+
+	//TODO: Get vector of objects in light to use instead of gameObjects. Or use a vector (one for each light) of vectors (one for each object type) of vectors (he objects itself. 
+	//May be ugly, but this way you have more flexibility of which objects should be rendered. For example, just render the enemies found in these vectors, since they are in light.
+	for (int i = 0; i < 2; i++)
 	{
 		_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::SHADOW_GENERATION);
 		_renderModule->SetShadowMapDataPerSpotlight(_spotlights[i]->GetViewMatrix(), _spotlights[i]->GetProjectionMatrix());
 
-		for (int i = 0; i < NR_OF_TYPES; i++)
+		for (int i = 0; i < gameObjects->size(); i++)
 		{
-			for (GameObject* g : gameObjects->at(i))
+			if (gameObjects->at(i).size() > 0)
 			{
-				_renderModule->RenderShadowMap(g->GetMatrix(), g->GetRenderObject());
+				RenderObject* renderObject = gameObjects->at(i).at(0)->GetRenderObject();
+				_renderModule->SetShadowMapDataPerObjectType(renderObject);
+				int vertexBufferSize = renderObject->_mesh._vertexBufferSize;
+
+				for (GameObject* g : gameObjects->at(i))
+				{
+					_renderModule->RenderShadowMap(g->GetMatrix(), vertexBufferSize);
+				}
 			}
 		}
 
 		_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::LIGHT_APPLICATION);
 		_renderModule->SetLightDataPerSpotlight(_spotlights[i]);
 
-		//Use when SetLightApplicationShaders takes 1 as input (using light volume shaders)
 		_renderModule->RenderLightVolume(_spotlights[i]->GetVolumeBuffer(), _spotlights[i]->GetWorldMatrix(), _spotlights[i]->GetVertexCount(), _spotlights[i]->GetVertexSize());
-
-		//Use when SetLightApplicationShaders takes 2 as input (using screen quad shaders)
-		//_renderModule->RenderScreenQuad();
 	}
 
 	/*-------------------------------------------------------- HUD and other 2D -----------------------------------------------------------*/
@@ -251,15 +280,6 @@ void Game::Render()
 int Game::Run()
 {
 	bool run = true;
-
-	// Setting up delta time
-		__int64 cntsPerSec = 0;
-	QueryPerformanceFrequency((LARGE_INTEGER*)&cntsPerSec);
-	float secsPerCnt = 1.0f / (float)cntsPerSec;
-
-	__int64 prevTimeStamp = 0;
-	QueryPerformanceCounter((LARGE_INTEGER*)&prevTimeStamp);
-	//
 
 	MSG msg;
 	ZeroMemory(&msg, sizeof(MSG));

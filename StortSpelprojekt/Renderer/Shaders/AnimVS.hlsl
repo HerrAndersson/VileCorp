@@ -6,11 +6,17 @@ cbuffer matrixBufferPerFrame : register(b0)
 {
 	matrix viewMatrix;
 	matrix projectionMatrix;
+	float3 ambientLight;
 };
 
-cbuffer matrixBufferPerSkinnedObject : register(b1)
+cbuffer matrixBufferPerObjectObject : register(b1)
 {
 	matrix worldMatrix;
+	float3 colorOffset;
+};
+
+cbuffer matrixBufferPerObjectObject : register(b5)
+{
 	matrix bones[30];
 };
 
@@ -28,7 +34,8 @@ struct VS_OUT
 	float4 pos			: SV_POSITION;
 	float3 normal		: NORMAL;
 	float2 uv			: TEXCOORD;
-	float4 worldPos		: POSITION;
+	float3 ambientLight : AMBIENT;
+	float3 colorOffset  : COLOROFFSET;
 };
 
 VS_OUT main(VS_IN input)
@@ -51,7 +58,7 @@ VS_OUT main(VS_IN input)
 	animNormal += mul(animNormal, bones[input.boneIndex.w]) * input.boneWeight.w;
 
 	animPos = mul(animPos, worldMatrix);
-	output.worldPos = animPos;
+	//output.worldPos = animPos;
 	animPos = mul(animPos, viewMatrix);
 	animPos = mul(animPos, projectionMatrix);
 

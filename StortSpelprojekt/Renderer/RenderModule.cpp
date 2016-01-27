@@ -147,16 +147,13 @@ namespace Renderer
 		deviceContext->VSSetConstantBuffers(0, 1, &_matrixBufferPerFrame);
 	}
 
-	void RenderModule::SetDataPerSkinnedObject(XMMATRIX* world, ID3D11ShaderResourceView* diffuse, ID3D11ShaderResourceView* specular, std::vector<DirectX::XMFLOAT4X4>* extra, DirectX::XMFLOAT3 colorOffset)
+	void RenderModule::SetDataPerSkinnedObject(XMMATRIX* world, std::vector<DirectX::XMFLOAT4X4>* extra, DirectX::XMFLOAT3 colorOffset)
 	{
 		HRESULT result;
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
 		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
 
-		UINT32 offset = 0;
-
-		deviceContext->PSSetShaderResources(0, 1, &diffuse);
-		deviceContext->PSSetShaderResources(1, 1, &specular);
+		SetDataPerObject(world, colorOffset);
 
 		XMMATRIX worldMatrixC = XMMatrixTranspose(*world);
 
@@ -167,8 +164,6 @@ namespace Renderer
 		}
 
 		MatrixBufferPerSkinnedObject* dataPtr = static_cast<MatrixBufferPerSkinnedObject*>(mappedResource.pData);
-		dataPtr->_world = worldMatrixC;
-		//dataPtr->_colorOffset = colorOffset;
 
 //		DirectX::XMFLOAT4X4 tempmatrix;														//
 //		DirectX::XMStoreFloat4x4(&tempmatrix, DirectX::XMMatrixIdentity());					//
@@ -179,17 +174,46 @@ namespace Renderer
 		
 		deviceContext->Unmap(_matrixBufferPerSkinnedObject, 0);
 
-		deviceContext->VSSetConstantBuffers(1, 1, &_matrixBufferPerSkinnedObject);
+		deviceContext->VSSetConstantBuffers(5, 1, &_matrixBufferPerSkinnedObject);
 	}
 
-	void RenderModule::SetDataPerObject(XMMATRIX* world, ID3D11ShaderResourceView* diffuse, ID3D11ShaderResourceView* specular, DirectX::XMFLOAT3 colorOffset)
+	void RenderModule::SetDataPerObjectType(RenderObject* renderObject)
+	{
+		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
+
+		ID3D11ShaderResourceView* diffuseData = nullptr;
+		ID3D11ShaderResourceView* specularData = nullptr;
+
+		Texture* diffuse = renderObject->_diffuseTexture;
+		Texture* specular = renderObject->_specularTexture;
+
+		if (diffuse)
+		{
+			diffuseData = diffuse->_data;
+		}
+		if (specular)
+		{
+			specularData = specular->_data;
+		}
+
+		UINT32 vertexSize = sizeof(Vertex);
+
+		if (renderObject->_isSkinned)
+		{
+			vertexSize = sizeof(WeightedVertex);
+		}
+
+		SetDataPerMesh(renderObject->_mesh._vertexBuffer, vertexSize);
+
+		deviceContext->PSSetShaderResources(0, 1, &diffuseData);
+		deviceContext->PSSetShaderResources(1, 1, &specularData);
+	}
+
+	void RenderModule::SetDataPerObject(XMMATRIX* world, DirectX::XMFLOAT3 colorOffset)
 	{
 		HRESULT result;
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
 		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
-
-		deviceContext->PSSetShaderResources(0, 1, &diffuse);
-		deviceContext->PSSetShaderResources(1, 1, &specular);
 
 		XMMATRIX worldMatrixC = XMMatrixTranspose(*world);
 
@@ -222,12 +246,12 @@ namespace Renderer
 		_shadowMap->SetDataPerFrame(_d3d->GetDeviceContext(), lightView, lightProjection);
 	}
 
-	void RenderModule::RenderShadowMap(DirectX::XMMATRIX* world, RenderObject* renderObject)
+	void RenderModule::SetShadowMapDataPerObjectType(RenderObject* renderObject)
 	{
 		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
-		_shadowMap->SetDataPerObject(_d3d->GetDeviceContext(), world);
 
-		int vertexSize = sizeof(Vertex);
+		UINT32 offset = 0;
+		UINT32 vertexSize = sizeof(Vertex);
 
 		if (renderObject->_isSkinned)
 		{
@@ -235,7 +259,14 @@ namespace Renderer
 		}
 
 		SetDataPerMesh(renderObject->_mesh._vertexBuffer, vertexSize);
-		deviceContext->Draw(renderObject->_mesh._vertexBufferSize, 0);
+	}
+
+	void RenderModule::RenderShadowMap(DirectX::XMMATRIX* world, int vertexBufferSize)
+	{
+		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
+		_shadowMap->SetDataPerObject(_d3d->GetDeviceContext(), world);
+
+		deviceContext->Draw(vertexBufferSize, 0);
 	}
 
 	void RenderModule::SetLightDataPerSpotlight(Spotlight* spotlight)
@@ -311,8 +342,8 @@ namespace Renderer
 		{
 		case ANIM_STAGE:
 		{
-			_d3d->SetGeometryStage();
 			_shaderHandler->SetAnimationPassShaders(_d3d->GetDeviceContext());
+
 			break;
 		}
 		case GEO_PASS:
@@ -368,43 +399,13 @@ namespace Renderer
 		_d3d->BeginScene(red, green, blue, alpha);
 	}
 
-	void RenderModule::Render(DirectX::XMMATRIX* world, RenderObject* renderObject, DirectX::XMFLOAT3 colorOffset, std::vector<DirectX::XMFLOAT4X4>* extra)
+	void RenderModule::Render(DirectX::XMMATRIX* world, int vertexBufferSize, DirectX::XMFLOAT3 colorOffset)
 	{
 		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
 
-		ID3D11ShaderResourceView* diffuseData = nullptr;
-		ID3D11ShaderResourceView* specularData = nullptr;
+		SetDataPerObject(world, colorOffset);
 
-		Texture* diffuse = renderObject->_diffuseTexture;
-		Texture* specular = renderObject->_specularTexture;
-
-		if (diffuse)
-		{
-			diffuseData = diffuse->_data;
-		}
-
-		if (specular)
-		{
-			specularData = specular->_data;
-		}
-
-		int vertexSize;
-
-		if (renderObject->_isSkinned)
-		{
-			SetShaderStage(ANIM_STAGE);
-			vertexSize = sizeof(WeightedVertex);
-			SetDataPerSkinnedObject(world, diffuseData, specularData, extra, colorOffset);
-		}
-		else
-		{
-			SetShaderStage(GEO_PASS);
-			vertexSize = sizeof(Vertex);
-			SetDataPerObject(world, diffuseData, specularData, colorOffset);
-		}
-		
-		SetDataPerMesh(renderObject->_mesh._vertexBuffer, vertexSize);
-		deviceContext->Draw(renderObject->_mesh._vertexBufferSize, 0);	
+		deviceContext->Draw(vertexBufferSize, 0);	
 	}
 
 	void RenderModule::Render(GUI::Node* root, FontWrapper* fontWrapper)
@@ -508,18 +509,18 @@ namespace Renderer
 
 	void RenderModule::RenderLineList(XMMATRIX* world, ID3D11Buffer* lineList, int nrOfPoints, XMFLOAT3 colorOffset)
 	{
-		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
+		//ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
 
-		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+		//deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
 
-		XMMATRIX worldMatrix = XMMatrixTranspose(*world);
+		//XMMATRIX worldMatrix = XMMatrixTranspose(*world);
 
-		SetDataPerObject(&worldMatrix, nullptr, nullptr, colorOffset);
+		//SetDataPerObject(&worldMatrix, nullptr, nullptr, colorOffset);
 
-		int pointSize = sizeof(XMFLOAT3);
+		//int pointSize = sizeof(XMFLOAT3);
 
-		SetDataPerMesh(lineList, pointSize);
-		deviceContext->Draw(nrOfPoints, 0);
+		//SetDataPerMesh(lineList, pointSize);
+		//deviceContext->Draw(nrOfPoints, 0);
 	}
 
 	void RenderModule::RenderScreenQuad()
