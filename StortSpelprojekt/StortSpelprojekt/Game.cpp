@@ -23,36 +23,40 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	_camera = new System::Camera(0.1f, 1000.0f, DirectX::XM_PIDIV4, settings._width, settings._height);
 	_camera->SetPosition(XMFLOAT3(3, 20, 0));
 	_camera->SetRotation(XMFLOAT3(60, 0, 0));
+	//_camera->SetMode(System::FREE_CAM);
+	//
 
 	_timer = System::Timer();
-
 
 	GameObjectInfo* data = new GameObjectInfo();
 	GameObjectDataLoader gameObjectDataLoader;
 	gameObjectDataLoader.WriteSampleGameObjects();
 	gameObjectDataLoader.LoadGameObjectInfo(data);
+
 	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager, data);
-	//Init statemachine
-	//_SM = new StateMachine();
-	//Init statemachine
 	_pickingDevice = new PickingDevice(_camera, _window);
 	_SM = new StateMachine(_controls, _objectHandler, _camera, _pickingDevice, "Assets/gui.json", _assetManager, _fontWrapper, settings._width, settings._height);
 
 	_SM->Update(_timer.GetFrameTime());
+	
 	if (_SM->GetState() == LEVELEDITSTATE)
 	{
 		_grid = new Grid(_renderModule->GetDevice(), 1, 10);
+	}
+	else
+	{
+		_grid = nullptr;
 	}
 
 	//CheckSettings();
 	//_controls->SaveKeyBindings(System::MAP_EDIT_KEYMAP, "MOVE_CAMERA_UP", "M");
 
-	//TODO: TEMP! Make this pretty
 	Renderer::Spotlight* spot;
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < 1; i++)
 	{
-		spot = new Renderer::Spotlight(_renderModule->GetDevice(), 0.1f, 1000.0f, XM_PIDIV4 /*XM_PI / 0.082673f*/, 256, 256, 1.0f, 10.0f, XMFLOAT3(0.0f, 1.0f, 1.0f), 36); //Ska ha samma dimensions som shadow map, som nu ligger i render module
-		spot->SetPositionAndRotation(XMFLOAT3(4 * i + 3, 1.5f, 3 * i + 3), XMFLOAT3(0, 90 + i * 25, 0));
+		int d = _renderModule->SHADOWMAP_DIMENSIONS;
+		spot = new Renderer::Spotlight(_renderModule->GetDevice(), 0.1f, 1000.0f, XM_PIDIV4 /*XM_PI / 0.082673f*/, d, d, 1.0f / (i+1), 9.5f, XMFLOAT3(1.0f, 1.0f, 1.0f), 36);
+		spot->SetPositionAndRotation(XMFLOAT3(6, 1, 2), XMFLOAT3(0,0,0));
 		_spotlights.push_back(spot);
 	}
 
@@ -89,26 +93,20 @@ void Game::CheckSettings()
 
 Game::~Game() 
 {
-	delete _window;
-	delete _renderModule;
-	delete _camera;
-	delete _objectHandler;
-	delete _SM;
-	delete _controls;
-	delete _assetManager;	
-	delete _pickingDevice;
+	SAFE_DELETE(_window);
+	SAFE_DELETE(_renderModule);
+	SAFE_DELETE(_camera);
+	SAFE_DELETE(_objectHandler);
+	SAFE_DELETE(_SM);
+	SAFE_DELETE(_controls);
+	SAFE_DELETE(_assetManager);
+	SAFE_DELETE(_pickingDevice);
+	SAFE_DELETE(_grid);
 	delete _fontWrapper;
 
-	
-	//TODO: TEMP! dfhfa
 	for(auto s : _spotlights)
 	{
 		delete s;
-	}
-
-	if (_grid != nullptr)
-	{
-		delete _grid;
 	}
 }
 
@@ -119,8 +117,6 @@ void Game::ResizeResources(System::WindowSettings settings)
 	_camera->Resize(settings._width, settings._height);
 	_SM->Resize(settings._width, settings._height);
 }
-
-
 
 void Game::Update(float deltaTime)
 {
@@ -141,99 +137,114 @@ void Game::Update(float deltaTime)
 	_SM->Update(deltaTime);
 	
 
-	for (int i = 0; i < _spotlights.size(); i++)
-	{
-		XMFLOAT3 rot = _spotlights[i]->GetRotation();
-		rot.y -= (float)(i + 1) / 1;
-		_spotlights[i]->SetRotation(rot);
+	std::vector<GameObject*> e = _objectHandler->GetAllByType(GUARD);
 
-		XMFLOAT3 color = _spotlights[i]->GetColor();
-		color.x = sin(_timer.GetGameTime() / 1000);
-		color.y = sin(_timer.GetGameTime() / 1000 + XMConvertToRadians(120));
-		color.z = sin(_timer.GetGameTime() / 1000 + XMConvertToRadians(240));
-		_spotlights[i]->SetColor(color);
+	if (e.size() > 0)
+	{
+		XMFLOAT3 p = e[0]->GetPosition();
+		XMFLOAT3 r = e[0]->GetRotation();
+
+		r = XMFLOAT3(XMConvertToDegrees(r.x), -XMConvertToDegrees(r.y), XMConvertToDegrees(r.z));
+		_spotlights[0]->SetRotation(r);
+
+		XMFLOAT3 d = _spotlights[0]->GetDirection();
+
+		p.y += 0.15f;
+		p.x += d.x * 0.5f;
+		p.z += d.z * 0.5f;
+
+		_spotlights[0]->SetPosition(p);
 	}
+
+	//for (unsigned int i = 0; i < _spotlights.size(); i++)
+	//{
+	//	XMFLOAT3 rot = _spotlights[i]->GetRotation();
+	//	rot.y -= (float)(i + 1) / 1;
+	//	_spotlights[i]->SetRotation(rot);
+
+	//	XMFLOAT3 color = _spotlights[i]->GetColor();
+	//	color.x = sin(_timer.GetGameTime() / 1000);
+	//	color.y = sin(_timer.GetGameTime() / 1000 + XMConvertToRadians(120));
+	//	color.z = sin(_timer.GetGameTime() / 1000 + XMConvertToRadians(240));
+	//	_spotlights[i]->SetColor(color);
+	//}
 }
 
 void Game::Render()
 {
-	_renderModule->BeginScene(0.0f, 1.0f, 1.0f, 1);
+	_renderModule->BeginScene(0.0f, 0.5f, 0.5f, 1.0f);
 	_renderModule->SetDataPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
+	/*--------------------------------------------------------- Geometry pass ------------------------------------------------------------
+	Render the objects to the diffuse and normal resource views. Camera depth is also generated here.									*/
 
-	/*/////////////////////////////////////////////////////////// Geometry pass //////////////////////////////////////////////////////////
-	
-	Render the objects to the diffuse and normal resource views. Camera depth is also generated here.
-			
-	*/
-	_renderModule->SetShaderStage(Renderer::RenderModule::GEO_PASS);
-	
+	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::GEO_PASS);
+
+	//Render all objects to the diffuse and normal buffers
 	std::vector<std::vector<GameObject*>>* gameObjects = _objectHandler->GetGameObjects();
 	for (int i = 0; i < NR_OF_TYPES; i++)
 	{
 		for (GameObject* g : gameObjects->at(i))
 		{
+			//TODO: If type == ENEMY -> don't render. Instead check in the chosen objects for the light rendering (Functionality not done), and check if the enemies are there they should be both rendered and lit.
+			//If not, they should not be rendered nor lit /Jonas
+
 			if (g->GetAnimation() != nullptr)
 			{
-				_renderModule->Render(g->GetMatrix(), g->GetRenderObject(), g->GetAnimation()->GetTransforms());
+				_renderModule->Render(g->GetMatrix(), g->GetRenderObject(), g->GetColorOffset(), g->GetAnimation()->GetTransforms());
 			}
 			else
 			{
-				_renderModule->Render(g->GetMatrix(), g->GetRenderObject());
+				_renderModule->Render(g->GetMatrix(), g->GetRenderObject(), g->GetColorOffset());
 			}
 		}
 	}
 
 	if (_SM->GetState() == LEVELEDITSTATE)
 	{
-		_renderModule->SetShaderStage(Renderer::RenderModule::GRID_PASS);
+		_renderModule->SetShaderStage(Renderer::RenderModule::GRID_STAGE);
 
 		//TODO: GetGridMatrices() returns a nullptr /Rikhard
 		//std::vector<DirectX::XMMATRIX>* gridMatrices = _grid->GetGridMatrices();
-
 		//for (auto &matrix : *gridMatrices)
 		//{
 		//	_renderModule->RenderLineList(&matrix, _grid->GetLineBuffer(), 2);
 		//}
 	}
-//for (auto spot : _spotlights)
-	//{
-	//	_renderModule->DEBUG_RenderLightVolume(spot->GetVolumeBuffer(), spot->GetWorldMatrix());
-	//}
 
-	/*/////////////////////////////////////////////////////////// Light pass /////////////////////////////////////////////////////////////
+	/*------------------------------------------------------------ Light pass --------------------------------------------------------------
+	Generate the shadow map for each spotlight, then apply the lighting/shadowing to the backbuffer render target with additive blending. */
 
-	Generate the shadow map for each spotlight, then apply the lighting/shadowing to the backbuffer render target with additive blending.
-	Instead of rendering the whole screen quad each time, the geometry pass should also output to the backbuffer directly,
-	then the light should be applied with additive blending.
-
-	*/
+	//_renderModule->RenderLightVolume(_spotlights[0]->GetVolumeBuffer(), _spotlights[0]->GetWorldMatrix(), _spotlights[0]->GetVertexCount(), _spotlights[0]->GetVertexSize());
 
 	_renderModule->SetLightDataPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
-	//for (auto spot : _spotlights)
-	//{
+	for (int i = 0; i < 1; i++)
+	{
+		_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::SHADOW_GENERATION);
+		_renderModule->SetShadowMapDataPerSpotlight(_spotlights[i]->GetViewMatrix(), _spotlights[i]->GetProjectionMatrix());
 
-		//for (int i = 0; i < 4; i++)
-		//{
-			_renderModule->SetShaderStage(Renderer::RenderModule::SHADOW_GENERATION);
-		//	_renderModule->SetShadowMapDataPerSpotLight(_spotlights[i]->GetViewMatrix(), _spotlights[i]->GetProjectionMatrix());
+		for (int i = 0; i < NR_OF_TYPES; i++)
+		{
+			for (GameObject* g : gameObjects->at(i))
+			{
+				_renderModule->RenderShadowMap(g->GetMatrix(), g->GetRenderObject());
+			}
+		}
 
-		//	for (auto i : *gameObjects)
-		//	{
-		//		_renderModule->RenderShadowMap(i->GetMatrix(), i->GetRenderObject());
-		//	}
+		_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::LIGHT_APPLICATION);
+		_renderModule->SetLightDataPerSpotlight(_spotlights[i]);
 
-			_renderModule->SetShaderStage(Renderer::RenderModule::LIGHT_APPLICATION);
-		//	_renderModule->SetLightDataPerLight(_spotlights[i]);
+		//Use when SetLightApplicationShaders takes 1 as input (using light volume shaders)
+		_renderModule->RenderLightVolume(_spotlights[i]->GetVolumeBuffer(), _spotlights[i]->GetWorldMatrix(), _spotlights[i]->GetVertexCount(), _spotlights[i]->GetVertexSize());
 
-			//Render light volume here instead? Render screen quad once first to fill the screen, or just let Geo pass output to backbuffer directly?
+		//Use when SetLightApplicationShaders takes 2 as input (using screen quad shaders)
+		//_renderModule->RenderScreenQuad();
+	}
 
-		//}
-	//}
-
+	/*-------------------------------------------------------- HUD and other 2D -----------------------------------------------------------*/
 	_renderModule->RenderScreenQuad();
-
-	_renderModule->SetShaderStage(Renderer::RenderModule::HUD_PASS);
+	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::HUD_STAGE);
 	_renderModule->Render(_SM->GetCurrentStatePointer()->GetUITree()->GetRootNode(), _fontWrapper);
+
 	_renderModule->EndScene();
 }
 

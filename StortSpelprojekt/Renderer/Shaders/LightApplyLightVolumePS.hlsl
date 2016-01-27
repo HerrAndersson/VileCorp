@@ -18,12 +18,12 @@ cbuffer matrixBufferLightPassPerLight : register(b3)
 	float lightIntensity;
 	float3 lightColor;
 	float lightRange;
+	int shadowMapDimensions;
 }
 
 struct VS_OUT
 {
 	float4 pos : SV_POSITION;
-	float2 uv : TEXCOORD;
 };
 
 Texture2D diffuseTex : register(t0);
@@ -39,9 +39,9 @@ float3 ReconstructWorldFromCamDepth(float2 uv)
 	// Get the depth value for this pixel
 	float z = camDepthMap.Sample(samplerWrap, uv).r;
 
-	// Get x/w and y/w from the viewport position
-	float x = uv.x * 2 - 1;											
+	float x = uv.x * 2 - 1;
 	float y = (1 - uv.y) * 2 - 1;
+
 	float4 projectedPos = float4(x, y, z, 1.0f);
 
 	float4 worldPos = mul(projectedPos, invCamProj);
@@ -52,31 +52,33 @@ float3 ReconstructWorldFromCamDepth(float2 uv)
 
 float4 main(VS_OUT input) : SV_TARGET
 {
-	float4 diffuse = diffuseTex.Sample(samplerWrap, input.uv);
-	float4 normal = normalTex.Sample(samplerWrap, input.uv);
-	normal.w = 0.0f;
-	normal = normalize(normal);
+	float lightAngleDiv2 = lightAngle / 2;
+	float2 uv = float2((input.pos.x) / 1920, (input.pos.y) / 1080);
+	//float2 uv = float2(0.5f + (input.pos.x / 1280 / input.pos.w * 0.5f), 0.5f - (input.pos.y / input.pos.w * 0.5f));
 
-	float3 finalColor = diffuse.xyz;
+	float4 normal = normalize(float4(normalTex.Sample(samplerWrap, uv).xyz, 0.0f));
 
-	//if (input.uv.x < 0.2f && input.uv.y < 0.2f)
+	//if (uv.x < 0.75f && uv.y < 0.75f && uv.x > 0.25f && uv.y > 0.25f)
 	//{
-	//	return pow(camDepthMap.Sample(samplerWrap, input.uv*5.0f).r,10);
+	//	return pow(camDepthMap.Sample(samplerWrap, uv).r,10);
+	//}
+	//if (uv.x > 0.8f && uv.y < 0.2f)
+	//{
+	//	return pow(lightDepthMap.Sample(samplerWrap, uv*5.0f).r,10);
 	//}
 
-	//if (input.uv.x > 0.8f && input.uv.y < 0.2f)
-	//{
-	//	return pow(lightDepthMap.Sample(samplerWrap, input.uv*5.0f).r,10);
-	//}
-
-	float3 worldPos = ReconstructWorldFromCamDepth(input.uv);
-	float3 lightToPixel = lightPosition - worldPos;
+	float3 worldPos = ReconstructWorldFromCamDepth(uv);
+	float3 pixToLight = lightPosition - worldPos;
 	
-	float l = length(lightToPixel);
-	lightToPixel = normalize(lightToPixel);
+	float l = length(pixToLight);
+	pixToLight = normalize(pixToLight);
 
-	float howMuchLight = dot(lightToPixel, normal.xyz);
-	if (howMuchLight > 0.0f  && l < lightRange)
+	float howMuchLight = dot(pixToLight, normal.xyz);
+
+	float3 nLightDir = normalize(lightDirection);
+	float pixToLightAngle = acos(dot(nLightDir, -pixToLight));
+	
+	if (howMuchLight > 0.0f && pixToLightAngle <= lightAngleDiv2)
 	{
 		//Sample and add shadows for the shadow map.
 		float4 lightSpacePos = float4(worldPos, 1.0f);
@@ -90,40 +92,40 @@ float4 main(VS_OUT input) : SV_TARGET
 		float depth = lightSpacePos.z / lightSpacePos.w;
 
 		float epsilon = 0.00001f;
-		float dx = 1.0f / 256;
+		float dx = 1.0f / shadowMapDimensions;
 
 		float s0 = lightDepthMap.Sample(samplerClamp, smTex).r;
 		float s1 = lightDepthMap.Sample(samplerClamp, smTex + float2(dx, 0.0f)).r;
 		float s2 = lightDepthMap.Sample(samplerClamp, smTex + float2(0.0f, dx)).r;
 		float s3 = lightDepthMap.Sample(samplerClamp, smTex + float2(dx, dx)).r;
 
-		float2 texelPos = smTex * 256;
+		float2 texelPos = smTex * shadowMapDimensions;
 		float2 lerps = frac(texelPos);
 		float shadowCoeff = lerp(lerp(s0, s1, lerps.x), lerp(s2, s3, lerps.x), lerps.y);
 
-		//Needs to calculate the light cone correctly. Or will rendering with light-volume solve this?
-		if (dot(-normalize(lightToPixel), normalize(lightDirection)) > 0.93f)
+		//In light
+		if (shadowCoeff > depth - epsilon)
 		{
-			//In light
-			if (shadowCoeff > depth - epsilon)
-			{
-				finalColor += saturate(lightColor * lightIntensity);
-				finalColor *= dot(-normalize(lightToPixel), lightDirection);
-				return saturate(float4(finalColor, lightIntensity));
-			}
-			else //In shadow
-			{
-				//Gives gray outlines where the shadow should be if no ambient is used
-				//finalColor *= shadowCoeff;
-				//return saturate(float4(finalColor, 0.5f));
+			float4 diffuse = diffuseTex.Sample(samplerWrap, uv);
+			float3 finalColor = diffuse.xyz * lightColor * lightIntensity;
 
-
-				//Sdgsdgsdg
-				//sdgdg
+			if (pixToLightAngle > lightAngleDiv2 * 0.85)
+			{
+				finalColor *= float4(0.1, 0.1, 0.1, 1.0);
 			}
+			else if (pixToLightAngle > lightAngleDiv2 * 0.75)
+			{
+				finalColor *= float4(0.35, 0.35, 0.35, 1.0);
+			}
+			else if (pixToLightAngle > lightAngleDiv2 * 0.65)
+			{
+				finalColor *= float4(0.7, 0.7, 0.7, 1.0);
+			}
+
+			return float4(finalColor, 1.0f);
 		}
 	}
 
-	//Alpha of 1 equals no blending.
-	return saturate(float4(finalColor, 1.f));
+	//Not in light
+	return float4(0, 0, 0, 0);
 }

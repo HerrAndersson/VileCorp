@@ -56,12 +56,8 @@ VS_OUT main(VS_IN input)
 	animPos = mul(animPos, projectionMatrix);
 
 	output.pos = animPos;
-
-
-
-	output.normal = animNormal;
+	output.normal = animNormal.xyz;
 	output.uv = input.uv;
-
 
 	return output;
 }

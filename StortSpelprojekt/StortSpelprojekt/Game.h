@@ -30,24 +30,24 @@ private:
 //	Animation*					_animation;
 	System::Controls*			_controls;
 	AssetManager*				_assetManager;
-	Grid*						_grid = nullptr;
+	Grid*						_grid;
 	FontWrapper*				_fontWrapper;
 	PickingDevice*				_pickingDevice;
 	PlayerInfo					_playerInfo;
 	SettingInfo					_gameSettings;
-	
-	bool						_hasFocus;
 
+	bool						_hasFocus;
 	//Resizing window, directx resources, camera
-	void ResizeResources(System::WindowSettings settings);
+	void ResizeResources(System::WindowSettings settings); //TODO: Test all scenarios and fix bugs /Jonas
 	void Update(float deltaTime);
 	void Render();
 	void CheckSettings();
 
-	//TODO: TEMP! Make this pretty
+	//TODO: TEMP! Move this to objectHandler
 	std::vector<Renderer::Spotlight*> _spotlights;
-	
+
 public:
+
 	Game(HINSTANCE hInstance, int nCmdShow);
 	~Game();
 

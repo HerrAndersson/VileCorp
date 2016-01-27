@@ -145,21 +145,26 @@ Trap::Trap()
 	_areaOfEffect = nullptr;
 }
 
-Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject * renderObject, TrapType trapType, AI::Vec2D direction)
+Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject * renderObject, 
+		  const Tilemap* tileMap, TrapType trapType, AI::Vec2D direction)
 	: GameObject(ID, position, rotation, tilePosition, type, renderObject)
 {
 	_trapType = trapType;
 	_direction = direction;
-
+	_tileMap = tileMap;
 	switch (_trapType)
 	{
 	case SPIKE:
+ 		_nrOfAOETiles = 1;
+		_areaOfEffect = new AI::Vec2D[1]{_tilePosition};
+		_damage = 3;
 		break;
 	case TESLACOIL:
 		break;
 	case SHARK:
 		break;
 	default:
+		_areaOfEffect = nullptr;
 		break;
 	}
 }

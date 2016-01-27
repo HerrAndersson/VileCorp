@@ -23,6 +23,7 @@ protected:
 	DirectX::XMFLOAT3 _position;
 	DirectX::XMFLOAT3 _rotation;
 	DirectX::XMFLOAT3 _scale;
+	DirectX::XMFLOAT3 _colorOffset;
 	AI::Vec2D _tilePosition;
 	Type _type;
 	bool _visible;
@@ -37,7 +38,7 @@ public:
 
 	GameObject();
 	//Type might not be necessary, depending on whether subclasses can correspond to one type or many.
-	GameObject(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject* renderObject);
+	GameObject(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject* renderObject, DirectX::XMFLOAT3 colorOffset = DirectX::XMFLOAT3(0,0,0));
 	virtual ~GameObject();
 
 	unsigned short GetID() const;
@@ -46,10 +47,12 @@ public:
 	DirectX::XMFLOAT3 GetRotation() const;
 	DirectX::XMFLOAT3 GetScale() const;
 	DirectX::XMMATRIX* GetMatrix();
+	DirectX::XMFLOAT3 GetColorOffset() const;
 
 	void SetPosition(const DirectX::XMFLOAT3& position);
 	void SetRotation(const DirectX::XMFLOAT3& rotation);
 	void SetScale(const DirectX::XMFLOAT3& scale);
+	void SetColorOffset(DirectX::XMFLOAT3 colorOffset);
 
 	void Translate(const DirectX::XMFLOAT3& offset);
 	void Scale(const DirectX::XMFLOAT3& scale);
