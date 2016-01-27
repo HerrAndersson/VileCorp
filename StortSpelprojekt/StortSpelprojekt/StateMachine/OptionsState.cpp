@@ -92,12 +92,13 @@ void OptionsState::Update(float deltaTime)
 			_outputSettings._resY = _resolution[_resolutionOption]._value2;
 			_outputSettings._shadowResX = _shadowmap[_shadowmapOption]._value;
 			_outputSettings._shadowResY = _shadowmap[_shadowmapOption]._value2;
-			_outputSettings._default = true;
-			_outputSettings._shadowmap = true;
 			_outputSettings._fullScreen = _window[_windowOption]._value & System::WindowSettings::FULLSCREEN;
-			_outputSettings._debugMode = false;
 			_outputSettings._bordeless = _window[_windowOption]._value & System::WindowSettings::BORDERLESS;
 			_outputSettings._showMouseCursor = _window[_windowOption]._value & System::WindowSettings::SHOW_CURSOR;
+
+			_outputSettings._debugMode = false;
+			_outputSettings._default = true;
+			_outputSettings._shadowmap = true;
 
 			System::saveJSON(&_outputSettings, "../../../../StortSpelprojekt/Assets/GameSettings.json", "Game Settings");
 		}
