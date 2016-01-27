@@ -6,6 +6,8 @@ cbuffer matrixBufferLightPassPerFrame : register(b2)
 {
 	matrix invCamView;
 	matrix invCamProj;
+	int screenWidth;
+	int screenHeight;
 };
 
 cbuffer matrixBufferLightPassPerLight : register(b3)
@@ -53,8 +55,7 @@ float3 ReconstructWorldFromCamDepth(float2 uv)
 float4 main(VS_OUT input) : SV_TARGET
 {
 	float lightAngleDiv2 = lightAngle / 2;
-	float2 uv = float2((input.pos.x) / 1920, (input.pos.y) / 1080);
-	//float2 uv = float2(0.5f + (input.pos.x / 1280 / input.pos.w * 0.5f), 0.5f - (input.pos.y / input.pos.w * 0.5f));
+	float2 uv = float2((input.pos.x) / screenWidth, (input.pos.y) / screenHeight);
 
 	float4 normal = normalize(float4(normalTex.Sample(samplerWrap, uv).xyz, 0.0f));
 
@@ -78,6 +79,7 @@ float4 main(VS_OUT input) : SV_TARGET
 	float3 nLightDir = normalize(lightDirection);
 	float pixToLightAngle = acos(dot(nLightDir, -pixToLight));
 	
+	//Inside of the volume
 	if (howMuchLight > 0.0f && pixToLightAngle <= lightAngleDiv2)
 	{
 		//Sample and add shadows for the shadow map.
@@ -103,26 +105,33 @@ float4 main(VS_OUT input) : SV_TARGET
 		float2 lerps = frac(texelPos);
 		float shadowCoeff = lerp(lerp(s0, s1, lerps.x), lerp(s2, s3, lerps.x), lerps.y);
 
+		float4 diffuse = diffuseTex.Sample(samplerWrap, uv);
+
 		//In light
 		if (shadowCoeff > depth - epsilon)
 		{
-			float4 diffuse = diffuseTex.Sample(samplerWrap, uv);
-			float3 finalColor = diffuse.xyz * lightColor * lightIntensity;
+			float4 finalColor = float4((diffuse.xyz * lightColor * lightIntensity), 1.0f);
 
 			if (pixToLightAngle > lightAngleDiv2 * 0.85)
 			{
-				finalColor *= float4(0.1, 0.1, 0.1, 1.0);
+				finalColor *= float4(0.1f, 0.1f, 0.1f, 0.1f);
 			}
 			else if (pixToLightAngle > lightAngleDiv2 * 0.75)
 			{
-				finalColor *= float4(0.35, 0.35, 0.35, 1.0);
+				finalColor *= float4(0.35f, 0.35f, 0.35f, 0.35f);
 			}
 			else if (pixToLightAngle > lightAngleDiv2 * 0.65)
 			{
-				finalColor *= float4(0.7, 0.7, 0.7, 1.0);
+				finalColor *= float4(0.7f, 0.7f, 0.7f, 0.65f);
 			}
 
-			return float4(finalColor, 1.0f);
+			return finalColor;
+		}
+		else
+		{
+			//In shadow
+			//Test how far away the lit parts are to generate the "toon" falloff
+			return float4(diffuse.xyz * float3(0.1, 0.1, 0.1), 0.5f);
 		}
 	}
 

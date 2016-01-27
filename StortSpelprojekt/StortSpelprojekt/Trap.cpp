@@ -3,20 +3,130 @@
 //Get the tiles that will be activated for traps with a circular aoe
 void Trap::CalculateCircleAOE(int radius)
 {
-	_areaOfEffectArrayCapacity = (2 * radius) * (2 * radius);
-	_areaOfEffect = new AI::Vec2D[_areaOfEffectArrayCapacity];
-	_nrOfAOETiles = 0;
-	for (int x = -radius; x < radius; x++)
+	
+	int x = radius;
+
+	int y = 0;
+	/*int x0 = _tilePosition._x;
+	int y0 = _tilePosition._y;*/
+
+	int D = 1 - x;   // Decision criterion divided by 2 evaluated at x=r, y=0
+
+	AI::Vec2D pos = {0,0};
+	bool xChanged = true;
+
+/*alternate method. Useful for circle outlines*/
+/*
+int decisionOver2 = 1 - x;
+	while (y <= x)
 	{
-		for (int y = -radius; y < radius; y++)
+		pos = {x, y};
+		if (isUnblocked(pos))
 		{
-			AI::Vec2D pos = {x, y};
-			if (x * x + y * y <= radius * radius && !_tileMap->IsWallOnTile(x, y) && isUnblocked(pos))			//Checking for a wall isn't necessary, but it's cheaper than a full check
-			{
-				_areaOfEffect[_nrOfAOETiles++] = pos + _tilePosition;
-			}
+			_areaOfEffect[_nrOfAOETiles++] = pos + _tilePosition;
+		}
+		pos = {y, x};
+		if (isUnblocked(pos))
+		{
+			_areaOfEffect[_nrOfAOETiles++] = pos + _tilePosition;
+		}
+		pos = {-x, y};
+		if (isUnblocked(pos))
+		{
+			_areaOfEffect[_nrOfAOETiles++] = pos + _tilePosition;
+		}
+		pos = {-y, x};
+		if (isUnblocked(pos))
+		{
+			_areaOfEffect[_nrOfAOETiles++] = pos + _tilePosition;
+		}
+		pos = {-x, -y};
+		if (isUnblocked(pos))
+		{
+			_areaOfEffect[_nrOfAOETiles++] = pos + _tilePosition;
+		}
+		pos = {-y, -x};
+		if (isUnblocked(pos))
+		{
+			_areaOfEffect[_nrOfAOETiles++] = pos + _tilePosition;
+		}
+		pos = {x, -y};
+		if (isUnblocked(pos))
+		{
+			_areaOfEffect[_nrOfAOETiles++] = pos + _tilePosition;
+		}
+		pos = {y, -x};
+		if (isUnblocked(pos))
+		{
+			_areaOfEffect[_nrOfAOETiles++] = pos + _tilePosition;
+		}
+		y++;
+		if (decisionOver2 <= 0)
+		{
+			decisionOver2 += 2 * y + 1;   // Change in decision criterion for y -> y+1
+		}
+		else
+		{
+			x--;
+			decisionOver2 += 2 * (y - x) + 1;   // Change for y -> y+1, x -> x-1
 		}
 	}
+	if (radius > 1)
+	{
+		CalculateCircleAOE(radius - 1);
+	}
+	*/
+
+	while (y <= x)
+	{
+		if (y != x)
+		{
+			for (int i = -x; i <= x; i++)
+			{
+				pos = {y, i};
+				if (isUnblocked(pos))
+				{
+					_areaOfEffect[_nrOfAOETiles++] = pos + _tilePosition;
+				}
+				if (y != 0)
+				{
+					pos = {-y, i};
+					if (isUnblocked(pos))
+					{
+						_areaOfEffect[_nrOfAOETiles++] = pos + _tilePosition;
+					}
+				}
+			}
+		}
+		y++;
+		if (D < 0)
+		{
+			D += 2 * y + 1;   // Change in decision criterion for y -> y+1
+		}
+		else
+		{
+			for (int i = -y + 1; i < y; i++)
+			{
+				pos = {x, i};
+				if (isUnblocked(pos))
+				{
+					_areaOfEffect[_nrOfAOETiles++] = pos + _tilePosition;
+				}
+				if (x != 0)			//If x = 0, -x is also 0
+				{
+					pos = {-x, i};
+					if (isUnblocked(pos))
+					{
+						_areaOfEffect[_nrOfAOETiles++] = pos + _tilePosition;
+					}
+				}
+
+			}
+			x--;
+			D += 2 * (y - x) + 1;   // Change for y -> y+1, x -> x-1
+		}
+	}
+
 }
 
 void Trap::CalculateLineAOE(int length)
@@ -38,7 +148,7 @@ bool Trap::isUnblocked( AI::Vec2D pos)
 {
 	int octant = 0;
 
-	if (pos._y < 0)
+	if (pos._y < 0 || (pos._y == 0 && pos._x < 0))
 	{
 		octant += 4;
 	}
@@ -152,12 +262,18 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	_trapType = trapType;
 	_direction = direction;
 	_tileMap = tileMap;
+
+	int radius = 0;
 	switch (_trapType)
 	{
 	case SPIKE:
- 		_nrOfAOETiles = 1;
-		_areaOfEffect = new AI::Vec2D[1]{_tilePosition};
 		_damage = 3;
+
+		radius = 3;
+		_areaOfEffectArrayCapacity = (radius * 2 + 1) * (radius * 2 + 1);				//Note: Since the max area should be constant this can be more carefully calculated offline
+		_areaOfEffect = new AI::Vec2D[_areaOfEffectArrayCapacity];
+		_nrOfAOETiles = 0;
+		CalculateCircleAOE(radius);
 		break;
 	case TESLACOIL:
 		break;
@@ -166,6 +282,15 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	default:
 		_areaOfEffect = nullptr;
 		break;
+	}
+	for (int i = 0; i < _nrOfAOETiles; i++)
+	{
+		AI::Vec2D pos = _areaOfEffect[i];
+		if (_tileMap->IsFloorOnTile(_areaOfEffect[i]._x, _areaOfEffect[i]._y))
+		{
+			_tileMap->GetObjectOnTile(_areaOfEffect[i]._x, _areaOfEffect[i]._y, FLOOR)->AddColorOffset({0,0,2});
+		}
+		//_tileMap->GetObjectOnTile(_tilePosition._x, _tilePosition._y, TRAP)->SetColorOffset({0,0,4});
 	}
 }
 
@@ -203,6 +328,11 @@ void Trap::Activate( Unit* target)
 
 void Trap::Update(float deltaTime)
 {
+	if (_tileMap->IsTrapOnTile(_tilePosition._x, _tilePosition._y))
+	{
+		_tileMap->GetObjectOnTile(_tilePosition._x, _tilePosition._y, TRAP)->SetColorOffset({0,0,4});
+	}
+	
 	for (int i = 0; i < _nrOfAOETiles; i++)
 	{
 		if (_tileMap->IsEnemyOnTile(_areaOfEffect[i]._x, _areaOfEffect[i]._y))

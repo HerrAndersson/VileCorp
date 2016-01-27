@@ -483,6 +483,7 @@ void Unit::SetGoal(AI::Vec2D goal)
 {
 	_goalTilePosition = goal;
 	_objective = _tileMap->GetObjectOnTile(goal._x, goal._y, FLOOR);		//Note: Make sure walled tiles aren't valid goals
+	//_objective->SetColorOffset({5,0,0});
 	_aStar->CleanMap();
 	_aStar->SetStartPosition(_tilePosition);
 	_aStar->SetGoalPosition(goal);
@@ -521,7 +522,9 @@ void Unit::Move()
 	//}
 	if (_isMoving)
 	{
+		_tileMap->GetObjectOnTile(_tilePosition._x, _tilePosition._y, FLOOR)->SetColorOffset({0,0,0});
 		_tilePosition += _direction;
+		_tileMap->GetObjectOnTile(_tilePosition._x, _tilePosition._y, FLOOR)->SetColorOffset({0,4,0});
 	}
 	if (_objective != nullptr && _objective->GetPickUpState() != ONTILE)			//Check that no one took your objective
 	{
