@@ -23,8 +23,10 @@ void GameLogic::Initialize(ObjectHandler* objectHandler, System::Camera* camera,
 	//_objectHandler->Add(TRAP, 0, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
 
 	//_objectHandler->Add(TRAP, 0, XMFLOAT3(0.5f, -1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
-	System::loadJSON(&_levelLoad, "../../../../StortSpelprojekt/Assets/LevelLoad.json");
-	_objectHandler->LoadLevel(_levelLoad.level);
+	
+	//Either import the level here or in the LevelEdit.cpp, otherwise the level will be loaded twice
+	//System::loadJSON(&_levelLoad, "../../../../StortSpelprojekt/Assets/LevelLoad.json");
+	//_objectHandler->LoadLevel(_levelLoad.level);
 
 	_objectHandler->InitPathfinding();
 

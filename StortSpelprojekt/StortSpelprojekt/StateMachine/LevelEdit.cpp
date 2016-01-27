@@ -85,8 +85,10 @@ void LevelEdit::Initialize(ObjectHandler* objectHandler, System::Controls* contr
 	//buttonInfo[1].parent = 0;
 	//buttonInfo[2].parent = 1;
 
+	//Either import the level here or in the GameLogic.cpp, otherwise the level will be loaded twice
 	System::loadJSON(&_levelLoad, "../../../../StortSpelprojekt/Assets/LevelLoad.json");
 	LoadLevel(_levelLoad.level);
+
 	_budget = 100;
 	_uiNode = _uiTree->GetNode("BudgetValue");
 	_uiNode->SetText(std::to_wstring(_budget));
