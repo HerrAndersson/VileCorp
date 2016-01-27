@@ -25,11 +25,13 @@ private:
 	int _health;
 
 	GameObject* _objective;
+	bool _isMoving;
 
 	void ScanOctant(int depth, int octant, double &startSlope, double endSlope);
 	double GetSlope(double x1, double y1, double x2, double y2, bool invert);
 	int GetVisDistance(int x1, int y1, int x2, int y2);
 	void CalculatePath();
+	void Rotate();
 
 protected:
 	int _goalPriority;				//Lower value means higher priority
@@ -54,11 +56,11 @@ public:
 	void SetGoal(AI::Vec2D goal);
 	void SetGoal(GameObject* objective);
 	void Move();
-	void Update();
+	void Update(float deltaTime);
 	virtual void Release();
 	virtual void act(GameObject* obj) = 0;									//context specific action on the unit's objective
 	void Wait(int frames);
-	void ChangeHealth(int damage);
+	void TakeDamage(int damage);
 
 };
 

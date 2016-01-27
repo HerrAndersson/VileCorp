@@ -103,32 +103,7 @@ void BaseEdit::DragAndDrop(Type type)
 		
 		if (_objectHandler->GetTileMap()->IsValid(pickedTile._x, pickedTile._y))
 		{
-			GameObject* objectOnTile;
-			switch (type)
-			{
-			case FLOOR:
-			case WALL:
-				objectOnTile = _objectHandler->GetTileMap()->GetObjectOnTile(pickedTile._x, pickedTile._y, 0);
-				break;
-			case ENEMY:
-			case GUARD:
-				objectOnTile = _objectHandler->GetTileMap()->GetObjectOnTile(pickedTile._x, pickedTile._y, 1);
-				if (objectOnTile == nullptr)
-				{
-					break;
-				}
-				objectOnTile = _objectHandler->GetTileMap()->GetObjectOnTile(pickedTile._x, pickedTile._y, 2);
-				break;
-			case TRAP:
-			case LOOT:
-				objectOnTile = _objectHandler->GetTileMap()->GetObjectOnTile(pickedTile._x, pickedTile._y, 3);
-				break;
-			case TRIGGER:
-				objectOnTile = _objectHandler->GetTileMap()->GetObjectOnTile(pickedTile._x, pickedTile._y, 4);
-				break;
-			default:
-				break;
-			}
+			GameObject* objectOnTile = _objectHandler->GetTileMap()->GetObjectOnTile(pickedTile._x, pickedTile._y, type);
 
 			if (objectOnTile == nullptr && _marker->GetType() == type)
 			{
@@ -210,8 +185,8 @@ void BaseEdit::DragAndPlace()
 			{
 				for (int y = minY; y <= maxY; y++)
 				{
-					// 3 - TRAP/LOOT OBS!
-					objectOnTile = _objectHandler->GetTileMap()->GetObjectOnTile(x, y, 3);
+					// TRAP/LOOT/SPAWN OBS!
+					objectOnTile = _objectHandler->GetTileMap()->GetObjectOnTile(x, y, type);
 
 					if (objectOnTile == nullptr)
 					{
@@ -227,8 +202,8 @@ void BaseEdit::DragAndPlace()
 			{
 				for (int y = minY; y <= maxY; y++)
 				{
-					// 3 - TRAP/LOOT OBS!
-					objectOnTile = _objectHandler->GetTileMap()->GetObjectOnTile(x, y, 3);
+					// TRAP/LOOT/SPAWN OBS!
+					objectOnTile = _objectHandler->GetTileMap()->GetObjectOnTile(x, y, type);
 
 					if (objectOnTile != nullptr && type == objectOnTile->GetType())
 					{

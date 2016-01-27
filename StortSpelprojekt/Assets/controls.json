@@ -22,7 +22,6 @@
     "REDO": [ "Y", "ctrl" ],
     "SAVE": [ "S", "ctrl" ],
     "DELETE_UNIT": [ "delete" ],
-
 	"SELECT": ["leftmouse"],
 	"REMOVE": ["rightmouse"],
 	"PLACEMENTFLAG": ["F"],
@@ -30,24 +29,25 @@
 	"DRAG": ["leftmouse", "repeat"],
 	
     "MENU": [ "escape" ],
-
     "NEWLEVEL": [ "C" ]
   },
-
   "PLACEMENT": {
-
+    "CLICK": [ "leftmouse" ],
     "BUILD_TRAP": [ "T" ],
-	"HIRE_GUARD": [ "U" ],
-    "DELETE": [ "delete" ]
+    "HIRE_GUARD": [ "U" ],
+    "DELETE": [ "delete" ],
+    "CHANGE_TO_PLAY": [ "P" ],
+    "SELECT": [ "leftmouse", "repeat" ],
+    "DESELECT": [ "rightmouse" ],
+    "MENU": [ "escape" ]
   },
-
   "PLAY": {
-    "SELECT": ["leftmouse"],
-    "DESELECT" : ["rightmouse"],
+    "SELECT": [ "leftmouse" ],
+    "DESELECT": [ "rightmouse" ],
     "BOX_SELECT": [ "leftmouse", "shift" ],
-	"SCROLLUP" : ["scrollup", "repeat"],
-	"SCROLLDOWN" : ["scrolldown", "repeat"],
-
+    "SET_PATROL": [ "leftmouse", "ctrl" ],
+    "SCROLLUP": [ "scrolldown", "repeat" ],
+    "SCROLLDOWN": [ "scrollup", "repeat" ],
     "CONTROL_GROUP0": [ "0", "ctrl" ],
     "CONTROL_GROUP1": [ "1", "ctrl" ],
     "CONTROL_GROUP2": [ "2", "ctrl" ],
@@ -58,27 +58,21 @@
     "CONTROL_GROUP7": [ "7", "ctrl" ],
     "CONTROL_GROUP8": [ "8", "ctrl" ],
     "CONTROL_GROUP9": [ "9", "ctrl" ],
-
-
     "MENU": [ "escape" ]
   },
-	
 	"MENU": {
 		"UP": ["uparrow"],
 		"DOWN": ["downarrow"],
 		"CLICK": ["leftmouse"],
 		"MENU": ["escape"]
     },
-	
     "DEBUG": {
 		"MOVE_CAMERA_UP": ["W", "repeat"],
 		"MOVE_CAMERA_DOWN": ["S", "repeat"],
 		"MOVE_CAMERA_LEFT": ["A", "repeat"],
 		"MOVE_CAMERA_RIGHT": ["D", "repeat"],
-		
 		"TEST": ["D", "ctrl", "alt", "shift"],
 		"ENABLE_FREECAM": ["F", "ctrl", "shift"],
-		
 		"UNLIMITED_MONEY": ["1", "ctrl", "alt"],
 		"INSTANT_WIN": ["2", "ctrl", "alt"],
 		"NO_FOG": ["3", "ctrl", "alt"]

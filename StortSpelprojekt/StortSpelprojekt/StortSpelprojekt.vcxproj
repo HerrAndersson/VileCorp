@@ -31,6 +31,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ObjectHandler.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="SpawnPoint.cpp" />
     <ClCompile Include="StateMachine\BaseState.cpp" />
     <ClCompile Include="StateMachine\BaseEdit.cpp" />
     <ClCompile Include="StateMachine\LevelEditState.cpp" />
@@ -43,7 +44,6 @@
     <ClCompile Include="StateMachine\StateMachine.cpp" />
     <ClCompile Include="Tilemap.cpp" />
     <ClCompile Include="Trap.cpp" />
-    <ClCompile Include="Trigger.cpp" />
     <ClCompile Include="UITree.cpp" />
     <ClCompile Include="Unit.cpp" />
   </ItemGroup>
@@ -55,7 +55,7 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameLogic.h" />
     <ClInclude Include="GameObject.h" />
-    <ClInclude Include="GameObjectDataLoader.h" />
+    <ClInclude Include="SpawnPoint.h" />
     <ClInclude Include="Grid.h" />
     <ClInclude Include="Guard.h" />
     <ClInclude Include="ObjectHandler.h" />
@@ -71,10 +71,10 @@
     <ClInclude Include="StateMachine\PlayState.h" />
     <ClInclude Include="StateMachine\SplashState.h" />
     <ClInclude Include="StateMachine\StateMachine.h" />
+    <ClInclude Include="StateMachine\States.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Tilemap.h" />
     <ClInclude Include="Trap.h" />
-    <ClInclude Include="Trigger.h" />
     <ClInclude Include="UITree.h" />
     <ClInclude Include="Unit.h" />
   </ItemGroup>

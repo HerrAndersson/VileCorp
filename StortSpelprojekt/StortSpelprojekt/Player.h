@@ -1,5 +1,6 @@
 #pragma once
 #include "Unit.h"
+#include "Guard.h"
 #include "PickingDevice.h"
 
 class Player
@@ -17,7 +18,7 @@ public:
 	bool AreUnitsSelected();
 	vector<Unit*> GetSelectedUnits();
 	void MoveUnits(AI::Vec2D movePoint);
-	//void PatrolUnits(AI::Vec2D patrolPoint);
+	void PatrolUnits(AI::Vec2D patrolPoint);
 
 };
 

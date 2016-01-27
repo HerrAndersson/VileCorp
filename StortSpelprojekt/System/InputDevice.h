@@ -40,6 +40,8 @@ namespace System
 
 		void Update();
 
+		void ResetInputBuffers();
+
 		void ToggleCursorLock();
 		bool CursorLocked();
 
