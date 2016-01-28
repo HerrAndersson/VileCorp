@@ -1,71 +1,75 @@
 #pragma once
 #include <DirectXMath.h>
 #include <d3d11.h>
+#include "RenderUtils.h"
 
 #define RENDERER_EXPORT __declspec(dllexport)
 
 //Disable warning about DirectX  FLOAT3/MATRIX
 #pragma warning( disable: 4251 )
 
-namespace Renderer
+class RENDERER_EXPORT Spotlight
 {
-	class RENDERER_EXPORT Spotlight
-	{
-	private:
+private:
+	DirectX::XMFLOAT3	_position;
+	DirectX::XMFLOAT3	_rotation;
+	DirectX::XMFLOAT3	_direction;
+	DirectX::XMFLOAT3	_up;
 
-		DirectX::XMFLOAT3	_position;
-		DirectX::XMFLOAT3	_rotation;
-		DirectX::XMFLOAT3	_direction;
-		DirectX::XMFLOAT3	_up;
+	DirectX::XMMATRIX	_viewMatrix;
+	DirectX::XMMATRIX	_projectionMatrix;
+	DirectX::XMMATRIX   _worldMatrix;
+	DirectX::XMMATRIX	_rotationMatrix;
 
-		DirectX::XMMATRIX	_viewMatrix;
-		DirectX::XMMATRIX	_projectionMatrix;
-		DirectX::XMMATRIX   _worldMatrix;
-		DirectX::XMMATRIX	_rotationMatrix;
+	float				_angle;
+	float				_intensity;
+	float				_range;
+	bool				_active;
+	unsigned char		_bone;
 
-		float				_angle;
-		float				_intensity;
-		float				_range;
+	DirectX::XMFLOAT3	_color;
 
-		DirectX::XMFLOAT3	_color;
+	int					_nrOfTriangles;
+	ID3D11Buffer*		_lightConeVolume;
 
-		int					_nrOfTriangles;
-		ID3D11Buffer*		_lightConeVolume;
+	void Update();
 
-		void Update();
+public:
 
-	public:
+	Spotlight(ID3D11Device* device, SpotlightData lightdata, int width, int height, float nearClip, float farClip, int resolution = 72);
+	~Spotlight();
 
-		Spotlight(ID3D11Device* device, float nearClip, float farClip, float fov, int width, int height, float intensity = 1.0f, float range = 10.0f, DirectX::XMFLOAT3 color = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), int resolution = 72);
-		~Spotlight();
+	void SetPosition(DirectX::XMFLOAT3 position);
+	void SetRotation(DirectX::XMFLOAT3 rotation);
+	void SetPositionAndRotation(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation);
+	void SetPositionAndRotation(DirectX::XMFLOAT4X4 &matrix);
 
-		void SetPosition(DirectX::XMFLOAT3 position);
-		void SetRotation(DirectX::XMFLOAT3 rotation);
-		void SetPositionAndRotation(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation);
+	void SetIntensity(float intensity);
+	void SetRange(float range);
+	void SetColor(DirectX::XMFLOAT3 color);
 
-		void SetIntensity(float intensity);
-		void SetRange(float range);
-		void SetColor(DirectX::XMFLOAT3 color);
+	float GetIntensity() const;
+	float GetRange() const;
+	float GetAngle() const;
 
-		float GetIntensity() const;
-		float GetRange() const;
-		float GetAngle() const;
+	unsigned char GetBone();
+	bool IsActive() const;
+	void SetActive(bool active);
 
-		DirectX::XMFLOAT3 GetColor() const;
-		DirectX::XMFLOAT3 GetPosition() const;
-		DirectX::XMFLOAT3 GetRotation() const;
-		DirectX::XMFLOAT3 GetDirection() const;
+	DirectX::XMFLOAT3 GetColor() const;
+	DirectX::XMFLOAT3 GetPosition() const;
+	DirectX::XMFLOAT3 GetRotation() const;
+	DirectX::XMFLOAT3 GetDirection() const;
 
-		DirectX::XMMATRIX* GetWorldMatrix();
-		DirectX::XMMATRIX* GetViewMatrix();
-		DirectX::XMMATRIX* GetProjectionMatrix();
+	DirectX::XMMATRIX* GetWorldMatrix();
+	DirectX::XMMATRIX* GetViewMatrix();
+	DirectX::XMMATRIX* GetProjectionMatrix();
 
-		ID3D11Buffer* GetVolumeBuffer() const;
+	ID3D11Buffer* GetVolumeBuffer() const;
 
-		//Overloading these guarantees 16B alignment of XMMATRIX
-		void* operator new(size_t i);
-		void operator delete(void* p);
+	//Overloading these guarantees 16B alignment of XMMATRIX
+	void* operator new(size_t i);
+	void operator delete(void* p);
 
-	};
-}
+};
 

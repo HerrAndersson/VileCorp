@@ -44,9 +44,6 @@ private:
 	void Update(float deltaTime);
 	void Render();
 	void CheckSettings();
-
-	//TODO: TEMP! Make this pretty
-	std::vector<Renderer::Spotlight*> _spotlights;
 	
 public:
 	Game(HINSTANCE hInstance, int nCmdShow);

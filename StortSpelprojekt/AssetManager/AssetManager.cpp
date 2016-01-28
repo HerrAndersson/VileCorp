@@ -415,14 +415,14 @@ RenderObject* AssetManager::ScanModel26(string fileName, ifstream* _infile)
 
 	if (meshHeader._numberPointLights)
 	{
-		renderObject->_mesh._pointLights.resize(sizeof(PointLight)*meshHeader._numberPointLights);
-		_infile->read((char*)renderObject->_mesh._pointLights.data(), sizeof(PointLight)*meshHeader._numberPointLights);
+		renderObject->_mesh._pointLights.resize(sizeof(PointlightData)*meshHeader._numberPointLights);
+		_infile->read((char*)renderObject->_mesh._pointLights.data(), sizeof(PointlightData)*meshHeader._numberPointLights);
 	}
 
 	if (meshHeader._numberSpotLights)
 	{
-		renderObject->_mesh._spotLights.resize(sizeof(SpotLight)*meshHeader._numberSpotLights);
-		_infile->read((char*)renderObject->_mesh._spotLights.data(), sizeof(SpotLight)*meshHeader._numberSpotLights);
+		renderObject->_mesh._spotLights.resize(sizeof(SpotlightData)*meshHeader._numberSpotLights);
+		_infile->read((char*)renderObject->_mesh._spotLights.data(), sizeof(SpotlightData)*meshHeader._numberSpotLights);
 	}
 	renderObject->_mesh._vertexBufferSize = meshHeader._numberOfVertices;
 	return renderObject;
@@ -459,19 +459,19 @@ RenderObject* AssetManager::ScanModel24(string fileName, ifstream* _infile)
 				_infile->seekg(meshHeader._numberOfVertices*sizeof(Vertex), ios::cur);
 			}
 
-			renderObject->_mesh._pointLights.resize(sizeof(PointLight)*meshHeader._numberPointLights);
+			renderObject->_mesh._pointLights.resize(sizeof(PointlightData)*meshHeader._numberPointLights);
 			for (int i = 0; i < meshHeader._numberPointLights; i++)
 			{
 				_infile->seekg(-1, ios::cur);
-				_infile->read((char*)&renderObject->_mesh._pointLights[i], sizeof(PointLight));
+				_infile->read((char*)&renderObject->_mesh._pointLights[i], sizeof(PointlightData));
 				renderObject->_mesh._pointLights[i]._bone = 0;
 			}
 
-			renderObject->_mesh._spotLights.resize(sizeof(SpotLight)*meshHeader._numberSpotLights);
+			renderObject->_mesh._spotLights.resize(sizeof(SpotlightData)*meshHeader._numberSpotLights);
 			for (int i = 0; i < meshHeader._numberSpotLights; i++)
 			{
 				_infile->seekg(-1, ios::cur);
-				_infile->read((char*)&renderObject->_mesh._spotLights[i], sizeof(SpotLight));
+				_infile->read((char*)&renderObject->_mesh._spotLights[i], sizeof(SpotlightData));
 				renderObject->_mesh._spotLights[i]._bone = 0;
 			}
 			renderObject->_mesh._vertexBufferSize = meshHeader._numberOfVertices;
@@ -493,12 +493,12 @@ RenderObject* AssetManager::ScanModel24(string fileName, ifstream* _infile)
 
 			if (meshHeader._numberPointLights)
 			{
-				_infile->seekg(sizeof(PointLight)*meshHeader._numberPointLights, ios::cur);
+				_infile->seekg(sizeof(PointlightData)*meshHeader._numberPointLights, ios::cur);
 			}
 
 			if (meshHeader._numberSpotLights)
 			{
-				_infile->seekg(sizeof(SpotLight)*meshHeader._numberSpotLights, ios::cur);
+				_infile->seekg(sizeof(SpotlightData)*meshHeader._numberSpotLights, ios::cur);
 			}
 		}
 	}

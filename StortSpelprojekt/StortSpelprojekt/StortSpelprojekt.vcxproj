@@ -55,6 +55,7 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameLogic.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="LightHandler.h" />
     <ClInclude Include="SpawnPoint.h" />
     <ClInclude Include="Grid.h" />
     <ClInclude Include="Guard.h" />

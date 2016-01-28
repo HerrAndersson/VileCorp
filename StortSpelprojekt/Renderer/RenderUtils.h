@@ -54,16 +54,18 @@ struct Vertex
 	DirectX::XMFLOAT2 _uv;
 };
 
-struct PointLight
+struct PointlightData
 {
 	unsigned char _bone;
-	float _pos[3], _col[3], _intensity;
+	float _range, _intensity;
+	DirectX::XMFLOAT3 _pos[3], _col[3];
 };
 
-struct SpotLight
+struct SpotlightData
 {
 	unsigned char _bone;
-	float _pos[3], _col[3], _intensity, _angle, _direction[3];
+	float _intensity, _angle, _range;
+	DirectX::XMFLOAT3 _pos, _color, _direction;
 };
 
 struct Point
@@ -77,8 +79,8 @@ struct Mesh
 {
 	ID3D11Buffer* _vertexBuffer;
 	int _vertexBufferSize, _toMesh;
-	std::vector<PointLight> _pointLights;
-	std::vector<SpotLight> _spotLights;
+	std::vector<PointlightData> _pointLights;
+	std::vector<SpotlightData> _spotLights;
 	~Mesh()
 	{
 		_pointLights.clear();

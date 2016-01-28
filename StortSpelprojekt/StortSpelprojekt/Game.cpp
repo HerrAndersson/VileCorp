@@ -45,13 +45,15 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	//_controls->SaveKeyBindings(System::MAP_EDIT_KEYMAP, "MOVE_CAMERA_UP", "M");
 
 	//TODO: TEMP! Make this pretty
+	/*
 	Renderer::Spotlight* spot;
 	for (int i = 0; i < 4; i++)
 	{
-		spot = new Renderer::Spotlight(_renderModule->GetDevice(), 0.1f, 1000.0f, XM_PIDIV4 /*XM_PI / 0.082673f*/, 256, 256, 1.0f, 10.0f, XMFLOAT3(0.0f, 1.0f, 1.0f), 36); //Ska ha samma dimensions som shadow map, som nu ligger i render module
+		spot = new Spotlight(_renderModule->GetDevice(), 0.1f, 1000.0f, XM_PIDIV4 /*XM_PI / 0.082673f, 256, 256, 1.0f, 10.0f, XMFLOAT3(0.0f, 1.0f, 1.0f), 36); //Ska ha samma dimensions som shadow map, som nu ligger i render module
 		spot->SetPositionAndRotation(XMFLOAT3(4 * i + 3, 1.5f, 3 * i + 3), XMFLOAT3(0, 90 + i * 25, 0));
 		_spotlights.push_back(spot);
 	}
+	*/
 
 	//settings._flags = settings.FULLSCREEN;
 	//ResizeResources(settings);
@@ -94,13 +96,6 @@ Game::~Game()
 	delete _pickingDevice;
 	delete _fontWrapper;
 
-	
-	//TODO: TEMP! dfhfa
-	for(auto s : _spotlights)
-	{
-		delete s;
-	}
-
 	if (_grid != nullptr)
 	{
 		delete _grid;
@@ -136,6 +131,7 @@ void Game::Update(float deltaTime)
 	_SM->Update(deltaTime);
 	
 
+	/*
 	for (int i = 0; i < _spotlights.size(); i++)
 	{
 		XMFLOAT3 rot = _spotlights[i]->GetRotation();
@@ -148,6 +144,7 @@ void Game::Update(float deltaTime)
 		color.z = sin(_timer.GetGameTime() / 1000 + XMConvertToRadians(240));
 		_spotlights[i]->SetColor(color);
 	}
+	*/
 }
 
 void Game::Render()

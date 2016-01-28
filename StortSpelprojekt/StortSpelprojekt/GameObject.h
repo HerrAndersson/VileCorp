@@ -26,6 +26,7 @@ protected:
 	AI::Vec2D _tilePosition;
 	Type _type;
 	bool _visible;
+	bool _active;
 	RenderObject* _renderObject;
 	Animation* _animation = nullptr;
 
@@ -60,6 +61,8 @@ public:
 	Type GetType() const;
 
 	bool IsVisible() const;
+	bool IsActive() const;
+	void SetActive(bool active);
 	void SetVisibility(bool visible);
 
 	RenderObject* GetRenderObject() const;

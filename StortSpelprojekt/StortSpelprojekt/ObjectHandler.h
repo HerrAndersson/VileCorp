@@ -11,6 +11,7 @@
 #include "JsonStructs.h"
 #include "AssetManager.h"
 #include "StateMachine\States.h"
+#include "Spotlight.h"
 
 /*
 ObjectHandler
@@ -47,6 +48,8 @@ private:
 	int _objectCount = 0;
 
 	AssetManager* _assetManager;
+	ID3D11Device* _device;
+	map< GameObject*, Spotlight*> _spotlights;
 
 public:
 	ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data);
