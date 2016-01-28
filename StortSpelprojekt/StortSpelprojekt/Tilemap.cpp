@@ -247,6 +247,11 @@ GameObject * Tilemap::GetObjectOnTile(int x, int z, Type type) const
 	}
 }
 
+GameObject * Tilemap::GetObjectOnTile(AI::Vec2D pos, Type type) const
+{
+	return GetObjectOnTile(pos._x, pos._y, type);
+}
+
 //GameObject * Tilemap::GetUnitOnTile(int x, int z) const
 //{
 //	GameObject* result = nullptr;

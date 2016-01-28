@@ -569,7 +569,7 @@ void Unit::Update(float deltaTime)
 	{
 		_waiting--;
 	}
-	else if (_waiting == 0)
+	else if (_waiting == 0 && !_isMoving)
 	{
 		_waiting--;
 		Move();

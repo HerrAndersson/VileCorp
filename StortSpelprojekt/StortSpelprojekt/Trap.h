@@ -36,7 +36,7 @@ public:
 	AI::Vec2D* GetTiles()const;
 	int GetTileSize()const;
 
-	void Activate(Unit* target);
+	void Activate();
 	void Update(float deltaTime);
 	void Release();
 };

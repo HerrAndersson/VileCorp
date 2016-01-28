@@ -55,6 +55,7 @@ public:
 	int GetWidth() const;
 
 	GameObject* GetObjectOnTile(int x, int z, Type type) const;
+	GameObject* GetObjectOnTile(AI::Vec2D pos, Type type) const;
 
 	std::vector<GameObject*> GetAllObjectsOnTile(AI::Vec2D tileCoords) const;
 	bool IsValid(int x, int z) const;

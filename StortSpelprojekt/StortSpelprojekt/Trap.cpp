@@ -201,7 +201,7 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 		  const Tilemap* tileMap, TrapType trapType, AI::Vec2D direction)
 	: GameObject(ID, position, rotation, tilePosition, type, renderObject)
 {
-	_trapType = SHARK;
+	_trapType = TESLACOIL;
 	_tileMap = tileMap;
 	_nrOfAOETiles = 0;
 
@@ -279,45 +279,35 @@ int Trap::GetTileSize() const
 	return _tileSize;
 }
 
-void Trap::Activate( Unit* target)
+void Trap::Activate()
 {
-	switch (_trapType)
-	{
-	case SPIKE:
-
-		break;
-	case TESLACOIL:
-		break;
-	case SHARK:
-		break;
-	default:
-		break;
-	}
-	if (_isActive && target->GetType() == ENEMY)
-	{
-		target->TakeDamage(3);
-		_isActive = false;
-	}
-	else if (!_isActive && target->GetType() == GUARD)
-	{
-		_isActive = true;
-	}
-	
-}
-
-void Trap::Update(float deltaTime)
-{
-	if (_tileMap->IsTrapOnTile(_tilePosition._x, _tilePosition._y))
-	{
-		_tileMap->GetObjectOnTile(_tilePosition._x, _tilePosition._y, TRAP)->SetColorOffset({0,0,4});
-	}
-	
 	for (int i = 0; i < _nrOfAOETiles; i++)
 	{
 		if (_tileMap->IsEnemyOnTile(_areaOfEffect[i]._x, _areaOfEffect[i]._y))
 		{
-			Activate(static_cast<Unit*>(_tileMap->GetObjectOnTile(_areaOfEffect[i]._x, _areaOfEffect[i]._y, ENEMY)));
+			static_cast<Unit*>(_tileMap->GetObjectOnTile(_areaOfEffect[i], ENEMY))->TakeDamage(_damage);
 		}
+		if (_tileMap->IsGuardOnTile(_areaOfEffect[i]._x, _areaOfEffect[i]._y))
+		{
+			static_cast<Unit*>(_tileMap->GetObjectOnTile(_areaOfEffect[i], GUARD))->TakeDamage(_damage);
+		}
+	}
+
+}
+
+void Trap::Update(float deltaTime)
+{	
+	bool triggered = false;
+	for (int i = 0; i < _tileSize && !triggered; i++)
+	{
+		if (_tileMap->IsEnemyOnTile(_occupiedTiles[i]._x, _occupiedTiles[i]._y))
+		{
+			triggered = true;
+		}
+	}
+	if (triggered)
+	{
+		Activate();
 	}
 }
 
