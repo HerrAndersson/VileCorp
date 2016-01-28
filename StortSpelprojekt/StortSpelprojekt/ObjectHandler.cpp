@@ -419,7 +419,7 @@ void ObjectHandler::Update(float deltaTime)
 
 	for (pair<GameObject*, Spotlight*> spot : _spotlights)
 	{
-		if (spot.second->GetActive() && spot.first->GetActive())
+		if (spot.second->IsActive() && spot.first->IsActive())
 		{
 			if (spot.second->GetBone() != -1)
 			{

@@ -58,7 +58,7 @@ struct PointlightData
 {
 	unsigned char _bone;
 	float _range, _intensity;
-	DirectX::XMFLOAT3 _pos[3], _col[3];
+	DirectX::XMFLOAT3 _pos, _col;
 };
 
 struct SpotlightData
