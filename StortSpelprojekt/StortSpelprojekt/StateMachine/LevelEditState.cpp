@@ -5,7 +5,7 @@ LevelEditState::LevelEditState(System::Controls* controls, ObjectHandler* object
 {
 	_controls = controls;
 	_objectHandler = objectHandler;
-	
+
 	_camera = camera;
 	_pickingDevice = pickingDevice;
 }
@@ -26,6 +26,7 @@ void LevelEditState::Update(float deltaTime)
 void LevelEditState::OnStateEnter()
 {
 	_baseEdit.Initialize(_objectHandler, _controls, _pickingDevice, _camera);
+	_objectHandler->DisableSpawnPoints();
 }
 
 void LevelEditState::OnStateExit()

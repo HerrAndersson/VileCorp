@@ -57,7 +57,6 @@ bool ObjectHandler::Add(Type type, int index, XMFLOAT3 position, XMFLOAT3 rotati
 		break;
 	case SPAWN:
 		object = MakeSpawn(_gameObjectData->Spawns(index), position, rotation);
-		//new SpawnPoint(_idCount, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(type), 180, 2);
 		break;
 	case ENEMY:
 		object = MakeEnemy(_gameObjectData->Enemies(index), position, rotation);
@@ -367,6 +366,22 @@ void ObjectHandler::InitPathfinding()
 	}
 }
 
+void ObjectHandler::EnableSpawnPoints()
+{
+	for (GameObject* g : _gameObjects[SPAWN])
+	{
+		((SpawnPoint*)g)->Enable();
+	}
+}
+
+void ObjectHandler::DisableSpawnPoints()
+{
+	for (GameObject* g : _gameObjects[SPAWN])
+	{
+		((SpawnPoint*)g)->Disable();
+	}
+}
+
 void ObjectHandler::Update(float deltaTime)
 {
 	//Update all objects gamelogic
@@ -435,19 +450,24 @@ void ObjectHandler::Update(float deltaTime)
 			{
 				if (static_cast<SpawnPoint*>(g)->isSpawning())
 				{
-					GameObject* object = new Enemy(_idCount, g->GetPosition(), g->GetRotation(), g->GetTilePosition(), ENEMY, _assetManager->GetRenderObject(ENEMY), _tilemap);
-					if (_tilemap->AddObjectToTile(g->GetTilePosition()._x, g->GetTilePosition()._y, object))
+					//GameObject* object = new Enemy(_idCount, g->GetPosition(), g->GetRotation(), g->GetTilePosition(), ENEMY, _assetManager->GetRenderObject(ENEMY), _tilemap);
+					//if (_tilemap->AddObjectToTile(g->GetTilePosition()._x, g->GetTilePosition()._y, object))
+					//{
+					//	_gameObjects[ENEMY].push_back(object);
+					//	_objectCount++;
+					//	_idCount++;
+					//	static_cast<Unit*>(object)->Move();
+					//}
+					//else
+					//{
+					//	delete object;
+					//}
+					if (Add(ENEMY, "enemy_proto", g->GetPosition(), g->GetRotation()))
 					{
-						_gameObjects[ENEMY].push_back(object);
-						_objectCount++;
-						_idCount++;
-						static_cast<Unit*>(object)->Move();
-					}
-					else
-					{
-						delete object;
+						((Unit*)_gameObjects[ENEMY].back())->Move();
 					}
 				}
+
 			}
 			//else if (g->GetType() == TRAP)
 			//{

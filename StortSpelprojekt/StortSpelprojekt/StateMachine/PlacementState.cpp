@@ -5,10 +5,12 @@ PlacementState::PlacementState(System::Controls* controls, ObjectHandler* object
 {
 	_controls = controls;
 	_objectHandler = objectHandler;
-	
+
 	_camera = camera;
 	_pickingDevice = pickingDevice;
 	_budget = 1000;
+
+
 }
 
 
@@ -26,6 +28,12 @@ void PlacementState::Update(float deltaTime)
 	//tempAddObj
 
 	int cost = 20;
+
+	// Temp code
+	if (_controls->IsFunctionKeyDown("PLACEMENT:BUILD_TRAP"))
+	{
+		ChangeState(PLAYSTATE);
+	}
 
 	if (_baseEdit.GetSelectedObject() != nullptr)
 	{
@@ -93,6 +101,7 @@ void PlacementState::Update(float deltaTime)
 void PlacementState::OnStateEnter()
 {
 	_baseEdit.Initialize(_objectHandler, _controls, _pickingDevice, _camera);
+	_objectHandler->DisableSpawnPoints();
 }
 
 void PlacementState::OnStateExit()

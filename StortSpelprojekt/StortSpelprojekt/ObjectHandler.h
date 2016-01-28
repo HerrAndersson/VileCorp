@@ -89,6 +89,8 @@ public:
 	bool LoadLevel(int lvlIndex);
 
 	void InitPathfinding();
+	void EnableSpawnPoints();
+	void DisableSpawnPoints();
 
 	//Update gamelogic of all objects
 	void Update(float deltaTime);

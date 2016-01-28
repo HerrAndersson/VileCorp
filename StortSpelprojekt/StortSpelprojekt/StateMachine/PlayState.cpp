@@ -26,6 +26,7 @@ void PlayState::Update(float deltaTime)
 void PlayState::OnStateEnter()
 {
 	_gameLogic.Initialize(_objectHandler, _camera, _controls, _pickingDevice);
+	_objectHandler->EnableSpawnPoints();
 }
 
 void PlayState::OnStateExit()
