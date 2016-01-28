@@ -66,10 +66,35 @@ bool ObjectHandler::Add(Type type, XMFLOAT3 position = XMFLOAT3(0.0f, 0.0f, 0.0f
 		break;
 	case TRAP:
 		object = new Trap(_idCount, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(type), _tilemap);
-		addedObject = _tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
+		//addedObject = _tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
 		break;
 	default:	
 		break;
+	}
+
+	//Temporary check for traps. Could be more general if other objects are allowed to take up multiple tiles
+	if (type == TRAP)
+	{
+		Trap* trap = static_cast<Trap*>(object);
+		int i = 0;
+		addedObject = true;
+		AI::Vec2D* arr = trap->GetTiles();
+		for (int i = 0; i < trap->GetTileSize() && addedObject; i++)
+		{
+			if (!_tilemap->CanPlaceObject(arr[i]))
+			{
+				addedObject = false;
+			}
+		}
+		if (addedObject)
+		{
+			for (int i = 0; i < trap->GetTileSize() && addedObject; i++)
+			{
+				_tilemap->AddObjectToTile(arr[i], object);
+				_tilemap->GetObjectOnTile(arr[i]._x, arr[i]._y, FLOOR)->AddColorOffset({2,0,0});
+			}
+		}
+
 	}
 
 	_idCount++;

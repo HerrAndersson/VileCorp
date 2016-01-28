@@ -3,79 +3,12 @@
 //Get the tiles that will be activated for traps with a circular aoe
 void Trap::CalculateCircleAOE(int radius)
 {
-	
 	int x = radius;
-
 	int y = 0;
 	/*int x0 = _tilePosition._x;
 	int y0 = _tilePosition._y;*/
-
 	int D = 1 - x;   // Decision criterion divided by 2 evaluated at x=r, y=0
-
 	AI::Vec2D pos = {0,0};
-	bool xChanged = true;
-
-/*alternate method. Useful for circle outlines*/
-/*
-int decisionOver2 = 1 - x;
-	while (y <= x)
-	{
-		pos = {x, y};
-		if (isUnblocked(pos))
-		{
-			_areaOfEffect[_nrOfAOETiles++] = pos + _tilePosition;
-		}
-		pos = {y, x};
-		if (isUnblocked(pos))
-		{
-			_areaOfEffect[_nrOfAOETiles++] = pos + _tilePosition;
-		}
-		pos = {-x, y};
-		if (isUnblocked(pos))
-		{
-			_areaOfEffect[_nrOfAOETiles++] = pos + _tilePosition;
-		}
-		pos = {-y, x};
-		if (isUnblocked(pos))
-		{
-			_areaOfEffect[_nrOfAOETiles++] = pos + _tilePosition;
-		}
-		pos = {-x, -y};
-		if (isUnblocked(pos))
-		{
-			_areaOfEffect[_nrOfAOETiles++] = pos + _tilePosition;
-		}
-		pos = {-y, -x};
-		if (isUnblocked(pos))
-		{
-			_areaOfEffect[_nrOfAOETiles++] = pos + _tilePosition;
-		}
-		pos = {x, -y};
-		if (isUnblocked(pos))
-		{
-			_areaOfEffect[_nrOfAOETiles++] = pos + _tilePosition;
-		}
-		pos = {y, -x};
-		if (isUnblocked(pos))
-		{
-			_areaOfEffect[_nrOfAOETiles++] = pos + _tilePosition;
-		}
-		y++;
-		if (decisionOver2 <= 0)
-		{
-			decisionOver2 += 2 * y + 1;   // Change in decision criterion for y -> y+1
-		}
-		else
-		{
-			x--;
-			decisionOver2 += 2 * (y - x) + 1;   // Change for y -> y+1, x -> x-1
-		}
-	}
-	if (radius > 1)
-	{
-		CalculateCircleAOE(radius - 1);
-	}
-	*/
 
 	while (y <= x)
 	{
@@ -129,7 +62,7 @@ int decisionOver2 = 1 - x;
 
 }
 
-void Trap::CalculateLineAOE(int length)
+void Trap::CalculateLineAOE(int length, AI::Vec2D direction)
 {
 	_areaOfEffectArrayCapacity = length;
 	_nrOfAOETiles = 0;
@@ -139,7 +72,7 @@ void Trap::CalculateLineAOE(int length)
 	for (int i = 0; i < length && !_tileMap->IsWallOnTile(pos._x,pos._y); i++)
 	{
 		_areaOfEffect[_nrOfAOETiles++] = pos;
-		pos += _direction;
+		pos += direction;
 	}
 }
 
@@ -248,41 +181,75 @@ AI::Vec2D Trap::convertOctant(int octant, AI::Vec2D pos, bool in)
 	return convertedPos;
 }
 
+void Trap::Initialize(int damage, int tileSize, int AOESize)
+{
+	_damage = damage;
+	_tileSize = tileSize;
+	_occupiedTiles = new AI::Vec2D[_tileSize];
+	_areaOfEffectArrayCapacity = AOESize;
+	_areaOfEffect = new AI::Vec2D[_areaOfEffectArrayCapacity];
+}
+
 Trap::Trap()
 	:GameObject()
 {
-	_direction = {0,0};
 	_areaOfEffect = nullptr;
+	_occupiedTiles = nullptr;
 }
 
 Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject * renderObject, 
 		  const Tilemap* tileMap, TrapType trapType, AI::Vec2D direction)
 	: GameObject(ID, position, rotation, tilePosition, type, renderObject)
 {
-	_trapType = trapType;
-	_direction = direction;
+	_trapType = SHARK;
 	_tileMap = tileMap;
+	_nrOfAOETiles = 0;
 
 	int radius = 0;
+	
+	//TODO Make an initialize function and stop wasting space with case code --Victor
 	switch (_trapType)
 	{
 	case SPIKE:
-		_damage = 3;
+		Initialize(3, 1, 1);
+		_occupiedTiles[0] = _tilePosition;
+		_areaOfEffect[_nrOfAOETiles++] = _tilePosition;								//Temporary failsafe to not have an ermpty array. Might be easier with a check against _nrOfAOETIles
+		break;
+	case TESLACOIL:						//AOE with radius 3, 3x3 trigger in the middle
+		Initialize(2, 9, 37);
+		for (int i = 0; i < _tileSize; i++)
+		{
+			AI::Vec2D offset = {i / 3 - 1, i % 3 - 1};
+			_occupiedTiles[i] = _tilePosition + offset;
+		}
+		CalculateCircleAOE(3);
+		break;
+	//Trigger area is currently the same as the trap's physical area. Might be awkward since the shark trap is larger than its AOE.
+	case SHARK:	
+	{
+		Initialize(100, 18, 3);
+		AI::Vec2D offset = {direction._y, direction._x};
+		_nrOfAOETiles = 3;
+		_areaOfEffect[0] = tilePosition;
+		_areaOfEffect[1] = tilePosition + offset;
+		_areaOfEffect[2] = tilePosition - offset;
 
-		radius = 3;
-		_areaOfEffectArrayCapacity = (radius * 2 + 1) * (radius * 2 + 1);				//Note: Since the max area should be constant this can be more carefully calculated offline
-		_areaOfEffect = new AI::Vec2D[_areaOfEffectArrayCapacity];
-		_nrOfAOETiles = 0;
-		CalculateCircleAOE(radius);
+		AI::Vec2D dirOffset = {0, 0};
+		for (int i = 0; i < 6; i++)
+		{ 
+			_occupiedTiles[3 * i] = _tilePosition + dirOffset - offset;
+			_occupiedTiles[3 * i + 1] = _tilePosition + dirOffset;
+			_occupiedTiles[3 * i + 2] = _tilePosition + dirOffset + offset;
+			dirOffset += direction;
+		}
 		break;
-	case TESLACOIL:
-		break;
-	case SHARK:
-		break;
+	}
 	default:
 		_areaOfEffect = nullptr;
 		break;
 	}
+
+	//Floor gets colored for debugging. Note that the tiles won't get decolored if the trap is removed
 	for (int i = 0; i < _nrOfAOETiles; i++)
 	{
 		AI::Vec2D pos = _areaOfEffect[i];
@@ -298,6 +265,18 @@ Trap::~Trap()
 {
 	delete[] _areaOfEffect;
 	_areaOfEffect = nullptr;
+	delete[] _occupiedTiles;
+	_occupiedTiles = nullptr;
+}
+
+AI::Vec2D * Trap::GetTiles() const
+{
+	return _occupiedTiles;
+}
+
+int Trap::GetTileSize() const
+{
+	return _tileSize;
 }
 
 void Trap::Activate( Unit* target)
