@@ -156,9 +156,10 @@ namespace Renderer
 		void SetShaderStage(ShaderStage stage);
 
 		void BeginScene(float red, float green, float blue, float alpha);
-		void Render(DirectX::XMMATRIX* world, int vertexBufferSize, DirectX::XMFLOAT3 colorOffset = DirectX::XMFLOAT3(0, 0, 0));// , std::vector<DirectX::XMFLOAT4X4>* extra = nullptr);
+		void Render(DirectX::XMMATRIX* world, int vertexBufferSize, DirectX::XMFLOAT3 colorOffset = DirectX::XMFLOAT3(0, 0, 0));
+		void RenderAnimation(DirectX::XMMATRIX* world, int vertexBufferSize, std::vector<DirectX::XMFLOAT4X4>* extra = nullptr, DirectX::XMFLOAT3 colorOffset = DirectX::XMFLOAT3(0, 0, 0));
 		void Render(GUI::Node* root, FontWrapper* fontWrapper);
-		void RenderLineList(DirectX::XMMATRIX* world, int nrOfPoints, DirectX::XMFLOAT3 colorOffset = DirectX::XMFLOAT3(0,0,0)); //TODO: Test if grid can be rendered /Jonas
+		void RenderLineList(DirectX::XMMATRIX* world, int nrOfPoints, DirectX::XMFLOAT3 colorOffset = DirectX::XMFLOAT3(0,0,0));
 		void RenderShadowMap(DirectX::XMMATRIX* world, int vertexBufferSize);
 		void RenderScreenQuad();
 		void EndScene();

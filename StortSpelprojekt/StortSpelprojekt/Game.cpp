@@ -50,7 +50,7 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	//_controls->SaveKeyBindings(System::MAP_EDIT_KEYMAP, "MOVE_CAMERA_UP", "M");
 
 	Renderer::Spotlight* spot;
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i < 10; i++)
 	{
 		int d = _renderModule->SHADOWMAP_DIMENSIONS;
 		spot = new Renderer::Spotlight(_renderModule->GetDevice(), 0.1f, 1000.0f, XM_PIDIV4, d, d, 1.0f, 9.5f, XMFLOAT3(1.0f, 1.0f, 1.0f), 72);
@@ -98,11 +98,12 @@ Game::~Game()
 	SAFE_DELETE(_assetManager);
 	SAFE_DELETE(_pickingDevice);
 	SAFE_DELETE(_grid);
-	delete _fontWrapper;
+	SAFE_DELETE(_fontWrapper);
+	SAFE_DELETE(_lightCulling);
 
 	for(auto s : _spotlights)
 	{
-		delete s;
+		SAFE_DELETE(s);
 	}
 }
 
@@ -167,21 +168,26 @@ void Game::Render()
 {
 	_renderModule->BeginScene(0.0f, 0.5f, 0.5f, 1.0f);
 	_renderModule->SetDataPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
-	/*--------------------------------------------------------- Geometry pass ------------------------------------------------------------
+
+	/*///////////////////////////////////////////////////////  Geometry pass  ////////////////////////////////////////////////////////////
 	Render the objects to the diffuse and normal resource views. Camera depth is also generated here.									*/
 
 	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::GEO_PASS);
 
 	std::vector<std::vector<GameObject*>>* gameObjects = _objectHandler->GetGameObjects();
 
-	//TODO: store this in object handler instead of building each frame? /Jonas
-	std::vector<std::vector<GameObject*>> animatedObjects;
+	/*------------------------------------------------  Render non-skinned objects  ---------------------------------------------------*/
 	for (auto i : *gameObjects)
 	{
 		if (i.size() > 0)
 		{
 			RenderObject* renderObject = i.at(0)->GetRenderObject();
-			if (!renderObject->_isSkinned)
+			//if (!renderObject->_isSkinned)
+			if (i.at(0)->GetType() == ENEMY)
+			{
+				continue;
+			}
+			else
 			{
 				_renderModule->SetDataPerObjectType(renderObject);
 				int vertexBufferSize = renderObject->_mesh._vertexBufferSize;
@@ -191,48 +197,28 @@ void Game::Render()
 					_renderModule->Render(g->GetMatrix(), vertexBufferSize, g->GetColorOffset());
 				}
 			}
-			else
-			{
-				animatedObjects.push_back(i);
-			}
 		}
 	}
 
-	////TODO: Check if this works. /Jonas
+	/*--------------------------------------------------  Render skinned objects  -----------------------------------------------------*/
+	////TODO: Check if this works, with the help from the animators. /Jonas
 	//_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::ANIM_STAGE);
-	//for (unsigned int i = 0; i < animatedObjects.size(); i++)
+	//if (gameObjects->size() > 0)
 	//{
-	//	if (animatedObjects.at(i).size() > 0)
+	//	if (gameObjects->at(GUARD).size() > 0)
 	//	{
-	//		RenderObject* renderObject = animatedObjects.at(i).at(0)->GetRenderObject();
+	//		RenderObject* renderObject = gameObjects->at(GUARD).at(0)->GetRenderObject();
 
 	//		_renderModule->SetDataPerObjectType(renderObject);
 	//		int vertexBufferSize = renderObject->_mesh._vertexBufferSize;
 
-	//		for (GameObject* a : animatedObjects.at(i))
+	//		for (GameObject* a : gameObjects->at(GUARD))
 	//		{
-	//			_renderModule->Render(a->GetMatrix(), vertexBufferSize, a->GetColorOffset());
+	//			_renderModule->RenderAnimation(a->GetMatrix(), vertexBufferSize, a->GetAnimation()->GetTransforms(), a->GetColorOffset());
 	//		}
 	//	}
 	//}
 
-	if (_SM->GetState() == LEVELEDITSTATE)
-	{
-		_renderModule->SetShaderStage(Renderer::RenderModule::GRID_STAGE);
-		_renderModule->SetDataPerLineList(_grid->GetLineBuffer(), _grid->GetVertexSize());
-
-		std::vector<DirectX::XMMATRIX>* gridMatrices = _grid->GetGridMatrices();
-		for (auto &matrix : *gridMatrices)
-		{
-			_renderModule->RenderLineList(&matrix, _grid->GetNrOfPoints(), _grid->GetColorOffset());
-		}
-
-	}
-
-	/*------------------------------------------------------------ Light pass --------------------------------------------------------------
-	Generate the shadow map for each spotlight, then apply the lighting/shadowing to the backbuffer render target with additive blending. */
-
-	//_renderModule->RenderLightVolume(_spotlights[0]->GetVolumeBuffer(), _spotlights[0]->GetWorldMatrix(), _spotlights[0]->GetVertexCount(), _spotlights[0]->GetVertexSize());
 
 	//TEMPORARY!!
 	std::vector<std::vector<std::vector<GameObject*>>> inLight;
@@ -248,11 +234,49 @@ void Game::Render()
 		{
 			inLight.push_back(_lightCulling->GetObjectsInSpotlight(_spotlights[i]));
 		}
+
+		//"Fog of War"
+		for (int i = 0; i < _spotlights.size(); i++)
+		{
+			if (inLight.at(i).size() >= ENEMY)
+			{
+				if (inLight.at(i).at(ENEMY).size() > 0)
+				{
+					RenderObject* renderObject = inLight.at(i).at(ENEMY).at(0)->GetRenderObject();
+
+					_renderModule->SetDataPerObjectType(renderObject);
+					int vertexBufferSize = renderObject->_mesh._vertexBufferSize;
+
+					for (GameObject* a : inLight.at(i).at(ENEMY))
+					{
+						//_renderModule->RenderAnimation(a->GetMatrix(), vertexBufferSize, a->GetAnimation()->GetTransforms(), a->GetColorOffset());
+						_renderModule->Render(a->GetMatrix(), vertexBufferSize, a->GetColorOffset());
+					}
+				}
+			}
+		}
 	}
+
+	if (_SM->GetState() == LEVELEDITSTATE)
+	{
+		_renderModule->SetShaderStage(Renderer::RenderModule::GRID_STAGE);
+		_renderModule->SetDataPerLineList(_grid->GetLineBuffer(), _grid->GetVertexSize());
+
+		std::vector<DirectX::XMMATRIX>* gridMatrices = _grid->GetGridMatrices();
+		for (auto &matrix : *gridMatrices)
+		{
+			_renderModule->RenderLineList(&matrix, _grid->GetNrOfPoints(), _grid->GetColorOffset());
+		}
+
+	}
+
+	/*//////////////////////////////////////////////////////////  Light pass  //////////////////////////////////////////////////////////////
+	Generate the shadow map for each spotlight, then apply the lighting/shadowing to the backbuffer render target with additive blending. */
+
+	//_renderModule->RenderLightVolume(_spotlights[0]->GetVolumeBuffer(), _spotlights[0]->GetWorldMatrix(), _spotlights[0]->GetVertexCount(), _spotlights[0]->GetVertexSize());
 
 	if (_SM->GetState() != MENUSTATE)
 	{
-
 		_renderModule->SetLightDataPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
 		for (int i = 0; i < _spotlights.size(); i++)
 		{
@@ -269,11 +293,27 @@ void Game::Render()
 
 					for (GameObject* g : j)
 					{
-						g->SetColorOffset(XMFLOAT3(0, 1, 0));
+						//g->SetColorOffset(XMFLOAT3(0, 1, 0));
 						_renderModule->RenderShadowMap(g->GetMatrix(), vertexBufferSize);
 					}
 				}
 			}
+
+			//for (auto j : *gameObjects)
+			//{
+			//	if (j.size() > 0)
+			//	{
+			//		RenderObject* renderObject = j.at(0)->GetRenderObject();
+			//		_renderModule->SetShadowMapDataPerObjectType(renderObject);
+			//		int vertexBufferSize = renderObject->_mesh._vertexBufferSize;
+
+			//		for (GameObject* g : j)
+			//		{
+			//			_renderModule->RenderShadowMap(g->GetMatrix(), vertexBufferSize);
+			//		}
+
+			//	}
+			//}
 
 			_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::LIGHT_APPLICATION);
 			_renderModule->SetLightDataPerSpotlight(_spotlights[i]);
