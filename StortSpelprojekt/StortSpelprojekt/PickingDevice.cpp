@@ -215,7 +215,6 @@ vector<GameObject*> PickingDevice::boxPickObjects(POINT mousePoint, vector<GameO
 	return pickedObjects;
 }
 
-
 vector<GameObject*> PickingDevice::pickTilemap(POINT mousePoint, Tilemap* tilemap)
 {
 	vector<GameObject*> pickedObjects;

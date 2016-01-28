@@ -15,6 +15,7 @@
 #include "Spotlight.h"
 #include "GameObjectDataLoader.h"
 #include "ShadowMap.h"
+#include "LightCulling.h"
 
 class Game
 {
@@ -45,6 +46,7 @@ private:
 
 	//TODO: TEMP! Move this to objectHandler
 	std::vector<Renderer::Spotlight*> _spotlights;
+	LightCulling* _lightCulling;
 
 public:
 

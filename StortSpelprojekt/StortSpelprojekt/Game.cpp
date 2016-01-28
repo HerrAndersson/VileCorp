@@ -62,6 +62,9 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 
 	//settings._flags = settings.FULLSCREEN;
 	//ResizeResources(settings);
+
+	_lightCulling = new LightCulling();
+
 }
 
 void Game::CheckSettings()
@@ -183,6 +186,7 @@ void Game::Render()
 	std::vector<std::vector<GameObject*>>* gameObjects = _objectHandler->GetGameObjects();
 	for (int i = 0; i < NR_OF_TYPES; i++)
 	{
+		
 		for (GameObject* g : gameObjects->at(i))
 		{
 			//TODO: If type == ENEMY -> don't render. Instead check in the chosen objects for the light rendering (Functionality not done), and check if the enemies are there they should be both rendered and lit.
@@ -209,6 +213,7 @@ void Game::Render()
 		//{
 		//	_renderModule->RenderLineList(&matrix, _grid->GetLineBuffer(), 2);
 		//}
+		
 	}
 
 	/*------------------------------------------------------------ Light pass --------------------------------------------------------------
@@ -218,6 +223,7 @@ void Game::Render()
 	//{
 	//	_renderModule->DEBUG_RenderLightVolume(_spotlights[i]->GetVolumeBuffer(), _spotlights[i]->GetWorldMatrix(), _spotlights[i]->GetVertexCount(), _spotlights[i]->GetVertexSize());
 	//}
+	
 
 	_renderModule->SetLightDataPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
 	for (int i = 0; i < 2; i++)
@@ -243,11 +249,21 @@ void Game::Render()
 		//_renderModule->RenderScreenQuad();
 	}
 
+	static std::vector<std::vector<GameObject*>>go;
+	if (_SM->GetState() == PLACEMENTSTATE)
+	{
+		_lightCulling = new LightCulling(_objectHandler->GetTileMap());
+		go = _lightCulling->GetObjectsInSpotlight(_spotlights[0]);
+		go = _lightCulling->GetObjectsInFrustum(_camera);
+
+
+	}
+
 	/*-------------------------------------------------------- HUD and other 2D -----------------------------------------------------------*/
 
 	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::HUD_STAGE);
 
-	//_renderModule->Render(_UI->GetTextureData());
+	_renderModule->RenderScreenQuad();
 	_renderModule->Render(_SM->GetCurrentStatePointer()->GetUITree()->GetRootNode(), _fontWrapper);
 	_renderModule->EndScene();
 }
