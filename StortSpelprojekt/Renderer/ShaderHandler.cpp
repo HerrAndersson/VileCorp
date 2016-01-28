@@ -120,6 +120,9 @@ namespace Renderer
 		_lightApplyLightVolumePS = CreatePixelShader(device, L"Assets/Shaders/LightApplyLightVolumePS.hlsl");
 		_lightApplyScreenQuadPS = CreatePixelShader(device, L"Assets/Shaders/LightApplyScreenQuadPS.hlsl");
 
+		//Fxaa pass init
+		_fxaaPassPS = CreatePixelShader(device, L"Assets/Shaders/FxaaPS.hlsl");
+
 		//Shadow map shaders init
 		D3D11_INPUT_ELEMENT_DESC shadowInputDesc[] =
 		{
@@ -154,7 +157,7 @@ namespace Renderer
 
 		_gridPassVS = CreateVertexShader(device, L"Assets/Shaders/GridVS.hlsl", gridInputDesc, numElements);
 		_gridPassPS = CreatePixelShader(device, L"Assets/Shaders/GridPS.hlsl");
-		
+
 		//HUD pass init
 		numElements = sizeof(lightInputDesc) / sizeof(lightInputDesc[0]);
 
@@ -544,6 +547,24 @@ namespace Renderer
 			deviceContext->PSSetShader(_lightApplyLightVolumePS, nullptr, 0);
 			deviceContext->CSSetShader(nullptr, nullptr, 0);
 		}
+
+		//Set sampler
+		ID3D11SamplerState* samplers[2] = { _samplerWRAP, _samplerCLAMP };
+		deviceContext->PSSetSamplers(0, 2, samplers);
+	}
+
+	void ShaderHandler::SetFXAAPassShaders(ID3D11DeviceContext* deviceContext)
+	{
+		// Set vertex layout
+		deviceContext->IASetInputLayout(_geoPassVS->_inputLayout);
+
+		// Set shaders
+		deviceContext->VSSetShader(_lightPassVS->_vertexShader, nullptr, 0);
+		deviceContext->HSSetShader(nullptr, nullptr, 0);
+		deviceContext->GSSetShader(nullptr, nullptr, 0);
+		deviceContext->DSSetShader(nullptr, nullptr, 0);
+		deviceContext->PSSetShader(_fxaaPassPS, nullptr, 0);
+		deviceContext->CSSetShader(nullptr, nullptr, 0);
 
 		//Set sampler
 		ID3D11SamplerState* samplers[2] = { _samplerWRAP, _samplerCLAMP };

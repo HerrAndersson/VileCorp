@@ -52,7 +52,7 @@ float3 ReconstructWorldFromCamDepth(float2 uv)
 	return float3(worldPos.xyz / worldPos.w);
 }
 
-float4 main(VS_OUT input) : SV_TARGET
+float4 main(VS_OUT input) : SV_TARGET4
 {
 	float lightAngleDiv2 = lightAngle / 2;
 	float2 uv = float2((input.pos.x) / screenWidth, (input.pos.y) / screenHeight);

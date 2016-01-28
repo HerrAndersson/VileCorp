@@ -15,7 +15,7 @@ namespace Renderer
 	{
 	private:
 
-		static const int BUFFER_COUNT = 2;
+		static const int BUFFER_COUNT = 3;
 
 		int _textureWidth;
 		int _textureHeight;
@@ -57,6 +57,7 @@ namespace Renderer
 		ID3D11DeviceContext* GetDeviceContext();
 
 		int SetGeometryStage();
+		void SetAntiAliasingState();
 		void SetShadowGenerationStage();
 		int SetLightStage();
 		void SetHUDStage();

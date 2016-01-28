@@ -46,6 +46,7 @@ namespace Renderer
 		ID3D11PixelShader*		_lightApplyLightVolumePS;
 		ID3D11PixelShader*		_lightApplyScreenQuadPS;
 		ID3D11PixelShader*		_hudPassPS;
+		ID3D11PixelShader*		_fxaaPassPS;
 
 		//Samplers
 		ID3D11SamplerState*		_samplerWRAP;
@@ -74,6 +75,7 @@ namespace Renderer
 		void SetShadowGenerationShaders(ID3D11DeviceContext* deviceContext);
 		void SetLightApplicationShaders(ID3D11DeviceContext* deviceContext, int screenOrVolume = 1); //Screen = 1, Volume = 2
 		void SetHUDPassShaders(ID3D11DeviceContext* deviceContext);
+		void SetFXAAPassShaders(ID3D11DeviceContext* deviceContext);
 	};
 }
 

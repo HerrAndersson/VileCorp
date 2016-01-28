@@ -282,6 +282,14 @@ void Game::Render()
 		}
 	}
 
+	/*------------------------------------------------FXAA Pass----------------------
+	Anti aliasing after geometry stage
+	*/
+	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::AA_STAGE);//Not quite sure is DirectXHandler part of this is right  /Seb
+	_renderModule->RenderScreenQuad();
+
+	//-------------------------------------------------------------------------------
+
 	/*-------------------------------------------------------- HUD and other 2D -----------------------------------------------------------*/
 	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::HUD_STAGE);
 	_renderModule->Render(_SM->GetCurrentStatePointer()->GetUITree()->GetRootNode(), _fontWrapper);

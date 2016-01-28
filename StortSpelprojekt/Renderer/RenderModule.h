@@ -33,6 +33,7 @@ Render targets:
 |						  |   Sampled from to e.g. reconstruct the world position of a pixel.											                      |
 |    ShadowMap       3    |   Technically not a render target, but an automatically generated depth map from the view of the light against rendered objects.  |
 |					      |   Sampled from to calculate lighting/shadows. Located in ShadowMap-class, set in RenderModule.						              |
+|	 TempBackBuffer  4	  |   Holds backbuffer copy for FXAA to be able to write and read from backbuffer												      |
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 IMPORTANT:
@@ -136,7 +137,7 @@ namespace Renderer
 		const int SHADOWMAP_DIMENSIONS = 256;
 		const DirectX::XMFLOAT3 AMBIENT_LIGHT = DirectX::XMFLOAT3(0.1f, 0.1f, 0.1f);
 
-		enum ShaderStage { GEO_PASS, SHADOW_GENERATION, LIGHT_APPLICATION, GRID_STAGE, ANIM_STAGE, HUD_STAGE };
+		enum ShaderStage { GEO_PASS, SHADOW_GENERATION, LIGHT_APPLICATION, GRID_STAGE, ANIM_STAGE, HUD_STAGE, AA_STAGE };
 
 		RenderModule(HWND hwnd, int screenWidth, int screenHeight, bool fullScreen);
 		~RenderModule();
