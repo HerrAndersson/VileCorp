@@ -431,30 +431,24 @@ static const bool Collision(Box &box, Square &square)
 	squareCorners.push_back(Vec3(square._minPos._x, 0.0f, square._maxPos._y));
 	squareCorners.push_back(Vec3(square._maxPos._x, 0.0f, square._maxPos._y));
 
-	//if (!SATVectorCheck(Ray(Vec3(), box1._xSlab._normal), firstBoxCorners, secondBoxCorners))
-	//{
-	//	collision = false;
-	//}
-	//else if (!SATVectorCheck(Ray(Vec3(), box1._ySlab._normal), firstBoxCorners, secondBoxCorners))
-	//{
-	//	collision = false;
-	//}
-	//else if (!SATVectorCheck(Ray(Vec3(), box1._zSlab._normal), firstBoxCorners, secondBoxCorners))
-	//{
-	//	collision = false;
-	//}
-	//else if (!SATVectorCheck(Ray(Vec3(), box2._xSlab._normal), firstBoxCorners, secondBoxCorners))
-	//{
-	//	collision = false;
-	//}
-	//else if (!SATVectorCheck(Ray(Vec3(), box2._ySlab._normal), firstBoxCorners, secondBoxCorners))
-	//{
-	//	collision = false;
-	//}
-	//else if (!SATVectorCheck(Ray(Vec3(), box2._zSlab._normal), firstBoxCorners, secondBoxCorners))
-	//{
-	//	collision = false;
-	//}
+	if (!SATVectorCheck(Ray(Vec3(), box._xSlab._normal), squareCorners, boxCorners))
+	{
+		collision = false;
+	}
+
+	else if (!SATVectorCheck(Ray(Vec3(), box._zSlab._normal), squareCorners, boxCorners))
+	{
+		collision = false;
+	}
+	else if (!SATVectorCheck(Ray(Vec3(), squareCorners[0] - squareCorners[1]), squareCorners, boxCorners))
+	{
+		collision = false;
+	}
+
+	else if (!SATVectorCheck(Ray(Vec3(), squareCorners[0] - squareCorners[2]), squareCorners, boxCorners))
+	{
+		collision = false;
+	}
 
 	return collision;
 

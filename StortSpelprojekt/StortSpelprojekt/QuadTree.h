@@ -15,7 +15,7 @@ public:
 
 	void Divide(int nrOfDivisions);
 	void GetSquares(Triangle& triangle, std::vector<Square> &collectedSquares);
-	void GetSquares(Square &frustumSquare, std::vector<Square> &collectedSquares);
+	void GetSquares(Box frustumBox, std::vector<Square> &collectedSquares);
 	void Release();
 
 };

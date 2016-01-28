@@ -97,7 +97,7 @@ std::vector<std::vector<GameObject*>> LightCulling::GetObjectsInSpotlight(Render
 
 std::vector<std::vector<GameObject*>> LightCulling::GetObjectsInFrustum(System::Camera* camera)
 {
-	Square cullSquare;// = Square(Vec2(0.0f, 0.0f), Vec2(20.0f, 20.0f));
+	Box cullBox;
 	std::vector<Square> collectedSquares;
 
 	std::vector<std::vector<GameObject*>> objectsInFrustum;
@@ -112,7 +112,7 @@ std::vector<std::vector<GameObject*>> LightCulling::GetObjectsInFrustum(System::
 		CalculateFrustumEdge(-1.0f, 1.0f, camera),
 		CalculateFrustumEdge(1.0f, 1.0f, camera) };
 
-	Vec2 points[4];
+	Vec3 points[4];
 	Plane pickPlane = Plane(Vec3(), Vec3(0.0f, 1.0f, 0.0f), 0.0f);
 
 	bool legitForReal = true;
@@ -121,8 +121,7 @@ std::vector<std::vector<GameObject*>> LightCulling::GetObjectsInFrustum(System::
 	{
 		if (Collision(rays[i], pickPlane))
 		{
-			Vec3 temp = Intersection(rays[i], pickPlane);
-			points[i] = Vec2(temp._x, temp._z);
+			points[i] = Intersection(rays[i], pickPlane);
 		}
 		else
 		{
@@ -132,10 +131,20 @@ std::vector<std::vector<GameObject*>> LightCulling::GetObjectsInFrustum(System::
 
 	if (legitForReal)
 	{
-		cullSquare = Square(points[0], points[3]);
+		Vec3 pos;
+		//TODO continue here
+		cullBox = Box(
+			pos, 
+			(points[0]-points[1]).Length(),
+			0.0f,
+			(points[0] - points[2]).Length(), 
+			Vec3(0.0f, 1.0f, 0.0f).Cross(points[0] - points[1]),
+			Vec3(0.0f, 1.0f, 0.0f),
+			Vec3(0.0f, 1.0f, 0.0f).Cross(points[0] - points[2])
+			);
 	}
 
-	_quadTreeRoot->GetSquares(cullSquare, collectedSquares);
+	_quadTreeRoot->GetSquares(cullBox, collectedSquares);
 
 
 	for (unsigned int i = 0; i < collectedSquares.size(); i++)

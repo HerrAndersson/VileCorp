@@ -58,7 +58,6 @@ void QuadTree::Divide(int nrOfDivisions)
 }
 void QuadTree::GetSquares(Triangle& triangle, std::vector<Square>&collectedSquares)
 {
-
 	if (Collision(triangle, _boundry))
 	{
 		if (isLeaf)
@@ -75,9 +74,9 @@ void QuadTree::GetSquares(Triangle& triangle, std::vector<Square>&collectedSquar
 	}
 }
 
-void QuadTree::GetSquares(Square& frustumSquare, std::vector<Square>&collectedSquares)
+void QuadTree::GetSquares(Box frustumBox, std::vector<Square>&collectedSquares)
 {
-	if (Collision(frustumSquare, _boundry))
+	if (Collision(frustumBox, _boundry))
 	{
 		if (isLeaf)
 		{
@@ -87,7 +86,7 @@ void QuadTree::GetSquares(Square& frustumSquare, std::vector<Square>&collectedSq
 		{
 			for (int i = 0; i < 4; i++)
 			{
-				_children[i]->GetSquares(frustumSquare, collectedSquares);
+				_children[i]->GetSquares(frustumBox, collectedSquares);
 			}
 		}
 	}
