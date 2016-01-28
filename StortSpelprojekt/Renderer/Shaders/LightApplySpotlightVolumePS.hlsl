@@ -10,7 +10,7 @@ cbuffer matrixBufferLightPassPerFrame : register(b2)
 	int screenHeight;
 };
 
-cbuffer matrixBufferLightPassPerLight : register(b3)
+cbuffer matrixBufferLightPassPerSpotlight : register(b3)
 {
 	matrix lightView;
 	matrix lightProj;

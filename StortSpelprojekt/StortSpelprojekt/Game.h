@@ -13,6 +13,7 @@
 #include "Grid.h"
 #include "PickingDevice.h"
 #include "Spotlight.h"
+#include "Pointlight.h"
 #include "GameObjectDataLoader.h"
 #include "ShadowMap.h"
 #include "LightCulling.h"
@@ -49,6 +50,7 @@ private:
 
 	//TODO: TEMP! Move this to objectHandler
 	std::vector<Renderer::Spotlight*> _spotlights;
+	std::vector<Renderer::Pointlight*> _pointlights;
 	LightCulling* _lightCulling;
 
 	std::vector<GameObject*> _enemies;

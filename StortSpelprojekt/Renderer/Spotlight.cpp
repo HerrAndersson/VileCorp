@@ -113,7 +113,9 @@ namespace Renderer
 		data.pSysMem = triangles.data();
 		HRESULT result = device->CreateBuffer(&bufferDesc, &data, &_lightConeVolume);
 		if (FAILED(result))
+		{
 			throw std::runtime_error("Spotlight: Failed to create vertex buffer");
+		}
 	}
 
 	Spotlight::~Spotlight()

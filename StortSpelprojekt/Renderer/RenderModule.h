@@ -9,6 +9,7 @@
 #include "HUDElement.h"
 #include "ShadowMap.h"
 #include "Spotlight.h"
+#include "Pointlight.h"
 #include "Node.h"
 #include "FontWrapper.h"
 
@@ -19,7 +20,7 @@ Constant buffer register setup:
 |    0	  |	   GeoPerFrame. Camera view and projection matrices. Used when rendering objects to give them the correct position from the view of the camera.   |
 |    1	  |	   PerObject. World matrix  and color offset of the object.																				          |
 |    2	  |	   LightPerFrame. Inverted camera view and projection. Used to reconstruct world position from the cam depth map.			                      |
-|    3	  |    LightPerLight. Spotlight data such as angle and range etc.															                          |
+|    3	  |    LightPerLight. Spotlight data such as angle and range etc. Pointlight data such as range and position										  |
 |    4    |    ShadowMapPerFrame. Light view and projection matrices. Used to generate the shadow map.                                                        |
 |    5    |    PerSkinnedObject. Animation data matrices																									  |
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -90,7 +91,7 @@ namespace Renderer
 			int _screenHeight;
 		};
 
-		struct MatrixBufferLightPassPerLight
+		struct MatrixBufferLightPassPerSpotlight
 		{
 			DirectX::XMMATRIX _viewMatrix;
 			DirectX::XMMATRIX _projectionMatrix;
@@ -103,11 +104,20 @@ namespace Renderer
 			int				  _shadowMapDimensions;
 		};
 
+		struct MatrixBufferLightPassPerPointlight
+		{
+			DirectX::XMFLOAT3 _position;
+			float			  _intensity;
+			DirectX::XMFLOAT3 _color;
+			float			  _range;
+		};
+
 		ID3D11Buffer*		_matrixBufferPerObject;
 		ID3D11Buffer* 		_matrixBufferPerSkinnedObject;
 		ID3D11Buffer*		_matrixBufferPerFrame;
 		ID3D11Buffer*		_matrixBufferLightPassPerFrame;
-		ID3D11Buffer*		_matrixBufferLightPassPerLight;
+		ID3D11Buffer*		_matrixBufferLightPassPerSpotlight;
+		ID3D11Buffer*		_matrixBufferLightPassPerPointlight;
 		ID3D11Buffer*		_screenQuad;
 		ID3D11Buffer*		_matrixBufferHUD;
 
@@ -136,7 +146,7 @@ namespace Renderer
 		const int SHADOWMAP_DIMENSIONS = 256;
 		const DirectX::XMFLOAT3 AMBIENT_LIGHT = DirectX::XMFLOAT3(0.1f, 0.1f, 0.1f);
 
-		enum ShaderStage { GEO_PASS, SHADOW_GENERATION, LIGHT_APPLICATION, GRID_STAGE, ANIM_STAGE, HUD_STAGE };
+		enum ShaderStage { GEO_PASS, SHADOW_GENERATION, LIGHT_APPLICATION_SPOTLIGHT, LIGHT_APPLICATION_POINTLIGHT, GRID_STAGE, ANIM_STAGE, HUD_STAGE };
 
 		RenderModule(HWND hwnd, int screenWidth, int screenHeight, bool fullScreen);
 		~RenderModule();
@@ -152,6 +162,7 @@ namespace Renderer
 
 		void SetLightDataPerFrame(DirectX::XMMATRIX* camView, DirectX::XMMATRIX* camProjection);
 		void SetLightDataPerSpotlight(Spotlight* spotlight);
+		void SetLightDataPerPointlight(Pointlight* pointlight);
 
 		void SetShaderStage(ShaderStage stage);
 

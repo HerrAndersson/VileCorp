@@ -8,7 +8,7 @@ cbuffer matrixBufferLightPassPerFrame : register(b2)
 	matrix invCamProj;
 };
 
-cbuffer matrixBufferLightPassPerLight : register(b3)
+cbuffer _matrixBufferLightPassPerSpotlight : register(b3)
 {
 	matrix lightView;
 	matrix lightProj;

@@ -50,12 +50,19 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	//_controls->SaveKeyBindings(System::MAP_EDIT_KEYMAP, "MOVE_CAMERA_UP", "M");
 
 	Renderer::Spotlight* spot;
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < 1; i++)
 	{
 		int d = _renderModule->SHADOWMAP_DIMENSIONS;
 		spot = new Renderer::Spotlight(_renderModule->GetDevice(), 0.1f, 1000.0f, XM_PIDIV4, d, d, 1.0f, 9.5f, XMFLOAT3(1.0f, 1.0f, 1.0f), 72);
 		spot->SetPositionAndRotation(XMFLOAT3(22 + i*2, 1, 22 + i * 2), XMFLOAT3(0,-35*i,0));
 		_spotlights.push_back(spot);
+	}
+
+	Renderer::Pointlight* point;
+	for (int i = 0; i < 25; i++)
+	{
+		point = new Renderer::Pointlight(_renderModule->GetDevice(), XMFLOAT3(20 + 10 * sin(25 + i * 2) * sin(i), 1.0f, 20 + 10 * sin(25 + i * 2) * cos(i)), 5, 1.0f, 1.0f, XMFLOAT3(sin(i*i * 6), sin(i * 50 * i), sin(120 * i * i)));
+		_pointlights.push_back(point);
 	}
 
 	_lightCulling = new LightCulling();
@@ -105,6 +112,11 @@ Game::~Game()
 	{
 		SAFE_DELETE(s);
 	}
+
+	for (auto p : _pointlights)
+	{
+		SAFE_DELETE(p);
+	}
 }
 
 void Game::ResizeResources(System::WindowSettings settings)
@@ -147,18 +159,18 @@ void Game::Update(float deltaTime)
 		}
 	}
 
-	for (unsigned int i = 0; i < _spotlights.size(); i++)
-	{
-		XMFLOAT3 rot = _spotlights[i]->GetRotation();
-		rot.y -= 1;
-		_spotlights[i]->SetRotation(rot);
+	//for (unsigned int i = 0; i < _spotlights.size(); i++)
+	//{
+	//	XMFLOAT3 rot = _spotlights[i]->GetRotation();
+	//	rot.y -= 1;
+	//	_spotlights[i]->SetRotation(rot);
 
-		XMFLOAT3 color = _spotlights[i]->GetColor();
-		color.x = sin(_timer.GetGameTime() / 1000 + 100 * i);
-		color.y = sin(_timer.GetGameTime() / 1000 + 100 * i + XMConvertToRadians(120));
-		color.z = sin(_timer.GetGameTime() / 1000 + 100 * i + XMConvertToRadians(240));
-		_spotlights[i]->SetColor(color);
-	}
+	//	XMFLOAT3 color = _spotlights[i]->GetColor();
+	//	color.x = sin(_timer.GetGameTime() / 1000 + 100 * i);
+	//	color.y = sin(_timer.GetGameTime() / 1000 + 100 * i + XMConvertToRadians(120));
+	//	color.z = sin(_timer.GetGameTime() / 1000 + 100 * i + XMConvertToRadians(240));
+	//	_spotlights[i]->SetColor(color);
+	//}
 }
 
 //TODO: TEMP! Should be removed later /Jonas
@@ -315,10 +327,17 @@ void Game::Render()
 			//	}
 			//}
 
-			_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::LIGHT_APPLICATION);
+			_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::LIGHT_APPLICATION_SPOTLIGHT);
 			_renderModule->SetLightDataPerSpotlight(_spotlights[i]);
 
 			_renderModule->RenderLightVolume(_spotlights[i]->GetVolumeBuffer(), _spotlights[i]->GetWorldMatrix(), _spotlights[i]->GetVertexCount(), _spotlights[i]->GetVertexSize());
+		}
+
+		_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::LIGHT_APPLICATION_POINTLIGHT);
+		for (auto p : _pointlights)
+		{
+			_renderModule->SetLightDataPerPointlight(p);
+			_renderModule->RenderLightVolume(p->GetVolumeBuffer(), p->GetWorldMatrix(), p->GetVertexCount(), p->GetVertexSize());
 		}
 	}
 
