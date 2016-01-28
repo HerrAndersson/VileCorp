@@ -5,8 +5,6 @@ void Trap::CalculateCircleAOE(int radius)
 {
 	int x = radius;
 	int y = 0;
-	/*int x0 = _tilePosition._x;
-	int y0 = _tilePosition._y;*/
 	int D = 1 - x;   // Decision criterion divided by 2 evaluated at x=r, y=0
 	AI::Vec2D pos = {0,0};
 
@@ -201,21 +199,21 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 		  const Tilemap* tileMap, TrapType trapType, AI::Vec2D direction)
 	: GameObject(ID, position, rotation, tilePosition, type, renderObject)
 {
-	_trapType = TESLACOIL;
+	_trapType = trapType;
+	//_trapType = SHARK;
 	_tileMap = tileMap;
 	_nrOfAOETiles = 0;
 
 	int radius = 0;
 	
-	//TODO Make an initialize function and stop wasting space with case code --Victor
 	switch (_trapType)
 	{
 	case SPIKE:
 		Initialize(3, 1, 1);
 		_occupiedTiles[0] = _tilePosition;
-		_areaOfEffect[_nrOfAOETiles++] = _tilePosition;								//Temporary failsafe to not have an ermpty array. Might be easier with a check against _nrOfAOETIles
+		_areaOfEffect[_nrOfAOETiles++] = _tilePosition;
 		break;
-	case TESLACOIL:						//AOE with radius 3, 3x3 trigger in the middle
+	case TESLACOIL:	
 		Initialize(2, 9, 37);
 		for (int i = 0; i < _tileSize; i++)
 		{
@@ -224,8 +222,7 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 		}
 		CalculateCircleAOE(3);
 		break;
-	//Trigger area is currently the same as the trap's physical area. Might be awkward since the shark trap is larger than its AOE.
-	case SHARK:	
+	case SHARK:			//Trigger area is currently the same as the trap's physical area. Might be awkward since the shark trap is larger than its AOE.
 	{
 		Initialize(100, 18, 3);
 		AI::Vec2D offset = {direction._y, direction._x};
@@ -255,9 +252,8 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 		AI::Vec2D pos = _areaOfEffect[i];
 		if (_tileMap->IsFloorOnTile(_areaOfEffect[i]._x, _areaOfEffect[i]._y))
 		{
-			_tileMap->GetObjectOnTile(_areaOfEffect[i]._x, _areaOfEffect[i]._y, FLOOR)->AddColorOffset({0,0,2});
+			_tileMap->GetObjectOnTile(_areaOfEffect[i]._x, _areaOfEffect[i]._y, FLOOR)->AddColorOffset({0,0,1});
 		}
-		//_tileMap->GetObjectOnTile(_tilePosition._x, _tilePosition._y, TRAP)->SetColorOffset({0,0,4});
 	}
 }
 
@@ -305,9 +301,10 @@ void Trap::Update(float deltaTime)
 			triggered = true;
 		}
 	}
-	if (triggered)
+	if (triggered && _isActive)
 	{
 		Activate();
+		_isActive = false;
 	}
 }
 
