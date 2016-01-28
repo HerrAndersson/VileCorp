@@ -107,17 +107,23 @@ void BaseEdit::DragAndDrop(Type type)
 
 			if (objectOnTile == nullptr && _marker->GetType() == type)
 			{
-				// Remove from old tile
-				_objectHandler->GetTileMap()->RemoveObjectFromTile(_marker);
-
 				// Update positions
 				//_marker->Translate(pos);
 				XMFLOAT3 p = XMFLOAT3(_marker->GetPosition());
 				p.x = pickedTile._x;
 				p.z = pickedTile._y;
+				Tilemap* tm = _objectHandler->GetTileMap();
 
-				_marker->SetPosition(p);
-				_objectHandler->GetTileMap()->AddObjectToTile(p.x, p.z, _marker);
+				//Check to see if the tile the object will be placed on is free, Aron
+				if (tm->GetAllObjectsOnTile(AI::Vec2D(p.x, p.z)).size() >= 1 && tm->GetObjectOnTile(p.x, p.z, WALL) == nullptr)
+				{
+					// Remove from old tile
+					_objectHandler->GetTileMap()->RemoveObjectFromTile(_marker);
+
+					//Update the object to the new position
+					_marker->SetPosition(p);
+					_objectHandler->GetTileMap()->AddObjectToTile(p.x, p.z, _marker);
+				}				
 			}
 		}
 	}
@@ -138,11 +144,15 @@ void BaseEdit::DragAndDrop()
 	}
 }
 
-void BaseEdit::DragAndPlace()
+void BaseEdit::DragAndPlace(Type type, std::string objectName)
 {
+<<<<<<< HEAD
 	Type type = TRAP;
 
+	if (_isDragAndPlaceMode && _controls->IsFunctionKeyUp("MAP_EDIT:SELECT"))
+=======
 	if (_isDragAndPlaceMode &&  _controls->IsFunctionKeyUp("MAP_EDIT:SELECT"))
+>>>>>>> 7deb5a17444ed2125940a1912feac7f795a21f49
 	{
 		AI::Vec2D pickedTile = _pickingDevice->pickTile(_controls->GetMouseCoord()._pos);
 
@@ -185,13 +195,12 @@ void BaseEdit::DragAndPlace()
 			{
 				for (int y = minY; y <= maxY; y++)
 				{
-					// TRAP/LOOT/SPAWN OBS!
 					objectOnTile = _objectHandler->GetTileMap()->GetObjectOnTile(x, y, type);
 
 					if (objectOnTile == nullptr)
 					{
 						// Add to valid place
-						_objectHandler->Add(type, "trap_proto", XMFLOAT3(x, 0, y), XMFLOAT3(0.0f, 0.0f, 0.0f));
+						_objectHandler->Add(type, objectName, XMFLOAT3(x, 0, y), XMFLOAT3(0.0f, 0.0f, 0.0f));
 					}
 				}
 			}
@@ -225,14 +234,14 @@ void BaseEdit::ChangePlaceState()
 	{
 		_isSelectionMode = false;
 		_isDragAndPlaceMode = true;
-		_isPlace = true;
 	}
 	else
 	{
 		_isSelectionMode = true;
 		_isDragAndPlaceMode = false;
-		_isPlace = true;
 	}
+
+	_isPlace = true;
 }
 
 void BaseEdit::HandleInput()
@@ -245,6 +254,7 @@ void BaseEdit::HandleInput()
 			std::vector<GameObject*> objectsOnTile = _objectHandler->GetTileMap()->GetAllObjectsOnTile(pickedTile);
 			if (!objectsOnTile.empty())
 			{
+				//Fetches either the floor if there is no other object on the tile, or the object that is on the tile
 				_marker = objectsOnTile.back();
 			}
 		}
@@ -252,6 +262,7 @@ void BaseEdit::HandleInput()
 		{
 			_isPlace = true;
 			_markedTile = new AI::Vec2D(_pickingDevice->pickTile(_controls->GetMouseCoord()._pos));
+
 		}
 	}
 
@@ -310,11 +321,7 @@ void BaseEdit::HandleInput()
 	XMFLOAT3 right(0, 0, 0);
 	bool isMoving = false;
 	float v = 0.06f + (_camera->GetPosition().y * 0.01);
-<<<<<<< HEAD
 	
-=======
-
->>>>>>> e8bbae311d8c8270fae5fe6215d5b6ad41a334d5
 	if (_controls->IsFunctionKeyDown("DEBUG:ENABLE_FREECAM"))
 	{
 		if (_camera->GetMode() == System::LOCKED_CAM)
@@ -412,7 +419,8 @@ void BaseEdit::LoadLevel(int levelID)
 	ResetSelectedObj();
 	_objectHandler->LoadLevel(levelID);
 
-	_objectHandler->EnlargeTilemap(1);
+	_objectHandler->EnlargeTilemap(5);
+	_objectHandler->MinimizeTileMap();
 
 	_tileMap = _objectHandler->GetTileMap();
 	_tilemapHeight = _tileMap->GetHeight();

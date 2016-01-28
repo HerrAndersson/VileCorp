@@ -278,22 +278,80 @@ void ObjectHandler::SetTileMap(Tilemap * tilemap)
 
 void ObjectHandler::MinimizeTileMap()
 {
-	int minX = 0, maxX;
+	int minY = -1, maxY = -1;
 	for (int y = 0; y < _tilemap->GetHeight(); y++)
 	{
-		for (int x = 0; x < _tilemap->GetWidth(); x++)
+		for (int x = 0; x < _tilemap->GetWidth() && minY == -1; x++)
 		{
-			// Check if something is on the tile
-			// if true set minX = x and break
+			if (!_tilemap->IsTileEmpty(x, y))
+			{
+				minY = y;
+			}
 		}
-		for (int x = _tilemap->GetWidth() - 1; x > 1; x--)
+	}
+	for (int y = _tilemap->GetHeight() - 1; y >= minY; y--)
+	{
+		for (int x = 0; x < _tilemap->GetWidth() && maxY == -1; x++)
 		{
-			// Check if something is on the tile
-			// if true set maxX = x and break
+			if (!_tilemap->IsTileEmpty(x, y))
+			{
+				maxY = y + 1;
+			}
 		}
 	}
 
-	// Do for Y
+	int minX = -1, maxX = -1;
+	for (int x = 0; x < _tilemap->GetWidth(); x++)
+	{
+		for (int y = minY; y < maxY && minX == -1; y++)
+		{
+			if (!_tilemap->IsTileEmpty(x, y))
+			{
+				minX = x;
+			}
+		}
+	}
+
+	for (int x = _tilemap->GetWidth() - 1; x >= minX; x--)
+	{
+		for (int y = minY; y < maxY && maxX == -1; y++)
+		{
+			if (!_tilemap->IsTileEmpty(x, y))
+			{
+				maxX = x + 1;
+			}
+		}
+	}
+
+	int newXMax = maxX - minX;
+	int newYMax = maxY - minY;
+
+	Tilemap* minimized = new Tilemap(newXMax, newYMax);
+	for (int x = 0; x < newXMax; x++)
+	{
+		for (int y = 0; y < newYMax; y++)
+		{
+			AI::Vec2D pos;
+			pos._x = x + minX;
+			pos._y = y + minY;
+			std::vector<GameObject*> temp = _tilemap->GetAllObjectsOnTile(pos);
+
+			for (GameObject* g : temp)
+			{
+				// Update real pos
+				g->SetPosition(XMFLOAT3(x, g->GetPosition().y, y));
+
+				// Update tile
+				minimized->AddObjectToTile(x, y, g);
+			}
+		}
+	}
+
+	if (_tilemap != nullptr)
+	{
+		delete _tilemap;
+	}
+	_tilemap = minimized;
 }
 
 void ObjectHandler::EnlargeTilemap(int offset)

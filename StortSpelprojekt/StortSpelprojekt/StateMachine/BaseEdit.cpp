@@ -144,10 +144,8 @@ void BaseEdit::DragAndDrop()
 	}
 }
 
-void BaseEdit::DragAndPlace()
+void BaseEdit::DragAndPlace(Type type, std::string objectName)
 {
-	Type type = TRAP;
-
 	if (_isDragAndPlaceMode && _controls->IsFunctionKeyUp("MAP_EDIT:SELECT"))
 	{
 		AI::Vec2D pickedTile = _pickingDevice->pickTile(_controls->GetMouseCoord()._pos);
@@ -191,13 +189,12 @@ void BaseEdit::DragAndPlace()
 			{
 				for (int y = minY; y <= maxY; y++)
 				{
-					// TRAP/LOOT/SPAWN OBS!
 					objectOnTile = _objectHandler->GetTileMap()->GetObjectOnTile(x, y, type);
 
 					if (objectOnTile == nullptr)
 					{
 						// Add to valid place
-						_objectHandler->Add(type, "trap_proto", XMFLOAT3(x, 0, y), XMFLOAT3(0.0f, 0.0f, 0.0f));
+						_objectHandler->Add(type, objectName, XMFLOAT3(x, 0, y), XMFLOAT3(0.0f, 0.0f, 0.0f));
 					}
 				}
 			}
@@ -416,7 +413,8 @@ void BaseEdit::LoadLevel(int levelID)
 	ResetSelectedObj();
 	_objectHandler->LoadLevel(levelID);
 
-	_objectHandler->EnlargeTilemap(1);
+	_objectHandler->EnlargeTilemap(5);
+	_objectHandler->MinimizeTileMap();
 
 	_tileMap = _objectHandler->GetTileMap();
 	_tilemapHeight = _tileMap->GetHeight();

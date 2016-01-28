@@ -21,12 +21,19 @@ void LevelEditState::Update(float deltaTime)
 	}
 	_baseEdit.Update(deltaTime);
 	HandleInput();
+	HandleButtons();
+	_baseEdit.DragAndDrop();
+
+	_baseEdit.DragAndPlace(_toPlace._type, _toPlace._name);
 }
 
 void LevelEditState::OnStateEnter()
 {
 	_baseEdit.Initialize(_objectHandler, _controls, _pickingDevice, _camera);
 	_objectHandler->DisableSpawnPoints();
+	_uiTree.GetNode("TrapLeaf")->SetHidden(true);
+	_uiTree.GetNode("UnitLeaf")->SetHidden(true);
+	_uiTree.GetNode("DecLeaf")->SetHidden(true);
 }
 
 void LevelEditState::OnStateExit()
@@ -36,9 +43,6 @@ void LevelEditState::OnStateExit()
 
 void LevelEditState::HandleInput()
 {
-	_baseEdit.DragAndDrop();
-	_baseEdit.DragAndPlace();
-
 	////Scale Objects
 	///*
 	//"SCALE_MARKER_LEFT": [""].
@@ -75,6 +79,65 @@ void LevelEditState::HandleInput()
 	{
 		InitNewLevel();
 	}
+}
+
+void LevelEditState::HandleButtons()
+{
+	System::MouseCoord coord = _controls->GetMouseCoord();
+	if (_uiTree.IsButtonColliding("Traps", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("PLACEMENT:CLICK"))
+	{
+		_uiTree.GetNode("TrapLeaf")->SetHidden(false);
+		_uiTree.GetNode("UnitLeaf")->SetHidden(true);
+		_uiTree.GetNode("DecLeaf")->SetHidden(true);
+
+		_trapButtonClick = true;
+		_unitButtonClick = false;
+		_decButtonClick = false;
+
+		// Temp, should be replaced with blueprint
+		_toPlace._type = TRAP;
+		_toPlace._name = "trap_proto";
+	}
+
+	if (_uiTree.IsButtonColliding("Units", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("PLACEMENT:CLICK"))
+	{
+		_uiTree.GetNode("UnitLeaf")->SetHidden(false);
+		_uiTree.GetNode("TrapLeaf")->SetHidden(true);
+		_uiTree.GetNode("DecLeaf")->SetHidden(true);
+
+		_trapButtonClick = false;
+		_unitButtonClick = true;
+		_decButtonClick = false;
+
+		// Temp, should be replaced with blueprint
+		_toPlace._type = GUARD;
+		_toPlace._name = "guard_proto";
+	}
+
+
+	if (_uiTree.IsButtonColliding("Decorations", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("PLACEMENT:CLICK"))
+	{
+		_uiTree.GetNode("DecLeaf")->SetHidden(false);
+		_uiTree.GetNode("TrapLeaf")->SetHidden(true);
+		_uiTree.GetNode("UnitLeaf")->SetHidden(true);
+
+		_trapButtonClick = false;
+		_unitButtonClick = true;
+		_decButtonClick = false;
+
+		// Not really implemented
+	}
+
+	if (_controls->IsFunctionKeyDown("PLACEMENT:CLICK") && _trapButtonClick == false && _unitButtonClick == false && _decButtonClick == false)
+	{
+		_uiTree.GetNode("DecLeaf")->SetHidden(true);
+		_uiTree.GetNode("TrapLeaf")->SetHidden(true);
+		_uiTree.GetNode("UnitLeaf")->SetHidden(true);
+	}
+
+	_trapButtonClick = false;
+	_unitButtonClick = false;
+	_decButtonClick = false;
 }
 
 void LevelEditState::InitNewLevel()

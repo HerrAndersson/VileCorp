@@ -3,8 +3,7 @@
 Trap::Trap()
 {}
 
-Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject * renderObject,
-	int cost)
+Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject * renderObject, int cost)
 	: GameObject(ID, position, rotation, tilePosition, type, renderObject)
 {
 	_cost = cost;
@@ -13,7 +12,7 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 Trap::~Trap()
 {}
 
-void Trap::Activate( Unit* target)
+void Trap::Activate(Unit* target)
 {
 	if (_isActive && target->GetType() == ENEMY)
 	{
@@ -24,7 +23,7 @@ void Trap::Activate( Unit* target)
 	{
 		_isActive = true;
 	}
-	
+
 }
 
 void Trap::Update(float deltaTime)

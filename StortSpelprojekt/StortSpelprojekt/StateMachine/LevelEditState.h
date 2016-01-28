@@ -23,9 +23,26 @@ private:
 		float _rotY;
 		int _tileType;
 	};
+	
+	bool _trapButtonClick = false;
+	bool _unitButtonClick = false;
+	bool _decButtonClick = false;
 
 	bool _floorChosen = false;
 	bool _wallChosen = false;
+
+	// Temp, should be replaced with blueprint
+	struct ToPlace
+	{
+		ToPlace()
+		{
+			_type = TRAP;
+			_name = "trap_proto";
+		}
+		Type _type;
+		std::string _name;
+	} _toPlace;
+	
 
 public:
 	LevelEditState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, int width, int height);
@@ -34,7 +51,10 @@ public:
 	void Update(float deltaTime);
 	void OnStateEnter();
 	void OnStateExit();
+	
 	void HandleInput();
+	void HandleButtons();
+
 	void InitNewLevel();
 	void ExportLevel();
 };

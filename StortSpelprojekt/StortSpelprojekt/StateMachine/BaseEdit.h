@@ -59,7 +59,7 @@ public:
 	bool TypeOn(Type type);
 	void DragAndDrop(Type type);
 	void DragAndDrop();
-	void DragAndPlace();
+	void DragAndPlace(Type type, std::string objectName);
 	void ChangePlaceState();
 
 
