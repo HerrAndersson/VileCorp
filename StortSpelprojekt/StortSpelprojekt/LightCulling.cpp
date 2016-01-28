@@ -3,7 +3,7 @@
 Triangle LightCulling::TransformSpotlight(Renderer::Spotlight* spotlight)
 {
 	//Transforming the spotlight to a triangle
-	Vec3 range = Vec3(spotlight->GetDirection()) * spotlight->GetRange();
+	Vec3 range = Vec3(spotlight->GetDirection()).Normalize() * spotlight->GetRange();
 
 	Vec3 width =  range * std::sin(spotlight->GetAngle()) * 0.5f;
 

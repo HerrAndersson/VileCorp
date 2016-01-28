@@ -137,6 +137,15 @@ static Vec3 Intersection(Ray &ray, Plane &plane)
 }
 
 //The Projection Formula
+static Vec2 FindClosestPointOnVector(Vec2 &point, Vec2 &vector)
+{
+	Vec2 pointVector = point - Vec2();
+	float dotProduct = pointVector.Dot(vector);
+	float denominator = vector.Dot(vector);
+
+	return vector * (dotProduct / denominator);
+}
+
 static Vec3 FindClosestPointOnVector(Vec3 &point, Ray &vector)
 {
 	Vec3 pointVector = point - vector._origin;
@@ -146,80 +155,111 @@ static Vec3 FindClosestPointOnVector(Vec3 &point, Ray &vector)
 	return vector._direction * (dotProduct / denominator);
 }
 
+
+
+
 //Separating Axis Theorem check for vectors
-static bool SATVectorCheck(Ray &axis, std::vector<Vec3> &firstObjectCorners, std::vector<Vec3> &secondObjectCorners)
+static bool SATVectorCheck(Vec2 &axis, std::vector<Vec2> &firstObjectCorners, std::vector<Vec2> &secondObjectCorners)
 {
 	bool collision = false;
-
-	Vec3 startingPoint = FindClosestPointOnVector(firstObjectCorners[0], axis);
-	Vec3 firstMinPoint = startingPoint;
-	Vec3 firstMaxPoint = startingPoint;
+	float firstMinPoint = axis.Dot(firstObjectCorners[0]);
+	float firstMaxPoint = firstMinPoint;
 
 	for (unsigned int i = 0; i < firstObjectCorners.size(); i++)
 	{
-		if (startingPoint.Dot(firstObjectCorners[i]) < startingPoint.Dot(firstMinPoint))
+		float point = axis.Dot(firstObjectCorners[i]);
+
+		if (point < firstMinPoint)
 		{
-			firstMinPoint = FindClosestPointOnVector(firstObjectCorners[i], axis);
+			firstMinPoint = point;
 		}
-		else if (startingPoint.Dot(firstObjectCorners[i]) > startingPoint.Dot(firstMaxPoint))
+		else if (point > firstMaxPoint)
 		{
-			firstMaxPoint = FindClosestPointOnVector(firstObjectCorners[i], axis);
+			firstMaxPoint = point;
 		}
 	}
 
-	startingPoint = FindClosestPointOnVector(secondObjectCorners[0], axis);
-	Vec3 secondMinPoint = startingPoint;
-	Vec3 secondMaxPoint = startingPoint;
+	float secondMinPoint = axis.Dot(secondObjectCorners[0]);
+	float secondMaxPoint = secondMinPoint;
 
 	for (unsigned int i = 0; i < secondObjectCorners.size(); i++)
 	{
-		if (startingPoint.Dot(secondObjectCorners[i]) < startingPoint.Dot(secondMinPoint))
+		float point = axis.Dot(secondObjectCorners[i]);
+
+		if (point < secondMinPoint)
 		{
-			secondMinPoint = FindClosestPointOnVector(secondObjectCorners[i], axis);
+			secondMinPoint = point;
 		}
-		else if (startingPoint.Dot(secondObjectCorners[i]) > startingPoint.Dot(secondMaxPoint))
+		else if (point > secondMaxPoint)
 		{
-			secondMaxPoint = FindClosestPointOnVector(secondObjectCorners[i], axis);
+			secondMaxPoint = point;
 		}
 	}
 
-
-	if (axis._direction._x != 0.0f)
+	if (firstMinPoint > secondMinPoint && firstMinPoint < secondMaxPoint)
 	{
-		if (firstMinPoint._x > secondMinPoint._x && firstMinPoint._x < secondMaxPoint._x)
-		{
-			collision = true;
-		}
-		else if (secondMinPoint._x > firstMinPoint._x && secondMinPoint._x < firstMaxPoint._x)
-		{
-			collision = true;
-		}
+		collision = true;
 	}
-	else if (axis._direction._y != 0.0f)
+	else if (secondMinPoint > firstMinPoint && secondMinPoint < firstMaxPoint)
 	{
-		if (firstMinPoint._y > secondMinPoint._y && firstMinPoint._y < secondMaxPoint._y)
-		{
-			collision = true;
-		}
-		else if (secondMinPoint._y > firstMinPoint._y && secondMinPoint._y < firstMaxPoint._y)
-		{
-			collision = true;
-		}
-	}
-	else if (axis._direction._z != 0.0f)
-	{
-		if (firstMinPoint._z > secondMinPoint._z && firstMinPoint._z < secondMaxPoint._z)
-		{
-			collision = true;
-		}
-		else if (secondMinPoint._z > firstMinPoint._z && secondMinPoint._z < firstMaxPoint._z)
-		{
-			collision = true;
-		}
+		collision = true;
 	}
 
 	return collision;
 }
+
+static bool SATVectorCheck(Vec3 &axis, std::vector<Vec3> &firstObjectCorners, std::vector<Vec3> &secondObjectCorners)
+{
+	bool collision = false;
+	float firstMinPoint = axis.Dot(firstObjectCorners[0]);
+	float firstMaxPoint = firstMinPoint;
+
+	for (unsigned int i = 0; i < firstObjectCorners.size(); i++)
+	{
+		float point = axis.Dot(firstObjectCorners[i]);
+
+		if (point < firstMinPoint)
+		{
+			firstMinPoint = point;
+		}
+		else if (point > firstMaxPoint)
+		{
+			firstMaxPoint = point;
+		}
+	}
+
+	float secondMinPoint = axis.Dot(secondObjectCorners[0]);
+	float secondMaxPoint = secondMinPoint;
+
+	for (unsigned int i = 0; i < secondObjectCorners.size(); i++)
+	{
+		float point = axis.Dot(secondObjectCorners[i]);
+
+		if (point < secondMinPoint)
+		{
+			secondMinPoint = point;
+		}
+		else if (point > secondMaxPoint)
+		{
+			secondMaxPoint = point;
+		}
+	}
+
+	if (firstMinPoint > secondMinPoint && firstMinPoint < secondMaxPoint)
+	{
+		collision = true;
+	}
+	else if (secondMinPoint > firstMinPoint && secondMinPoint < firstMaxPoint)
+	{
+		collision = true;
+	}
+
+	return collision;
+}
+
+
+
+
 
 //Finds the cornerpoints in a shape
 static std::vector<Vec3> FindCorners(Box &box)
@@ -284,6 +324,22 @@ static const bool Collision(Vec3 &point, Square &square)
 		point._x > square._minPos._x &&
 		point._z < square._maxPos._y &&
 		point._z > square._minPos._y);
+}
+
+static const bool Collision(Vec2 &point, Triangle &triangle)
+{
+	Vec2 p0, p1, p2;
+
+	p0 = Vec2(triangle._pos1._x, triangle._pos1._z);
+	p1 = Vec2(triangle._pos2._x, triangle._pos2._z);
+	p2 = Vec2(triangle._pos3._x, triangle._pos3._z);
+
+	float area = 1 / 2 * (-p1._y*p2._x + p0._y*(-p1._x + p2._x) + p0._x*(p1._y - p2._y) + p1._x*p2._y);
+
+	float s = 1 / (2 * area)*(p0._y*p2._x - p0._x*p2._y + (p2._y - p0._y)* point._x + (p0._x - p2._x)*point._y);
+	float t = 1 / (2 * area)*(p0._x*p1._y - p0._y*p1._x + (p0._y - p1._y)*point._x + (p1._x - p0._x)*point._y);
+
+	return s > 0 && t > 0 && 1 - s - t > 0;
 }
 
 static const bool Collision(Vec2 &point, Circle &circle)
@@ -392,27 +448,27 @@ static const bool Collision(Box &box1, Box &box2)
 	std::vector<Vec3>secondBoxCorners = FindCorners(box2);
 
 
-	if (!SATVectorCheck(Ray(Vec3(), box1._xSlab._normal), firstBoxCorners, secondBoxCorners))
+	if (!SATVectorCheck(box1._xSlab._normal, firstBoxCorners, secondBoxCorners))
 	{
 		collision = false;
 	}
-	else if (!SATVectorCheck(Ray(Vec3(), box1._ySlab._normal), firstBoxCorners, secondBoxCorners))
+	else if (!SATVectorCheck(box1._ySlab._normal, firstBoxCorners, secondBoxCorners))
 	{
 		collision = false;
 	}
-	else if (!SATVectorCheck(Ray(Vec3(), box1._zSlab._normal), firstBoxCorners, secondBoxCorners))
+	else if (!SATVectorCheck(box1._zSlab._normal, firstBoxCorners, secondBoxCorners))
 	{
 		collision = false;
 	}
-	else if (!SATVectorCheck(Ray(Vec3(), box2._xSlab._normal), firstBoxCorners, secondBoxCorners))
+	else if (!SATVectorCheck(box2._xSlab._normal, firstBoxCorners, secondBoxCorners))
 	{
 		collision = false;
 	}
-	else if (!SATVectorCheck(Ray(Vec3(), box2._ySlab._normal), firstBoxCorners, secondBoxCorners))
+	else if (!SATVectorCheck(box2._ySlab._normal, firstBoxCorners, secondBoxCorners))
 	{
 		collision = false;
 	}
-	else if (!SATVectorCheck(Ray(Vec3(), box2._zSlab._normal), firstBoxCorners, secondBoxCorners))
+	else if (!SATVectorCheck(box2._zSlab._normal, firstBoxCorners, secondBoxCorners))
 	{
 		collision = false;
 	}
@@ -462,58 +518,52 @@ static const bool Collision(Box &box, Square &square)
 
 static const bool Collision(Triangle &triangle, Square &square)
 {
-	bool simpleCollision = false;
-	bool satCollision = true;
+	bool collision = true;
 
+	std::vector<Vec2> trianglePoints;
+	std::vector<Vec2> squarePoints;
+
+	trianglePoints.push_back(Vec2(triangle._pos1._x, triangle._pos1._z));
+	trianglePoints.push_back(Vec2(triangle._pos2._x, triangle._pos2._z));
+	trianglePoints.push_back(Vec2(triangle._pos3._x, triangle._pos3._z));
+
+	squarePoints.push_back(square._minPos);
+	squarePoints.push_back(Vec2(square._maxPos._x, square._minPos._y));
+	squarePoints.push_back(Vec2(square._minPos._x, square._maxPos._y));
+	squarePoints.push_back(square._maxPos);
+
+
+	Vec2 vec1 = trianglePoints[0] - trianglePoints[1];
+	Vec2 vec2 = trianglePoints[0] - trianglePoints[2];
+	Vec2 vec3 = trianglePoints[1] - trianglePoints[2];
+
+	if (!SATVectorCheck(Vec2(-vec1._y, vec1._x).Normalize(), trianglePoints, squarePoints))
+	{
+		collision = false;
+	}
+
+	else if (!SATVectorCheck(Vec2(-vec2._y, vec2._x).Normalize(), trianglePoints, squarePoints))
+	{
+		collision = false;
+	}
+
+	else if (!SATVectorCheck(Vec2(-vec3._y, vec3._x).Normalize(), trianglePoints, squarePoints))
+	{
+		collision = false;
+	}
+
+	else if (!SATVectorCheck(Vec2(1.0f, 0.0f).Normalize(), trianglePoints, squarePoints))
+	{
+		collision = false;
+	}
+
+	else if (!SATVectorCheck(Vec2(0.0f, 1.0f).Normalize(), trianglePoints, squarePoints))
+	{
+		collision = false;
+	}
 	
 
-	if (Collision(triangle._pos1, square) || Collision(triangle._pos2, square) || Collision(triangle._pos3, square))
-	{
-		simpleCollision = true;
-	}
-
-	// SAT check
-	if (!simpleCollision)
-	{
-		std::vector<Vec3> trianglePoints;
-		std::vector<Vec3> squarePoints;
-
-		trianglePoints.push_back(Vec3(triangle._pos1._x, 0.0f, triangle._pos1._z));
-		trianglePoints.push_back(Vec3(triangle._pos2._x, 0.0f, triangle._pos2._z));
-		trianglePoints.push_back(Vec3(triangle._pos3._x, 0.0f, triangle._pos3._z));
-
-		squarePoints.push_back(Vec3(square._minPos._x, 0.0f, square._minPos._y));
-		squarePoints.push_back(Vec3(square._maxPos._x, 0.0f, square._minPos._y));
-		squarePoints.push_back(Vec3(square._minPos._x, 0.0f, square._maxPos._y));
-		squarePoints.push_back(Vec3(square._maxPos._x, 0.0f, square._maxPos._y));
-
-		if (!SATVectorCheck(Ray(Vec3(), Vec3(triangle._pos1 - triangle._pos2).Cross(Vec3(0.0f, 1.0f, 0.0f))), trianglePoints, squarePoints))
-		{
-			satCollision = false;
-		}
-
-		else if (!SATVectorCheck(Ray(Vec3(), Vec3(triangle._pos1 - triangle._pos3).Cross(Vec3(0.0f, 1.0f, 0.0f))), trianglePoints, squarePoints))
-		{
-			satCollision = false;
-		}
-
-		else if (!SATVectorCheck(Ray(Vec3(), Vec3(triangle._pos2 - triangle._pos3).Cross(Vec3(0.0f, 1.0f, 0.0f))), trianglePoints, squarePoints))
-		{
-			satCollision = false;
-		}
-
-		else if (!SATVectorCheck(Ray(Vec3(), Vec3(1.0f, 0.0f, 0.0f)), trianglePoints, squarePoints))
-		{
-			satCollision = false;
-		}
-
-		else if (!SATVectorCheck(Ray(Vec3(), Vec3(0.0f, 0.0f, 1.0f)), trianglePoints, squarePoints))
-		{
-			satCollision = false;
-		}
-	}
-
-	return simpleCollision || satCollision;
+	return collision;
 }
 
 static const bool Collision(Circle &circle, Square &square)
@@ -564,22 +614,22 @@ static const bool Collision(Square &square1, Square &square2)
 	squarePoints2.push_back(Vec3(square2._maxPos._x, 0.0f, square2._maxPos._y));
 
 
-	if (!SATVectorCheck(Ray(Vec3(), squarePoints1[0]-squarePoints1[1]), squarePoints1, squarePoints2))
+	if (!SATVectorCheck((squarePoints1[0]-squarePoints1[1]).Normalize(), squarePoints1, squarePoints2))
 	{
 		collision = false;
 	}
 
-	else if (!SATVectorCheck(Ray(Vec3(), squarePoints1[0] - squarePoints1[2]), squarePoints1, squarePoints2))
+	else if (!SATVectorCheck((squarePoints1[0] - squarePoints1[2]).Normalize(), squarePoints1, squarePoints2))
 	{
 		collision = false;
 	}
 
-	else if (!SATVectorCheck(Ray(Vec3(), squarePoints2[0] - squarePoints2[1]), squarePoints1, squarePoints2))
+	else if (!SATVectorCheck((squarePoints2[0] - squarePoints2[1]).Normalize(), squarePoints1, squarePoints2))
 	{
 		collision = false;
 	}
 
-	else if (!SATVectorCheck(Ray(Vec3(), squarePoints2[0] - squarePoints2[2]), squarePoints1, squarePoints2))
+	else if (!SATVectorCheck((squarePoints2[0] - squarePoints2[2]).Normalize(), squarePoints1, squarePoints2))
 	{
 		collision = false;
 	}
