@@ -112,18 +112,17 @@ void BaseEdit::DragAndDrop(Type type)
 				XMFLOAT3 p = XMFLOAT3(_marker->GetPosition());
 				p.x = pickedTile._x;
 				p.z = pickedTile._y;
+				Tilemap* tm = _objectHandler->GetTileMap();
 
 				//Check to see if the tile the object will be placed on is free, Aron
-				if (_objectHandler->GetTileMap()->GetAllObjectsOnTile(AI::Vec2D(p.x, p.z)).size() == 1 && !_objectHandler->GetTileMap()->GetObjectOnTile(p.x,p.z, WALL))
+				if (tm->GetAllObjectsOnTile(AI::Vec2D(p.x, p.z)).size() >= 1 && tm->GetObjectOnTile(p.x, p.z, WALL) == nullptr)
 				{
 					// Remove from old tile
 					_objectHandler->GetTileMap()->RemoveObjectFromTile(_marker);
 
-					//Check that the tile is not occupied by a wall, guard, trap, loot, spawnpoint or trigger
-
+					//Update the object to the new position
 					_marker->SetPosition(p);
 					_objectHandler->GetTileMap()->AddObjectToTile(p.x, p.z, _marker);
-
 				}				
 			}
 		}
@@ -149,7 +148,7 @@ void BaseEdit::DragAndPlace()
 {
 	Type type = TRAP;
 
-	if (_isDragAndPlaceMode &&  _controls->IsFunctionKeyUp("MAP_EDIT:SELECT"))
+	if (_isDragAndPlaceMode && _controls->IsFunctionKeyUp("MAP_EDIT:SELECT"))
 	{
 		AI::Vec2D pickedTile = _pickingDevice->pickTile(_controls->GetMouseCoord()._pos);
 
@@ -232,14 +231,14 @@ void BaseEdit::ChangePlaceState()
 	{
 		_isSelectionMode = false;
 		_isDragAndPlaceMode = true;
-		_isPlace = true;
 	}
 	else
 	{
 		_isSelectionMode = true;
 		_isDragAndPlaceMode = false;
-		_isPlace = true;
 	}
+
+	_isPlace = true;
 }
 
 void BaseEdit::HandleInput()
@@ -252,6 +251,7 @@ void BaseEdit::HandleInput()
 			std::vector<GameObject*> objectsOnTile = _objectHandler->GetTileMap()->GetAllObjectsOnTile(pickedTile);
 			if (!objectsOnTile.empty())
 			{
+				//Fetches either the floor if there is no other object on the tile, or the object that is on the tile
 				_marker = objectsOnTile.back();
 			}
 		}
@@ -259,6 +259,7 @@ void BaseEdit::HandleInput()
 		{
 			_isPlace = true;
 			_markedTile = new AI::Vec2D(_pickingDevice->pickTile(_controls->GetMouseCoord()._pos));
+
 		}
 	}
 
