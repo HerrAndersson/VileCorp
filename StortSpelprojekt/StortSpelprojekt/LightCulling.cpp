@@ -69,6 +69,7 @@ LightCulling::~LightCulling()
 {
 	_tilemap = nullptr;
 	_quadTreeRoot->Release();
+	delete _quadTreeRoot;
 }
 
 std::vector<std::vector<GameObject*>> LightCulling::GetObjectsInSpotlight(Renderer::Spotlight* spotlight)

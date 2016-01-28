@@ -52,7 +52,7 @@ float3 ReconstructWorldFromCamDepth(float2 uv)
 	return float3(worldPos.xyz / worldPos.w);
 }
 
-float4 main(VS_OUT input) : SV_TARGET
+float4 main(VS_OUT input) : SV_TARGET0
 {
 	float lightAngleDiv2 = lightAngle / 2;
 	float2 uv = float2((input.pos.x) / screenWidth, (input.pos.y) / screenHeight);
@@ -80,7 +80,7 @@ float4 main(VS_OUT input) : SV_TARGET
 	float pixToLightAngle = acos(dot(nLightDir, -pixToLight));
 	
 	//Inside of the volume
-	if (howMuchLight > 0.0f && pixToLightAngle <= lightAngleDiv2)
+	if (howMuchLight > 0.0f && l < lightRange && pixToLightAngle <= lightAngleDiv2)
 	{
 		//Sample and add shadows for the shadow map.
 		float4 lightSpacePos = float4(worldPos, 1.0f);

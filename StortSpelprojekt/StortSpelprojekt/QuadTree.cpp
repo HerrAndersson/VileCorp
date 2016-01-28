@@ -94,12 +94,12 @@ void QuadTree::GetSquares(Box frustumBox, std::vector<Square>&collectedSquares)
 
 void QuadTree::Release()
 {
-	if (_children[0] != nullptr)
+	for (int i = 0; i < 4; i++)
 	{
-		for (int i = 0; i < 4; i++)
+		if (_children[i] != nullptr)
 		{
 			_children[i]->Release();
-			delete _children[i];
 		}
+		delete _children[i];
 	}
 }

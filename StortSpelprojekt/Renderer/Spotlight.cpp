@@ -19,8 +19,8 @@ namespace Renderer
 
 		_color = color;
 
-		_rotationMatrix = XMMatrixRotationRollPitchYaw(XMConvertToRadians(_rotation.x), XMConvertToRadians(_rotation.y), XMConvertToRadians(_rotation.z));
-		_worldMatrix = _rotationMatrix * XMMatrixTranslation(_position.x, _position.y, _position.z);
+		XMMATRIX rotationMatrix = XMMatrixRotationRollPitchYaw(XMConvertToRadians(_rotation.x), XMConvertToRadians(_rotation.y), XMConvertToRadians(_rotation.z));
+		_worldMatrix = rotationMatrix * XMMatrixTranslation(_position.x, _position.y, _position.z);
 
 		if (height <= 0 || range < std::numeric_limits<float>::epsilon())
 		{
@@ -29,7 +29,7 @@ namespace Renderer
 
 		//Prepare vectors for Matrix initialization
 		XMVECTOR vPos = XMLoadFloat3(&_position);
-		XMVECTOR vDir = XMVector3TransformCoord(XMLoadFloat3(&_direction), _rotationMatrix);
+		XMVECTOR vDir = XMVector3TransformCoord(XMLoadFloat3(&_direction), rotationMatrix);
 		XMVECTOR vUp = XMLoadFloat3(&_up);
 
 		_viewMatrix = XMMatrixLookAtLH(vPos, vPos + vDir, vUp);

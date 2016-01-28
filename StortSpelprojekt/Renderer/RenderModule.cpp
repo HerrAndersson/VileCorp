@@ -160,7 +160,7 @@ namespace Renderer
 		result = deviceContext->Map(_matrixBufferPerSkinnedObject, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 		if (FAILED(result))
 		{
-			throw std::runtime_error("RenderModule::SetResourcesPerObject: Failed to Map _matrixBufferPerObject");
+			throw std::runtime_error("RenderModule::SetResourcesPerObject: Failed to Map _matrixBufferPerSkinnedObject");
 		}
 
 		MatrixBufferPerSkinnedObject* dataPtr = static_cast<MatrixBufferPerSkinnedObject*>(mappedResource.pData);
@@ -170,7 +170,7 @@ namespace Renderer
 //		for (unsigned i = 0; i < 30; i++) {													//
 //			memcpy(&dataPtr->bones[i], (char*)&tempmatrix, sizeof(DirectX::XMFLOAT4X4));	//
 //		}																					//TODO remove - Fredrik
-//		memcpy(&dataPtr->bones, extra->data(), sizeof(DirectX::XMFLOAT4X4) * extra->size());
+		memcpy(&dataPtr->_bones, extra->data(), sizeof(DirectX::XMFLOAT4X4) * extra->size());
 		
 		deviceContext->Unmap(_matrixBufferPerSkinnedObject, 0);
 
@@ -414,11 +414,14 @@ namespace Renderer
 
 	void RenderModule::Render(DirectX::XMMATRIX* world, int vertexBufferSize, DirectX::XMFLOAT3 colorOffset)
 	{
-		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
-
 		SetDataPerObject(world, colorOffset);
+		_d3d->GetDeviceContext()->Draw(vertexBufferSize, 0);
+	}
 
-		deviceContext->Draw(vertexBufferSize, 0);	
+	void RenderModule::RenderAnimation(DirectX::XMMATRIX* world, int vertexBufferSize, std::vector<DirectX::XMFLOAT4X4>* extra, DirectX::XMFLOAT3 colorOffset)
+	{
+		SetDataPerSkinnedObject(world, extra, colorOffset);
+		_d3d->GetDeviceContext()->Draw(vertexBufferSize, 0);
 	}
 
 	void RenderModule::Render(GUI::Node* root, FontWrapper* fontWrapper)
