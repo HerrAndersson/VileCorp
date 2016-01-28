@@ -22,21 +22,22 @@
     "NEWLEVEL": [ "C" ]
   },
   "PLACEMENT": {
-	"CLICK": ["leftmouse"],
+    "CLICK": [ "leftmouse" ],
     "BUILD_TRAP": [ "T" ],
-	"HIRE_GUARD": [ "U" ],
+    "HIRE_GUARD": [ "U" ],
     "DELETE": [ "delete" ],
-	"CHANGE_TO_PLAY": [ "P" ],
-	"SELECT": ["leftmouse", "repeat"],
-	"DESELECT": ["rightmouse"],
-	"MENU": [ "escape" ]
+    "CHANGE_TO_PLAY": [ "P" ],
+    "SELECT": [ "leftmouse", "repeat" ],
+    "DESELECT": [ "rightmouse" ],
+    "MENU": [ "escape" ]
   },
   "PLAY": {
-    "SELECT": ["leftmouse"],
-    "DESELECT" : ["rightmouse"],
+    "SELECT": [ "leftmouse" ],
+    "DESELECT": [ "rightmouse" ],
     "BOX_SELECT": [ "leftmouse", "shift" ],
-	"SCROLLUP" : ["scrolldown", "repeat"],
-	"SCROLLDOWN" : ["scrollup", "repeat"],
+    "SET_PATROL": [ "leftmouse", "ctrl" ],
+    "SCROLLUP": [ "scrolldown", "repeat" ],
+    "SCROLLDOWN": [ "scrollup", "repeat" ],
     "CONTROL_GROUP0": [ "0", "ctrl" ],
     "CONTROL_GROUP1": [ "1", "ctrl" ],
     "CONTROL_GROUP2": [ "2", "ctrl" ],

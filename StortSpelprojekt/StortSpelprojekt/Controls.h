@@ -39,7 +39,7 @@ namespace System
 	private:
 		InputDevice* _inputDevice;
 		std::map<std::string, Key>* _keymap;
-		std::string _allKeys;
+		std::string* _allKeys;
 
 		void StringToKeyMap(const std::string& key, unsigned char &mainKey, unsigned char& keyModifiers);
 	public:

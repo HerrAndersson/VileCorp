@@ -22,7 +22,6 @@ void Enemy::EvaluateTile(Type objective, AI::Vec2D tile)
 		tempPriority = 2;
 	case GUARD:
 	case TRAP:
-	case TRIGGER:
 		break;
 	case ENEMY:
 		break;
@@ -39,34 +38,35 @@ void Enemy::EvaluateTile(Type objective, AI::Vec2D tile)
 void Enemy::EvaluateTile(GameObject* obj)
 {
 	int tempPriority = 0;
-	switch (obj->GetType())
+	if (obj!= nullptr)
 	{
-	case LOOT:
-		if (_heldObject == nullptr)
+		switch (obj->GetType())
 		{
-			tempPriority = 2;
+		case LOOT:
+			if (_heldObject == nullptr)
+			{
+				tempPriority = 2;
+			}
+		case SPAWN:
+			if (_heldObject != nullptr)
+			{
+				tempPriority = 2;
+			}
+			break;
+		case TRAP:
+			break;
+		case GUARD:
+			break;
+		case ENEMY:
+			break;
+		default:
+			break;
 		}
-	case SPAWN:
-		if (_heldObject != nullptr)
+		if (obj->GetPickUpState() == ONTILE && tempPriority > 0 && obj->GetTilePosition() != _tilePosition && (_pathLength <= 0 || tempPriority * GetApproxDistance(obj->GetTilePosition()) < _goalPriority * GetApproxDistance(GetGoal())))
 		{
-			tempPriority = 2;
+			_goalPriority = tempPriority;
+			SetGoal(obj);
 		}
-		break;
-	case TRAP:
-		break;
-	case TRIGGER:
-		break;
-	case GUARD:
-		break;
-	case ENEMY:
-		break;
-	default:
-		break;
-	}
-	if (obj->GetPickUpState()==ONTILE && tempPriority > 0 && obj->GetTilePosition() != _tilePosition && (_pathLength <= 0 || tempPriority * GetApproxDistance(obj->GetTilePosition()) < _goalPriority * GetApproxDistance(GetGoal())))
-	{
-		_goalPriority = tempPriority;
-		SetGoal(obj);
 	}
 }
 
@@ -88,8 +88,6 @@ void Enemy::act(GameObject* obj)
 		}
 		break;
 	case TRAP:
-		break;
-	case TRIGGER:
 		break;
 	case GUARD:
 		break;

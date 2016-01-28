@@ -56,11 +56,13 @@ struct Vertex
 
 struct PointLight
 {
+	unsigned char _bone;
 	float _pos[3], _col[3], _intensity;
 };
 
 struct SpotLight
 {
+	unsigned char _bone;
 	float _pos[3], _col[3], _intensity, _angle, _direction[3];
 };
 

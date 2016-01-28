@@ -4,12 +4,14 @@
 
 struct LevelLoad
 {
-	int level = 7;
+	int level = 1;
+	int editLevel = 1;
 
 	template<class A>
 	void serialize(A& a)
 	{
-		a((CEREAL_NVP(level)));
+		a((CEREAL_NVP(level)),
+			(CEREAL_NVP(editLevel)));
 	}
 };
 

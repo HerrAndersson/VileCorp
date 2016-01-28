@@ -54,7 +54,7 @@ namespace System
 		}
 		string str((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
 		file.close();
-		_allKeys = str;
+		_allKeys = &str;
 
 		Document d;
 
@@ -221,7 +221,7 @@ namespace System
 	void Controls::SaveKeyBindings(int keyMap, std::string action, std::string newKey, std::string newKey2, std::string newKey3, std::string newKey4)
 	{
 		Document d;
-		d.Parse(_allKeys.c_str());
+		d.Parse(_allKeys->c_str());
 		int currentKeyMap = 0;
 		//Loop through all the states
 		for (Value::MemberIterator it = d.MemberBegin(); it != d.MemberEnd(); ++it)

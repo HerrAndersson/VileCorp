@@ -217,28 +217,7 @@ vector<GameObject*> PickingDevice::boxPickObjects(POINT mousePoint, vector<GameO
 
 vector<GameObject*> PickingDevice::pickTilemap(POINT mousePoint, Tilemap* tilemap)
 {
-	vector<GameObject*> pickedObjects;
-
-	AI::Vec2D tileIndex = pickTile(mousePoint);
-
-	if (tileIndex._x >= 0 && tileIndex._x < tilemap->GetWidth() &&
-		tileIndex._y >= 0 && tileIndex._y < tilemap->GetHeight())
-	{
-		GameObject* object = nullptr;
-
-		for (int i = 0; i < 5; i++)
-		{
-			object = tilemap->GetObjectOnTile(tileIndex._x, tileIndex._y, i);
-
-			if (object != nullptr)
-			{
-				pickedObjects.push_back(object);
-			}
-		}
-	}
-
-
-	return pickedObjects;
+	return tilemap->GetAllObjectsOnTile(pickTile(mousePoint));
 }
 
 void PickingDevice::setFirstBoxPoint(POINT mousePoint)

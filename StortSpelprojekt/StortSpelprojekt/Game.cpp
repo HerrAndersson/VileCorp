@@ -5,26 +5,22 @@
 
 Game::Game(HINSTANCE hInstance, int nCmdShow)
 {
+	CheckSettings();
 	_gameHandle = this;
-	System::WindowSettings settings;
-	settings._height = 1080;
-	settings._width = 1920;
-	_window = new System::Window("Amazing game", hInstance, settings, WndProc);
+	_window = new System::Window("Amazing game", hInstance, _windowSettings, WndProc);
 
 	_timer = System::Timer();
 
-	_renderModule = new Renderer::RenderModule(_window->GetHWND(), settings._width, settings._height);
+	_renderModule = new Renderer::RenderModule(_window->GetHWND(), _windowSettings._width, _windowSettings._height, _gameSettings._fullScreen);
 	
 	_assetManager = new AssetManager(_renderModule->GetDevice());
 	_controls = new System::Controls(_window->GetHWND());
 	_fontWrapper = new FontWrapper(_renderModule->GetDevice(), L"Assets/Fonts/Calibri.ttf", L"Calibri");
 
 	//Init camera
-	_camera = new System::Camera(0.1f, 1000.0f, DirectX::XM_PIDIV4, settings._width, settings._height);
+	_camera = new System::Camera(0.1f, 1000.0f, DirectX::XM_PIDIV2, _windowSettings._width, _windowSettings._height);
 	_camera->SetPosition(XMFLOAT3(3, 20, 0));
 	_camera->SetRotation(XMFLOAT3(60, 0, 0));
-	//_camera->SetMode(System::FREE_CAM);
-	//_controls->ToggleCursorLock();
 
 	_timer = System::Timer();
 
@@ -35,33 +31,32 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 
 	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager, data);
 	_pickingDevice = new PickingDevice(_camera, _window);
-	_SM = new StateMachine(_controls, _objectHandler, _camera, _pickingDevice, "Assets/gui.json", _assetManager, _fontWrapper, settings._width, settings._height);
+	_SM = new StateMachine(_controls, _objectHandler, _camera, _pickingDevice, "Assets/gui.json", _assetManager, _fontWrapper, _windowSettings._width, _windowSettings._height);
 
 	_SM->Update(_timer.GetFrameTime());
 	
 	if (_SM->GetState() == LEVELEDITSTATE)
 	{
-		_grid = new Grid(_renderModule->GetDevice(), 1, 10);
+		//TODO: Use dimensions from the tilemap /Jonas
+		_grid = new Grid(_renderModule->GetDevice(), 1, 1, 1, DirectX::XMFLOAT3(0.4f, 1.0f, 0.3f));
 	}
 	else
 	{
 		_grid = nullptr;
 	}
 
-	//CheckSettings();
+	_enemiesHasSpawned = false;
+
 	//_controls->SaveKeyBindings(System::MAP_EDIT_KEYMAP, "MOVE_CAMERA_UP", "M");
 
 	Renderer::Spotlight* spot;
 	for (int i = 0; i < 2; i++)
 	{
 		int d = _renderModule->SHADOWMAP_DIMENSIONS;
-		spot = new Renderer::Spotlight(_renderModule->GetDevice(), 0.1f, 1000.0f, XM_PIDIV4 /*XM_PI / 0.082673f*/, d, d, 1.0f / (i+1), 8.0f, XMFLOAT3(0.0f, 1.0f, 1.0f), 36);
-		spot->SetPositionAndRotation(XMFLOAT3(3*i+5, 1.0f, 2*i+4), XMFLOAT3(0, 90 + i*25, 0));
+		spot = new Renderer::Spotlight(_renderModule->GetDevice(), 0.1f, 1000.0f, XM_PIDIV4, d, d, 1.0f, 9.5f, XMFLOAT3(1.0f, 1.0f, 1.0f), 72);
+		spot->SetPositionAndRotation(XMFLOAT3(22 + i*2, 1, 22 + i * 2), XMFLOAT3(0,-35*i,0));
 		_spotlights.push_back(spot);
 	}
-
-	//settings._flags = settings.FULLSCREEN;
-	//ResizeResources(settings);
 
 	_lightCulling = new LightCulling();
 
@@ -69,29 +64,27 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 
 void Game::CheckSettings()
 {
-	////System::saveJSON(&_gameSettings, "Assets/GameSettings.json", "Game Settings");
-	//System::loadJSON(&_gameSettings, "Assets/GameSettings.json");
+	//System::saveJSON(&_gameSettings, "Assets/GameSettings.json", "Game Settings");
+	System::loadJSON(&_gameSettings, "Assets/GameSettings.json");
 
-	//if (_gameSettings._default == false)
-	//{
-	//	System::WindowSettings winSettings = _window->GetWindowSettings();
-	//	winSettings._width = _gameSettings._resX;
-	//	winSettings._height = _gameSettings._resY;
-	//	winSettings._flags = 0;
-	//	if (_gameSettings._fullScreen == true)
-	//	{
-	//		winSettings._flags += 1;
-	//	}
-	//	else if (_gameSettings._bordeless == true)
-	//	{
-	//		winSettings._flags += 2;
-	//	}
-	//	else if (_gameSettings._showMouseCursor == true)
-	//	{
-	//		winSettings._flags += 4;
-	//	}
-	//	_window->ResizeWindow(winSettings);
-	//}
+	if (_gameSettings._default == false)
+	{
+		_windowSettings._width = _gameSettings._resX;
+		_windowSettings._height = _gameSettings._resY;
+		_windowSettings._flags = 0;
+		if (_gameSettings._fullScreen == true)
+		{
+			_windowSettings._flags |= System::WindowSettings::FULLSCREEN;
+		}
+		if (_gameSettings._bordeless == true)
+		{
+			_windowSettings._flags |= System::WindowSettings::BORDERLESS;
+		}
+		if (_gameSettings._showMouseCursor == true)
+		{
+			_windowSettings._flags |= System::WindowSettings::SHOW_CURSOR;
+		}
+	}
 }
 
 Game::~Game() 
@@ -123,12 +116,6 @@ void Game::ResizeResources(System::WindowSettings settings)
 
 void Game::Update(float deltaTime)
 {
-	/*
-	Object handler update
-
-	Fetch from objecthandler or different update functions in objecthandler
-
-	*/
 	_controls->Update();
 
 	if (_controls->IsFunctionKeyDown("EVERYWHERE:FULLSCREEN"))
@@ -138,40 +125,43 @@ void Game::Update(float deltaTime)
 	}
 
 	_SM->Update(deltaTime);
-	
 
-	std::vector<GameObject*> e = _objectHandler->GetAllByType(GUARD);
+	_enemies = _objectHandler->GetAllByType(ENEMY);
+	_loot = _objectHandler->GetAllByType(LOOT);
 
-	if (e.size() > 0)
+	if (_enemies.size() > 0)
 	{
-		XMFLOAT3 p = e[0]->GetPosition();
-		XMFLOAT3 r = e[0]->GetRotation();
-
-		r = XMFLOAT3(XMConvertToDegrees(r.x), -XMConvertToDegrees(r.y), XMConvertToDegrees(r.z));
-		_spotlights[0]->SetRotation(r);
-
-		XMFLOAT3 d = _spotlights[0]->GetDirection();
-
-		p.y += 0.15f;
-		p.x += d.x * 0.5f;
-		p.z += d.z * 0.5f;
-
-		_spotlights[0]->SetPosition(p);
+		_enemiesHasSpawned = true;
 	}
 
-	//for (unsigned int i = 0; i < _spotlights.size(); i++)
-	//{
-	//	XMFLOAT3 rot = _spotlights[i]->GetRotation();
-	//	rot.y -= (float)(i + 1) / 1;
-	//	_spotlights[i]->SetRotation(rot);
+	if (_enemies.size() == 0 && _enemiesHasSpawned == true)
+	{
+		if (_loot.size() >= 1)
+		{
+			//TODO: Add something to notify the player that they've beat the level
+		}
+		else
+		{
+			//TODO: Add something to notify the player that they've SUCK and they can replay the level
+		}
+	}
 
-	//	XMFLOAT3 color = _spotlights[i]->GetColor();
-	//	color.x = sin(_timer.GetGameTime() / 1000);
-	//	color.y = sin(_timer.GetGameTime() / 1000 + XMConvertToRadians(120));
-	//	color.z = sin(_timer.GetGameTime() / 1000 + XMConvertToRadians(240));
-	//	_spotlights[i]->SetColor(color);
-	//}
+	for (unsigned int i = 0; i < _spotlights.size(); i++)
+	{
+		XMFLOAT3 rot = _spotlights[i]->GetRotation();
+		rot.y -= 1;
+		_spotlights[i]->SetRotation(rot);
+
+		XMFLOAT3 color = _spotlights[i]->GetColor();
+		color.x = sin(_timer.GetGameTime() / 1000 + 100 * i);
+		color.y = sin(_timer.GetGameTime() / 1000 + 100 * i + XMConvertToRadians(120));
+		color.z = sin(_timer.GetGameTime() / 1000 + 100 * i + XMConvertToRadians(240));
+		_spotlights[i]->SetColor(color);
+	}
 }
+
+//TODO: TEMP! Should be removed later /Jonas
+bool init = false;
 
 void Game::Render()
 {
@@ -182,104 +172,126 @@ void Game::Render()
 
 	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::GEO_PASS);
 
-	//Render all objects to the diffuse and normal buffers
 	std::vector<std::vector<GameObject*>>* gameObjects = _objectHandler->GetGameObjects();
-	for (int i = 0; i < NR_OF_TYPES; i++)
-	{
-		
-		for (GameObject* g : gameObjects->at(i))
-		{
-			//TODO: If type == ENEMY -> don't render. Instead check in the chosen objects for the light rendering (Functionality not done), and check if the enemies are there they should be both rendered and lit.
-			//If not, they should not be rendered nor lit /Jonas
 
-			if (g->GetAnimation() != nullptr)
+	//TODO: store this in object handler instead of building each frame? /Jonas
+	std::vector<std::vector<GameObject*>> animatedObjects;
+	for (auto i : *gameObjects)
+	{
+		if (i.size() > 0)
+		{
+			RenderObject* renderObject = i.at(0)->GetRenderObject();
+			if (!renderObject->_isSkinned)
 			{
-				_renderModule->Render(g->GetMatrix(), g->GetRenderObject(), XMFLOAT3(0,0,0), g->GetAnimation()->GetTransforms());
+				_renderModule->SetDataPerObjectType(renderObject);
+				int vertexBufferSize = renderObject->_mesh._vertexBufferSize;
+
+				for (GameObject* g : i)
+				{
+					_renderModule->Render(g->GetMatrix(), vertexBufferSize, g->GetColorOffset());
+				}
 			}
 			else
 			{
-				_renderModule->Render(g->GetMatrix(), g->GetRenderObject());
+				animatedObjects.push_back(i);
 			}
 		}
 	}
 
+	////TODO: Check if this works. /Jonas
+	//_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::ANIM_STAGE);
+	//for (unsigned int i = 0; i < animatedObjects.size(); i++)
+	//{
+	//	if (animatedObjects.at(i).size() > 0)
+	//	{
+	//		RenderObject* renderObject = animatedObjects.at(i).at(0)->GetRenderObject();
+
+	//		_renderModule->SetDataPerObjectType(renderObject);
+	//		int vertexBufferSize = renderObject->_mesh._vertexBufferSize;
+
+	//		for (GameObject* a : animatedObjects.at(i))
+	//		{
+	//			_renderModule->Render(a->GetMatrix(), vertexBufferSize, a->GetColorOffset());
+	//		}
+	//	}
+	//}
+
 	if (_SM->GetState() == LEVELEDITSTATE)
 	{
 		_renderModule->SetShaderStage(Renderer::RenderModule::GRID_STAGE);
+		_renderModule->SetDataPerLineList(_grid->GetLineBuffer(), _grid->GetVertexSize());
 
-		//TODO: GetGridMatrices() returns a nullptr /Rikhard
-		//std::vector<DirectX::XMMATRIX>* gridMatrices = _grid->GetGridMatrices();
-		//for (auto &matrix : *gridMatrices)
-		//{
-		//	_renderModule->RenderLineList(&matrix, _grid->GetLineBuffer(), 2);
-		//}
-		
+		std::vector<DirectX::XMMATRIX>* gridMatrices = _grid->GetGridMatrices();
+		for (auto &matrix : *gridMatrices)
+		{
+			_renderModule->RenderLineList(&matrix, _grid->GetNrOfPoints(), _grid->GetColorOffset());
+		}
+
 	}
 
 	/*------------------------------------------------------------ Light pass --------------------------------------------------------------
 	Generate the shadow map for each spotlight, then apply the lighting/shadowing to the backbuffer render target with additive blending. */
 
-	//for (int i = 0; i < 2; i++)
-	//{
-	//	_renderModule->DEBUG_RenderLightVolume(_spotlights[i]->GetVolumeBuffer(), _spotlights[i]->GetWorldMatrix(), _spotlights[i]->GetVertexCount(), _spotlights[i]->GetVertexSize());
-	//}
-	
+	//_renderModule->RenderLightVolume(_spotlights[0]->GetVolumeBuffer(), _spotlights[0]->GetWorldMatrix(), _spotlights[0]->GetVertexCount(), _spotlights[0]->GetVertexSize());
 
-	_renderModule->SetLightDataPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
-	for (int i = 0; i < 2; i++)
+	//TEMPORARY!!
+	std::vector<std::vector<std::vector<GameObject*>>> inLight;
+	if (_SM->GetState() != MENUSTATE)
 	{
-		_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::SHADOW_GENERATION);
-		_renderModule->SetShadowMapDataPerSpotlight(_spotlights[i]->GetViewMatrix(), _spotlights[i]->GetProjectionMatrix());
-
-		for (int i = 0; i < NR_OF_TYPES; i++)
+		if (!init)
 		{
-			for (GameObject* g : gameObjects->at(i))
-			{
-				_renderModule->RenderShadowMap(g->GetMatrix(), g->GetRenderObject());
-			}
+			init = true;
+			_lightCulling = new LightCulling(_objectHandler->GetTileMap());
 		}
 
-		_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::LIGHT_APPLICATION);
-		_renderModule->SetLightDataPerSpotlight(_spotlights[i]);
-
-		//Use when SetLightApplicationShaders takes 1 as input (using light volume shaders)
-		_renderModule->DEBUG_RenderLightVolume(_spotlights[i]->GetVolumeBuffer(), _spotlights[i]->GetWorldMatrix(), _spotlights[i]->GetVertexCount(), _spotlights[i]->GetVertexSize());
-
-		//Use when SetLightApplicationShaders takes 2 as input (using screen quad shaders)
-		//_renderModule->RenderScreenQuad();
+		for (int i = 0; i < _spotlights.size(); i++)
+		{
+			inLight.push_back(_lightCulling->GetObjectsInSpotlight(_spotlights[i]));
+		}
 	}
 
-	static std::vector<std::vector<GameObject*>>go;
-	if (_SM->GetState() == PLACEMENTSTATE)
+	if (_SM->GetState() != MENUSTATE)
 	{
-		_lightCulling = new LightCulling(_objectHandler->GetTileMap());
-		go = _lightCulling->GetObjectsInSpotlight(_spotlights[0]);
-		go = _lightCulling->GetObjectsInFrustum(_camera);
 
+		_renderModule->SetLightDataPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
+		for (int i = 0; i < _spotlights.size(); i++)
+		{
+			_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::SHADOW_GENERATION);
+			_renderModule->SetShadowMapDataPerSpotlight(_spotlights[i]->GetViewMatrix(), _spotlights[i]->GetProjectionMatrix());
 
+			for (auto j : inLight.at(i))
+			{
+				if (j.size() > 0)
+				{
+					RenderObject* renderObject = j.at(0)->GetRenderObject();
+					_renderModule->SetShadowMapDataPerObjectType(renderObject);
+					int vertexBufferSize = renderObject->_mesh._vertexBufferSize;
+
+					for (GameObject* g : j)
+					{
+						g->SetColorOffset(XMFLOAT3(0, 1, 0));
+						_renderModule->RenderShadowMap(g->GetMatrix(), vertexBufferSize);
+					}
+				}
+			}
+
+			_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::LIGHT_APPLICATION);
+			_renderModule->SetLightDataPerSpotlight(_spotlights[i]);
+
+			_renderModule->RenderLightVolume(_spotlights[i]->GetVolumeBuffer(), _spotlights[i]->GetWorldMatrix(), _spotlights[i]->GetVertexCount(), _spotlights[i]->GetVertexSize());
+		}
 	}
 
 	/*-------------------------------------------------------- HUD and other 2D -----------------------------------------------------------*/
-
 	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::HUD_STAGE);
-
-	_renderModule->RenderScreenQuad();
 	_renderModule->Render(_SM->GetCurrentStatePointer()->GetUITree()->GetRootNode(), _fontWrapper);
+
 	_renderModule->EndScene();
 }
 
 int Game::Run()
 {
 	bool run = true;
-
-	// Setting up delta time
-		__int64 cntsPerSec = 0;
-	QueryPerformanceFrequency((LARGE_INTEGER*)&cntsPerSec);
-	float secsPerCnt = 1.0f / (float)cntsPerSec;
-
-	__int64 prevTimeStamp = 0;
-	QueryPerformanceCounter((LARGE_INTEGER*)&prevTimeStamp);
-	//
 
 	MSG msg;
 	ZeroMemory(&msg, sizeof(MSG));

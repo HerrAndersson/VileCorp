@@ -2,7 +2,7 @@
 
 namespace Renderer
 {
-	DirectXHandler::DirectXHandler(HWND hwnd, int screenWidth, int screenHeight)
+	DirectXHandler::DirectXHandler(HWND hwnd, int screenWidth, int screenHeight, bool fullScreen)
 	{
 		HRESULT hResult;
 		_textureWidth = screenWidth;
@@ -25,7 +25,14 @@ namespace Renderer
 		swapChainDesc.SampleDesc.Count = 1;
 		swapChainDesc.SampleDesc.Quality = 0;
 
-		swapChainDesc.Windowed = true;
+		if (fullScreen)
+		{
+			swapChainDesc.Windowed = false;
+		}
+		else
+		{
+			swapChainDesc.Windowed = true;
+		}
 
 		swapChainDesc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
 		swapChainDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
@@ -349,7 +356,6 @@ namespace Renderer
 
 	int DirectXHandler::SetLightStage()
 	{
-		//TODO: Should the final rendering of the light volumes use depth testing? /Jonas
 		_deviceContext->OMSetRenderTargets(1, &_backBufferRTV, nullptr);
 		_deviceContext->RSSetViewports(1, &_viewport);
 
@@ -407,6 +413,7 @@ namespace Renderer
 
 	void DirectXHandler::SetHUDStage()
 	{
+		_deviceContext->RSSetViewports(1, &_viewport);
 		_deviceContext->OMSetRenderTargets(1, &_backBufferRTV, nullptr);
 		_deviceContext->RSSetState(_rasterizerStateBack);
 		_deviceContext->OMSetDepthStencilState(_depthStateDisable, 1);
@@ -490,7 +497,6 @@ namespace Renderer
 	{
 		float color[] = { red, green, blue, alpha };
 
-		_deviceContext->RSSetState(_rasterizerStateBack);
 		_deviceContext->ClearRenderTargetView(_backBufferRTV, color);
 
 		for (int i = 0; i < BUFFER_COUNT; i++)

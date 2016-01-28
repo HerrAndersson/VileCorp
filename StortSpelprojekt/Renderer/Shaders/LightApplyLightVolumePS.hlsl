@@ -6,6 +6,8 @@ cbuffer matrixBufferLightPassPerFrame : register(b2)
 {
 	matrix invCamView;
 	matrix invCamProj;
+	int screenWidth;
+	int screenHeight;
 };
 
 cbuffer matrixBufferLightPassPerLight : register(b3)
@@ -52,33 +54,33 @@ float3 ReconstructWorldFromCamDepth(float2 uv)
 
 float4 main(VS_OUT input) : SV_TARGET
 {
-	float2 uv = float2((input.pos.x) / 1920, (input.pos.y) / 1080);
-	//float2 uv = float2(0.5f + (input.pos.x / 1280 / input.pos.w * 0.5f), 0.5f - (input.pos.y / input.pos.w * 0.5f));
+	float lightAngleDiv2 = lightAngle / 2;
+	float2 uv = float2((input.pos.x) / screenWidth, (input.pos.y) / screenHeight);
 
-	float4 diffuse = diffuseTex.Sample(samplerWrap, uv);
-	float4 normal = normalTex.Sample(samplerWrap, uv);
-	normal.w = 0.0f;
-	normal = normalize(normal);
+	float4 normal = normalize(float4(normalTex.Sample(samplerWrap, uv).xyz, 0.0f));
 
-	float3 finalColor = diffuse.xyz;
-
-	//if (input.uv.x < 0.75f && input.uv.y < 0.75f && input.uv.x > 0.25f && input.uv.y > 0.25f)
+	//if (uv.x < 0.75f && uv.y < 0.75f && uv.x > 0.25f && uv.y > 0.25f)
 	//{
-	//	return pow(camDepthMap.Sample(samplerWrap, input.uv).r,10);
+	//	return pow(camDepthMap.Sample(samplerWrap, uv).r,10);
 	//}
-	//if (input.uv.x > 0.8f && input.uv.y < 0.2f)
+	//if (uv.x > 0.8f && uv.y < 0.2f)
 	//{
-	//	return pow(lightDepthMap.Sample(samplerWrap, input.uv*5.0f).r,10);
+	//	return pow(lightDepthMap.Sample(samplerWrap, uv*5.0f).r,10);
 	//}
 
 	float3 worldPos = ReconstructWorldFromCamDepth(uv);
-	float3 lightToPixel = lightPosition - worldPos;
+	float3 pixToLight = lightPosition - worldPos;
 	
-	float l = length(lightToPixel);
-	lightToPixel = normalize(lightToPixel);
+	float l = length(pixToLight);
+	pixToLight = normalize(pixToLight);
 
-	float howMuchLight = dot(lightToPixel, normal.xyz);
-	if (howMuchLight > 0.0f  && l < lightRange)
+	float howMuchLight = dot(pixToLight, normal.xyz);
+
+	float3 nLightDir = normalize(lightDirection);
+	float pixToLightAngle = acos(dot(nLightDir, -pixToLight));
+	
+	//Inside of the volume
+	if (howMuchLight > 0.0f && pixToLightAngle <= lightAngleDiv2)
 	{
 		//Sample and add shadows for the shadow map.
 		float4 lightSpacePos = float4(worldPos, 1.0f);
@@ -91,7 +93,7 @@ float4 main(VS_OUT input) : SV_TARGET
 
 		float depth = lightSpacePos.z / lightSpacePos.w;
 
-		float epsilon = 0.000001f;
+		float epsilon = 0.00001f;
 		float dx = 1.0f / shadowMapDimensions;
 
 		float s0 = lightDepthMap.Sample(samplerClamp, smTex).r;
@@ -103,12 +105,33 @@ float4 main(VS_OUT input) : SV_TARGET
 		float2 lerps = frac(texelPos);
 		float shadowCoeff = lerp(lerp(s0, s1, lerps.x), lerp(s2, s3, lerps.x), lerps.y);
 
+		float4 diffuse = diffuseTex.Sample(samplerWrap, uv);
+
 		//In light
 		if (shadowCoeff > depth - epsilon)
 		{
-			finalColor += saturate(lightColor * lightIntensity);
-			//finalColor *= dot(-normalize(lightToPixel), lightDirection);
-			return saturate(float4(finalColor, 1.0f));
+			float4 finalColor = float4((diffuse.xyz * lightColor * lightIntensity), 0.5f);
+
+			if (pixToLightAngle > lightAngleDiv2 * 0.85)
+			{
+				finalColor *= float4(0.1f, 0.1f, 0.1f, 0.1f);
+			}
+			else if (pixToLightAngle > lightAngleDiv2 * 0.75)
+			{
+				finalColor *= float4(0.35f, 0.35f, 0.35f, 0.35f);
+			}
+			else if (pixToLightAngle > lightAngleDiv2 * 0.65)
+			{
+				finalColor *= float4(0.7f, 0.7f, 0.7f, 0.65f);
+			}
+
+			return finalColor;
+		}
+		else
+		{
+			//In shadow
+			//Test how far away the lit parts are to generate the "toon" falloff
+			/*return float4(diffuse.xyz * float3(0.1, 0.1, 0.1), 0.5f);*/
 		}
 	}
 

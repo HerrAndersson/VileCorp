@@ -16,15 +16,15 @@
 class LevelEdit
 {
 private:
-	AI::AStar*				_aStar;
+	AI::AStar*			_aStar;
 	System::Controls*		_controls;
 	System::Camera*			_camera;
-	Tilemap*				_tileMap;
+	Tilemap*			_tileMap;
 	ObjectHandler*			_objectHandler;
 	PickingDevice*			_pickingDevice;
-	Grid*					_grid;
+	Grid*				_grid;
 	GUI::UITree*			_uiTree;
-	LevelLoad				_levelLoad;
+	LevelLoad			_levelLoad;
 	
 	struct LevelHeader
 	{
