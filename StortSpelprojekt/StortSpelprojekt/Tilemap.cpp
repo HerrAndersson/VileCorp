@@ -351,3 +351,17 @@ bool Tilemap::IsTileVisible(int x, int z) const
 	return _map[x][z]._isVisible;
 }
 
+bool Tilemap::IsTileEmpty(int x, int z) const
+{
+	bool empty = true;
+	for (int i = 0; i < Tile::OBJECT_CAPACITY; i++)
+	{
+		if (_map[x][z]._objectsOnTile[i] != nullptr)
+		{
+			empty = false;
+			break;
+		}
+	}
+	return empty;
+}
+
