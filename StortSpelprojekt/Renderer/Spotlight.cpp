@@ -65,7 +65,7 @@ namespace Renderer
 		XMVECTOR X = XMVectorSet(1, 0, 0, 0);
 		XMVECTOR Y = XMVectorSet(0, 1, 0, 0);
 
-	    //The vertices of the cone base are given by: v(t) = B + w * (x * cos t + y * sin t), with t varying from 0 to 2*pi.
+	    //The vertices of the cone base are given by: v(t) = pos + basecenter * (x * cos t + y * sin t), with t varying from 0 to 2*pi.
 		double pi2 = 2 * XM_PI;
 		std::vector<XMFLOAT3> points;
 		XMFLOAT3 element;

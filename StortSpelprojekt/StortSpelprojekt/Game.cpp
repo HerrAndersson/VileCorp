@@ -50,13 +50,16 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	//_controls->SaveKeyBindings(System::MAP_EDIT_KEYMAP, "MOVE_CAMERA_UP", "M");
 
 	Renderer::Spotlight* spot;
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < 2; i++)
 	{
 		int d = _renderModule->SHADOWMAP_DIMENSIONS;
 		spot = new Renderer::Spotlight(_renderModule->GetDevice(), 0.1f, 1000.0f, XM_PIDIV4, d, d, 1.0f, 9.5f, XMFLOAT3(1.0f, 1.0f, 1.0f), 72);
-		spot->SetPositionAndRotation(XMFLOAT3(rand() % 35, 1, rand() % 35), XMFLOAT3(0,-35*i,0));
+		spot->SetPositionAndRotation(XMFLOAT3(22 + i*2, 1, 22 + i * 2), XMFLOAT3(0,-35*i,0));
 		_spotlights.push_back(spot);
 	}
+
+	_lightCulling = new LightCulling();
+
 }
 
 void Game::CheckSettings()
@@ -146,7 +149,7 @@ void Game::Update(float deltaTime)
 	for (unsigned int i = 0; i < _spotlights.size(); i++)
 	{
 		XMFLOAT3 rot = _spotlights[i]->GetRotation();
-		rot.y -= 15;
+		rot.y -= 1;
 		_spotlights[i]->SetRotation(rot);
 
 		XMFLOAT3 color = _spotlights[i]->GetColor();
@@ -220,12 +223,14 @@ void Game::Render()
 		{
 			_renderModule->RenderLineList(&matrix, _grid->GetNrOfPoints(), _grid->GetColorOffset());
 		}
+		
 	}
 
 	/*------------------------------------------------------------ Light pass --------------------------------------------------------------
 	Generate the shadow map for each spotlight, then apply the lighting/shadowing to the backbuffer render target with additive blending. */
 
 	//_renderModule->RenderLightVolume(_spotlights[0]->GetVolumeBuffer(), _spotlights[0]->GetWorldMatrix(), _spotlights[0]->GetVertexCount(), _spotlights[0]->GetVertexSize());
+	
 
 	_renderModule->SetLightDataPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
 
@@ -255,6 +260,16 @@ void Game::Render()
 		_renderModule->SetLightDataPerSpotlight(spot);
 
 		_renderModule->RenderLightVolume(spot->GetVolumeBuffer(), spot->GetWorldMatrix(), spot->GetVertexCount(), spot->GetVertexSize());
+	}
+
+	static std::vector<std::vector<GameObject*>>go;
+	if (_SM->GetState() == PLACEMENTSTATE)
+	{
+		_lightCulling = new LightCulling(_objectHandler->GetTileMap());
+		go = _lightCulling->GetObjectsInSpotlight(_spotlights[0]);
+		go = _lightCulling->GetObjectsInFrustum(_camera);
+
+
 	}
 
 	/*-------------------------------------------------------- HUD and other 2D -----------------------------------------------------------*/
