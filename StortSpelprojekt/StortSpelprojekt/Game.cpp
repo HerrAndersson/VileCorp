@@ -160,6 +160,9 @@ void Game::Update(float deltaTime)
 	}
 }
 
+//TODO: TEMP! Should be removed later /Jonas
+bool init = false;
+
 void Game::Render()
 {
 	_renderModule->BeginScene(0.0f, 0.5f, 0.5f, 1.0f);
@@ -223,53 +226,60 @@ void Game::Render()
 		{
 			_renderModule->RenderLineList(&matrix, _grid->GetNrOfPoints(), _grid->GetColorOffset());
 		}
-		
+
 	}
 
 	/*------------------------------------------------------------ Light pass --------------------------------------------------------------
 	Generate the shadow map for each spotlight, then apply the lighting/shadowing to the backbuffer render target with additive blending. */
 
 	//_renderModule->RenderLightVolume(_spotlights[0]->GetVolumeBuffer(), _spotlights[0]->GetWorldMatrix(), _spotlights[0]->GetVertexCount(), _spotlights[0]->GetVertexSize());
-	
 
-	_renderModule->SetLightDataPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
-
-	//TODO: Get vector of objects in light to use instead of gameObjects. Or use a vector (one for each light) of vectors (one for each object type) of vectors (he objects itself. 
-	//May be ugly, but this way you have more flexibility of which objects should be rendered. For example, just render the enemies found in these vectors, since they are in light.
-	for (auto spot : _spotlights)
+	//TEMPORARY!!
+	std::vector<std::vector<std::vector<GameObject*>>> inLight;
+	if (_SM->GetState() != MENUSTATE)
 	{
-		_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::SHADOW_GENERATION);
-		_renderModule->SetShadowMapDataPerSpotlight(spot->GetViewMatrix(), spot->GetProjectionMatrix());
-
-		for (auto i : *gameObjects)
+		if (!init)
 		{
-			if (i.size() > 0)
-			{
-				RenderObject* renderObject = i.at(0)->GetRenderObject();
-				_renderModule->SetShadowMapDataPerObjectType(renderObject);
-				int vertexBufferSize = renderObject->_mesh._vertexBufferSize;
-
-				for (GameObject* g : i)
-				{
-					_renderModule->RenderShadowMap(g->GetMatrix(), vertexBufferSize);
-				}
-			}
+			init = true;
+			_lightCulling = new LightCulling(_objectHandler->GetTileMap());
 		}
 
-		_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::LIGHT_APPLICATION);
-		_renderModule->SetLightDataPerSpotlight(spot);
-
-		_renderModule->RenderLightVolume(spot->GetVolumeBuffer(), spot->GetWorldMatrix(), spot->GetVertexCount(), spot->GetVertexSize());
+		for (int i = 0; i < _spotlights.size(); i++)
+		{
+			inLight.push_back(_lightCulling->GetObjectsInSpotlight(_spotlights[i]));
+		}
 	}
 
-	static std::vector<std::vector<GameObject*>>go;
-	if (_SM->GetState() == PLACEMENTSTATE)
+	if (_SM->GetState() != MENUSTATE)
 	{
-		_lightCulling = new LightCulling(_objectHandler->GetTileMap());
-		go = _lightCulling->GetObjectsInSpotlight(_spotlights[0]);
-		go = _lightCulling->GetObjectsInFrustum(_camera);
 
+		_renderModule->SetLightDataPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
+		for (int i = 0; i < _spotlights.size(); i++)
+		{
+			_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::SHADOW_GENERATION);
+			_renderModule->SetShadowMapDataPerSpotlight(_spotlights[i]->GetViewMatrix(), _spotlights[i]->GetProjectionMatrix());
 
+			for (auto j : inLight.at(i))
+			{
+				if (j.size() > 0)
+				{
+					RenderObject* renderObject = j.at(0)->GetRenderObject();
+					_renderModule->SetShadowMapDataPerObjectType(renderObject);
+					int vertexBufferSize = renderObject->_mesh._vertexBufferSize;
+
+					for (GameObject* g : j)
+					{
+						g->SetColorOffset(XMFLOAT3(0, 1, 0));
+						_renderModule->RenderShadowMap(g->GetMatrix(), vertexBufferSize);
+					}
+				}
+			}
+
+			_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::LIGHT_APPLICATION);
+			_renderModule->SetLightDataPerSpotlight(_spotlights[i]);
+
+			_renderModule->RenderLightVolume(_spotlights[i]->GetVolumeBuffer(), _spotlights[i]->GetWorldMatrix(), _spotlights[i]->GetVertexCount(), _spotlights[i]->GetVertexSize());
+		}
 	}
 
 	/*-------------------------------------------------------- HUD and other 2D -----------------------------------------------------------*/

@@ -356,7 +356,6 @@ namespace Renderer
 
 	int DirectXHandler::SetLightStage()
 	{
-		//TODO: Should the final rendering of the light volumes use depth testing? /Jonas
 		_deviceContext->OMSetRenderTargets(1, &_backBufferRTV, nullptr);
 		_deviceContext->RSSetViewports(1, &_viewport);
 
@@ -414,6 +413,7 @@ namespace Renderer
 
 	void DirectXHandler::SetHUDStage()
 	{
+		_deviceContext->RSSetViewports(1, &_viewport);
 		_deviceContext->OMSetRenderTargets(1, &_backBufferRTV, nullptr);
 		_deviceContext->RSSetState(_rasterizerStateBack);
 		_deviceContext->OMSetDepthStencilState(_depthStateDisable, 1);
