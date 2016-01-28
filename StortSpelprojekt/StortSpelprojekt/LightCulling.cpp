@@ -3,15 +3,12 @@
 Triangle LightCulling::TransformSpotlight(Renderer::Spotlight* spotlight)
 {
 	//Transforming the spotlight to a triangle
-	Vec3 direction = Vec3(spotlight->GetDirection());
-	Vec3 range =  direction * spotlight->GetRange();
-	Vec3 width = (direction.Dot(Vec3(0.0f, 1.0f, 0.0f)));// *std::sin(spotlight->GetAngle())) * 0.5f;
+	Vec3 range = Vec3(spotlight->GetDirection()) * spotlight->GetRange();
 
-	Vec3 point1 = Vec3();
-	Vec3 point2 = Vec3(3.0f,3.0f, 3.0f);
-	Vec3 point3 = Vec3(5.0f, 5.0f, 5.0f);
+	Vec3 width =  range * std::sin(spotlight->GetAngle()) * 0.5f;
 
-	 return Triangle(point1, point2, point3);
+	Vec3 pos = Vec3(spotlight->GetPosition());
+	 return Triangle(pos, pos + range + width, pos + range - width);
 }
 
 void LightCulling::GatherObjectsOnSquare(Square &square, std::vector<std::vector<GameObject*>> &allObjects)

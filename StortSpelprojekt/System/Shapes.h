@@ -478,9 +478,9 @@ static const bool Collision(Triangle &triangle, Square &square)
 		std::vector<Vec3> trianglePoints;
 		std::vector<Vec3> squarePoints;
 
-		trianglePoints.push_back(Vec3(triangle._pos1._x, 0.0f, triangle._pos1._y));
-		trianglePoints.push_back(Vec3(triangle._pos2._x, 0.0f, triangle._pos2._y));
-		trianglePoints.push_back(Vec3(triangle._pos3._x, 0.0f, triangle._pos3._y));
+		trianglePoints.push_back(Vec3(triangle._pos1._x, 0.0f, triangle._pos1._z));
+		trianglePoints.push_back(Vec3(triangle._pos2._x, 0.0f, triangle._pos2._z));
+		trianglePoints.push_back(Vec3(triangle._pos3._x, 0.0f, triangle._pos3._z));
 
 		squarePoints.push_back(Vec3(square._minPos._x, 0.0f, square._minPos._y));
 		squarePoints.push_back(Vec3(square._maxPos._x, 0.0f, square._minPos._y));
