@@ -107,17 +107,24 @@ void BaseEdit::DragAndDrop(Type type)
 
 			if (objectOnTile == nullptr && _marker->GetType() == type)
 			{
-				// Remove from old tile
-				_objectHandler->GetTileMap()->RemoveObjectFromTile(_marker);
-
 				// Update positions
 				//_marker->Translate(pos);
 				XMFLOAT3 p = XMFLOAT3(_marker->GetPosition());
 				p.x = pickedTile._x;
 				p.z = pickedTile._y;
 
-				_marker->SetPosition(p);
-				_objectHandler->GetTileMap()->AddObjectToTile(p.x, p.z, _marker);
+				//Check to see if the tile the object will be placed on is free, Aron
+				if (_objectHandler->GetTileMap()->GetAllObjectsOnTile(AI::Vec2D(p.x, p.z)).size() == 1 && !_objectHandler->GetTileMap()->GetObjectOnTile(p.x,p.z, WALL))
+				{
+					// Remove from old tile
+					_objectHandler->GetTileMap()->RemoveObjectFromTile(_marker);
+
+					//Check that the tile is not occupied by a wall, guard, trap, loot, spawnpoint or trigger
+
+					_marker->SetPosition(p);
+					_objectHandler->GetTileMap()->AddObjectToTile(p.x, p.z, _marker);
+
+				}				
 			}
 		}
 	}
