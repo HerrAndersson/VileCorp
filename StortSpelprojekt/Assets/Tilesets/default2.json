@@ -17,6 +17,7 @@
     
   ],
   "traps": [
+    "trap-24.bin",
     "trap-24.bin"
 
   ],
@@ -25,7 +26,8 @@
     
   ],
   "guards": [
-    "guard-24.bin"
+    "guard-24.bin",
+	"guard-24.bin"
 
   ],
   "enemies": [

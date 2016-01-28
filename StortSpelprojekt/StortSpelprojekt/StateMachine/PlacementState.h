@@ -1,13 +1,14 @@
 #pragma once
 
 #include "BaseState.h"
-#include "LevelEdit.h"
+#include "BaseEdit.h"
 
 class PlacementState : public BaseState
 {
 private:
-	LevelEdit _levelEdit;
+	BaseEdit _baseEdit;
 	bool _trapChosen = false;
+	int _budget;
 
 public:
 	PlacementState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, int width, int height);

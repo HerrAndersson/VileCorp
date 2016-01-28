@@ -68,4 +68,5 @@ public:
 	bool IsSpawnOnTile(int x, int z)const;
 	bool IsTypeOnTile(int x, int z, Type type)const;
 	bool IsTileVisible(int x, int z) const;
+	bool IsTileEmpty(int x, int z) const;
 };

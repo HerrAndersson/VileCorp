@@ -38,6 +38,8 @@ private:
 	System::WindowSettings		_windowSettings;
 	
 	bool						_hasFocus;
+	
+	bool						_enemiesHasSpawned;
 
 	//Resizing window, directx resources, camera
 	void ResizeResources(System::WindowSettings settings);
@@ -47,7 +49,10 @@ private:
 
 	//TODO: TEMP! Make this pretty
 	std::vector<Renderer::Spotlight*> _spotlights;
-	
+
+	std::vector<GameObject*> _enemies;
+	std::vector<GameObject*> _loot;
+
 public:
 	Game(HINSTANCE hInstance, int nCmdShow);
 	~Game();
