@@ -310,7 +310,7 @@ void BaseEdit::HandleInput()
 	XMFLOAT3 right(0, 0, 0);
 	bool isMoving = false;
 	float v = 0.06f + (_camera->GetPosition().y * 0.01);
-	if (GetAsyncKeyState('W'))
+
 	if (_controls->IsFunctionKeyDown("DEBUG:ENABLE_FREECAM"))
 	{
 		if (_camera->GetMode() == System::LOCKED_CAM)
