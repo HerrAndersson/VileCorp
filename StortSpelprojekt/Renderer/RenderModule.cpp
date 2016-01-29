@@ -132,7 +132,6 @@ namespace Renderer
 		MatrixBufferPerFrame* dataPtr;
 		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
 
-		//View,Projection
 		XMMATRIX viewMatrixC, projectionMatrixC;
 
 		viewMatrixC = XMMatrixTranspose(*view);
@@ -173,11 +172,6 @@ namespace Renderer
 
 		MatrixBufferPerSkinnedObject* dataPtr = static_cast<MatrixBufferPerSkinnedObject*>(mappedResource.pData);
 
-//		DirectX::XMFLOAT4X4 tempmatrix;														//
-//		DirectX::XMStoreFloat4x4(&tempmatrix, DirectX::XMMatrixIdentity());					//
-//		for (unsigned i = 0; i < 30; i++) {													//
-//			memcpy(&dataPtr->bones[i], (char*)&tempmatrix, sizeof(DirectX::XMFLOAT4X4));	//
-//		}																					//TODO remove - Fredrik
 		memcpy(&dataPtr->_bones, extra->data(), sizeof(DirectX::XMFLOAT4X4) * extra->size());
 		
 		deviceContext->Unmap(_matrixBufferPerSkinnedObject, 0);

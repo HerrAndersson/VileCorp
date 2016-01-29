@@ -49,6 +49,7 @@ float3 ReconstructWorldFromCamDepth(float2 uv)
 
 float4 main(VS_OUT input) : SV_TARGET0
 {
+	float lightRangeDiv2 = lightRange / 2;
 	float2 uv = float2((input.pos.x) / screenWidth, (input.pos.y) / screenHeight);
 
 	float4 normal = normalize(float4(normalTex.Sample(samplerWrap, uv).xyz, 0.0f));
@@ -56,16 +57,29 @@ float4 main(VS_OUT input) : SV_TARGET0
 	float3 worldPos = ReconstructWorldFromCamDepth(uv);
 	float3 pixToLight = lightPosition - worldPos;
 
-	float l = length(pixToLight);
+	float len = length(pixToLight);
 	pixToLight = normalize(pixToLight);
 
 	float howMuchLight = dot(pixToLight, normal.xyz);
 
 	//Inside of the volume
-	if (howMuchLight > 0.0f && l < lightRange/2)
+	if (howMuchLight > 0.0f && len < lightRangeDiv2)
 	{
 		float4 diffuse = float4(diffuseTex.Sample(samplerWrap, uv).xyz, 0.0f);
-		float4 finalColor = float4(((diffuse.xyz + lightColor) * pow(lightIntensity,3)), 0.5f);
+		float4 finalColor = float4(((diffuse.xyz + lightColor) * lightIntensity), 0.5f);
+
+		if (len > lightRangeDiv2 * 0.85)
+		{
+			finalColor *= float4(0.1f, 0.1f, 0.1f, 0.1f);
+		}
+		else if (len > lightRangeDiv2 * 0.75)
+		{
+			finalColor *= float4(0.35f, 0.35f, 0.35f, 0.35f);
+		}
+		else if (len > lightRangeDiv2 * 0.65)
+		{
+			finalColor *= float4(0.7f, 0.7f, 0.7f, 0.65f);
+		}
 
 		return finalColor;
 	}

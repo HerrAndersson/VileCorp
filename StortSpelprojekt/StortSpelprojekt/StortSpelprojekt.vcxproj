@@ -57,6 +57,7 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameLogic.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="GameObjectDataLoader.h" />
     <ClInclude Include="LightCulling.h" />
     <ClInclude Include="QuadTree.h" />
     <ClInclude Include="SpawnPoint.h" />

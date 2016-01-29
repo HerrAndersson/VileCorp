@@ -51,7 +51,7 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	//_controls->SaveKeyBindings(System::MAP_EDIT_KEYMAP, "MOVE_CAMERA_UP", "M");
 
 	Renderer::Spotlight* spot;
-	for (int i = 0; i < 1; i++)
+	for (int i = 0; i < 4; i++)
 	{
 		int d = _renderModule->SHADOWMAP_DIMENSIONS;
 		spot = new Renderer::Spotlight(_renderModule->GetDevice(), 0.1f, 1000.0f, XM_PIDIV4, d, d, 1.0f, 9.5f, XMFLOAT3(1.0f, 1.0f, 1.0f), 72);
@@ -60,9 +60,9 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	}
 
 	Renderer::Pointlight* point;
-	for (int i = 0; i < 200; i++)
+	for (int i = 0; i < 100; i++)
 	{
-		point = new Renderer::Pointlight(_renderModule->GetDevice(), XMFLOAT3(25 + 20 * sin(25 + i * 2 + rand() % ((i+1)) / 8) * sin(i), 1.0f, 25 + 20 * sin(25 + i * 2 + rand() % ((i + 1)) / 8) * cos(i)), 5, 1.0f, 1.0f, XMFLOAT3(sin(i*i * 6), sin(i * 50 * i), sin(120 * i * i)));
+		point = new Renderer::Pointlight(_renderModule->GetDevice(), XMFLOAT3(25 + 20 * sin(25 + i * 2 + rand() % ((i+1)) / 8) * sin(i) + 1, 0.05f, 25 + 20 * sin(25 + i * 2 + rand() % ((i + 1)) / 8) * cos(i)), 1.0f, 1.0f, XMFLOAT3(sin(i*i * 6), sin(i * 50 * i), sin(120 * i * i)));
 		_pointlights.push_back(point);
 	}
 
@@ -160,6 +160,59 @@ void Game::Update(float deltaTime)
 		}
 	}
 
+	int i = 0;
+	for (auto p : _pointlights)
+	{
+		i++;
+		XMFLOAT3 pos = p->GetPosition();
+		p->SetPosition(XMFLOAT3(pos.x + (sin((_timer.GetGameTime() / 1000) * sin(120 * i))) / 10, pos.y, pos.z + (sin((_timer.GetGameTime() / 1000) * sin(17 * i * i))) / 10));
+	}
+
+	//System::MouseCoord mc = _controls->GetMouseCoord();
+	//XMFLOAT3 mouseViewPos;
+	//XMFLOAT4X4 viewMatrix;
+	//XMFLOAT4X4 projMatrix;
+	//XMStoreFloat4x4(&projMatrix, *_camera->GetProjectionMatrix());
+
+	////Translating mouseposition to viewSpace
+	//float width = (float)_window->GetWindowSettings()._width;
+	//float xPos = (float)mc._pos.x;
+
+	//float height = (float)_window->GetWindowSettings()._height;
+	//float yPos = (float)mc._pos.y;
+
+	//mouseViewPos.x = (((2 * xPos) / width) - 1.0f) / projMatrix._11;
+	//mouseViewPos.y = (((-2 * yPos) / height) + 1.0f) / projMatrix._22;
+	//mouseViewPos.z = 1.0f;
+
+	//XMVECTOR determinant;
+	//XMMATRIX inverseViewMatrix = XMMatrixInverse(&determinant, *_camera->GetViewMatrix());
+	//XMStoreFloat3(&mouseViewPos, XMVector3TransformCoord(XMVectorSet(mouseViewPos.x, mouseViewPos.y, mouseViewPos.z, 0.0f), inverseViewMatrix));
+
+	//XMVECTOR t = XMVectorSet(_pointlights[0]->GetPosition().x, _pointlights[0]->GetPosition().y, _pointlights[0]->GetPosition().z, 0);
+	//t = XMVector3TransformCoord(t, *_camera->GetViewMatrix());
+	//XMFLOAT3 lightViewPos;
+	//XMStoreFloat3(&lightViewPos, t);
+
+	//if (mouseViewPos.x < lightViewPos.x)
+	//{
+	//	lightViewPos.x--;
+	//}
+	////else if (mouseViewPos.x > lightViewPos.x)
+	////{
+	////	lightViewPos.x++;
+	////}
+	//t = XMLoadFloat3(&lightViewPos);
+	//t = XMVector3TransformCoord(t, inverseViewMatrix);
+	//XMStoreFloat3(&lightViewPos, t);
+
+	//_pointlights[0]->SetPosition(lightViewPos);
+	//
+
+	//string s = to_string(mouseViewPos.x) + " " + to_string(mouseViewPos.z);
+	//SetWindowText(_window->GetHWND(), s.c_str());
+
+	int tds = 0;
 	//for (unsigned int i = 0; i < _spotlights.size(); i++)
 	//{
 	//	XMFLOAT3 rot = _spotlights[i]->GetRotation();
@@ -195,11 +248,14 @@ void Game::Render()
 		if (i.size() > 0)
 		{
 			RenderObject* renderObject = i.at(0)->GetRenderObject();
-			//if (!renderObject->_isSkinned)
-			if (i.at(0)->GetType() == ENEMY)
+			if (renderObject->_isSkinned)
 			{
 				continue;
 			}
+			//if (i.at(0)->GetType() == ENEMY)
+			//{
+			//	continue;
+			//}
 			else
 			{
 				_renderModule->SetDataPerObjectType(renderObject);
@@ -214,23 +270,22 @@ void Game::Render()
 	}
 
 	/*--------------------------------------------------  Render skinned objects  -----------------------------------------------------*/
-	////TODO: Check if this works, with the help from the animators. /Jonas
-	//_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::ANIM_STAGE);
-	//if (gameObjects->size() > 0)
-	//{
-	//	if (gameObjects->at(GUARD).size() > 0)
-	//	{
-	//		RenderObject* renderObject = gameObjects->at(GUARD).at(0)->GetRenderObject();
+	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::ANIM_STAGE);
+	if (gameObjects->size() > 0)
+	{
+		if (gameObjects->at(GUARD).size() > 0)
+		{
+			RenderObject* renderObject = gameObjects->at(GUARD).at(0)->GetRenderObject();
 
-	//		_renderModule->SetDataPerObjectType(renderObject);
-	//		int vertexBufferSize = renderObject->_mesh._vertexBufferSize;
+			_renderModule->SetDataPerObjectType(renderObject);
+			int vertexBufferSize = renderObject->_mesh._vertexBufferSize;
 
-	//		for (GameObject* a : gameObjects->at(GUARD))
-	//		{
-	//			_renderModule->RenderAnimation(a->GetMatrix(), vertexBufferSize, a->GetAnimation()->GetTransforms(), a->GetColorOffset());
-	//		}
-	//	}
-	//}
+			for (GameObject* a : gameObjects->at(GUARD))
+			{
+				_renderModule->RenderAnimation(a->GetMatrix(), vertexBufferSize, a->GetAnimation()->GetTransforms(), a->GetColorOffset());
+			}
+		}
+	}
 
 
 	//TEMPORARY!!

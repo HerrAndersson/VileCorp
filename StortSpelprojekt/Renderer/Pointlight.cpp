@@ -4,7 +4,7 @@ using namespace DirectX;
 
 namespace Renderer
 {
-	Pointlight::Pointlight(ID3D11Device* device, XMFLOAT3 position, float range, float intensity, int resolution, XMFLOAT3 color)
+	Pointlight::Pointlight(ID3D11Device* device, XMFLOAT3 position, float range, float intensity, XMFLOAT3 color)
 	{
 		_position = position;
 		_range = range;
@@ -23,6 +23,7 @@ namespace Renderer
 
 	void Pointlight::CreateIcoSphereVolume(ID3D11Device* device)
 	{
+		//IcoSphere vertex data. Has a diameter of 1 unit
 		XMFLOAT3 vertices[] = {
 		{-0.081228f, -0.425327f, -0.249997f},
 		{ 0.212662f, -0.425327f, -0.154506f },

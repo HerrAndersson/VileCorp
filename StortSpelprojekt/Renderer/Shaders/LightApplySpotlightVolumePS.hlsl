@@ -112,17 +112,17 @@ float4 main(VS_OUT input) : SV_TARGET0
 		{
 			float4 finalColor = float4((diffuse.xyz * lightColor * lightIntensity), 0.5f);
 
-			if (pixToLightAngle > lightAngleDiv2 * 0.85)
+			if (pixToLightAngle > lightAngleDiv2 * 0.85f)
 			{
-				finalColor *= float4(0.1f, 0.1f, 0.1f, 0.1f);
+				finalColor *= float4(0.1f, 0.1f, 0.1f, 0.05f);
 			}
-			else if (pixToLightAngle > lightAngleDiv2 * 0.75)
+			else if (pixToLightAngle > lightAngleDiv2 * 0.75f)
 			{
-				finalColor *= float4(0.35f, 0.35f, 0.35f, 0.35f);
+				finalColor *= float4(0.35f, 0.35f, 0.35f, 0.15f);
 			}
-			else if (pixToLightAngle > lightAngleDiv2 * 0.65)
+			else if (pixToLightAngle > lightAngleDiv2 * 0.65f)
 			{
-				finalColor *= float4(0.7f, 0.7f, 0.7f, 0.65f);
+				finalColor *= float4(0.7f, 0.7f, 0.7f, 0.5f);
 			}
 
 			return finalColor;
