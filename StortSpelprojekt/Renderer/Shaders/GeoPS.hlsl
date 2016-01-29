@@ -20,7 +20,7 @@ struct PS_OUT
 {
 	float4 diffuse		: SV_Target0;
 	float4 normal	    : SV_Target1;
-	float4 backbuffercopy: SV_Target4;
+	float4 backbuffercopy: SV_Target2;
 };
 
 

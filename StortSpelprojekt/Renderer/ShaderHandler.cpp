@@ -556,7 +556,7 @@ namespace Renderer
 	void ShaderHandler::SetFXAAPassShaders(ID3D11DeviceContext* deviceContext)
 	{
 		// Set vertex layout
-		deviceContext->IASetInputLayout(_geoPassVS->_inputLayout);
+		deviceContext->IASetInputLayout(_lightPassVS->_inputLayout);
 
 		// Set shaders
 		deviceContext->VSSetShader(_lightPassVS->_vertexShader, nullptr, 0);

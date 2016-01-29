@@ -30,8 +30,8 @@ struct VS_OUT
 
 Texture2D diffuseTex : register(t0);
 Texture2D normalTex : register(t1);
-Texture2D camDepthMap : register(t2);
-Texture2D lightDepthMap : register(t3);
+Texture2D camDepthMap : register(t3);
+Texture2D lightDepthMap : register(t4);
 
 SamplerState samplerWrap : register(s0);
 SamplerState samplerClamp : register(s1);
@@ -52,7 +52,7 @@ float3 ReconstructWorldFromCamDepth(float2 uv)
 	return float3(worldPos.xyz / worldPos.w);
 }
 
-float4 main(VS_OUT input) : SV_TARGET4
+float4 main(VS_OUT input) : SV_TARGET
 {
 	float lightAngleDiv2 = lightAngle / 2;
 	float2 uv = float2((input.pos.x) / screenWidth, (input.pos.y) / screenHeight);
