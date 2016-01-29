@@ -63,6 +63,7 @@ struct GameObjectBaseInfo
 {
 	std::string _name = "proto";
 	unsigned _renderObject;
+	std::string _textureName;
 };
 
 struct GameObjectFloorInfo : GameObjectBaseInfo
@@ -70,7 +71,8 @@ struct GameObjectFloorInfo : GameObjectBaseInfo
 	template<class A>
 	void serialize(A& a)
 	{
-		a(CEREAL_NVP(_name));
+		a(CEREAL_NVP(_name)),
+		a(CEREAL_NVP(_textureName));
 	}
 };
 
@@ -79,7 +81,8 @@ struct GameObjectWallInfo : GameObjectBaseInfo
 	template<class A>
 	void serialize(A& a)
 	{
-		a(CEREAL_NVP(_name));
+		a(CEREAL_NVP(_name)),
+		a(CEREAL_NVP(_textureName));
 	}
 };
 
@@ -97,7 +100,8 @@ struct GameObjectLootInfo : GameObjectBaseInfo
 			a(CEREAL_NVP(_radius)),
 			a(CEREAL_NVP(_value)),
 			a(CEREAL_NVP(_steal)),
-			a(CEREAL_NVP(_destroy));
+			a(CEREAL_NVP(_destroy)),
+			a(CEREAL_NVP(_textureName));
 	}
 };
 
@@ -156,7 +160,8 @@ struct GameObjectGuardInfo : GameObjectBaseInfo
 		a(CEREAL_NVP(_speed)),
 		a(CEREAL_NVP(_hitpoints)),
 		a(CEREAL_NVP(_damage)),
-		a(CEREAL_NVP(_radius));
+		a(CEREAL_NVP(_radius)),
+		a(CEREAL_NVP(_textureName));
 	}
 };
 
@@ -176,7 +181,8 @@ struct GameObjectEnemyInfo : GameObjectBaseInfo
 		a(CEREAL_NVP(_speed)),
 		a(CEREAL_NVP(_hitpoints)),
 		a(CEREAL_NVP(_damage)),
-		a(CEREAL_NVP(_radius));
+		a(CEREAL_NVP(_radius)),
+		a(CEREAL_NVP(_textureName));
 	}
 };
 

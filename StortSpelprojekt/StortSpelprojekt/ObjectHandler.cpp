@@ -5,7 +5,7 @@ ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, G
 	_idCount = 0;
 	_assetManager = assetManager;
 	_tilemap = nullptr;
-	_gameObjectData = data;
+	_gameObjectInfo = data;
 
 	for (int i = 0; i < NR_OF_TYPES; i++)
 	{
@@ -18,7 +18,7 @@ ObjectHandler::~ObjectHandler()
 {
 	Release();
 	delete _tilemap;
-	delete _gameObjectData;
+	delete _gameObjectInfo;
 }
 
 void ObjectHandler::ActivateTileset(string name)
@@ -28,9 +28,9 @@ void ObjectHandler::ActivateTileset(string name)
 
 	for (uint a = 0; a < Type::NR_OF_TYPES; a++)
 	{
-		for (uint i = 0; i < _gameObjectData->_objects[a]->size(); i++)
+		for (uint i = 0; i < _gameObjectInfo->_objects[a]->size(); i++)
 		{
-			_gameObjectData->_objects[a]->at(i)->_renderObject = _assetManager->GetRenderObjectByType((Type)a, i);
+			_gameObjectInfo->_objects[a]->at(i)->_renderObject = _assetManager->GetRenderObjectByType((Type)a, i);
 		}
 	}
 }
@@ -44,28 +44,28 @@ bool ObjectHandler::Add(Type type, int index, XMFLOAT3 position, XMFLOAT3 rotati
 	switch (type)
 	{
 	case FLOOR:
-		object = MakeFloor(_gameObjectData->Floors(index), position, rotation);
+		object = MakeFloor(_gameObjectInfo->Floors(index), position, rotation);
 		break;
 	case WALL:
-		object = MakeWall(_gameObjectData->Walls(index), position, rotation);
+		object = MakeWall(_gameObjectInfo->Walls(index), position, rotation);
 		break;
 	case LOOT:
-		object = MakeLoot(_gameObjectData->Loot(index), position, rotation);
+		object = MakeLoot(_gameObjectInfo->Loot(index), position, rotation);
 		break;
 	case SPAWN:
-		object = MakeSpawn(_gameObjectData->Spawns(index), position, rotation);
+		object = MakeSpawn(_gameObjectInfo->Spawns(index), position, rotation);
 		break;
 	case ENEMY:
-		object = MakeEnemy(_gameObjectData->Enemies(index), position, rotation);
+		object = MakeEnemy(_gameObjectInfo->Enemies(index), position, rotation);
 		break;
 	case GUARD:
-		object = MakeGuard(_gameObjectData->Guards(index), position, rotation);
+		object = MakeGuard(_gameObjectInfo->Guards(index), position, rotation);
 		break;
 	case TRAP:
-		object = MakeTrap(_gameObjectData->Traps(index), position, rotation);
+		object = MakeTrap(_gameObjectInfo->Traps(index), position, rotation);
 		break;
 	case TRIGGER:
-		object = MakeTrigger(_gameObjectData->Triggers(index), position, rotation);
+		object = MakeTrigger(_gameObjectInfo->Triggers(index), position, rotation);
 		break;
 	default:
 
@@ -86,9 +86,9 @@ bool ObjectHandler::Add(Type type, int index, XMFLOAT3 position, XMFLOAT3 rotati
 
 bool ObjectHandler::Add(Type type, std::string name, XMFLOAT3 position = XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3 rotation = XMFLOAT3(0.0f, 0.0f, 0.0f))
 {
-	for (int i = 0; i < _gameObjectData->_objects[type]->size(); i++)
+	for (int i = 0; i < _gameObjectInfo->_objects[type]->size(); i++)
 	{
-		if (_gameObjectData->_objects[type]->at(i)->_name == name)
+		if (_gameObjectInfo->_objects[type]->at(i)->_name == name)
 		{
 			return Add(type, i, position, rotation);
 		}
@@ -226,14 +226,14 @@ RenderList ObjectHandler::GetAllByType(int renderObjectID)
 	// TODO make it so that it returns a vector of renderlists to improve performance /Markus
 
 	RenderList list;
-	list._renderObject = _assetManager->GetRenderObject(renderObjectID);;
+	list._renderObject = _assetManager->GetRenderObject(renderObjectID, "");;
 
 	int count = 0;
 	for (int i = 0; i < NR_OF_TYPES; i++)
 	{
 		for (GameObject* g : _gameObjects[i])
 		{
-			if (g->GetRenderObject() == _assetManager->GetRenderObject(renderObjectID))
+			if (g->GetRenderObject() == _assetManager->GetRenderObject(renderObjectID, ""))
 			{
 				//TODO _modelMatrices should hold XMMATRIX* instead to ensure proper alignment of the matrices |Jonas a.k.a. ] 0 |\| /-\ 5
 				list._modelMatrices[count] = *g->GetMatrix();
@@ -252,7 +252,7 @@ vector<vector<GameObject*>>* ObjectHandler::GetGameObjects()
 
 GameObjectInfo * ObjectHandler::GetBlueprints()
 {
-	return _gameObjectData;
+	return _gameObjectInfo;
 }
 
 int ObjectHandler::GetObjectCount() const
@@ -375,12 +375,12 @@ void ObjectHandler::Release()
 Architecture * ObjectHandler::MakeFloor(GameObjectFloorInfo * data, XMFLOAT3 position, XMFLOAT3 rotation)
 {
 	Architecture* obj = new Architecture(
-		_idCount, 
-		position, 
-		rotation, 
-		AI::Vec2D((int)position.x, (int)position.z), 
-		FLOOR, 
-		_assetManager->GetRenderObject(data->_renderObject));
+		_idCount,
+		position,
+		rotation,
+		AI::Vec2D((int)position.x, (int)position.z),
+		FLOOR,
+		_assetManager->GetRenderObject(data->_renderObject, data->_textureName));
 
 	if (!_tilemap->AddObjectToTile((int)position.x, (int)position.z, obj))
 	{
@@ -399,7 +399,7 @@ Architecture * ObjectHandler::MakeWall(GameObjectWallInfo * data, XMFLOAT3 posit
 		rotation,
 		AI::Vec2D((int)position.x, (int)position.z),
 		WALL,
-		_assetManager->GetRenderObject(data->_renderObject));
+		_assetManager->GetRenderObject(data->_renderObject, data->_textureName));
 
 	if (!_tilemap->AddObjectToTile((int)position.x, (int)position.z, obj))
 	{
@@ -418,7 +418,7 @@ Architecture * ObjectHandler::MakeLoot(GameObjectLootInfo * data, XMFLOAT3 posit
 		rotation,
 		AI::Vec2D((int)position.x, (int)position.z),
 		LOOT,
-		_assetManager->GetRenderObject(data->_renderObject));
+		_assetManager->GetRenderObject(data->_renderObject, data->_textureName));
 
 	// read more data
 
@@ -439,7 +439,7 @@ Architecture * ObjectHandler::MakeSpawn(GameObjectSpawnInfo * data, XMFLOAT3 pos
 		rotation,
 		AI::Vec2D((int)position.x, (int)position.z),
 		SPAWN,
-		_assetManager->GetRenderObject(data->_renderObject));
+		_assetManager->GetRenderObject(data->_renderObject, ""));
 
 	// read more data
 
@@ -460,7 +460,7 @@ Trap * ObjectHandler::MakeTrap(GameObjectTrapInfo * data, XMFLOAT3 position, XMF
 		rotation,
 		AI::Vec2D((int)position.x, (int)position.z),
 		TRAP,
-		_assetManager->GetRenderObject(data->_renderObject),
+		_assetManager->GetRenderObject(data->_renderObject, ""),
 		data->_cost);
 
 	// Read more data
@@ -482,7 +482,7 @@ Trigger * ObjectHandler::MakeTrigger(GameObjectTriggerInfo * data, XMFLOAT3 posi
 		rotation,
 		AI::Vec2D((int)position.x, (int)position.z),
 		TRIGGER,
-		_assetManager->GetRenderObject(data->_renderObject));
+		_assetManager->GetRenderObject(data->_renderObject, ""));
 
 	// read more data
 
@@ -503,7 +503,7 @@ Guard * ObjectHandler::MakeGuard(GameObjectGuardInfo * data, XMFLOAT3 position, 
 		rotation,
 		AI::Vec2D((int)position.x, (int)position.z),
 		GUARD,
-		_assetManager->GetRenderObject(data->_renderObject),
+		_assetManager->GetRenderObject(data->_renderObject, data->_textureName),
 		_tilemap);
 
 	// read more data
@@ -525,7 +525,7 @@ Enemy * ObjectHandler::MakeEnemy(GameObjectEnemyInfo * data, XMFLOAT3 position, 
 		rotation,
 		AI::Vec2D((int)position.x, (int)position.z),
 		ENEMY,
-		_assetManager->GetRenderObject(data->_renderObject),
+		_assetManager->GetRenderObject(data->_renderObject, data->_textureName),
 		_tilemap);
 
 	// read more data

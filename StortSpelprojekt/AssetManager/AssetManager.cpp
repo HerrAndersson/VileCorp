@@ -252,7 +252,7 @@ HRESULT Texture::LoadTexture(ID3D11Device* device)
 
 		if (_data == nullptr)
 		{
-			string filenameString(_filename.begin(),_filename.end());
+ 			string filenameString(_filename.begin(),_filename.end());
 			throw std::runtime_error("Texture " + filenameString + " not found");
 		}
 		_loaded = true;
@@ -264,11 +264,7 @@ HRESULT Texture::LoadTexture(ID3D11Device* device)
 bool Texture::DecrementUsers()
 {
 	_activeUsers--;
-	if (!_activeUsers)
-	{
-		return true;
-	}
-	return false;
+	return (!_activeUsers);
 }
 
 //Loads a model to the GPU
@@ -551,7 +547,7 @@ ID3D11Buffer* AssetManager::CreateVertexBuffer(vector<WeightedVertex> *weightedV
 }
 
 //How AssetManager interfaces with the renderer. Don't save the return, request it anew everytime unless you are certain the model won't be unloaded
-RenderObject* AssetManager::GetRenderObject(int index)
+RenderObject* AssetManager::GetRenderObject(int index, string texture)
 {
 	RenderObject* renderObject = _renderObjects->at(index);
 	if (!renderObject->_meshLoaded)
@@ -561,6 +557,10 @@ RenderObject* AssetManager::GetRenderObject(int index)
 	else if (renderObject->_toUnload)
 	{
 		renderObject->_toUnload = false;
+	}
+	if (texture != "")
+	{
+		renderObject->_diffuseTexture->_data = GetTexture(texture);
 	}
 	return renderObject;
 }
