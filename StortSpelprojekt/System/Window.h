@@ -12,6 +12,7 @@ namespace System
 			BORDERLESS	= 2,
 			SHOW_CURSOR	= 4
 		};
+
 		int _width;
 		int _height;
 		int _flags;
@@ -50,8 +51,6 @@ namespace System
 		HWND GetHWND();
 
 		WindowSettings GetWindowSettings();
-
-		static LRESULT CALLBACK MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam);
 	};
 
 	

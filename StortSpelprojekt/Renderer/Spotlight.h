@@ -4,7 +4,7 @@
 
 #define RENDERER_EXPORT __declspec(dllexport)
 
-//Disable warning about DirectX  FLOAT3/MATRIX
+//Disable warning about DirectX XMFLOAT3/XMMATRIX etc
 #pragma warning( disable: 4251 )
 
 namespace Renderer
@@ -12,6 +12,8 @@ namespace Renderer
 	class RENDERER_EXPORT Spotlight
 	{
 	private:
+
+		//TODO: Should hold a pointer to its GameObject parent / Jonas
 
 		DirectX::XMFLOAT3	_position;
 		DirectX::XMFLOAT3	_rotation;
@@ -29,7 +31,8 @@ namespace Renderer
 
 		DirectX::XMFLOAT3	_color;
 
-		int					_nrOfTriangles;
+		int					_vertexCount;
+		int					_vertexSize;
 		ID3D11Buffer*		_lightConeVolume;
 
 		void Update();
@@ -50,6 +53,8 @@ namespace Renderer
 		float GetIntensity() const;
 		float GetRange() const;
 		float GetAngle() const;
+		int GetVertexCount() const;
+		int GetVertexSize() const;
 
 		DirectX::XMFLOAT3 GetColor() const;
 		DirectX::XMFLOAT3 GetPosition() const;

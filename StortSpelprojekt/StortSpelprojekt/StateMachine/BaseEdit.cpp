@@ -104,7 +104,7 @@ void BaseEdit::DragAndDrop(Type type)
 				Tilemap* tm = _objectHandler->GetTileMap();
 
 				//Check to see if the tile the object will be placed on is free, Aron
-				if (tm->IsPlacable(p.x, p.z, type))
+				if (tm->IsPlaceable(p.x, p.z, type))
 				{
 					if (type == WALL && !tm->IsTileEmpty(p.x, p.z))
 					{
@@ -238,7 +238,7 @@ void BaseEdit::DragActivate(Type type, std::string objectName)
 	{
 		for (int z = 1; z < tm->GetHeight() - 1; z++)
 		{
-			if (tm->IsPlacable(x, z, type))
+			if (tm->IsPlaceable(x, z, type))
 			{
 				pos = XMFLOAT3(x, 0, z);
 				if (_objectHandler->Add(type, objectName, pos, XMFLOAT3(0.0f, 0.0f, 0.0f)))

@@ -38,7 +38,6 @@ class ObjectHandler
 {
 private:
 	vector<vector<GameObject*>> _gameObjects;
-	//vector<RenderList> _renderLists;
 	GameObjectInfo* _gameObjectInfo;
 	void ActivateTileset(string name);
 	Tilemap* _tilemap;
