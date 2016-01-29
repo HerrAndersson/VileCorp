@@ -247,14 +247,14 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	}
 
 	//Floor gets colored for debugging. Note that the tiles won't get decolored if the trap is removed
-	for (int i = 0; i < _nrOfAOETiles; i++)
+	/*for (int i = 0; i < _nrOfAOETiles; i++)
 	{
 		AI::Vec2D pos = _areaOfEffect[i];
 		if (_tileMap->IsFloorOnTile(_areaOfEffect[i]._x, _areaOfEffect[i]._y))
 		{
 			_tileMap->GetObjectOnTile(_areaOfEffect[i]._x, _areaOfEffect[i]._y, FLOOR)->AddColorOffset({0,0,1});
 		}
-	}
+	}*/
 }
 
 Trap::~Trap()

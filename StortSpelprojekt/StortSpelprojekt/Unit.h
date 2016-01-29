@@ -2,6 +2,7 @@
 #include "GameObject.h"
 #include "Tilemap.h"
 #include "AStar.h"
+#include "VisionCone.h"
 #include <DirectXMath.h>
 class Unit : public GameObject
 {
@@ -17,8 +18,9 @@ private:
 	float  _moveSpeed;
 
 	int _visionRadius;
-	AI::Vec2D* _visibleTiles;
-	int _nrOfVisibleTiles;
+	VisionCone* _visionCone;
+	//AI::Vec2D* _visibleTiles;
+	//int _nrOfVisibleTiles;
 
 	int _waiting;					//Temporarily counting frame. Should use a timer eventually
 
@@ -27,9 +29,9 @@ private:
 	GameObject* _objective;
 	bool _isMoving;
 
-	void ScanOctant(int depth, int octant, double &startSlope, double endSlope);
-	double GetSlope(double x1, double y1, double x2, double y2, bool invert);
-	int GetVisDistance(int x1, int y1, int x2, int y2);
+	//void ScanOctant(int depth, int octant, double &startSlope, double endSlope);
+	//double GetSlope(double x1, double y1, double x2, double y2, bool invert);
+	//int GetVisDistance(int x1, int y1, int x2, int y2);
 	void CalculatePath();
 	void Rotate();
 
@@ -48,7 +50,7 @@ public:
 	AI::Vec2D GetDirection();
 	int GetHealth();
 	GameObject* GetHeldObject()const;
-	void FindVisibleTiles();
+	//void FindVisibleTiles();
 	void CheckVisibleTiles();
 	void CheckAllTiles();
 	virtual void EvaluateTile(Type objective, AI::Vec2D tile) = 0;
@@ -61,6 +63,8 @@ public:
 	virtual void act(GameObject* obj) = 0;									//context specific action on the unit's objective
 	void Wait(int frames);
 	void TakeDamage(int damage);
+
+	void ColorVisibleTiles(DirectX::XMFLOAT3 color);												//Debug function. Colors the visibility cone
 
 };
 
