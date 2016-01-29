@@ -46,18 +46,15 @@ namespace System
 		void Update();
 		void Resize(int width, int height);
 
-		DirectX::XMFLOAT3 GetPosition()const;
 		void SetPosition(DirectX::XMFLOAT3 position);
 		void Move(DirectX::XMFLOAT3 offset);
-		DirectX::XMFLOAT3 GetRotation()const;
 		void SetRotation(DirectX::XMFLOAT3 rotation);
+
+		DirectX::XMFLOAT3 GetPosition()const;
+		DirectX::XMFLOAT3 GetRotation()const;
 
 		DirectX::XMMATRIX* GetViewMatrix();
 		DirectX::XMMATRIX* GetProjectionMatrix();
-		//OrthoMatrix is commonly used for anything 2D. Commonly used in the "projection slot".
-		DirectX::XMMATRIX* GetOrthoMatrix();
-		//BaseViewMatrix is used for 2D HUD. Commonly used in the "view slot".
-		DirectX::XMMATRIX* GetBaseViewMatrix();
 
 		DirectX::XMFLOAT3 GetForwardVector() const;
 		DirectX::XMFLOAT3 GetRightVector() const;

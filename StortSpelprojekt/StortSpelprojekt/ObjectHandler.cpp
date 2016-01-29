@@ -39,7 +39,7 @@ void ObjectHandler::ActivateTileset(string name)
 	}
 }
 
-bool ObjectHandler::Add(Type type, XMFLOAT3 position = XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3 rotation = XMFLOAT3(0.0f, 0.0f, 0.0f))
+bool ObjectHandler::Add(Type type, XMFLOAT3 position = XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3 rotation = XMFLOAT3(0.0f, 0.0f, 0.0f), int subType)
 {
 	GameObject* object = nullptr;
 	bool addedObject = false;
@@ -53,7 +53,7 @@ bool ObjectHandler::Add(Type type, XMFLOAT3 position = XMFLOAT3(0.0f, 0.0f, 0.0f
 		addedObject = _tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
 		break;
 	case SPAWN:
-		object = new SpawnPoint(_idCount, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(type), 180,2);
+		object = new SpawnPoint(_idCount, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(type), 80,2);
 		addedObject = _tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
 		break;
 	case ENEMY:
@@ -65,11 +65,36 @@ bool ObjectHandler::Add(Type type, XMFLOAT3 position = XMFLOAT3(0.0f, 0.0f, 0.0f
 		addedObject = _tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
 		break;
 	case TRAP:
-		object = new Trap(_idCount, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(type));
-		addedObject = _tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
+		object = new Trap(_idCount, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(type), _tilemap);
+		//addedObject = _tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
 		break;
 	default:	
 		break;
+	}
+
+	//Temporary check for traps. Could be more general if other objects are allowed to take up multiple tiles
+	if (type == TRAP)
+	{
+		Trap* trap = static_cast<Trap*>(object);
+		int i = 0;
+		addedObject = true;
+		AI::Vec2D* arr = trap->GetTiles();
+		for (int i = 0; i < trap->GetTileSize() && addedObject; i++)
+		{
+			if (!_tilemap->CanPlaceObject(arr[i]))
+			{
+				addedObject = false;
+			}
+		}
+		if (addedObject)
+		{
+			for (int i = 0; i < trap->GetTileSize() && addedObject; i++)
+			{
+				_tilemap->AddObjectToTile(arr[i], object);
+				_tilemap->GetObjectOnTile(arr[i]._x, arr[i]._y, FLOOR)->AddColorOffset({2,0,0});
+			}
+		}
+
 	}
 
 	_idCount++;
@@ -346,10 +371,10 @@ void ObjectHandler::Update(float deltaTime)
 						unit->Move();
 						_tilemap->AddObjectToTile(g->GetTilePosition()._x, g->GetTilePosition()._y, unit);
 
-						if (_tilemap->IsTrapOnTile(g->GetTilePosition()._x, g->GetTilePosition()._y))
+						/*if (_tilemap->IsTrapOnTile(g->GetTilePosition()._x, g->GetTilePosition()._y))
 						{
 							static_cast<Trap*>(_tilemap->GetObjectOnTile(g->GetTilePosition()._x, g->GetTilePosition()._y, TRAP))->Activate(unit);
-						}
+						}*/
 					}
 					if (unit->GetType() == GUARD && _tilemap->IsEnemyOnTile(g->GetTilePosition()._x, g->GetTilePosition()._y))
 					{

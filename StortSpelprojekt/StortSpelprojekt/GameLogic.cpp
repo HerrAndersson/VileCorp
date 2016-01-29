@@ -1,6 +1,6 @@
 #include "GameLogic.h"
 #include <DirectXMath.h>
-
+#include "InputDevice.h"
 
 GameLogic::GameLogic()
 {
@@ -19,10 +19,7 @@ void GameLogic::Initialize(ObjectHandler* objectHandler, System::Camera* camera,
 	_controls = controls;
 	_pickingDevice = pickingDevice;
 
-	//Needs a Tilemap in the objectHandler /Markus
-	//_objectHandler->Add(TRAP, 0, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
-
-	//_objectHandler->Add(TRAP, 0, XMFLOAT3(0.5f, -1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
+	//_objectHandler->LoadLevel(3);
 	
 	//Either import the level here or in the LevelEdit.cpp, otherwise the level will be loaded twice
 	//System::loadJSON(&_levelLoad, "../../../../StortSpelprojekt/Assets/LevelLoad.json");
@@ -77,15 +74,20 @@ void GameLogic::HandleInput()
 		if (_player->AreUnitsSelected())
 		{
 			vector<Unit*> units = _player->GetSelectedUnits();
-			for (uint i = 0; i < units.size(); i++)
+			for (unsigned int i = 0; i < units.size(); i++)
 			{
 				units[i]->SetScale(DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f));
 			}
 			_player->DeselectUnits();
 		}
 	}
+	
+	XMFLOAT3 forward(0, 0, 0);
+	XMFLOAT3 position = _camera->GetPosition();
+	XMFLOAT3 right(0, 0, 0);
+	bool isMoving = false;
+	float v = 0.06f + (_camera->GetPosition().y * 0.01);
 
-	//Boxselect Units
 	if(_controls->IsFunctionKeyDown("PLAY:BOX_SELECT"))
 	{
 		_pickingDevice->setFirstBoxPoint(_controls->GetMouseCoord()._pos);
@@ -128,12 +130,7 @@ void GameLogic::HandleInput()
 		}
 	}
 	
-
-	XMFLOAT3 forward(0, 0, 0);
-	XMFLOAT3 position = _camera->GetPosition();
-	XMFLOAT3 right(0, 0, 0);
-	bool isMoving = false;
-	float v = 0.06f + (_camera->GetPosition().y * 0.01);
+	
 
 	if (_controls->IsFunctionKeyDown("DEBUG:ENABLE_FREECAM"))
 	{
@@ -202,8 +199,9 @@ void GameLogic::HandleInput()
 	if (_controls->CursorLocked())
 	{
 		XMFLOAT3 rotation = _camera->GetRotation();
-		rotation.x += _controls->GetMouseCoord()._deltaPos.y / 10.0f;
-		rotation.y += _controls->GetMouseCoord()._deltaPos.x / 10.0f;
+		System::MouseCoord mc = _controls->GetMouseCoord();
+		rotation.x += mc._deltaPos.y / 10.0f;
+		rotation.y += mc._deltaPos.x / 10.0f;
 
 		_camera->SetRotation(rotation);
 	}

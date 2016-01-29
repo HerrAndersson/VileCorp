@@ -5,6 +5,11 @@ bool Tilemap::IsValid(int x, int z) const
 	return (x >= 0 && x < _width && z >= 0 && z < _height);
 }
 
+bool Tilemap::IsValid(AI::Vec2D pos) const
+{
+	return (pos._x >= 0 && pos._x < _width && pos._y >= 0 && pos._y < _height);
+}
+
 Tilemap::Tilemap()
 {
 	_height = 10;
@@ -102,6 +107,11 @@ bool Tilemap::AddObjectToTile(int x, int z, GameObject * obj)
 		}
 	}
 	return result;
+}
+
+bool Tilemap::AddObjectToTile(AI::Vec2D pos, GameObject * obj)
+{
+	return AddObjectToTile(pos._x, pos._y, obj);
 }
 
 bool Tilemap::RemoveObjectFromTile(int x, int z, GameObject * obj)
@@ -237,6 +247,11 @@ GameObject * Tilemap::GetObjectOnTile(int x, int z, Type type) const
 	}
 }
 
+GameObject * Tilemap::GetObjectOnTile(AI::Vec2D pos, Type type) const
+{
+	return GetObjectOnTile(pos._x, pos._y, type);
+}
+
 //GameObject * Tilemap::GetUnitOnTile(int x, int z) const
 //{
 //	GameObject* result = nullptr;
@@ -256,6 +271,11 @@ bool Tilemap::IsArchitectureOnTile(int x, int z) const
 	return IsValid(x, z) && _map[x][z]._objectsOnTile[0] != nullptr;
 }
 
+bool Tilemap::IsArchitectureOnTile(AI::Vec2D pos) const
+{
+	return IsValid(pos) && _map[pos._x][pos._y]._objectsOnTile[0] != nullptr;
+}
+
 bool Tilemap::IsWallOnTile(int x, int z) const
 {
 	return IsArchitectureOnTile(x, z) && _map[x][z]._objectsOnTile[0]->GetType() == WALL;
@@ -264,6 +284,11 @@ bool Tilemap::IsWallOnTile(int x, int z) const
 bool Tilemap::IsFloorOnTile(int x, int z) const
 {
 	return IsArchitectureOnTile(x, z) && _map[x][z]._objectsOnTile[0]->GetType() == FLOOR;
+}
+
+bool Tilemap::IsFloorOnTile(AI::Vec2D pos) const
+{
+	return IsArchitectureOnTile(pos) && _map[pos._x][pos._y]._objectsOnTile[0]->GetType() == FLOOR;
 }
 
 int Tilemap::UnitsOnTile(int x, int z) const
@@ -349,5 +374,18 @@ bool Tilemap::IsTypeOnTile(int x, int z, Type type) const
 bool Tilemap::IsTileVisible(int x, int z) const
 {
 	return _map[x][z]._isVisible;
+}
+
+/*
+	To place an object, the tile should be empty besides a floor
+*/
+bool Tilemap::CanPlaceObject(int x, int z) const
+{
+	return IsFloorOnTile(x, z) && _map[x][z]._objectsOnTile[1] == nullptr && _map[x][z]._objectsOnTile[2] == nullptr && _map[x][z]._objectsOnTile[3] == nullptr;
+}
+
+bool Tilemap::CanPlaceObject(AI::Vec2D pos) const
+{
+	return IsFloorOnTile(pos) && _map[pos._x][pos._y]._objectsOnTile[1] == nullptr && _map[pos._x][pos._y]._objectsOnTile[2] == nullptr && _map[pos._x][pos._y]._objectsOnTile[3] == nullptr;
 }
 

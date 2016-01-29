@@ -45,6 +45,7 @@ public:
 	~Tilemap();
 
 	bool AddObjectToTile(int x, int z, GameObject* obj);
+	bool AddObjectToTile(AI::Vec2D pos, GameObject* obj);
 	bool RemoveObjectFromTile(int x, int z, GameObject* obj);
 	bool RemoveObjectFromTile(GameObject* obj);
 	void ClearTile(int x, int z);
@@ -54,12 +55,16 @@ public:
 	int GetWidth() const;
 
 	GameObject* GetObjectOnTile(int x, int z, Type type) const;
+	GameObject* GetObjectOnTile(AI::Vec2D pos, Type type) const;
 
 	std::vector<GameObject*> GetAllObjectsOnTile(AI::Vec2D tileCoords) const;
 	bool IsValid(int x, int z) const;
+	bool IsValid(AI::Vec2D pos) const;
 	bool IsArchitectureOnTile(int x, int z)const;
+	bool IsArchitectureOnTile(AI::Vec2D pos)const;
 	bool IsWallOnTile(int x, int z)const;
 	bool IsFloorOnTile(int x, int z)const;
+	bool IsFloorOnTile(AI::Vec2D pos)const;
 	int UnitsOnTile(int x, int z)const;
 	bool IsGuardOnTile(int x, int z)const;
 	bool IsEnemyOnTile(int x, int z)const;
@@ -68,4 +73,6 @@ public:
 	bool IsSpawnOnTile(int x, int z)const;
 	bool IsTypeOnTile(int x, int z, Type type)const;
 	bool IsTileVisible(int x, int z) const;
+	bool CanPlaceObject(int x, int z) const;	
+	bool CanPlaceObject(AI::Vec2D pos) const;
 };
