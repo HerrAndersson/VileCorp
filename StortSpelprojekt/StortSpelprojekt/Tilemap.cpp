@@ -5,6 +5,46 @@ bool Tilemap::IsValid(int x, int z) const
 	return (x >= 0 && x < _width && z >= 0 && z < _height);
 }
 
+bool Tilemap::IsPlacable(int x, int z, Type type) const
+{
+	GameObject* result = nullptr;
+	if (IsValid(x, z))
+	{
+		if (!IsWallOnTile(x, z))
+		{
+			switch (type)
+			{
+			case FLOOR:
+			case WALL:
+				result = _map[x][z]._objectsOnTile[0];
+				break;
+			case ENEMY:
+				result = _map[x][z]._objectsOnTile[1];
+				break;
+			case GUARD:
+				result = _map[x][z]._objectsOnTile[2];
+				break;
+			case LOOT:
+			case SPAWN:
+			case TRAP:
+				result = _map[x][z]._objectsOnTile[3];
+				break;
+			default:
+				break;
+			}
+		}
+	}
+
+	if (result == nullptr)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 Tilemap::Tilemap()
 {
 	_height = 10;

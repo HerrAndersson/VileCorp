@@ -57,6 +57,7 @@ public:
 
 	std::vector<GameObject*> GetAllObjectsOnTile(AI::Vec2D tileCoords) const;
 	bool IsValid(int x, int z) const;
+	bool IsPlacable(int x, int z, Type type) const;
 	bool IsArchitectureOnTile(int x, int z)const;
 	bool IsWallOnTile(int x, int z)const;
 	bool IsFloorOnTile(int x, int z)const;

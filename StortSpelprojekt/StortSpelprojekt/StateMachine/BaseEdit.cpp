@@ -6,11 +6,7 @@
 // local function
 bool compareFloat3(XMFLOAT3 a, XMFLOAT3 b)
 {
-	if (a.x == b.x && a.z == b.z)
-	{
-		return true;
-	}
-	return false;
+	return (a.x == b.x && a.z == b.z);
 }
 
 // Instancing
@@ -115,8 +111,12 @@ void BaseEdit::DragAndDrop(Type type)
 				Tilemap* tm = _objectHandler->GetTileMap();
 
 				//Check to see if the tile the object will be placed on is free, Aron
-				if (tm->GetAllObjectsOnTile(AI::Vec2D(p.x, p.z)).size() >= 1 && tm->GetObjectOnTile(p.x, p.z, WALL) == nullptr)
+				if (tm->IsPlacable(p.x, p.z, type))
 				{
+					if (type == WALL && !tm->IsTileEmpty(p.x, p.z))
+					{
+						return;
+					}
 					// Remove from old tile
 					_objectHandler->GetTileMap()->RemoveObjectFromTile(_marker);
 
@@ -414,7 +414,7 @@ void BaseEdit::LoadLevel(int levelID)
 	_objectHandler->LoadLevel(levelID);
 
 	_objectHandler->EnlargeTilemap(5);
-	_objectHandler->MinimizeTileMap();
+	//_objectHandler->MinimizeTileMap();
 
 	_tileMap = _objectHandler->GetTileMap();
 	_tilemapHeight = _tileMap->GetHeight();
