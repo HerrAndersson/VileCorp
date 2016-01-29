@@ -35,7 +35,7 @@ public:
 		int height);
 	~StateMachine();
 
-	void virtual Update(float deltaTime);
+	bool Update(float deltaTime);
 	State GetState();
 	BaseState* GetCurrentStatePointer() const;
 	void Resize(int width, int height);

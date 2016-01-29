@@ -19,7 +19,7 @@ AssetManager::AssetManager(ID3D11Device* device)
 
 	SetupTilesets();
 
-	SetupLevelFileNameList();
+	GetFilenamesInDirectory("Assets/Levels/", ".lvl", *_levelFileNames);
 }
 
 AssetManager::~AssetManager()
@@ -52,28 +52,26 @@ AssetManager::~AssetManager()
 }
 
 //Looks through the Models folder and creates an empty RenderObject for each entry
-void AssetManager::SetupRenderObjectList(Tileset* tileset)
+bool AssetManager::SetupRenderObjectList(Tileset* tileset)
 {
 	_modelFiles->clear();
-	vector<string>* vec = &tileset->_floors;
 	for (int i = 0; i < NR_OF_TYPES; i++)
 	{
-		for (string str : *vec)
+		for (string str : tileset->_objects[i])
 		{
 			_modelFiles->push_back(str);
 			RenderObject* renderObject = ScanModel(str);
+			if (renderObject == nullptr)
+			{
+				return false;
+			}
 			renderObject->_type = (Type)i;
 			_renderObjects->push_back(renderObject);
 		}
-		vec++;
 	}
 
 	_activeTileset = tileset;
-}
-
-void AssetManager::SetupLevelFileNameList()
-{
-	GetFilenamesInDirectory("Assets/Levels/", ".lvl", *_levelFileNames);
+	return true;
 }
 
 void AssetManager::SetupTilesets()
@@ -107,7 +105,7 @@ bool AssetManager::ActivateTileset(string name)
 {
 	if (!strcmp(name.c_str(), _activeTileset->_name.c_str()))
 	{
-		return true;
+		return true; //Specified tileset is already the current tileset
 	}
 
 	for (Texture* texture : *_textures)
@@ -134,8 +132,9 @@ bool AssetManager::ActivateTileset(string name)
 	{
 		if (!strcmp(name.c_str(), set._name.c_str()))
 		{
-			SetupRenderObjectList(&set);
-			return true;
+			//Tileset was found
+			return SetupRenderObjectList(&set);
+			//If false one or more .bins in tileset was invalid
 		}
 	}
 	return false;
@@ -176,14 +175,14 @@ void AssetManager::UnloadModel(int index, bool force)
 	}
 }
 
-void AssetManager::ParseLevel(int index, vector<GameObjectData> &gameObjects, int &dimX, int &dimY)
+bool AssetManager::ParseLevel(int index, vector<GameObjectData> &gameObjects, int &dimX, int &dimY)
 {
 	LevelHeader lvlHead;
 
 	_infile->open(_levelFileNames->at(index).c_str(), ifstream::binary);
 	if (!_infile->is_open())
 	{
-		return;
+		return false;
 	}
 
 	_infile->read((char*)&lvlHead, sizeof(LevelHeader));
@@ -194,15 +193,7 @@ void AssetManager::ParseLevel(int index, vector<GameObjectData> &gameObjects, in
 	_infile->read((char*)gameObjects.data(), sizeof(GameObjectData) * lvlHead._nrOfGameObjects);
 
 	_infile->close();
-	//infile->open(file_path.c_str(), ifstream::binary);
-	//if (!infile->is_open())
-	//{
-	//	return;
-	//}
-
-	//infile->seekg(mesh->toMesh);
-	//vertices.resize(mesh->vertexBufferSize);
-	//infile->read((char*)vertices.data(), mesh->vertexBufferSize*sizeof(Vertex));
+	return true;
 }
 
 //Unloads all Assets waiting to be unloaded
@@ -268,7 +259,7 @@ bool Texture::DecrementUsers()
 }
 
 //Loads a model to the GPU
-void AssetManager::LoadModel(string fileName, RenderObject* renderObject) {
+bool AssetManager::LoadModel(string fileName, RenderObject* renderObject) {
 
 	string file_path = "Assets/Models/";
 
@@ -277,7 +268,7 @@ void AssetManager::LoadModel(string fileName, RenderObject* renderObject) {
 
 	if (!_infile->is_open())
 	{
-		return;
+		return false;
 	}
 
 	vector<Vertex> vertices;
@@ -294,7 +285,7 @@ void AssetManager::LoadModel(string fileName, RenderObject* renderObject) {
 		vertices.resize(renderObject->_mesh._vertexBufferSize);
 		_infile->read((char*)vertices.data(), renderObject->_mesh._vertexBufferSize*sizeof(Vertex));
 	}
-		renderObject->_mesh._vertexBuffer = CreateVertexBuffer(&weightedVertices, &vertices, renderObject->_isSkinned);
+	renderObject->_mesh._vertexBuffer = CreateVertexBuffer(&weightedVertices, &vertices, renderObject->_isSkinned);
 
 	if (renderObject->_diffuseTexture != nullptr)
 	{
@@ -315,6 +306,7 @@ void AssetManager::LoadModel(string fileName, RenderObject* renderObject) {
 
 	_infile->close();
 	renderObject->_meshLoaded = true;
+	return true;
 }
 
 Texture* AssetManager::ScanTexture(string filename)
@@ -353,11 +345,11 @@ RenderObject* AssetManager::ScanModel(string fileName)
 	int version;
 	_infile->read((char*)&version, 4);
 
-	RenderObject* renderObject = (this->*(_meshFormatVersion[version]))(fileName, _infile);
-	if (renderObject == nullptr)
+	if (version != 24 && version != 26)
 	{
 		throw std::runtime_error("Failed to load " + file_path + ":\nIncorrect fileversion");
 	}
+	RenderObject* renderObject = (this->*(_meshFormatVersion[version]))(fileName, _infile);
 
 	renderObject->_name = fileName;
 
@@ -463,16 +455,20 @@ RenderObject* AssetManager::ScanModel24(string fileName, ifstream* _infile)
 				_infile->seekg(meshHeader._numberOfVertices*sizeof(Vertex), ios::cur);
 			}
 
-			if (meshHeader._numberPointLights)
+			renderObject->_mesh._pointLights.resize(sizeof(PointLight)*meshHeader._numberPointLights);
+			for (int i = 0; i < meshHeader._numberPointLights; i++)
 			{
-				renderObject->_mesh._pointLights.resize(sizeof(PointLight)*meshHeader._numberPointLights);
-				_infile->read((char*)renderObject->_mesh._pointLights.data(), sizeof(PointLight)*meshHeader._numberPointLights);
+				_infile->seekg(-1, ios::cur);
+				_infile->read((char*)&renderObject->_mesh._pointLights[i], sizeof(PointLight));
+				renderObject->_mesh._pointLights[i]._bone = 0;
 			}
 
-			if (meshHeader._numberSpotLights)
+			renderObject->_mesh._spotLights.resize(sizeof(SpotLight)*meshHeader._numberSpotLights);
+			for (int i = 0; i < meshHeader._numberSpotLights; i++)
 			{
-				renderObject->_mesh._spotLights.resize(sizeof(SpotLight)*meshHeader._numberSpotLights);
-				_infile->read((char*)renderObject->_mesh._spotLights.data(), sizeof(SpotLight)*meshHeader._numberSpotLights);
+				_infile->seekg(-1, ios::cur);
+				_infile->read((char*)&renderObject->_mesh._spotLights[i], sizeof(SpotLight));
+				renderObject->_mesh._spotLights[i]._bone = 0;
 			}
 			renderObject->_mesh._vertexBufferSize = meshHeader._numberOfVertices;
 		}
@@ -508,29 +504,22 @@ RenderObject* AssetManager::ScanModel24(string fileName, ifstream* _infile)
 ID3D11Buffer* AssetManager::CreateVertexBuffer(vector<WeightedVertex> *weightedVertices, vector<Vertex> *vertices, int skeleton)
 {
 	D3D11_BUFFER_DESC vbDESC;
+	D3D11_SUBRESOURCE_DATA vertexData;
 	vbDESC.Usage = D3D11_USAGE_DEFAULT;
 	if (skeleton)
 	{
 		vbDESC.ByteWidth = sizeof(WeightedVertex)* weightedVertices->size();
+		vertexData.pSysMem = weightedVertices->data();
 	}
 	else
 	{
 		vbDESC.ByteWidth = sizeof(Vertex)* vertices->size();
+		vertexData.pSysMem = vertices->data();
 	}
 	vbDESC.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	vbDESC.CPUAccessFlags = 0;
 	vbDESC.MiscFlags = 0;
 	vbDESC.StructureByteStride = 0;
-
-	D3D11_SUBRESOURCE_DATA vertexData;
-	if (skeleton)
-	{
-		vertexData.pSysMem = weightedVertices->data();
-	}
-	else
-	{
-		vertexData.pSysMem = vertices->data();
-	}
 	vertexData.SysMemPitch = 0;
 	vertexData.SysMemSlicePitch = 0;
 
@@ -549,14 +538,18 @@ ID3D11Buffer* AssetManager::CreateVertexBuffer(vector<WeightedVertex> *weightedV
 //How AssetManager interfaces with the renderer. Don't save the return, request it anew everytime unless you are certain the model won't be unloaded
 RenderObject* AssetManager::GetRenderObject(int index, string texture)
 {
-	RenderObject* renderObject = _renderObjects->at(index);
-	if (!renderObject->_meshLoaded)
+	RenderObject* renderObject = nullptr;
+	if (index >= 0 && index < _renderObjects->size())
 	{
-		LoadModel(_modelFiles->at(index), renderObject);
-	}
-	else if (renderObject->_toUnload)
-	{
-		renderObject->_toUnload = false;
+		renderObject = _renderObjects->at(index);
+		if (!renderObject->_meshLoaded)
+		{
+			LoadModel(_modelFiles->at(index), renderObject);
+		}
+		else if (renderObject->_toUnload)
+		{
+			renderObject->_toUnload = false;
+		}
 	}
 	if (texture != "")
 	{
@@ -612,8 +605,8 @@ Skeleton* AssetManager::LoadSkeleton(string filename)
 		throw runtime_error("Failed to open " + file_path);
 	}
 
-	_skeletons->push_back(new Skeleton);
-	Skeleton* skeleton = _skeletons->back();
+	Skeleton* skeleton = new Skeleton;
+	_skeletons->push_back(skeleton);
 
 	SkeletonHeader header;
 	_infile->read((char*)&header, sizeof(SkeletonHeader));

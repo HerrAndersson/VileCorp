@@ -135,6 +135,11 @@ RenderObject * GameObject::GetRenderObject() const
 	return _renderObject;
 }
 
+Animation * GameObject::GetAnimation() const
+{
+	return _animation;
+}
+
 void GameObject::SetPickUpState(PickUpState state)
 {
 	_pickUpState = state;

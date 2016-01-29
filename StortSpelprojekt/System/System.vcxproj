@@ -96,8 +96,11 @@
     </Link>
     <CustomBuildStep>
       <Command>robocopy "C:\%HOMEPATH%\Google Drive\Stort spelprojekt\Assets" "$(OutDir)Assets" /MIR /Z /XA:H /W:1 /R:1 /V
+
 robocopy "$(SolutionDir)Renderer\Shaders" "$(OutDir)Assets\Shaders" *.hlsl /MIR /Z /XA:H /W:1 /R:1 /V
+
 robocopy "$(SolutionDir)Assets" "$(OutDir)Assets" *.json /E /Z /XA:H /W:1 /R:1 /V
+
 if errorlevel 1 exit 0 else exit %errorlevel%</Command>
     </CustomBuildStep>
     <CustomBuildStep>
@@ -116,8 +119,11 @@ if errorlevel 1 exit 0 else exit %errorlevel%</Command>
     </Link>
     <CustomBuildStep>
       <Command>robocopy "C:\%HOMEPATH%\Google Drive\Stort spelprojekt\Assets" "$(OutDir)Assets" /MIR /Z /XA:H /W:1 /R:1 /V
+
 robocopy "$(SolutionDir)Renderer\Shaders" "$(OutDir)Assets\Shaders" *.hlsl /MIR /Z /XA:H /W:1 /R:1 /V
+
 robocopy "$(SolutionDir)Assets" "$(OutDir)Assets" *.json /E /Z /XA:H /W:1 /R:1 /V
+
 if errorlevel 1 exit 0 else exit %errorlevel%</Command>
     </CustomBuildStep>
     <CustomBuildStep>
@@ -140,8 +146,11 @@ if errorlevel 1 exit 0 else exit %errorlevel%</Command>
     </Link>
     <CustomBuildStep>
       <Command>robocopy "C:\%HOMEPATH%\Google Drive\Stort spelprojekt\Assets" "$(OutDir)Assets" /MIR /Z /XA:H /W:1 /R:1 /V
+
 robocopy "$(SolutionDir)Renderer\Shaders" "$(OutDir)Assets\Shaders" *.hlsl /MIR /Z /XA:H /W:1 /R:1 /V
+
 robocopy "$(SolutionDir)Assets" "$(OutDir)Assets" *.json /E /Z /XA:H /W:1 /R:1 /V
+
 if errorlevel 1 exit 0 else exit %errorlevel%</Command>
     </CustomBuildStep>
     <CustomBuildStep>
@@ -163,8 +172,11 @@ if errorlevel 1 exit 0 else exit %errorlevel%</Command>
     </Link>
     <CustomBuildStep>
       <Command>robocopy "C:\%HOMEPATH%\Google Drive\Stort spelprojekt\Assets" "$(OutDir)Assets" /MIR /Z /XA:H /W:1 /R:1 /V
+
 robocopy "$(SolutionDir)Renderer\Shaders" "$(OutDir)Assets\Shaders" *.hlsl /MIR /Z /XA:H /W:1 /R:1 /V
+
 robocopy "$(SolutionDir)Assets" "$(OutDir)Assets" *.json /E /Z /XA:H /W:1 /R:1 /V
+
 if errorlevel 1 exit 0 else exit %errorlevel%</Command>
     </CustomBuildStep>
     <CustomBuildStep>

@@ -69,7 +69,7 @@ public:
 	PickUpState GetPickUpState()const;
 
 	//Update object gamelogic
-	void virtual Update() = 0;
+	void virtual Update(float deltaTime) = 0;
 
 	void virtual Release() = 0;
 

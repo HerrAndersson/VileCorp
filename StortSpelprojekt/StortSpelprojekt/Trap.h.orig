@@ -4,8 +4,11 @@
 class Trap : public GameObject
 {
 private:
+<<<<<<< HEAD
 	int _cost;
+=======
 	bool _isActive;
+>>>>>>> Developer
 public:
 	Trap();
 	Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject * renderObject,

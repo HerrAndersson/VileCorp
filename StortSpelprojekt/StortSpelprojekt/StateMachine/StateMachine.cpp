@@ -28,21 +28,16 @@ StateMachine::~StateMachine()
 	}
 }
 
-void StateMachine::Update(float deltaTime)
+bool StateMachine::Update(float deltaTime)
 {
-	switch (_currentState)
-	{
-	case EXITSTATE:
-	{
-		break;
-	}
-	default:
-	{
-		_baseStates[_currentState]->Update(deltaTime);
-		break;
-	}
-	}
+	_baseStates[_currentState]->Update(deltaTime);
 	ProcessStateRequest();
+	
+	if (_currentState == EXITSTATE)
+	{
+		return false;
+	}
+	return true;
 }
 
 void StateMachine::ProcessStateRequest()
@@ -52,7 +47,10 @@ void StateMachine::ProcessStateRequest()
 	{
 		_baseStates[_currentState]->OnStateExit();
 		_currentState = _baseStates[_currentState]->GetNewStateRequest();
-		_baseStates[_currentState]->OnStateEnter();
+		if (_currentState != State::EXITSTATE)
+		{
+			_baseStates[_currentState]->OnStateEnter();
+		}
 	}
 }
 

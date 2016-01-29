@@ -5,7 +5,7 @@ LevelEditState::LevelEditState(System::Controls* controls, ObjectHandler* object
 {
 	_controls = controls;
 	_objectHandler = objectHandler;
-	
+
 	_camera = camera;
 	_pickingDevice = pickingDevice;
 }
@@ -15,13 +15,25 @@ LevelEditState::~LevelEditState()
 
 void LevelEditState::Update(float deltaTime)
 {
-	HandleInput();
+	if (_controls->IsFunctionKeyDown("MAP_EDIT:PLACEMENTFLAG"))
+	{
+		_baseEdit.ChangePlaceState();
+	}
 	_baseEdit.Update(deltaTime);
+	HandleInput();
+	HandleButtons();
+	_baseEdit.DragAndDrop();
+
+	_baseEdit.DragAndPlace(_toPlace._type, _toPlace._name);
 }
 
 void LevelEditState::OnStateEnter()
 {
 	_baseEdit.Initialize(_objectHandler, _controls, _pickingDevice, _camera);
+	_objectHandler->DisableSpawnPoints();
+	_uiTree.GetNode("TrapLeaf")->SetHidden(true);
+	_uiTree.GetNode("UnitLeaf")->SetHidden(true);
+	_uiTree.GetNode("DecLeaf")->SetHidden(true);
 }
 
 void LevelEditState::OnStateExit()
@@ -31,45 +43,70 @@ void LevelEditState::OnStateExit()
 
 void LevelEditState::HandleInput()
 {
-	int maxObject = _objectHandler->GetObjectCount();
-	int selectedLevel = 1;
-
-	////Scale Objects
-	///*
-	//"SCALE_MARKER_LEFT": [""].
-	//*/
-	if (_baseEdit.GetSelectedObject() != nullptr)
-	{
-		if (_controls->IsFunctionKeyDown("MAP_EDIT:SCALE_MARKER_XPOSITIVE"))
-		{
-			XMFLOAT3 tempPos = _baseEdit.GetSelectedObject()->GetScale();
-			_baseEdit.GetSelectedObject()->SetScale(XMFLOAT3(tempPos.x + 1, tempPos.y, tempPos.z));
-		}
-
-		if (_controls->IsFunctionKeyDown("MAP_EDIT:SCALE_MARKER_XNEGATIVE"))
-		{
-			XMFLOAT3 tempPos = _baseEdit.GetSelectedObject()->GetScale();
-			_baseEdit.GetSelectedObject()->SetScale(XMFLOAT3(tempPos.x - 1, tempPos.y, tempPos.z));
-		}
-
-		if (_controls->IsFunctionKeyDown("MAP_EDIT:SCALE_MARKER_YPOSITIVE"))
-		{
-			XMFLOAT3 tempPos = _baseEdit.GetSelectedObject()->GetScale();
-			_baseEdit.GetSelectedObject()->SetScale(XMFLOAT3(tempPos.x, tempPos.y, tempPos.z + 1));
-		}
-
-		if (_controls->IsFunctionKeyDown("MAP_EDIT:SCALE_MARKER_YNEGATIVE"))
-		{
-			XMFLOAT3 tempPos = _baseEdit.GetSelectedObject()->GetScale();
-			_baseEdit.GetSelectedObject()->SetScale(XMFLOAT3(tempPos.x, tempPos.y, tempPos.z - 1));
-		}
-	}
-
 	//Press C to init new level
 	if (_controls->IsFunctionKeyDown("MAP_EDIT:NEWLEVEL"))
 	{
 		InitNewLevel();
 	}
+}
+
+void LevelEditState::HandleButtons()
+{
+	System::MouseCoord coord = _controls->GetMouseCoord();
+	if (_uiTree.IsButtonColliding("Traps", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("PLACEMENT:CLICK"))
+	{
+		_uiTree.GetNode("TrapLeaf")->SetHidden(false);
+		_uiTree.GetNode("UnitLeaf")->SetHidden(true);
+		_uiTree.GetNode("DecLeaf")->SetHidden(true);
+
+		_trapButtonClick = true;
+		_unitButtonClick = false;
+		_decButtonClick = false;
+
+		// Temp, should be replaced with blueprint
+		_toPlace._type = TRAP;
+		_toPlace._name = "trap_proto";
+	}
+
+	if (_uiTree.IsButtonColliding("Units", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("PLACEMENT:CLICK"))
+	{
+		_uiTree.GetNode("UnitLeaf")->SetHidden(false);
+		_uiTree.GetNode("TrapLeaf")->SetHidden(true);
+		_uiTree.GetNode("DecLeaf")->SetHidden(true);
+
+		_trapButtonClick = false;
+		_unitButtonClick = true;
+		_decButtonClick = false;
+
+		// Temp, should be replaced with blueprint
+		_toPlace._type = GUARD;
+		_toPlace._name = "guard_proto";
+	}
+
+
+	if (_uiTree.IsButtonColliding("Decorations", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("PLACEMENT:CLICK"))
+	{
+		_uiTree.GetNode("DecLeaf")->SetHidden(false);
+		_uiTree.GetNode("TrapLeaf")->SetHidden(true);
+		_uiTree.GetNode("UnitLeaf")->SetHidden(true);
+
+		_trapButtonClick = false;
+		_unitButtonClick = true;
+		_decButtonClick = false;
+
+		// Not really implemented
+	}
+
+	if (_controls->IsFunctionKeyDown("PLACEMENT:CLICK") && _trapButtonClick == false && _unitButtonClick == false && _decButtonClick == false)
+	{
+		_uiTree.GetNode("DecLeaf")->SetHidden(true);
+		_uiTree.GetNode("TrapLeaf")->SetHidden(true);
+		_uiTree.GetNode("UnitLeaf")->SetHidden(true);
+	}
+
+	_trapButtonClick = false;
+	_unitButtonClick = false;
+	_decButtonClick = false;
 }
 
 void LevelEditState::InitNewLevel()

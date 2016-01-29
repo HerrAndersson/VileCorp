@@ -43,7 +43,6 @@ private:
 	bool _isDragAndPlaceMode;
 	bool _isPlace;
 
-	void ChangePlaceState();
 	void HandleInput();
 	void LoadLevel(int levelID);
 
@@ -60,7 +59,8 @@ public:
 	bool TypeOn(Type type);
 	void DragAndDrop(Type type);
 	void DragAndDrop();
-	void DragAndPlace();
+	void DragAndPlace(Type type, std::string objectName);
+	void ChangePlaceState();
 
 
 	void Update(float deltaTime);

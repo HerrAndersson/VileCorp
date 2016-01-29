@@ -2,6 +2,19 @@
 #include <cereal/cereal.hpp>
 #include <cereal\types\vector.hpp>
 
+struct LevelLoad
+{
+	int level = 1;
+	int editLevel = 1;
+
+	template<class A>
+	void serialize(A& a)
+	{
+		a((CEREAL_NVP(level)),
+			(CEREAL_NVP(editLevel)));
+	}
+};
+
 struct PlayerInfo
 {
 	std::string _name = "Jonas";
@@ -135,15 +148,6 @@ struct GameObjectTrapInfo : GameObjectBaseInfo
 	}
 };
 
-struct GameObjectTriggerInfo : GameObjectBaseInfo
-{
-	template<class A>
-	void serialize(A& a)
-	{
-		a(CEREAL_NVP(_name));
-	}
-};
-
 struct GameObjectGuardInfo : GameObjectBaseInfo
 {
 	int _cost = 10;
@@ -197,7 +201,6 @@ struct GameObjectInfo
 		_objects[LOOT] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectLootInfo*>;
 		_objects[SPAWN] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectSpawnInfo*>;
 		_objects[TRAP] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectTrapInfo*>;
-		_objects[TRIGGER] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectTriggerInfo*>;
 		_objects[GUARD] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectGuardInfo*>;
 		_objects[ENEMY] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectEnemyInfo*>;
 	}
@@ -223,10 +226,6 @@ struct GameObjectInfo
 		{
 			delete (GameObjectTrapInfo*)obj;
 		}
-		for (GameObjectBaseInfo* obj : *_objects[TRIGGER])
-		{
-			delete (GameObjectTriggerInfo*)obj;
-		}
 		for (GameObjectBaseInfo* obj : *_objects[GUARD])
 		{
 			delete (GameObjectGuardInfo*)obj;
@@ -240,7 +239,6 @@ struct GameObjectInfo
 		delete _objects[LOOT];
 		delete _objects[SPAWN];
 		delete _objects[TRAP];
-		delete _objects[TRIGGER];
 		delete _objects[GUARD];
 		delete _objects[ENEMY];
 	}
@@ -284,14 +282,6 @@ struct GameObjectInfo
 			_objects[TRAP]->push_back((GameObjectBaseInfo*)new GameObjectTrapInfo());
 		}
 		return (GameObjectTrapInfo*)_objects[TRAP]->at(i);
-	}
-	GameObjectTriggerInfo* Triggers(unsigned i)
-	{
-		if (_objects[TRIGGER]->size() < i + 1)
-		{
-			_objects[TRIGGER]->push_back((GameObjectBaseInfo*)new GameObjectTriggerInfo());
-		}
-		return (GameObjectTriggerInfo*)_objects[TRIGGER]->at(i);
 	}
 	GameObjectGuardInfo* Guards(unsigned i)
 	{

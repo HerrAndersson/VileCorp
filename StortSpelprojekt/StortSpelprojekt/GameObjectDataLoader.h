@@ -17,7 +17,6 @@ public:
 		{ LOOT, "Loot/" },
 		{ SPAWN, "Spawns/" },
 		{ TRAP, "Traps/" },
-		{ TRIGGER, "Triggers/" },
 		{ GUARD, "Guards/" },
 		{ ENEMY, "Enemies/" },
 	};
@@ -58,9 +57,6 @@ inline bool GameObjectDataLoader::LoadGameObjectInfo(GameObjectInfo* data)
 			case TRAP:
 				System::loadJSON(data->Traps(i), filenames[i]);
 				break;
-			case TRIGGER:
-				System::loadJSON(data->Triggers(i), filenames[i]);
-				break;
 			case GUARD:
 				System::loadJSON(data->Guards(i), filenames[i]);
 				break;
@@ -95,10 +91,6 @@ inline void GameObjectDataLoader::WriteSampleGameObjects()
 	{
 		GameObjectTrapInfo sample;
 		System::saveJSON(&sample, "Assets/Gameobjects/Traps/sample.json", "sample");
-	}
-	{
-		GameObjectTriggerInfo sample;
-		System::saveJSON(&sample, "Assets/Gameobjects/Triggers/sample.json", "sample");
 	}
 	{
 		GameObjectGuardInfo sample;

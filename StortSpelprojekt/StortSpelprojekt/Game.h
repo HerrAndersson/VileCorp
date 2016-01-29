@@ -35,19 +35,23 @@ private:
 	PickingDevice*				_pickingDevice;
 	PlayerInfo					_playerInfo;
 	SettingInfo					_gameSettings;
+	System::WindowSettings		_windowSettings;
 	
+	bool						_hasFocus;
+	
+	bool						_enemiesHasSpawned;
 
 	//Resizing window, directx resources, camera
 	void ResizeResources(System::WindowSettings settings);
-	void Update(float deltaTime);
+	bool Update(float deltaTime);
 	void Render();
 	void CheckSettings();
 
-
-
 	//TODO: TEMP! Make this pretty
 	std::vector<Renderer::Spotlight*> _spotlights;
-	
+
+	std::vector<GameObject*> _enemies;
+	std::vector<GameObject*> _loot;
 
 public:
 	Game(HINSTANCE hInstance, int nCmdShow);

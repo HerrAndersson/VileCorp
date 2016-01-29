@@ -27,7 +27,8 @@
     
   ],
   "guards": [
-    "guard-24.bin"
+    "guard-24.bin",
+	"guard-24.bin"
 
   ],
   "enemies": [

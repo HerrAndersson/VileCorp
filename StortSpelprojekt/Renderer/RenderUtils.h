@@ -5,7 +5,7 @@
 #include <DirectXMath.h>
 #include <map>
 
-enum Type { FLOOR, WALL, LOOT, SPAWN, TRAP, TRIGGER, GUARD, ENEMY, NR_OF_TYPES/*Has to be last*/ };
+enum Type { FLOOR, WALL, LOOT, SPAWN, TRAP, GUARD, ENEMY, NR_OF_TYPES/*Has to be last*/ };
 
 struct Bone
 {
@@ -56,11 +56,13 @@ struct Vertex
 
 struct PointLight
 {
+	unsigned char _bone;
 	float _pos[3], _col[3], _intensity;
 };
 
 struct SpotLight
 {
+	unsigned char _bone;
 	float _pos[3], _col[3], _intensity, _angle, _direction[3];
 };
 

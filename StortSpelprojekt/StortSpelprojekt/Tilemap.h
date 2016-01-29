@@ -10,8 +10,8 @@ class Tilemap
 private:
 	struct Tile
 	{
-		static const int OBJECT_CAPACITY = 5;
-		GameObject* _objectsOnTile[OBJECT_CAPACITY];					//0 = floor or wall, 1 = 1st unit, 2 = 2nd unit, 3 = trap/thief objectives, 4 = trigger
+		static const int OBJECT_CAPACITY = 4;
+		GameObject* _objectsOnTile[OBJECT_CAPACITY];					//0 = floor or wall, 1 = enemy, 2 = guard, 3 = trap or thief objectives or spawnpoint
 		bool _isVisible;
 		Tile()
 		{
@@ -53,18 +53,21 @@ public:
 	int GetHeight() const;
 	int GetWidth() const;
 
-	GameObject* GetObjectOnTile(int x, int z, int index) const; // More thinking
 	GameObject* GetObjectOnTile(int x, int z, Type type) const;
+
 	std::vector<GameObject*> GetAllObjectsOnTile(AI::Vec2D tileCoords) const;
 	bool IsValid(int x, int z) const;
-	bool IsTileEmpty(int x, int z)const;
+	bool IsPlacable(int x, int z, Type type) const;
+	bool IsArchitectureOnTile(int x, int z)const;
 	bool IsWallOnTile(int x, int z)const;
+	bool IsFloorOnTile(int x, int z)const;
 	int UnitsOnTile(int x, int z)const;
-	bool isGuardOnTile(int x, int z)const;
-	bool isEnemyOnTile(int x, int z)const;
+	bool IsGuardOnTile(int x, int z)const;
+	bool IsEnemyOnTile(int x, int z)const;
 	bool IsTrapOnTile(int x, int z)const;
-	bool IsTriggerOnTile(int x, int z) const;
 	bool IsObjectiveOnTile(int x, int z)const;
+	bool IsSpawnOnTile(int x, int z)const;
 	bool IsTypeOnTile(int x, int z, Type type)const;
 	bool IsTileVisible(int x, int z) const;
+	bool IsTileEmpty(int x, int z) const;
 };
