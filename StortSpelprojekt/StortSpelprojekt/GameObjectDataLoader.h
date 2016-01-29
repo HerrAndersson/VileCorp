@@ -17,7 +17,7 @@ public:
 		{ LOOT, "Loot/" },
 		{ SPAWN, "Spawns/" },
 		{ TRAP, "Traps/" },
-		{ TRIGGER, "Triggers/" },
+		//{ TRIGGER, "Triggers/" },
 		{ GUARD, "Guards/" },
 		{ ENEMY, "Enemies/" },
 	};
@@ -58,9 +58,9 @@ inline bool GameObjectDataLoader::LoadGameObjectInfo(GameObjectInfo* data)
 			case TRAP:
 				System::loadJSON(data->Traps(i), filenames[i]);
 				break;
-			case TRIGGER:
+		/*	case TRIGGER:
 				System::loadJSON(data->Triggers(i), filenames[i]);
-				break;
+				break;*/
 			case GUARD:
 				System::loadJSON(data->Guards(i), filenames[i]);
 				break;

@@ -54,9 +54,9 @@ void SecurityCamera::CheckVisibleTiles()
 	for (size_t i = 0; i < _visionCone->GetNrOfVisibleTiles(); i++)
 	{
 		tile = _visionCone->GetVisibleTile(i);
-		if (_tileMap->IsEnemyOnTile(tile._x, tile._y))
+		if (_tileMap->IsEnemyOnTile(tile))
 		{
-
+			_tileMap->GetObjectOnTile(tile, ENEMY)->SetVisibility(true);
 		}
 	}
 }

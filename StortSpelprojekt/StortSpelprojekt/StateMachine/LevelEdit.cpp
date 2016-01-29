@@ -146,7 +146,7 @@ void LevelEdit::DragAndDrop()
 		_objects = _objectHandler->GetTileMap()->GetAllObjectsOnTile(tilePos);
 		for (int i = 1; i < _objects.size(); i++)
 		{
-			if (_objects[i]->GetType() == GUARD || _objects[i]->GetType() == TRIGGER || _objects[i]->GetType() == TRAP)
+			if (_objects[i]->GetType() == GUARD || _objects[i]->GetType() == TRAP)
 			{
 				// Get object on tile
 				_selectedObject = _objects[i];

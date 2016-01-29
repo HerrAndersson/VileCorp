@@ -91,7 +91,7 @@ struct TilesetHandler
 		}
 		else if (!strcmp("triggers", str))
 		{
-			_cur = &_tileset->_objects[TRIGGER];
+			//_cur = &_tileset->_objects[TRIGGER];				//Triggers are gone
 		}
 		else if (!strcmp("guards", str))
 		{

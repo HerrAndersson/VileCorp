@@ -146,7 +146,7 @@ void Unit::CheckVisibleTiles()
 		//{
 		//	_aStar->SetTileCost(_visibleTiles[i], 10);
 		//}
-		if (_tileMap->UnitsOnTile(visibleTiles[i]._x, visibleTiles[i]._y) > 0 && !(visibleTiles[i] == _goalTilePosition || visibleTiles[i] == _tilePosition))	//Unit finds another unit
+		if (_tileMap->UnitsOnTile(visibleTiles[i]) > 0 && !(visibleTiles[i] == _goalTilePosition || visibleTiles[i] == _tilePosition))	//Unit finds another unit
 		{
 			int nrOfUnits = _tileMap->UnitsOnTile(visibleTiles[i]);
 			GameObject* unit = _tileMap->GetObjectOnTile(visibleTiles[i], ENEMY);

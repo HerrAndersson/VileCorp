@@ -148,10 +148,10 @@ void VisionCone::ScanOctant(int depth, int octant, double &startSlope, double en
 		if (GetVisDistance(x, y, unitPosX, unitPosY) <= visRangeSqrd)
 		{
 			//Is there a wall on current tile
-			if (_tileMap->IsWallOnTile(x, y))
+			if (_tileMap->IsWallOnTile({x, y}))
 			{
 				//If previous tile was in range and not a wall
-				if (_tileMap->IsValid(x, y) && !_tileMap->IsWallOnTile(x + prevTileVec._x, y + prevTileVec._y))
+				if (_tileMap->IsValid({x, y}) && !_tileMap->IsWallOnTile({x + prevTileVec._x, y + prevTileVec._y}))
 				{
 					//Recurse and adjust depth with new end slope
 					ScanOctant(depth + 1, octant, startSlope, (endSlopeCompOffset)* GetSlope(x + (endCornerVec._x * 0.5), y + (endCornerVec._y * 0.5), unitPosX, unitPosY, (!rowByRow)), pos, dir);
@@ -159,12 +159,12 @@ void VisionCone::ScanOctant(int depth, int octant, double &startSlope, double en
 			}
 			else
 			{
-				if ((_tileMap->IsWallOnTile(x + (prevTileVec._x), y + (prevTileVec._y))))
+				if ((_tileMap->IsWallOnTile({x + (prevTileVec._x), y + (prevTileVec._y)})))
 				{
 					startSlope = (startSlopeOffset)* GetSlope(x + (startCornerVec._x * 0.5), y + (startCornerVec._y * 0.5), unitPosX, unitPosY, (!rowByRow));
 				}
 				//Add current tile to visible
-				_visibleTiles[_nrOfVisibleTiles] = AI::Vec2D(x, y);
+				_visibleTiles[_nrOfVisibleTiles] = {x, y};
 				_nrOfVisibleTiles++;
 			}
 		}
@@ -190,7 +190,7 @@ void VisionCone::ScanOctant(int depth, int octant, double &startSlope, double en
 	y = min(max(y, 0), _tileMap->GetHeight() - 1);	//Set y within tile range if it's outside
 
 													//Recurse and run if depth is within range
-	if (depth < _radius && (!_tileMap->IsWallOnTile(x, y)))
+	if (depth < _radius && (!_tileMap->IsWallOnTile({x, y})))
 	{
 		ScanOctant(depth + 1, octant, startSlope, endSlope, pos, dir);
 	}
