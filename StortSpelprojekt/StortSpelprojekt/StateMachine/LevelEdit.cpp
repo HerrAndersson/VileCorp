@@ -163,7 +163,7 @@ void LevelEdit::DragAndDrop()
 		p.z = tilePos._y;
 
 		_selectedObject->SetPosition(p);
-		_objectHandler->GetTileMap()->AddObjectToTile(p.x, p.z, _selectedObject);
+		_objectHandler->GetTileMap()->AddObjectToTile(tilePos, _selectedObject);
 	}
 	if (_controls->IsFunctionKeyUp("PLACEMENT:SELECT"))
 	{

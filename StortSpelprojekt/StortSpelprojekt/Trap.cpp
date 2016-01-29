@@ -67,7 +67,7 @@ void Trap::CalculateLineAOE(int length, AI::Vec2D direction)
 	_areaOfEffect = new AI::Vec2D[_areaOfEffectArrayCapacity];
 	AI::Vec2D pos = _tilePosition;
 
-	for (int i = 0; i < length && !_tileMap->IsWallOnTile(pos._x,pos._y); i++)
+	for (int i = 0; i < length && !_tileMap->IsWallOnTile(pos); i++)
 	{
 		_areaOfEffect[_nrOfAOETiles++] = pos;
 		pos += direction;
@@ -121,7 +121,7 @@ bool Trap::isUnblocked( AI::Vec2D pos)
 	bool result = true;
 	for (int i = 0; i < lineLength && result; i++)
 	{
-		if (_tileMap->IsWallOnTile(_tilePosition._x + line[i]._x, _tilePosition._y + line[i]._y))
+		if (_tileMap->IsWallOnTile(_tilePosition + line[i]))
 		{
 			result = false;
 		}
@@ -250,9 +250,9 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	/*for (int i = 0; i < _nrOfAOETiles; i++)
 	{
 		AI::Vec2D pos = _areaOfEffect[i];
-		if (_tileMap->IsFloorOnTile(_areaOfEffect[i]._x, _areaOfEffect[i]._y))
+		if (_tileMap->IsFloorOnTile(_areaOfEffect[i]))
 		{
-			_tileMap->GetObjectOnTile(_areaOfEffect[i]._x, _areaOfEffect[i]._y, FLOOR)->AddColorOffset({0,0,1});
+			_tileMap->GetObjectOnTile(_areaOfEffect[i], FLOOR)->AddColorOffset({0,0,1});
 		}
 	}*/
 }
@@ -279,11 +279,11 @@ void Trap::Activate()
 {
 	for (int i = 0; i < _nrOfAOETiles; i++)
 	{
-		if (_tileMap->IsEnemyOnTile(_areaOfEffect[i]._x, _areaOfEffect[i]._y))
+		if (_tileMap->IsEnemyOnTile(_areaOfEffect[i]))
 		{
 			static_cast<Unit*>(_tileMap->GetObjectOnTile(_areaOfEffect[i], ENEMY))->TakeDamage(_damage);
 		}
-		if (_tileMap->IsGuardOnTile(_areaOfEffect[i]._x, _areaOfEffect[i]._y))
+		if (_tileMap->IsGuardOnTile(_areaOfEffect[i]))
 		{
 			static_cast<Unit*>(_tileMap->GetObjectOnTile(_areaOfEffect[i], GUARD))->TakeDamage(_damage);
 		}
@@ -296,7 +296,7 @@ void Trap::Update(float deltaTime)
 	bool triggered = false;
 	for (int i = 0; i < _tileSize && !triggered; i++)
 	{
-		if (_tileMap->IsEnemyOnTile(_occupiedTiles[i]._x, _occupiedTiles[i]._y))
+		if (_tileMap->IsEnemyOnTile(_occupiedTiles[i]))
 		{
 			triggered = true;
 		}

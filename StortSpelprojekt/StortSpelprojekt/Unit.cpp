@@ -148,13 +148,13 @@ void Unit::CheckVisibleTiles()
 		//}
 		if (_tileMap->UnitsOnTile(visibleTiles[i]._x, visibleTiles[i]._y) > 0 && !(visibleTiles[i] == _goalTilePosition || visibleTiles[i] == _tilePosition))	//Unit finds another unit
 		{
-			int nrOfUnits = _tileMap->UnitsOnTile(visibleTiles[i]._x, visibleTiles[i]._y);
-			GameObject* unit = _tileMap->GetObjectOnTile(visibleTiles[i]._x, visibleTiles[i]._y, ENEMY);
+			int nrOfUnits = _tileMap->UnitsOnTile(visibleTiles[i]);
+			GameObject* unit = _tileMap->GetObjectOnTile(visibleTiles[i], ENEMY);
 			if (unit == nullptr)
 			{
-				unit = _tileMap->GetObjectOnTile(visibleTiles[i]._x, visibleTiles[i]._y, GUARD);
+				unit = _tileMap->GetObjectOnTile(visibleTiles[i], GUARD);
 			}
-			EvaluateTile(unit);				//
+			EvaluateTile(unit);
 		}
 	}
 }
@@ -166,7 +166,7 @@ void Unit::CheckAllTiles()
 		for (int j = 0; j < _tileMap->GetHeight(); j++)
 		{
 			//Handle walls
-			if (_tileMap->IsWallOnTile(i, j))
+			if (_tileMap->IsWallOnTile(AI::Vec2D(i, j)))
 			{
 				_aStar->SetTileCost({ i, j }, -1);
 			}
@@ -181,14 +181,14 @@ void Unit::CheckAllTiles()
 		for (int j = 0; j < _tileMap->GetHeight(); j++)
 		{
 			//Handle objectives
-			if (_tileMap->IsObjectiveOnTile(i, j))
+			if (_tileMap->IsObjectiveOnTile(AI::Vec2D(i, j)))
 			{
 				_aStar->SetTileCost({ i, j }, 1);
-				EvaluateTile(_tileMap->GetObjectOnTile(i, j, LOOT));
+				EvaluateTile(_tileMap->GetObjectOnTile(AI::Vec2D(i, j), LOOT));
 			}
-			else if (_tileMap->IsTypeOnTile(i, j, SPAWN))
+			else if (_tileMap->IsTypeOnTile(AI::Vec2D(i, j), SPAWN))
 			{
-				EvaluateTile(_tileMap->GetObjectOnTile(i, j, SPAWN));
+				EvaluateTile(_tileMap->GetObjectOnTile(AI::Vec2D(i, j), SPAWN));
 			}
 		}
 	}
@@ -201,7 +201,7 @@ Moves the goal and finds the path to the new goal
 void Unit::SetGoal(AI::Vec2D goal)
 {
 	_goalTilePosition = goal;
-	_objective = _tileMap->GetObjectOnTile(goal._x, goal._y, FLOOR);		//Note: Make sure walled tiles aren't valid goals
+	_objective = _tileMap->GetObjectOnTile(goal, FLOOR);		//Note: Make sure walled tiles aren't valid goals
 	//_objective->SetColorOffset({5,0,0});
 	_aStar->CleanMap();
 	_aStar->SetStartPosition(_tilePosition);
@@ -241,9 +241,9 @@ void Unit::Move()
 	//}
 	if (_isMoving)
 	{
-		_tileMap->GetObjectOnTile(_tilePosition._x, _tilePosition._y, FLOOR)->SetColorOffset({0,0,0});
+		_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,0});
 		_tilePosition += _direction;
-		_tileMap->GetObjectOnTile(_tilePosition._x, _tilePosition._y, FLOOR)->SetColorOffset({0,4,0});
+		_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,4,0});
 	}
 	if (_objective != nullptr && _objective->GetPickUpState() != ONTILE)			//Check that no one took your objective
 	{
