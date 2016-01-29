@@ -1,5 +1,27 @@
 #include "LightCulling.h"
 
+LightCulling::LightCulling()
+{
+	_tilemap = nullptr;
+	_quadTreeRoot = nullptr;
+}
+
+LightCulling::LightCulling(Tilemap* tilemap)
+{
+	_tilemap = tilemap;
+	_quadTreeRoot = new QuadTree(Vec2(), Vec2((float)_tilemap->GetWidth(), (float)_tilemap->GetHeight()));
+
+	float finalQuadSize = 2 * 2;
+	int nrOfDivides = (int)std::ceil(std::log2((_tilemap->GetWidth()*_tilemap->GetHeight()) / finalQuadSize) * 0.5);
+
+	_quadTreeRoot->Divide(nrOfDivides);
+}
+
+LightCulling::~LightCulling()
+{
+	_tilemap = nullptr;
+	delete _quadTreeRoot;
+}
 Triangle LightCulling::TransformSpotlight(Renderer::Spotlight* spotlight)
 {
 	//Transforming the spotlight to a triangle
@@ -45,31 +67,6 @@ Ray LightCulling::CalculateFrustumEdge(float x, float y, System::Camera* camera)
 	Ray ray = Ray(Vec3(camera->GetPosition()), (Vec3(mouseViewPos) - Vec3(camera->GetPosition())));
 
 	return ray;
-}
-
-
-LightCulling::LightCulling()
-{
-	_tilemap = nullptr;
-	_quadTreeRoot = nullptr;
-}
-
-LightCulling::LightCulling(Tilemap* tilemap)
-{
-	_tilemap = tilemap;
-	_quadTreeRoot = new QuadTree(Vec2(), Vec2((float)_tilemap->GetWidth(), (float)_tilemap->GetHeight()));
-
-	float finalQuadSize = 2 * 2;
-	int nrOfDivides = (int)std::ceil(std::log2((_tilemap->GetWidth()*_tilemap->GetHeight()) / finalQuadSize) * 0.5);
-
-	_quadTreeRoot->Divide(nrOfDivides);
-}
-
-LightCulling::~LightCulling()
-{
-	_tilemap = nullptr;
-	_quadTreeRoot->Release();
-	delete _quadTreeRoot;
 }
 
 std::vector<std::vector<GameObject*>> LightCulling::GetObjectsInSpotlight(Renderer::Spotlight* spotlight)

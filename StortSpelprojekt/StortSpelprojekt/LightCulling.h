@@ -11,6 +11,7 @@ Handles both culling for lightning purposes and camera frustum purposes
 class LightCulling
 {
 private:
+
 	QuadTree* _quadTreeRoot;
 	Tilemap* _tilemap;
 
@@ -22,6 +23,7 @@ private:
 	Ray CalculateFrustumEdge(float x, float y, System::Camera* camera);
 
 public:
+
 	LightCulling();
 	LightCulling(Tilemap* tilemap);
 	~LightCulling();

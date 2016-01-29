@@ -11,7 +11,13 @@ QuadTree::QuadTree(Vec2 minPoint, Vec2 maxPoint)
 }
 QuadTree::~QuadTree()
 {
-
+	for (int i = 0; i < 4; i++)
+	{
+		if (_children[i] != nullptr)
+		{
+			delete _children[i];
+		}
+	}
 }
 
 void QuadTree::Divide(int nrOfDivisions)
@@ -90,17 +96,5 @@ void QuadTree::GetSquares(Square& frustumSquare, std::vector<Square>&collectedSq
 				_children[i]->GetSquares(frustumSquare, collectedSquares);
 			}
 		}
-	}
-}
-
-void QuadTree::Release()
-{
-	for (int i = 0; i < 4; i++)
-	{
-		if (_children[i] != nullptr)
-		{
-			_children[i]->Release();
-		}
-		delete _children[i];
 	}
 }
