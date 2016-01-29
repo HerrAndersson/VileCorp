@@ -7,11 +7,12 @@ bool Tilemap::IsValid(int x, int z) const
 
 bool Tilemap::IsPlacable(int x, int z, Type type) const
 {
-	GameObject* result = nullptr;
+	bool placable = false;
 	if (IsValid(x, z))
 	{
 		if (!IsWallOnTile(x, z))
 		{
+			GameObject* result = nullptr;
 			switch (type)
 			{
 			case FLOOR:
@@ -32,17 +33,14 @@ bool Tilemap::IsPlacable(int x, int z, Type type) const
 			default:
 				break;
 			}
+			if (result == nullptr)
+			{
+				placable = true;
+			}
 		}
 	}
 
-	if (result == nullptr)
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	return placable;
 }
 
 Tilemap::Tilemap()
