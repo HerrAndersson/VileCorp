@@ -413,9 +413,6 @@ void BaseEdit::LoadLevel(int levelID)
 	ResetSelectedObj();
 	_objectHandler->LoadLevel(levelID);
 
-	_objectHandler->EnlargeTilemap(5);
-	//_objectHandler->MinimizeTileMap();
-
 	_tileMap = _objectHandler->GetTileMap();
 	_tilemapHeight = _tileMap->GetHeight();
 	_tilemapWidth = _tileMap->GetWidth();

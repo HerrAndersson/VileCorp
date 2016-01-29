@@ -34,11 +34,20 @@ void LevelEditState::OnStateEnter()
 	_uiTree.GetNode("TrapLeaf")->SetHidden(true);
 	_uiTree.GetNode("UnitLeaf")->SetHidden(true);
 	_uiTree.GetNode("DecLeaf")->SetHidden(true);
+
+	_objectHandler->EnlargeTilemap(50);
+
+	XMFLOAT3 campos;
+	campos.x = _objectHandler->GetTileMap()->GetWidth() / 2;
+	campos.y = 15;
+	campos.z = _objectHandler->GetTileMap()->GetHeight() / 2 - 10;
+	_camera->SetPosition(campos);
+
 }
 
 void LevelEditState::OnStateExit()
 {
-
+	_objectHandler->MinimizeTileMap();
 }
 
 void LevelEditState::HandleInput()
