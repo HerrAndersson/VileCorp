@@ -1,8 +1,5 @@
 #include "ObjectHandler.h"
 
-
-
-
 ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data)
 {
 	_idCount = 0;
@@ -50,23 +47,23 @@ bool ObjectHandler::Add(Type type, XMFLOAT3 position = XMFLOAT3(0.0f, 0.0f, 0.0f
 	case WALL:
 	case LOOT:
 		object = new Architecture(_idCount, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(type));
-		addedObject = _tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
+		addedObject = _tilemap->AddObjectToTile(AI::Vec2D(position.x, position.z), object);
 		break;
 	case SPAWN:
 		object = new SpawnPoint(_idCount, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(type), 80,2);
-		addedObject = _tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
+		addedObject = _tilemap->AddObjectToTile(AI::Vec2D(position.x, position.z), object);
 		break;
 	case ENEMY:
 		object = new Enemy(_idCount, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(type), _tilemap);
-		addedObject = _tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
+		addedObject = _tilemap->AddObjectToTile(AI::Vec2D(position.x, position.z), object);
 		break;
 	case GUARD:
 		object = new Guard(_idCount, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(type), _tilemap);
-		addedObject = _tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
+		addedObject = _tilemap->AddObjectToTile(AI::Vec2D(position.x, position.z), object);
 		break;
 	case TRAP:
 		object = new Trap(_idCount, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(type), _tilemap);
-		//addedObject = _tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
+		//addedObject = _tilemap->AddObjectToTile(AI::Vec2D(position.x, position.z), object);
 		break;
 	default:	
 		break;
@@ -91,7 +88,7 @@ bool ObjectHandler::Add(Type type, XMFLOAT3 position = XMFLOAT3(0.0f, 0.0f, 0.0f
 			for (int i = 0; i < trap->GetTileSize() && addedObject; i++)
 			{
 				_tilemap->AddObjectToTile(arr[i], object);
-				_tilemap->GetObjectOnTile(arr[i]._x, arr[i]._y, FLOOR)->AddColorOffset({2,0,0});
+				_tilemap->GetObjectOnTile(arr[i], FLOOR)->AddColorOffset({2,0,0});
 			}
 		}
 
@@ -291,7 +288,7 @@ bool ObjectHandler::LoadLevel(int lvlIndex)
 	if (result)
 	{
 		delete _tilemap;
-		_tilemap = new Tilemap(dimX, dimY);
+		_tilemap = new Tilemap(AI::Vec2D(dimX, dimY));
 
 		for (auto i : gameObjectData)
 		{
@@ -336,7 +333,7 @@ void ObjectHandler::Update(float deltaTime)
 			}
 			else if (g->GetPickUpState() == DROPPING)
 			{
-				_tilemap->AddObjectToTile(g->GetTilePosition()._x, g->GetTilePosition()._y, g);
+				_tilemap->AddObjectToTile(g->GetTilePosition(), g);
 				g->SetPickUpState(ONTILE);
 			}
 
@@ -367,18 +364,18 @@ void ObjectHandler::Update(float deltaTime)
 					float zOffset = abs(g->GetPosition().z - g->GetTilePosition()._y);
 					if (xOffset > 0.99 || zOffset > 0.99)																		 //If unit is on a new tile	
 					{
-						_tilemap->RemoveObjectFromTile(g->GetTilePosition()._x, g->GetTilePosition()._y, unit);
+						_tilemap->RemoveObjectFromTile(g->GetTilePosition(), unit);
 						unit->Move();
-						_tilemap->AddObjectToTile(g->GetTilePosition()._x, g->GetTilePosition()._y, unit);
+						_tilemap->AddObjectToTile(g->GetTilePosition(), unit);
 
 						/*if (_tilemap->IsTrapOnTile(g->GetTilePosition()._x, g->GetTilePosition()._y))
 						{
 							static_cast<Trap*>(_tilemap->GetObjectOnTile(g->GetTilePosition()._x, g->GetTilePosition()._y, TRAP))->Activate(unit);
 						}*/
 					}
-					if (unit->GetType() == GUARD && _tilemap->IsEnemyOnTile(g->GetTilePosition()._x, g->GetTilePosition()._y))
+					if (unit->GetType() == GUARD && _tilemap->IsEnemyOnTile(g->GetTilePosition()))
 					{
-						unit->act(_tilemap->GetObjectOnTile(g->GetTilePosition()._x, g->GetTilePosition()._y, ENEMY));
+						unit->act(_tilemap->GetObjectOnTile(g->GetTilePosition(), ENEMY));
 					}
 				}
 			}
@@ -387,7 +384,7 @@ void ObjectHandler::Update(float deltaTime)
 				if (static_cast<SpawnPoint*>(g)->isSpawning())
 				{
 					GameObject* object = new Enemy(_idCount, g->GetPosition(), g->GetRotation(), g->GetTilePosition(), ENEMY, _assetManager->GetRenderObject(ENEMY), _tilemap);
-					if (_tilemap->AddObjectToTile(g->GetTilePosition()._x, g->GetTilePosition()._y, object))
+					if (_tilemap->AddObjectToTile(g->GetTilePosition(), object))
 					{
 						_gameObjects[ENEMY].push_back(object);
 						_objectCount++;
