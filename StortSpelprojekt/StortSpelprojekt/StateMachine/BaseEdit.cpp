@@ -23,8 +23,6 @@ void BaseEdit::Initialize(ObjectHandler* objectHandler, System::Controls* contro
 	_camera = camera;
 	_aStar = new AI::AStar();
 
-
-	_lastSelected = nullptr;
 	_tileMultiplier = 1;
 
 	// Don´t let both be true
@@ -49,12 +47,6 @@ BaseEdit::~BaseEdit()
 GameObject* BaseEdit::GetSelectedObject()
 {
 	return _marker;
-}
-
-void BaseEdit::ResetSelectedObj()
-{
-	//_marker = nullptr;
-	_lastSelected = nullptr;
 }
 
 bool BaseEdit::Add(Type type, std::string name)
@@ -93,6 +85,8 @@ bool BaseEdit::TypeOn(Type type)
 
 void BaseEdit::DragAndDrop(Type type)
 {
+
+
 	if (_marker != nullptr && _isSelectionMode && _controls->IsFunctionKeyDown("MAP_EDIT:DRAG"))
 	{
 		AI::Vec2D pickedTile = _pickingDevice->pickTile(_controls->GetMouseCoord()._pos);
@@ -104,7 +98,6 @@ void BaseEdit::DragAndDrop(Type type)
 			if (objectOnTile == nullptr && _marker->GetType() == type)
 			{
 				// Update positions
-				//_marker->Translate(pos);
 				XMFLOAT3 p = XMFLOAT3(_marker->GetPosition());
 				p.x = pickedTile._x;
 				p.z = pickedTile._y;
@@ -117,6 +110,12 @@ void BaseEdit::DragAndDrop(Type type)
 					{
 						return;
 					}
+
+					if (_isPlace && !_marker->IsVisible())
+					{
+						_marker->SetVisibility(true);
+					}
+
 					// Remove from old tile
 					_objectHandler->GetTileMap()->RemoveObjectFromTile(_marker);
 
@@ -131,7 +130,12 @@ void BaseEdit::DragAndDrop(Type type)
 	{
 		if (_isSelectionMode)
 		{
+			if (_marker != nullptr && _isPlace && !_marker->IsVisible())
+			{
+				_objectHandler->Remove(_marker);
+			}
 			_marker = nullptr;
+			_isPlace = false;
 		}
 	}
 }
@@ -222,27 +226,69 @@ void BaseEdit::DragAndPlace(Type type, std::string objectName)
 	}
 }
 
+void BaseEdit::DragActivate(Type type, std::string objectName)
+{
+	_isPlace = false;
+	AI::Vec2D pickedTile = _pickingDevice->pickTile(_controls->GetMouseCoord()._pos);
+	
+	XMFLOAT3 pos;
+
+	Tilemap* tm = _objectHandler->GetTileMap();
+	for (int x = 1; x < tm->GetWidth() - 1; x++)
+	{
+		for (int z = 1; z < tm->GetHeight() - 1; z++)
+		{
+			if (tm->IsPlacable(x, z, type))
+			{
+				pos = XMFLOAT3(x, 0, z);
+				if (_objectHandler->Add(type, objectName, pos, XMFLOAT3(0.0f, 0.0f, 0.0f)))
+				{
+					_marker = _objectHandler->GetGameObjects()->at(type).back();
+					_marker->SetVisibility(false);
+					_isPlace = true;
+					return;
+				}
+			}
+		}
+	}
+}
+
 void BaseEdit::ChangePlaceState()
 {
 	if (_isSelectionMode)
 	{
 		_isSelectionMode = false;
 		_isDragAndPlaceMode = true;
+		_isPlace = false;
 	}
 	else
 	{
 		_isSelectionMode = true;
 		_isDragAndPlaceMode = false;
+		_isPlace = false;
 	}
+}
 
-	_isPlace = true;
+bool BaseEdit::IsSelection() const
+{
+	return _isSelectionMode;
+}
+
+bool BaseEdit::IsDragAndPlace() const
+{
+	return _isDragAndPlaceMode;
+}
+
+bool BaseEdit::IsPlace() const
+{
+	return _isPlace;
 }
 
 void BaseEdit::HandleInput()
 {
 	if (_controls->IsFunctionKeyDown("MAP_EDIT:SELECT"))
 	{
-		if (_isSelectionMode)
+		if (_isSelectionMode && !_isPlace)
 		{
 			AI::Vec2D pickedTile = _pickingDevice->pickTile(_controls->GetMouseCoord()._pos);
 			std::vector<GameObject*> objectsOnTile = _objectHandler->GetTileMap()->GetAllObjectsOnTile(pickedTile);
@@ -256,7 +302,6 @@ void BaseEdit::HandleInput()
 		{
 			_isPlace = true;
 			_markedTile = new AI::Vec2D(_pickingDevice->pickTile(_controls->GetMouseCoord()._pos));
-
 		}
 	}
 
@@ -410,7 +455,6 @@ void BaseEdit::LoadLevel(int levelID)
 {
 	//load existing level.
 	_objectHandler->Release();
-	ResetSelectedObj();
 	_objectHandler->LoadLevel(levelID);
 
 	_tileMap = _objectHandler->GetTileMap();
