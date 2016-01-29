@@ -62,25 +62,12 @@ float4 main(VS_OUT input) : SV_TARGET0
 	float howMuchLight = dot(pixToLight, normal.xyz);
 
 	//Inside of the volume
-	if (howMuchLight > 0.0f && l < lightRange)
+	if (howMuchLight > 0.0f && l < lightRange/2)
 	{
-		/*float4 diffuse = normalize(float4(normalTex.Sample(samplerWrap, uv).xyz, 0.0f));
-		float4 finalColor = float4((diffuse.xyz * lightColor * lightIntensity), 0.5f);
+		float4 diffuse = float4(diffuseTex.Sample(samplerWrap, uv).xyz, 0.0f);
+		float4 finalColor = float4(((diffuse.xyz + lightColor) * pow(lightIntensity,3)), 0.5f);
 
-		if (pixToLightAngle > lightAngleDiv2 * 0.85)
-		{
-			finalColor *= float4(0.1f, 0.1f, 0.1f, 0.1f);
-		}
-		else if (pixToLightAngle > lightAngleDiv2 * 0.75)
-		{
-			finalColor *= float4(0.35f, 0.35f, 0.35f, 0.35f);
-		}
-		else if (pixToLightAngle > lightAngleDiv2 * 0.65)
-		{
-			finalColor *= float4(0.7f, 0.7f, 0.7f, 0.65f);
-		}*/
-
-		//return finalColor;
+		return finalColor;
 	}
 
 	//Not in light

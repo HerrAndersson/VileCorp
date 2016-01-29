@@ -43,7 +43,8 @@ namespace Renderer
 		ID3D11PixelShader*		_geoPassPS;
 		ID3D11PixelShader*		_lightPassPS;
 		ID3D11PixelShader*		_gridPassPS;
-		ID3D11PixelShader*		_lightApplyLightVolumePS;
+		ID3D11PixelShader*		_lightApplySpotlightVolumePS;
+		ID3D11PixelShader*		_lightApplyPointlightVolumePS;
 		ID3D11PixelShader*		_lightApplyScreenQuadPS;
 		ID3D11PixelShader*		_hudPassPS;
 
@@ -72,7 +73,8 @@ namespace Renderer
 		void SetAnimationPassShaders(ID3D11DeviceContext* deviceContext);
 		void SetGridPassShaders(ID3D11DeviceContext* deviceContest);
 		void SetShadowGenerationShaders(ID3D11DeviceContext* deviceContext);
-		void SetLightApplicationShaders(ID3D11DeviceContext* deviceContext, int screenOrVolume = 1); //Screen = 1, Volume = 2
+		void SetSpotlightApplicationShaders(ID3D11DeviceContext* deviceContext);
+		void SetPointlightApplicationShaders(ID3D11DeviceContext* deviceContext);
 		void SetHUDPassShaders(ID3D11DeviceContext* deviceContext);
 	};
 }

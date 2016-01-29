@@ -418,7 +418,7 @@ namespace Renderer
 
 			int nrOfSRVs = _d3d->SetLightStage();
 
-			_shaderHandler->SetLightApplicationShaders(deviceContext, 2);
+			_shaderHandler->SetSpotlightApplicationShaders(deviceContext);
 			ID3D11ShaderResourceView* shadowMapSRV = _shadowMap->GetShadowSRV();
 			_d3d->GetDeviceContext()->PSSetShaderResources(nrOfSRVs, 1, &shadowMapSRV);
 
@@ -432,7 +432,7 @@ namespace Renderer
 			//TODO: Should activate the pointlight shaders!
 			int nrOfSRVs = _d3d->SetLightStage();
 
-			_shaderHandler->SetLightApplicationShaders(deviceContext, 2);
+			_shaderHandler->SetPointlightApplicationShaders(deviceContext);
 			ID3D11ShaderResourceView* shadowMapSRV = _shadowMap->GetShadowSRV();
 			_d3d->GetDeviceContext()->PSSetShaderResources(nrOfSRVs, 1, &shadowMapSRV);
 
@@ -605,7 +605,7 @@ namespace Renderer
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
 		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
 
-		_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::NONE);
+		_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::FRONT);
 		_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::ENABLE);
 
 		XMMATRIX worldMatrixC = XMMatrixTranspose(*world);

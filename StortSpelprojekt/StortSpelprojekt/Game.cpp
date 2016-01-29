@@ -5,6 +5,7 @@
 
 Game::Game(HINSTANCE hInstance, int nCmdShow)
 {
+
 	CheckSettings();
 	_gameHandle = this;
 	_window = new System::Window("Amazing game", hInstance, _windowSettings, WndProc);
@@ -59,9 +60,9 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	}
 
 	Renderer::Pointlight* point;
-	for (int i = 0; i < 25; i++)
+	for (int i = 0; i < 200; i++)
 	{
-		point = new Renderer::Pointlight(_renderModule->GetDevice(), XMFLOAT3(20 + 10 * sin(25 + i * 2) * sin(i), 1.0f, 20 + 10 * sin(25 + i * 2) * cos(i)), 5, 1.0f, 1.0f, XMFLOAT3(sin(i*i * 6), sin(i * 50 * i), sin(120 * i * i)));
+		point = new Renderer::Pointlight(_renderModule->GetDevice(), XMFLOAT3(25 + 20 * sin(25 + i * 2 + rand() % ((i+1)) / 8) * sin(i), 1.0f, 25 + 20 * sin(25 + i * 2 + rand() % ((i + 1)) / 8) * cos(i)), 5, 1.0f, 1.0f, XMFLOAT3(sin(i*i * 6), sin(i * 50 * i), sin(120 * i * i)));
 		_pointlights.push_back(point);
 	}
 
