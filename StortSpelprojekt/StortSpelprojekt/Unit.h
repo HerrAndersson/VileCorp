@@ -64,7 +64,5 @@ public:
 	void Wait(int frames);
 	void TakeDamage(int damage);
 
-	void ColorVisibleTiles(DirectX::XMFLOAT3 color);												//Debug function. Colors the visibility cone
-
 };
 

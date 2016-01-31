@@ -196,9 +196,10 @@ Trap::Trap()
 }
 
 Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject * renderObject, 
-		  const Tilemap* tileMap, TrapType trapType, AI::Vec2D direction)
+		  const Tilemap* tileMap, TrapType trapType, AI::Vec2D direction, int cost)
 	: GameObject(ID, position, rotation, tilePosition, type, renderObject)
 {
+	_cost = cost;
 	_trapType = trapType;
 	//_trapType = SHARK;
 	_tileMap = tileMap;

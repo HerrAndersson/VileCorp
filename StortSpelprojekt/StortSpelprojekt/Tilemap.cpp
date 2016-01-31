@@ -1,10 +1,5 @@
 #include "Tilemap.h"
 
-bool Tilemap::IsValid(AI::Vec2D pos) const
-{
-	return (pos._x >= 0 && pos._x < _width && pos._y >= 0 && pos._y < _height);
-}
-
 Tilemap::Tilemap()
 {
 	_height = 10;
@@ -20,6 +15,10 @@ Tilemap::Tilemap()
 			_map[i][j] = Tile();
 		}
 	}
+}
+Tilemap::Tilemap(int x, int z)
+{
+	Tilemap(AI::Vec2D(x, z));
 }
 Tilemap::Tilemap(AI::Vec2D size)
 {
@@ -102,6 +101,11 @@ bool Tilemap::AddObjectToTile(AI::Vec2D pos, GameObject * obj)
 		}
 	}
 	return result;
+}
+
+bool Tilemap::AddObjectToTile(int x, int z, GameObject * obj)
+{
+	return AddObjectToTile(AI::Vec2D(x, z), obj);
 }
 
 bool Tilemap::RemoveObjectFromTile(AI::Vec2D pos, GameObject * obj)
@@ -236,44 +240,116 @@ GameObject * Tilemap::GetObjectOnTile(AI::Vec2D pos, Type type) const
 	}
 }
 
-//GameObject * Tilemap::GetUnitOnTile(int x, int z) const
-//{
-//	GameObject* result = nullptr;
-//	if (_map[x][z]._objectsOnTile[1] != nullptr)
-//	{
-//		result = _map[x][z]._objectsOnTile[1];
-//	}
-//	else if (_map[x][z]._objectsOnTile[2] != nullptr)
-//	{
-//		result = _map[x][z]._objectsOnTile[2];
-//	}
-//	return result;
-//}
+GameObject * Tilemap::GetObjectOnTile(int x, int z, Type type) const
+{
+	return GetObjectOnTile(AI::Vec2D(x, z), type);
+}
+
+bool Tilemap::IsValid(AI::Vec2D pos) const
+{
+	return (pos._x >= 0 && pos._x < _width && pos._y >= 0 && pos._y < _height);
+}
+
+bool Tilemap::IsValid(int x, int z) const
+{
+	return IsValid(AI::Vec2D(x, z));
+}
+
+bool Tilemap::IsPlaceable(int x, int z, Type type) const
+{
+	bool placable = false;
+	if (IsValid(x, z))
+	{
+		if (!IsWallOnTile(x, z))
+		{
+			GameObject* result = nullptr;
+			switch (type)
+			{
+			case FLOOR:
+			case WALL:
+				result = _map[x][z]._objectsOnTile[0];
+				break;
+			case ENEMY:
+				result = _map[x][z]._objectsOnTile[1];
+				break;
+			case GUARD:
+				result = _map[x][z]._objectsOnTile[2];
+				break;
+			case LOOT:
+			case SPAWN:
+			case TRAP:
+				result = _map[x][z]._objectsOnTile[3];
+				break;
+			default:
+				break;
+			}
+			if (result == nullptr)
+			{
+				placable = true;
+			}
+		}
+	}
+
+	return placable;
+}
+
+bool Tilemap::IsPlaceable(AI::Vec2D pos, Type type) const
+{
+	return false;
+}
+/*
+To place an object, the tile should be empty besides a floor
+*/
+bool Tilemap::CanPlaceObject(AI::Vec2D pos) const
+{
+	return IsFloorOnTile(pos) && _map[pos._x][pos._y]._objectsOnTile[1] == nullptr && _map[pos._x][pos._y]._objectsOnTile[2] == nullptr && _map[pos._x][pos._y]._objectsOnTile[3] == nullptr;
+}
+
+bool Tilemap::CanPlaceObject(int x, int z) const
+{
+	return IsFloorOnTile(AI::Vec2D(x, z));
+}
+
+bool Tilemap::IsArchitectureOnTile(int x, int z) const
+{
+	return IsValid(x, z) && _map[x][z]._objectsOnTile[0] != nullptr;
+}
+
 bool Tilemap::IsArchitectureOnTile(AI::Vec2D pos) const
 {
-	return IsValid(pos) && _map[pos._x][pos._y]._objectsOnTile[0] != nullptr;
+	return IsArchitectureOnTile(pos._x, pos._y);
+}
+
+bool Tilemap::IsWallOnTile(int x, int z) const
+{
+	return IsArchitectureOnTile(x, z) && _map[x][z]._objectsOnTile[0]->GetType() == WALL;
 }
 
 bool Tilemap::IsWallOnTile(AI::Vec2D pos) const
 {
-	return IsArchitectureOnTile(pos) && _map[pos._x][pos._y]._objectsOnTile[0]->GetType() == WALL;
+	return IsWallOnTile(pos._x, pos._y);
+}
+
+bool Tilemap::IsFloorOnTile(int x, int z) const
+{
+	return IsArchitectureOnTile(x, z) && _map[x][z]._objectsOnTile[0]->GetType() == FLOOR;
 }
 
 bool Tilemap::IsFloorOnTile(AI::Vec2D pos) const
 {
-	return IsArchitectureOnTile(pos) && _map[pos._x][pos._y]._objectsOnTile[0]->GetType() == FLOOR;
+	return IsFloorOnTile(pos._x, pos._y);
 }
 
-int Tilemap::UnitsOnTile(AI::Vec2D pos) const
+int Tilemap::UnitsOnTile(int x, int z) const
 {
 	int result = 0;
-	if (IsValid(pos))
+	if (IsValid(x, z))
 	{
-		if (_map[pos._x][pos._y]._objectsOnTile[1] != nullptr)
+		if (_map[x][z]._objectsOnTile[1] != nullptr)
 		{
 			result++;
 		}
-		if (_map[pos._x][pos._y]._objectsOnTile[2] != nullptr)
+		if (_map[x][z]._objectsOnTile[2] != nullptr)
 		{
 			result++;
 		}
@@ -281,59 +357,89 @@ int Tilemap::UnitsOnTile(AI::Vec2D pos) const
 	return result;
 }
 
+int Tilemap::UnitsOnTile(AI::Vec2D pos) const
+{
+	return UnitsOnTile(pos._x, pos._y);
+}
+
+bool Tilemap::IsGuardOnTile(int x, int z) const
+{
+	return  IsValid(x, z) && _map[x][z]._objectsOnTile[2] != nullptr;
+}
+
 bool Tilemap::IsGuardOnTile(AI::Vec2D pos) const
 {
-	return  IsValid(pos) && _map[pos._x][pos._y]._objectsOnTile[2] != nullptr;
+	return IsGuardOnTile(pos._x, pos._y);
+}
+
+bool Tilemap::IsEnemyOnTile(int x, int z) const
+{
+	return  IsValid(x, z) && _map[x][z]._objectsOnTile[1] != nullptr;
 }
 
 bool Tilemap::IsEnemyOnTile(AI::Vec2D pos) const
 {
-	return  IsValid(pos) && _map[pos._x][pos._y]._objectsOnTile[1] != nullptr;
+	return IsEnemyOnTile(pos._x, pos._y);
 }
 
-bool Tilemap::IsTrapOnTile(AI::Vec2D pos) const
+bool Tilemap::IsTrapOnTile(int x, int z) const
 {
-	if (!IsValid(pos) || _map[pos._x][pos._y]._objectsOnTile[3] == nullptr)
+	if (!IsValid(x, z) || _map[x][z]._objectsOnTile[3] == nullptr)
 	{
 		return false;
 	}
 	else
 	{
-		return  _map[pos._x][pos._y]._objectsOnTile[3]->GetType() == TRAP;
+		return  _map[x][z]._objectsOnTile[3]->GetType() == TRAP;
+	}
+}
+
+bool Tilemap::IsTrapOnTile(AI::Vec2D pos) const
+{
+	return IsTrapOnTile(pos._x, pos._y);
+}
+
+bool Tilemap::IsObjectiveOnTile(int x, int z) const
+{
+	if (!IsValid(x, z) || _map[x][z]._objectsOnTile[3] == nullptr)
+	{
+		return false;
+	}
+	else
+	{
+		return  _map[x][z]._objectsOnTile[3]->GetType() == LOOT;
 	}
 }
 
 bool Tilemap::IsObjectiveOnTile(AI::Vec2D pos) const
 {
-	if (!IsValid(pos) || _map[pos._x][pos._y]._objectsOnTile[3] == nullptr)
+	return IsObjectiveOnTile(pos._x, pos._y);
+}
+
+bool Tilemap::IsSpawnOnTile(int x, int z) const
+{
+	if (!IsValid(x, z) || _map[x][z]._objectsOnTile[3] == nullptr)
 	{
 		return false;
 	}
 	else
 	{
-		return  _map[pos._x][pos._y]._objectsOnTile[3]->GetType() == LOOT;
+		return  _map[x][z]._objectsOnTile[3]->GetType() == SPAWN;
 	}
 }
 
 bool Tilemap::IsSpawnOnTile(AI::Vec2D pos) const
 {
-	if (!IsValid(pos) || _map[pos._x][pos._y]._objectsOnTile[3] == nullptr)
-	{
-		return false;
-	}
-	else
-	{
-		return  _map[pos._x][pos._y]._objectsOnTile[3]->GetType() == SPAWN;
-	}
+	return IsSpawnOnTile(pos._x, pos._y);
 }
 
-bool Tilemap::IsTypeOnTile(AI::Vec2D pos, Type type) const
+bool Tilemap::IsTypeOnTile(int x, int z, Type type) const
 {
-	if (IsValid(pos))
+	if (IsValid(x, z))
 	{
 		for (int i = 0; i < Tile::OBJECT_CAPACITY; i++)
 		{
-			if (_map[pos._x][pos._y]._objectsOnTile[i] != nullptr && _map[pos._x][pos._y]._objectsOnTile[i]->GetType() == type)
+			if (_map[x][z]._objectsOnTile[i] != nullptr && _map[x][z]._objectsOnTile[i]->GetType() == type)
 			{
 				return true;
 			}
@@ -342,16 +448,41 @@ bool Tilemap::IsTypeOnTile(AI::Vec2D pos, Type type) const
 	return false;
 }
 
+bool Tilemap::IsTypeOnTile(AI::Vec2D pos, Type type) const
+{
+	return IsTypeOnTile(pos._x, pos._y, type);
+}
+
+bool Tilemap::IsTileVisible(int x, int z) const
+{
+	return _map[x][z]._isVisible;
+}
+
 bool Tilemap::IsTileVisible(AI::Vec2D pos) const
 {
-	return _map[pos._x][pos._y]._isVisible;
+	return IsTileVisible(pos._x, pos._y);
 }
 
 /*
 	To place an object, the tile should be empty besides a floor
 */
-bool Tilemap::CanPlaceObject(AI::Vec2D pos) const
+
+bool Tilemap::IsTileEmpty(int x, int z) const
 {
-	return IsFloorOnTile(pos) && _map[pos._x][pos._y]._objectsOnTile[1] == nullptr && _map[pos._x][pos._y]._objectsOnTile[2] == nullptr && _map[pos._x][pos._y]._objectsOnTile[3] == nullptr;
+	bool empty = true;
+	for (int i = 0; i < Tile::OBJECT_CAPACITY; i++)
+	{
+		if (_map[x][z]._objectsOnTile[i] != nullptr)
+		{
+			empty = false;
+			break;
+		}
+	}
+	return empty;
+}
+
+bool Tilemap::IsTileEmpty(AI::Vec2D pos) const
+{
+	return false;
 }
 

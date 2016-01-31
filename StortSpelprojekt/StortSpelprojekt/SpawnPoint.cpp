@@ -30,14 +30,17 @@ SpawnPoint::~SpawnPoint()
 
 void SpawnPoint::Update(float deltaTime)
 {
-	if (_time <= 0)
+	if (_enabled)
 	{
-		_time = _timer;
-		_unitsToSpawn--;
-	}
-	if (_unitsToSpawn > 0)
-	{
-		_time--;
+		if (_time <= 0)
+		{
+			_time = _timer;
+			_unitsToSpawn--;
+		}
+		if (_unitsToSpawn > 0)
+		{
+			_time--;
+		}
 	}
 }
 
@@ -49,4 +52,14 @@ void SpawnPoint::Release()
 bool SpawnPoint::isSpawning()
 {
 	return _time <= 0;
+}
+
+void SpawnPoint::Disable()
+{
+	_enabled = false;
+}
+
+void SpawnPoint::Enable()
+{
+	_enabled = true;
 }

@@ -37,9 +37,9 @@ void Unit::Rotate()
 		}
 		CalculateMatrix();
 	}
-	ColorVisibleTiles({0,0,0});
+	_visionCone->ColorVisibleTiles({0,0,0});
 	_visionCone->FindVisibleTiles(_tilePosition, _direction);
-	ColorVisibleTiles({0,0,3});
+	_visionCone->ColorVisibleTiles({0,0,3});
 	CheckVisibleTiles();
 }
 
@@ -318,20 +318,6 @@ void Unit::Wait(int frames)
 void Unit::TakeDamage(int damage)
 {
 	_health -= damage;
-}
-
-void Unit::ColorVisibleTiles(DirectX::XMFLOAT3 color)
-{
-	AI::Vec2D* visibleTiles = _visionCone->GetVisibleTiles();
-	for (int i = 0; i < _visionCone->GetNrOfVisibleTiles(); i++)
-	{
-		GameObject* floor = _tileMap->GetObjectOnTile(visibleTiles[i], FLOOR);
-		if (floor != nullptr)
-		{
-			floor->SetColorOffset(color);
-		}
-		
-	}
 }
 
 

@@ -18,9 +18,9 @@ void SecurityCamera::Rotate()
 		}
 		CalculateMatrix();
 	}
-	ColorVisibleTiles({0,0,0});
+	_visionCone->ColorVisibleTiles({0,0,0});
 	_visionCone->FindVisibleTiles(_tilePosition, _direction);
-	ColorVisibleTiles({0,0,3});
+	_visionCone->ColorVisibleTiles({0,0,3});
 	CheckVisibleTiles();
 }
 
@@ -35,7 +35,13 @@ SecurityCamera::SecurityCamera()
 
 SecurityCamera::SecurityCamera(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject * renderObject, const Tilemap * tileMap)
 	: GameObject(ID, position, rotation, tilePosition, type, renderObject)
-{}
+{
+	_tileMap = tileMap;
+	_direction = {0,1};
+	_visionRadius = 4;
+	_visionCone = new VisionCone(_visionRadius, _tileMap);
+	_visionCone->FindVisibleTiles(_tilePosition, _direction);
+}
 
 SecurityCamera::~SecurityCamera()
 {
@@ -44,7 +50,7 @@ SecurityCamera::~SecurityCamera()
 
 AI::Vec2D SecurityCamera::GetDirection()
 {
-	return AI::Vec2D();
+	return _direction;
 }
 
 void SecurityCamera::CheckVisibleTiles()
@@ -62,10 +68,9 @@ void SecurityCamera::CheckVisibleTiles()
 }
 
 void SecurityCamera::Update(float deltaTime)
-{}
+{
+	CheckVisibleTiles();
+}
 
 void SecurityCamera::Release()
-{}
-
-void SecurityCamera::ColorVisibleTiles(DirectX::XMFLOAT3 color)
 {}

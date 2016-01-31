@@ -20,7 +20,7 @@ void Guard::EvaluateTile(Type objective, AI::Vec2D tile)
 	{ 
 	case LOOT:
 	case GUARD:					
-	case TRAP:				//Guards don't react to these
+	case TRAP:
 		break;
 	case ENEMY:
 		tempPriority = 10;
@@ -49,6 +49,7 @@ void Guard::EvaluateTile(GameObject * obj)
 		case CAMERA:				//Guards don't react to these
 			break;
 		case ENEMY:
+			obj->SetVisibility(true);
 			tempPriority = 10;
 			break;
 		default:

@@ -3,7 +3,6 @@
 #include "Tilemap.h"
 #include "AStar.h"
 #include "VisionCone.h"
-#include <DirectXMath.h>
 class SecurityCamera : public GameObject
 {
 private:
@@ -21,7 +20,6 @@ public:
 	void CheckVisibleTiles();
 	void Update(float deltaTime);
 	void Release();
-	void ColorVisibleTiles(DirectX::XMFLOAT3 color);												//Debug function. Colors the visibility cone
 
 };
 
