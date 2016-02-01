@@ -25,7 +25,7 @@ void Animation::Update(float time)
 	_animTime += time/1000;
 	if (_currentAction != -1)
 	{
-		if (_skeleton->_actions[_currentAction]._frameTime.back() < _animTime)
+		if (_skeleton->_actions[_currentAction]._bones[0]._frameTime.back() < _animTime)
 		{
 			_currentAction = -1;
 			_animTime = 0.0f;
@@ -40,9 +40,9 @@ void Animation::Update(float time)
 	}
 	if (_currentAction == -1)
 	{
-		if (_skeleton->_actions[_currentCycle]._frameTime.back() < _animTime)
+		if (_skeleton->_actions[_currentCycle]._bones[0]._frameTime.back() < _animTime)
 		{
-			_animTime -= _skeleton->_actions[_currentCycle]._frameTime.back();
+			_animTime -= _skeleton->_actions[_currentCycle]._bones[0]._frameTime.back();
 		}
 		for (unsigned int i = 0; i < _skeleton->_skeleton.size(); i++)
 		{
@@ -84,8 +84,8 @@ void Animation::PlayAction(int action)
 DirectX::XMFLOAT4X4 Animation::Interpolate(unsigned int boneID, int action)
 {
 	DirectX::XMFLOAT4X4 matrix;
-	_lastFrame = _skeleton->_actions[action]._frameTime.size() - 1;
-	if (_animTime <= _skeleton->_actions[action]._frameTime[0])
+	_lastFrame = _skeleton->_actions[action]._bones[boneID]._frameTime.size() - 1;
+	if (_animTime <= _skeleton->_actions[action]._bones[boneID]._frameTime[0])
 	{
 		DirectX::XMVECTOR s = DirectX::XMLoadFloat3(&_skeleton->_actions[action]._bones[boneID]._frames[0]._scale);
 		DirectX::XMVECTOR p = DirectX::XMLoadFloat3(&_skeleton->_actions[action]._bones[boneID]._frames[0]._translation);
@@ -94,7 +94,7 @@ DirectX::XMFLOAT4X4 Animation::Interpolate(unsigned int boneID, int action)
 		DirectX::XMStoreFloat4x4(&matrix, DirectX::XMMatrixAffineTransformation(s, _zeroVector, q, p));
 	}
 	
-	else if (_animTime >= _skeleton->_actions[action]._frameTime[_lastFrame])
+	else if (_animTime >= _skeleton->_actions[action]._bones[0]._frameTime[_lastFrame])
 	{
 		DirectX::XMVECTOR s = DirectX::XMLoadFloat3(&_skeleton->_actions[action]._bones[boneID]._frames[_lastFrame]._scale);
 		DirectX::XMVECTOR p = DirectX::XMLoadFloat3(&_skeleton->_actions[action]._bones[boneID]._frames[_lastFrame]._translation);
@@ -105,10 +105,10 @@ DirectX::XMFLOAT4X4 Animation::Interpolate(unsigned int boneID, int action)
 
 	else
 	{
-		for (unsigned int i = 0; i <= _skeleton->_actions[action]._frameTime.size(); i++)
+		for (unsigned int i = 0; i <= _skeleton->_actions[action]._bones[boneID]._frameTime.size(); i++)
 		{
-			_currTime = _skeleton->_actions[action]._frameTime[i];
-			_nextTime = _skeleton->_actions[action]._frameTime[i + 1];
+			_currTime = _skeleton->_actions[action]._bones[boneID]._frameTime[i];
+			_nextTime = _skeleton->_actions[action]._bones[boneID]._frameTime[i + 1];
 			if (_animTime >= _currTime && _animTime <= _nextTime)
 			{
 				_lerpPercent = (_animTime - _currTime) / (_nextTime - _currTime);

@@ -666,9 +666,7 @@ Skeleton* AssetManager::LoadSkeleton(string filename)
 		throw runtime_error("Failed to load " + file_path + ":\nIncorrect fileversion");
 	}
 
-	vector<int> frameCountPerAction;
-	frameCountPerAction.resize(header._actionCount);
-	_infile->read((char*)frameCountPerAction.data(), header._actionCount * 4);
+	int frames;
 
 	skeleton->_skeleton.resize(header._boneCount);
 	_infile->read((char*)skeleton->_skeleton.data(), header._boneCount * sizeof(Bone));
@@ -676,14 +674,15 @@ Skeleton* AssetManager::LoadSkeleton(string filename)
 	skeleton->_actions.resize(header._actionCount);
 	for (uint a = 0; a < skeleton->_actions.size(); a++)
 	{
-		skeleton->_actions[a]._frameTime.resize(frameCountPerAction[a]);
-		_infile->read((char*)skeleton->_actions[a]._frameTime.data(), frameCountPerAction[a] * 4);
-
 		skeleton->_actions[a]._bones.resize(header._boneCount);
 		for (uint b = 0; b < skeleton->_actions[a]._bones.size(); b++)
 		{
-			skeleton->_actions[a]._bones[b]._frames.resize(frameCountPerAction[a]);
-			_infile->read((char*)skeleton->_actions[a]._bones[b]._frames.data(), sizeof(Frame) * frameCountPerAction[a]);
+			_infile->read((char*)&frames, 4);
+			skeleton->_actions[a]._bones[b]._frameCount = frames;
+			skeleton->_actions[a]._bones[b]._frameTime.resize(frames);
+			_infile->read((char*)skeleton->_actions[a]._bones[b]._frameTime.data(), frames * 4);
+			skeleton->_actions[a]._bones[b]._frames.resize(frames);
+			_infile->read((char*)skeleton->_actions[a]._bones[b]._frames.data(), sizeof(Frame) * frames);
 		}
 	}
 

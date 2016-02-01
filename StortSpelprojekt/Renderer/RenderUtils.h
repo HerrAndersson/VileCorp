@@ -22,12 +22,13 @@ struct Frame
 
 struct BoneFrames
 {
+	int _frameCount;
+	std::vector<float> _frameTime;
 	std::vector<Frame> _frames;
 };
 
 struct Action
 {
-	std::vector<float> _frameTime;
 	std::vector<BoneFrames> _bones;
 };
 

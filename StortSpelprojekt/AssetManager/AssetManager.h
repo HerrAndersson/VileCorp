@@ -129,7 +129,7 @@ struct LevelHeader
 
 struct SkeletonHeader
 {
-	unsigned int _version, _framerate, _actionCount, _boneCount;
+	unsigned int _version, _framerate, _boneCount, _actionCount;
 };
 
 struct GameObjectData
