@@ -350,9 +350,9 @@ namespace Renderer
 
 	void DirectXHandler::SetAntiAliasingState()
 	{
-		_deviceContext->OMSetDepthStencilState(_depthStateEnable, 1);
+		_deviceContext->OMSetDepthStencilState(_depthStateDisable, 1);
 		_deviceContext->RSSetViewports(1, &_viewport);
-		_deviceContext->OMSetRenderTargets(1, &_backBufferRTV, _backBufferDSV);
+		_deviceContext->OMSetRenderTargets(1, &_backBufferRTV, nullptr);
 
 		_deviceContext->PSSetShaderResources(0, BUFFER_COUNT + 1, _deferredSRVarray);
 	}
