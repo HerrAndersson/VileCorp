@@ -16,6 +16,7 @@ GameObject::GameObject(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::X
 	_type = type;
 	_renderObject = renderObject;
 	_pickUpState = ONTILE;
+	_active = true;
 	CalculateMatrix();
 }
 
@@ -114,6 +115,16 @@ Type GameObject::GetType() const
 bool GameObject::IsVisible() const
 {
 	return _visible;
+}
+
+bool GameObject::IsActive() const
+{
+	return _active;
+}
+
+void GameObject::SetActive(bool active)
+{
+	_active = active;
 }
 
 void GameObject::SetVisibility(bool visible)

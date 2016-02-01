@@ -47,7 +47,7 @@ private:
 	bool Update(float deltaTime);
 	void Render();
 	void CheckSettings();
-
+	
 	//TODO: TEMP! Move this to objectHandler
 	std::vector<Renderer::Spotlight*> _spotlights;
 	std::vector<Renderer::Pointlight*> _pointlights;
@@ -55,7 +55,6 @@ private:
 
 	std::vector<GameObject*> _enemies;
 	std::vector<GameObject*> _loot;
-
 public:
 
 	Game(HINSTANCE hInstance, int nCmdShow);
