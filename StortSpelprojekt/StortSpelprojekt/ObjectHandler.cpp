@@ -500,13 +500,24 @@ void ObjectHandler::Update(float deltaTime)
 				{
 					heldObject->SetPosition(DirectX::XMFLOAT3(unit->GetPosition().x, unit->GetPosition().y + 2, unit->GetPosition().z));
 				}
+
 				if (unit->GetHealth() <= 0)
 				{
-					//TODO: drop held object and set its tile position --Victor
+					for (int k = 0; k < _gameObjects[SPAWN].size(); k++)
+					{
+						//If the enemy is at the despawn point with the diamond, remove the diamond and the enemy, Aron
+						if ((int)unit->GetPosition().x == (int)_gameObjects[SPAWN][k]->GetPosition().x &&
+							(int)unit->GetPosition().z == (int)_gameObjects[SPAWN][k]->GetPosition().z)
+						{
+							Remove(heldObject);
+						}
+					}
+
 					if (heldObject != nullptr)
 					{
-						Remove(heldObject);
+						heldObject->SetPosition(XMFLOAT3(heldObject->GetPosition().x, 0.0f, heldObject->GetPosition().z));
 					}
+
 					Remove(g);
 					g = nullptr;
 					j--;
@@ -515,7 +526,7 @@ void ObjectHandler::Update(float deltaTime)
 				{
 					float xOffset = abs(g->GetPosition().x - g->GetTilePosition()._x);
 					float zOffset = abs(g->GetPosition().z - g->GetTilePosition()._y);
-					if (xOffset > 0.99 || zOffset > 0.99)																		 //If unit is on a new tile	
+					if (xOffset > 0.99f || zOffset > 0.99f)																		 //If unit is on a new tile	
 					{
 						_tilemap->RemoveObjectFromTile(g->GetTilePosition(), unit);
 						unit->Move();
@@ -541,7 +552,6 @@ void ObjectHandler::Update(float deltaTime)
 						((Unit*)_gameObjects[ENEMY].back())->Move();
 					}
 				}
-
 			}
 			//else if (g->GetType() == TRAP)
 			//{
