@@ -30,9 +30,10 @@ Render targets:
 |	 Backbuffer	     x    |   This is the render target that is ultimately drawn to the screen in EndScene. Does not have a shader resource view              |
 |    Diffuse         0    |	  Holds the diffuse colors of all rendered objects. Sampled from to e.g. calculate lighting.                                      |
 |    Normals         1    |	  Holds the normals of the rendered pixels. Sampled from to e.g. calculate lighting.		                                      |
-|    CameraDepthMap  2    |	  Technically not a render target, but an automatically generated depth map from the view of the camera against rendered objects. |
+|	 TempBackBuffer  2	  |   Holds backbuffer copy for FXAA to be able to write and read from backbuffer												      |
+|    CameraDepthMap  3    |	  Technically not a render target, but an automatically generated depth map from the view of the camera against rendered objects. |
 |						  |   Sampled from to e.g. reconstruct the world position of a pixel.											                      |
-|    ShadowMap       3    |   Technically not a render target, but an automatically generated depth map from the view of the light against rendered objects.  |
+|    ShadowMap       4    |   Technically not a render target, but an automatically generated depth map from the view of the light against rendered objects.  |
 |					      |   Sampled from to calculate lighting/shadows. Located in ShadowMap-class, set in RenderModule.						              |
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -146,7 +147,7 @@ namespace Renderer
 		const int SHADOWMAP_DIMENSIONS = 256;
 		const DirectX::XMFLOAT3 AMBIENT_LIGHT = DirectX::XMFLOAT3(0.1f, 0.1f, 0.1f);
 
-		enum ShaderStage { GEO_PASS, SHADOW_GENERATION, LIGHT_APPLICATION_SPOTLIGHT, LIGHT_APPLICATION_POINTLIGHT, GRID_STAGE, ANIM_STAGE, HUD_STAGE };
+		enum ShaderStage { GEO_PASS, SHADOW_GENERATION, LIGHT_APPLICATION_SPOTLIGHT, LIGHT_APPLICATION_POINTLIGHT, GRID_STAGE, ANIM_STAGE, HUD_STAGE, AA_STAGE };
 
 		RenderModule(HWND hwnd, int screenWidth, int screenHeight, bool fullScreen);
 		~RenderModule();

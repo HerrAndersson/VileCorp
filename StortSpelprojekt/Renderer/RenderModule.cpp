@@ -393,6 +393,14 @@ namespace Renderer
 
 			break;
 		}
+		case AA_STAGE:
+		{
+			_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::BACK);
+			_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::DISABLE);
+			_d3d->SetAntiAliasingState();
+			_shaderHandler->SetFXAAPassShaders(deviceContext);
+			break;
+		}
 		case SHADOW_GENERATION:
 		{
 			//Topology has to be set here because GRID_STAGE, which is the previous stage, will change to LINELIST

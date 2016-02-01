@@ -325,7 +325,15 @@ void Game::Render()
 		}
 	}
 
-	/////////////////////////////////////////////////////////  HUD and other 2D   ///////////////////////////////////////////////////////////
+	/*------------------------------------------------FXAA Pass----------------------
+	Anti aliasing after light stage
+	*/
+	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::AA_STAGE);
+	_renderModule->RenderScreenQuad();
+
+	//-------------------------------------------------------------------------------
+
+	/////////////////////////////////////////////////////////  HUD and other 2D   ////////////////////////////////////////////////////
 	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::HUD_STAGE);
 	_renderModule->Render(_SM->GetCurrentStatePointer()->GetUITree()->GetRootNode(), _fontWrapper);
 
