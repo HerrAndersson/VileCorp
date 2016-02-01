@@ -74,6 +74,7 @@ void Enemy::EvaluateTile(GameObject* obj)
 			{
 				_isFleeing = true;
 				_pursuer = obj;
+				ClearObjective();
 			}
 			else if (GetApproxDistance(obj->GetTilePosition()) < 3)
 			{

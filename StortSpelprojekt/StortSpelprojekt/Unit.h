@@ -67,6 +67,7 @@ public:
 	virtual void Release();
 	virtual void act(GameObject* obj) = 0;									//context specific action on the unit's objective
 	void Wait(int frames);
+	void ClearObjective();
 	void TakeDamage(int damage);
 	void SetVisibility(bool visible);
 

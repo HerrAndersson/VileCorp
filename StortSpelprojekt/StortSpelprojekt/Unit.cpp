@@ -57,6 +57,7 @@ void Unit::Flee()
 	{
 		_isFleeing = false;
 		CheckAllTiles();
+		Wait(20);
 	}
 	else
 	{
@@ -112,7 +113,7 @@ Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 {
 	_isFleeing = false;
 	_goalPriority = -1;
-	_visionRadius = 4;
+	_visionRadius = 5;
 	_goalTilePosition = _tilePosition;
 	_tileMap = tileMap;
 	_visionCone = new VisionCone(_visionRadius, _tileMap);
@@ -271,7 +272,7 @@ void Unit::Move()
 	{
 		_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,0});
 		_tilePosition += _direction;
-		//_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,4,0});
+		_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,4,0});
 	}
 	if (_objective != nullptr && _objective->GetPickUpState() != ONTILE)			//Check that no one took your objective
 	{
@@ -346,6 +347,13 @@ void Unit::Release()
 void Unit::Wait(int frames)
 {
 	_waiting = frames;
+}
+
+void Unit::ClearObjective()
+{
+	_objective = nullptr;
+	_path = nullptr;
+	_pathLength = 0;
 }
 
 void Unit::TakeDamage(int damage)
