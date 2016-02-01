@@ -49,7 +49,7 @@ void Guard::EvaluateTile(GameObject * obj)
 		case CAMERA:				//Guards don't react to these
 			break;
 		case ENEMY:
-			obj->SetVisibility(true);
+			static_cast<Enemy*>(obj)->ResetVisibilityTimer();
 			tempPriority = 10;
 			break;
 		default:

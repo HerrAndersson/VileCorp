@@ -17,6 +17,7 @@ GameObject::GameObject(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::X
 	_renderObject = renderObject;
 	_pickUpState = ONTILE;
 	CalculateMatrix();
+	_visible = true;
 }
 
 GameObject::~GameObject()

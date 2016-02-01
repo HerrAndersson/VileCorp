@@ -471,11 +471,6 @@ void ObjectHandler::DisableSpawnPoints()
 void ObjectHandler::Update(float deltaTime)
 {
 	//Update all objects gamelogic
-
-	//for (int i = 0; i < _gameObjects[ENEMY].size(); i++)
-	//{
-	//	_gameObjects[ENEMY][i]->SetVisibility(false);
-	//}
 	for (int i = 0; i < NR_OF_TYPES; i++)
 	{
 		for (int j = 0; j < _gameObjects[i].size(); j++)
@@ -536,7 +531,7 @@ void ObjectHandler::Update(float deltaTime)
 					}
 					if (unit->GetType() == ENEMY)
 					{
-					//	unit->SetVisibility(false);
+						//unit->SetVisibility(false);
 					}
 				}
 			}

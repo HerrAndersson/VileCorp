@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Unit.h"
+#include "Enemy.h"
 
 class Guard : public Unit
 {

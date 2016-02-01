@@ -2,11 +2,16 @@
 
 Enemy::Enemy()
 	: Unit()
-{}
+{
+	SetVisibility(false);
+}
 
 Enemy::Enemy(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject * renderObject, const Tilemap * tileMap)
 	: Unit(ID, position, rotation, tilePosition, type, renderObject, tileMap)
-{}
+{
+	SetVisibility(false);
+	_visibilityTimer = TIME_TO_HIDE;
+}
 
 Enemy::~Enemy()
 {
@@ -97,6 +102,7 @@ void Enemy::act(GameObject* obj)
 		{
 			obj->SetPickUpState(PICKINGUP);
 			_heldObject = obj;
+			obj->SetVisibility(_visible);
 		}
 		break;
 	case SPAWN:
@@ -118,3 +124,20 @@ void Enemy::act(GameObject* obj)
 
 void Enemy::Release()
 {}
+
+void Enemy::Update(float deltaTime)
+{
+	Unit::Update(deltaTime);
+	_visibilityTimer--;
+	if (_visibilityTimer <= 0)
+	{
+		_visible = false;
+		_visibilityTimer = TIME_TO_HIDE;
+	}
+}
+
+void Enemy::ResetVisibilityTimer()
+{
+	_visible = true;
+	_visibilityTimer = TIME_TO_HIDE;
+}

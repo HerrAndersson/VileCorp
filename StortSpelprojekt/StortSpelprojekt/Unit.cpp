@@ -39,7 +39,7 @@ void Unit::Rotate()
 	}
 	_visionCone->ColorVisibleTiles({0,0,0});
 	_visionCone->FindVisibleTiles(_tilePosition, _direction);
-	_visionCone->ColorVisibleTiles({0,0,3});
+//	_visionCone->ColorVisibleTiles({0,0,3});
 }
 
 int Unit::GetApproxDistance(AI::Vec2D target) const
@@ -53,9 +53,10 @@ int Unit::GetApproxDistance(AI::Vec2D target) const
 */
 void Unit::Flee()
 {
-	if (_pursuer == nullptr)		//TODO Add other conditions to stop fleeing --Victor
+	if (_pursuer == nullptr || !_visible)		//TODO Add other conditions to stop fleeing --Victor
 	{
 		_isFleeing = false;
+		CheckAllTiles();
 	}
 	else
 	{
@@ -270,7 +271,7 @@ void Unit::Move()
 	{
 		_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,0});
 		_tilePosition += _direction;
-		_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,4,0});
+		//_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,4,0});
 	}
 	if (_objective != nullptr && _objective->GetPickUpState() != ONTILE)			//Check that no one took your objective
 	{
@@ -350,6 +351,15 @@ void Unit::Wait(int frames)
 void Unit::TakeDamage(int damage)
 {
 	_health -= damage;
+}
+
+void Unit::SetVisibility(bool visible)
+{
+	GameObject::SetVisibility(visible);
+	if (_heldObject != nullptr)
+	{
+		_heldObject->SetVisibility(visible);
+	}
 }
 
 

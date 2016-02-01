@@ -179,7 +179,10 @@ void Game::Render()
 
 				for (GameObject* g : gameObjects->at(i))
 				{
-					_renderModule->Render(g->GetMatrix(), vertexBufferSize, g->GetColorOffset());
+					if (g->IsVisible())
+					{
+						_renderModule->Render(g->GetMatrix(), vertexBufferSize, g->GetColorOffset());
+					}
 				}
 			}
 			else
@@ -245,7 +248,10 @@ void Game::Render()
 
 				for (GameObject* g : gameObjects->at(i))
 				{
-					_renderModule->RenderShadowMap(g->GetMatrix(), vertexBufferSize);
+					if (g->IsVisible())
+					{
+						_renderModule->RenderShadowMap(g->GetMatrix(), vertexBufferSize);
+					}
 				}
 			}
 		}

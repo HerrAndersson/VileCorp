@@ -66,7 +66,7 @@ void SecurityCamera::CheckVisibleTiles()
 		tile = _visionCone->GetVisibleTile(i);
 		if (_tileMap->IsEnemyOnTile(tile))
 		{
-			_tileMap->GetObjectOnTile(tile, ENEMY)->SetVisibility(true);
+			static_cast<Enemy*>(_tileMap->GetObjectOnTile(tile, ENEMY))->ResetVisibilityTimer();
 		}
 	}
 }
