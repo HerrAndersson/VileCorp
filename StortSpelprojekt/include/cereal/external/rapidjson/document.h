@@ -217,7 +217,7 @@ public:
 	//!@name Bool_
 	//@{
 
-	bool GetBool_() const { RAPIDJSON_ASSERT(IsBool_()); return flags_ == kTrueFlag; }
+	bool GetBool() const { RAPIDJSON_ASSERT(IsBool_()); return flags_ == kTrueFlag; }
 	GenericValue& SetBool_(bool b) { this->~GenericValue(); new (this) GenericValue(b); return *this; }
 
 	//@}
