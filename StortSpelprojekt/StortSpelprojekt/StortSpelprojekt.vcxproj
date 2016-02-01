@@ -35,7 +35,7 @@
     <ClCompile Include="QuadTree.cpp" />
     <ClCompile Include="SpawnPoint.cpp" />
     <ClCompile Include="StateMachine\BaseState.cpp" />
-    <ClCompile Include="StateMachine\LevelEdit.cpp" />
+    <ClCompile Include="StateMachine\BaseEdit.cpp" />
     <ClCompile Include="StateMachine\LevelEditState.cpp" />
     <ClCompile Include="PickingDevice.cpp" />
     <ClCompile Include="StateMachine\MenuState.cpp" />
@@ -68,7 +68,7 @@
     <ClInclude Include="Player.h" />
     <ClInclude Include="StateMachine\BaseState.h" />
     <ClInclude Include="PickingDevice.h" />
-    <ClInclude Include="StateMachine\LevelEdit.h" />
+    <ClInclude Include="StateMachine\BaseEdit.h" />
     <ClInclude Include="StateMachine\LevelEditState.h" />
     <ClInclude Include="StateMachine\MenuState.h" />
     <ClInclude Include="StateMachine\OptionsState.h" />

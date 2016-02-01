@@ -491,61 +491,64 @@ namespace Renderer
 
 	void RenderModule::Render(GUI::Node* current, XMMATRIX* transform, FontWrapper* fontWrapper)
 	{
-		ID3D11ShaderResourceView* tex = current->GetTexture();
-		if (tex)
+		if (!current->GetHidden())
 		{
-			D3D11_MAPPED_SUBRESOURCE mappedResource;
-			HRESULT result;
-
-			result = _d3d->GetDeviceContext()->Map(_matrixBufferHUD, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-			if (FAILED(result))
+			ID3D11ShaderResourceView* tex = current->GetTexture();
+			if (tex)
 			{
-				throw std::runtime_error("RenderModule::SetResourcesPerObject: Failed to Map _matrixBufferHUD");
-			}
+				D3D11_MAPPED_SUBRESOURCE mappedResource;
+				HRESULT result;
 
-			XMFLOAT2 s = current->GetScale();
-			DirectX::XMMATRIX scale = DirectX::XMMatrixScaling(s.x, s.y, 1);
+				result = _d3d->GetDeviceContext()->Map(_matrixBufferHUD, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+				if (FAILED(result))
+				{
+					throw std::runtime_error("RenderModule::SetResourcesPerObject: Failed to Map _matrixBufferHUD");
+				}
 
-			XMMATRIX t = DirectX::XMMatrixMultiply(scale, *transform);
+				XMFLOAT2 s = current->GetScale();
+				DirectX::XMMATRIX scale = DirectX::XMMatrixScaling(s.x, s.y, 1);
+
+				XMMATRIX t = DirectX::XMMatrixMultiply(scale, *transform);
 
 			MatrixBufferHud* dataPtr = static_cast<MatrixBufferHud*>(mappedResource.pData);
 			dataPtr->_model = XMMatrixTranspose(t);
 			dataPtr->_colorOffset = current->GetColorOffset();
 
-			_d3d->GetDeviceContext()->Unmap(_matrixBufferHUD, 0);
+				_d3d->GetDeviceContext()->Unmap(_matrixBufferHUD, 0);
 
 			_d3d->GetDeviceContext()->VSSetConstantBuffers(1, 1, &_matrixBufferHUD);
-			_d3d->GetDeviceContext()->PSSetShaderResources(0, 1, &tex);
+				_d3d->GetDeviceContext()->PSSetShaderResources(0, 1, &tex);
 
-			_d3d->GetDeviceContext()->Draw(6, 0);
-		}
-		//Render text
-		int len = current->GetText().length();
-		if (len > 0)
-		{
-			XMFLOAT4X4 temp;
-			float x, y;
-			XMFLOAT2 pos;
+				_d3d->GetDeviceContext()->Draw(6, 0);
+			}
+			//Render text
+			int len = current->GetText().length();
+		if (len > 0) 
+			{
+				XMFLOAT4X4 temp;
+				float x, y;
+				XMFLOAT2 pos;
 
-			XMStoreFloat4x4(&temp, *transform);
-			pos.x = temp._41;
-			pos.y = temp._42;
-			XMFLOAT2 scale = current->GetScale();
-			x = pos.x - scale.x;
-			y = pos.y*-1.0f - scale.y;
+				XMStoreFloat4x4(&temp, *transform);
+				pos.x = temp._41;
+				pos.y = temp._42;
+				XMFLOAT2 scale = current->GetScale();
+				x = pos.x - scale.x;
+				y = pos.y*-1.0f - scale.y;
 			
 			//x and y is in -1,1 coordinate system, convert to pixel coordinate system
-			x = (x + 1.0f) * 0.5f * _screenWidth;
-			y = (y + 1.0f) * 0.5f * _screenHeight;
-			fontWrapper->GetFontWrapper()->DrawTextLayout(_d3d->GetDeviceContext(), current->GetFont()->_textLayout, x, y, current->GetColor(), FW1_RESTORESTATE);
+				x = (x + 1.0f) * 0.5f * _screenWidth;
+				y = (y + 1.0f) * 0.5f * _screenHeight;
+				fontWrapper->GetFontWrapper()->DrawTextLayout(_d3d->GetDeviceContext(), current->GetFont()->_textLayout, x, y, current->GetColor(), FW1_RESTORESTATE);
+			}
+			for (GUI::Node* i : *current->GetChildren())
+			{
+				XMMATRIX a = *(i->GetModelMatrix());
+				XMMATRIX t = XMMatrixMultiply(*transform, a);
+				Render(i, &t, fontWrapper);
+			}
 		}
-
-		for (GUI::Node* i : *current->GetChildren())
-		{
-			XMMATRIX a = *(i->GetModelMatrix());
-			XMMATRIX t = XMMatrixMultiply(*transform, a);
-			Render(i, &t, fontWrapper);
-		}
+		
 	}
 
 	void RenderModule::RenderLineList(XMMATRIX* world, int nrOfPoints, XMFLOAT3 colorOffset)

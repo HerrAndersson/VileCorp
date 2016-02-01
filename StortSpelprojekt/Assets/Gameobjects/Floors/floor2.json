@@ -1,0 +1,7 @@
+{
+    "sample": {
+        "_name": "floor2_proto",
+        "_renderObjectName": "floor",
+		"_textureName": "floor2.png"
+    }
+}

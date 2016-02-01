@@ -128,17 +128,17 @@ void Game::ResizeResources(System::WindowSettings settings)
 	_SM->Resize(settings._width, settings._height);
 }
 
-void Game::Update(float deltaTime)
+bool Game::Update(float deltaTime)
 {
+	bool run = true;
 	_controls->Update();
-
+	run = _SM->Update(deltaTime);
 	if (_controls->IsFunctionKeyDown("EVERYWHERE:FULLSCREEN"))
 	{
 		System::WindowSettings windowSettings = _window->GetWindowSettings();
 		_window->ResizeWindow(windowSettings);
 	}
 
-	_SM->Update(deltaTime);
 
 	_enemies = _objectHandler->GetAllByType(ENEMY);
 	_loot = _objectHandler->GetAllByType(LOOT);
@@ -159,12 +159,7 @@ void Game::Update(float deltaTime)
 			//TODO: Add something to notify the player that they've SUCK and they can replay the level
 		}
 	}
-
-	//for (unsigned int i = 0; i < _spotlights.size(); i++)
-	//{
-	//	XMFLOAT3 rot = _spotlights[i]->GetRotation();
 	//	rot.y -= 0.2f;
-	//	_spotlights[i]->SetRotation(rot);
 
 	//	XMFLOAT3 color = _spotlights[i]->GetColor();
 	//	color.x = sin(_timer.GetGameTime() / 1000 + 100 * i);
@@ -172,7 +167,7 @@ void Game::Update(float deltaTime)
 	//	color.z = sin(_timer.GetGameTime() / 1000 + 100 * i + XMConvertToRadians(240));
 	//	_spotlights[i]->SetColor(color);
 	//}
-
+	
 	//int i = 0;
 	//for (auto p : _pointlights)
 	//{
@@ -180,6 +175,7 @@ void Game::Update(float deltaTime)
 	//	XMFLOAT3 pos = p->GetPosition();
 	//	p->SetPosition(XMFLOAT3(pos.x + (sin((_timer.GetGameTime() / 1000) * sin(120 * i))) / 10, pos.y, pos.z + (sin((_timer.GetGameTime() / 1000) * sin(17 * i * i))) / 10));
 	//}
+	return run;
 }
 
 //TODO: TEMP! Should be removed later. Used for initializing of LightCulling. /Jonas
@@ -368,17 +364,18 @@ int Game::Run()
 		{
 			_timer.Update();
 			if (_timer.GetFrameTime() >= MS_PER_FRAME)
-			{
+			{				
 				if (_hasFocus)
 				{
 					Update(_timer.GetFrameTime());
+				}			{
+					Render();
+					string s = to_string(_timer.GetFrameTime()) + " " + to_string(_timer.GetFPS());
+
+					SetWindowText(_window->GetHWND(), s.c_str());
+
+					_timer.Reset();
 				}
-				Render();
-				string s = to_string(_timer.GetFrameTime()) + " " + to_string(_timer.GetFPS());
-
-				SetWindowText(_window->GetHWND(), s.c_str());
-
-				_timer.Reset();
 			}
 		}
 	}

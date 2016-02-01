@@ -10,7 +10,9 @@ namespace GUI
 		const std::string& id,
 		const std::wstring& text,
 		UINT32 color,
-		float fontSize)
+		float fontSize,
+		bool centered,
+		bool hidden)
 	{
 		_info = info;
 		_position = position;
@@ -21,6 +23,8 @@ namespace GUI
 		_fontSize = fontSize;
 		_color = color;
 		_colorOffset = colorOffset;
+		_centered = centered;
+		_hidden = hidden;
 
 		UpdateMatrix();
 		UpdateFont();
@@ -84,6 +88,10 @@ namespace GUI
 		DWRITE_TEXT_RANGE allText = { 0, uintTextSize };
 		_font._textLayout->SetFontSize(_fontSize, allText);
 		_font._textLayout->SetWordWrapping(DWRITE_WORD_WRAPPING_WHOLE_WORD);
+		if (_centered)
+		{
+			_font._textLayout->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
+		}
 	}
 
 	void Node::SetPosition(DirectX::XMFLOAT2 position)
@@ -133,6 +141,17 @@ namespace GUI
 		return _colorOffset;
 	}
 
+	void Node::SetCentered(bool centered)
+	{
+		_centered = centered;
+		UpdateFont();
+	}
+
+	void Node::SetHidden(bool hidden)
+	{
+		_hidden = hidden;
+	}
+
 	DirectX::XMFLOAT2 Node::GetPosition() const
 	{
 		return _position;
@@ -166,6 +185,16 @@ namespace GUI
 	ID3D11ShaderResourceView* Node::GetTexture()
 	{
 		return _texture;
+	}
+
+	bool Node::GetCentered() const
+	{
+		return _centered;
+	}
+
+	bool Node::GetHidden() const
+	{
+		return _hidden;
 	}
 
 	DirectX::XMMATRIX* Node::GetModelMatrix()

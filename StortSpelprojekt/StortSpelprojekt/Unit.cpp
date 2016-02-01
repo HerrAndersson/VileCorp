@@ -148,10 +148,10 @@ void Unit::ScanOctant(int depth, int octant, double &startSlope, double endSlope
 		if (GetVisDistance(x, y, unitPosX, unitPosY) <= visRangeSqrd)
 		{
 			//Is there a wall on current tile
-			if (_tileMap->IsWallOnTile(x, y))
+			if (_tileMap->IsWallOnTile(AI::Vec2D(x, y)))
 			{
 				//If previous tile was in range and not a wall
-				if (_tileMap->IsValid(x, y) && !_tileMap->IsWallOnTile(x + prevTileVec._x, y + prevTileVec._y))
+				if (_tileMap->IsValid(AI::Vec2D(x, y)) && !_tileMap->IsWallOnTile(AI::Vec2D(x + prevTileVec._x, y + prevTileVec._y)))
 				{
 					//Recurse and adjust depth with new end slope
 					ScanOctant(depth + 1, octant, startSlope, (endSlopeCompOffset)* GetSlope(x + (endCornerVec._x * 0.5), y + (endCornerVec._y * 0.5), unitPosX, unitPosY, (!rowByRow)));
@@ -159,7 +159,7 @@ void Unit::ScanOctant(int depth, int octant, double &startSlope, double endSlope
 			}
 			else
 			{
-				if ((_tileMap->IsWallOnTile(x + (prevTileVec._x), y + (prevTileVec._y))))
+				if ((_tileMap->IsWallOnTile(AI::Vec2D(x + (prevTileVec._x), y + (prevTileVec._y)))))
 				{
 					startSlope = (startSlopeOffset)* GetSlope(x + (startCornerVec._x * 0.5), y + (startCornerVec._y * 0.5), unitPosX, unitPosY, (!rowByRow));
 				}
@@ -190,7 +190,7 @@ void Unit::ScanOctant(int depth, int octant, double &startSlope, double endSlope
 	y = min(max(y, 0), _tileMap->GetHeight() - 1);	//Set y within tile range if it's outside
 
 	//Recurse and run if depth is within range
-	if (depth < _visionRadius && (!_tileMap->IsWallOnTile(x, y)))
+	if (depth < _visionRadius && (!_tileMap->IsWallOnTile(AI::Vec2D(x, y))))
 	{
 		ScanOctant(depth + 1, octant, startSlope, endSlope);
 	}
@@ -418,23 +418,23 @@ void Unit::CheckVisibleTiles()
 {
 	for (int i = 0; i < _nrOfVisibleTiles; i++)
 	{
-		if (_tileMap->IsWallOnTile(_visibleTiles[i]._x, _visibleTiles[i]._y))
+		if (_tileMap->IsWallOnTile(_visibleTiles[i]))
 		{
 			_aStar->SetTileCost(_visibleTiles[i], -1);
 		}
-		else if (_tileMap->IsTrapOnTile(_visibleTiles[i]._x, _visibleTiles[i]._y))											//TODO: Traps shouldn't be automatically visible --Victor
+		else if (_tileMap->IsTrapOnTile(_visibleTiles[i]))											//TODO: Traps shouldn't be automatically visible --Victor
 		{
 			_aStar->SetTileCost(_visibleTiles[i], 10);
 		}
-		if (_tileMap->UnitsOnTile(_visibleTiles[i]._x, _visibleTiles[i]._y) > 0 && !(_visibleTiles[i] == _goalTilePosition || _visibleTiles[i] == _tilePosition))	//Unit finds another unit
+		if (_tileMap->UnitsOnTile(_visibleTiles[i]) > 0 && !(_visibleTiles[i] == _goalTilePosition || _visibleTiles[i] == _tilePosition))	//Unit finds another unit
 		{
-			int nrOfUnits = _tileMap->UnitsOnTile(_visibleTiles[i]._x, _visibleTiles[i]._y);
-			GameObject* unit = _tileMap->GetObjectOnTile(_visibleTiles[i]._x, _visibleTiles[i]._y, ENEMY);
+			int nrOfUnits = _tileMap->UnitsOnTile(_visibleTiles[i]);
+			GameObject* unit = _tileMap->GetObjectOnTile(_visibleTiles[i], ENEMY);
 			if (unit == nullptr)
 			{
-				unit = _tileMap->GetObjectOnTile(_visibleTiles[i]._x, _visibleTiles[i]._y, GUARD);
+				unit = _tileMap->GetObjectOnTile(_visibleTiles[i], GUARD);
 			}
-			EvaluateTile(unit);				//
+			EvaluateTile(unit);
 		}
 	}
 }
@@ -446,13 +446,13 @@ void Unit::CheckAllTiles()
 		for (int j = 0; j < _tileMap->GetHeight(); j++)
 		{
 			//Handle walls
-			if (_tileMap->IsWallOnTile(i, j))
+			if (_tileMap->IsWallOnTile(AI::Vec2D(i, j)))
 			{
-				_aStar->SetTileCost({ i, j }, -1);
+				_aStar->SetTileCost(AI::Vec2D(i, j), -1);
 			}
 			else
 			{
-				_aStar->SetTileCost({ i, j }, 1);
+				_aStar->SetTileCost(AI::Vec2D(i, j), 1);
 			}
 		}
 	}
@@ -461,14 +461,14 @@ void Unit::CheckAllTiles()
 		for (int j = 0; j < _tileMap->GetHeight(); j++)
 		{
 			//Handle objectives
-			if (_tileMap->IsObjectiveOnTile(i, j))
+			if (_tileMap->IsObjectiveOnTile(AI::Vec2D(i, j)))
 			{
 				_aStar->SetTileCost({ i, j }, 1);
-				EvaluateTile(_tileMap->GetObjectOnTile(i, j, LOOT));
+				EvaluateTile(_tileMap->GetObjectOnTile(AI::Vec2D(i, j), LOOT));
 			}
-			else if (_tileMap->IsTypeOnTile(i, j, SPAWN))
+			else if (_tileMap->IsTypeOnTile(AI::Vec2D(i, j), SPAWN))
 			{
-				EvaluateTile(_tileMap->GetObjectOnTile(i, j, SPAWN));
+				EvaluateTile(_tileMap->GetObjectOnTile(AI::Vec2D(i, j), SPAWN));
 			}
 		}
 	}
@@ -482,7 +482,8 @@ Moves the goal and finds the path to the new goal
 void Unit::SetGoal(AI::Vec2D goal)
 {
 	_goalTilePosition = goal;
-	_objective = _tileMap->GetObjectOnTile(goal._x, goal._y, FLOOR);		//Note: Make sure walled tiles aren't valid goals
+	_objective = _tileMap->GetObjectOnTile(goal, FLOOR);		//Note: Make sure walled tiles aren't valid goals
+	//_objective->SetColorOffset({5,0,0});
 	_aStar->CleanMap();
 	_aStar->SetStartPosition(_tilePosition);
 	_aStar->SetGoalPosition(goal);
@@ -521,7 +522,9 @@ void Unit::Move()
 	//}
 	if (_isMoving)
 	{
+		_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,0});
 		_tilePosition += _direction;
+		_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,4,0});
 	}
 	if (_objective != nullptr && _objective->GetPickUpState() != ONTILE)			//Check that no one took your objective
 	{
@@ -566,7 +569,7 @@ void Unit::Update(float deltaTime)
 	{
 		_waiting--;
 	}
-	else if (_waiting == 0)
+	else if (_waiting == 0 && !_isMoving)
 	{
 		_waiting--;
 		Move();

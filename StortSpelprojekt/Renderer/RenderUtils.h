@@ -5,7 +5,7 @@
 #include <DirectXMath.h>
 #include <map>
 
-enum Type { FLOOR, WALL, LOOT, SPAWN, TRAP, TRIGGER, GUARD, ENEMY, NR_OF_TYPES/*Has to be last*/ };
+enum Type { FLOOR, WALL, LOOT, SPAWN, TRAP, GUARD, ENEMY, NR_OF_TYPES/*Has to be last*/ };
 
 struct Bone
 {

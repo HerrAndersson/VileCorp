@@ -8,6 +8,7 @@ PlayState::PlayState(System::Controls* controls, ObjectHandler* objectHandler, S
 	
 	_camera = camera;
 	_pickingDevice = pickingDevice;
+	_gamePaused = false;
 }
 
 PlayState::~PlayState()
@@ -15,20 +16,66 @@ PlayState::~PlayState()
 
 void PlayState::Update(float deltaTime)
 {
-	if(_controls->IsFunctionKeyDown("PLAY:MENU"))
-	{
-		ChangeState(MENUSTATE);
-	}
+	HandleInput();
 
-	_gameLogic.Update(deltaTime);
+	IngameMenu();
+	if (!_gamePaused)
+	{
+		_gameLogic.Update(deltaTime);
+	}
 }
 
 void PlayState::OnStateEnter()
 {
 	_gameLogic.Initialize(_objectHandler, _camera, _controls, _pickingDevice);
+	//TODO: hide ingame menu
+	_objectHandler->EnableSpawnPoints();
 }
 
 void PlayState::OnStateExit()
 {
 
+}
+
+void PlayState::HandleInput()
+{
+	if (_controls->IsFunctionKeyDown("MAP_EDIT:MENU"))
+	{
+		ChangeState(MENUSTATE);
+	}
+}
+
+void PlayState::IngameMenu()
+{
+
+	if (_controls->IsFunctionKeyDown("PLAY:SHOWMENU"))
+	{
+		//TODO::unhide menu
+		_gamePaused = true;
+	}
+	
+	if (_gamePaused)
+	{
+	if (_controls->IsFunctionKeyDown("MENU:CLICK"))
+	{
+		System::MouseCoord coord = _controls->GetMouseCoord();
+		if (_uiTree.IsButtonColliding("resume", coord._pos.x, coord._pos.y))
+		{
+			//TODO: hide menu
+			_gamePaused = false;
+		}
+		
+		if (_uiTree.IsButtonColliding("mainmenu", coord._pos.x, coord._pos.y))
+		{
+			ChangeState(State::MENUSTATE);
+		}
+		
+		if (_uiTree.IsButtonColliding("quit", coord._pos.x, coord._pos.y))
+		{
+			ChangeState(State::EXITSTATE);
+		}
+		
+		}
+	}
+	
 }

@@ -92,10 +92,6 @@ struct TilesetHandler
 		{
 			_cur = &_tileset->_objects[TRAP];
 		}
-		else if (!strcmp("triggers", str))
-		{
-			_cur = &_tileset->_objects[TRIGGER];
-		}
 		else if (!strcmp("guards", str))
 		{
 			_cur = &_tileset->_objects[GUARD];
@@ -213,7 +209,7 @@ private:
 public:
 	AssetManager(ID3D11Device* device);
 	~AssetManager();
-	RenderObject* GetRenderObject(int index);
+	RenderObject* GetRenderObject(int index, string texture);
 	uint GetRenderObjectByType(Type type, uint index);
 	void UnloadModel(int index, bool force);
 	bool ParseLevel(int index, vector<GameObjectData> &gameObjects, int &dimX, int &dimY);
