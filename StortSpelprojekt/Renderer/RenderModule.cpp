@@ -395,6 +395,7 @@ namespace Renderer
 		}
 		case AA_STAGE:
 		{
+			deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 			_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::BACK);
 			_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::DISABLE);
 			_d3d->SetAntiAliasingState();
@@ -513,20 +514,20 @@ namespace Renderer
 
 				XMMATRIX t = DirectX::XMMatrixMultiply(scale, *transform);
 
-			MatrixBufferHud* dataPtr = static_cast<MatrixBufferHud*>(mappedResource.pData);
-			dataPtr->_model = XMMatrixTranspose(t);
-			dataPtr->_colorOffset = current->GetColorOffset();
+				MatrixBufferHud* dataPtr = static_cast<MatrixBufferHud*>(mappedResource.pData);
+				dataPtr->_model = XMMatrixTranspose(t);
+				dataPtr->_colorOffset = current->GetColorOffset();
 
 				_d3d->GetDeviceContext()->Unmap(_matrixBufferHUD, 0);
 
-			_d3d->GetDeviceContext()->VSSetConstantBuffers(1, 1, &_matrixBufferHUD);
+				_d3d->GetDeviceContext()->VSSetConstantBuffers(1, 1, &_matrixBufferHUD);
 				_d3d->GetDeviceContext()->PSSetShaderResources(0, 1, &tex);
 
 				_d3d->GetDeviceContext()->Draw(6, 0);
 			}
 			//Render text
 			int len = current->GetText().length();
-		if (len > 0) 
+			if (len > 0)
 			{
 				XMFLOAT4X4 temp;
 				float x, y;
@@ -538,8 +539,8 @@ namespace Renderer
 				XMFLOAT2 scale = current->GetScale();
 				x = pos.x - scale.x;
 				y = pos.y*-1.0f - scale.y;
-			
-			//x and y is in -1,1 coordinate system, convert to pixel coordinate system
+
+				//x and y is in -1,1 coordinate system, convert to pixel coordinate system
 				x = (x + 1.0f) * 0.5f * _screenWidth;
 				y = (y + 1.0f) * 0.5f * _screenHeight;
 				fontWrapper->GetFontWrapper()->DrawTextLayout(_d3d->GetDeviceContext(), current->GetFont()->_textLayout, x, y, current->GetColor(), FW1_RESTORESTATE);
@@ -551,7 +552,6 @@ namespace Renderer
 				Render(i, &t, fontWrapper);
 			}
 		}
-		
 	}
 
 	void RenderModule::RenderLineList(XMMATRIX* world, int nrOfPoints, XMFLOAT3 colorOffset)
@@ -559,10 +559,7 @@ namespace Renderer
 		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
 
 		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
-
 		SetDataPerObject(world, colorOffset);
-
-		int pointSize = sizeof(XMFLOAT3);
 
 		deviceContext->Draw(nrOfPoints, 0);
 	}
