@@ -37,7 +37,7 @@ SecurityCamera::SecurityCamera(unsigned short ID, DirectX::XMFLOAT3 position, Di
 	: GameObject(ID, position, rotation, tilePosition, type, renderObject)
 {
 	_tileMap = tileMap;
-	_direction = {0,1};
+	_direction = {0,1};				//TODO this should be setable --Victor
 	_visionRadius = 4;
 	_visionCone = new VisionCone(_visionRadius, _tileMap);
 	_visionCone->FindVisibleTiles(_tilePosition, _direction);
@@ -45,17 +45,21 @@ SecurityCamera::SecurityCamera(unsigned short ID, DirectX::XMFLOAT3 position, Di
 
 SecurityCamera::~SecurityCamera()
 {
-	delete[] _visionCone;
+	delete _visionCone;
 }
 
-AI::Vec2D SecurityCamera::GetDirection()
+AI::Vec2D SecurityCamera::GetDirection() const
 {
 	return _direction;
 }
 
+void SecurityCamera::SetDirection(AI::Vec2D direction)
+{
+	_direction = direction;
+}
+
 void SecurityCamera::CheckVisibleTiles()
 {
-//	AI::Vec2D* visibleTiles = _visionCone->GetVisibleTiles();
 	AI::Vec2D tile = {0,0};
 	for (size_t i = 0; i < _visionCone->GetNrOfVisibleTiles(); i++)
 	{

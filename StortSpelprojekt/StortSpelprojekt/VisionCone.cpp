@@ -196,7 +196,6 @@ void VisionCone::ScanOctant(int depth, int octant, double &startSlope, double en
 	}
 }
 
-
 double VisionCone::GetSlope(double x1, double y1, double x2, double y2, bool invert)
 {
 	if (invert)
@@ -215,7 +214,12 @@ int VisionCone::GetVisDistance(int x1, int y1, int x2, int y2)
 }
 
 VisionCone::VisionCone()
-{}
+{
+	_radius = 0;
+	_tileMap = nullptr;
+	_visibleTiles = nullptr;
+	_nrOfVisibleTiles = 0;
+}
 
 VisionCone::VisionCone(int radius, const Tilemap* tileMap)
 {
@@ -248,7 +252,6 @@ void VisionCone::FindVisibleTiles(AI::Vec2D pos, AI::Vec2D dir)
 	{
 		octant = 3 - (2 - dir._x) * dir._y;			//2-4 if x = 1, 1 or 5 if x = 0
 	}
-
 	ScanOctant(1, octant, startSlope, 0.0, pos, dir);
 	octant = octant % 8 + 1;
 	startSlope = 1.0;
@@ -279,6 +282,5 @@ void VisionCone::ColorVisibleTiles(DirectX::XMFLOAT3 color)
 		{
 			floor->SetColorOffset(color);
 		}
-
 	}
 }
