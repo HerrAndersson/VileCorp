@@ -36,15 +36,8 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 
 	_SM->Update(_timer.GetFrameTime());
 	
-	if (_SM->GetState() == LEVELEDITSTATE)
-	{
-		//TODO: Use dimensions from the tilemap /Jonas
-		_grid = new Grid(_renderModule->GetDevice(), 1, 1, 1, DirectX::XMFLOAT3(0.4f, 1.0f, 0.3f));
-	}
-	else
-	{
-		_grid = nullptr;
-	}
+	//TODO: Use dimensions from the tilemap /Jonas
+	_grid = new Grid(_renderModule->GetDevice(), 1, 100,100, DirectX::XMFLOAT3(0.4f, 1.0f, 0.3f));
 
 	_enemiesHasSpawned = false;
 
@@ -67,7 +60,6 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	}
 
 	_lightCulling = new LightCulling();
-
 }
 
 void Game::CheckSettings()
@@ -235,7 +227,6 @@ void Game::Render()
 			}
 		}
 	}
-
 
 	//TEMPORARY!!
 	//TODO: LightCulling does not work correctly, which makes the light shine through walls sometimes. The functionality for the light is correct, but the data passed to it is not complete.

@@ -5,7 +5,7 @@ namespace GUI
 	Node::Node(NodeInfo* info,
 		DirectX::XMFLOAT2 position,
 		DirectX::XMFLOAT2 scale,
-		DirectX::XMFLOAT3 colorOffset,
+		DirectX::XMFLOAT4 colorOffset,
 		ID3D11ShaderResourceView* texture,
 		const std::string& id,
 		const std::wstring& text,
@@ -131,14 +131,23 @@ namespace GUI
 		_texture = texture;
 	}
 
-	void Node::SetColorOffset(DirectX::XMFLOAT3 colorOffset)
+	void Node::SetColorOffset(DirectX::XMFLOAT4 colorOffset)
 	{
 		_colorOffset = colorOffset;
 	}
 
-	DirectX::XMFLOAT3 Node::GetColorOffset()
+	void Node::SetAlpha(float alpha)
+	{
+		_colorOffset.w = alpha;
+	}
+
+	DirectX::XMFLOAT4 Node::GetColorOffset() const
 	{
 		return _colorOffset;
+	}
+	float Node::GetAlpha() const
+	{
+		return _colorOffset.w;
 	}
 
 	void Node::SetCentered(bool centered)

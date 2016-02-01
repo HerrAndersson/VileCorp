@@ -81,7 +81,7 @@ namespace Renderer
 		struct MatrixBufferHud
 		{
 			DirectX::XMMATRIX _model;
-			DirectX::XMFLOAT3 _colorOffset;
+			DirectX::XMFLOAT4 _colorOffset;
 		};
 
 		struct MatrixBufferLightPassPerFrame

@@ -5,7 +5,7 @@
 cbuffer TextureModelMatrix : register(b1)
 {
 	matrix model;
-	float3 colorOffset;
+	float4 colorOffset;
 };
 
 struct VS_IN
@@ -18,7 +18,7 @@ struct VS_OUT
 {
 	float4 pos : SV_POSITION;
 	float2 uv : TEXCOORD0;
-	float3 colorOffset : COLOROFFSET;
+	float4 colorOffset : COLOROFFSET;
 };
 
 VS_OUT main(VS_IN input)
