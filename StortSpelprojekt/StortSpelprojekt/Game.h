@@ -16,6 +16,8 @@
 #include "GameObjectDataLoader.h"
 #include "ShadowMap.h"
 
+#include "SettingsReader.h"
+
 class Game
 {
 private:
@@ -36,6 +38,7 @@ private:
 	PlayerInfo					_playerInfo;
 	SettingInfo					_gameSettings;
 	System::WindowSettings		_windowSettings;
+	Settings::SettingsReader*	_settingsReader;
 
 	bool						_hasFocus;
 	

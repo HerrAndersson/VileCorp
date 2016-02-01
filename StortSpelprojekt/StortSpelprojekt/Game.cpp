@@ -5,6 +5,8 @@
 
 Game::Game(HINSTANCE hInstance, int nCmdShow)
 {
+	_settingsReader = new Settings::SettingsReader();
+
 	CheckSettings();
 	_gameHandle = this;
 	_window = new System::Window("Amazing game", hInstance, _windowSettings, WndProc);
