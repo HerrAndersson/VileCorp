@@ -48,6 +48,31 @@ int Unit::GetApproxDistance(AI::Vec2D target) const
 	return _aStar->GetHeuristicDistance(_tilePosition, target);
 }
 
+void Unit::Flee()
+{
+	if (_pursuer == nullptr)		//TODO Add other conditions to stop fleeing --Victor
+	{
+		_isFleeing = false;
+	}
+	else
+	{
+		AI::Vec2D offset = _tilePosition - _pursuer->GetTilePosition();
+		AI::Vec2D bestDist = offset + AI::Vec2D(-1, 0);
+		for (int i = 1; i < 8; i++)
+		{
+			AI::Vec2D tempDist = offset + AI::NEIGHBOUR_OFFSETS[i];
+
+			if (_tileMap->IsFloorOnTile(_tilePosition + AI::NEIGHBOUR_OFFSETS[i]) && !_tileMap->IsEnemyOnTile(_tilePosition + AI::NEIGHBOUR_OFFSETS[i])
+				&& tempDist._x * tempDist._x + tempDist._y * tempDist._y < bestDist._x * bestDist._x + bestDist._y * bestDist._y)
+			{
+				bestDist = tempDist;
+			}
+		}
+
+		_direction = bestDist - offset;
+	}
+}
+
 Unit::Unit()
 	: GameObject()
 {
@@ -227,18 +252,7 @@ Name should be changed to make it clear that this is tile movement
 */
 void Unit::Move()
 {
-	//if (_pathLength <= 0)		//The unit has reached its goal and needs a new one
-	//{
-	//	if (_objective != nullptr)
-	//	{
-	//		act(_objective);
-	//	}
-	//	CheckAllTiles();
-	//}
-	//if (_goalTilePosition == _tilePosition)
-	//{
-	//	CheckAllTiles();
-	//}
+
 	if (_isMoving)
 	{
 		_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,0});

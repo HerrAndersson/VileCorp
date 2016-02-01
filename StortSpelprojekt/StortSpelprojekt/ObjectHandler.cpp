@@ -472,6 +472,11 @@ void ObjectHandler::Update(float deltaTime)
 {
 	//Update all objects gamelogic
 
+	//resets visibility for enemies each frame. Placed first for now to avoid possible conflicts
+	for (int i = 0; i < _gameObjects[ENEMY].size(); i++)
+	{
+		_gameObjects[ENEMY][i]->SetVisibility(false);
+	}
 	for (int i = 0; i < NR_OF_TYPES; i++)
 	{
 		for (int j = 0; j < _gameObjects[i].size(); j++)
@@ -492,12 +497,6 @@ void ObjectHandler::Update(float deltaTime)
 
 			if (g->GetType() == GUARD || g->GetType() == ENEMY)									//Handle unit movement
 			{
-
-				if (g->GetType() == ENEMY)													//Reset enemy visibility
-				{
-					g->SetVisibility(false);
-				}
-
 				Unit* unit = static_cast<Unit*>(g);
 
 				GameObject* heldObject = unit->GetHeldObject();

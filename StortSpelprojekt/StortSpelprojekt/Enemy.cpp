@@ -21,6 +21,15 @@ void Enemy::EvaluateTile(Type objective, AI::Vec2D tile)
 	case LOOT:
 		tempPriority = 2;
 	case GUARD:
+		if (IsVisible())
+		{
+			_isFleeing = true;
+			_pursuer = _tileMap->GetObjectOnTile(tile, GUARD);
+		}
+		else if (GetApproxDistance(tile) < 3)
+		{
+			tempPriority = 2;			//TODO Make actual calculations based on attack skill etc --Victor
+		}
 	case TRAP:
 		break;
 	case ENEMY:
@@ -56,6 +65,15 @@ void Enemy::EvaluateTile(GameObject* obj)
 		case TRAP:
 			break;
 		case GUARD:
+			if (IsVisible())
+			{
+				_isFleeing = true;
+				_pursuer = obj;
+			}
+			else if (GetApproxDistance(obj->GetTilePosition()) < 3)
+			{
+				tempPriority = 2;			//TODO Make actual calculations based on attack skill etc --Victor
+			}
 			break;
 		case ENEMY:
 			break;

@@ -12,9 +12,6 @@ private:
 	AI::AStar* _aStar;
 	AI::Vec2D _goalTilePosition;
 	AI::Vec2D* _path;
-
-	const Tilemap* _tileMap;		//Pointer to the tileMap in objectHandler(?). Units should preferably have read-, but not write-access.
-	AI::Vec2D _direction;
 	float  _moveSpeed;
 
 	int _visionRadius;
@@ -36,10 +33,18 @@ private:
 	void Rotate();
 
 protected:
+	AI::Vec2D _direction;
+	const Tilemap* _tileMap;		//Pointer to the tileMap in objectHandler(?). Units should preferably have read-, but not write-access.
 	int _goalPriority;				//Lower value means higher priority
 	int _pathLength;
+
 	GameObject* _heldObject;
+
+	bool _isFleeing;
+	GameObject* _pursuer;
+
 	int GetApproxDistance(AI::Vec2D target)const;
+	void Flee();
 
 public:
 	Unit();
