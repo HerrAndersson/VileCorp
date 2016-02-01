@@ -34,8 +34,9 @@ void LevelEditState::Update(float deltaTime)
 	_baseEdit.Update(deltaTime);
 	HandleInput();
 	HandleButtons();
-	_baseEdit.DragAndDrop();
 
+
+	_baseEdit.DragAndDrop();
 	_baseEdit.DragAndPlace(_toPlace._type, _toPlace._name);
 }
 
@@ -45,11 +46,20 @@ void LevelEditState::OnStateEnter()
 	_objectHandler->DisableSpawnPoints();
 	_uiTree.GetNode("wholelist")->SetHidden(true);
 	_uiTree.GetNode("listbuttons")->SetHidden(true);
+
+	//_objectHandler->EnlargeTilemap(50);
+
+	XMFLOAT3 campos;
+	campos.x = _objectHandler->GetTileMap()->GetWidth() / 2;
+	campos.y = 15;
+	campos.z = _objectHandler->GetTileMap()->GetHeight() / 2 - 10;
+	_camera->SetPosition(campos);
+
 }
 
 void LevelEditState::OnStateExit()
 {
-
+	_objectHandler->MinimizeTileMap();
 }
 
 void LevelEditState::HandleInput()
@@ -257,8 +267,6 @@ void LevelEditState::HandleButtons()
 void LevelEditState::InitNewLevel()
 {
 	_objectHandler->Release();
-
-	_baseEdit.ResetSelectedObj();
 }
 
 void LevelEditState::ExportLevel()
@@ -277,16 +285,14 @@ void LevelEditState::ExportLevel()
 
 	for (uint i = 0; i < gameObjects->size(); i++)
 	{
-		for (uint y = 0; y < gameObjects[i].size(); y++)
+		for (GameObject* g : gameObjects->at(i))
 		{
-			GameObject *gameObj = (*gameObjects)[i][y];
 			MapData mapD;
 
-			mapD._tileType = gameObj->GetType();
-			DirectX::XMFLOAT3 position = gameObj->GetPosition();
-			mapD._posX = position.x;
-			mapD._posZ = position.z;
-			mapD._rotY = gameObj->GetRotation().y;
+			mapD._tileType = g->GetType();
+			mapD._posX = g->GetPosition().x;
+			mapD._posZ = g->GetPosition().z;
+			mapD._rotY = g->GetRotation().y;
 
 			mapData.push_back(mapD);
 		}

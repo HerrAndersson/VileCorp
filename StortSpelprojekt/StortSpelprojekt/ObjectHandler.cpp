@@ -1,8 +1,5 @@
 #include "ObjectHandler.h"
 
-
-
-
 ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data)
 {
 	_idCount = 0;
@@ -69,6 +66,37 @@ bool ObjectHandler::Add(Type type, int index, XMFLOAT3 position, XMFLOAT3 rotati
 		break;
 	default:	
 		break;
+	}
+
+
+	//Temporary check for traps. Could be more general if other objects are allowed to take up multiple tiles
+	bool addedObject = false;
+	if (object != nullptr)
+	{
+		addedObject = true;
+	}
+	if (type == TRAP)
+	{
+		Trap* trap = static_cast<Trap*>(object);
+		int i = 0;
+		addedObject = true;
+		AI::Vec2D* arr = trap->GetTiles();
+		for (int i = 0; i < trap->GetTileSize() && addedObject; i++)
+		{
+			if (!_tilemap->CanPlaceObject(arr[i]))
+			{
+				addedObject = false;
+			}
+		}
+		if (addedObject)
+		{
+			for (int i = 0; i < trap->GetTileSize() && addedObject; i++)
+			{
+				_tilemap->AddObjectToTile(arr[i], object);
+				_tilemap->GetObjectOnTile(arr[i], FLOOR)->AddColorOffset({2,0,0});
+			}
+		}
+
 	}
 
 
@@ -397,7 +425,7 @@ bool ObjectHandler::LoadLevel(int lvlIndex)
 	if (result)
 	{
 		delete _tilemap;
-		_tilemap = new Tilemap(dimX, dimY);
+		_tilemap = new Tilemap(AI::Vec2D(dimX, dimY));
 
 		for (auto i : gameObjectData)
 		{
@@ -458,7 +486,7 @@ void ObjectHandler::Update(float deltaTime)
 			}
 			else if (g->GetPickUpState() == DROPPING)
 			{
-				_tilemap->AddObjectToTile(g->GetTilePosition()._x, g->GetTilePosition()._y, g);
+				_tilemap->AddObjectToTile(g->GetTilePosition(), g);
 				g->SetPickUpState(ONTILE);
 			}
 
@@ -489,18 +517,18 @@ void ObjectHandler::Update(float deltaTime)
 					float zOffset = abs(g->GetPosition().z - g->GetTilePosition()._y);
 					if (xOffset > 0.99 || zOffset > 0.99)																		 //If unit is on a new tile	
 					{
-						_tilemap->RemoveObjectFromTile(g->GetTilePosition()._x, g->GetTilePosition()._y, unit);
+						_tilemap->RemoveObjectFromTile(g->GetTilePosition(), unit);
 						unit->Move();
-						_tilemap->AddObjectToTile(g->GetTilePosition()._x, g->GetTilePosition()._y, unit);
+						_tilemap->AddObjectToTile(g->GetTilePosition(), unit);
 
-						if (_tilemap->IsTrapOnTile(g->GetTilePosition()._x, g->GetTilePosition()._y))
+						/*if (_tilemap->IsTrapOnTile(g->GetTilePosition()._x, g->GetTilePosition()._y))
 						{
 							static_cast<Trap*>(_tilemap->GetObjectOnTile(g->GetTilePosition()._x, g->GetTilePosition()._y, TRAP))->Activate(unit);
-						}
+						}*/
 					}
-					if (unit->GetType() == GUARD && _tilemap->IsEnemyOnTile(g->GetTilePosition()._x, g->GetTilePosition()._y))
+					if (unit->GetType() == GUARD && _tilemap->IsEnemyOnTile(g->GetTilePosition()))
 					{
-						unit->act(_tilemap->GetObjectOnTile(g->GetTilePosition()._x, g->GetTilePosition()._y, ENEMY));
+						unit->act(_tilemap->GetObjectOnTile(g->GetTilePosition(), ENEMY));
 					}
 				}
 			}
@@ -508,18 +536,6 @@ void ObjectHandler::Update(float deltaTime)
 			{
 				if (static_cast<SpawnPoint*>(g)->isSpawning())
 				{
-					//GameObject* object = new Enemy(_idCount, g->GetPosition(), g->GetRotation(), g->GetTilePosition(), ENEMY, _assetManager->GetRenderObject(ENEMY), _tilemap);
-					//if (_tilemap->AddObjectToTile(g->GetTilePosition()._x, g->GetTilePosition()._y, object))
-					//{
-					//	_gameObjects[ENEMY].push_back(object);
-					//	_objectCount++;
-					//	_idCount++;
-					//	static_cast<Unit*>(object)->Move();
-					//}
-					//else
-					//{
-					//	delete object;
-					//}
 					if (Add(ENEMY, "enemy_proto", g->GetPosition(), g->GetRotation()))
 					{
 						((Unit*)_gameObjects[ENEMY].back())->Move();
@@ -650,6 +666,9 @@ Trap * ObjectHandler::MakeTrap(GameObjectTrapInfo * data, XMFLOAT3 position, XMF
 		AI::Vec2D((int)position.x, (int)position.z),
 		TRAP,
 		_assetManager->GetRenderObject(data->_renderObject, ""),
+		_tilemap,
+		SPIKE,
+		{ 1,0 },
 		data->_cost);
 
 	// Read more data

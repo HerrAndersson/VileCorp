@@ -112,6 +112,11 @@ namespace System
 		MSG msg;
 		bool result = true;
 
+		if (GetAsyncKeyState(VK_ESCAPE) != 0)
+		{
+			return false;
+		}
+
 		ZeroMemory(&msg, sizeof(MSG));
 
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))

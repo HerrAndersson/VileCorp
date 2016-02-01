@@ -18,7 +18,7 @@ struct vertexInputType
 
 struct vertexOutput
 {
-	float4 pos		: SV_POSITION0;
+	float4 pos			: SV_POSITION0;
 	float3 normal		: NORMAL;
 	float2 uv			: TEXCOORD0;
 };

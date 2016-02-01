@@ -30,7 +30,6 @@ private:
 	};
 
 	GameObject* _marker;
-	GameObject* _lastSelected;
 	AI::Vec2D* _markedTile;
 
 	System::MouseCoord _mouseCoord;
@@ -53,15 +52,18 @@ public:
 	void Initialize(ObjectHandler* objectHandler, System::Controls* controls, PickingDevice* pickingDevice, System::Camera* camera);
 
 	GameObject* GetSelectedObject();
-	void ResetSelectedObj();
 	bool Add(Type type, std::string name);
 	bool Delete(Type type);
 	bool TypeOn(Type type);
 	void DragAndDrop(Type type);
 	void DragAndDrop();
 	void DragAndPlace(Type type, std::string objectName);
+	
+	void DragActivate(Type type, std::string objectName);
 	void ChangePlaceState();
-
+	bool IsSelection() const;
+	bool IsDragAndPlace() const;
+	bool IsPlace() const;
 
 	void Update(float deltaTime);
 };
