@@ -6,7 +6,6 @@
 #include "ShaderHandler.h"
 #include <DirectXMath.h>
 #include "RenderUtils.h"
-#include "HUDElement.h"
 #include "ShadowMap.h"
 #include "Spotlight.h"
 #include "Pointlight.h"
@@ -82,6 +81,7 @@ namespace Renderer
 		struct MatrixBufferHud
 		{
 			DirectX::XMMATRIX _model;
+			DirectX::XMFLOAT3 _colorOffset;
 		};
 
 		struct MatrixBufferLightPassPerFrame
@@ -137,7 +137,6 @@ namespace Renderer
 		void SetShadowMapDataPerObject(DirectX::XMMATRIX* world);
 
 		void Render(GUI::Node* current, DirectX::XMMATRIX* transform, FontWrapper* fontWrapper);
-		void Render(std::vector<HUDElement>* imageData);
 
 		ShadowMap* _shadowMap;
 

@@ -172,6 +172,14 @@ void Game::Update(float deltaTime)
 	//	color.z = sin(_timer.GetGameTime() / 1000 + 100 * i + XMConvertToRadians(240));
 	//	_spotlights[i]->SetColor(color);
 	//}
+
+	//int i = 0;
+	//for (auto p : _pointlights)
+	//{
+	//	i++;
+	//	XMFLOAT3 pos = p->GetPosition();
+	//	p->SetPosition(XMFLOAT3(pos.x + (sin((_timer.GetGameTime() / 1000) * sin(120 * i))) / 10, pos.y, pos.z + (sin((_timer.GetGameTime() / 1000) * sin(17 * i * i))) / 10));
+	//}
 }
 
 //TODO: TEMP! Should be removed later. Used for initializing of LightCulling. /Jonas
@@ -325,13 +333,11 @@ void Game::Render()
 		}
 	}
 
-	/*------------------------------------------------FXAA Pass----------------------
-	Anti aliasing after light stage
-	*/
+	/*-----------------------------------------------------------  FXAA  -------------------------------------------------------------------
+	Anti aliasing after light stage																									      */
+
 	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::AA_STAGE);
 	_renderModule->RenderScreenQuad();
-
-	//-------------------------------------------------------------------------------
 
 	/////////////////////////////////////////////////////////  HUD and other 2D   ////////////////////////////////////////////////////
 	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::HUD_STAGE);

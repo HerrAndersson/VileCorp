@@ -23,7 +23,6 @@
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="FontWrapper.cpp" />
     <ClCompile Include="Node.cpp" />
-    <ClCompile Include="HUDElement.cpp" />
     <ClCompile Include="Pointlight.cpp" />
     <ClCompile Include="RenderModule.cpp" />
     <ClCompile Include="ShaderHandler.cpp" />
@@ -37,7 +36,6 @@
     <ClInclude Include="FontWrapper.h" />
     <ClInclude Include="FW\FW1FontWrapper.h" />
     <ClInclude Include="Node.h" />
-    <ClInclude Include="HUDElement.h" />
     <ClInclude Include="Pointlight.h" />
     <ClInclude Include="RenderModule.h" />
     <ClInclude Include="RenderUtils.h" />

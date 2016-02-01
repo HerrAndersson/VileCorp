@@ -508,8 +508,9 @@ namespace Renderer
 
 			XMMATRIX t = DirectX::XMMatrixMultiply(scale, *transform);
 
-			MatrixBufferHud* dataPtr = (MatrixBufferHud*)mappedResource.pData;
+			MatrixBufferHud* dataPtr = static_cast<MatrixBufferHud*>(mappedResource.pData);
 			dataPtr->_model = XMMatrixTranspose(t);
+			dataPtr->_colorOffset = current->GetColorOffset();
 
 			_d3d->GetDeviceContext()->Unmap(_matrixBufferHUD, 0);
 
@@ -544,35 +545,6 @@ namespace Renderer
 			XMMATRIX a = *(i->GetModelMatrix());
 			XMMATRIX t = XMMatrixMultiply(*transform, a);
 			Render(i, &t, fontWrapper);
-		}
-	}
-
-	void RenderModule::Render(std::vector<HUDElement>* imageData)
-	{
-		D3D11_MAPPED_SUBRESOURCE mappedResource;
-		HRESULT result;
-
-		for (auto i : *imageData)
-		{
-			if (i.GetVisibility() == true)
-			{
-				result = _d3d->GetDeviceContext()->Map(_matrixBufferHUD, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-				if (FAILED(result))
-				{
-					throw std::runtime_error("RenderModule::SetResourcesPerObject: Failed to Map _matrixBufferHUD");
-				}
-
-				MatrixBufferHud* dataPtr = (MatrixBufferHud*)mappedResource.pData;
-				dataPtr->_model = *(i.GetModelMatrix());
-
-				_d3d->GetDeviceContext()->Unmap(_matrixBufferHUD, 0);
-
-				_d3d->GetDeviceContext()->VSSetConstantBuffers(1, 1, &_matrixBufferHUD);
-				ID3D11ShaderResourceView* tex = i.GetTexture();
-				_d3d->GetDeviceContext()->PSSetShaderResources(0, 1, &tex);
-
-				_d3d->GetDeviceContext()->Draw(6, 0);
-			}
 		}
 	}
 
@@ -618,7 +590,7 @@ namespace Renderer
 			throw std::runtime_error("RenderModule::SetDataPerObject: Failed to Map _matrixBufferPerObject");
 		}
 
-		MatrixBufferPerObject* dataPtr = (MatrixBufferPerObject*)mappedResource.pData;
+		MatrixBufferPerObject* dataPtr = static_cast<MatrixBufferPerObject*>(mappedResource.pData);
 		dataPtr->_world = worldMatrixC;
 		deviceContext->Unmap(_matrixBufferPerObject, 0);
 
