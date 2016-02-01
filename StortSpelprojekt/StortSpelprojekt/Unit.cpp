@@ -47,6 +47,10 @@ int Unit::GetApproxDistance(AI::Vec2D target) const
 	return _aStar->GetHeuristicDistance(_tilePosition, target);
 }
 
+
+/*
+	Decides the best direction to run away from a foe.
+*/
 void Unit::Flee()
 {
 	if (_pursuer == nullptr)		//TODO Add other conditions to stop fleeing --Victor
@@ -56,30 +60,29 @@ void Unit::Flee()
 	else
 	{
 		AI::Vec2D offset = _tilePosition - _pursuer->GetTilePosition();
-		AI::Vec2D bestDist = offset + AI::Vec2D(-1, 0);
-		for (int i = 1; i < 8; i++)
+		AI::Vec2D bestDir = {0,0};
+		float bestDist = 0;
+		float tempDist = 0;
+		for (int i = 0; i < 8; i++)
 		{
-			AI::Vec2D tempDist = offset + AI::NEIGHBOUR_OFFSETS[i];
+		//	AI::Vec2D tempDist = offset + AI::NEIGHBOUR_OFFSETS[i];
 
 			if (i < 4)						//weighting to normalize diagonal and straight directions
 			{
-				tempDist += AI::NEIGHBOUR_OFFSETS[i];
+				tempDist = pow(offset._x + AI::SQRT2 * AI::NEIGHBOUR_OFFSETS[i]._x, 2) + pow(offset._y + AI::SQRT2 * AI::NEIGHBOUR_OFFSETS[i]._y, 2);
+			}
+			else
+			{
+				tempDist = pow(offset._x + AI::NEIGHBOUR_OFFSETS[i]._x, 2) + pow(offset._y + AI::NEIGHBOUR_OFFSETS[i]._y, 2);
 			}
 
-			if (_tileMap->IsFloorOnTile(_tilePosition + AI::NEIGHBOUR_OFFSETS[i]) && !_tileMap->IsEnemyOnTile(_tilePosition + AI::NEIGHBOUR_OFFSETS[i])
-				&& tempDist._x * tempDist._x + tempDist._y * tempDist._y > bestDist._x * bestDist._x + bestDist._y * bestDist._y)
+			if (_tileMap->IsFloorOnTile(_tilePosition + AI::NEIGHBOUR_OFFSETS[i]) && !_tileMap->IsEnemyOnTile(_tilePosition + AI::NEIGHBOUR_OFFSETS[i]) && tempDist > bestDist)
 			{
 				bestDist = tempDist;
+				bestDir = AI::NEIGHBOUR_OFFSETS[i];
 			}
 		}
-
-		_direction = bestDist - offset;
-
-		if (_direction._x == 0 || _direction._y == 0)			//Undoes the weighting
-		{
-			_direction._x /= 2;
-			_direction._y /= 2;
-		}
+		_direction = bestDir;
 	}
 }
 
