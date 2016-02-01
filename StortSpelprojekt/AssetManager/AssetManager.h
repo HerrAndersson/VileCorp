@@ -14,6 +14,9 @@
 using namespace std;
 using namespace DirectX;
 
+//Disable warning about std::Map dll-interface -> typedef std::map<int, AssetManager::_scanFunc> _scanFuncMap;
+#pragma warning( disable: 4251 )
+
 struct Tileset
 {
 	Tileset()
@@ -172,8 +175,10 @@ static bool GetFilenamesInDirectory(char* folder, char* extension, vector<string
 class ASSET_MANAGER_EXPORT AssetManager
 {
 private:
+
 	typedef RenderObject* (AssetManager::*_scanFunc)(string file_path, ifstream* _infile);
 	typedef std::map<int, AssetManager::_scanFunc> _scanFuncMap;
+
 	_scanFuncMap _meshFormatVersion;
 	int _animationFormatVersion = 10;
 	ifstream* _infile;

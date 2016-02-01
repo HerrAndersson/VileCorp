@@ -6,9 +6,9 @@
 #include "ShaderHandler.h"
 #include <DirectXMath.h>
 #include "RenderUtils.h"
-#include "HUDElement.h"
 #include "ShadowMap.h"
 #include "Spotlight.h"
+#include "Pointlight.h"
 #include "Node.h"
 #include "FontWrapper.h"
 
@@ -19,7 +19,7 @@ Constant buffer register setup:
 |    0	  |	   GeoPerFrame. Camera view and projection matrices. Used when rendering objects to give them the correct position from the view of the camera.   |
 |    1	  |	   PerObject. World matrix  and color offset of the object.																				          |
 |    2	  |	   LightPerFrame. Inverted camera view and projection. Used to reconstruct world position from the cam depth map.			                      |
-|    3	  |    LightPerLight. Spotlight data such as angle and range etc.															                          |
+|    3	  |    LightPerLight. Spotlight data such as angle and range etc. Pointlight data such as range and position										  |
 |    4    |    ShadowMapPerFrame. Light view and projection matrices. Used to generate the shadow map.                                                        |
 |    5    |    PerSkinnedObject. Animation data matrices																									  |
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -29,9 +29,10 @@ Render targets:
 |	 Backbuffer	     x    |   This is the render target that is ultimately drawn to the screen in EndScene. Does not have a shader resource view              |
 |    Diffuse         0    |	  Holds the diffuse colors of all rendered objects. Sampled from to e.g. calculate lighting.                                      |
 |    Normals         1    |	  Holds the normals of the rendered pixels. Sampled from to e.g. calculate lighting.		                                      |
-|    CameraDepthMap  2    |	  Technically not a render target, but an automatically generated depth map from the view of the camera against rendered objects. |
+|	 TempBackBuffer  2	  |   Holds backbuffer copy for FXAA to be able to write and read from backbuffer												      |
+|    CameraDepthMap  3    |	  Technically not a render target, but an automatically generated depth map from the view of the camera against rendered objects. |
 |						  |   Sampled from to e.g. reconstruct the world position of a pixel.											                      |
-|    ShadowMap       3    |   Technically not a render target, but an automatically generated depth map from the view of the light against rendered objects.  |
+|    ShadowMap       4    |   Technically not a render target, but an automatically generated depth map from the view of the light against rendered objects.  |
 |					      |   Sampled from to calculate lighting/shadows. Located in ShadowMap-class, set in RenderModule.						              |
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -80,6 +81,7 @@ namespace Renderer
 		struct MatrixBufferHud
 		{
 			DirectX::XMMATRIX _model;
+			DirectX::XMFLOAT3 _colorOffset;
 		};
 
 		struct MatrixBufferLightPassPerFrame
@@ -90,7 +92,7 @@ namespace Renderer
 			int _screenHeight;
 		};
 
-		struct MatrixBufferLightPassPerLight
+		struct MatrixBufferLightPassPerSpotlight
 		{
 			DirectX::XMMATRIX _viewMatrix;
 			DirectX::XMMATRIX _projectionMatrix;
@@ -103,11 +105,20 @@ namespace Renderer
 			int				  _shadowMapDimensions;
 		};
 
+		struct MatrixBufferLightPassPerPointlight
+		{
+			DirectX::XMFLOAT3 _position;
+			float			  _intensity;
+			DirectX::XMFLOAT3 _color;
+			float			  _range;
+		};
+
 		ID3D11Buffer*		_matrixBufferPerObject;
 		ID3D11Buffer* 		_matrixBufferPerSkinnedObject;
 		ID3D11Buffer*		_matrixBufferPerFrame;
 		ID3D11Buffer*		_matrixBufferLightPassPerFrame;
-		ID3D11Buffer*		_matrixBufferLightPassPerLight;
+		ID3D11Buffer*		_matrixBufferLightPassPerSpotlight;
+		ID3D11Buffer*		_matrixBufferLightPassPerPointlight;
 		ID3D11Buffer*		_screenQuad;
 		ID3D11Buffer*		_matrixBufferHUD;
 
@@ -126,7 +137,6 @@ namespace Renderer
 		void SetShadowMapDataPerObject(DirectX::XMMATRIX* world);
 
 		void Render(GUI::Node* current, DirectX::XMMATRIX* transform, FontWrapper* fontWrapper);
-		void Render(std::vector<HUDElement>* imageData);
 
 		ShadowMap* _shadowMap;
 
@@ -136,7 +146,7 @@ namespace Renderer
 		const int SHADOWMAP_DIMENSIONS = 256;
 		const DirectX::XMFLOAT3 AMBIENT_LIGHT = DirectX::XMFLOAT3(0.1f, 0.1f, 0.1f);
 
-		enum ShaderStage { GEO_PASS, SHADOW_GENERATION, LIGHT_APPLICATION, GRID_STAGE, ANIM_STAGE, HUD_STAGE };
+		enum ShaderStage { GEO_PASS, SHADOW_GENERATION, LIGHT_APPLICATION_SPOTLIGHT, LIGHT_APPLICATION_POINTLIGHT, GRID_STAGE, ANIM_STAGE, HUD_STAGE, AA_STAGE };
 
 		RenderModule(HWND hwnd, int screenWidth, int screenHeight, bool fullScreen);
 		~RenderModule();
@@ -145,19 +155,22 @@ namespace Renderer
 
 		void SetDataPerFrame(DirectX::XMMATRIX* view, DirectX::XMMATRIX* projection);
 		void SetDataPerObjectType(RenderObject* renderObject);
+		void SetDataPerLineList(ID3D11Buffer* lineList, int vertexSize);
 
 		void SetShadowMapDataPerObjectType(RenderObject* renderObject);
 		void SetShadowMapDataPerSpotlight(DirectX::XMMATRIX* lightView, DirectX::XMMATRIX* lightProjection);
 
 		void SetLightDataPerFrame(DirectX::XMMATRIX* camView, DirectX::XMMATRIX* camProjection);
 		void SetLightDataPerSpotlight(Spotlight* spotlight);
+		void SetLightDataPerPointlight(Pointlight* pointlight);
 
 		void SetShaderStage(ShaderStage stage);
 
 		void BeginScene(float red, float green, float blue, float alpha);
-		void Render(DirectX::XMMATRIX* world, int vertexBufferSize, DirectX::XMFLOAT3 colorOffset = DirectX::XMFLOAT3(0, 0, 0));// , std::vector<DirectX::XMFLOAT4X4>* extra = nullptr);
+		void Render(DirectX::XMMATRIX* world, int vertexBufferSize, DirectX::XMFLOAT3 colorOffset = DirectX::XMFLOAT3(0, 0, 0));
+		void RenderAnimation(DirectX::XMMATRIX* world, int vertexBufferSize, std::vector<DirectX::XMFLOAT4X4>* extra = nullptr, DirectX::XMFLOAT3 colorOffset = DirectX::XMFLOAT3(0, 0, 0));
 		void Render(GUI::Node* root, FontWrapper* fontWrapper);
-		void RenderLineList(DirectX::XMMATRIX* world, ID3D11Buffer* lineList, int nrOfPoints, DirectX::XMFLOAT3 colorOffset = DirectX::XMFLOAT3(0,0,0)); //TODO: Test if grid can be rendered /Jonas
+		void RenderLineList(DirectX::XMMATRIX* world, int nrOfPoints, DirectX::XMFLOAT3 colorOffset = DirectX::XMFLOAT3(0,0,0));
 		void RenderShadowMap(DirectX::XMMATRIX* world, int vertexBufferSize);
 		void RenderScreenQuad();
 		void EndScene();

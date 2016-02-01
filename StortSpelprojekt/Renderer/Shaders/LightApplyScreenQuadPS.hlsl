@@ -8,7 +8,7 @@ cbuffer matrixBufferLightPassPerFrame : register(b2)
 	matrix invCamProj;
 };
 
-cbuffer matrixBufferLightPassPerLight : register(b3)
+cbuffer _matrixBufferLightPassPerSpotlight : register(b3)
 {
 	matrix lightView;
 	matrix lightProj;
@@ -29,8 +29,8 @@ struct VS_OUT
 
 Texture2D diffuseTex : register(t0);
 Texture2D normalTex : register(t1);
-Texture2D camDepthMap : register(t2);
-Texture2D lightDepthMap : register(t3);
+Texture2D camDepthMap : register(t3);
+Texture2D lightDepthMap : register(t4);
 
 SamplerState samplerWrap : register(s0);
 SamplerState samplerClamp : register(s1);
@@ -108,7 +108,7 @@ float4 main(VS_OUT input) : SV_TARGET
 			//In light
 			if (shadowCoeff > depth - epsilon)
 			{
-				finalColor += saturate(lightColor * diffuse);
+				finalColor += saturate(lightColor * diffuse.xyz);
 				finalColor *= dot(-normalize(lightToPixel), lightDirection) * lightIntensity * 2;
 				return saturate(float4(finalColor, 1.0f));
 			}

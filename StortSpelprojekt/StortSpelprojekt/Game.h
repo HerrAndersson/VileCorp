@@ -13,8 +13,10 @@
 #include "Grid.h"
 #include "PickingDevice.h"
 #include "Spotlight.h"
+#include "Pointlight.h"
 #include "GameObjectDataLoader.h"
 #include "ShadowMap.h"
+#include "LightCulling.h"
 
 class Game
 {
@@ -38,7 +40,6 @@ private:
 	System::WindowSettings		_windowSettings;
 
 	bool						_hasFocus;
-	
 	bool						_enemiesHasSpawned;
 
 	//Resizing window, directx resources, camera
@@ -49,6 +50,8 @@ private:
 
 	//TODO: TEMP! Move this to objectHandler
 	std::vector<Renderer::Spotlight*> _spotlights;
+	std::vector<Renderer::Pointlight*> _pointlights;
+	LightCulling* _lightCulling;
 
 	std::vector<GameObject*> _enemies;
 	std::vector<GameObject*> _loot;

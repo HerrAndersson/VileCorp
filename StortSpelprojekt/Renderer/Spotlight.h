@@ -13,17 +13,14 @@ namespace Renderer
 	{
 	private:
 
-		//TODO: Should hold a pointer to its GameObject parent / Jonas
+		DirectX::XMMATRIX	_viewMatrix;
+		DirectX::XMMATRIX	_projectionMatrix;
+		DirectX::XMMATRIX   _worldMatrix;
 
 		DirectX::XMFLOAT3	_position;
 		DirectX::XMFLOAT3	_rotation;
 		DirectX::XMFLOAT3	_direction;
 		DirectX::XMFLOAT3	_up;
-
-		DirectX::XMMATRIX	_viewMatrix;
-		DirectX::XMMATRIX	_projectionMatrix;
-		DirectX::XMMATRIX   _worldMatrix;
-		DirectX::XMMATRIX	_rotationMatrix;
 
 		float				_angle;
 		float				_intensity;

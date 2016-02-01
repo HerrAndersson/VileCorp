@@ -28,9 +28,11 @@
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Guard.cpp" />
     <ClCompile Include="Grid.cpp" />
+    <ClCompile Include="LightCulling.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ObjectHandler.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="QuadTree.cpp" />
     <ClCompile Include="SpawnPoint.cpp" />
     <ClCompile Include="StateMachine\BaseState.cpp" />
     <ClCompile Include="StateMachine\BaseEdit.cpp" />
@@ -55,6 +57,9 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameLogic.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="GameObjectDataLoader.h" />
+    <ClInclude Include="LightCulling.h" />
+    <ClInclude Include="QuadTree.h" />
     <ClInclude Include="SpawnPoint.h" />
     <ClInclude Include="Grid.h" />
     <ClInclude Include="Guard.h" />

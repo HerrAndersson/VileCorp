@@ -19,8 +19,8 @@ namespace Renderer
 
 		_color = color;
 
-		_rotationMatrix = XMMatrixRotationRollPitchYaw(XMConvertToRadians(_rotation.x), XMConvertToRadians(_rotation.y), XMConvertToRadians(_rotation.z));
-		_worldMatrix = _rotationMatrix * XMMatrixTranslation(_position.x, _position.y, _position.z);
+		XMMATRIX rotationMatrix = XMMatrixRotationRollPitchYaw(XMConvertToRadians(_rotation.x), XMConvertToRadians(_rotation.y), XMConvertToRadians(_rotation.z));
+		_worldMatrix = rotationMatrix * XMMatrixTranslation(_position.x, _position.y, _position.z);
 
 		if (height <= 0 || range < std::numeric_limits<float>::epsilon())
 		{
@@ -29,7 +29,7 @@ namespace Renderer
 
 		//Prepare vectors for Matrix initialization
 		XMVECTOR vPos = XMLoadFloat3(&_position);
-		XMVECTOR vDir = XMVector3TransformCoord(XMLoadFloat3(&_direction), _rotationMatrix);
+		XMVECTOR vDir = XMVector3TransformCoord(XMLoadFloat3(&_direction), rotationMatrix);
 		XMVECTOR vUp = XMLoadFloat3(&_up);
 
 		_viewMatrix = XMMatrixLookAtLH(vPos, vPos + vDir, vUp);
@@ -44,28 +44,10 @@ namespace Renderer
 		double shadowMapFov = std::tan(baseRadius / range);
 		_projectionMatrix = XMMatrixPerspectiveFovLH(fov, (float)width / (float)height, nearClip, farClip);
 
-		/*//Use if direction isn't hardcoded
-		////Calculate a vector X that is normal to direction
-		//XMVECTOR T = XMVectorSet(1, 0, 0, 0);
-		//XMVECTOR X = XMVector3Cross(dir, T);													
-		//X = XMVector4Normalize(X);
-
-		//if (XMVectorGetX(XMVector3Length(X)) < std::numeric_limits<float>::epsilon())
-		//{
-		//	T = XMVectorSet(0, 1, 0, 0);
-		//	X = XMVector3Cross(dir, T);
-		//	X = XMVector4Normalize(X);
-		//}
-
-		////Given this x, calculate another vector y = cross(d, x)
-		//XMVECTOR Y = XMVector3Cross(dir, X);
-		//Y = XMVector4Normalize(Y);
-		*/
-
 		XMVECTOR X = XMVectorSet(1, 0, 0, 0);
 		XMVECTOR Y = XMVectorSet(0, 1, 0, 0);
 
-	    //The vertices of the cone base are given by: v(t) = B + w * (x * cos t + y * sin t), with t varying from 0 to 2*pi.
+	    //The vertices of the cone base are given by: v(t) = pos + basecenter * (x * cos t + y * sin t), with t varying from 0 to 2*pi.
 		double pi2 = 2 * XM_PI;
 		std::vector<XMFLOAT3> points;
 		XMFLOAT3 element;
@@ -113,7 +95,9 @@ namespace Renderer
 		data.pSysMem = triangles.data();
 		HRESULT result = device->CreateBuffer(&bufferDesc, &data, &_lightConeVolume);
 		if (FAILED(result))
+		{
 			throw std::runtime_error("Spotlight: Failed to create vertex buffer");
+		}
 	}
 
 	Spotlight::~Spotlight()
@@ -243,7 +227,7 @@ namespace Renderer
 		return _mm_malloc(i, 16);
 	}
 
-		void Spotlight::operator delete(void* p)
+	void Spotlight::operator delete(void* p)
 	{
 		_mm_free(p);
 	}
