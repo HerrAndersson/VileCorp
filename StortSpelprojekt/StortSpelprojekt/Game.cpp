@@ -51,16 +51,16 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	//_controls->SaveKeyBindings(System::MAP_EDIT_KEYMAP, "MOVE_CAMERA_UP", "M");
 
 	Renderer::Spotlight* spot;
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < 1; i++)
 	{
 		int d = _renderModule->SHADOWMAP_DIMENSIONS;
 		spot = new Renderer::Spotlight(_renderModule->GetDevice(), 0.1f, 1000.0f, XM_PIDIV4, d, d, 1.0f, 9.5f, XMFLOAT3(1.0f, 1.0f, 1.0f), 72);
-		spot->SetPositionAndRotation(XMFLOAT3(22 + i*2, 1, 22 + i * 2), XMFLOAT3(0,-35*i,0));
+		spot->SetPositionAndRotation(XMFLOAT3(14 + i*2, 1, 8 + i * 2), XMFLOAT3(0,-35*i,0));
 		_spotlights.push_back(spot);
 	}
 
 	Renderer::Pointlight* point;
-	for (int i = 0; i < 100; i++)
+	for (int i = 0; i < 50; i++)
 	{
 		point = new Renderer::Pointlight(_renderModule->GetDevice(), XMFLOAT3(25 + 20 * sin(25 + i * 2 + rand() % ((i+1)) / 8) * sin(i) + 1, 0.05f, 25 + 20 * sin(25 + i * 2 + rand() % ((i + 1)) / 8) * cos(i)), 1.0f, 1.0f, XMFLOAT3(sin(i*i * 6), sin(i * 50 * i), sin(120 * i * i)));
 		_pointlights.push_back(point);
@@ -160,63 +160,10 @@ void Game::Update(float deltaTime)
 		}
 	}
 
-	int i = 0;
-	for (auto p : _pointlights)
-	{
-		i++;
-		XMFLOAT3 pos = p->GetPosition();
-		p->SetPosition(XMFLOAT3(pos.x + (sin((_timer.GetGameTime() / 1000) * sin(120 * i))) / 10, pos.y, pos.z + (sin((_timer.GetGameTime() / 1000) * sin(17 * i * i))) / 10));
-	}
-
-	//System::MouseCoord mc = _controls->GetMouseCoord();
-	//XMFLOAT3 mouseViewPos;
-	//XMFLOAT4X4 viewMatrix;
-	//XMFLOAT4X4 projMatrix;
-	//XMStoreFloat4x4(&projMatrix, *_camera->GetProjectionMatrix());
-
-	////Translating mouseposition to viewSpace
-	//float width = (float)_window->GetWindowSettings()._width;
-	//float xPos = (float)mc._pos.x;
-
-	//float height = (float)_window->GetWindowSettings()._height;
-	//float yPos = (float)mc._pos.y;
-
-	//mouseViewPos.x = (((2 * xPos) / width) - 1.0f) / projMatrix._11;
-	//mouseViewPos.y = (((-2 * yPos) / height) + 1.0f) / projMatrix._22;
-	//mouseViewPos.z = 1.0f;
-
-	//XMVECTOR determinant;
-	//XMMATRIX inverseViewMatrix = XMMatrixInverse(&determinant, *_camera->GetViewMatrix());
-	//XMStoreFloat3(&mouseViewPos, XMVector3TransformCoord(XMVectorSet(mouseViewPos.x, mouseViewPos.y, mouseViewPos.z, 0.0f), inverseViewMatrix));
-
-	//XMVECTOR t = XMVectorSet(_pointlights[0]->GetPosition().x, _pointlights[0]->GetPosition().y, _pointlights[0]->GetPosition().z, 0);
-	//t = XMVector3TransformCoord(t, *_camera->GetViewMatrix());
-	//XMFLOAT3 lightViewPos;
-	//XMStoreFloat3(&lightViewPos, t);
-
-	//if (mouseViewPos.x < lightViewPos.x)
-	//{
-	//	lightViewPos.x--;
-	//}
-	////else if (mouseViewPos.x > lightViewPos.x)
-	////{
-	////	lightViewPos.x++;
-	////}
-	//t = XMLoadFloat3(&lightViewPos);
-	//t = XMVector3TransformCoord(t, inverseViewMatrix);
-	//XMStoreFloat3(&lightViewPos, t);
-
-	//_pointlights[0]->SetPosition(lightViewPos);
-	//
-
-	//string s = to_string(mouseViewPos.x) + " " + to_string(mouseViewPos.z);
-	//SetWindowText(_window->GetHWND(), s.c_str());
-
-	int tds = 0;
 	//for (unsigned int i = 0; i < _spotlights.size(); i++)
 	//{
 	//	XMFLOAT3 rot = _spotlights[i]->GetRotation();
-	//	rot.y -= 1;
+	//	rot.y -= 0.2f;
 	//	_spotlights[i]->SetRotation(rot);
 
 	//	XMFLOAT3 color = _spotlights[i]->GetColor();
@@ -227,7 +174,7 @@ void Game::Update(float deltaTime)
 	//}
 }
 
-//TODO: TEMP! Should be removed later /Jonas
+//TODO: TEMP! Should be removed later. Used for initializing of LightCulling. /Jonas
 bool init = false;
 
 void Game::Render()
@@ -252,10 +199,6 @@ void Game::Render()
 			{
 				continue;
 			}
-			//if (i.at(0)->GetType() == ENEMY)
-			//{
-			//	continue;
-			//}
 			else
 			{
 				_renderModule->SetDataPerObjectType(renderObject);
@@ -264,6 +207,7 @@ void Game::Render()
 				for (GameObject* g : i)
 				{
 					_renderModule->Render(g->GetMatrix(), vertexBufferSize, g->GetColorOffset());
+					//g->SetColorOffset(XMFLOAT3(0, 0, 0));
 				}
 			}
 		}
@@ -289,6 +233,7 @@ void Game::Render()
 
 
 	//TEMPORARY!!
+	//TODO: LightCulling does not work correctly, which makes the light shine through walls sometimes. The functionality for the light is correct, but the data passed to it is not complete.
 	std::vector<std::vector<std::vector<GameObject*>>> inLight;
 	if (_SM->GetState() != MENUSTATE)
 	{
@@ -335,16 +280,14 @@ void Game::Render()
 		{
 			_renderModule->RenderLineList(&matrix, _grid->GetNrOfPoints(), _grid->GetColorOffset());
 		}
-
 	}
 
-	/*//////////////////////////////////////////////////////////  Light pass  //////////////////////////////////////////////////////////////
-	Generate the shadow map for each spotlight, then apply the lighting/shadowing to the backbuffer render target with additive blending. */
-
-	//_renderModule->RenderLightVolume(_spotlights[0]->GetVolumeBuffer(), _spotlights[0]->GetWorldMatrix(), _spotlights[0]->GetVertexCount(), _spotlights[0]->GetVertexSize());
-
+	////////////////////////////////////////////////////////////  Light pass  //////////////////////////////////////////////////////////////
 	if (_SM->GetState() != MENUSTATE)
 	{
+	/*----------------------------------------------------------  Spotlights  -------------------------------------------------------------
+	Generate the shadow map for each spotlight, then apply the lighting/shadowing to the render target with additive blending.           */
+
 		_renderModule->SetLightDataPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
 		for (int i = 0; i < _spotlights.size(); i++)
 		{
@@ -367,28 +310,13 @@ void Game::Render()
 				}
 			}
 
-			//for (auto j : *gameObjects)
-			//{
-			//	if (j.size() > 0)
-			//	{
-			//		RenderObject* renderObject = j.at(0)->GetRenderObject();
-			//		_renderModule->SetShadowMapDataPerObjectType(renderObject);
-			//		int vertexBufferSize = renderObject->_mesh._vertexBufferSize;
-
-			//		for (GameObject* g : j)
-			//		{
-			//			_renderModule->RenderShadowMap(g->GetMatrix(), vertexBufferSize);
-			//		}
-
-			//	}
-			//}
-
 			_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::LIGHT_APPLICATION_SPOTLIGHT);
 			_renderModule->SetLightDataPerSpotlight(_spotlights[i]);
 
 			_renderModule->RenderLightVolume(_spotlights[i]->GetVolumeBuffer(), _spotlights[i]->GetWorldMatrix(), _spotlights[i]->GetVertexCount(), _spotlights[i]->GetVertexSize());
 		}
 
+	/*---------------------------------------------------------  Pointlights  ------------------------------------------------------------*/
 		_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::LIGHT_APPLICATION_POINTLIGHT);
 		for (auto p : _pointlights)
 		{
@@ -397,7 +325,7 @@ void Game::Render()
 		}
 	}
 
-	/*-------------------------------------------------------- HUD and other 2D -----------------------------------------------------------*/
+	/////////////////////////////////////////////////////////  HUD and other 2D   ///////////////////////////////////////////////////////////
 	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::HUD_STAGE);
 	_renderModule->Render(_SM->GetCurrentStatePointer()->GetUITree()->GetRootNode(), _fontWrapper);
 

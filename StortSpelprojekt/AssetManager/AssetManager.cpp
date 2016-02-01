@@ -595,7 +595,7 @@ Skeleton* AssetManager::LoadSkeleton(string filename)
 		}
 	}
 
-	string file_path = "Assets/Models/";
+	string file_path = "Assets/Animations/";
 
 	file_path.append(filename);
 	_infile->open(file_path.c_str(), ifstream::binary);
