@@ -22,80 +22,11 @@ void PlacementState::Update(float deltaTime)
 {
 	_baseEdit.Update(deltaTime);
 
-	_baseEdit.DragAndDrop(TRAP);
-	_baseEdit.DragAndDrop(GUARD);
+	HandleInput();
+	HandleButtons();
 
-	//tempAddObj
 
-	int cost = 20;
 
-	// Temp code
-	if (_controls->IsFunctionKeyDown("PLACEMENT:BUILD_TRAP"))
-	{
-		ChangeState(PLAYSTATE);
-	}
-
-	if (_baseEdit.GetSelectedObject() != nullptr)
-	{
-		//T adds Trap
-		if (_controls->IsFunctionKeyDown("PLACEMENT:BUILD_TRAP"))
-		{
-			if (_budget - cost >= 0)
-			{
-				vector<GameObject*>* vec = &_objectHandler->GetGameObjects()->at(TRAP);
-				if (vec->empty() && _baseEdit.Add(TRAP, "trap_proto"))
-				{
-					_budget -= cost;
-				}
-				else
-				{
-					bool taken = false;
-					if (_baseEdit.TypeOn(WALL))
-					{
-						taken = true;
-					}
-					if (!taken && _baseEdit.Add(TRAP, "trap_proto"))
-					{
-						_budget -= cost;
-					}
-				}
-			}
-		}
-		else if (_controls->IsFunctionKeyDown("PLACEMENT:HIRE_GUARD"))
-		{
-			if (_budget - cost >= 0)
-			{
-				vector<GameObject*>* vec = &_objectHandler->GetGameObjects()->at(GUARD);
-				if (vec->empty() && _baseEdit.Add(GUARD, "proto"))
-				{
-					_budget -= cost;
-				}
-				else
-				{
-					bool taken = false;
-					if (_baseEdit.TypeOn(WALL))
-					{
-						taken = true;
-					}
-					if (!taken && _baseEdit.Add(GUARD, "proto"))
-					{
-						_budget -= cost;
-					}
-				}
-			}
-		}
-		else if (_controls->IsFunctionKeyDown("PLACEMENT:DELETE"))
-		{
-			if (!_baseEdit.Delete(TRAP))
-			{
-				_budget += cost;
-			}
-			if (!_baseEdit.Delete(GUARD))
-			{
-				_budget += cost;
-			}
-		}
-	}
 }
 
 void PlacementState::OnStateEnter()
@@ -107,6 +38,56 @@ void PlacementState::OnStateEnter()
 void PlacementState::OnStateExit()
 {
 
+}
+
+void PlacementState::HandleInput()
+{
+	_baseEdit.DragAndDrop(TRAP);
+	_baseEdit.DragAndDrop(GUARD);
+
+	if (_controls->IsFunctionKeyDown("MAP_EDIT:MENU"))
+	{
+		ChangeState(MENUSTATE);
+	}
+}
+
+void PlacementState::HandleButtons()
+{
+
+
+
+
+	System::MouseCoord coord = _controls->GetMouseCoord();
+
+	if (_uiTree.IsButtonColliding("Play", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("PLACEMENT:CLICK"))
+	{
+		ChangeState(PLAYSTATE);
+	}
+
+
+	if (_uiTree.IsButtonColliding("Trap", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("PLACEMENT:CLICK"))
+	{
+		// Temp, should be replaced with blueprint
+		_toPlace._type = TRAP;
+		_toPlace._name = "trap_proto";
+
+		if (_baseEdit.IsSelection() && !_baseEdit.IsPlace())
+		{
+			_baseEdit.DragActivate(_toPlace._type, _toPlace._name);
+		}
+	}
+
+	if (_uiTree.IsButtonColliding("Guard", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("PLACEMENT:CLICK"))
+	{
+		// Temp, should be replaced with blueprint
+		_toPlace._type = GUARD;
+		_toPlace._name = "guard_proto";
+
+		if (_baseEdit.IsSelection())
+		{
+			_baseEdit.DragActivate(_toPlace._type, _toPlace._name);
+		}
+	}
 }
 
 
