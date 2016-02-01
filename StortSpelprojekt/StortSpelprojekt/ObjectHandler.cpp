@@ -506,8 +506,8 @@ void ObjectHandler::Update(float deltaTime)
 					for (int k = 0; k < _gameObjects[SPAWN].size(); k++)
 					{
 						//If the enemy is at the despawn point with the diamond, remove the diamond and the enemy, Aron
-						if ((int)unit->GetPosition().x == (int)_gameObjects[SPAWN][k]->GetPosition().x &&
-							(int)unit->GetPosition().z == (int)_gameObjects[SPAWN][k]->GetPosition().z)
+						if ((int)unit->GetTilePosition()._x == (int)_gameObjects[SPAWN][k]->GetTilePosition()._x &&
+							(int)unit->GetTilePosition()._y == (int)_gameObjects[SPAWN][k]->GetTilePosition()._y)
 						{
 							Remove(heldObject);
 						}
