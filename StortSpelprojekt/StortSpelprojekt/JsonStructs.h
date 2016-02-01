@@ -80,6 +80,7 @@ struct GameObjectBaseInfo
 {
 	std::string _name = "proto";
 	unsigned _renderObject;
+	std::string _textureName;
 };
 
 struct GameObjectFloorInfo : GameObjectBaseInfo
@@ -87,7 +88,8 @@ struct GameObjectFloorInfo : GameObjectBaseInfo
 	template<class A>
 	void serialize(A& a)
 	{
-		a(CEREAL_NVP(_name));
+		a(CEREAL_NVP(_name)),
+		a(CEREAL_NVP(_textureName));
 	}
 };
 
@@ -96,7 +98,8 @@ struct GameObjectWallInfo : GameObjectBaseInfo
 	template<class A>
 	void serialize(A& a)
 	{
-		a(CEREAL_NVP(_name));
+		a(CEREAL_NVP(_name)),
+		a(CEREAL_NVP(_textureName));
 	}
 };
 
@@ -114,7 +117,8 @@ struct GameObjectLootInfo : GameObjectBaseInfo
 			a(CEREAL_NVP(_radius)),
 			a(CEREAL_NVP(_value)),
 			a(CEREAL_NVP(_steal)),
-			a(CEREAL_NVP(_destroy));
+			a(CEREAL_NVP(_destroy)),
+			a(CEREAL_NVP(_textureName));
 	}
 };
 
@@ -148,15 +152,6 @@ struct GameObjectTrapInfo : GameObjectBaseInfo
 	}
 };
 
-struct GameObjectTriggerInfo : GameObjectBaseInfo
-{
-	template<class A>
-	void serialize(A& a)
-	{
-		a(CEREAL_NVP(_name));
-	}
-};
-
 struct GameObjectGuardInfo : GameObjectBaseInfo
 {
 	int _cost = 10;
@@ -173,7 +168,8 @@ struct GameObjectGuardInfo : GameObjectBaseInfo
 		a(CEREAL_NVP(_speed)),
 		a(CEREAL_NVP(_hitpoints)),
 		a(CEREAL_NVP(_damage)),
-		a(CEREAL_NVP(_radius));
+		a(CEREAL_NVP(_radius)),
+		a(CEREAL_NVP(_textureName));
 	}
 };
 
@@ -193,7 +189,8 @@ struct GameObjectEnemyInfo : GameObjectBaseInfo
 		a(CEREAL_NVP(_speed)),
 		a(CEREAL_NVP(_hitpoints)),
 		a(CEREAL_NVP(_damage)),
-		a(CEREAL_NVP(_radius));
+		a(CEREAL_NVP(_radius)),
+		a(CEREAL_NVP(_textureName));
 	}
 };
 
@@ -208,7 +205,6 @@ struct GameObjectInfo
 		_objects[LOOT] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectLootInfo*>;
 		_objects[SPAWN] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectSpawnInfo*>;
 		_objects[TRAP] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectTrapInfo*>;
-		_objects[TRIGGER] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectTriggerInfo*>;
 		_objects[GUARD] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectGuardInfo*>;
 		_objects[ENEMY] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectEnemyInfo*>;
 	}
@@ -234,10 +230,6 @@ struct GameObjectInfo
 		{
 			delete (GameObjectTrapInfo*)obj;
 		}
-		for (GameObjectBaseInfo* obj : *_objects[TRIGGER])
-		{
-			delete (GameObjectTriggerInfo*)obj;
-		}
 		for (GameObjectBaseInfo* obj : *_objects[GUARD])
 		{
 			delete (GameObjectGuardInfo*)obj;
@@ -251,7 +243,6 @@ struct GameObjectInfo
 		delete _objects[LOOT];
 		delete _objects[SPAWN];
 		delete _objects[TRAP];
-		delete _objects[TRIGGER];
 		delete _objects[GUARD];
 		delete _objects[ENEMY];
 	}
@@ -295,14 +286,6 @@ struct GameObjectInfo
 			_objects[TRAP]->push_back((GameObjectBaseInfo*)new GameObjectTrapInfo());
 		}
 		return (GameObjectTrapInfo*)_objects[TRAP]->at(i);
-	}
-	GameObjectTriggerInfo* Triggers(unsigned i)
-	{
-		if (_objects[TRIGGER]->size() < i + 1)
-		{
-			_objects[TRIGGER]->push_back((GameObjectBaseInfo*)new GameObjectTriggerInfo());
-		}
-		return (GameObjectTriggerInfo*)_objects[TRIGGER]->at(i);
 	}
 	GameObjectGuardInfo* Guards(unsigned i)
 	{

@@ -2,7 +2,7 @@
 	TEXTURE - VERTEX SHADER
 ------------------------------------------*/
 
-cbuffer TextureModelMatrix : register(b0)
+cbuffer TextureModelMatrix : register(b1)
 {
 	matrix	model;
 };

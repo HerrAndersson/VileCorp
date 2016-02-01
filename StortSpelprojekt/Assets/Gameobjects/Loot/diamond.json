@@ -1,0 +1,11 @@
+{
+    "sample": {
+        "_name": "loot_proto",
+        "_renderObjectName": "objective",
+        "_radius": 50,
+        "_value": 100,
+        "_steal": true,
+        "_destroy": false,
+		"_textureName": "diamond.png"
+    }
+}

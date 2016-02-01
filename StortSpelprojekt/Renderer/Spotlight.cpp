@@ -22,37 +22,48 @@ namespace Renderer
 		_rotationMatrix = XMMatrixRotationRollPitchYaw(XMConvertToRadians(_rotation.x), XMConvertToRadians(_rotation.y), XMConvertToRadians(_rotation.z));
 		_worldMatrix = _rotationMatrix * XMMatrixTranslation(_position.x, _position.y, _position.z);
 
+		if (height <= 0 || range < std::numeric_limits<float>::epsilon())
+		{
+			throw std::runtime_error("Spotlight::Spotlight: Division by Zero");
+		}
+
 		//Prepare vectors for Matrix initialization
 		XMVECTOR vPos = XMLoadFloat3(&_position);
 		XMVECTOR vDir = XMVector3TransformCoord(XMLoadFloat3(&_direction), _rotationMatrix);
 		XMVECTOR vUp = XMLoadFloat3(&_up);
 
 		_viewMatrix = XMMatrixLookAtLH(vPos, vPos + vDir, vUp);
+		
+		/// --------------------------------------- Create a cone that represents the light as a volume --------------------------------------- ///
+		XMVECTOR pos = XMVectorSet(_position.x, _position.y, _position.z, 0);
+		XMVECTOR dir = XMVector4Normalize(XMVectorSet(_direction.x, _direction.y, _direction.z, 0));																												
+
+		XMVECTOR baseCenter = pos + dir * range; //Center of the cone base.
+		double baseRadius = range * sin(fov/2.0f);	 //Radius of the cone base.
+
+		double shadowMapFov = std::tan(baseRadius / range);
 		_projectionMatrix = XMMatrixPerspectiveFovLH(fov, (float)width / (float)height, nearClip, farClip);
 
-		/// --------------------------------------- Create a cone that represents the light as a volume --------------------------------------- ///
-		XMVECTOR L = XMVector4Normalize(XMVectorSet(_position.x, _position.y, _position.z, 1));
-		XMVECTOR d = XMVector4Normalize(XMVectorSet(_direction.x, _direction.y, _direction.z, 1));
-		float r = range;																	
-		double a = fov;													
+		/*//Use if direction isn't hardcoded
+		////Calculate a vector X that is normal to direction
+		//XMVECTOR T = XMVectorSet(1, 0, 0, 0);
+		//XMVECTOR X = XMVector3Cross(dir, T);													
+		//X = XMVector4Normalize(X);
 
-		XMVECTOR B = L + d*r; //Center of the cone base.
-		float w = r * sin(a); //Radius of the cone base.
+		//if (XMVectorGetX(XMVector3Length(X)) < std::numeric_limits<float>::epsilon())
+		//{
+		//	T = XMVectorSet(0, 1, 0, 0);
+		//	X = XMVector3Cross(dir, T);
+		//	X = XMVector4Normalize(X);
+		//}
 
-		//Calculate a vector X that is normal to direction
-		XMVECTOR T = XMVectorSet(1, 0, 0, 0);
-		XMVECTOR X = XMVector3Cross(d, T);													
-		X = XMVector4Normalize(X);
-		if (XMVectorGetX(XMVector3Length(X)) == 0)
-		{
-			T = XMVectorSet(0, 1, 0, 0);
-			X = XMVector3Cross(d, T);
-			X = XMVector4Normalize(X);
-		}
+		////Given this x, calculate another vector y = cross(d, x)
+		//XMVECTOR Y = XMVector3Cross(dir, X);
+		//Y = XMVector4Normalize(Y);
+		*/
 
-		//Given this x, calculate another vector y = cross(d, x)
-		XMVECTOR Y = XMVector3Cross(d, X);
-		Y = XMVector4Normalize(Y);
+		XMVECTOR X = XMVectorSet(1, 0, 0, 0);
+		XMVECTOR Y = XMVectorSet(0, 1, 0, 0);
 
 	    //The vertices of the cone base are given by: v(t) = B + w * (x * cos t + y * sin t), with t varying from 0 to 2*pi.
 		double pi2 = 2 * XM_PI;
@@ -60,7 +71,7 @@ namespace Renderer
 		XMFLOAT3 element;
 		for (double t = 0; t < pi2; t += pi2 / resolution)
 		{
-			XMVECTOR v = B + w * (X * cos(t) + Y * sin(t));
+			XMVECTOR v = baseCenter + (float)baseRadius * (X * (float)cos(t) + Y * (float)sin(t));
 			XMStoreFloat3(&element, v);
 			points.push_back(element);
 		}
@@ -68,33 +79,35 @@ namespace Renderer
 		int pc = 0, pc2 = 0;
 		std::vector<XMFLOAT3>triangles;
 		XMFLOAT3 basePos;
-		XMStoreFloat3(&basePos, B);
+		XMStoreFloat3(&basePos, baseCenter);
 		for (int i = 0; i < resolution-1; i++)
 		{
-			triangles.push_back(_position);
-			triangles.push_back(points[pc]);
 			triangles.push_back(points[++pc]);
-
+			triangles.push_back(points[pc - 1]);
+			triangles.push_back(_position);
+			
 			triangles.push_back(basePos);
 			triangles.push_back(points[pc2]);
 			triangles.push_back(points[++pc2]);
 		}
 		//Fix the connection between the last and the first
-		triangles.push_back(_position);
-		triangles.push_back(points[pc]);
 		triangles.push_back(points[0]);
-
+		triangles.push_back(points[pc]);
+		triangles.push_back(_position);
+		
 		triangles.push_back(basePos);
 		triangles.push_back(points[pc2]);
 		triangles.push_back(points[0]);
 
 		//Create buffer
-		_nrOfTriangles = resolution * 3 * 2;
+		_vertexCount = resolution * 3 * 2;
+		_vertexSize = sizeof(XMFLOAT3);
+
 		D3D11_BUFFER_DESC bufferDesc;
 		ZeroMemory(&bufferDesc, sizeof(bufferDesc));
 		bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 		bufferDesc.Usage = D3D11_USAGE_DEFAULT;
-		bufferDesc.ByteWidth = sizeof(XMFLOAT3) * _nrOfTriangles;
+		bufferDesc.ByteWidth = _vertexSize * _vertexCount;
 
 		D3D11_SUBRESOURCE_DATA data;
 		data.pSysMem = triangles.data();
@@ -207,6 +220,16 @@ namespace Renderer
 	XMFLOAT3 Spotlight::GetColor() const
 	{
 		return _color;
+	}
+
+	int Spotlight::GetVertexCount() const
+	{
+		return _vertexCount;
+	}
+
+	int Spotlight::GetVertexSize() const
+	{
+		return _vertexSize;
 	}
 
 	ID3D11Buffer* Spotlight::GetVolumeBuffer() const

@@ -21,7 +21,6 @@ void Guard::EvaluateTile(Type objective, AI::Vec2D tile)
 	case LOOT:
 	case GUARD:					
 	case TRAP:
-	case TRIGGER:				//Guards don't react to these
 		break;
 	case ENEMY:
 		tempPriority = 10;
@@ -47,7 +46,6 @@ void Guard::EvaluateTile(GameObject * obj)
 		case LOOT:
 		case GUARD:
 		case TRAP:
-		case TRIGGER:				//Guards don't react to these
 			break;
 		case ENEMY:
 			tempPriority = 10;
@@ -73,8 +71,6 @@ void Guard::act(GameObject* obj)
 		case LOOT:
 		case GUARD:
 		case TRAP:
-		case TRIGGER:										//Guards don't react to these (yet)
-			break;
 		case ENEMY:											//The guard hits the enemy
 			static_cast<Unit*>(obj)->TakeDamage(1);
 			break;

@@ -5,11 +5,12 @@ GameObject::GameObject()
 
 }
 
-GameObject::GameObject(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation,  AI::Vec2D tilePosition, Type type, RenderObject * renderObject)
+GameObject::GameObject(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation,  AI::Vec2D tilePosition, Type type, RenderObject * renderObject, DirectX::XMFLOAT3 colorOffset)
 {
 	_ID = ID;
 	_position = position;
 	_rotation = rotation;
+	_colorOffset = colorOffset;
 	_scale = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
 	_tilePosition = tilePosition;
 	_type = type;
@@ -24,19 +25,9 @@ GameObject::~GameObject()
 
 void GameObject::CalculateMatrix()
 {
-	//_objectMatrix = DirectX::XMMatrixAffineTransformation(
-	//	DirectX::XMLoadFloat3(&_scale),
-	//	DirectX::XMLoadFloat3(&DirectX::XMFLOAT3(0, 0, 0)),
-	//	DirectX::XMQuaternionRotationRollPitchYaw(_rotation.x, _rotation.y, _rotation.z),
-	//	XMLoadFloat3(&_position)
-	//	);
-
-	//DO NOT TOUCH!
-	_objectMatrix = 
-		DirectX::XMMatrixScalingFromVector(DirectX::XMLoadFloat3(&_scale)) * 
-		DirectX::XMMatrixRotationRollPitchYaw(_rotation.x, _rotation.y, _rotation.z) *
-		DirectX::XMMatrixTranslationFromVector(DirectX::XMLoadFloat3(&_position));
-
+	_objectMatrix = DirectX::XMMatrixScalingFromVector(DirectX::XMLoadFloat3(&_scale)) 
+			      * DirectX::XMMatrixRotationRollPitchYaw(_rotation.x, _rotation.y, _rotation.z) 
+		          * DirectX::XMMatrixTranslationFromVector(DirectX::XMLoadFloat3(&_position));
 }
 
 unsigned short GameObject::GetID() const
@@ -148,6 +139,23 @@ void GameObject::SetPickUpState(PickUpState state)
 PickUpState GameObject::GetPickUpState()const
 {
 	return _pickUpState;
+}
+
+DirectX::XMFLOAT3 GameObject::GetColorOffset() const
+{
+	return _colorOffset;
+}
+
+void GameObject::SetColorOffset(DirectX::XMFLOAT3 colorOffset)
+{
+	_colorOffset = colorOffset;
+}
+
+void GameObject::AddColorOffset(DirectX::XMFLOAT3 colorOffset)
+{
+	_colorOffset.x += colorOffset.x;
+	_colorOffset.y += colorOffset.y;
+	_colorOffset.z += colorOffset.z;
 }
 
 void* GameObject::operator new(size_t i)

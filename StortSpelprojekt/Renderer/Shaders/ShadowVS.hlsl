@@ -1,4 +1,4 @@
-cbuffer matrixBufferPerFrame : register(b0)
+cbuffer matrixBufferPerFrame : register(b4)
 {
 	matrix viewMatrix;
 	matrix projectionMatrix;

@@ -18,6 +18,7 @@ cbuffer matrixBufferLightPassPerLight : register(b3)
 	float lightIntensity;
 	float3 lightColor;
 	float lightRange;
+	int shadowMapDimensions;
 }
 
 struct VS_OUT
@@ -40,8 +41,9 @@ float3 ReconstructWorldFromCamDepth(float2 uv)
 	float z = camDepthMap.Sample(samplerWrap, uv).r;
 
 	// Get x/w and y/w from the viewport position
-	float x = uv.x * 2 - 1;											
+	float x = uv.x * 2 - 1;
 	float y = (1 - uv.y) * 2 - 1;
+
 	float4 projectedPos = float4(x, y, z, 1.0f);
 
 	float4 worldPos = mul(projectedPos, invCamProj);
@@ -61,9 +63,8 @@ float4 main(VS_OUT input) : SV_TARGET
 
 	//if (input.uv.x < 0.2f && input.uv.y < 0.2f)
 	//{
-	//	return pow(camDepthMap.Sample(samplerWrap, input.uv*5.0f).r,10);
+	//	return pow(camDepthMap.Sample(samplerWrap, input.uv).r,10);
 	//}
-
 	//if (input.uv.x > 0.8f && input.uv.y < 0.2f)
 	//{
 	//	return pow(lightDepthMap.Sample(samplerWrap, input.uv*5.0f).r,10);
@@ -71,7 +72,7 @@ float4 main(VS_OUT input) : SV_TARGET
 
 	float3 worldPos = ReconstructWorldFromCamDepth(input.uv);
 	float3 lightToPixel = lightPosition - worldPos;
-	
+
 	float l = length(lightToPixel);
 	lightToPixel = normalize(lightToPixel);
 
@@ -90,14 +91,14 @@ float4 main(VS_OUT input) : SV_TARGET
 		float depth = lightSpacePos.z / lightSpacePos.w;
 
 		float epsilon = 0.00001f;
-		float dx = 1.0f / 256;
+		float dx = 1.0f / shadowMapDimensions;
 
 		float s0 = lightDepthMap.Sample(samplerClamp, smTex).r;
 		float s1 = lightDepthMap.Sample(samplerClamp, smTex + float2(dx, 0.0f)).r;
 		float s2 = lightDepthMap.Sample(samplerClamp, smTex + float2(0.0f, dx)).r;
 		float s3 = lightDepthMap.Sample(samplerClamp, smTex + float2(dx, dx)).r;
 
-		float2 texelPos = smTex * 256;
+		float2 texelPos = smTex * shadowMapDimensions;
 		float2 lerps = frac(texelPos);
 		float shadowCoeff = lerp(lerp(s0, s1, lerps.x), lerp(s2, s3, lerps.x), lerps.y);
 
@@ -107,23 +108,12 @@ float4 main(VS_OUT input) : SV_TARGET
 			//In light
 			if (shadowCoeff > depth - epsilon)
 			{
-				finalColor += saturate(lightColor * lightIntensity);
-				finalColor *= dot(-normalize(lightToPixel), lightDirection);
-				return saturate(float4(finalColor, lightIntensity));
-			}
-			else //In shadow
-			{
-				//Gives gray outlines where the shadow should be if no ambient is used
-				//finalColor *= shadowCoeff;
-				//return saturate(float4(finalColor, 0.5f));
-
-
-				//Sdgsdgsdg
-				//sdgdg
+				finalColor += saturate(lightColor * diffuse);
+				finalColor *= dot(-normalize(lightToPixel), lightDirection) * lightIntensity * 2;
+				return saturate(float4(finalColor, 1.0f));
 			}
 		}
 	}
 
-	//Alpha of 1 equals no blending.
-	return saturate(float4(finalColor, 1.f));
+	return float4(diffuse.xyz, 0.0f);
 }

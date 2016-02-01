@@ -5,6 +5,16 @@
         "_radius": 50,
         "_value": 100,
         "_steal": true,
-        "_destroy": false
+        "_destroy": false,
+		"_textureName": [ "diamond.png", 
+		"diamond2.png",
+		"diamond3.png",
+		"diamond4.png",
+		"diamond5.png",
+		"diamond6.png",
+		"diamond7.png",
+		"diamond8.png",
+		"diamond9.png"
+		]
     }
 }
