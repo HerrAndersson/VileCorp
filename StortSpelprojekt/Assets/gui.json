@@ -58,9 +58,24 @@
 					"fontsize" : 30.0
 				}
 			},
-			"exit":
+			"levelselect":
 			{
 				"position": [-0.09, -0.7],
+				"scale": [1.0, 1.0],
+				"texture": "../Menues/menu2.png",
+				
+				"levelselectbutton":
+				{
+					"position" : [-0.46, 0.36],
+					"scale": [0.15, 0.06],
+					"text": "Level select",
+					"color": "FF000000",
+					"fontsize" : 30.0
+				}
+			},
+			"exit":
+			{
+				"position": [-0.12, -0.9],
 				"scale": [1.0, 1.0],
 				"texture": "../Menues/menu2.png",
 				
@@ -398,7 +413,6 @@
 					"color": "FF000000",
 					"fontsize" : 30.0
 				}
->>>>>>> Developer
 			}
 			
 			
@@ -513,6 +527,64 @@
 		}
     
   
-  }
-  
-  }
+  },
+	"LEVELSELECT" :
+	{
+		"bg" :
+		{
+			"position": [0.0, 0.0],
+			"scale": [1.0, 1.0],
+			"texture" : "../Menues/settings/settings1.png"
+		},
+		"title":
+		{
+			"position": [0.0, 0.0],
+			"scale" : [1.0, 0.8],
+			"text": "Level Select",
+			"centered" : true,
+			"color" : "FF000000",
+			"fontsize" : 60.0
+		},
+		"":
+		{
+			"position" : [0.0, 0.5],
+			
+			"" :
+			{
+				"position": [0.0, 0.0],
+				"scale": [1.0, 1.0],
+				
+				"playbutton" :
+				{
+					"position": [0.32, 0.0],
+					"scale": [0.08, 0.08],
+					"text" : "Play",
+					"centered": true,
+					"color" : "FFFFFFFF",
+					"texture": "../Menues/LevelEdit/GUI/placement4-button2.png"
+				},
+				"map" :
+				{
+					"position": [0.32, -0.16],
+					"scale": [0.08, 0.08],
+					"texture" : "floor.png"
+				},
+				"levelname":
+				{
+					"position" : [-0.08, 0.0],
+					"scale": [0.3, 0.05],
+					"text" : "Level name",
+					"color" : "FF000000"
+				},
+				"description":
+				{
+					"position" : [-0.08, -0.1],
+					"scale": [0.3, 0.05],
+					"text" : "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco",
+					"color" : "FF888888",
+					"fontsize" : 25.0
+				}
+			}
+		}
+	}
+}

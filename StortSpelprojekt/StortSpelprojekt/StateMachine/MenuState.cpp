@@ -32,6 +32,10 @@ void MenuState::Update(float deltaTime)
 		{
 			ChangeState(State::LEVELEDITSTATE);
 		}
+		if (_uiTree.IsButtonColliding("levelselectbutton", coord._pos.x, coord._pos.y))
+		{
+			ChangeState(State::LEVELSELECTSTATE);
+		}
 		if (_uiTree.IsButtonColliding("exitbutton", coord._pos.x, coord._pos.y))
 		{
 			//TODO: This is a hack, this fuction should instead return a value if the game should quit //Mattias

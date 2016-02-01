@@ -9,6 +9,7 @@
 #include "PlacementState.h"
 #include "LevelEditState.h"
 #include "OptionsState.h"
+#include "LevelSelectState.h"
 #include <vector>
 
 class StateMachine

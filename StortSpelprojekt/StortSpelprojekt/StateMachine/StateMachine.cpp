@@ -17,6 +17,7 @@ StateMachine::StateMachine(System::Controls* controls,
 	_baseStates.push_back(new PlayState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, width, height));
 	_baseStates.push_back(new PlacementState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, width, height));
 	_baseStates.push_back(new LevelEditState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, width, height));
+	_baseStates.push_back(new LevelSelectState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, width, height));
 	_baseStates.push_back(new OptionsState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, width, height));
 }
 
