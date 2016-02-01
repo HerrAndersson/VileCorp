@@ -245,7 +245,7 @@ namespace Renderer
 
 	void RenderModule::SetDataPerLineList(ID3D11Buffer* lineList, int vertexSize)
 	{
-		//This might seem like a useless function, but SteDataPerMesh should be private to prevent people from using it the wrong way.
+		//This might seem like a useless function, but SetDataPerMesh should be private to prevent people from using it the wrong way.
 		//This is a special case function that is public, and should only be used for the grid, or other lines.
 
 		SetDataPerMesh(lineList, vertexSize);
@@ -455,6 +455,11 @@ namespace Renderer
 			_shaderHandler->SetHUDPassShaders(_d3d->GetDeviceContext());
 			break;
 		}
+		default:
+		{
+			throw std::runtime_error("RenderModule::SetShaderStage: Invalid shader stage");
+			break;
+		}
 		};
 	}
 
@@ -482,10 +487,8 @@ namespace Renderer
 	{
 		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
 		UINT32 vertexSize = sizeof(ScreenQuadVertex);
-		UINT32 offset = 0;
 
 		SetDataPerMesh(_screenQuad, vertexSize);
-
 		Render(root, root->GetModelMatrix(), fontWrapper);
 	}
 

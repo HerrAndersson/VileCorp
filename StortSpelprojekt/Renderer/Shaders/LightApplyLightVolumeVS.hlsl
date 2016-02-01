@@ -12,12 +12,12 @@ cbuffer matrixBufferPerObject : register(b1)
 
 struct VS_IN
 {
-	float3 pos		: POSITION;
+	float3 pos : POSITION;
 };
 
 struct VS_OUT
 {
-	float4 pos			: SV_POSITION;
+	float4 pos : SV_POSITION;
 };
 
 VS_OUT main(VS_IN input)

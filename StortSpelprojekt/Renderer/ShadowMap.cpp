@@ -9,7 +9,7 @@ namespace Renderer
 {
 	ShadowMap::ShadowMap(ID3D11Device* device, int dimensions)
 	{
-		this->dimensions = dimensions;
+		_dimensions = dimensions;
 
 		HRESULT hr;
 		ID3DBlob* errorMessage = nullptr;
@@ -143,7 +143,7 @@ namespace Renderer
 
 		MatrixBufferPerObject* matrixDataBuffer = static_cast<MatrixBufferPerObject*>(mappedResource.pData);
 
-		matrixDataBuffer->modelWorld = tw;
+		matrixDataBuffer->_modelWorld = tw;
 
 		deviceContext->Unmap(_matrixBufferPerObject, 0);
 		deviceContext->VSSetConstantBuffers(1, 1, &_matrixBufferPerObject);
@@ -165,8 +165,8 @@ namespace Renderer
 
 		MatrixBufferPerFrame* matrixDataBuffer = static_cast<MatrixBufferPerFrame*>(mappedResource.pData);
 
-		matrixDataBuffer->lightView = tv;
-		matrixDataBuffer->lightProjection = tp;
+		matrixDataBuffer->_lightView = tv;
+		matrixDataBuffer->_lightProjection = tp;
 
 		deviceContext->Unmap(_matrixBufferPerFrame, 0);
 		deviceContext->VSSetConstantBuffers(4, 1, &_matrixBufferPerFrame);
@@ -179,7 +179,7 @@ namespace Renderer
 
 	int ShadowMap::GetSize()
 	{
-		return dimensions;
+		return _dimensions;
 	}
 
 }

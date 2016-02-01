@@ -59,6 +59,7 @@ float4 main(VS_OUT input) : SV_TARGET
 
 	float4 normal = normalize(float4(normalTex.Sample(samplerWrap, uv).xyz, 0.0f));
 
+	//Save this for debugging //Jonas
 	//if (uv.x < 0.75f && uv.y < 0.75f && uv.x > 0.25f && uv.y > 0.25f)
 	//{
 	//	return pow(camDepthMap.Sample(samplerWrap, uv).r,10);
@@ -130,7 +131,7 @@ float4 main(VS_OUT input) : SV_TARGET
 		else
 		{
 			//In shadow
-			//Test how far away the lit parts are to generate the "toon" falloff
+			//Test how far away the lit parts are to generate the "toon" falloff //Jonas
 			/*return float4(diffuse.xyz * float3(0.1, 0.1, 0.1), 0.5f);*/
 		}
 	}

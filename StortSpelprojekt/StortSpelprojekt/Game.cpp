@@ -159,6 +159,7 @@ bool Game::Update(float deltaTime)
 			//TODO: Add something to notify the player that they've SUCK and they can replay the level
 		}
 	}
+	//Save for debugging //Jonas
 	//	rot.y -= 0.2f;
 
 	//	XMFLOAT3 color = _spotlights[i]->GetColor();
@@ -287,7 +288,7 @@ void Game::Render()
 	}
 
 	////////////////////////////////////////////////////////////  Light pass  //////////////////////////////////////////////////////////////
-	if (_SM->GetState() != MENUSTATE)
+	if (_SM->GetState() == PLAYSTATE)
 	{
 	/*----------------------------------------------------------  Spotlights  -------------------------------------------------------------
 	Generate the shadow map for each spotlight, then apply the lighting/shadowing to the render target with additive blending.           */

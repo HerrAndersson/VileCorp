@@ -44,24 +44,6 @@ namespace Renderer
 		double shadowMapFov = std::tan(baseRadius / range);
 		_projectionMatrix = XMMatrixPerspectiveFovLH(fov, (float)width / (float)height, nearClip, farClip);
 
-		/*//Use if direction isn't hardcoded
-		////Calculate a vector X that is normal to direction
-		//XMVECTOR T = XMVectorSet(1, 0, 0, 0);
-		//XMVECTOR X = XMVector3Cross(dir, T);													
-		//X = XMVector4Normalize(X);
-
-		//if (XMVectorGetX(XMVector3Length(X)) < std::numeric_limits<float>::epsilon())
-		//{
-		//	T = XMVectorSet(0, 1, 0, 0);
-		//	X = XMVector3Cross(dir, T);
-		//	X = XMVector4Normalize(X);
-		//}
-
-		////Given this x, calculate another vector y = cross(d, x)
-		//XMVECTOR Y = XMVector3Cross(dir, X);
-		//Y = XMVector4Normalize(Y);
-		*/
-
 		XMVECTOR X = XMVectorSet(1, 0, 0, 0);
 		XMVECTOR Y = XMVectorSet(0, 1, 0, 0);
 
@@ -245,7 +227,7 @@ namespace Renderer
 		return _mm_malloc(i, 16);
 	}
 
-		void Spotlight::operator delete(void* p)
+	void Spotlight::operator delete(void* p)
 	{
 		_mm_free(p);
 	}

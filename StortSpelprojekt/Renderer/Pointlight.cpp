@@ -294,7 +294,6 @@ namespace Renderer
 	{
 		_position = position;
 		Update();
-
 	}
 
 	void Pointlight::SetRange(float range)
@@ -354,7 +353,7 @@ namespace Renderer
 		return _mm_malloc(i, 16);
 	}
 
-		void Pointlight::operator delete(void* p)
+	void Pointlight::operator delete(void* p)
 	{
 		_mm_free(p);
 	}
