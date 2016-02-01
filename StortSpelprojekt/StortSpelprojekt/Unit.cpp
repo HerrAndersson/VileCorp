@@ -40,7 +40,6 @@ void Unit::Rotate()
 	_visionCone->ColorVisibleTiles({0,0,0});
 	_visionCone->FindVisibleTiles(_tilePosition, _direction);
 	_visionCone->ColorVisibleTiles({0,0,3});
-	CheckVisibleTiles();
 }
 
 int Unit::GetApproxDistance(AI::Vec2D target) const
@@ -62,20 +61,32 @@ void Unit::Flee()
 		{
 			AI::Vec2D tempDist = offset + AI::NEIGHBOUR_OFFSETS[i];
 
+			if (i < 4)						//weighting to normalize diagonal and straight directions
+			{
+				tempDist += AI::NEIGHBOUR_OFFSETS[i];
+			}
+
 			if (_tileMap->IsFloorOnTile(_tilePosition + AI::NEIGHBOUR_OFFSETS[i]) && !_tileMap->IsEnemyOnTile(_tilePosition + AI::NEIGHBOUR_OFFSETS[i])
-				&& tempDist._x * tempDist._x + tempDist._y * tempDist._y < bestDist._x * bestDist._x + bestDist._y * bestDist._y)
+				&& tempDist._x * tempDist._x + tempDist._y * tempDist._y > bestDist._x * bestDist._x + bestDist._y * bestDist._y)
 			{
 				bestDist = tempDist;
 			}
 		}
 
 		_direction = bestDist - offset;
+
+		if (_direction._x == 0 || _direction._y == 0)			//Undoes the weighting
+		{
+			_direction._x /= 2;
+			_direction._y /= 2;
+		}
 	}
 }
 
 Unit::Unit()
 	: GameObject()
 {
+	_isFleeing = false;
 	_goalPriority = -1;
 	_aStar = new AI::AStar();
 	_visionCone = nullptr;
@@ -95,8 +106,9 @@ Unit::Unit()
 Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject* renderObject, const Tilemap* tileMap)
 	: GameObject(ID, position, rotation, tilePosition, type, renderObject)
 {
+	_isFleeing = false;
 	_goalPriority = -1;
-	_visionRadius = 3;
+	_visionRadius = 4;
 	_goalTilePosition = _tilePosition;
 	_tileMap = tileMap;
 	_visionCone = new VisionCone(_visionRadius, _tileMap);
@@ -171,15 +183,14 @@ void Unit::CheckVisibleTiles()
 		//{
 		//	_aStar->SetTileCost(_visibleTiles[i], 10);
 		//}
-		if (_tileMap->UnitsOnTile(visibleTiles[i]) > 0 && !(visibleTiles[i] == _goalTilePosition || visibleTiles[i] == _tilePosition))	//Unit finds another unit
+
+		if (_type != ENEMY && _tileMap->IsEnemyOnTile(visibleTiles[i]))
 		{
-			int nrOfUnits = _tileMap->UnitsOnTile(visibleTiles[i]);
-			GameObject* unit = _tileMap->GetObjectOnTile(visibleTiles[i], ENEMY);
-			if (unit == nullptr)
-			{
-				unit = _tileMap->GetObjectOnTile(visibleTiles[i], GUARD);
-			}
-			EvaluateTile(unit);
+			EvaluateTile(_tileMap->GetObjectOnTile(visibleTiles[i], ENEMY));
+		}
+		if (_type != GUARD && _tileMap->IsGuardOnTile(visibleTiles[i]))
+		{
+			EvaluateTile(_tileMap->GetObjectOnTile(visibleTiles[i], GUARD));
 		}
 	}
 }
@@ -252,7 +263,6 @@ Name should be changed to make it clear that this is tile movement
 */
 void Unit::Move()
 {
-
 	if (_isMoving)
 	{
 		_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,0});
@@ -265,7 +275,11 @@ void Unit::Move()
 		_pathLength = 0;														//reseting _pathLength to indicate that a new path needs to be found
 	}
 
-	if (_pathLength > 0)
+	if (_isFleeing)
+	{
+		Flee();
+	}
+	else if (_pathLength > 0)
 	{
 		_isMoving = true;
 		AI::Vec2D nextTile = _path[--_pathLength];
@@ -283,6 +297,7 @@ void Unit::Move()
 		Wait(10);
 	}
 	Rotate();
+	CheckVisibleTiles();
 }
 
 void Unit::Update(float deltaTime)

@@ -71,10 +71,9 @@
   "PLAY" : {},
   "OPTIONS" : {},
   "PLACEMENT" : {
-  
-  "Play" :
+  		"Play" :
 		{
-			"position": [-0.9, -0.0],	
+			"position": [0.9, 0.9],	
 			"scale": [0.1, 0.1],
 			"texture": "../Menues/Button.png",
 			
@@ -82,13 +81,65 @@
 			{
 				"position" : [0.97, -0.96],
 				"scale": [1.0, 1.0],
-				"text": "Button",
+				"text": "Play",
 				"color": "FF000000",
 				"fontsize" : 30.0
 			}
+		},
+		"Trap" :
+		{
+			"position": [-0.1, -0.9],	
+			"scale": [0.1, 0.1],
+			"texture": "../Menues/Button.png",
+			
+			"TrapText":
+			{
+				"position" : [0.97, -0.96],
+				"scale": [1.0, 1.0],
+				"text": "Trap",
+				"color": "FF000000",
+				"fontsize" : 30.0
+			}
+		},
+		"Guard" :
+		{
+			"position": [0.1, -0.9],	
+			"scale": [0.1, 0.1],
+			"texture": "../Menues/Button.png",
+			
+			"GuardText":
+			{
+				"position" : [0.97, -0.96],
+				"scale": [1.0, 1.0],
+				"text": "Guard",
+				"color": "FF000000",
+				"fontsize" : 30.0
+			}
+		},
+		"Budget" :
+		{
+			"position": [-0.9, 0.9],	
+			"scale": [0.1, 0.1],
+			"texture": "../Menues/Budget.png",
+			
+			"BudgetText":
+			{
+				"position" : [0.91, -0.96],
+				"scale": [1.0, 1.0],
+				"text": "Budget:",
+				"color": "FF000000",
+				"fontsize" : 25.0
+			},
+			
+			"BudgetValue":
+			{
+				"position" : [1.0, -0.96],
+				"scale": [1.0, 1.0],
+				"text": "1000",
+				"color": "FF000000",
+				"fontsize" : 25.0
+			}
 		}
-    
-  
   },
   "LEVELEDIT" : {
   

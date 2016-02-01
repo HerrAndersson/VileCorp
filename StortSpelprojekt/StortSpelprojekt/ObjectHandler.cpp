@@ -472,11 +472,10 @@ void ObjectHandler::Update(float deltaTime)
 {
 	//Update all objects gamelogic
 
-	//resets visibility for enemies each frame. Placed first for now to avoid possible conflicts
-	for (int i = 0; i < _gameObjects[ENEMY].size(); i++)
-	{
-		_gameObjects[ENEMY][i]->SetVisibility(false);
-	}
+	//for (int i = 0; i < _gameObjects[ENEMY].size(); i++)
+	//{
+	//	_gameObjects[ENEMY][i]->SetVisibility(false);
+	//}
 	for (int i = 0; i < NR_OF_TYPES; i++)
 	{
 		for (int j = 0; j < _gameObjects[i].size(); j++)
@@ -534,6 +533,10 @@ void ObjectHandler::Update(float deltaTime)
 					if (unit->GetType() == GUARD && _tilemap->IsEnemyOnTile(g->GetTilePosition()))
 					{
 						unit->act(_tilemap->GetObjectOnTile(g->GetTilePosition(), ENEMY));
+					}
+					if (unit->GetType() == ENEMY)
+					{
+					//	unit->SetVisibility(false);
 					}
 				}
 			}
