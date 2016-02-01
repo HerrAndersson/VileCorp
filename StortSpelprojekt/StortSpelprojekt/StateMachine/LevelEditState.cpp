@@ -69,6 +69,11 @@ void LevelEditState::HandleInput()
 	{
 		InitNewLevel();
 	}
+
+	if (_controls->IsFunctionKeyDown("MAP_EDIT:MENU"))
+	{
+		ChangeState(MENUSTATE);
+	}
 }
 
 void LevelEditState::HandleButtons()

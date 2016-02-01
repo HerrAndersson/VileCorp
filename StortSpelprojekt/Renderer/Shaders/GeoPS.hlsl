@@ -20,7 +20,7 @@ struct PS_OUT
 {
 	float4 diffuse		: SV_Target0;
 	float4 normal	    : SV_Target1;
-	float4 backbuffer	: SV_Target2;
+	float4 backbuffercopy: SV_Target2;
 };
 
 
@@ -30,9 +30,9 @@ PS_OUT main(VS_OUT input)
 
 	float4 color = diffuse.Sample(samplerWrap, input.uv) + float4(input.colorOffset,0);
 
-	output.diffuse = float4(color.xyz, 0.0f);
+	output.diffuse = float4(color.xyz, 1.0f);
 	output.normal = float4(input.normal, 0.0f);
-	output.backbuffer = float4(output.diffuse.xyz * input.ambientLight, 0.0f);
+	output.backbuffercopy = float4(output.diffuse.xyz * input.ambientLight, 0.0f);
 
 	return output;
 }

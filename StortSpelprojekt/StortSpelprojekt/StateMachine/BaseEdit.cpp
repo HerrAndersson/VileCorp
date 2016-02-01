@@ -329,17 +329,6 @@ void BaseEdit::HandleInput()
 		}
 	}
 
-
-	//Camera mouse control_
-	System::MouseCoord mouseCoord = _controls->GetMouseCoord();
-	if (mouseCoord._deltaPos.x != 0 || mouseCoord._deltaPos.y != 0)
-	{
-		XMFLOAT3 rotation = _camera->GetRotation();
-		rotation.y += mouseCoord._deltaPos.x / 10.0f;
-		rotation.x += mouseCoord._deltaPos.y / 10.0f;
-		_camera->SetRotation(rotation);
-	}
-
 	if (_camera->GetMode() == System::LOCKED_CAM)
 	{
 		if (_controls->IsFunctionKeyDown("PLAY:SCROLLDOWN") &&
@@ -354,6 +343,14 @@ void BaseEdit::HandleInput()
 		}
 	}
 
+	if (_controls->CursorLocked())
+	{
+		XMFLOAT3 rotation = _camera->GetRotation();
+		rotation.x += _controls->GetMouseCoord()._deltaPos.y / 10.0f;
+		rotation.y += _controls->GetMouseCoord()._deltaPos.x / 10.0f;
+
+		_camera->SetRotation(rotation);
+	}
 
 	XMFLOAT3 forward(0, 0, 0);
 	XMFLOAT3 position = _camera->GetPosition();
@@ -374,6 +371,10 @@ void BaseEdit::HandleInput()
 			_camera->SetMode(System::LOCKED_CAM);
 			_camera->SetRotation(DirectX::XMFLOAT3(70, 0, 0));
 		}
+	}
+
+	if (_controls->IsFunctionKeyDown("MAP_EDIT:MOVE_CAMERA_UP"))
+	{
 		if (_camera->GetMode() == System::FREE_CAM)
 		{
 			forward = _camera->GetForwardVector();
@@ -385,7 +386,8 @@ void BaseEdit::HandleInput()
 
 		isMoving = true;
 	}
-	else if (GetAsyncKeyState('S'))
+
+	if (_controls->IsFunctionKeyDown("MAP_EDIT:MOVE_CAMERA_DOWN"))
 	{
 		if (_camera->GetMode() == System::FREE_CAM)
 		{
@@ -400,15 +402,6 @@ void BaseEdit::HandleInput()
 		forward.y *= -1;
 		forward.z *= -1;
 		isMoving = true;
-	}
-
-	if (_controls->CursorLocked())
-	{
-		XMFLOAT3 rotation = _camera->GetRotation();
-		rotation.x += _controls->GetMouseCoord()._deltaPos.y / 10.0f;
-		rotation.y += _controls->GetMouseCoord()._deltaPos.x / 10.0f;
-
-		_camera->SetRotation(rotation);
 	}
 
 	if (_controls->IsFunctionKeyDown("MAP_EDIT:MOVE_CAMERA_RIGHT"))
@@ -416,26 +409,13 @@ void BaseEdit::HandleInput()
 		right = _camera->GetRightVector();
 		isMoving = true;
 	}
-	else if (_controls->IsFunctionKeyDown("MAP_EDIT:MOVE_CAMERA_LEFT"))
+
+	if (_controls->IsFunctionKeyDown("MAP_EDIT:MOVE_CAMERA_LEFT"))
 	{
 		right = _camera->GetRightVector();
 		right.x *= -1;
 		right.y *= -1;
 		right.z *= -1;
-		isMoving = true;
-	}
-
-	if (_controls->IsFunctionKeyDown("MAP_EDIT:MOVE_CAMERA_UP"))
-	{
-		forward = _camera->GetForwardVector();
-		isMoving = true;
-	}
-	else if (_controls->IsFunctionKeyDown("MAP_EDIT:MOVE_CAMERA_DOWN"))
-	{
-		forward = _camera->GetForwardVector();
-		forward.x *= -1;
-		forward.y *= -1;
-		forward.z *= -1;
 		isMoving = true;
 	}
 

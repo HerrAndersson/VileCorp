@@ -16,6 +16,8 @@ PlayState::~PlayState()
 
 void PlayState::Update(float deltaTime)
 {
+	HandleInput();
+
 	IngameMenu();
 	if (!_gamePaused)
 	{
@@ -33,6 +35,14 @@ void PlayState::OnStateEnter()
 void PlayState::OnStateExit()
 {
 
+}
+
+void PlayState::HandleInput()
+{
+	if (_controls->IsFunctionKeyDown("MAP_EDIT:MENU"))
+	{
+		ChangeState(MENUSTATE);
+	}
 }
 
 void PlayState::IngameMenu()

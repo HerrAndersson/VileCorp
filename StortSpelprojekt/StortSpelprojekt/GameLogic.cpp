@@ -20,7 +20,6 @@ void GameLogic::Initialize(ObjectHandler* objectHandler, System::Camera* camera,
 	_pickingDevice = pickingDevice;
 
 	//_objectHandler->LoadLevel(3);
-	
 	//Either import the level here or in the LevelEdit.cpp, otherwise the level will be loaded twice
 	//System::loadJSON(&_levelLoad, "../../../../StortSpelprojekt/Assets/LevelLoad.json");
 	//_objectHandler->LoadLevel(_levelLoad.level);
@@ -81,6 +80,7 @@ void GameLogic::HandleInput()
 		}
 	}
 	
+	//Boxselect Units
 	XMFLOAT3 forward(0, 0, 0);
 	XMFLOAT3 position = _camera->GetPosition();
 	XMFLOAT3 right(0, 0, 0);

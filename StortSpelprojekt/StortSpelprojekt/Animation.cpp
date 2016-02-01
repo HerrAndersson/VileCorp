@@ -134,3 +134,13 @@ DirectX::XMFLOAT4X4 Animation::Interpolate(unsigned int boneID, int action)
 	}
 	return matrix;
 }
+
+void* Animation::operator new(size_t i)
+{
+	return _mm_malloc(i, 16);
+}
+
+void Animation::operator delete(void* p)
+{
+	_mm_free(p);
+}

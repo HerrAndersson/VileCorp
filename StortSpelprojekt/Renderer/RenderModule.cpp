@@ -30,7 +30,8 @@ namespace Renderer
 		SAFE_RELEASE(_matrixBufferPerFrame);
 		SAFE_RELEASE(_matrixBufferHUD);
 		SAFE_RELEASE(_matrixBufferLightPassPerFrame);
-		SAFE_RELEASE(_matrixBufferLightPassPerLight);
+		SAFE_RELEASE(_matrixBufferLightPassPerSpotlight);
+		SAFE_RELEASE(_matrixBufferLightPassPerPointlight);
 	}
 
 	void RenderModule::InitializeScreenQuadBuffer()
@@ -102,11 +103,18 @@ namespace Renderer
 			throw std::runtime_error("RenderModule::InitializeConstantBuffers: Failed to create MatrixBufferLightPassPerFrame");
 		}
 
-		matrixBufferDesc.ByteWidth = sizeof(MatrixBufferLightPassPerLight);
-		result = device->CreateBuffer(&matrixBufferDesc, NULL, &_matrixBufferLightPassPerLight);
+		matrixBufferDesc.ByteWidth = sizeof(MatrixBufferLightPassPerSpotlight);
+		result = device->CreateBuffer(&matrixBufferDesc, NULL, &_matrixBufferLightPassPerSpotlight);
 		if (FAILED(result))
 		{
-			throw std::runtime_error("RenderModule::InitializeConstantBuffers: Failed to create MatrixBufferLightPassPerLight");
+			throw std::runtime_error("RenderModule::InitializeConstantBuffers: Failed to create _matrixBufferLightPassPerSpotlight");
+		}
+
+		matrixBufferDesc.ByteWidth = sizeof(MatrixBufferLightPassPerPointlight);
+		result = device->CreateBuffer(&matrixBufferDesc, NULL, &_matrixBufferLightPassPerPointlight);
+		if (FAILED(result))
+		{
+			throw std::runtime_error("RenderModule::InitializeConstantBuffers: Failed to create _MatrixBufferLightPassPerPointlight");
 		}
 	}
 
@@ -124,7 +132,6 @@ namespace Renderer
 		MatrixBufferPerFrame* dataPtr;
 		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
 
-		//View,Projection
 		XMMATRIX viewMatrixC, projectionMatrixC;
 
 		viewMatrixC = XMMatrixTranspose(*view);
@@ -160,17 +167,12 @@ namespace Renderer
 		result = deviceContext->Map(_matrixBufferPerSkinnedObject, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 		if (FAILED(result))
 		{
-			throw std::runtime_error("RenderModule::SetResourcesPerObject: Failed to Map _matrixBufferPerObject");
+			throw std::runtime_error("RenderModule::SetResourcesPerObject: Failed to Map _matrixBufferPerSkinnedObject");
 		}
 
 		MatrixBufferPerSkinnedObject* dataPtr = static_cast<MatrixBufferPerSkinnedObject*>(mappedResource.pData);
 
-//		DirectX::XMFLOAT4X4 tempmatrix;														//
-//		DirectX::XMStoreFloat4x4(&tempmatrix, DirectX::XMMatrixIdentity());					//
-//		for (unsigned i = 0; i < 30; i++) {													//
-//			memcpy(&dataPtr->bones[i], (char*)&tempmatrix, sizeof(DirectX::XMFLOAT4X4));	//
-//		}																					//TODO remove - Fredrik
-//		memcpy(&dataPtr->bones, extra->data(), sizeof(DirectX::XMFLOAT4X4) * extra->size());
+		memcpy(&dataPtr->_bones, extra->data(), sizeof(DirectX::XMFLOAT4X4) * extra->size());
 		
 		deviceContext->Unmap(_matrixBufferPerSkinnedObject, 0);
 
@@ -241,6 +243,14 @@ namespace Renderer
 		deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &vs, &offset);
 	}
 
+	void RenderModule::SetDataPerLineList(ID3D11Buffer* lineList, int vertexSize)
+	{
+		//This might seem like a useless function, but SetDataPerMesh should be private to prevent people from using it the wrong way.
+		//This is a special case function that is public, and should only be used for the grid, or other lines.
+
+		SetDataPerMesh(lineList, vertexSize);
+	}
+
 	void RenderModule::SetShadowMapDataPerSpotlight(DirectX::XMMATRIX* lightView, DirectX::XMMATRIX* lightProjection)
 	{
 		_shadowMap->SetDataPerFrame(_d3d->GetDeviceContext(), lightView, lightProjection);
@@ -278,19 +288,19 @@ namespace Renderer
 
 		HRESULT result;
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
-		MatrixBufferLightPassPerLight* dataPtr;
+		MatrixBufferLightPassPerSpotlight* dataPtr;
 		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
 
 		XMMATRIX view = XMMatrixTranspose(*(spotlight->GetViewMatrix()));
 		XMMATRIX proj = XMMatrixTranspose(*(spotlight->GetProjectionMatrix()));
 
-		result = deviceContext->Map(_matrixBufferLightPassPerLight, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+		result = deviceContext->Map(_matrixBufferLightPassPerSpotlight, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 		if (FAILED(result))
 		{
-			throw std::runtime_error("RenderModule::SetLightDataPerSpotlight: Failed to Map _matrixBufferLightPass");
+			throw std::runtime_error("RenderModule::SetLightDataPerSpotlight: Failed to Map _matrixBufferLightPassPerSpotlight");
 		}
 
-		dataPtr = static_cast<MatrixBufferLightPassPerLight*>(mappedResource.pData);
+		dataPtr = static_cast<MatrixBufferLightPassPerSpotlight*>(mappedResource.pData);
 
 		dataPtr->_viewMatrix = view;
 		dataPtr->_projectionMatrix = proj;
@@ -302,9 +312,39 @@ namespace Renderer
 		dataPtr->_range = spotlight->GetRange();
 		dataPtr->_shadowMapDimensions = SHADOWMAP_DIMENSIONS;
 
-		deviceContext->Unmap(_matrixBufferLightPassPerLight, 0);
+		deviceContext->Unmap(_matrixBufferLightPassPerSpotlight, 0);
 
-		deviceContext->PSSetConstantBuffers(3, 1, &_matrixBufferLightPassPerLight);
+		deviceContext->PSSetConstantBuffers(3, 1, &_matrixBufferLightPassPerSpotlight);
+	}
+
+	void RenderModule::SetLightDataPerPointlight(Pointlight* pointlight)
+	{
+		if (!pointlight)
+		{
+			throw std::runtime_error("RenderModule::SetLightDataPerSpotlight: Pointlight is nullptr");
+		}
+
+		HRESULT result;
+		D3D11_MAPPED_SUBRESOURCE mappedResource;
+		MatrixBufferLightPassPerPointlight* dataPtr;
+		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
+
+		result = deviceContext->Map(_matrixBufferLightPassPerSpotlight, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+		if (FAILED(result))
+		{
+			throw std::runtime_error("RenderModule::SetLightDataPerPointlight: Failed to Map _matrixBufferLightPassPerSpotlight");
+		}
+
+		dataPtr = static_cast<MatrixBufferLightPassPerPointlight*>(mappedResource.pData);
+
+		dataPtr->_position = pointlight->GetPosition();
+		dataPtr->_intensity = pointlight->GetIntensity();
+		dataPtr->_color = pointlight->GetColor();
+		dataPtr->_range = pointlight->GetRange();
+
+		deviceContext->Unmap(_matrixBufferLightPassPerSpotlight, 0);
+
+		deviceContext->PSSetConstantBuffers(3, 1, &_matrixBufferLightPassPerSpotlight);
 	}
 
 	void RenderModule::SetLightDataPerFrame(XMMATRIX* camView, XMMATRIX* camProjection)
@@ -353,8 +393,19 @@ namespace Renderer
 
 			break;
 		}
+		case AA_STAGE:
+		{
+			deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+			_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::BACK);
+			_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::DISABLE);
+			_d3d->SetAntiAliasingState();
+			_shaderHandler->SetFXAAPassShaders(deviceContext);
+			break;
+		}
 		case SHADOW_GENERATION:
 		{
+			//Topology has to be set here because GRID_STAGE, which is the previous stage, will change to LINELIST
+			deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 			_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::DISABLE);
 			_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::FRONT);
 
@@ -363,14 +414,28 @@ namespace Renderer
 
 			break;
 		}
-		case LIGHT_APPLICATION:
+		case LIGHT_APPLICATION_SPOTLIGHT:
 		{
 			_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::ENABLE);
 			_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::BACK);
 
 			int nrOfSRVs = _d3d->SetLightStage();
 
-			_shaderHandler->SetLightApplicationShaders(deviceContext, 2);
+			_shaderHandler->SetSpotlightApplicationShaders(deviceContext);
+			ID3D11ShaderResourceView* shadowMapSRV = _shadowMap->GetShadowSRV();
+			_d3d->GetDeviceContext()->PSSetShaderResources(nrOfSRVs, 1, &shadowMapSRV);
+
+			break;
+		}
+		case LIGHT_APPLICATION_POINTLIGHT:
+		{
+			_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::ENABLE);
+			_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::BACK);
+
+			//TODO: Should activate the pointlight shaders!
+			int nrOfSRVs = _d3d->SetLightStage();
+
+			_shaderHandler->SetPointlightApplicationShaders(deviceContext);
 			ID3D11ShaderResourceView* shadowMapSRV = _shadowMap->GetShadowSRV();
 			_d3d->GetDeviceContext()->PSSetShaderResources(nrOfSRVs, 1, &shadowMapSRV);
 
@@ -384,8 +449,16 @@ namespace Renderer
 		}
 		case HUD_STAGE:
 		{
+			_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::ENABLE);
+			_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::BACK);
+			deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 			_d3d->SetHUDStage();
 			_shaderHandler->SetHUDPassShaders(_d3d->GetDeviceContext());
+			break;
+		}
+		default:
+		{
+			throw std::runtime_error("RenderModule::SetShaderStage: Invalid shader stage");
 			break;
 		}
 		};
@@ -401,21 +474,22 @@ namespace Renderer
 
 	void RenderModule::Render(DirectX::XMMATRIX* world, int vertexBufferSize, DirectX::XMFLOAT3 colorOffset)
 	{
-		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
-
 		SetDataPerObject(world, colorOffset);
+		_d3d->GetDeviceContext()->Draw(vertexBufferSize, 0);
+	}
 
-		deviceContext->Draw(vertexBufferSize, 0);	
+	void RenderModule::RenderAnimation(DirectX::XMMATRIX* world, int vertexBufferSize, std::vector<DirectX::XMFLOAT4X4>* extra, DirectX::XMFLOAT3 colorOffset)
+	{
+		SetDataPerSkinnedObject(world, extra, colorOffset);
+		_d3d->GetDeviceContext()->Draw(vertexBufferSize, 0);
 	}
 
 	void RenderModule::Render(GUI::Node* root, FontWrapper* fontWrapper)
 	{
 		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
 		UINT32 vertexSize = sizeof(ScreenQuadVertex);
-		UINT32 offset = 0;
 
 		SetDataPerMesh(_screenQuad, vertexSize);
-
 		Render(root, root->GetModelMatrix(), fontWrapper);
 	}
 
@@ -440,19 +514,20 @@ namespace Renderer
 
 				XMMATRIX t = DirectX::XMMatrixMultiply(scale, *transform);
 
-				MatrixBufferHud* dataPtr = (MatrixBufferHud*)mappedResource.pData;
-			dataPtr->_model = XMMatrixTranspose(t);
+				MatrixBufferHud* dataPtr = static_cast<MatrixBufferHud*>(mappedResource.pData);
+				dataPtr->_model = XMMatrixTranspose(t);
+				dataPtr->_colorOffset = current->GetColorOffset();
 
 				_d3d->GetDeviceContext()->Unmap(_matrixBufferHUD, 0);
 
-			_d3d->GetDeviceContext()->VSSetConstantBuffers(1, 1, &_matrixBufferHUD);
+				_d3d->GetDeviceContext()->VSSetConstantBuffers(1, 1, &_matrixBufferHUD);
 				_d3d->GetDeviceContext()->PSSetShaderResources(0, 1, &tex);
 
 				_d3d->GetDeviceContext()->Draw(6, 0);
 			}
 			//Render text
 			int len = current->GetText().length();
-		if (len > 0) 
+			if (len > 0)
 			{
 				XMFLOAT4X4 temp;
 				float x, y;
@@ -464,11 +539,10 @@ namespace Renderer
 				XMFLOAT2 scale = current->GetScale();
 				x = pos.x - scale.x;
 				y = pos.y*-1.0f - scale.y;
-				//x and y is in -1,1 coordinate system
-				//Convert to pixel coordinate system
+
+				//x and y is in -1,1 coordinate system, convert to pixel coordinate system
 				x = (x + 1.0f) * 0.5f * _screenWidth;
 				y = (y + 1.0f) * 0.5f * _screenHeight;
-				//x and y is in pixel coordinates
 				fontWrapper->GetFontWrapper()->DrawTextLayout(_d3d->GetDeviceContext(), current->GetFont()->_textLayout, x, y, current->GetColor(), FW1_RESTORESTATE);
 			}
 			for (GUI::Node* i : *current->GetChildren())
@@ -478,52 +552,16 @@ namespace Renderer
 				Render(i, &t, fontWrapper);
 			}
 		}
-		
 	}
 
-	void RenderModule::Render(std::vector<HUDElement>* imageData)
+	void RenderModule::RenderLineList(XMMATRIX* world, int nrOfPoints, XMFLOAT3 colorOffset)
 	{
-		D3D11_MAPPED_SUBRESOURCE mappedResource;
-		HRESULT result;
+		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
 
-		for (auto i : *imageData)
-		{
-			if (i.GetVisibility() == true)
-			{
-				result = _d3d->GetDeviceContext()->Map(_matrixBufferHUD, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-				if (FAILED(result))
-				{
-					throw std::runtime_error("RenderModule::SetResourcesPerObject: Failed to Map _matrixBufferHUD");
-				}
+		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+		SetDataPerObject(world, colorOffset);
 
-				MatrixBufferHud* dataPtr = (MatrixBufferHud*)mappedResource.pData;
-				dataPtr->_model = *(i.GetModelMatrix());
-
-				_d3d->GetDeviceContext()->Unmap(_matrixBufferHUD, 0);
-
-				_d3d->GetDeviceContext()->VSSetConstantBuffers(1, 1, &_matrixBufferHUD);
-				ID3D11ShaderResourceView* tex = i.GetTexture();
-				_d3d->GetDeviceContext()->PSSetShaderResources(0, 1, &tex);
-
-				_d3d->GetDeviceContext()->Draw(6, 0);
-			}
-		}
-	}
-
-	void RenderModule::RenderLineList(XMMATRIX* world, ID3D11Buffer* lineList, int nrOfPoints, XMFLOAT3 colorOffset)
-	{
-		//ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
-
-		//deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
-
-		//XMMATRIX worldMatrix = XMMatrixTranspose(*world);
-
-		//SetDataPerObject(&worldMatrix, nullptr, nullptr, colorOffset);
-
-		//int pointSize = sizeof(XMFLOAT3);
-
-		//SetDataPerMesh(lineList, pointSize);
-		//deviceContext->Draw(nrOfPoints, 0);
+		deviceContext->Draw(nrOfPoints, 0);
 	}
 
 	void RenderModule::RenderScreenQuad()
@@ -544,11 +582,8 @@ namespace Renderer
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
 		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
 
-		_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::NONE);
+		_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::FRONT);
 		_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::ENABLE);
-
-		//_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::NONE);
-		//_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::DISABLE);
 
 		XMMATRIX worldMatrixC = XMMatrixTranspose(*world);
 
@@ -558,7 +593,7 @@ namespace Renderer
 			throw std::runtime_error("RenderModule::SetDataPerObject: Failed to Map _matrixBufferPerObject");
 		}
 
-		MatrixBufferPerObject* dataPtr = (MatrixBufferPerObject*)mappedResource.pData;
+		MatrixBufferPerObject* dataPtr = static_cast<MatrixBufferPerObject*>(mappedResource.pData);
 		dataPtr->_world = worldMatrixC;
 		deviceContext->Unmap(_matrixBufferPerObject, 0);
 
