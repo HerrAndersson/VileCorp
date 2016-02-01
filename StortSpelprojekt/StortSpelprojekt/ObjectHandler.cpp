@@ -104,6 +104,11 @@ bool ObjectHandler::Add(Type type, int index, XMFLOAT3 position, XMFLOAT3 rotati
 	{
 		_idCount++;
 		_gameObjects[type].push_back(object);
+		for(auto i : object->GetRenderObject()->_mesh._spotLights)
+		{
+			//TODO: Add settings variables to this function below! Alex
+			_spotlights[object] = new Renderer::Spotlight(_device, i, 256, 256, 0.1f, 1000.0f);
+		}
 		_objectCount++;
 		return true;
 	}
@@ -133,6 +138,12 @@ bool ObjectHandler::Remove(int ID)
 			{
 				// Release object resource
 				_gameObjects[i][j]->Release();
+
+				if (_spotlights.count(_gameObjects[i][j]))
+				{
+					delete _spotlights[_gameObjects[i][j]];
+					_spotlights.erase(_gameObjects[i][j]);
+				}
 
 				delete _gameObjects[i][j];
 
@@ -185,6 +196,12 @@ bool ObjectHandler::Remove(Type type, int ID)
 			_tilemap->RemoveObjectFromTile(_gameObjects[type].at(i));
 			_gameObjects[type][i]->Release();
 
+			if (_spotlights.count(_gameObjects[type][i]))
+			{
+				delete _spotlights[_gameObjects[type][i]];
+				_spotlights.erase(_gameObjects[type][i]);
+			}
+
 			delete _gameObjects[type][i];
 
 			// Replace pointer with the last pointer int the vector
@@ -194,6 +211,7 @@ bool ObjectHandler::Remove(Type type, int ID)
 			_gameObjects[type].pop_back();
 
 			_objectCount--;
+
 
 			return true;
 		}
@@ -562,6 +580,33 @@ void ObjectHandler::Update(float deltaTime)
 			//		static_cast<Trap*>(g)->Activate(unit);
 			//	}
 			//}
+		}
+	}
+
+	/*
+	
+	if(animations uppdateringar)
+		if(active)
+			do ljus update
+
+	if(gameobject förflyttning)
+		if(active)
+			do ljus update
+	
+	*/
+
+	for (pair<GameObject*, Renderer::Spotlight*> spot : _spotlights)
+	{
+		if (spot.second->IsActive() && spot.first->IsActive())
+		{
+			if (spot.second->GetBone() != -1)
+			{
+				spot.second->SetPositionAndRotation(spot.first->GetAnimation()->GetTransforms()->at(spot.second->GetBone()));
+			}
+			else
+			{
+				spot.second->SetPositionAndRotation(spot.first->GetPosition(), spot.first->GetRotation());
+			}
 		}
 	}
 }

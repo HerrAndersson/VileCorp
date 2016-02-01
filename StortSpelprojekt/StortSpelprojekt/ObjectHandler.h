@@ -11,6 +11,7 @@
 #include "JsonStructs.h"
 #include "AssetManager.h"
 #include "StateMachine\States.h"
+#include "Spotlight.h"
 
 /*
 ObjectHandler
@@ -46,6 +47,8 @@ private:
 	int _objectCount = 0;
 
 	AssetManager* _assetManager;
+	ID3D11Device* _device;
+	map< GameObject*, Renderer::Spotlight*> _spotlights;
 
 	Architecture*	MakeFloor(GameObjectFloorInfo* data, XMFLOAT3 position, XMFLOAT3 rotation);
 	Architecture*	MakeWall(GameObjectWallInfo* data, XMFLOAT3 position, XMFLOAT3 rotation);

@@ -53,8 +53,12 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	Renderer::Spotlight* spot;
 	for (int i = 0; i < 1; i++)
 	{
+		SpotlightData lightdata;
+		lightdata._angle = XM_PIDIV4;
+		lightdata._color = XMFLOAT3(1.0f, 1.0f, 1.0f);
+		lightdata._range = 9.5f;
 		int d = _renderModule->SHADOWMAP_DIMENSIONS;
-		spot = new Renderer::Spotlight(_renderModule->GetDevice(), 0.1f, 1000.0f, XM_PIDIV4, d, d, 1.0f, 9.5f, XMFLOAT3(1.0f, 1.0f, 1.0f), 72);
+		spot = new Renderer::Spotlight(_renderModule->GetDevice(), lightdata, d, d, 0.1f, 1000.0f);
 		spot->SetPositionAndRotation(XMFLOAT3(14 + i*2, 1, 8 + i * 2), XMFLOAT3(0,-35*i,0));
 		_spotlights.push_back(spot);
 	}
@@ -108,7 +112,6 @@ Game::~Game()
 	SAFE_DELETE(_grid);
 	SAFE_DELETE(_fontWrapper);
 	SAFE_DELETE(_lightCulling);
-
 	for(auto s : _spotlights)
 	{
 		SAFE_DELETE(s);
