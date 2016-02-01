@@ -92,6 +92,9 @@
       <Project>{1a48944a-4d63-4549-9560-d04bf1393ff2}</Project>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="ObjectHandler.cpp.orig" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{EC1FCE9E-9382-463B-A119-666180E146D6}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>

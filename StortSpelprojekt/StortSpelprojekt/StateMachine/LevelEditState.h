@@ -24,9 +24,11 @@ private:
 		int _tileType;
 	};
 	
-	bool _trapButtonClick = false;
-	bool _unitButtonClick = false;
-	bool _decButtonClick = false;
+	int _listId;
+	XMFLOAT2 _buttonPositions[7];
+	GUI::Node* _currentList = nullptr;
+	int _currentPage = 0;
+	std::vector<GUI::Node*>* objectTabs;
 
 	bool _floorChosen = false;
 	bool _wallChosen = false;

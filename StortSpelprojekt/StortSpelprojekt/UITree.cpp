@@ -71,6 +71,7 @@ namespace GUI
 			{
 				if (i->value.IsArray())
 				{
+					//if(test == "Trap" || returnNode->GetId() == "Unit" || returnNode->GetId() == "Entry" || returnNode->GetId() == "Floor" || returnNode->GetId() == "Wall" || returnNode->GetId() == "Decoration" || returnNode->GetId() == "Objective")
 					returnNode->SetPosition(XMFLOAT2(
 						(float)i->value[0].GetDouble(),
 						(float)i->value[1].GetDouble()
@@ -182,6 +183,11 @@ namespace GUI
 		XMFLOAT2 pos = _root->GetPosition();
 		bool f;
 		return IsButtonColliding(_root, id, x, y, pos.x, pos.y, f);
+	}
+
+	bool UITree::IsButtonColliding(Node* current, int x, int y)
+	{
+		return IsButtonColliding(current->GetId(), x, y);
 	}
 
 	Node* UITree::FindNode(Node* current, const std::string& id)

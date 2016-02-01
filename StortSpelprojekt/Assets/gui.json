@@ -91,169 +91,770 @@
   
   },
   "LEVELEDIT" : {
-  
-  "Traps" :
-		{
-			"position": [-0.96, 0.9],	
-			"scale": [0.05, 0.1],
-			"texture": "../Menues/LEVELEDIT1.png",
-			
-			"TrapsText":
+	  "Buttons":
+	  {
+			"Floors" :
 			{
-				"position" : [0.96, -0.96],
-				"scale": [1.0, 1.0],
-				"text": "Traps",
-				"color": "FF000000",
-				"fontsize" : 30.0
-			}
-		},
-		
-		"TrapLeaf":
-		{
-			 "Trap1" :
+				"position": [-0.98, 0.9],	
+				"scale": [0.035, 0.07],
+				"texture": "../Menues/LEVELEDIT1.png",
+				
+				"FloorsText":
+				{
+					"position" : [0.984, -0.975],
+					"scale": [1.0, 1.0],
+					"text": "Floor",
+					"color": "FF000000",
+					"fontsize" : 18.0
+				}
+			},
+			"Walls" :
 			{
-				"position": [-0.859, 0.9],	
-				"scale": [0.05, 0.1],
+				"position": [-0.98, 0.75],	
+				"scale": [0.035, 0.07],
+				"texture": "../Menues/LEVELEDIT1.png",
+				
+				"WallsText":
+				{
+					"position" : [0.984, -0.975],
+					"scale": [1.0, 1.0],
+					"text": "Wall",
+					"color": "FF000000",
+					"fontsize" : 18.0
+				}
+			},
+			"Objectives" :
+			{
+				"position": [-0.98, 0.6],	
+				"scale": [0.035, 0.07],
+				"texture": "../Menues/LEVELEDIT1.png",
+				
+				"ObjectivesText":
+				{
+					"position" : [0.984, -0.975],
+					"scale": [1.0, 1.0],
+					"text": "Obj-",
+					"color": "FF000000",
+					"fontsize" : 18.0
+				}
+			},
+			"Entries" :
+			{
+				"position": [-0.98, 0.45],	
+				"scale": [0.035, 0.07],
+				"texture": "../Menues/LEVELEDIT1.png",
+				
+				"EntriesText":
+				{
+					"position" : [0.984, -0.975],
+					"scale": [1.0, 1.0],
+					"text": "Entry",
+					"color": "FF000000",
+					"fontsize" : 18.0
+				}
+			},
+			"Units" :
+			{
+				"position": [-0.98, 0.3],	
+				"scale": [0.035, 0.07],
+				"texture": "../Menues/LEVELEDIT1.png",
+				
+				"UnitsText":
+				{
+					"position" : [0.984, -0.975],
+					"scale": [1.0, 1.0],
+					"text": "Unit",
+					"color": "FF000000",
+					"fontsize" : 18.0
+				}
+			},
+			"Traps" :
+			{
+				"position": [-0.98, 0.15],	
+				"scale": [0.035, 0.07],
 				"texture": "../Menues/LEVELEDIT1.png",
 				
 				"TrapsText":
 				{
-					"position" : [0.97, -0.96],
+					"position" : [0.984, -0.975],
 					"scale": [1.0, 1.0],
-					"text": "Trap1",
+					"text": "Trap",
 					"color": "FF000000",
-					"fontsize" : 30.0
+					"fontsize" : 18.0
 				}
 			},
-			
-			 "Trap2" :
+			"Decorations" :
 			{
-				"position": [-0.859, 0.7],	
-				"scale": [0.05, 0.1],
+				"position": [-0.98, 0.0],	
+				"scale": [0.035, 0.07],
 				"texture": "../Menues/LEVELEDIT1.png",
 				
-				"TrapsText":
+				"DecorationsText":
 				{
-					"position" : [0.97, -0.96],
+					"position" : [0.984, -0.975],
 					"scale": [1.0, 1.0],
-					"text": "Trap2",
+					"text": "Dec-",
 					"color": "FF000000",
-					"fontsize" : 30.0
+					"fontsize" : 18.0
 				}
 			}
-			
-			
 		},
-		
-	"Units" :
+		"wholelist":
 		{
-			"position": [-0.96, 0.7],	
-			"scale": [0.05, 0.1],
-			"texture": "../Menues/LEVELEDIT1.png",
-			
-			"UnitsText":
+		"scale": [0.8, 0.8],
+			"floorlist":
 			{
-				"position" : [0.97, -0.96],
-				"scale": [1.0, 1.0],
-				"text": "Units",
-				"color": "FF000000",
-				"fontsize" : 30.0
-			}
-		},
-		
-	"UnitLeaf":
-		{
-			 "Unit1" :
-			{
-				"position": [-0.859, 0.7],	
-				"scale": [0.05, 0.1],
-				"texture": "../Menues/LEVELEDIT1.png",
-				
-				"UnitText":
+				"position": [-0.8, 0.46],
+				"scale": [0.2, 0.54],
+				"texture": "../Menues/leveledit-page.png",
+					
+				"floorpage0":
 				{
-					"position" : [0.97, -0.96],
-					"scale": [1.0, 1.0],
-					"text": "Unit1",
-					"color": "FF000000",
-					"fontsize" : 30.0
+					"":
+					{
+						"floor1" :
+						{
+							"position": [-0.125, 0.42],	
+							"scale": [0.045, 0.045],
+							"texture": "../Menues/LevelEdit/Floors/floor1.png"
+						},
+						"floor2" :
+						{
+							"position": [-0.035, 0.42],	
+							"scale": [0.045, 0.045],
+							"texture": "../Menues/LevelEdit/Floors/floor2.png"
+						},
+						"floor3" :
+						{
+							"position": [0.055, 0.42],	
+							"scale": [0.045, 0.045],
+							"texture": "../Menues/LevelEdit/Floors/floor3.png"
+						},
+						"floor4" :
+						{
+							"position": [0.145, 0.42],
+							"scale": [0.045, 0.045],
+							"texture": "../Menues/LevelEdit/Floors/floor4.png"
+						}
+					},
+					"":
+					{
+						"position": [0.0, -0.15],
+						"floor5" :
+						{
+							"position": [-0.125, 0.42],	
+							"scale": [0.045, 0.045],
+							"texture": "../Menues/LevelEdit/Floors/floor5.png"
+						},
+						"floor6" :
+						{
+							"position": [-0.035, 0.42],	
+							"scale": [0.045, 0.045],
+							"texture": "../Menues/LevelEdit/Floors/floor6.png"
+						},
+						"floor7" :
+						{
+							"position": [0.055, 0.42],	
+							"scale": [0.045, 0.045],
+							"texture": "../Menues/LevelEdit/Floors/floor7.png"
+						},
+						"floor8" :
+						{
+							"position": [0.145, 0.42],	
+							"scale": [0.045, 0.045],
+							"texture": "../Menues/LevelEdit/Floors/floor8.png"
+						}
+					},
+					"":
+					{
+						"position": [0.0, -0.30],
+						"floor9" :
+						{
+							"position": [-0.125, 0.42],	
+							"scale": [0.045, 0.045],
+							"texture": "../Menues/LevelEdit/Floors/floor9.png"
+						},
+						"floor10" :
+						{
+							"position": [-0.035, 0.42],	
+							"scale": [0.045, 0.045],
+							"texture": "../Menues/LevelEdit/Floors/floor10.png"
+						},
+						"floor11" :
+						{
+							"position": [0.055, 0.42],	
+							"scale": [0.045, 0.045],
+							"texture": "../Menues/LevelEdit/Floors/floor11.png"
+						},
+						"floor12" :
+						{
+							"position": [0.145, 0.42],	
+							"scale": [0.045, 0.045],
+							"texture": "../Menues/LevelEdit/Floors/floor12.png"
+						}
+					},
+					"":
+					{
+						"position": [0.0, -0.45],
+						"floor13" :
+						{
+							"position": [-0.125, 0.42],	
+							"scale": [0.045, 0.045],
+							"texture": "../Menues/LevelEdit/Floors/floor13.png"
+						},
+						"floor14" :
+						{
+							"position": [-0.035, 0.42],	
+							"scale": [0.045, 0.045],
+							"texture": "../Menues/LevelEdit/Floors/floor14.png"
+						},
+						"floor15" :
+						{
+							"position": [0.055, 0.42],	
+							"scale": [0.045, 0.045],
+							"texture": "../Menues/LevelEdit/Floors/floor15.png"
+						},
+						"floor16" :
+						{
+							"position": [0.145, 0.42],	
+							"scale": [0.045, 0.045],
+							"texture": "../Menues/LevelEdit/Floors/floor16.png"
+						}
+					},
+					"":
+					{
+						"position": [0.0, -0.60],
+						"floor17" :
+						{
+							"position": [-0.125, 0.42],	
+							"scale": [0.045, 0.045],
+							"texture": "../Menues/LevelEdit/Floors/floor17.png"
+						},
+						"floor18" :
+						{
+							"position": [-0.035, 0.42],	
+							"scale": [0.045, 0.045],
+							"texture": "../Menues/LevelEdit/Floors/floor18.png"
+						},
+						"floor19" :
+						{
+							"position": [0.055, 0.42],	
+							"scale": [0.045, 0.045],
+							"texture": "../Menues/LevelEdit/Floors/floor19.png"
+						},
+						"floor20" :
+						{
+							"position": [0.145, 0.42],	
+							"scale": [0.045, 0.045],
+							"texture": "../Menues/LevelEdit/Floors/floor20.png"
+						}
+					},
+					"":
+					{
+						"position": [0.0, -0.75],
+						"floor21" :
+						{
+							"position": [-0.125, 0.42],	
+							"scale": [0.045, 0.045],
+							"texture": "../Menues/LevelEdit/Floors/floor21.png"
+						},
+						"floor22" :
+						{
+							"position": [-0.035, 0.42],	
+							"scale": [0.045, 0.045],
+							"texture": "../Menues/LevelEdit/Floors/floor22.png"
+						},
+						"floor23" :
+						{
+							"position": [0.055, 0.42],	
+							"scale": [0.045, 0.045],
+							"texture": "../Menues/LevelEdit/Floors/floor23.png"
+						},
+						"floor24" :
+						{
+							"position": [0.145, 0.42],	
+							"scale": [0.045, 0.045],
+							"texture": "../Menues/LevelEdit/Floors/floor24.png"
+						}
+					}
+				},
+				"floorpage1":
+				{
+					"":
+					{
+						"floor25" :
+						{
+							"position": [-0.125, 0.42],	
+							"scale": [0.045, 0.045],
+							"texture": "../Menues/LevelEdit/Floors/floor25.png"
+						},
+						"floor26" :
+						{
+							"position": [-0.035, 0.42],	
+							"scale": [0.045, 0.045],
+							"texture": "../Menues/LevelEdit/Floors/floor26.png"
+						},
+						"floor27" :
+						{
+							"position": [0.055, 0.42],	
+							"scale": [0.045, 0.045],
+							"texture": "../Menues/LevelEdit/Floors/floor27.png"
+						},
+						"floor28" :
+						{
+							"position": [0.145, 0.42],	
+							"scale": [0.045, 0.045],
+							"texture": "../Menues/LevelEdit/Floors/floor28.png"
+						}
+					},
+					"":
+					{
+						"position": [0.0, -0.15],
+						"floor29" :
+						{
+							"position": [-0.125, 0.42],	
+							"scale": [0.045, 0.045],
+							"texture": "../Menues/LevelEdit/Floors/floor29.png"
+						},
+						"floor30" :
+						{
+							"position": [-0.035, 0.42],	
+							"scale": [0.045, 0.045],
+							"texture": "../Menues/LevelEdit/Floors/floor30.png"
+						},
+						"floor31" :
+						{
+							"position": [0.055, 0.42],	
+							"scale": [0.045, 0.045],
+							"texture": "../Menues/LevelEdit/Floors/floor31.png"
+						},
+						"floor32" :
+						{
+							"position": [0.145, 0.42],	
+							"scale": [0.045, 0.045],
+							"texture": "../Menues/LevelEdit/Floors/floor32.png"
+						}
+					},
+					"":
+					{
+						"position": [0.0, -0.30],
+						"floor33" :
+						{
+							"position": [-0.125, 0.42],	
+							"scale": [0.045, 0.045],
+							"texture": "../Menues/LevelEdit/Floors/floor33.png"
+						},
+						"floor34" :
+						{
+							"position": [-0.035, 0.42],	
+							"scale": [0.045, 0.045],
+							"texture": "../Menues/LevelEdit/Floors/floor34.png"
+						},
+						"floor35" :
+						{
+							"position": [0.055, 0.42],	
+							"scale": [0.045, 0.045],
+							"texture": "../Menues/LevelEdit/Floors/floor35.png"
+						}
+					}
 				}
 			},
-			
-			 "Unit2" :
+			"walllist":
 			{
-				"position": [-0.859, 0.5],	
-				"scale": [0.05, 0.1],
-				"texture": "../Menues/LEVELEDIT1.png",
-				
-				"UnitText":
+				"position": [-0.8, 0.46],
+				"scale": [0.2, 0.54],
+				"texture": "../Menues/leveledit-page.png",
+					
+				"wallpage0":
 				{
-					"position" : [0.97, -0.96],
-					"scale": [1.0, 1.0],
-					"text": "Unit2",
-					"color": "FF000000",
-					"fontsize" : 30.0
-				}
-			}
-			
-			
-		},
-		
-  
-  "Decorations" :
-		{
-			"position": [-0.96, 0.5],	
-			"scale": [0.05, 0.1],
-			"texture": "../Menues/LEVELEDIT1.png",
-			
-			"DecorationsText":
-			{
-				"position" : [0.97, -0.96],
-				"scale": [1.0, 1.0],
-				"text": "Dec.",
-				"color": "FF000000",
-				"fontsize" : 30.0
-			}
-		},
-		
-		
-		"DecLeaf":
-		{
-			 "Dec1" :
-			{
-				"position": [-0.859, 0.5],	
-				"scale": [0.05, 0.1],
-				"texture": "../Menues/LEVELEDIT1.png",
-				
-				"DecText":
-				{
-					"position" : [0.97, -0.96],
-					"scale": [1.0, 1.0],
-					"text": "Dec1",
-					"color": "FF000000",
-					"fontsize" : 30.0
+					"":
+					{
+						"wall1" :
+						{
+							"position": [-0.125, 0.42],	
+							"scale": [0.045, 0.045],
+							"texture": "../Menues/LevelEdit/Walls/wall1.png"
+						},
+						"wall2" :
+						{
+							"position": [-0.035, 0.42],	
+							"scale": [0.045, 0.045],
+							"texture": "../Menues/LevelEdit/Walls/wall2.png"
+						},
+						"wall3" :
+						{
+							"position": [0.055, 0.42],	
+							"scale": [0.045, 0.045],
+							"texture": "../Menues/LevelEdit/Walls/wall3.png"
+						},
+						"wall4" :
+						{
+							"position": [0.145, 0.42],	
+							"scale": [0.045, 0.045],
+							"texture": "../Menues/LevelEdit/Walls/wall4.png"
+						}
+					},
+					"":
+					{
+						"position": [0.0, -0.15],
+						"wall5" :
+						{
+							"position": [-0.125, 0.42],	
+							"scale": [0.045, 0.045],
+							"texture": "../Menues/LevelEdit/Walls/wall5.png"
+						},
+						"wall6" :
+						{
+							"position": [-0.035, 0.42],	
+							"scale": [0.045, 0.045],
+							"texture": "../Menues/LevelEdit/Walls/wall6.png"
+						}
+					}
 				}
 			},
-			
-			 "Dec2" :
+			"objectivelist":
 			{
-				"position": [-0.859, 0.3],	
-				"scale": [0.05, 0.1],
-				"texture": "../Menues/LEVELEDIT1.png",
-				
-				"DecText":
+				"position": [-0.8, 0.46],
+				"scale": [0.2, 0.54],
+				"texture": "../Menues/leveledit-page.png",
+					
+				"objectivepage0":
 				{
-					"position" : [0.97, -0.96],
-					"scale": [1.0, 1.0],
-					"text": "Dec2",
-					"color": "FF000000",
-					"fontsize" : 30.0
+					"":
+					{
+						"objective1" :
+						{
+							"position": [-0.125, 0.42],	
+							"scale": [0.065, 0.065],
+							"texture": "../Menues/LevelEdit/Walls/wall1.png"
+						},
+						"objective2" :
+						{
+							"position": [-0.035, 0.42],	
+							"scale": [0.065, 0.065],
+							"texture": "../Menues/LevelEdit/Walls/wall2.png"
+						},
+						"objective3" :
+						{
+							"position": [0.055, 0.42],	
+							"scale": [0.065, 0.065],
+							"texture": "../Menues/LevelEdit/Walls/wall3.png"
+						},
+						"objective4" :
+						{
+							"position": [0.145, 0.42],	
+							"scale": [0.065, 0.065],
+							"texture": "../Menues/LevelEdit/Walls/wall4.png"
+						}
+					},
+					"":
+					{
+						"position": [0.0, -0.15],
+						"objective5" :
+						{
+							"position": [0.0, 0.0],	
+							"scale": [0.1, 0.1],
+							"texture": "../Menues/LevelEdit/Floors/Floor5.png"
+						},
+						"objective6" :
+						{
+							"position": [0.2, 0.0],
+							"scale": [0.1, 0.1],
+							"texture": "../Menues/LevelEdit/Floors/Floor6.png"
+						},
+						"objective7" :
+						{
+							"position": [0.3, 0.0],
+							"scale": [0.1, 0.1],
+							"texture": "../Menues/LevelEdit/Floors/Floor7.png"
+						},
+						"objective8" :
+						{
+							"position": [0.4, 0.0],
+							"scale": [0.1, 0.1],
+							"texture": "../Menues/LevelEdit/Floors/Floor8.png"
+						}
+					}
+				}
+			},
+			"entrylist":
+			{
+				"position": [-0.8, 0.46],
+				"scale": [0.2, 0.54],
+				"texture": "../Menues/leveledit-page.png",
+					
+				"entrypage0":
+				{
+					"":
+					{
+						"entry1" :
+						{
+							"position": [-0.125, 0.42],	
+							"scale": [0.065, 0.065],
+							"texture": "../Menues/LevelEdit/Walls/wall1.png"
+						},
+						"entry2" :
+						{
+							"position": [-0.035, 0.42],	
+							"scale": [0.065, 0.065],
+							"texture": "../Menues/LevelEdit/Walls/wall2.png"
+						},
+						"entry3" :
+						{
+							"position": [0.055, 0.42],	
+							"scale": [0.065, 0.065],
+							"texture": "../Menues/LevelEdit/Walls/wall3.png"
+						},
+						"entry4" :
+						{
+							"position": [0.145, 0.42],	
+							"scale": [0.065, 0.065],
+							"texture": "../Menues/LevelEdit/Walls/wall4.png"
+						}
+					},
+					"":
+					{
+						"position": [0.0, -0.15],
+						"entry5" :
+						{
+							"position": [0.0, 0.0],	
+							"scale": [0.1, 0.1],
+							"texture": "../Menues/LevelEdit/Floors/Floor5.png"
+						},
+						"entry6" :
+						{
+							"position": [0.2, 0.0],
+							"scale": [0.1, 0.1],
+							"texture": "../Menues/LevelEdit/Floors/Floor6.png"
+						},
+						"entry7" :
+						{
+							"position": [0.3, 0.0],
+							"scale": [0.1, 0.1],
+							"texture": "../Menues/LevelEdit/Floors/Floor7.png"
+						},
+						"entry8" :
+						{
+							"position": [0.4, 0.0],
+							"scale": [0.1, 0.1],
+							"texture": "../Menues/LevelEdit/Floors/Floor8.png"
+						}
+					}
+				}
+			},
+			"unitlist":
+			{
+				"position": [-0.8, 0.46],
+				"scale": [0.2, 0.54],
+				"texture": "../Menues/leveledit-page.png",
+					
+				"unitpage0":
+				{
+					"":
+					{
+						"unit1" :
+						{
+							"position": [-0.125, 0.42],	
+							"scale": [0.065, 0.065],
+							"texture": "../Menues/LevelEdit/Walls/wall1.png"
+						},
+						"unit2" :
+						{
+							"position": [-0.035, 0.42],	
+							"scale": [0.065, 0.065],
+							"texture": "../Menues/LevelEdit/Walls/wall2.png"
+						},
+						"unit3" :
+						{
+							"position": [0.055, 0.42],	
+							"scale": [0.065, 0.065],
+							"texture": "../Menues/LevelEdit/Walls/wall3.png"
+						},
+						"unit4" :
+						{
+							"position": [0.145, 0.42],	
+							"scale": [0.065, 0.065],
+							"texture": "../Menues/LevelEdit/Walls/wall4.png"
+						}
+					},
+					"":
+					{
+						"position": [0.0, -0.15],
+						"unit5" :
+						{
+							"position": [0.0, 0.0],	
+							"scale": [0.1, 0.1],
+							"texture": "../Menues/LevelEdit/Floors/Floor5.png"
+						},
+						"unit6" :
+						{
+							"position": [0.2, 0.0],
+							"scale": [0.1, 0.1],
+							"texture": "../Menues/LevelEdit/Floors/Floor6.png"
+						},
+						"unit7" :
+						{
+							"position": [0.3, 0.0],
+							"scale": [0.1, 0.1],
+							"texture": "../Menues/LevelEdit/Floors/Floor7.png"
+						},
+						"unit8" :
+						{
+							"position": [0.4, 0.0],
+							"scale": [0.1, 0.1],
+							"texture": "../Menues/LevelEdit/Floors/Floor8.png"
+						}
+					}
+				}
+			},
+			"traplist":
+			{
+				"position": [-0.8, 0.46],
+				"scale": [0.2, 0.54],
+				"texture": "../Menues/leveledit-page.png",
+					
+				"trappage0":
+				{
+					"":
+					{
+						"trap1" :
+						{
+							"position": [-0.125, 0.42],	
+							"scale": [0.065, 0.065],
+							"texture": "../Menues/LevelEdit/Walls/wall1.png"
+						},
+						"trap2" :
+						{
+							"position": [-0.035, 0.42],	
+							"scale": [0.065, 0.065],
+							"texture": "../Menues/LevelEdit/Walls/wall2.png"
+						},
+						"trap3" :
+						{
+							"position": [0.055, 0.42],	
+							"scale": [0.065, 0.065],
+							"texture": "../Menues/LevelEdit/Walls/wall3.png"
+						},
+						"trap4" :
+						{
+							"position": [0.145, 0.42],	
+							"scale": [0.065, 0.065],
+							"texture": "../Menues/LevelEdit/Walls/wall4.png"
+						}
+					},
+					"":
+					{
+						"position": [0.0, -0.15],
+						"trap5" :
+						{
+							"position": [0.0, 0.0],	
+							"scale": [0.1, 0.1],
+							"texture": "../Menues/LevelEdit/Floors/Floor5.png"
+						},
+						"trap6" :
+						{
+							"position": [0.2, 0.0],
+							"scale": [0.1, 0.1],
+							"texture": "../Menues/LevelEdit/Floors/Floor6.png"
+						},
+						"trap7" :
+						{
+							"position": [0.3, 0.0],
+							"scale": [0.1, 0.1],
+							"texture": "../Menues/LevelEdit/Floors/Floor7.png"
+						},
+						"trap8" :
+						{
+							"position": [0.4, 0.0],
+							"scale": [0.1, 0.1],
+							"texture": "../Menues/LevelEdit/Floors/Floor8.png"
+						}
+					}
+				}
+			},
+			"decorationlist":
+			{
+				"position": [-0.8, 0.46],
+				"scale": [0.2, 0.54],
+				"texture": "../Menues/leveledit-page.png",
+					
+				"decorationpage0":
+				{
+					"":
+					{
+						"decoration1" :
+						{
+							"position": [-0.125, 0.42],	
+							"scale": [0.065, 0.065],
+							"texture": "../Menues/LevelEdit/Walls/wall1.png"
+						},
+						"decoration2" :
+						{
+							"position": [-0.035, 0.42],	
+							"scale": [0.065, 0.065],
+							"texture": "../Menues/LevelEdit/Walls/wall2.png"
+						},
+						"decoration3" :
+						{
+							"position": [0.055, 0.42],	
+							"scale": [0.065, 0.065],
+							"texture": "../Menues/LevelEdit/Walls/wall3.png"
+						},
+						"decoration4" :
+						{
+							"position": [0.145, 0.42],	
+							"scale": [0.065, 0.065],
+							"texture": "../Menues/LevelEdit/Walls/wall4.png"
+						}
+					},
+					"":
+					{
+						"position": [0.0, -0.15],
+						"decoration5" :
+						{
+							"position": [0.0, 0.0],	
+							"scale": [0.1, 0.1],
+							"texture": "../Menues/LevelEdit/Floors/Floor5.png"
+						},
+						"decoration6" :
+						{
+							"position": [0.2, 0.0],
+							"scale": [0.1, 0.1],
+							"texture": "../Menues/LevelEdit/Floors/Floor6.png"
+						},
+						"decoration7" :
+						{
+							"position": [0.3, 0.0],
+							"scale": [0.1, 0.1],
+							"texture": "../Menues/LevelEdit/Floors/Floor7.png"
+						},
+						"decoration8" :
+						{
+							"position": [0.4, 0.0],
+							"scale": [0.1, 0.1],
+							"texture": "../Menues/LevelEdit/Floors/Floor8.png"
+						}
+					}
 				}
 			}
-			
-			
+		},
+		"listbuttons":
+		{
+			"position": [-0.82, 0.485],
+			"scale": [0.16, 0.432],
+			"left":
+			{
+				"position": [0.126, -0.5],
+				"scale": [0.02, 0.02],
+				"texture": "../Menues/LevelEdit/GUI/placement4-button1.png"
+			},
+			"right":
+			{
+				"position": [0.174, -0.5],
+				"scale": [0.02, 0.02],
+				"texture": "../Menues/LevelEdit/GUI/placement4-button2.png"
+			}
 		}
-    
-  
   }
   
   }
