@@ -16,7 +16,7 @@ private:
 	int _detectDifficulty;
 	int _disarmDifficulty;
 
-//	AI::Vec2D _direction;
+	AI::Vec2D _direction;
 	AI::Vec2D* _occupiedTiles;
 	int _tileSize;
 
@@ -49,5 +49,8 @@ public:
 
 	bool IsVisibleToEnemies()const;
 	void SetVisibleToEnemies(bool visible);
+
+	// Overloaded function
+	void SetTilePosition(AI::Vec2D pos);
 };
 

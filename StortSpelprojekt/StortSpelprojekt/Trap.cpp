@@ -202,6 +202,7 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	: GameObject(ID, position, rotation, tilePosition, type, renderObject)
 {
 	_cost = cost;
+	_direction = direction;
 	_trapType = trapType;
 	//_trapType = SHARK;
 	_tileMap = tileMap;
@@ -335,4 +336,55 @@ bool Trap::IsVisibleToEnemies() const
 void Trap::SetVisibleToEnemies(bool visible)
 {
 	_isVisibleToEnemies = visible;
+}
+
+
+// Overloaded function
+void Trap::SetTilePosition(AI::Vec2D pos)
+{
+	GameObject::SetTilePosition(pos);
+
+	_nrOfAOETiles = 0;
+
+	int radius = 0;
+
+	switch (_trapType)
+	{
+	case SPIKE:
+		Initialize(3, 1, 1, 50, 50);
+		_occupiedTiles[0] = _tilePosition;
+		_areaOfEffect[_nrOfAOETiles++] = _tilePosition;
+		break;
+	case TESLACOIL:
+		Initialize(2, 9, 37, 50, 50);
+		for (int i = 0; i < _tileSize; i++)
+		{
+			AI::Vec2D offset = { i / 3 - 1, i % 3 - 1 };
+			_occupiedTiles[i] = _tilePosition + offset;
+		}
+		CalculateCircleAOE(3);
+		break;
+	case SHARK:			//Trigger area is currently the same as the trap's physical area. Might be awkward since the shark trap is larger than its AOE.
+	{
+		Initialize(100, 18, 3, 50, 50);
+		AI::Vec2D offset = { _direction._y, _direction._x };
+		_nrOfAOETiles = 3;
+		_areaOfEffect[0] = pos;
+		_areaOfEffect[1] = pos + offset;
+		_areaOfEffect[2] = pos - offset;
+
+		AI::Vec2D dirOffset = { 0, 0 };
+		for (int i = 0; i < 6; i++)
+		{
+			_occupiedTiles[3 * i] = _tilePosition + dirOffset - offset;
+			_occupiedTiles[3 * i + 1] = _tilePosition + dirOffset;
+			_occupiedTiles[3 * i + 2] = _tilePosition + dirOffset + offset;
+			dirOffset += _direction;
+		}
+		break;
+	}
+	default:
+		_areaOfEffect = nullptr;
+		break;
+	}
 }
