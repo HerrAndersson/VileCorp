@@ -36,7 +36,7 @@ void LevelEditState::OnStateEnter()
 	_uiTree.GetNode("UnitLeaf")->SetHidden(true);
 	_uiTree.GetNode("DecLeaf")->SetHidden(true);
 
-	//_objectHandler->EnlargeTilemap(50);
+	_objectHandler->EnlargeTilemap(50);
 
 	XMFLOAT3 campos;
 	campos.x = _objectHandler->GetTileMap()->GetWidth() / 2;

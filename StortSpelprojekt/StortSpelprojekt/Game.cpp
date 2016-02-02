@@ -226,7 +226,8 @@ void Game::Render()
 
 			for (GameObject* a : gameObjects->at(GUARD))
 			{
-				_renderModule->RenderAnimation(a->GetMatrix(), vertexBufferSize, a->GetAnimation()->GetTransforms(), a->GetColorOffset());
+				// temporary uncommenting
+				//_renderModule->RenderAnimation(a->GetMatrix(), vertexBufferSize, a->GetAnimation()->GetTransforms(), a->GetColorOffset());
 			}
 		}
 	}
