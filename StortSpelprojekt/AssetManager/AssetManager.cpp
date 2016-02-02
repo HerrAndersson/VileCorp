@@ -346,7 +346,7 @@ RenderObject* AssetManager::ScanModel(string fileName)
 	int version;
 	_infile->read((char*)&version, 4);
 
-	if (version != 24 && version != 26)
+	if (version != 24 && version != 26 && version != 27)
 	{
 		throw std::runtime_error("Failed to load " + file_path + ":\nIncorrect fileversion");
 	}

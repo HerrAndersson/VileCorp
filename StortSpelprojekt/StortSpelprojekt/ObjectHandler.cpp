@@ -6,6 +6,7 @@ ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, G
 	_assetManager = assetManager;
 	_tilemap = nullptr;
 	_gameObjectInfo = data;
+	_device = device;
 
 	for (int i = 0; i < NR_OF_TYPES; i++)
 	{
@@ -432,9 +433,6 @@ void ObjectHandler::EnlargeTilemap(int offset)
 	}
 }
 
-
-
-
 bool ObjectHandler::LoadLevel(int lvlIndex)
 {
 	int dimX, dimY;
@@ -622,6 +620,13 @@ void ObjectHandler::Release()
 		}
 		_gameObjects[i].clear();
 	}
+
+	for (pair<GameObject*, Renderer::Spotlight*> spot : _spotlights)
+	{
+		delete spot.second;
+	}
+	_spotlights.clear();
+
 	_idCount = 0;
 	_objectCount = 0;
 }

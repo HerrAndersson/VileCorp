@@ -27,8 +27,8 @@
     
   ],
   "guards": [
-    "BasemanAnimated-26.bin",
-	  "BasemanAnimated-26.bin"
+    "basemanBodyAnimationtest-27.bin",
+	  "basemanBodyAnimationtest-27.bin"
 
   ],
   "enemies": [
