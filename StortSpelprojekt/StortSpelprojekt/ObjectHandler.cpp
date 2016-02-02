@@ -372,7 +372,7 @@ void ObjectHandler::MinimizeTileMap()
 	int newXMax = maxX - minX;
 	int newYMax = maxY - minY;
 
-	Tilemap* minimized = new Tilemap(newXMax, newYMax);
+	Tilemap* minimized = new Tilemap(AI::Vec2D(newXMax, newYMax));
 	for (int x = 0; x < newXMax; x++)
 	{
 		for (int y = 0; y < newYMax; y++)
@@ -405,7 +405,7 @@ void ObjectHandler::EnlargeTilemap(int offset)
 	if (offset > 0)
 	{
 		int o = 2 * offset;
-		Tilemap* large = new Tilemap(_tilemap->GetWidth() + o, _tilemap->GetHeight() + o);
+		Tilemap* large = new Tilemap(AI::Vec2D(_tilemap->GetWidth() + o, _tilemap->GetHeight() + o));
 
 		for (int x = offset; x < _tilemap->GetWidth() + offset; x++)
 		{

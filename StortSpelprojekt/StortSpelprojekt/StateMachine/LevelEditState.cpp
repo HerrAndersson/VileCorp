@@ -43,7 +43,7 @@ void LevelEditState::OnStateEnter()
 	_uiTree.GetNode("wholelist")->SetHidden(true);
 	_uiTree.GetNode("listbuttons")->SetHidden(true);
 
-	//_objectHandler->EnlargeTilemap(50);
+	_objectHandler->EnlargeTilemap(50);
 
 	XMFLOAT3 campos;
 	campos.x = _objectHandler->GetTileMap()->GetWidth() / 2;

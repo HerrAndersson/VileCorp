@@ -16,10 +16,7 @@ Tilemap::Tilemap()
 		}
 	}
 }
-Tilemap::Tilemap(int x, int z)
-{
-	Tilemap(AI::Vec2D(x, z));
-}
+
 Tilemap::Tilemap(AI::Vec2D size)
 {
 	if (size._x > 0 && size._y > 0)
