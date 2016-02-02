@@ -22,7 +22,7 @@ Animation::~Animation()
 
 void Animation::Update(float time)
 {
-	_animTime += time/1000;
+	_animTime += time / 1000;
 	if (_currentAction != -1)
 	{
 		if (_skeleton->_actions[_currentAction]._bones[0]._frameTime.back() < _animTime)
@@ -55,16 +55,12 @@ void Animation::Update(float time)
 	for (unsigned int i = 1; i < _skeleton->_skeleton.size(); i++)
 	{
 		// Current bone transform relative to its parent
-		DirectX::XMMATRIX toParent = DirectX::XMLoadFloat4x4(&toParentTransforms[i]);
-		DirectX::XMMATRIX parentToRoot = DirectX::XMLoadFloat4x4(&toRootTransforms[_skeleton->_skeleton[i]._parent]);
-		toRootTransforms[i] = toParent * parentToRoot;
+		toRootTransforms[i] = toParentTransforms[i] * toRootTransforms[_skeleton->_skeleton[i]._parent];
 	}
 
 	for (unsigned int i = 0; i < _skeleton->_skeleton.size(); i++)
 	{
-		DirectX::XMMATRIX offset = DirectX::XMLoadFloat4x4(&_skeleton->_skeleton[i]._inverseBindpose);
-		DirectX::XMMATRIX toRoot = DirectX::XMLoadFloat4x4(&toRootTransforms[i]);
-		DirectX::XMStoreFloat4x4(&finalTransforms[i], DirectX::XMMatrixTranspose(offset * toRoot));
+		finalTransforms[i] = DirectX::XMMatrixTranspose(_skeleton->_skeleton[i]._inverseBindpose * toRootTransforms[i]);
 	}
 }
 
@@ -82,50 +78,57 @@ void Animation::PlayAction(int action)
 
 DirectX::XMMATRIX Animation::Interpolate(unsigned int boneID, int action)
 {
+	BoneFrames* boneptr = &_skeleton->_actions[action]._bones[boneID];
 	DirectX::XMMATRIX matrix;
-	_lastFrame = _skeleton->_actions[action]._bones[boneID]._frameTime.size() - 1;
-	if (_animTime <= _skeleton->_actions[action]._bones[boneID]._frameTime[0])
+	_lastFrame = boneptr->_frameTime.size() - 1;
+	if (_animTime <= boneptr->_frameTime[0])
 	{
-		DirectX::XMVECTOR s = DirectX::XMLoadFloat3(&_skeleton->_actions[action]._bones[boneID]._frames[0]._scale);
-		DirectX::XMVECTOR p = DirectX::XMLoadFloat3(&_skeleton->_actions[action]._bones[boneID]._frames[0]._translation);
-		DirectX::XMVECTOR q = DirectX::XMLoadFloat4(&_skeleton->_actions[action]._bones[boneID]._frames[0]._rotation);
-
-		matrix = DirectX::XMMatrixAffineTransformation(s, _zeroVector, q, p);
+		matrix = DirectX::XMMatrixAffineTransformation(
+			boneptr->_frames[0]._scale,
+			_zeroVector,
+			boneptr->_frames[0]._rotation,
+			boneptr->_frames[0]._translation);
 	}
-	
-	else if (_animTime >= _skeleton->_actions[action]._bones[0]._frameTime[_lastFrame])
-	{
-		DirectX::XMVECTOR s = DirectX::XMLoadFloat3(&_skeleton->_actions[action]._bones[boneID]._frames[_lastFrame]._scale);
-		DirectX::XMVECTOR p = DirectX::XMLoadFloat3(&_skeleton->_actions[action]._bones[boneID]._frames[_lastFrame]._translation);
-		DirectX::XMVECTOR q = DirectX::XMLoadFloat4(&_skeleton->_actions[action]._bones[boneID]._frames[_lastFrame]._rotation);
 
-		matrix = DirectX::XMMatrixAffineTransformation(s, _zeroVector, q, p);
+	else if (_animTime >= boneptr->_frameTime[_lastFrame])
+	{
+		matrix = DirectX::XMMatrixAffineTransformation(
+			boneptr->_frames[_lastFrame]._scale,
+			_zeroVector,
+			boneptr->_frames[_lastFrame]._rotation,
+			boneptr->_frames[_lastFrame]._translation);
 	}
 
 	else
 	{
-		for (unsigned int i = 0; i <= _skeleton->_actions[action]._bones[boneID]._frameTime.size(); i++)
+		for (unsigned int i = 0; i <= boneptr->_frameTime.size(); i++)
 		{
-			_currTime = _skeleton->_actions[action]._bones[boneID]._frameTime[i];
-			_nextTime = _skeleton->_actions[action]._bones[boneID]._frameTime[i + 1];
+			_currTime = boneptr->_frameTime[i];
+			_nextTime = boneptr->_frameTime[i + 1];
 			if (_animTime >= _currTime && _animTime <= _nextTime)
 			{
 				_lerpPercent = (_animTime - _currTime) / (_nextTime - _currTime);
+				/*
+				DirectX::XMVECTOR s0 = boneptr->_frames[i]._scale;
+				DirectX::XMVECTOR s1 = boneptr->_frames[i + 1]._scale;
 
-				DirectX::XMVECTOR s0 = DirectX::XMLoadFloat3(&_skeleton->_actions[action]._bones[boneID]._frames[i]._scale);
-				DirectX::XMVECTOR s1 = DirectX::XMLoadFloat3(&_skeleton->_actions[action]._bones[boneID]._frames[i + 1]._scale);
+				DirectX::XMVECTOR p0 = boneptr->_frames[i]._translation;
+				DirectX::XMVECTOR p1 = boneptr->_frames[i + 1]._translation;
 
-				DirectX::XMVECTOR p0 = DirectX::XMLoadFloat3(&_skeleton->_actions[action]._bones[boneID]._frames[i]._translation);
-				DirectX::XMVECTOR p1 = DirectX::XMLoadFloat3(&_skeleton->_actions[action]._bones[boneID]._frames[i + 1]._translation);
-
-				DirectX::XMVECTOR q0 = DirectX::XMLoadFloat4(&_skeleton->_actions[action]._bones[boneID]._frames[i]._rotation);
-				DirectX::XMVECTOR q1 = DirectX::XMLoadFloat4(&_skeleton->_actions[action]._bones[boneID]._frames[i + 1]._rotation);
+				DirectX::XMVECTOR q0 = boneptr->_frames[i]._rotation;
+				DirectX::XMVECTOR q1 = boneptr->_frames[i + 1]._rotation;
 
 				DirectX::XMVECTOR s = DirectX::XMVectorLerp(s0, s1, _lerpPercent);
 				DirectX::XMVECTOR p = DirectX::XMVectorLerp(p0, p1, _lerpPercent);
 				DirectX::XMVECTOR q = DirectX::XMQuaternionSlerp(q0, q1, _lerpPercent);
-				
+
 				matrix = DirectX::XMMatrixAffineTransformation(s, _zeroVector, q, p);
+				*/
+
+				matrix = DirectX::XMMatrixAffineTransformation(DirectX::XMVectorLerp(boneptr->_frames[i]._scale, boneptr->_frames[i + 1]._scale, _lerpPercent),
+					_zeroVector,
+					DirectX::XMQuaternionSlerp(boneptr->_frames[i]._rotation, boneptr->_frames[i + 1]._rotation, _lerpPercent),
+					DirectX::XMVectorLerp(boneptr->_frames[i]._translation, boneptr->_frames[i + 1]._translation, _lerpPercent));
 
 				break;
 			}

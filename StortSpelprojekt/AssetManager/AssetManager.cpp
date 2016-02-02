@@ -667,6 +667,8 @@ Skeleton* AssetManager::LoadSkeleton(string filename)
 	}
 
 	int frames;
+	XMFLOAT3 scale, translation;
+	XMFLOAT4 rotation;
 
 	skeleton->_skeleton.resize(header._boneCount);
 	_infile->read((char*)skeleton->_skeleton.data(), header._boneCount * sizeof(Bone));
@@ -682,7 +684,16 @@ Skeleton* AssetManager::LoadSkeleton(string filename)
 			skeleton->_actions[a]._bones[b]._frameTime.resize(frames);
 			_infile->read((char*)skeleton->_actions[a]._bones[b]._frameTime.data(), frames * 4);
 			skeleton->_actions[a]._bones[b]._frames.resize(frames);
-			_infile->read((char*)skeleton->_actions[a]._bones[b]._frames.data(), sizeof(Frame) * frames);
+			
+			for (int i = 0; i < frames; i++)
+			{
+				_infile->read((char*)&translation, sizeof(XMFLOAT3));
+				_infile->read((char*)&rotation, sizeof(XMFLOAT4));
+				_infile->read((char*)&scale, sizeof(XMFLOAT3));
+				skeleton->_actions[a]._bones[b]._frames[i]._translation = XMLoadFloat3(&translation);
+				skeleton->_actions[a]._bones[b]._frames[i]._rotation = XMLoadFloat4(&rotation);
+				skeleton->_actions[a]._bones[b]._frames[i]._scale = XMLoadFloat3(&scale);
+			}
 		}
 	}
 

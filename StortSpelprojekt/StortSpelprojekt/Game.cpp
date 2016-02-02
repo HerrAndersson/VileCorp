@@ -226,7 +226,10 @@ void Game::Render()
 
 			for (GameObject* a : gameObjects->at(GUARD))
 			{
-				_renderModule->RenderAnimation(a->GetMatrix(), vertexBufferSize, a->GetAnimation()->GetTransforms(), a->GetColorOffset());
+				if (a->GetRenderObject()->_isSkinned)
+				{
+					_renderModule->RenderAnimation(a->GetMatrix(), vertexBufferSize, a->GetAnimation()->GetTransforms(), a->GetColorOffset());
+				}
 			}
 		}
 	}
@@ -242,13 +245,13 @@ void Game::Render()
 			_lightCulling = new LightCulling(_objectHandler->GetTileMap());
 		}
 
-		for (int i = 0; i < _spotlights.size(); i++)
+		for (unsigned i = 0; i < _spotlights.size(); i++)
 		{
 			inLight.push_back(_lightCulling->GetObjectsInSpotlight(_spotlights[i]));
 		}
 
 		//"Fog of War"
-		for (int i = 0; i < _spotlights.size(); i++)
+		for (unsigned i = 0; i < _spotlights.size(); i++)
 		{
 			if (inLight.at(i).size() >= ENEMY)
 			{
@@ -288,7 +291,7 @@ void Game::Render()
 	Generate the shadow map for each spotlight, then apply the lighting/shadowing to the render target with additive blending.           */
 
 		_renderModule->SetLightDataPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
-		for (int i = 0; i < _spotlights.size(); i++)
+		for (unsigned i = 0; i < _spotlights.size(); i++)
 		{
 			_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::SHADOW_GENERATION);
 			_renderModule->SetShadowMapDataPerSpotlight(_spotlights[i]->GetViewMatrix(), _spotlights[i]->GetProjectionMatrix());

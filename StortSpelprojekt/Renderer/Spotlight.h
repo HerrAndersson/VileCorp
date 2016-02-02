@@ -45,7 +45,7 @@ public:
 	void SetPosition(DirectX::XMFLOAT3 position);
 	void SetRotation(DirectX::XMFLOAT3 rotation);
 	void SetPositionAndRotation(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation);
-	void SetPositionAndRotation(DirectX::XMFLOAT4X4 &matrix);
+	void SetPositionAndRotation(DirectX::XMMATRIX &matrix);
 
 	void SetIntensity(float intensity);
 	void SetRange(float range);

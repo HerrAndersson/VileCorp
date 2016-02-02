@@ -143,9 +143,8 @@ void Spotlight::SetPositionAndRotation(XMFLOAT3 position, XMFLOAT3 rotation)
 	Update();
 }
 
-void Spotlight::SetPositionAndRotation(DirectX::XMFLOAT4X4 &mfloat)
+void Spotlight::SetPositionAndRotation(DirectX::XMMATRIX &matrix)
 {
-	XMMATRIX matrix = XMLoadFloat4x4(&mfloat);
 	XMVECTOR pos, rot, scale;
 	XMMatrixDecompose(&scale, &rot, &pos, matrix);
 

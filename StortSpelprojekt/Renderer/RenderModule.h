@@ -68,7 +68,7 @@ namespace Renderer
 		
 		struct MatrixBufferPerSkinnedObject
 		{
-			DirectX::XMFLOAT4X4 _bones[30];
+			DirectX::XMMATRIX _bones[30];
 		};
 
 		struct MatrixBufferPerFrame
@@ -132,7 +132,7 @@ namespace Renderer
 		void InitializeScreenQuadBuffer();
 
 		void SetDataPerObject(DirectX::XMMATRIX* world, DirectX::XMFLOAT3 colorOffset = DirectX::XMFLOAT3(0, 0, 0));
-		void SetDataPerSkinnedObject(DirectX::XMMATRIX* world, std::vector<DirectX::XMFLOAT4X4>* extra, DirectX::XMFLOAT3 colorOffset = DirectX::XMFLOAT3(0, 0, 0));
+		void SetDataPerSkinnedObject(DirectX::XMMATRIX* world, std::vector<DirectX::XMMATRIX>* extra, DirectX::XMFLOAT3 colorOffset = DirectX::XMFLOAT3(0, 0, 0));
 		void SetDataPerMesh(ID3D11Buffer* vertexBuffer, int vertexSize);
 		void SetShadowMapDataPerObject(DirectX::XMMATRIX* world);
 
@@ -168,7 +168,7 @@ namespace Renderer
 
 		void BeginScene(float red, float green, float blue, float alpha);
 		void Render(DirectX::XMMATRIX* world, int vertexBufferSize, DirectX::XMFLOAT3 colorOffset = DirectX::XMFLOAT3(0, 0, 0));
-		void RenderAnimation(DirectX::XMMATRIX* world, int vertexBufferSize, std::vector<DirectX::XMFLOAT4X4>* extra = nullptr, DirectX::XMFLOAT3 colorOffset = DirectX::XMFLOAT3(0, 0, 0));
+		void RenderAnimation(DirectX::XMMATRIX* world, int vertexBufferSize, std::vector<DirectX::XMMATRIX>* extra = nullptr, DirectX::XMFLOAT3 colorOffset = DirectX::XMFLOAT3(0, 0, 0));
 		void Render(GUI::Node* root, FontWrapper* fontWrapper);
 		void RenderLineList(DirectX::XMMATRIX* world, int nrOfPoints, DirectX::XMFLOAT3 colorOffset = DirectX::XMFLOAT3(0,0,0));
 		void RenderShadowMap(DirectX::XMMATRIX* world, int vertexBufferSize);

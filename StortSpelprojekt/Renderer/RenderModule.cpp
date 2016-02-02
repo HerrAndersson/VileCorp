@@ -154,7 +154,7 @@ namespace Renderer
 		deviceContext->VSSetConstantBuffers(0, 1, &_matrixBufferPerFrame);
 	}
 
-	void RenderModule::SetDataPerSkinnedObject(XMMATRIX* world, std::vector<DirectX::XMFLOAT4X4>* extra, DirectX::XMFLOAT3 colorOffset)
+	void RenderModule::SetDataPerSkinnedObject(XMMATRIX* world, std::vector<DirectX::XMMATRIX>* extra, DirectX::XMFLOAT3 colorOffset)
 	{
 		HRESULT result;
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -478,7 +478,7 @@ namespace Renderer
 		_d3d->GetDeviceContext()->Draw(vertexBufferSize, 0);
 	}
 
-	void RenderModule::RenderAnimation(DirectX::XMMATRIX* world, int vertexBufferSize, std::vector<DirectX::XMFLOAT4X4>* extra, DirectX::XMFLOAT3 colorOffset)
+	void RenderModule::RenderAnimation(DirectX::XMMATRIX* world, int vertexBufferSize, std::vector<DirectX::XMMATRIX>* extra, DirectX::XMFLOAT3 colorOffset)
 	{
 		SetDataPerSkinnedObject(world, extra, colorOffset);
 		_d3d->GetDeviceContext()->Draw(vertexBufferSize, 0);
