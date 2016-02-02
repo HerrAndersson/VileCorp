@@ -71,9 +71,9 @@ void Enemy::EvaluateTile(GameObject* obj)
 			}
 			break;
 		case TRAP:
-			if (SpotTrap(static_cast<Trap*>(obj)))
+			if (SpotTrap(static_cast<Trap*>(obj)) && _disarmSkill - static_cast<Trap*>(obj)->GetDisarmDifficulty() > 20)
 			{
-
+				tempPriority = 5;
 			}
 			break;
 		case GUARD:
@@ -120,10 +120,6 @@ void Enemy::act(GameObject* obj)
 		}
 		break;
 	case TRAP:
-		if (SpotTrap(static_cast<Trap*>(obj)))
-		{
-
-		}
 		break;
 	case GUARD:
 		break;
