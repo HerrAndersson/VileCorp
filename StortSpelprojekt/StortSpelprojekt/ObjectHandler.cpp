@@ -118,7 +118,7 @@ bool ObjectHandler::Add(Type type, int index, XMFLOAT3 position, XMFLOAT3 rotati
 
 bool ObjectHandler::Add(Type type, std::string name, XMFLOAT3 position = XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3 rotation = XMFLOAT3(0.0f, 0.0f, 0.0f))
 {
-	for (int i = 0; i < _gameObjectInfo->_objects[type]->size(); i++)
+	for (unsigned i = 0; i < _gameObjectInfo->_objects[type]->size(); i++)
 	{
 		if (_gameObjectInfo->_objects[type]->at(i)->_name == name)
 		{
@@ -492,7 +492,7 @@ void ObjectHandler::Update(float deltaTime)
 
 	for (int i = 0; i < NR_OF_TYPES; i++)
 	{
-		for (int j = 0; j < _gameObjects[i].size(); j++)
+		for (unsigned j = 0; j < _gameObjects[i].size(); j++)
 		{
 			GameObject* g = _gameObjects[i][j];
 			g->Update(deltaTime);
@@ -521,7 +521,7 @@ void ObjectHandler::Update(float deltaTime)
 
 				if (unit->GetHealth() <= 0)
 				{
-					for (int k = 0; k < _gameObjects[SPAWN].size(); k++)
+					for (unsigned k = 0; k < _gameObjects[SPAWN].size(); k++)
 					{
 						//If the enemy is at the despawn point with the diamond, remove the diamond and the enemy, Aron
 						if ((int)unit->GetTilePosition()._x == (int)_gameObjects[SPAWN][k]->GetTilePosition()._x &&
@@ -601,7 +601,7 @@ void ObjectHandler::Update(float deltaTime)
 		{
 			if (spot.second->GetBone() != -1)
 			{
-				spot.second->SetPositionAndRotation(spot.first->GetAnimation()->GetTransforms()->at(spot.second->GetBone()));
+				spot.second->SetPositionAndRotation(spot.first->GetAnimation()->GetTransforms()[spot.second->GetBone()]);
 			}
 			else
 			{

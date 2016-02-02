@@ -38,10 +38,10 @@ void LightCulling::GatherObjectsOnSquare(Square &square, std::vector<std::vector
 	std::vector<GameObject*> gatheredObjects;
 
 	//Loop through width/x
-	for (unsigned int x = (int)square._minPos._x; x < (int)square._maxPos._x + 1; x++)
+	for (int x = (int)square._minPos._x; x < (int)square._maxPos._x + 1; x++)
 	{
 		//Loop through height/y
-		for (unsigned int y = (int)square._minPos._y; y < (int)square._maxPos._y + 1; y++)
+		for (int y = (int)square._minPos._y; y < (int)square._maxPos._y + 1; y++)
 		{
 			gatheredObjects = _tilemap->GetAllObjectsOnTile(AI::Vec2D(x, y));
 			if (!gatheredObjects.empty())

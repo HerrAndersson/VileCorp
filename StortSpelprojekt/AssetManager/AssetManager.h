@@ -209,7 +209,7 @@ private:
 public:
 	AssetManager(ID3D11Device* device);
 	~AssetManager();
-	RenderObject* GetRenderObject(int index, string texture);
+	RenderObject* GetRenderObject(unsigned index, string texture);
 	uint GetRenderObjectByType(Type type, uint index);
 	void UnloadModel(int index, bool force);
 	bool ParseLevel(int index, vector<GameObjectData> &gameObjects, int &dimX, int &dimY);

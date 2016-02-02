@@ -228,7 +228,7 @@ void Game::Render()
 			{
 				if (a->GetRenderObject()->_isSkinned)
 				{
-					_renderModule->RenderAnimation(a->GetMatrix(), vertexBufferSize, a->GetAnimation()->GetTransforms(), a->GetColorOffset());
+					_renderModule->RenderAnimation(a->GetMatrix(), vertexBufferSize, a->GetAnimation()->GetTransforms(), a->GetAnimation()->GetBoneCount(), a->GetColorOffset());
 				}
 			}
 		}

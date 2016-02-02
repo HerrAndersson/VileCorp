@@ -587,7 +587,7 @@ ID3D11Buffer* AssetManager::CreateVertexBuffer(vector<WeightedVertex> *weightedV
 }
 
 //How AssetManager interfaces with the renderer. Don't save the return, request it anew everytime unless you are certain the model won't be unloaded
-RenderObject* AssetManager::GetRenderObject(int index, string texture)
+RenderObject* AssetManager::GetRenderObject(unsigned index, string texture)
 {
 	RenderObject* renderObject = nullptr;
 	if (index >= 0 && index < _renderObjects->size())
@@ -665,14 +665,18 @@ Skeleton* AssetManager::LoadSkeleton(string filename)
 	{
 		throw runtime_error("Failed to load " + file_path + ":\nIncorrect fileversion");
 	}
-
 	int frames;
 	XMFLOAT3 scale, translation;
 	XMFLOAT4 rotation;
-
-	skeleton->_skeleton.resize(header._boneCount);
-	_infile->read((char*)skeleton->_skeleton.data(), header._boneCount * sizeof(Bone));
-
+	XMFLOAT4X4 matrixin;
+	skeleton->_parents.resize(header._boneCount);
+	skeleton->_bindposes = (XMMATRIX*)_aligned_malloc(64 * header._boneCount, 16);
+	for (unsigned i = 0; i < header._boneCount; i++)
+	{
+		_infile->read((char*)&skeleton->_parents[i], sizeof(int));
+		_infile->read((char*)&matrixin, sizeof(XMFLOAT4X4));
+		skeleton->_bindposes[i] = XMLoadFloat4x4(&matrixin);
+	}
 	skeleton->_actions.resize(header._actionCount);
 	for (uint a = 0; a < skeleton->_actions.size(); a++)
 	{
@@ -682,7 +686,7 @@ Skeleton* AssetManager::LoadSkeleton(string filename)
 			_infile->read((char*)&frames, 4);
 			skeleton->_actions[a]._bones[b]._frameCount = frames;
 			skeleton->_actions[a]._bones[b]._frameTime.resize(frames);
-			_infile->read((char*)skeleton->_actions[a]._bones[b]._frameTime.data(), frames * 4);
+			_infile->read((char*)skeleton->_actions[a]._bones[b]._frameTime.data(), frames * sizeof(int));
 			skeleton->_actions[a]._bones[b]._frames.resize(frames);
 			
 			for (int i = 0; i < frames; i++)

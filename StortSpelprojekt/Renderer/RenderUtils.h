@@ -7,12 +7,6 @@
 
 enum Type { FLOOR, WALL, LOOT, SPAWN, TRAP, GUARD, ENEMY, NR_OF_TYPES/*Has to be last*/ };
 
-struct Bone
-{
-	int _parent;
-	DirectX::XMMATRIX _inverseBindpose;
-};
-
 struct Frame
 {
 	DirectX::XMVECTOR _translation;
@@ -35,7 +29,8 @@ struct Action
 struct Skeleton
 {
 	std::string _name;
-	std::vector<Bone> _skeleton;
+	std::vector<int> _parents;
+	DirectX::XMMATRIX* _bindposes;
 	std::vector<Action> _actions;
 };
 
