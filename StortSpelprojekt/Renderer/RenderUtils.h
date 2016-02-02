@@ -32,6 +32,10 @@ struct Skeleton
 	std::vector<int> _parents;
 	DirectX::XMMATRIX* _bindposes;
 	std::vector<Action> _actions;
+	~Skeleton()
+	{
+		_aligned_free(_bindposes);
+	}
 };
 
 struct WeightedVertex
