@@ -266,166 +266,194 @@
 						"floor1" :
 						{
 							"position": [-0.125, 0.42],	
-							"scale": [0.045, 0.045],
+							"scale": [0.04, 0.060],
 							"texture": "../Menues/LevelEdit/Floors/floor1.png"
 						},
 						"floor2" :
 						{
 							"position": [-0.035, 0.42],	
-							"scale": [0.045, 0.045],
+							"scale": [0.04, 0.060],
 							"texture": "../Menues/LevelEdit/Floors/floor2.png"
 						},
 						"floor3" :
 						{
 							"position": [0.055, 0.42],	
-							"scale": [0.045, 0.045],
+							"scale": [0.04, 0.060],
 							"texture": "../Menues/LevelEdit/Floors/floor3.png"
 						},
 						"floor4" :
 						{
 							"position": [0.145, 0.42],
-							"scale": [0.045, 0.045],
+							"scale": [0.04, 0.060],
 							"texture": "../Menues/LevelEdit/Floors/floor4.png"
 						}
 					},
 					"":
 					{
-						"position": [0.0, -0.15],
+						"position": [0.0, -0.13],
 						"floor5" :
 						{
 							"position": [-0.125, 0.42],	
-							"scale": [0.045, 0.045],
+							"scale": [0.04, 0.060],
 							"texture": "../Menues/LevelEdit/Floors/floor5.png"
 						},
 						"floor6" :
 						{
 							"position": [-0.035, 0.42],	
-							"scale": [0.045, 0.045],
+							"scale": [0.04, 0.060],
 							"texture": "../Menues/LevelEdit/Floors/floor6.png"
 						},
 						"floor7" :
 						{
 							"position": [0.055, 0.42],	
-							"scale": [0.045, 0.045],
+							"scale": [0.04, 0.060],
 							"texture": "../Menues/LevelEdit/Floors/floor7.png"
 						},
 						"floor8" :
 						{
 							"position": [0.145, 0.42],	
-							"scale": [0.045, 0.045],
+							"scale": [0.04, 0.060],
 							"texture": "../Menues/LevelEdit/Floors/floor8.png"
 						}
 					},
 					"":
 					{
-						"position": [0.0, -0.30],
+						"position": [0.0, -0.26],
 						"floor9" :
 						{
 							"position": [-0.125, 0.42],	
-							"scale": [0.045, 0.045],
+							"scale": [0.04, 0.060],
 							"texture": "../Menues/LevelEdit/Floors/floor9.png"
 						},
 						"floor10" :
 						{
 							"position": [-0.035, 0.42],	
-							"scale": [0.045, 0.045],
+							"scale": [0.04, 0.060],
 							"texture": "../Menues/LevelEdit/Floors/floor10.png"
 						},
 						"floor11" :
 						{
 							"position": [0.055, 0.42],	
-							"scale": [0.045, 0.045],
+							"scale": [0.04, 0.060],
 							"texture": "../Menues/LevelEdit/Floors/floor11.png"
 						},
 						"floor12" :
 						{
 							"position": [0.145, 0.42],	
-							"scale": [0.045, 0.045],
+							"scale": [0.04, 0.060],
 							"texture": "../Menues/LevelEdit/Floors/floor12.png"
 						}
 					},
 					"":
 					{
-						"position": [0.0, -0.45],
+						"position": [0.0, -0.39],
 						"floor13" :
 						{
 							"position": [-0.125, 0.42],	
-							"scale": [0.045, 0.045],
+							"scale": [0.04, 0.060],
 							"texture": "../Menues/LevelEdit/Floors/floor13.png"
 						},
 						"floor14" :
 						{
 							"position": [-0.035, 0.42],	
-							"scale": [0.045, 0.045],
+							"scale": [0.04, 0.060],
 							"texture": "../Menues/LevelEdit/Floors/floor14.png"
 						},
 						"floor15" :
 						{
 							"position": [0.055, 0.42],	
-							"scale": [0.045, 0.045],
+							"scale": [0.04, 0.060],
 							"texture": "../Menues/LevelEdit/Floors/floor15.png"
 						},
 						"floor16" :
 						{
 							"position": [0.145, 0.42],	
-							"scale": [0.045, 0.045],
+							"scale": [0.04, 0.060],
 							"texture": "../Menues/LevelEdit/Floors/floor16.png"
 						}
 					},
 					"":
 					{
-						"position": [0.0, -0.60],
+						"position": [0.0, -0.52],
 						"floor17" :
 						{
 							"position": [-0.125, 0.42],	
-							"scale": [0.045, 0.045],
+							"scale": [0.04, 0.060],
 							"texture": "../Menues/LevelEdit/Floors/floor17.png"
 						},
 						"floor18" :
 						{
 							"position": [-0.035, 0.42],	
-							"scale": [0.045, 0.045],
+							"scale": [0.04, 0.060],
 							"texture": "../Menues/LevelEdit/Floors/floor18.png"
 						},
 						"floor19" :
 						{
 							"position": [0.055, 0.42],	
-							"scale": [0.045, 0.045],
+							"scale": [0.04, 0.060],
 							"texture": "../Menues/LevelEdit/Floors/floor19.png"
 						},
 						"floor20" :
 						{
 							"position": [0.145, 0.42],	
-							"scale": [0.045, 0.045],
+							"scale": [0.04, 0.060],
 							"texture": "../Menues/LevelEdit/Floors/floor20.png"
 						}
 					},
 					"":
 					{
-						"position": [0.0, -0.75],
+						"position": [0.0, -0.65],
 						"floor21" :
 						{
 							"position": [-0.125, 0.42],	
-							"scale": [0.045, 0.045],
+							"scale": [0.04, 0.060],
 							"texture": "../Menues/LevelEdit/Floors/floor21.png"
 						},
 						"floor22" :
 						{
 							"position": [-0.035, 0.42],	
-							"scale": [0.045, 0.045],
+							"scale": [0.04, 0.060],
 							"texture": "../Menues/LevelEdit/Floors/floor22.png"
 						},
 						"floor23" :
 						{
 							"position": [0.055, 0.42],	
-							"scale": [0.045, 0.045],
+							"scale": [0.04, 0.060],
 							"texture": "../Menues/LevelEdit/Floors/floor23.png"
 						},
 						"floor24" :
 						{
 							"position": [0.145, 0.42],	
-							"scale": [0.045, 0.045],
+							"scale": [0.04, 0.060],
 							"texture": "../Menues/LevelEdit/Floors/floor24.png"
+						}
+					},
+					"":
+					{
+					"position": [0.0, -0.78],
+						"floor25" :
+						{
+							"position": [-0.125, 0.42],	
+							"scale": [0.04, 0.060],
+							"texture": "../Menues/LevelEdit/Floors/floor25.png"
+						},
+						"floor26" :
+						{
+							"position": [-0.035, 0.42],	
+							"scale": [0.04, 0.060],
+							"texture": "../Menues/LevelEdit/Floors/floor26.png"
+						},
+						"floor27" :
+						{
+							"position": [0.055, 0.42],	
+							"scale": [0.04, 0.060],
+							"texture": "../Menues/LevelEdit/Floors/floor27.png"
+						},
+						"floor28" :
+						{
+							"position": [0.145, 0.42],	
+							"scale": [0.04, 0.060],
+							"texture": "../Menues/LevelEdit/Floors/floor28.png"
 						}
 					}
 				},
@@ -433,78 +461,50 @@
 				{
 					"":
 					{
-						"floor25" :
-						{
-							"position": [-0.125, 0.42],	
-							"scale": [0.045, 0.045],
-							"texture": "../Menues/LevelEdit/Floors/floor25.png"
-						},
-						"floor26" :
-						{
-							"position": [-0.035, 0.42],	
-							"scale": [0.045, 0.045],
-							"texture": "../Menues/LevelEdit/Floors/floor26.png"
-						},
-						"floor27" :
-						{
-							"position": [0.055, 0.42],	
-							"scale": [0.045, 0.045],
-							"texture": "../Menues/LevelEdit/Floors/floor27.png"
-						},
-						"floor28" :
-						{
-							"position": [0.145, 0.42],	
-							"scale": [0.045, 0.045],
-							"texture": "../Menues/LevelEdit/Floors/floor28.png"
-						}
-					},
-					"":
-					{
-						"position": [0.0, -0.15],
 						"floor29" :
 						{
 							"position": [-0.125, 0.42],	
-							"scale": [0.045, 0.045],
+							"scale": [0.04, 0.060],
 							"texture": "../Menues/LevelEdit/Floors/floor29.png"
 						},
 						"floor30" :
 						{
 							"position": [-0.035, 0.42],	
-							"scale": [0.045, 0.045],
+							"scale": [0.04, 0.060],
 							"texture": "../Menues/LevelEdit/Floors/floor30.png"
 						},
 						"floor31" :
 						{
 							"position": [0.055, 0.42],	
-							"scale": [0.045, 0.045],
+							"scale": [0.04, 0.060],
 							"texture": "../Menues/LevelEdit/Floors/floor31.png"
 						},
 						"floor32" :
 						{
 							"position": [0.145, 0.42],	
-							"scale": [0.045, 0.045],
+							"scale": [0.04, 0.060],
 							"texture": "../Menues/LevelEdit/Floors/floor32.png"
 						}
 					},
 					"":
 					{
-						"position": [0.0, -0.30],
+						"position": [0.0, -0.13],
 						"floor33" :
 						{
 							"position": [-0.125, 0.42],	
-							"scale": [0.045, 0.045],
+							"scale": [0.04, 0.060],
 							"texture": "../Menues/LevelEdit/Floors/floor33.png"
 						},
 						"floor34" :
 						{
 							"position": [-0.035, 0.42],	
-							"scale": [0.045, 0.045],
+							"scale": [0.04, 0.060],
 							"texture": "../Menues/LevelEdit/Floors/floor34.png"
 						},
 						"floor35" :
 						{
 							"position": [0.055, 0.42],	
-							"scale": [0.045, 0.045],
+							"scale": [0.04, 0.060],
 							"texture": "../Menues/LevelEdit/Floors/floor35.png"
 						}
 					}
@@ -523,41 +523,41 @@
 						"wall1" :
 						{
 							"position": [-0.125, 0.42],	
-							"scale": [0.045, 0.045],
+							"scale": [0.04, 0.060],
 							"texture": "../Menues/LevelEdit/Walls/wall1.png"
 						},
 						"wall2" :
 						{
 							"position": [-0.035, 0.42],	
-							"scale": [0.045, 0.045],
+							"scale": [0.04, 0.060],
 							"texture": "../Menues/LevelEdit/Walls/wall2.png"
 						},
 						"wall3" :
 						{
 							"position": [0.055, 0.42],	
-							"scale": [0.045, 0.045],
+							"scale": [0.04, 0.060],
 							"texture": "../Menues/LevelEdit/Walls/wall3.png"
 						},
 						"wall4" :
 						{
 							"position": [0.145, 0.42],	
-							"scale": [0.045, 0.045],
+							"scale": [0.04, 0.060],
 							"texture": "../Menues/LevelEdit/Walls/wall4.png"
 						}
 					},
 					"":
 					{
-						"position": [0.0, -0.15],
+						"position": [0.0, -0.13],
 						"wall5" :
 						{
 							"position": [-0.125, 0.42],	
-							"scale": [0.045, 0.045],
+							"scale": [0.04, 0.060],
 							"texture": "../Menues/LevelEdit/Walls/wall5.png"
 						},
 						"wall6" :
 						{
 							"position": [-0.035, 0.42],	
-							"scale": [0.045, 0.045],
+							"scale": [0.04, 0.060],
 							"texture": "../Menues/LevelEdit/Walls/wall6.png"
 						}
 					}
@@ -576,54 +576,65 @@
 						"objective1" :
 						{
 							"position": [-0.125, 0.42],	
-							"scale": [0.065, 0.065],
-							"texture": "../Menues/LevelEdit/Walls/wall1.png"
+							"scale": [0.04, 0.060],
+							"texture": "../Menues/LevelEdit/Loot/diamond1.png"
 						},
 						"objective2" :
 						{
 							"position": [-0.035, 0.42],	
-							"scale": [0.065, 0.065],
-							"texture": "../Menues/LevelEdit/Walls/wall2.png"
+							"scale": [0.04, 0.060],
+							"texture": "../Menues/LevelEdit/Loot/diamond2.png"
 						},
 						"objective3" :
 						{
 							"position": [0.055, 0.42],	
-							"scale": [0.065, 0.065],
-							"texture": "../Menues/LevelEdit/Walls/wall3.png"
+							"scale": [0.04, 0.060],
+
+							"texture": "../Menues/LevelEdit/Loot/diamond3.png"
 						},
 						"objective4" :
 						{
 							"position": [0.145, 0.42],	
-							"scale": [0.065, 0.065],
-							"texture": "../Menues/LevelEdit/Walls/wall4.png"
+							"scale": [0.04, 0.060],
+							"texture": "../Menues/LevelEdit/Loot/diamond4.png"
 						}
 					},
 					"":
 					{
-						"position": [0.0, -0.15],
+						"position": [0.0, -0.13],
 						"objective5" :
 						{
-							"position": [0.0, 0.0],	
-							"scale": [0.1, 0.1],
-							"texture": "../Menues/LevelEdit/Floors/Floor5.png"
+							"position": [-0.125, 0.42],	
+							"scale": [0.04, 0.060],
+							"texture": "../Menues/LevelEdit/Loot/diamond5.png"
 						},
 						"objective6" :
 						{
-							"position": [0.2, 0.0],
-							"scale": [0.1, 0.1],
-							"texture": "../Menues/LevelEdit/Floors/Floor6.png"
+							"position": [-0.035, 0.42],	
+							"scale": [0.04, 0.060],
+							"texture": "../Menues/LevelEdit/Loot/diamond6.png"
 						},
 						"objective7" :
 						{
-							"position": [0.3, 0.0],
-							"scale": [0.1, 0.1],
-							"texture": "../Menues/LevelEdit/Floors/Floor7.png"
+							"position": [0.055, 0.42],	
+							"scale": [0.04, 0.060],
+							"texture": "../Menues/LevelEdit/Loot/diamond7.png"
 						},
 						"objective8" :
 						{
-							"position": [0.4, 0.0],
-							"scale": [0.1, 0.1],
-							"texture": "../Menues/LevelEdit/Floors/Floor8.png"
+							"position": [0.145, 0.42],	
+							"scale": [0.04, 0.060],
+							"texture": "../Menues/LevelEdit/Loot/diamond8.png"
+						}
+					},
+										"":
+					{
+						"position": [0.0, -0.26],
+						"objective9" :
+						{
+							"position": [-0.125, 0.42],	
+							"scale": [0.04, 0.060],
+							"texture": "../Menues/LevelEdit/Loot/diamond9.png"
 						}
 					}
 				}
@@ -641,54 +652,26 @@
 						"entry1" :
 						{
 							"position": [-0.125, 0.42],	
-							"scale": [0.065, 0.065],
-							"texture": "../Menues/LevelEdit/Walls/wall1.png"
+							"scale": [0.04, 0.060],
+							"texture": "../Menues/LevelEdit/Entry/entry1.png"
 						},
 						"entry2" :
 						{
 							"position": [-0.035, 0.42],	
-							"scale": [0.065, 0.065],
-							"texture": "../Menues/LevelEdit/Walls/wall2.png"
+							"scale": [0.04, 0.060],
+							"texture": "../Menues/LevelEdit/Entry/entry1.png"
 						},
 						"entry3" :
 						{
 							"position": [0.055, 0.42],	
-							"scale": [0.065, 0.065],
-							"texture": "../Menues/LevelEdit/Walls/wall3.png"
+							"scale": [0.04, 0.060],
+							"texture": "../Menues/LevelEdit/Entry/entry1.png"
 						},
 						"entry4" :
 						{
 							"position": [0.145, 0.42],	
-							"scale": [0.065, 0.065],
-							"texture": "../Menues/LevelEdit/Walls/wall4.png"
-						}
-					},
-					"":
-					{
-						"position": [0.0, -0.15],
-						"entry5" :
-						{
-							"position": [0.0, 0.0],	
-							"scale": [0.1, 0.1],
-							"texture": "../Menues/LevelEdit/Floors/Floor5.png"
-						},
-						"entry6" :
-						{
-							"position": [0.2, 0.0],
-							"scale": [0.1, 0.1],
-							"texture": "../Menues/LevelEdit/Floors/Floor6.png"
-						},
-						"entry7" :
-						{
-							"position": [0.3, 0.0],
-							"scale": [0.1, 0.1],
-							"texture": "../Menues/LevelEdit/Floors/Floor7.png"
-						},
-						"entry8" :
-						{
-							"position": [0.4, 0.0],
-							"scale": [0.1, 0.1],
-							"texture": "../Menues/LevelEdit/Floors/Floor8.png"
+							"scale": [0.04, 0.060],
+							"texture": "../Menues/LevelEdit/Entry/entry1.png"
 						}
 					}
 				}
@@ -706,54 +689,26 @@
 						"unit1" :
 						{
 							"position": [-0.125, 0.42],	
-							"scale": [0.065, 0.065],
-							"texture": "../Menues/LevelEdit/Walls/wall1.png"
+							"scale": [0.04, 0.060],
+							"texture": "../Menues/LevelEdit/Units/texturebrown.png"
 						},
 						"unit2" :
 						{
 							"position": [-0.035, 0.42],	
-							"scale": [0.065, 0.065],
-							"texture": "../Menues/LevelEdit/Walls/wall2.png"
+							"scale": [0.04, 0.060],
+							"texture": "../Menues/LevelEdit/Units/engineer2.png"
 						},
 						"unit3" :
 						{
 							"position": [0.055, 0.42],	
-							"scale": [0.065, 0.065],
-							"texture": "../Menues/LevelEdit/Walls/wall3.png"
+							"scale": [0.04, 0.060],
+							"texture": "../Menues/LevelEdit/Units/cameraFin.png"
 						},
 						"unit4" :
 						{
 							"position": [0.145, 0.42],	
-							"scale": [0.065, 0.065],
-							"texture": "../Menues/LevelEdit/Walls/wall4.png"
-						}
-					},
-					"":
-					{
-						"position": [0.0, -0.15],
-						"unit5" :
-						{
-							"position": [0.0, 0.0],	
-							"scale": [0.1, 0.1],
-							"texture": "../Menues/LevelEdit/Floors/Floor5.png"
-						},
-						"unit6" :
-						{
-							"position": [0.2, 0.0],
-							"scale": [0.1, 0.1],
-							"texture": "../Menues/LevelEdit/Floors/Floor6.png"
-						},
-						"unit7" :
-						{
-							"position": [0.3, 0.0],
-							"scale": [0.1, 0.1],
-							"texture": "../Menues/LevelEdit/Floors/Floor7.png"
-						},
-						"unit8" :
-						{
-							"position": [0.4, 0.0],
-							"scale": [0.1, 0.1],
-							"texture": "../Menues/LevelEdit/Floors/Floor8.png"
+							"scale": [0.04, 0.060],
+							"texture": "../Menues/LevelEdit/Units/Enemy.png"
 						}
 					}
 				}
@@ -771,54 +726,20 @@
 						"trap1" :
 						{
 							"position": [-0.125, 0.42],	
-							"scale": [0.065, 0.065],
-							"texture": "../Menues/LevelEdit/Walls/wall1.png"
+							"scale": [0.04, 0.060],
+							"texture": "../Menues/LevelEdit/Traps/spiketrap.png"
 						},
 						"trap2" :
 						{
 							"position": [-0.035, 0.42],	
-							"scale": [0.065, 0.065],
-							"texture": "../Menues/LevelEdit/Walls/wall2.png"
+							"scale": [0.04, 0.060],
+							"texture": "../Menues/LevelEdit/Traps/Tesla.png"
 						},
 						"trap3" :
 						{
 							"position": [0.055, 0.42],	
-							"scale": [0.065, 0.065],
-							"texture": "../Menues/LevelEdit/Walls/wall3.png"
-						},
-						"trap4" :
-						{
-							"position": [0.145, 0.42],	
-							"scale": [0.065, 0.065],
-							"texture": "../Menues/LevelEdit/Walls/wall4.png"
-						}
-					},
-					"":
-					{
-						"position": [0.0, -0.15],
-						"trap5" :
-						{
-							"position": [0.0, 0.0],	
-							"scale": [0.1, 0.1],
-							"texture": "../Menues/LevelEdit/Floors/Floor5.png"
-						},
-						"trap6" :
-						{
-							"position": [0.2, 0.0],
-							"scale": [0.1, 0.1],
-							"texture": "../Menues/LevelEdit/Floors/Floor6.png"
-						},
-						"trap7" :
-						{
-							"position": [0.3, 0.0],
-							"scale": [0.1, 0.1],
-							"texture": "../Menues/LevelEdit/Floors/Floor7.png"
-						},
-						"trap8" :
-						{
-							"position": [0.4, 0.0],
-							"scale": [0.1, 0.1],
-							"texture": "../Menues/LevelEdit/Floors/Floor8.png"
+							"scale": [0.04, 0.060],
+							"texture": "../Menues/LevelEdit/Traps/SharkTrap.png"
 						}
 					}
 				}
@@ -836,54 +757,54 @@
 						"decoration1" :
 						{
 							"position": [-0.125, 0.42],	
-							"scale": [0.065, 0.065],
-							"texture": "../Menues/LevelEdit/Walls/wall1.png"
+							"scale": [0.04, 0.060],
+							"texture": "../Menues/LevelEdit/Decorations/flatcounter.png"
 						},
 						"decoration2" :
 						{
 							"position": [-0.035, 0.42],	
-							"scale": [0.065, 0.065],
-							"texture": "../Menues/LevelEdit/Walls/wall2.png"
+							"scale": [0.04, 0.060],
+							"texture": "../Menues/LevelEdit/Decorations/pillowpedestal.png"
 						},
 						"decoration3" :
 						{
 							"position": [0.055, 0.42],	
-							"scale": [0.065, 0.065],
-							"texture": "../Menues/LevelEdit/Walls/wall3.png"
+							"scale": [0.04, 0.060],
+							"texture": "../Menues/LevelEdit/Decorations/roundcounter.png"
 						},
 						"decoration4" :
 						{
 							"position": [0.145, 0.42],	
-							"scale": [0.065, 0.065],
-							"texture": "../Menues/LevelEdit/Walls/wall4.png"
+							"scale": [0.04, 0.060],
+							"texture": "../Menues/LevelEdit/Decorations/roundcounter.png"
 						}
 					},
 					"":
 					{
-						"position": [0.0, -0.15],
+						"position": [0.0, -0.13],
 						"decoration5" :
 						{
-							"position": [0.0, 0.0],	
-							"scale": [0.1, 0.1],
-							"texture": "../Menues/LevelEdit/Floors/Floor5.png"
+							"position": [-0.125, 0.42],	
+							"scale": [0.04, 0.060],
+							"texture": "../Menues/LevelEdit/Decorations/roundcounter.png"
 						},
 						"decoration6" :
 						{
-							"position": [0.2, 0.0],
-							"scale": [0.1, 0.1],
-							"texture": "../Menues/LevelEdit/Floors/Floor6.png"
+							"position": [-0.035, 0.42],	
+							"scale": [0.04, 0.060],
+							"texture": "../Menues/LevelEdit/Decorations/roundcounter.png"
 						},
 						"decoration7" :
 						{
-							"position": [0.3, 0.0],
-							"scale": [0.1, 0.1],
-							"texture": "../Menues/LevelEdit/Floors/Floor7.png"
+							"position": [0.055, 0.42],	
+							"scale": [0.04, 0.060],
+							"texture": "../Menues/LevelEdit/Decorations/roundcounter.png"
 						},
 						"decoration8" :
 						{
-							"position": [0.4, 0.0],
-							"scale": [0.1, 0.1],
-							"texture": "../Menues/LevelEdit/Floors/Floor8.png"
+							"position": [0.145, 0.42],	
+							"scale": [0.04, 0.060],
+							"texture": "../Menues/LevelEdit/Decorations/roundcounter.png"
 						}
 					}
 				}

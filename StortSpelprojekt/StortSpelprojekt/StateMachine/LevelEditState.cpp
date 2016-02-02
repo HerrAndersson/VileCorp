@@ -10,11 +10,11 @@ LevelEditState::LevelEditState(System::Controls* controls, ObjectHandler* object
 	_pickingDevice = pickingDevice;
 	_listId = -1;
 
-	objectTabs = _uiTree.GetNode("Buttons")->GetChildren();
+	_objectTabs = _uiTree.GetNode("Buttons")->GetChildren();
 
-	for (int i = 0; i < objectTabs->size(); i++)
+	for (int i = 0; i < _objectTabs->size(); i++)
 	{
-		_buttonPositions[i] = objectTabs->at(i)->GetPosition();
+		_buttonPositions[i] = _objectTabs->at(i)->GetPosition();
 	}
 }
 
@@ -23,10 +23,6 @@ LevelEditState::~LevelEditState()
 
 void LevelEditState::Update(float deltaTime)
 {
-	if (_controls->IsFunctionKeyDown("DEBUG:RELOAD_GUI"))
-	{
-		_uiTree.ReloadTree("Assets/gui.json", "OPTIONS");
-	}
 	if (_controls->IsFunctionKeyDown("MAP_EDIT:PLACEMENTFLAG"))
 	{
 		_baseEdit.ChangePlaceState();
@@ -74,6 +70,11 @@ void LevelEditState::HandleInput()
 	{
 		ChangeState(MENUSTATE);
 	}
+
+	if (_controls->IsFunctionKeyDown("DEBUG:EXPORT_LEVEL"))
+	{
+		ExportLevel();
+	}
 }
 
 void LevelEditState::HandleButtons()
@@ -89,9 +90,9 @@ void LevelEditState::HandleButtons()
 	{
 		//Open Level editor placement GUI
 		bool buttonClicked = false;
-		for (int i = 0; i < objectTabs->size() && !buttonClicked; i++)
+		for (int i = 0; i < _objectTabs->size() && !buttonClicked; i++)
 		{
-			if (_uiTree.IsButtonColliding(objectTabs->at(i), coord._pos.x, coord._pos.y))
+			if (_uiTree.IsButtonColliding(_objectTabs->at(i), coord._pos.x, coord._pos.y))
 			{
 				if (_listId == i)
 				{
@@ -100,6 +101,7 @@ void LevelEditState::HandleButtons()
 				else
 				{
 					_listId = i;
+					_currentPage = 0;
 				}
 				buttonClicked = true;
 			}
@@ -156,7 +158,7 @@ void LevelEditState::HandleButtons()
 		for (int i = 0; i < _uiTree.GetNode("wholelist")->GetChildren()->size(); i++)
 		{
 			//Move gui
-			GUI::Node* node = objectTabs->at(i);
+			GUI::Node* node = _objectTabs->at(i);
 			node->SetPosition(_buttonPositions[i]);
 		}
 	}
@@ -167,7 +169,7 @@ void LevelEditState::HandleButtons()
 		for (int i = 0; i < _uiTree.GetNode("wholelist")->GetChildren()->size(); i++)
 		{
 			//Move gui
-			GUI::Node* node = objectTabs->at(i);
+			GUI::Node* node = _objectTabs->at(i);
 			XMFLOAT2 move = _buttonPositions[i];
 			move.x = move.x + 0.414f;
 			XMFLOAT2 moveShort = move;
@@ -202,7 +204,6 @@ void LevelEditState::HandleButtons()
 			}
 		}
 	}
-
 
 	//if (_uiTree.GetNode("TrapLeaf")->GetHidden() == false)
 	//{
@@ -274,76 +275,193 @@ void LevelEditState::InitNewLevel()
 	_objectHandler->Release();
 }
 
+
 void LevelEditState::ExportLevel()
 {
-	LevelHeader levelHead;
-	levelHead._version = 10;
+	std::string levelName = "exportedLevel.lvl";
+
+	LevelFormat exportedLevel;
+	
 	Tilemap* tileMap = _objectHandler->GetTileMap();
-	levelHead._levelSizeY = tileMap->GetHeight();
-	levelHead._levelSizeX = tileMap->GetWidth();
-	levelHead._nrOfGameObjects = _objectHandler->GetObjectCount();
+	exportedLevel._tileMapWidth = tileMap->GetWidth();
+	exportedLevel._tileMapHeight = tileMap->GetHeight();
+	exportedLevel._modelPath = MODEL_FOLDER_PATH;
+	std::string texturePath(TEXTURE_FOLDER_PATH_W.begin(), TEXTURE_FOLDER_PATH_W.end());
+	exportedLevel._texturePath = texturePath;
 
-	//Iterating through all game objects and saving only the relevant data for exporting.
-	std::vector<MapData> mapData;
-	mapData.reserve(levelHead._nrOfGameObjects);
 	std::vector<std::vector<GameObject*>>* gameObjects = _objectHandler->GetGameObjects();
+	exportedLevel._gameObjectData.resize(_objectHandler->GetObjectCount());
 
+	int gameObjectIndex = 0;
 	for (uint i = 0; i < gameObjects->size(); i++)
 	{
 		for (GameObject* g : gameObjects->at(i))
 		{
-			MapData mapD;
+			exportedLevel._gameObjectData[gameObjectIndex].resize(7);
 
-			mapD._tileType = g->GetType();
-			mapD._posX = g->GetPosition().x;
-			mapD._posZ = g->GetPosition().z;
-			mapD._rotY = g->GetRotation().y;
+			//position
+			AI::Vec2D position = g->GetTilePosition();
+			exportedLevel._gameObjectData[gameObjectIndex][0] = static_cast<int>(position._x);
+			exportedLevel._gameObjectData[gameObjectIndex][1] = static_cast<int>(position._y);
 
-			mapData.push_back(mapD);
+			//rotation
+			DirectX::XMFLOAT3 rotation = g->GetRotation();
+			float eps = std::numeric_limits<float>::epsilon();
+			if ((rotation.x > 0 && rotation.z > 0) || (rotation.x < eps && rotation.z < eps))
+			{
+				exportedLevel._gameObjectData[gameObjectIndex][2] = 0;
+			}
+			else if (rotation.x < 0 && rotation.z > 0)
+			{
+				exportedLevel._gameObjectData[gameObjectIndex][2] = 1;
+			}
+			else if (rotation.x < 0 && rotation.z < 0)
+			{
+				exportedLevel._gameObjectData[gameObjectIndex][2] = 2;
+			}
+			else
+			{
+				exportedLevel._gameObjectData[gameObjectIndex][2] = 3;
+			}
+
+			//type
+			int type = g->GetType();
+			exportedLevel._gameObjectData[gameObjectIndex][3] = type;
+
+			//subtype
+			if (type == Type::TRAP)
+			{
+				exportedLevel._gameObjectData[gameObjectIndex][4] = static_cast<Trap*>(g)->GetTrapType();
+			}
+			else
+			{
+				exportedLevel._gameObjectData[gameObjectIndex][4] = 0;
+			}
+
+			//model
+			RenderObject* renderObject = g->GetRenderObject();
+			std::string modelName = renderObject->_name;
+			exportedLevel._gameObjectData[gameObjectIndex][5] = GetVectorIndexOfString(&exportedLevel._modelReferences, modelName);
+
+			//texture
+			std::string textureName = renderObject->_diffuseTexture->_name.c_str();
+			exportedLevel._gameObjectData[gameObjectIndex][6] = GetVectorIndexOfString(&exportedLevel._textureReferences, textureName);
+
+			gameObjectIndex++;
 		}
 	}
 
+	std::string levelPath;
+
+#ifdef _DEBUG
 	char userPath[MAX_PATH];
 	SHGetFolderPathA(NULL, CSIDL_PROFILE, NULL, 0, userPath);
-
-	string outputPath, copyPath;
-	string levelName = "exportedLevel.lvl";
-
-	//Setting the output folder depending on if running debug or release mode.
-
-	outputPath = ("/Assets/Levels/");
-
-	outputPath += levelName;
-	copyPath += levelName;
-
-	ofstream outputFile;
-
-	outputFile.open(outputPath, ios::out | ios::binary);
-
-	outputFile.write((const char*)&levelHead, sizeof(levelHead));
-
-	for (auto md : mapData)
-	{
-		outputFile.write((const char*)&md, sizeof(mapData));
-	}
-
-	outputFile.close();
-
-	char buf[BUFSIZ];
-	size_t size;
-	FILE* source;
-	FILE* dest;
-	fopen_s(&source, outputPath.c_str(), "rb");
-	fopen_s(&dest, copyPath.c_str(), "wb");
-
-	while (size = fread(buf, 1, BUFSIZ, source))
-	{
-		fwrite(buf, 1, size, dest);
-	}
-
-	//fclose(source);
-	//fclose(dest);
-
-	mapData.clear();
-
+	
+	levelPath = userPath;
+	levelPath += "\\Google Drive\\Stort spelprojekt\\Assets\\Levels\\";
+#else
+	levelPath = LEVEL_FOLDER_PATH + "/";
+#endif
+	levelPath += levelName;
+	
+	std::ofstream out(levelPath);
+	cereal::BinaryOutputArchive archive(out);
+	//cereal::JSONOutputArchive archive(out);
+	archive(exportedLevel);
 }
+
+int LevelEditState::GetVectorIndexOfString(std::vector<std::string>* vec, std::string str)
+{
+	int referenceIndex = 0;
+	bool foundReference = false;
+	for (int referenceIndex = 0; referenceIndex < vec->size() && !foundReference; referenceIndex++)
+	{
+		if (vec->at(referenceIndex) == str)
+		{
+			foundReference = true;
+		}
+	}
+	if (!foundReference)
+	{
+		vec->push_back(str);
+		referenceIndex = vec->size() - 1;
+	}
+	return referenceIndex;
+}
+
+//void LevelEditState::ExportLevel()
+//{
+//	LevelHeader levelHead;
+//	levelHead._version = 26;
+//	Tilemap* tileMap = _objectHandler->GetTileMap();
+//	levelHead._levelSizeY = tileMap->GetHeight();
+//	levelHead._levelSizeX = tileMap->GetWidth();
+//	levelHead._nrOfGameObjects = _objectHandler->GetObjectCount();
+//
+//	//Iterating through all game objects and saving only the relevant data for exporting.
+//	std::vector<MapData> mapData;
+//	mapData.reserve(levelHead._nrOfGameObjects);
+//	std::vector<std::vector<GameObject*>>* gameObjects = _objectHandler->GetGameObjects();
+//
+//	for (uint i = 0; i < gameObjects->size(); i++)
+//	{
+//		for (GameObject* g : gameObjects->at(i))
+//		{
+//			MapData mapD;
+//
+//			mapD._tileType = g->GetType();
+//			mapD._posX = g->GetPosition().x;
+//			mapD._posZ = g->GetPosition().z;
+//			mapD._rotY = g->GetRotation().y;
+//
+//			mapData.push_back(mapD);
+//		}
+//	}
+//
+
+// UNDERNEATH: Important pathfinding function
+
+//	char userPath[MAX_PATH];
+//	SHGetFolderPathA(NULL, CSIDL_PROFILE, NULL, 0, userPath);
+//
+//	string outputPath, copyPath;
+//	string levelName = "exportedLevel.lvl";
+//
+//	//Setting the output folder depending on if running debug or release mode.
+//
+//	outputPath = ("/Assets/Levels/");
+//
+//	outputPath += levelName;
+//	copyPath += levelName;
+//
+//	ofstream outputFile;
+//
+//	outputFile.open(outputPath, ios::out | ios::binary);
+//
+//	outputFile.write((const char*)&levelHead, sizeof(levelHead));
+//
+//	for (auto md : mapData)
+//	{
+//		outputFile.write((const char*)&md, sizeof(mapData));
+//	}
+//
+//	outputFile.close();
+//
+//	char buf[BUFSIZ];
+//	size_t size;
+//	FILE* source;
+//	FILE* dest;
+//	fopen_s(&source, outputPath.c_str(), "rb");
+//	fopen_s(&dest, copyPath.c_str(), "wb");
+//
+//	while (size = fread(buf, 1, BUFSIZ, source))
+//	{
+//		fwrite(buf, 1, size, dest);
+//	}
+//
+//	//fclose(source);
+//	//fclose(dest);
+//
+//	mapData.clear();
+//
+//}

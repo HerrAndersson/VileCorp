@@ -37,6 +37,7 @@ public:
 
 	AI::Vec2D* GetTiles()const;
 	int GetTileSize()const;
+	int GetTrapType()const;
 
 	void Activate();
 	void Update(float deltaTime);

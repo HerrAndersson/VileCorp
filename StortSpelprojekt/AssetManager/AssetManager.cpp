@@ -240,11 +240,11 @@ HRESULT Texture::LoadTexture(ID3D11Device* device)
 	HRESULT res = S_OK;
 	if (!_loaded)
 	{
-		res = DirectX::CreateWICTextureFromFile(device, _filename.c_str(), nullptr, &_data, 0);
+		res = DirectX::CreateWICTextureFromFile(device, _filePath.c_str(), nullptr, &_data, 0);
 
 		if (_data == nullptr)
 		{
- 			string filenameString(_filename.begin(),_filename.end());
+ 			string filenameString(_filePath.begin(), _filePath.end());
 			throw std::runtime_error("Texture " + filenameString + " not found");
 		}
 		_loaded = true;
@@ -314,16 +314,17 @@ Texture* AssetManager::ScanTexture(string filename)
 {
 	for (Texture* texture : *_textures)
 	{
-		string str = string(texture->_filename.begin(), texture->_filename.end());
+		string str = string(texture->_filePath.begin(), texture->_filePath.end());
 		if (!strcmp(str.data(), filename.data()))
 		{
 			return texture;
 		}
 	}
 	Texture* texture = new Texture;
-	texture->_filename = wstring(filename.begin(), filename.end());
+	texture->_name = filename;
+	texture->_filePath = wstring(filename.begin(), filename.end());
 
-	texture->_filename.insert(0, L"Assets/Textures/");
+	texture->_filePath.insert(0, TEXTURE_FOLDER_PATH_W);
 
 	_textures->push_back(texture);
 	return texture;
@@ -333,7 +334,7 @@ Texture* AssetManager::ScanTexture(string filename)
 RenderObject* AssetManager::ScanModel(string fileName)
 {
 
-	string file_path = "Assets/Models/";
+	string file_path = MODEL_FOLDER_PATH;
 
 	file_path.append(fileName);
 	_infile->open(file_path.c_str(), ifstream::binary);
@@ -587,7 +588,7 @@ ID3D11Buffer* AssetManager::CreateVertexBuffer(vector<WeightedVertex> *weightedV
 }
 
 //How AssetManager interfaces with the renderer. Don't save the return, request it anew everytime unless you are certain the model won't be unloaded
-RenderObject* AssetManager::GetRenderObject(int index, string texture)
+RenderObject* AssetManager::GetRenderObject(int index)
 {
 	RenderObject* renderObject = nullptr;
 	if (index >= 0 && index < _renderObjects->size())
@@ -601,10 +602,6 @@ RenderObject* AssetManager::GetRenderObject(int index, string texture)
 		{
 			renderObject->_toUnload = false;
 		}
-	}
-	if (texture != "")
-	{
-		renderObject->_diffuseTexture->_data = GetTexture(texture);
 	}
 	return renderObject;
 }

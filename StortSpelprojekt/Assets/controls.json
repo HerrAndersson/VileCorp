@@ -6,10 +6,6 @@
     "MOVE_MARKER_DOWN": [ "downarrow" ],
     "ROTATE_MARKER_COUNTERCLOCK": [ "Q" ],
     "ROTATE_MARKER_CLOCK": [ "E" ],
-	"SCALE_MARKER_XPOSITIVE": [ "N" ],
-	"SCALE_MARKER_XNEGATIVE": [ "M" ],
-	"SCALE_MARKER_YPOSITIVE": [ "J" ],
-	"SCALE_MARKER_YNEGATIVE": [ "K" ],
     "ROTATE_CAMERA_LEFT": [ "Q" ],
     "ROTATE_CAMERA_RIGHT": [ "E" ],
     "MOVE_CAMERA_UP": [ "W", "repeat" ],
@@ -76,6 +72,7 @@
 		"UNLIMITED_MONEY": ["1", "ctrl", "alt"],
 		"INSTANT_WIN": ["2", "ctrl", "alt"],
 		"NO_FOG": ["3", "ctrl", "alt"],
-		"RELOAD_GUI" : ["G"]
+		"RELOAD_GUI" : ["G"],
+		"EXPORT_LEVEL" : ["P"]
 	}
 }

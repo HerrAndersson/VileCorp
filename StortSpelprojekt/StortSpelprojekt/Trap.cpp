@@ -276,6 +276,11 @@ int Trap::GetTileSize() const
 	return _tileSize;
 }
 
+int Trap::GetTrapType() const
+{
+	return _trapType;
+}
+
 void Trap::Activate()
 {
 	for (int i = 0; i < _nrOfAOETiles; i++)

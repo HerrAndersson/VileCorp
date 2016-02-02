@@ -2,6 +2,7 @@
 
 #include "BaseState.h"
 #include "BaseEdit.h"
+#include "..\LevelFormat.h"
 
 class LevelEditState : public BaseState
 {
@@ -28,7 +29,7 @@ private:
 	XMFLOAT2 _buttonPositions[7];
 	GUI::Node* _currentList = nullptr;
 	int _currentPage = 0;
-	std::vector<GUI::Node*>* objectTabs;
+	std::vector<GUI::Node*>* _objectTabs;
 
 	bool _floorChosen = false;
 	bool _wallChosen = false;
@@ -45,6 +46,7 @@ private:
 		std::string _name;
 	} _toPlace;
 	
+	int GetVectorIndexOfString(std::vector<std::string>* vec ,std::string str);
 
 public:
 	LevelEditState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, int width, int height);

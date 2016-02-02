@@ -6,6 +6,9 @@
 #include <map>
 
 enum Type { FLOOR, WALL, LOOT, SPAWN, TRAP, GUARD, ENEMY, NR_OF_TYPES/*Has to be last*/ };
+const std::string MODEL_FOLDER_PATH = "Assets/Models/";
+const std::wstring TEXTURE_FOLDER_PATH_W = L"Assets/Textures/";
+const std::string LEVEL_FOLDER_PATH = "Assets/Levels/";
 
 struct Bone
 {
@@ -94,7 +97,8 @@ struct Texture
 	bool DecrementUsers();
 	bool _loaded = false;
 	short _activeUsers = 0;
-	std::wstring _filename;
+	std::wstring _filePath;
+	std::string _name;
 	ID3D11ShaderResourceView* _data = nullptr;
 };
 
