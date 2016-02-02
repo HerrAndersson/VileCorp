@@ -179,13 +179,15 @@ AI::Vec2D Trap::convertOctant(int octant, AI::Vec2D pos, bool in)
 	return convertedPos;
 }
 
-void Trap::Initialize(int damage, int tileSize, int AOESize)
+void Trap::Initialize(int damage, int tileSize, int AOESize, int detectDifficulty, int disarmDifficulty)
 {
 	_damage = damage;
 	_tileSize = tileSize;
 	_occupiedTiles = new AI::Vec2D[_tileSize];
 	_areaOfEffectArrayCapacity = AOESize;
 	_areaOfEffect = new AI::Vec2D[_areaOfEffectArrayCapacity];
+	_detectDifficulty = detectDifficulty;
+	_disarmDifficulty = disarmDifficulty;
 }
 
 Trap::Trap()
@@ -204,18 +206,19 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	//_trapType = SHARK;
 	_tileMap = tileMap;
 	_nrOfAOETiles = 0;
+	_isVisibleToEnemies = false;
 
 	int radius = 0;
 	
 	switch (_trapType)
 	{
 	case SPIKE:
-		Initialize(3, 1, 1);
+		Initialize(3, 1, 1, 50, 50);
 		_occupiedTiles[0] = _tilePosition;
 		_areaOfEffect[_nrOfAOETiles++] = _tilePosition;
 		break;
 	case TESLACOIL:	
-		Initialize(2, 9, 37);
+		Initialize(2, 9, 37, 50, 50);
 		for (int i = 0; i < _tileSize; i++)
 		{
 			AI::Vec2D offset = {i / 3 - 1, i % 3 - 1};
@@ -225,7 +228,7 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 		break;
 	case SHARK:			//Trigger area is currently the same as the trap's physical area. Might be awkward since the shark trap is larger than its AOE.
 	{
-		Initialize(100, 18, 3);
+		Initialize(100, 18, 3, 50, 50);
 		AI::Vec2D offset = {direction._y, direction._x};
 		_nrOfAOETiles = 3;
 		_areaOfEffect[0] = tilePosition;
@@ -276,6 +279,16 @@ int Trap::GetTileSize() const
 	return _tileSize;
 }
 
+int Trap::GetDetectionDifficulty() const
+{
+	return _detectDifficulty;
+}
+
+int Trap::GetDisarmDifficulty() const
+{
+	return _disarmDifficulty;
+}
+
 void Trap::Activate()
 {
 	for (int i = 0; i < _nrOfAOETiles; i++)
@@ -312,4 +325,14 @@ void Trap::Update(float deltaTime)
 void Trap::Release()
 {
 	//_renderObject = nullptr;
+}
+
+bool Trap::IsVisibleToEnemies() const
+{
+	return _isVisibleToEnemies;
+}
+
+void Trap::SetVisibleToEnemies(bool visible)
+{
+	_isVisibleToEnemies = visible;
 }

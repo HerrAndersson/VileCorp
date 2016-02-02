@@ -184,10 +184,10 @@ void Unit::CheckVisibleTiles()
 		//{
 		//	_aStar->SetTileCost(_visibleTiles[i], -1);
 		//}
-		//else if (_tileMap->IsTrapOnTile(_visibleTiles[i]._x, _visibleTiles[i]._y))											//TODO: Traps shouldn't be automatically visible --Victor
-		//{
-		//	_aStar->SetTileCost(_visibleTiles[i], 10);
-		//}
+		if (_tileMap->IsTrapOnTile(visibleTiles[i]._x, visibleTiles[i]._y))											//TODO: Traps shouldn't be automatically visible --Victor
+		{
+			EvaluateTile(_tileMap->GetObjectOnTile(visibleTiles[i], TRAP));
+		}
 
 		if (_type != ENEMY && _tileMap->IsEnemyOnTile(visibleTiles[i]))
 		{

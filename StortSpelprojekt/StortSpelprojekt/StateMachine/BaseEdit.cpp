@@ -428,7 +428,7 @@ void BaseEdit::HandleInput()
 void BaseEdit::Update(float deltaTime)
 {
 	HandleInput();
-	_objectHandler->Update(deltaTime);
+	//_objectHandler->Update(deltaTime);
 }
 
 void BaseEdit::LoadLevel(int levelID)

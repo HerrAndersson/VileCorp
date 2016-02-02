@@ -11,6 +11,9 @@ Enemy::Enemy(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 ro
 {
 	SetVisibility(false);
 	_visibilityTimer = TIME_TO_HIDE;
+
+	_detectionSkill = 50;
+	_disarmSkill = 50;
 }
 
 Enemy::~Enemy()
@@ -68,6 +71,10 @@ void Enemy::EvaluateTile(GameObject* obj)
 			}
 			break;
 		case TRAP:
+			if (SpotTrap(static_cast<Trap*>(obj)))
+			{
+
+			}
 			break;
 		case GUARD:
 			if (IsVisible())
@@ -78,7 +85,7 @@ void Enemy::EvaluateTile(GameObject* obj)
 			}
 			else if (GetApproxDistance(obj->GetTilePosition()) < 3)
 			{
-				tempPriority = 2;			//TODO Make actual calculations based on attack skill etc --Victor
+		//		tempPriority = 2;			//TODO Make actual calculations based on attack skill etc --Victor
 			}
 			break;
 		case ENEMY:
@@ -113,6 +120,10 @@ void Enemy::act(GameObject* obj)
 		}
 		break;
 	case TRAP:
+		if (SpotTrap(static_cast<Trap*>(obj)))
+		{
+
+		}
 		break;
 	case GUARD:
 		break;
@@ -141,4 +152,19 @@ void Enemy::ResetVisibilityTimer()
 {
 	_visible = true;
 	_visibilityTimer = TIME_TO_HIDE;
+}
+
+bool Enemy::SpotTrap(Trap * trap)
+{
+	if (!trap->IsVisibleToEnemies())
+	{
+		srand(time(NULL));
+		int detectRoll = rand() % 100;
+		if (detectRoll + _detectionSkill - trap->GetDetectionDifficulty() >= 50)
+		{
+			trap->SetVisibleToEnemies(true);
+		}
+	}
+
+	return trap->IsVisibleToEnemies();
 }

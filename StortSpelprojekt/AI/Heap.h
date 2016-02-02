@@ -57,6 +57,7 @@ void Heap<T>::operator=(const Heap<T>& comp)
 	if (_tree != nullptr)
 	{
 		delete[] _tree;
+		_tree = nullptr;
 	}
 	
 

@@ -179,10 +179,10 @@ void Game::Render()
 
 				for (GameObject* g : gameObjects->at(i))
 				{
-					if (g->IsVisible())
-					{
+					//if (g->IsVisible())
+					//{
 						_renderModule->Render(g->GetMatrix(), vertexBufferSize, g->GetColorOffset());
-					}
+				/*	}*/
 				}
 			}
 			else
