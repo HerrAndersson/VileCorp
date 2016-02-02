@@ -10,7 +10,7 @@ enum Type { FLOOR, WALL, LOOT, SPAWN, TRAP, GUARD, ENEMY, NR_OF_TYPES/*Has to be
 struct Bone
 {
 	int _parent;
-	DirectX::XMFLOAT4X4 _inverseBindpose;
+	DirectX::XMMatrix _inverseBindpose;
 };
 
 struct Frame

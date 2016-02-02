@@ -9,7 +9,7 @@ class Animation
 {
 private:
 
-	DirectX::XMFLOAT4X4 Interpolate(unsigned int boneID, int action);
+	DirectX::XMMATRIX Interpolate(unsigned int boneID, int action);
 
 	float _time;
 	float _currTime;
@@ -17,9 +17,9 @@ private:
 	float _lerpPercent;
 	int _lastFrame;
 	DirectX::XMVECTOR _zeroVector = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
-	std::vector<DirectX::XMFLOAT4X4> toRootTransforms;
-	std::vector<DirectX::XMFLOAT4X4> toParentTransforms;
-	std::vector<DirectX::XMFLOAT4X4> finalTransforms;
+	std::vector<DirectX::XMMATRIX> toRootTransforms;
+	std::vector<DirectX::XMMATRIX> toParentTransforms;
+	std::vector<DirectX::XMMATRIX> finalTransforms;
 	Skeleton* _skeleton;
 	float _animTime;
 	int _currentCycle, _currentAction;
@@ -31,7 +31,7 @@ public:
 	void Update(float time);
 	void SetActionAsCycle(int action);
 	void PlayAction(int action);
-	std::vector<DirectX::XMFLOAT4X4>* GetTransforms()
+	std::vector<DirectX::XMMATRIX>* GetTransforms()
 	{
 		return &finalTransforms;
 	}

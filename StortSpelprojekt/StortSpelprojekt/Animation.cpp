@@ -8,7 +8,7 @@ Animation::Animation(Skeleton* skeleton)
 	finalTransforms.resize(_skeleton->_skeleton.size());
 	for (unsigned int i = 0; i < finalTransforms.size(); i++)
 	{
-		DirectX::XMStoreFloat4x4(&finalTransforms[i], DirectX::XMMatrixIdentity());
+		finalTransforms[i] = DirectX::XMMatrixIdentity();
 	}
 	_animTime = 0.0f;
 	_currentAction = -1;
@@ -57,8 +57,7 @@ void Animation::Update(float time)
 		// Current bone transform relative to its parent
 		DirectX::XMMATRIX toParent = DirectX::XMLoadFloat4x4(&toParentTransforms[i]);
 		DirectX::XMMATRIX parentToRoot = DirectX::XMLoadFloat4x4(&toRootTransforms[_skeleton->_skeleton[i]._parent]);
-		DirectX::XMMATRIX toRoot = toParent * parentToRoot;
-		DirectX::XMStoreFloat4x4(&toRootTransforms[i], toRoot);
+		toRootTransforms[i] = toParent * parentToRoot;
 	}
 
 	for (unsigned int i = 0; i < _skeleton->_skeleton.size(); i++)
@@ -81,9 +80,9 @@ void Animation::PlayAction(int action)
 	_currentAction = action;
 }
 
-DirectX::XMFLOAT4X4 Animation::Interpolate(unsigned int boneID, int action)
+DirectX::XMMATRIX Animation::Interpolate(unsigned int boneID, int action)
 {
-	DirectX::XMFLOAT4X4 matrix;
+	DirectX::XMMATRIX matrix;
 	_lastFrame = _skeleton->_actions[action]._bones[boneID]._frameTime.size() - 1;
 	if (_animTime <= _skeleton->_actions[action]._bones[boneID]._frameTime[0])
 	{
@@ -91,7 +90,7 @@ DirectX::XMFLOAT4X4 Animation::Interpolate(unsigned int boneID, int action)
 		DirectX::XMVECTOR p = DirectX::XMLoadFloat3(&_skeleton->_actions[action]._bones[boneID]._frames[0]._translation);
 		DirectX::XMVECTOR q = DirectX::XMLoadFloat4(&_skeleton->_actions[action]._bones[boneID]._frames[0]._rotation);
 
-		DirectX::XMStoreFloat4x4(&matrix, DirectX::XMMatrixAffineTransformation(s, _zeroVector, q, p));
+		matrix = DirectX::XMMatrixAffineTransformation(s, _zeroVector, q, p);
 	}
 	
 	else if (_animTime >= _skeleton->_actions[action]._bones[0]._frameTime[_lastFrame])
@@ -100,7 +99,7 @@ DirectX::XMFLOAT4X4 Animation::Interpolate(unsigned int boneID, int action)
 		DirectX::XMVECTOR p = DirectX::XMLoadFloat3(&_skeleton->_actions[action]._bones[boneID]._frames[_lastFrame]._translation);
 		DirectX::XMVECTOR q = DirectX::XMLoadFloat4(&_skeleton->_actions[action]._bones[boneID]._frames[_lastFrame]._rotation);
 
-		DirectX::XMStoreFloat4x4(&matrix, DirectX::XMMatrixAffineTransformation(s, _zeroVector, q, p));
+		matrix = DirectX::XMMatrixAffineTransformation(s, _zeroVector, q, p);
 	}
 
 	else
@@ -126,7 +125,7 @@ DirectX::XMFLOAT4X4 Animation::Interpolate(unsigned int boneID, int action)
 				DirectX::XMVECTOR p = DirectX::XMVectorLerp(p0, p1, _lerpPercent);
 				DirectX::XMVECTOR q = DirectX::XMQuaternionSlerp(q0, q1, _lerpPercent);
 				
-				DirectX::XMStoreFloat4x4(&matrix, DirectX::XMMatrixAffineTransformation(s, _zeroVector, q, p));
+				matrix = DirectX::XMMatrixAffineTransformation(s, _zeroVector, q, p);
 
 				break;
 			}
