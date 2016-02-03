@@ -50,6 +50,7 @@ public:
 	~BaseEdit();
 
 	void Initialize(ObjectHandler* objectHandler, System::Controls* controls, PickingDevice* pickingDevice, System::Camera* camera);
+	void Release();
 
 	GameObject* GetSelectedObject();
 	bool Add(Type type, std::string name);

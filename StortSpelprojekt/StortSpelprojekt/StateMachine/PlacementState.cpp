@@ -37,7 +37,7 @@ void PlacementState::OnStateEnter()
 
 void PlacementState::OnStateExit()
 {
-
+	_baseEdit.Release();
 }
 
 void PlacementState::HandleInput()
@@ -53,17 +53,12 @@ void PlacementState::HandleInput()
 
 void PlacementState::HandleButtons()
 {
-
-
-
-
 	System::MouseCoord coord = _controls->GetMouseCoord();
 
 	if (_uiTree.IsButtonColliding("Play", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("PLACEMENT:CLICK"))
 	{
 		ChangeState(PLAYSTATE);
 	}
-
 
 	if (_uiTree.IsButtonColliding("Trap", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("PLACEMENT:CLICK"))
 	{

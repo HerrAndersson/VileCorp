@@ -40,6 +40,11 @@ void BaseEdit::Initialize(ObjectHandler* objectHandler, System::Controls* contro
 
 BaseEdit::~BaseEdit()
 {
+	Release();
+}
+
+void BaseEdit::Release()
+{
 	delete _aStar;
 }
 
@@ -85,8 +90,6 @@ bool BaseEdit::TypeOn(Type type)
 
 void BaseEdit::DragAndDrop(Type type)
 {
-
-
 	if (_marker != nullptr && _isSelectionMode && _controls->IsFunctionKeyDown("MAP_EDIT:DRAG"))
 	{
 		AI::Vec2D pickedTile = _pickingDevice->pickTile(_controls->GetMouseCoord()._pos);
