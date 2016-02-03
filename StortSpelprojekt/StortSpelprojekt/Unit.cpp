@@ -256,7 +256,7 @@ void Unit::Rotate()
 
 int Unit::GetApproxDistance(AI::Vec2D target) const
 {
-	return _aStar->GetHeuristicDistance(_tilePosition, target);
+	return (int)_aStar->GetHeuristicDistance(_tilePosition, target);
 }
 
 Unit::Unit()

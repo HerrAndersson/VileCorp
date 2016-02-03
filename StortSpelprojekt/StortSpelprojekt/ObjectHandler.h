@@ -40,7 +40,7 @@ class ObjectHandler
 private:
 	vector<vector<GameObject*>> _gameObjects;
 	GameObjectInfo* _gameObjectInfo;
-	void ActivateTileset(string name);
+	void ActivateTileset(const string& name);
 	Tilemap* _tilemap;
 
 	int _idCount = 0;
@@ -50,21 +50,21 @@ private:
 	ID3D11Device* _device;
 	map< GameObject*, Renderer::Spotlight*> _spotlights;
 
-	Architecture*	MakeFloor(GameObjectFloorInfo* data, XMFLOAT3 position, XMFLOAT3 rotation);
-	Architecture*	MakeWall(GameObjectWallInfo* data, XMFLOAT3 position, XMFLOAT3 rotation);
-	Architecture*	MakeLoot(GameObjectLootInfo* data, XMFLOAT3 position, XMFLOAT3 rotation);
-	SpawnPoint*		MakeSpawn(GameObjectSpawnInfo* data, XMFLOAT3 position, XMFLOAT3 rotation);
-	Trap*			MakeTrap(GameObjectTrapInfo* data, XMFLOAT3 position, XMFLOAT3 rotation);
-	Guard*			MakeGuard(GameObjectGuardInfo* data, XMFLOAT3 position, XMFLOAT3 rotation);
-	Enemy*			MakeEnemy(GameObjectEnemyInfo* data, XMFLOAT3 position, XMFLOAT3 rotation);
+	Architecture*	MakeFloor(GameObjectFloorInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation);
+	Architecture*	MakeWall(GameObjectWallInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation);
+	Architecture*	MakeLoot(GameObjectLootInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation);
+	SpawnPoint*		MakeSpawn(GameObjectSpawnInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation);
+	Trap*			MakeTrap(GameObjectTrapInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation);
+	Guard*			MakeGuard(GameObjectGuardInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation);
+	Enemy*			MakeEnemy(GameObjectEnemyInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation);
 
 public:
 	ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data);
 	~ObjectHandler();
 
 	//Add a gameobject
-	bool Add(Type type, int index, XMFLOAT3 position, XMFLOAT3 rotation);
-	bool Add(Type type, std::string name, XMFLOAT3 position, XMFLOAT3 rotation);
+	bool Add(Type type, int index, const XMFLOAT3& position, const XMFLOAT3& rotation);
+	bool Add(Type type, const std::string& name, const XMFLOAT3& position, const XMFLOAT3& rotation);
 	
 	bool Remove(int ID);
 	bool Remove(Type type, int ID);

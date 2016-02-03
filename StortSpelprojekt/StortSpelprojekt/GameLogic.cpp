@@ -5,6 +5,11 @@
 GameLogic::GameLogic()
 {
 	_player = nullptr;
+	_objectHandler = nullptr;
+	_camera = nullptr;
+	_controls = nullptr;
+	_pickingDevice = nullptr;
+	_levelLoad = LevelLoad();
 }
 
 GameLogic::~GameLogic()
@@ -53,7 +58,7 @@ void GameLogic::HandleInput()
 		else
 		{
 			vector<Unit*> units = _player->GetSelectedUnits();
-			for (int i = 0; i < units.size(); i++)
+			for (unsigned int i = 0; i < units.size(); i++)
 			{
 				units[i]->SetScale(DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f));
 			}
@@ -96,7 +101,7 @@ void GameLogic::HandleInput()
 	{
 		vector<GameObject*> pickedUnits = _pickingDevice->boxPickObjects(_controls->GetMouseCoord()._pos, _objectHandler->GetAllByType(GUARD));
 
-		for (int i = 0; i < pickedUnits.size(); i++)
+		for (unsigned int i = 0; i < pickedUnits.size(); i++)
 		{
 			_player->SelectUnit((Unit*)pickedUnits[i]);
 			pickedUnits[i]->SetScale(DirectX::XMFLOAT3(1.2f, 1.2f, 1.2f));

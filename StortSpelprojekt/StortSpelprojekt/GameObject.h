@@ -53,9 +53,9 @@ public:
 	void SetPosition(const DirectX::XMFLOAT3& position);
 	void SetRotation(const DirectX::XMFLOAT3& rotation);
 	void SetScale(const DirectX::XMFLOAT3& scale);
-	void SetColorOffset(DirectX::XMFLOAT3 colorOffset);
+	void SetColorOffset(const DirectX::XMFLOAT3& colorOffset);
 
-	void AddColorOffset(DirectX::XMFLOAT3 colorOffset);
+	void AddColorOffset(const DirectX::XMFLOAT3& colorOffset);
 
 	void Translate(const DirectX::XMFLOAT3& offset);
 	void Scale(const DirectX::XMFLOAT3& scale);

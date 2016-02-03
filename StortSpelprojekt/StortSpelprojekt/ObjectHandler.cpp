@@ -6,6 +6,7 @@ ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, G
 	_assetManager = assetManager;
 	_tilemap = nullptr;
 	_gameObjectInfo = data;
+	_device = device;
 
 	for (int i = 0; i < NR_OF_TYPES; i++)
 	{
@@ -21,7 +22,7 @@ ObjectHandler::~ObjectHandler()
 	delete _gameObjectInfo;
 }
 
-void ObjectHandler::ActivateTileset(string name)
+void ObjectHandler::ActivateTileset(const string& name)
 {
 	Release();
 	_assetManager->ActivateTileset(name);
@@ -37,7 +38,7 @@ void ObjectHandler::ActivateTileset(string name)
 
 
 
-bool ObjectHandler::Add(Type type, int index, XMFLOAT3 position, XMFLOAT3 rotation)
+bool ObjectHandler::Add(Type type, int index, const XMFLOAT3& position, const XMFLOAT3& rotation)
 {
 	GameObject* object = nullptr;
 
@@ -99,7 +100,6 @@ bool ObjectHandler::Add(Type type, int index, XMFLOAT3 position, XMFLOAT3 rotati
 
 	}
 
-
 	if (object != nullptr)
 	{
 		_idCount++;
@@ -116,9 +116,9 @@ bool ObjectHandler::Add(Type type, int index, XMFLOAT3 position, XMFLOAT3 rotati
 	return false;
 }
 
-bool ObjectHandler::Add(Type type, std::string name, XMFLOAT3 position = XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3 rotation = XMFLOAT3(0.0f, 0.0f, 0.0f))
+bool ObjectHandler::Add(Type type, const std::string& name, const XMFLOAT3& position = XMFLOAT3(0.0f, 0.0f, 0.0f), const XMFLOAT3& rotation = XMFLOAT3(0.0f, 0.0f, 0.0f))
 {
-	for (int i = 0; i < _gameObjectInfo->_objects[type]->size(); i++)
+	for (unsigned int i = 0; i < _gameObjectInfo->_objects[type]->size(); i++)
 	{
 		if (_gameObjectInfo->_objects[type]->at(i)->_name == name)
 		{
@@ -315,89 +315,91 @@ Tilemap * ObjectHandler::GetTileMap() const
 
 void ObjectHandler::SetTileMap(Tilemap * tilemap)
 {
-	if (_tilemap != nullptr)
-	{
-		delete _tilemap;
-	}
+	delete _tilemap;
 	_tilemap = tilemap;
 }
 
 void ObjectHandler::MinimizeTileMap()
 {
-	int minY = -1, maxY = -1;
-	for (int y = 0; y < _tilemap->GetHeight(); y++)
+	if (_tilemap)
 	{
-		for (int x = 0; x < _tilemap->GetWidth() && minY == -1; x++)
+		int minY = -1, maxY = -1;
+		for (int y = 0; y < _tilemap->GetHeight(); y++)
 		{
-			if (!_tilemap->IsTileEmpty(x, y))
+			for (int x = 0; x < _tilemap->GetWidth() && minY == -1; x++)
 			{
-				minY = y;
+				if (!_tilemap->IsTileEmpty(x, y))
+				{
+					minY = y;
+				}
 			}
 		}
-	}
-	for (int y = _tilemap->GetHeight() - 1; y >= minY; y--)
-	{
-		for (int x = 0; x < _tilemap->GetWidth() && maxY == -1; x++)
+		for (int y = _tilemap->GetHeight() - 1; y >= minY; y--)
 		{
-			if (!_tilemap->IsTileEmpty(x, y))
+			for (int x = 0; x < _tilemap->GetWidth() && maxY == -1; x++)
 			{
-				maxY = y + 1;
+				if (!_tilemap->IsTileEmpty(x, y))
+				{
+					maxY = y + 1;
+				}
 			}
 		}
-	}
 
-	int minX = -1, maxX = -1;
-	for (int x = 0; x < _tilemap->GetWidth(); x++)
-	{
-		for (int y = minY; y < maxY && minX == -1; y++)
+		int minX = -1, maxX = -1;
+		for (int x = 0; x < _tilemap->GetWidth(); x++)
 		{
-			if (!_tilemap->IsTileEmpty(x, y))
+			for (int y = minY; y < maxY && minX == -1; y++)
 			{
-				minX = x;
+				if (!_tilemap->IsTileEmpty(x, y))
+				{
+					minX = x;
+				}
 			}
 		}
-	}
 
-	for (int x = _tilemap->GetWidth() - 1; x >= minX; x--)
-	{
-		for (int y = minY; y < maxY && maxX == -1; y++)
+		for (int x = _tilemap->GetWidth() - 1; x >= minX; x--)
 		{
-			if (!_tilemap->IsTileEmpty(x, y))
+			for (int y = minY; y < maxY && maxX == -1; y++)
 			{
-				maxX = x + 1;
+				if (!_tilemap->IsTileEmpty(x, y))
+				{
+					maxX = x + 1;
+				}
 			}
 		}
-	}
 
-	int newXMax = maxX - minX;
-	int newYMax = maxY - minY;
+		int newXMax = maxX - minX;
+		int newYMax = maxY - minY;
 
-	Tilemap* minimized = new Tilemap(AI::Vec2D(newXMax, newYMax));
-	for (int x = 0; x < newXMax; x++)
-	{
-		for (int y = 0; y < newYMax; y++)
+		Tilemap* minimized = new Tilemap(AI::Vec2D(newXMax, newYMax));
+		for (int x = 0; x < newXMax; x++)
 		{
-			AI::Vec2D pos;
-			pos._x = x + minX;
-			pos._y = y + minY;
-			std::vector<GameObject*> temp = _tilemap->GetAllObjectsOnTile(pos);
-
-			for (GameObject* g : temp)
+			for (int y = 0; y < newYMax; y++)
 			{
-				// Update real pos
-				g->SetPosition(XMFLOAT3(x, g->GetPosition().y, y));
+				AI::Vec2D pos;
+				pos._x = x + minX;
+				pos._y = y + minY;
 
-				// Update tile
-				minimized->AddObjectToTile(x, y, g);
+				std::vector<GameObject*> temp = _tilemap->GetAllObjectsOnTile(pos);
+
+				for (GameObject* g : temp)
+				{
+					// Update real pos
+					g->SetPosition(XMFLOAT3(x, g->GetPosition().y, y));
+
+					// Update tile
+					minimized->AddObjectToTile(x, y, g);
+				}
 			}
 		}
-	}
 
-	if (_tilemap != nullptr)
-	{
 		delete _tilemap;
+		_tilemap = minimized;
 	}
-	_tilemap = minimized;
+	else
+	{
+		throw std::runtime_error("ObjectHandler::MinimizeTileMap: _tilemap is nullptr");
+	}
 }
 
 void ObjectHandler::EnlargeTilemap(int offset)
@@ -455,16 +457,16 @@ bool ObjectHandler::LoadLevel(int lvlIndex)
 
 void ObjectHandler::InitPathfinding()
 {
-	for (vector<GameObject*>::iterator i = _gameObjects[ENEMY].begin(); i != _gameObjects[ENEMY].end(); i++)
+	for (GameObject* i : _gameObjects[ENEMY])
 	{
-		Unit* unit = dynamic_cast<Unit*>((*i));
+		Unit* unit = dynamic_cast<Unit*>(i);
 		//unit->CheckAllTiles();
 		unit->Move();
 	}
-	for (vector<GameObject*>::iterator i = _gameObjects[GUARD].begin(); i != _gameObjects[GUARD].end(); i++)
-	{
 
-		Unit* unit = dynamic_cast<Unit*>((*i));
+	for (GameObject* i : _gameObjects[GUARD])
+	{
+		Unit* unit = dynamic_cast<Unit*>(i);
 		//unit->CheckAllTiles();
 		unit->Move();
 	}
@@ -492,7 +494,7 @@ void ObjectHandler::Update(float deltaTime)
 
 	for (int i = 0; i < NR_OF_TYPES; i++)
 	{
-		for (int j = 0; j < _gameObjects[i].size(); j++)
+		for (unsigned int j = 0; j < _gameObjects[i].size(); j++)
 		{
 			GameObject* g = _gameObjects[i][j];
 			g->Update(deltaTime);
@@ -521,7 +523,7 @@ void ObjectHandler::Update(float deltaTime)
 
 				if (unit->GetHealth() <= 0)
 				{
-					for (int k = 0; k < _gameObjects[SPAWN].size(); k++)
+					for (unsigned int k = 0; k < _gameObjects[SPAWN].size(); k++)
 					{
 						//If the enemy is at the despawn point with the diamond, remove the diamond and the enemy, Aron
 						if ((int)unit->GetTilePosition()._x == (int)_gameObjects[SPAWN][k]->GetTilePosition()._x &&
@@ -629,7 +631,7 @@ void ObjectHandler::Release()
 
 /*Make object*/
 
-Architecture * ObjectHandler::MakeFloor(GameObjectFloorInfo * data, XMFLOAT3 position, XMFLOAT3 rotation)
+Architecture * ObjectHandler::MakeFloor(GameObjectFloorInfo * data, const XMFLOAT3& position, const XMFLOAT3& rotation)
 {
 	Architecture* obj = new Architecture(
 		_idCount,
@@ -648,7 +650,7 @@ Architecture * ObjectHandler::MakeFloor(GameObjectFloorInfo * data, XMFLOAT3 pos
 	return obj;
 }
 
-Architecture * ObjectHandler::MakeWall(GameObjectWallInfo * data, XMFLOAT3 position, XMFLOAT3 rotation)
+Architecture * ObjectHandler::MakeWall(GameObjectWallInfo * data, const XMFLOAT3& position, const XMFLOAT3& rotation)
 {
 	Architecture* obj = new Architecture(
 		_idCount,
@@ -667,7 +669,7 @@ Architecture * ObjectHandler::MakeWall(GameObjectWallInfo * data, XMFLOAT3 posit
 	return obj;
 }
 
-Architecture * ObjectHandler::MakeLoot(GameObjectLootInfo * data, XMFLOAT3 position, XMFLOAT3 rotation)
+Architecture * ObjectHandler::MakeLoot(GameObjectLootInfo * data, const XMFLOAT3& position, const XMFLOAT3& rotation)
 {
 	Architecture* obj = new Architecture(
 		_idCount,
@@ -688,7 +690,7 @@ Architecture * ObjectHandler::MakeLoot(GameObjectLootInfo * data, XMFLOAT3 posit
 	return obj;
 }
 
-SpawnPoint * ObjectHandler::MakeSpawn(GameObjectSpawnInfo * data, XMFLOAT3 position, XMFLOAT3 rotation)
+SpawnPoint * ObjectHandler::MakeSpawn(GameObjectSpawnInfo * data, const XMFLOAT3& position, const XMFLOAT3& rotation)
 {
 	SpawnPoint* obj = new SpawnPoint(
 		_idCount,
@@ -712,7 +714,7 @@ SpawnPoint * ObjectHandler::MakeSpawn(GameObjectSpawnInfo * data, XMFLOAT3 posit
 	return obj;
 }
 
-Trap * ObjectHandler::MakeTrap(GameObjectTrapInfo * data, XMFLOAT3 position, XMFLOAT3 rotation)
+Trap * ObjectHandler::MakeTrap(GameObjectTrapInfo * data, const XMFLOAT3& position, const XMFLOAT3& rotation)
 {
 	Trap* obj = new Trap(
 		_idCount,
@@ -737,7 +739,7 @@ Trap * ObjectHandler::MakeTrap(GameObjectTrapInfo * data, XMFLOAT3 position, XMF
 	return obj;
 }
 
-Guard * ObjectHandler::MakeGuard(GameObjectGuardInfo * data, XMFLOAT3 position, XMFLOAT3 rotation)
+Guard * ObjectHandler::MakeGuard(GameObjectGuardInfo * data, const XMFLOAT3& position, const XMFLOAT3& rotation)
 {
 	Guard* obj = new Guard(
 		_idCount,
@@ -759,7 +761,7 @@ Guard * ObjectHandler::MakeGuard(GameObjectGuardInfo * data, XMFLOAT3 position, 
 	return obj;
 }
 
-Enemy * ObjectHandler::MakeEnemy(GameObjectEnemyInfo * data, XMFLOAT3 position, XMFLOAT3 rotation)
+Enemy * ObjectHandler::MakeEnemy(GameObjectEnemyInfo * data, const XMFLOAT3& position, const XMFLOAT3& rotation)
 {
 	Enemy* obj = new Enemy(
 		_idCount,

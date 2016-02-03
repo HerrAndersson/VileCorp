@@ -43,7 +43,7 @@ private:
 	bool						_enemiesHasSpawned;
 
 	//Resizing window, directx resources, camera
-	void ResizeResources(System::WindowSettings settings); //TODO: Test all scenarios and fix bugs /Jonas
+	void ResizeResources(const System::WindowSettings& settings);
 	bool Update(float deltaTime);
 	void Render();
 	void CheckSettings();

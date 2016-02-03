@@ -52,14 +52,14 @@ public:
 	void Initialize(ObjectHandler* objectHandler, System::Controls* controls, PickingDevice* pickingDevice, System::Camera* camera);
 
 	GameObject* GetSelectedObject();
-	bool Add(Type type, std::string name);
+	bool Add(Type type, const std::string& name);
 	bool Delete(Type type);
 	bool TypeOn(Type type);
 	void DragAndDrop(Type type);
 	void DragAndDrop();
-	void DragAndPlace(Type type, std::string objectName);
+	void DragAndPlace(Type type, const std::string& objectName);
 	
-	void DragActivate(Type type, std::string objectName);
+	void DragActivate(Type type, const std::string& objectName);
 	void ChangePlaceState();
 	bool IsSelection() const;
 	bool IsDragAndPlace() const;

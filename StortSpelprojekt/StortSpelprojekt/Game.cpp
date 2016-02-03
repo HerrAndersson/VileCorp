@@ -116,7 +116,7 @@ Game::~Game()
 	}
 }
 
-void Game::ResizeResources(System::WindowSettings settings)
+void Game::ResizeResources(const System::WindowSettings& settings)
 {
 	_window->ResizeWindow(settings);
 	_renderModule->ResizeResources(_window->GetHWND(), settings._width, settings._height);
@@ -158,26 +158,26 @@ bool Game::Update(float deltaTime)
 
 
 	//Save for debugging //Jonas
-	//int i = 0;
-	//for (auto s : _spotlights)
-	//{
-	//	XMFLOAT3 color = s->GetColor();
-	//	color.x = sin(_timer.GetGameTime() / 1000 + 100 * i);
-	//	color.y = sin(_timer.GetGameTime() / 1000 + 100 * i + XMConvertToRadians(120));
-	//	color.z = sin(_timer.GetGameTime() / 1000 + 100 * i + XMConvertToRadians(240));
-	//	s->SetColor(color);
-	//	XMFLOAT3 rot = s->GetRotation();
-	//	rot.y -= 0.2f;
-	//	s->SetRotation(rot);
-	//	i++;
-	//}
-	//i = 0;
-	//for (auto p : _pointlights)
-	//{
-	//	i++;
-	//	XMFLOAT3 pos = p->GetPosition();
-	//	p->SetPosition(XMFLOAT3(pos.x + (sin((_timer.GetGameTime() / 1000) * sin(120 * i))) / 20, pos.y, pos.z + (sin((_timer.GetGameTime() / 1000) * sin(17 * i * i))) / 20));
-	//}
+	int i = 0;
+	for (auto s : _spotlights)
+	{
+		XMFLOAT3 color = s->GetColor();
+		color.x = sin(_timer.GetGameTime() / 1000 + 100 * i);
+		color.y = sin(_timer.GetGameTime() / 1000 + 100 * i + XMConvertToRadians(120));
+		color.z = sin(_timer.GetGameTime() / 1000 + 100 * i + XMConvertToRadians(240));
+		s->SetColor(color);
+		XMFLOAT3 rot = s->GetRotation();
+		rot.y -= 0.2f;
+		s->SetRotation(rot);
+		i++;
+	}
+	i = 0;
+	for (auto p : _pointlights)
+	{
+		i++;
+		XMFLOAT3 pos = p->GetPosition();
+		p->SetPosition(XMFLOAT3(pos.x + (sin((_timer.GetGameTime() / 1000) * sin(120 * i))) / 20, pos.y, pos.z + (sin((_timer.GetGameTime() / 1000) * sin(17 * i * i))) / 20));
+	}
 
 	return run;
 }
@@ -253,13 +253,13 @@ void Game::Render()
 			_lightCulling = new LightCulling(_objectHandler->GetTileMap());
 		}
 
-		for (int i = 0; i < _spotlights.size(); i++)
+		for (unsigned int i = 0; i < _spotlights.size(); i++)
 		{
 			inLight.push_back(_lightCulling->GetObjectsInSpotlight(_spotlights[i]));
 		}
 
 		//"Fog of War"
-		for (int i = 0; i < _spotlights.size(); i++)
+		for (unsigned int i = 0; i < _spotlights.size(); i++)
 		{
 			if (inLight.at(i).size() >= ENEMY)
 			{
@@ -299,7 +299,7 @@ void Game::Render()
 	Generate the shadow map for each spotlight, then apply the lighting/shadowing to the render target with additive blending.           */
 
 		_renderModule->SetLightDataPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
-		for (int i = 0; i < _spotlights.size(); i++)
+		for (unsigned int i = 0; i < _spotlights.size(); i++)
 		{
 			_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::SHADOW_GENERATION);
 			_renderModule->SetShadowMapDataPerSpotlight(_spotlights[i]->GetViewMatrix(), _spotlights[i]->GetProjectionMatrix());
@@ -429,7 +429,6 @@ LRESULT CALLBACK Game::WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM l
 		_gameHandle->_hasFocus = false;
 		break;
 	}
-
 	default:
 	{
 		return _gameHandle->MessageHandler(hwnd, umessage, wparam, lparam);
