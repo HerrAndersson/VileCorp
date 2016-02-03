@@ -23,8 +23,6 @@ void BaseEdit::Initialize(ObjectHandler* objectHandler, System::Controls* contro
 	_camera = camera;
 	_aStar = new AI::AStar();
 
-	_tileMultiplier = 1;
-
 	// Don´t let both be true
 	_isSelectionMode = true;
 	_isDragAndPlaceMode = false;
@@ -438,6 +436,4 @@ void BaseEdit::LoadLevel(int levelID)
 	_objectHandler->LoadLevel(levelID);
 
 	_tileMap = _objectHandler->GetTileMap();
-	_tilemapHeight = _tileMap->GetHeight();
-	_tilemapWidth = _tileMap->GetWidth();
 }

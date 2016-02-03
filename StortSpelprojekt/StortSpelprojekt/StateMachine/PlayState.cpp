@@ -34,7 +34,7 @@ void PlayState::OnStateEnter()
 
 void PlayState::OnStateExit()
 {
-
+	_gamePaused = false;
 }
 
 void PlayState::HandleInput()

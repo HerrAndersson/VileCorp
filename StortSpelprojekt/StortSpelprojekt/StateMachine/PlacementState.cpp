@@ -33,6 +33,12 @@ void PlacementState::OnStateEnter()
 {
 	_baseEdit.Initialize(_objectHandler, _controls, _pickingDevice, _camera);
 	_objectHandler->DisableSpawnPoints();
+
+	XMFLOAT3 campos;
+	campos.x = _objectHandler->GetTileMap()->GetWidth() / 2;
+	campos.y = 15;
+	campos.z = _objectHandler->GetTileMap()->GetHeight() / 2 - 10;
+	_camera->SetPosition(campos);
 }
 
 void PlacementState::OnStateExit()
