@@ -76,11 +76,10 @@ bool ObjectHandler::Add(Type type, int index, const XMFLOAT3& position, const XM
 	{
 		addedObject = true;
 	}
-	if (type == TRAP)
+	if (type == TRAP && addedObject)
 	{
 		Trap* trap = static_cast<Trap*>(object);
 		int i = 0;
-		addedObject = true;
 		AI::Vec2D* arr = trap->GetTiles();
 		for (int i = 0; i < trap->GetTileSize() && addedObject; i++)
 		{

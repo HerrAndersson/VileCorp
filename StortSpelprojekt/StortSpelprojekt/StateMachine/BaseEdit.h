@@ -14,7 +14,6 @@
 class BaseEdit
 {
 private:
-	AI::AStar*				_aStar;
 	System::Controls*		_controls;
 	System::Camera*			_camera;
 	Tilemap*				_tileMap;
@@ -33,8 +32,6 @@ private:
 	AI::Vec2D* _markedTile;
 
 	System::MouseCoord _mouseCoord;
-	int _tileMultiplier;
-	int _tilemapHeight, _tilemapWidth;
 	std::vector<ButtonInfo> buttonInfo;
 	
 	// FLAGS

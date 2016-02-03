@@ -33,11 +33,16 @@ void PlacementState::OnStateEnter()
 {
 	_baseEdit.Initialize(_objectHandler, _controls, _pickingDevice, _camera);
 	_objectHandler->DisableSpawnPoints();
+
+	XMFLOAT3 campos;
+	campos.x = _objectHandler->GetTileMap()->GetWidth() / 2;
+	campos.y = 15;
+	campos.z = _objectHandler->GetTileMap()->GetHeight() / 2 - 10;
+	_camera->SetPosition(campos);
 }
 
 void PlacementState::OnStateExit()
 {
-
 }
 
 void PlacementState::HandleInput()
@@ -45,7 +50,7 @@ void PlacementState::HandleInput()
 	_baseEdit.DragAndDrop(TRAP);
 	_baseEdit.DragAndDrop(GUARD);
 
-	if (_controls->IsFunctionKeyDown("MAP_EDIT:MENU"))
+	if (_controls->IsFunctionKeyDown("MENU:MENU"))
 	{
 		ChangeState(MENUSTATE);
 	}
@@ -53,19 +58,14 @@ void PlacementState::HandleInput()
 
 void PlacementState::HandleButtons()
 {
-
-
-
-
 	System::MouseCoord coord = _controls->GetMouseCoord();
 
-	if (_uiTree.IsButtonColliding("Play", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("PLACEMENT:CLICK"))
+	if (_uiTree.IsButtonColliding("Play", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
 		ChangeState(PLAYSTATE);
 	}
 
-
-	if (_uiTree.IsButtonColliding("Trap", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("PLACEMENT:CLICK"))
+	if (_uiTree.IsButtonColliding("Trap", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
 		// Temp, should be replaced with blueprint
 		_toPlace._type = TRAP;
@@ -77,7 +77,7 @@ void PlacementState::HandleButtons()
 		}
 	}
 
-	if (_uiTree.IsButtonColliding("Guard", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("PLACEMENT:CLICK"))
+	if (_uiTree.IsButtonColliding("Guard", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
 		// Temp, should be replaced with blueprint
 		_toPlace._type = GUARD;
