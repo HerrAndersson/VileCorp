@@ -9,8 +9,8 @@ namespace Renderer
 	Spotlight::Spotlight(ID3D11Device* device, SpotlightData lightdata, int width, int height, float nearClip, float farClip, int resolution)
 	{
 		_position = lightdata._pos;
-		_rotation = XMFLOAT3(0, 0, 0);
-		_direction = lightdata._direction;
+		_rotation = lightdata._rotation;
+		_direction = XMFLOAT3(0, 0, 0);
 		_up = XMFLOAT3(0, 1, 0);
 
 		_angle = lightdata._angle;

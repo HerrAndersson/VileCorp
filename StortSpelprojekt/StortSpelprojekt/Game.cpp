@@ -50,6 +50,8 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 		lightdata._angle = XM_PIDIV4;
 		lightdata._color = XMFLOAT3(1.0f, 1.0f, 1.0f);
 		lightdata._range = 9.5f;
+		lightdata._pos = XMFLOAT3(0.0f, 0.0f, 0.0f);
+		lightdata._rotation = XMFLOAT3(0.0f, 0.0f, 0.0f);
 		int d = _renderModule->SHADOWMAP_DIMENSIONS;
 		spot = new Renderer::Spotlight(_renderModule->GetDevice(), lightdata, d, d, 0.1f, 1000.0f);
 		spot->SetPositionAndRotation(XMFLOAT3(14 + i*2, 1, 8 + i * 2), XMFLOAT3(0,-35*i,0));

@@ -462,7 +462,7 @@ RenderObject* AssetManager::ScanModel26()
 		_infile->read((char*)&renderObject->_mesh._spotLights[i]._color, 12);
 		_infile->read((char*)&renderObject->_mesh._spotLights[i]._intensity, 4);
 		_infile->read((char*)&renderObject->_mesh._spotLights[i]._angle, 4);
-		_infile->read((char*)&renderObject->_mesh._spotLights[i]._direction, 12);
+		_infile->read((char*)&renderObject->_mesh._spotLights[i]._rotation, 12);
 		renderObject->_mesh._spotLights[i]._range = 100;
 	}
 	renderObject->_mesh._vertexBufferSize = meshHeader._numberOfVertices;
@@ -517,7 +517,7 @@ RenderObject* AssetManager::ScanModel24()
 				_infile->read((char*)&renderObject->_mesh._spotLights[i]._color, 12);
 				_infile->read((char*)&renderObject->_mesh._spotLights[i]._intensity, 4);
 				_infile->read((char*)&renderObject->_mesh._spotLights[i]._angle, 4);
-				_infile->read((char*)&renderObject->_mesh._spotLights[i]._direction, 12);
+				_infile->read((char*)&renderObject->_mesh._spotLights[i]._rotation, 12);
 				renderObject->_mesh._spotLights[i]._bone = 0;
 				renderObject->_mesh._spotLights[i]._range = 100;
 			}
