@@ -14,7 +14,6 @@
 class BaseEdit
 {
 private:
-	AI::AStar*				_aStar;
 	System::Controls*		_controls;
 	System::Camera*			_camera;
 	Tilemap*				_tileMap;
@@ -50,7 +49,6 @@ public:
 	~BaseEdit();
 
 	void Initialize(ObjectHandler* objectHandler, System::Controls* controls, PickingDevice* pickingDevice, System::Camera* camera);
-	void Release();
 
 	GameObject* GetSelectedObject();
 	bool Add(Type type, std::string name);
