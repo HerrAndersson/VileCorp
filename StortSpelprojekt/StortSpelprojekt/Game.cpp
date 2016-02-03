@@ -195,14 +195,14 @@ void Game::Render()
 		if (i.size() > 0)
 		{
 			RenderObject* renderObject = i.at(0)->GetRenderObject();
-			if (renderObject->_isSkinned)
+			if (renderObject->_mesh->_isSkinned)
 			{
 				continue;
 			}
 			else
 			{
 				_renderModule->SetDataPerObjectType(renderObject);
-				int vertexBufferSize = renderObject->_mesh._vertexBufferSize;
+				int vertexBufferSize = renderObject->_mesh->_vertexBufferSize;
 
 				for (GameObject* g : i)
 				{
@@ -222,7 +222,7 @@ void Game::Render()
 			RenderObject* renderObject = gameObjects->at(GUARD).at(0)->GetRenderObject();
 
 			_renderModule->SetDataPerObjectType(renderObject);
-			int vertexBufferSize = renderObject->_mesh._vertexBufferSize;
+			int vertexBufferSize = renderObject->_mesh->_vertexBufferSize;
 
 			for (GameObject* a : gameObjects->at(GUARD))
 			{
@@ -258,7 +258,7 @@ void Game::Render()
 					RenderObject* renderObject = inLight.at(i).at(ENEMY).at(0)->GetRenderObject();
 
 					_renderModule->SetDataPerObjectType(renderObject);
-					int vertexBufferSize = renderObject->_mesh._vertexBufferSize;
+					int vertexBufferSize = renderObject->_mesh->_vertexBufferSize;
 
 					for (GameObject* a : inLight.at(i).at(ENEMY))
 					{
@@ -300,7 +300,7 @@ void Game::Render()
 				{
 					RenderObject* renderObject = j.at(0)->GetRenderObject();
 					_renderModule->SetShadowMapDataPerObjectType(renderObject);
-					int vertexBufferSize = renderObject->_mesh._vertexBufferSize;
+					int vertexBufferSize = renderObject->_mesh->_vertexBufferSize;
 
 					for (GameObject* g : j)
 					{

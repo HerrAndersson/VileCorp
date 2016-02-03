@@ -9,8 +9,13 @@
 #include <fstream>
 #include "WICTextureLoader.h"
 #include "RenderUtils.h"
-#include "rapidjson\reader.h"
 #include "LevelFormat.h"
+
+#include "cereal\cereal.hpp"
+#include "cereal\archives\json.hpp"
+#include "cereal\types\vector.hpp"
+#include "cereal\types\string.hpp"
+
 
 using namespace std;
 using namespace DirectX;
@@ -20,92 +25,28 @@ using namespace DirectX;
 
 struct Tileset
 {
+	struct Object
+	{
+		string _mesh;
+		string _name;
+		vector<string> _textures;
+		vector<string> _thumbnails;
+		template<class Archive>
+		void serialize(Archive & archive)
+		{
+			archive(_mesh, _name, _textures, _thumbnails);
+		}
+	};
 	Tileset()
 	{
-		for (int i = 0; i < NR_OF_TYPES; i++)
-		{
-			vector<string> type;
-			_objects.push_back(type);
-		}
+		_objects.resize(NR_OF_TYPES);
 	}
-	string _name;
-	vector<vector<string>> _objects;
-};
-
-struct TilesetHandler
-{
-	vector<Tileset>* _tilesets;
-	Tileset* _tileset;
-	vector<string>* _cur;
-	bool _nameNext = false;
-
-	bool Null() { return true; }
-	bool Bool(bool b) { return true; }
-	bool Int(int i) { return true; }
-	bool Uint(unsigned u) { return true; }
-	bool Int64(int64_t i) { return true; }
-	bool Uint64(uint64_t u) { return true; }
-	bool Double(double d) { return true; }
-	bool String(const char* str, rapidjson::SizeType length, bool copy)
+	vector<vector<Object>> _objects;
+	template<class Archive>
+	void serialize(Archive & archive)
 	{
-		if (_nameNext)
-		{
-			_tileset->_name = str;
-			_nameNext = false;
-			_cur = &_tileset->_objects[FLOOR];
-		}
-		else
-		{
-			_cur->push_back(str);
-		}
-		return true;
+		archive(_objects);
 	}
-	bool StartObject()
-	{
-		Tileset newTileset;
-		_tilesets->push_back(newTileset);
-		_tileset = &_tilesets->back();
-		return true;
-	}
-	bool Key(const char* str, rapidjson::SizeType length, bool copy)
-	{
-		if (!strcmp("name", str))
-		{
-			_nameNext = true;
-		}
-		else if (!strcmp("floors", str))
-		{
-			_cur = &_tileset->_objects[FLOOR];
-		}
-		else if (!strcmp("walls", str))
-		{
-			_cur = &_tileset->_objects[WALL];
-		}
-		else if (!strcmp("loot", str))
-		{
-			_cur = &_tileset->_objects[LOOT];
-		}
-		else if (!strcmp("spawns", str))
-		{
-			_cur = &_tileset->_objects[SPAWN];
-		}
-		else if (!strcmp("traps", str))
-		{
-			_cur = &_tileset->_objects[TRAP];
-		}
-		else if (!strcmp("guards", str))
-		{
-			_cur = &_tileset->_objects[GUARD];
-		}
-		else if (!strcmp("enemies", str))
-		{
-			_cur = &_tileset->_objects[ENEMY];
-		}
-		return true;
-	}
-	bool EndObject(rapidjson::SizeType memberCount) { return true; }
-	bool StartArray() { return true; }
-	bool EndArray(rapidjson::SizeType elementCount) { return true; }
 };
 
 struct MeshHeader24
@@ -173,7 +114,6 @@ private:
 	ID3D11Device* _device;
 	Tileset* _activeTileset;
 
-	vector<string>* _modelFiles;
 	vector<string>* _levelFileNames;
 	vector<Tileset>* _tilesets;
 	vector<Skeleton*>* _skeletons;
@@ -181,32 +121,27 @@ private:
 	vector<RenderObject*>* _renderObjects;
 
 	vector<Texture*>* _textures;
-	vector<Texture*>* _texturesToFlush;
-
 	vector<Mesh*>* _meshes;
-	vector<Mesh*>* _meshesToFlush;
 
 	LevelFormat _currentLevelData;
 
-	bool LoadModel(string file_path, RenderObject* renderObject);
+	bool LoadModel(string name, Mesh* mesh);
 	void Flush();
 	Mesh* ScanModel24();
 	Mesh* ScanModel26();
 	Mesh* ScanModel27();
-	Mesh* ScanModel(string file_path);
-	Texture* ScanTexture(string filename);
-	Skeleton* LoadSkeleton(string filename);
+	Mesh* ScanModel(string name);
+	Texture* ScanTexture(string name);
+	Mesh* GetModel(string name);
+	Skeleton* LoadSkeleton(string name);
 	ID3D11Buffer* CreateVertexBuffer(vector<WeightedVertex> *weightedVertices, vector<Vertex> *vertices, int skeleton);
-	bool SetupRenderObjectList(Tileset* tileset);
-	void SetupTilesets();
+	bool SetupTileset(Tileset* tileset);
 public:
 	AssetManager(ID3D11Device* device);
 	~AssetManager();
 	RenderObject* GetRenderObject(int index);
 	RenderObject* GetRenderObject(int modelReference, int textureReference);
-	uint GetRenderObjectByType(Type type, uint index);
-	void UnloadModel(int index, bool force);
 	LevelFormat* ParseLevel(int index);
 	bool ActivateTileset(string name);
-	ID3D11ShaderResourceView* GetTexture(string filename);
+	Texture* GetTexture(string name);
 };

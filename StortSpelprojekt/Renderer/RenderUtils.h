@@ -9,6 +9,8 @@ enum Type { FLOOR, WALL, LOOT, SPAWN, TRAP, GUARD, ENEMY, NR_OF_TYPES/*Has to be
 const std::string MODEL_FOLDER_PATH = "Assets/Models/";
 const std::wstring TEXTURE_FOLDER_PATH_W = L"Assets/Textures/";
 const std::string LEVEL_FOLDER_PATH = "Assets/Levels/";
+const std::string ANIMATION_FOLDER_PATH = "Assets/Animations/";
+const std::string TILESET_FOLDER_PATH = "Assets/Tilesets/";
 
 struct Bone
 {

@@ -30,7 +30,7 @@ void ObjectHandler::ActivateTileset(string name)
 	{
 		for (uint i = 0; i < _gameObjectInfo->_objects[a]->size(); i++)
 		{
-			_gameObjectInfo->_objects[a]->at(i)->_renderObject = _assetManager->GetRenderObjectByType((Type)a, i);
+//			_gameObjectInfo->_objects[a]->at(i)->_renderObject = _assetManager->GetRenderObjectByType((Type)a, i);//TODO - Fredrik
 		}
 	}
 }
@@ -102,10 +102,10 @@ bool ObjectHandler::Add(Type type, int index, XMFLOAT3 position, XMFLOAT3 rotati
 	{
 		_idCount++;
 		_gameObjects[type].push_back(object);
-		for(auto i : object->GetRenderObject()->_mesh._spotLights)
+		if(object->GetRenderObject()->_mesh->_spotLights.size())
 		{
 			//TODO: Add settings variables to this function below! Alex
-			_spotlights[object] = new Renderer::Spotlight(_device, i, 256, 256, 0.1f, 1000.0f);
+			_spotlights[object] = new Renderer::Spotlight(_device, object->GetRenderObject()->_mesh->_spotLights[0], 256, 256, 0.1f, 1000.0f);
 		}
 		_objectCount++;
 		return true;
@@ -226,10 +226,10 @@ bool ObjectHandler::Add(XMFLOAT3 position, XMFLOAT3 rotation, Type type, int sub
 
 			_idCount++;
 			_gameObjects[type].push_back(object);
-			for (auto i : object->GetRenderObject()->_mesh._spotLights)
+			if (object->GetRenderObject()->_mesh->_spotLights.size())
 			{
 				//TODO: Add settings variables to this function below! Alex
-				_spotlights[object] = new Renderer::Spotlight(_device, i, 256, 256, 0.1f, 1000.0f);
+			_spotlights[object] = new Renderer::Spotlight(_device, object->GetRenderObject()->_mesh->_spotLights[0], 256, 256, 0.1f, 1000.0f);
 			}
 			_objectCount++;
 			return true;

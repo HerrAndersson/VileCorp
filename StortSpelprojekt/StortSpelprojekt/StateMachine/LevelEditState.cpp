@@ -341,7 +341,7 @@ void LevelEditState::ExportLevel()
 
 			//model
 			RenderObject* renderObject = g->GetRenderObject();
-			std::string modelName = renderObject->_name;
+			std::string modelName = renderObject->_mesh->_name;
 			exportedLevel._gameObjectData[gameObjectIndex][5] = GetVectorIndexOfString(&exportedLevel._modelReferences, modelName);
 
 			//texture

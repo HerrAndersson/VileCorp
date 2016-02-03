@@ -200,12 +200,12 @@ namespace Renderer
 
 		UINT32 vertexSize = sizeof(Vertex);
 
-		if (renderObject->_isSkinned)
+		if (renderObject->_mesh->_isSkinned)
 		{
 			vertexSize = sizeof(WeightedVertex);
 		}
 
-		SetDataPerMesh(renderObject->_mesh._vertexBuffer, vertexSize);
+		SetDataPerMesh(renderObject->_mesh->_vertexBuffer, vertexSize);
 
 		deviceContext->PSSetShaderResources(0, 1, &diffuseData);
 		deviceContext->PSSetShaderResources(1, 1, &specularData);
@@ -263,12 +263,12 @@ namespace Renderer
 		UINT32 offset = 0;
 		UINT32 vertexSize = sizeof(Vertex);
 
-		if (renderObject->_isSkinned)
+		if (renderObject->_mesh->_isSkinned)
 		{
 			vertexSize = sizeof(WeightedVertex);
 		}
 
-		SetDataPerMesh(renderObject->_mesh._vertexBuffer, vertexSize);
+		SetDataPerMesh(renderObject->_mesh->_vertexBuffer, vertexSize);
 	}
 
 	void RenderModule::RenderShadowMap(DirectX::XMMATRIX* world, int vertexBufferSize)
