@@ -45,7 +45,7 @@ void PlacementState::HandleInput()
 	_baseEdit.DragAndDrop(TRAP);
 	_baseEdit.DragAndDrop(GUARD);
 
-	if (_controls->IsFunctionKeyDown("MAP_EDIT:MENU"))
+	if (_controls->IsFunctionKeyDown("PLACEMENT:MENU"))
 	{
 		ChangeState(MENUSTATE);
 	}

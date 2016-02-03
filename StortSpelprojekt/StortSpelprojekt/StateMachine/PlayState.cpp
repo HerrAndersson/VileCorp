@@ -39,7 +39,7 @@ void PlayState::OnStateExit()
 
 void PlayState::HandleInput()
 {
-	if (_controls->IsFunctionKeyDown("MAP_EDIT:MENU"))
+	if (_controls->IsFunctionKeyDown("PLAY:MENU"))
 	{
 		ChangeState(MENUSTATE);
 	}
@@ -47,8 +47,7 @@ void PlayState::HandleInput()
 
 void PlayState::IngameMenu()
 {
-
-	if (_controls->IsFunctionKeyDown("PLAY:SHOWMENU"))
+	if (_controls->IsFunctionKeyDown("PLAY:PLAY"))
 	{
 		//TODO::unhide menu
 		_gamePaused = true;
@@ -77,5 +76,4 @@ void PlayState::IngameMenu()
 		
 		}
 	}
-	
 }
