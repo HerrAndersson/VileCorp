@@ -17,6 +17,10 @@ MenuState::~MenuState()
 
 void MenuState::Update(float deltaTime)
 {
+	if (_controls->IsFunctionKeyDown("DEBUG:RELOAD_GUI"))
+	{
+		_uiTree.ReloadTree("../../../../StortSpelprojekt/Assets/gui.json", "MENU");
+	}
 	if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
 		System::MouseCoord coord = _controls->GetMouseCoord();
