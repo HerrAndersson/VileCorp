@@ -30,14 +30,11 @@ private:
 	int _aaOption;
 
 	float _volumeOption;
-
-
-	SettingInfo _outputSettings;
 private:
 	bool HandleOptionSwitch(const std::string& leftId, const std::string& rightId, const std::string& contentId, int& optionValue, Options* options, int optionsMax);
 
 public:
-	OptionsState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, int width, int height);
+	OptionsState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::Settings* settings);
 	virtual ~OptionsState();
 
 	void Update(float deltaTime);

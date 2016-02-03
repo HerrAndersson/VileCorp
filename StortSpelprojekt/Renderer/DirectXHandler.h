@@ -6,6 +6,8 @@
 #include <stdexcept>
 #include "stdafx.h"
 
+#include "../System/Settings/settings.h"
+
 #pragma comment (lib, "d3d11.lib")
 #pragma comment (lib, "d3dcompiler.lib")
 
@@ -50,7 +52,7 @@ namespace Renderer
 		enum CullingState { BACK, FRONT, NONE };
 		enum BlendState { ENABLE, DISABLE };
 
-		DirectXHandler(HWND hwnd, int screenWidth, int screenHeight, bool fullScreen);
+		DirectXHandler(HWND hwnd, System::Settings* settings);
 		~DirectXHandler();
 
 		ID3D11Device* GetDevice();
@@ -65,7 +67,7 @@ namespace Renderer
 		void SetCullingState(CullingState state);
 		void SetBlendState(BlendState state);
 
-		void ResizeResources(HWND hwnd, int windowWidth, int windowHeight);
+		void ResizeResources(HWND hwnd, System::Settings* settings);
 
 		void BeginScene(float red, float green, float blue, float alpha);
 		void EndScene();

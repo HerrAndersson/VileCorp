@@ -11,6 +11,7 @@
 #include "Spotlight.h"
 #include "Node.h"
 #include "FontWrapper.h"
+#include "../System/Settings/settings.h"
 
 /*
 
@@ -114,8 +115,7 @@ namespace Renderer
 		DirectXHandler*		_d3d;
 		ShaderHandler*		_shaderHandler;
 
-		int _screenWidth;
-		int _screenHeight;
+		System::Settings* _settings;
 
 		void InitializeConstantBuffers();
 		void InitializeScreenQuadBuffer();
@@ -138,10 +138,10 @@ namespace Renderer
 
 		enum ShaderStage { GEO_PASS, SHADOW_GENERATION, LIGHT_APPLICATION, GRID_STAGE, ANIM_STAGE, HUD_STAGE };
 
-		RenderModule(HWND hwnd, int screenWidth, int screenHeight, bool fullScreen);
+		RenderModule(HWND hwnd, System::Settings* settings);
 		~RenderModule();
 
-		void ResizeResources(HWND hwnd, int windowWidth, int windowHeight);
+		void ResizeResources(HWND hwnd, System::Settings* settings);
 
 		void SetDataPerFrame(DirectX::XMMATRIX* view, DirectX::XMMATRIX* projection);
 		void SetDataPerObjectType(RenderObject* renderObject);

@@ -3,24 +3,25 @@
 #include <DirectXMath.h>
 #include <sstream>
 
-Game::Game(HINSTANCE hInstance, int nCmdShow)
+Game::Game(HINSTANCE hInstance, int nCmdShow):
+	_settingsReader("Assets/settings.xml")
 {
-	_settingsReader = new Settings::SettingsReader();
+	System::Settings* settings = _settingsReader.GetSettings();
 
-	CheckSettings();
+
 	_gameHandle = this;
-	_window = new System::Window("Amazing game", hInstance, _windowSettings, WndProc);
+	_window = new System::Window("Amazing game", hInstance, settings, WndProc);
 
 	_timer = System::Timer();
 
-	_renderModule = new Renderer::RenderModule(_window->GetHWND(), _windowSettings._width, _windowSettings._height, _gameSettings._fullScreen);
+	_renderModule = new Renderer::RenderModule(_window->GetHWND(), settings);
 	
 	_assetManager = new AssetManager(_renderModule->GetDevice());
 	_controls = new System::Controls(_window->GetHWND());
 	_fontWrapper = new FontWrapper(_renderModule->GetDevice(), L"Assets/Fonts/Calibri.ttf", L"Calibri");
 
 	//Init camera
-	_camera = new System::Camera(0.1f, 1000.0f, DirectX::XM_PIDIV2, _windowSettings._width, _windowSettings._height);
+	_camera = new System::Camera(settings);
 	_camera->SetPosition(XMFLOAT3(3, 20, 0));
 	_camera->SetRotation(XMFLOAT3(60, 0, 0));
 
@@ -32,8 +33,8 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	gameObjectDataLoader.LoadGameObjectInfo(data);
 
 	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager, data);
-	_pickingDevice = new PickingDevice(_camera, _window);
-	_SM = new StateMachine(_controls, _objectHandler, _camera, _pickingDevice, "Assets/gui.json", _assetManager, _fontWrapper, _windowSettings._width, _windowSettings._height);
+	_pickingDevice = new PickingDevice(_camera, settings);
+	_SM = new StateMachine(_controls, _objectHandler, _camera, _pickingDevice, "Assets/gui.json", _assetManager, _fontWrapper, settings);
 
 	_SM->Update(_timer.GetFrameTime());
 	
@@ -58,37 +59,9 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 		spot->SetPositionAndRotation(XMFLOAT3(6 + 2*i, 1, 2 + 2*i), XMFLOAT3(0,-35*i,0));
 		_spotlights.push_back(spot);
 	}
-
-	//settings._flags = settings.FULLSCREEN;
-	//ResizeResources(settings);
 }
 
-void Game::CheckSettings()
-{
-	//System::saveJSON(&_gameSettings, "Assets/GameSettings.json", "Game Settings");
-	System::loadJSON(&_gameSettings, "Assets/GameSettings.json");
-
-	if (_gameSettings._default == false)
-	{
-		_windowSettings._width = _gameSettings._resX;
-		_windowSettings._height = _gameSettings._resY;
-		_windowSettings._flags = 0;
-		if (_gameSettings._fullScreen == true)
-		{
-			_windowSettings._flags |= System::WindowSettings::FULLSCREEN;
-		}
-		if (_gameSettings._bordeless == true)
-		{
-			_windowSettings._flags |= System::WindowSettings::BORDERLESS;
-		}
-		if (_gameSettings._showMouseCursor == true)
-		{
-			_windowSettings._flags |= System::WindowSettings::SHOW_CURSOR;
-		}
-	}
-}
-
-Game::~Game() 
+Game::~Game()
 {
 	SAFE_DELETE(_window);
 	SAFE_DELETE(_renderModule);
@@ -107,24 +80,27 @@ Game::~Game()
 	}
 }
 
-void Game::ResizeResources(System::WindowSettings settings)
+void Game::ResizeResources(System::Settings* settings)
 {
 	_window->ResizeWindow(settings);
-	_renderModule->ResizeResources(_window->GetHWND(), settings._width, settings._height);
-	_camera->Resize(settings._width, settings._height);
-	_SM->Resize(settings._width, settings._height);
+	_renderModule->ResizeResources(_window->GetHWND(), settings);
+	_camera->Resize(settings);
+	_SM->Resize(settings);
 }
 
 bool Game::Update(float deltaTime)
 {
 	bool run = true;
+
+	//Apply settings if they has changed
+	if (_settingsReader.GetSettingsChanged())
+	{
+		ResizeResources(_settingsReader.GetSettings());
+		_settingsReader.SetSettingsChanged(false);
+	}
+
 	_controls->Update();
 	run = _SM->Update(deltaTime);
-	if (_controls->IsFunctionKeyDown("EVERYWHERE:FULLSCREEN"))
-	{
-		System::WindowSettings windowSettings = _window->GetWindowSettings();
-		_window->ResizeWindow(windowSettings);
-	}
 
 
 	_enemies = _objectHandler->GetAllByType(ENEMY);

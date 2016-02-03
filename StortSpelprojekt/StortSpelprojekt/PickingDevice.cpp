@@ -1,8 +1,5 @@
 #include "PickingDevice.h"
 
-
-
-
 Ray PickingDevice::calculatePickRay(long x, long y)
 {
 	XMFLOAT3 mouseViewPos;
@@ -11,11 +8,11 @@ Ray PickingDevice::calculatePickRay(long x, long y)
 	XMStoreFloat4x4(&projMatrix, *_camera->GetProjectionMatrix());
 
 	//Translating mouseposition to viewSpace
-	float width = (float)_window->GetWindowSettings()._width;
+	float width = (float)_settings->_screenWidth;
 	float xPos = (float)x;
 
 
-	float height = (float)_window->GetWindowSettings()._height;
+	float height = (float)_settings->_screenHeight;
 	float yPos = (float)y;
 
 
@@ -77,17 +74,15 @@ vector<GameObject*> PickingDevice::sortByDistance(vector<GameObject*> pickedObje
 	return sortedObjects;
 }
 
-PickingDevice::PickingDevice(System::Camera * camera, System::Window* window)
+PickingDevice::PickingDevice(System::Camera* camera, System::Settings* settings)
 {
 	_camera = camera;
-	_window = window;
+	_settings = settings;
 	_firstBoxPoint = POINT();
 }
 
 PickingDevice::~PickingDevice()
 {
-	_camera = nullptr;
-	_window = nullptr;
 }
 
 AI::Vec2D PickingDevice::pickTile(POINT mousePoint)

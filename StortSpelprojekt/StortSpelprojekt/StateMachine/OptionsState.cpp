@@ -2,8 +2,8 @@
 
 #include "../Game.h"
 
-OptionsState::OptionsState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, int width, int height)
-	: BaseState (controls, objectHandler, camera, pickingDevice, filename, "OPTIONS", assetManager, fontWrapper, width, height)
+OptionsState::OptionsState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::Settings* settings)
+	: BaseState (controls, objectHandler, camera, pickingDevice, filename, "OPTIONS", assetManager, fontWrapper, settings)
 {
 	_controls = controls;
 	_objectHandler = objectHandler;
@@ -19,9 +19,9 @@ OptionsState::OptionsState(System::Controls* controls, ObjectHandler* objectHand
 	_resolutionOption = 0;
 
 	//Window options
-	_window[0] = { L"Fullscreen", System::WindowSettings::FULLSCREEN | System::WindowSettings::SHOW_CURSOR, 0 };
-	_window[1] = { L"Borderless window", System::WindowSettings::BORDERLESS | System::WindowSettings::SHOW_CURSOR, 0 };
-	_window[2] = { L"Windowed", System::WindowSettings::SHOW_CURSOR, 0 };
+	_window[0] = { L"Fullscreen", 1, 0 };
+	_window[1] = { L"Borderless window", 2, 0 };
+	_window[2] = { L"Windowed", 3, 0 };
 	_windowOption = 0;
 
 	//Window options
@@ -40,7 +40,9 @@ OptionsState::OptionsState(System::Controls* controls, ObjectHandler* objectHand
 }
 
 OptionsState::~OptionsState()
-{}
+{
+
+}
 
 bool OptionsState::HandleOptionSwitch(const std::string& leftId, const std::string& rightId, const std::string& contentId, int& optionValue, Options* options, int optionsMax)
 {
@@ -101,22 +103,9 @@ void OptionsState::Update(float deltaTime)
 		System::MouseCoord coord = _controls->GetMouseCoord();
 		if (_uiTree.IsButtonColliding("apply", coord._pos.x, coord._pos.y))
 		{
-			_outputSettings._resX = _resolution[_resolutionOption]._value;
-			_outputSettings._resY = _resolution[_resolutionOption]._value2;
-			_outputSettings._shadowResX = _shadowmap[_shadowmapOption]._value;
-			_outputSettings._shadowResY = _shadowmap[_shadowmapOption]._value2;
-			_outputSettings._fullScreen = _window[_windowOption]._value & System::WindowSettings::FULLSCREEN;
-			_outputSettings._bordeless = _window[_windowOption]._value & System::WindowSettings::BORDERLESS;
-			_outputSettings._showMouseCursor = _window[_windowOption]._value & System::WindowSettings::SHOW_CURSOR;
-
-			_outputSettings._debugMode = false;
-			_outputSettings._default = true;
-			_outputSettings._shadowmap = true;
-
-			System::saveJSON(&_outputSettings, "../../../../StortSpelprojekt/Assets/GameSettings.json", "Game Settings");
-			_uiTree.GetNode("apply")->SetHidden(true);
-
 			//TODO: Apply to the game in runtime with ResizeResources
+
+			_uiTree.GetNode("apply")->SetHidden(true);
 		}
 		if (_uiTree.IsButtonColliding("cancel", coord._pos.x, coord._pos.y))
 		{

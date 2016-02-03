@@ -20,7 +20,7 @@ protected:
 	
 	void ChangeState(State newState);
 public:
-	BaseState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, const std::string& statename, AssetManager* assetManager, FontWrapper* fontWrapper, int width, int height);
+	BaseState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, const std::string& statename, AssetManager* assetManager, FontWrapper* fontWrapper, System::Settings* settings);
 	virtual ~BaseState();
 
 	virtual void Update(float deltaTime) = 0;
@@ -29,5 +29,5 @@ public:
 
 	State GetNewStateRequest() const;
 	GUI::UITree* GetUITree();
-	void Resize(int width, int height);
+	void Resize(System::Settings* settings);
 };

@@ -2,8 +2,8 @@
 
 State BaseState::_newStateRequest;
 
-BaseState::BaseState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, const std::string& statename, AssetManager* assetManager, FontWrapper* fontWrapper, int width, int height)
-	: _uiTree(filename, statename, assetManager, fontWrapper, width, height)
+BaseState::BaseState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, const std::string& statename, AssetManager* assetManager, FontWrapper* fontWrapper, System::Settings* settings)
+	: _uiTree(filename, statename, assetManager, fontWrapper, settings)
 {
 	_controls			= controls;
 	_objectHandler		= objectHandler;
@@ -30,7 +30,7 @@ GUI::UITree* BaseState::GetUITree()
 	return &_uiTree;
 }
 
-void BaseState::Resize(int width, int height)
+void BaseState::Resize(System::Settings* settings)
 {
-	_uiTree.Resize(width, height);
+	_uiTree.Resize(settings);
 }

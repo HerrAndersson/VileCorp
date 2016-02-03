@@ -2,11 +2,11 @@
 
 namespace Renderer
 {
-	DirectXHandler::DirectXHandler(HWND hwnd, int screenWidth, int screenHeight, bool fullScreen)
+	DirectXHandler::DirectXHandler(HWND hwnd, System::Settings* settings)
 	{
 		HRESULT hResult;
-		_textureWidth = screenWidth;
-		_textureHeight = screenHeight;
+		_textureWidth = settings->_screenWidth;
+		_textureHeight = settings->_screenHeight;
 
 		//////////////////////////////////////////////////// Swap chain, back buffer RTV //////////////////////////////////////////////////// 
 		//Describe the swap chain
@@ -14,8 +14,8 @@ namespace Renderer
 		ZeroMemory(&swapChainDesc, sizeof(swapChainDesc));
 
 		swapChainDesc.BufferCount = 1;
-		swapChainDesc.BufferDesc.Width = screenWidth;
-		swapChainDesc.BufferDesc.Height = screenHeight;
+		swapChainDesc.BufferDesc.Width = settings->_screenWidth;
+		swapChainDesc.BufferDesc.Height = settings->_screenHeight;
 		swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 		swapChainDesc.BufferDesc.RefreshRate.Numerator = 0;
 		swapChainDesc.BufferDesc.RefreshRate.Denominator = 1;
@@ -25,7 +25,7 @@ namespace Renderer
 		swapChainDesc.SampleDesc.Count = 1;
 		swapChainDesc.SampleDesc.Quality = 0;
 
-		if (fullScreen)
+		if (settings->_fullscreen)
 		{
 			swapChainDesc.Windowed = false;
 		}
@@ -167,8 +167,8 @@ namespace Renderer
 
 		//////////////////////////////////////////////////////////// Other ////////////////////////////////////////////////////////////
 		//Set up viewport
-		_viewport.Width = (float)screenWidth;
-		_viewport.Height = (float)screenHeight;
+		_viewport.Width = (float)settings->_screenWidth;
+		_viewport.Height = (float)settings->_screenHeight;
 		_viewport.MinDepth = 0.0f;
 		_viewport.MaxDepth = 1.0f;
 		_viewport.TopLeftX = 0.0f;
@@ -425,9 +425,9 @@ namespace Renderer
 		_deviceContext->RSSetState(_rasterizerStateBack);
 	}
 
-	void DirectXHandler::ResizeResources(HWND hwnd, int windowWidth, int windowHeight)
+	void DirectXHandler::ResizeResources(HWND hwnd, System::Settings* settings)
 	{
-		if (_swapChain && windowHeight > 0 && windowWidth > 0)
+		if (_swapChain && settings->_screenHeight > 0 && settings->_screenWidth > 0)
 		{
 			HRESULT hr;
 			_deviceContext->OMSetRenderTargets(0, 0, 0);
@@ -435,8 +435,8 @@ namespace Renderer
 
 			DXGI_MODE_DESC modeDesc;
 			ZeroMemory(&modeDesc, sizeof(modeDesc));
-			modeDesc.Width = windowWidth;
-			modeDesc.Height = windowHeight;
+			modeDesc.Width = settings->_screenWidth;
+			modeDesc.Height = settings->_screenHeight;
 			modeDesc.Format = DXGI_FORMAT_UNKNOWN;
 
 			_swapChain->ResizeTarget(&modeDesc);
@@ -469,8 +469,8 @@ namespace Renderer
 
 			//Set up the new viewport.
 			D3D11_VIEWPORT vp;
-			vp.Width = (FLOAT)windowWidth;
-			vp.Height = (FLOAT)windowHeight;
+			vp.Width = (FLOAT)settings->_screenWidth;
+			vp.Height = (FLOAT)settings->_screenHeight;
 			vp.MinDepth = 0.0f;
 			vp.MaxDepth = 1.0f;
 			vp.TopLeftX = 0;
@@ -487,7 +487,7 @@ namespace Renderer
 				SAFE_RELEASE(_deferredRTVArray[i]);
 			}
 
-			_textureWidth = windowWidth;
+			_textureWidth = settings->_screenWidth;
 
 			InitializeDeferredBuffers();
 		}

@@ -12,13 +12,11 @@
 using namespace std;
 using namespace DirectX;
 
-
-
 class PickingDevice
 {
 private:
 	System::Camera* _camera;
-	System::Window* _window;
+	System::Settings* _settings;
 
 	
 
@@ -28,7 +26,7 @@ private:
 
 
 public:
-	PickingDevice(System::Camera* camera = nullptr, System::Window* window = nullptr);
+	PickingDevice(System::Camera* camera, System::Settings* settings);
 	~PickingDevice();
 	POINT _firstBoxPoint;
 	//This function only works if the level is aligned worldspace, must check x&y>=0 && <height&width /Markus

@@ -31,11 +31,6 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ObjectHandler.cpp" />
     <ClCompile Include="Player.cpp" />
-    <ClCompile Include="SettingsReader.cpp" />
-    <ClCompile Include="Settings\DebugSettings.cpp" />
-    <ClCompile Include="Settings\Prefrences.cpp" />
-    <ClCompile Include="Settings\Profile.cpp" />
-    <ClCompile Include="Settings\Settings.cpp" />
     <ClCompile Include="SpawnPoint.cpp" />
     <ClCompile Include="StateMachine\BaseState.cpp" />
     <ClCompile Include="StateMachine\BaseEdit.cpp" />
@@ -61,11 +56,6 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameLogic.h" />
     <ClInclude Include="GameObject.h" />
-    <ClInclude Include="SettingsReader.h" />
-    <ClInclude Include="Settings\DebugSettings.h" />
-    <ClInclude Include="Settings\Prefrences.h" />
-    <ClInclude Include="Settings\Profile.h" />
-    <ClInclude Include="Settings\Settings.h" />
     <ClInclude Include="SpawnPoint.h" />
     <ClInclude Include="Grid.h" />
     <ClInclude Include="Guard.h" />

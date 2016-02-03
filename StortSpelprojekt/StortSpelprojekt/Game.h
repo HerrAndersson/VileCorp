@@ -37,18 +37,16 @@ private:
 	PickingDevice*				_pickingDevice;
 	PlayerInfo					_playerInfo;
 	SettingInfo					_gameSettings;
-	System::WindowSettings		_windowSettings;
-	Settings::SettingsReader*	_settingsReader;
+	System::SettingsReader		_settingsReader;
 
 	bool						_hasFocus;
 	
 	bool						_enemiesHasSpawned;
 
 	//Resizing window, directx resources, camera
-	void ResizeResources(System::WindowSettings settings); //TODO: Test all scenarios and fix bugs /Jonas
+	void ResizeResources(System::Settings* settings); //TODO: Test all scenarios and fix bugs /Jonas
 	bool Update(float deltaTime);
 	void Render();
-	void CheckSettings();
 
 	//TODO: TEMP! Move this to objectHandler
 	std::vector<Renderer::Spotlight*> _spotlights;
