@@ -7,7 +7,8 @@ AssetManager::AssetManager(ID3D11Device* device)
 	_infile = new ifstream;
 	_modelFiles = new vector<string>;
 	_renderObjects = new vector<RenderObject*>;
-	_renderObjectsToFlush = new vector<RenderObject*>;
+	_meshes = new vector<Mesh*>;
+	_meshesToFlush = new vector<Mesh*>;
 	_textures = new vector<Texture*>;
 	_texturesToFlush = new vector<Texture*>;
 	_levelFileNames = new vector<string>;
@@ -20,7 +21,7 @@ AssetManager::AssetManager(ID3D11Device* device)
 
 	SetupTilesets();
 
-	GetFilenamesInDirectory("Assets/Levels/", ".lvl", *_levelFileNames);
+	GetFilenamesInDirectory((char*)LEVEL_FOLDER_PATH.c_str(), ".lvl", *_levelFileNames);
 }
 
 AssetManager::~AssetManager()
@@ -176,25 +177,20 @@ void AssetManager::UnloadModel(int index, bool force)
 	}
 }
 
-bool AssetManager::ParseLevel(int index, vector<GameObjectData> &gameObjects, int &dimX, int &dimY)
+LevelFormat* AssetManager::ParseLevel(int index)
 {
-	LevelHeader lvlHead;
-
-	_infile->open(_levelFileNames->at(index).c_str(), ifstream::binary);
-	if (!_infile->is_open())
+	try
 	{
-		return false;
+		_currentLevelData = LevelFormat();
+		std::ifstream in(_levelFileNames->at(index).c_str());
+		cereal::BinaryInputArchive archive(in);
+		archive(_currentLevelData);
 	}
-
-	_infile->read((char*)&lvlHead, sizeof(LevelHeader));
-	dimX = lvlHead._tileGridSizeX;
-	dimY = lvlHead._tileGridSizeY;
-
-	gameObjects.resize(lvlHead._nrOfGameObjects);
-	_infile->read((char*)gameObjects.data(), sizeof(GameObjectData) * lvlHead._nrOfGameObjects);
-
-	_infile->close();
-	return true;
+	catch (...)
+	{
+		return nullptr;
+	}
+	return &_currentLevelData;
 }
 
 //Unloads all Assets waiting to be unloaded
@@ -331,7 +327,7 @@ Texture* AssetManager::ScanTexture(string filename)
 }
 
 //Creates a RenderObject for the specified model without loading it
-RenderObject* AssetManager::ScanModel(string fileName)
+Mesh* AssetManager::ScanModel(string fileName)
 {
 
 	string file_path = MODEL_FOLDER_PATH;
@@ -387,7 +383,7 @@ RenderObject* AssetManager::ScanModel(string fileName)
 	return renderObject;
 }
 
-RenderObject* AssetManager::ScanModel27()
+Mesh* AssetManager::ScanModel27()
 {
 	RenderObject* renderObject = new RenderObject;
 	int skeletonStringLength;
@@ -421,7 +417,7 @@ RenderObject* AssetManager::ScanModel27()
 	return renderObject;
 }
 
-RenderObject* AssetManager::ScanModel26()
+Mesh* AssetManager::ScanModel26()
 {
 	RenderObject* renderObject = new RenderObject;
 	int skeletonStringLength;
@@ -470,7 +466,7 @@ RenderObject* AssetManager::ScanModel26()
 	return renderObject;
 }
 
-RenderObject* AssetManager::ScanModel24()
+Mesh* AssetManager::ScanModel24()
 {
 	RenderObject* renderObject = new RenderObject;
 	int meshes;
@@ -606,6 +602,21 @@ RenderObject* AssetManager::GetRenderObject(int index)
 	return renderObject;
 }
 
+RenderObject* AssetManager::GetRenderObject(int modelReference, int textureReference)
+{
+	for (RenderObject* renderObject : *_renderObjects)
+	{
+		if (_currentLevelData._modelReferences[modelReference] == renderObject->_mesh->_name &&
+			_currentLevelData._textureReferences[textureReference] == renderObject->_diffuseTexture->_name)
+		{
+			return renderObject;
+		}
+	}
+	RenderObject* renderObject = new RenderObject;
+	renderObject->_mesh = GetModel(_currentLevelData._modelReferences[modelReference]);
+	renderObject->_diffuseTexture = GetTexture(_currentLevelData._textureReferences[textureReference]);
+}
+
 uint AssetManager::GetRenderObjectByType(Type type, uint index)
 {
 	uint i = 0;
@@ -625,11 +636,11 @@ uint AssetManager::GetRenderObjectByType(Type type, uint index)
 	return 0;
 }
 
-ID3D11ShaderResourceView* AssetManager::GetTexture(string filename)
+Texture* AssetManager::GetTexture(string filename)
 {
 	Texture* texture = ScanTexture(filename);
 	texture->LoadTexture(_device);
-	return texture->_data;
+	return texture;
 }
 
 Skeleton* AssetManager::LoadSkeleton(string filename)

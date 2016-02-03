@@ -35,8 +35,6 @@ void ObjectHandler::ActivateTileset(string name)
 	}
 }
 
-
-
 bool ObjectHandler::Add(Type type, int index, XMFLOAT3 position, XMFLOAT3 rotation)
 {
 	GameObject* object = nullptr;
@@ -123,6 +121,118 @@ bool ObjectHandler::Add(Type type, std::string name, XMFLOAT3 position = XMFLOAT
 		if (_gameObjectInfo->_objects[type]->at(i)->_name == name)
 		{
 			return Add(type, i, position, rotation);
+		}
+	}
+	return false;
+}
+
+bool ObjectHandler::Add(XMFLOAT3 position, XMFLOAT3 rotation, Type type, int subType, int modelReference, int textureReference)
+{
+	GameObject* object = nullptr;
+	RenderObject* renderObject = nullptr;
+
+	_assetManager->GetRenderObject(modelReference, textureReference);
+
+
+	if (renderObject != nullptr)
+	{
+		switch (type)
+		{
+		case FLOOR:
+		case WALL:
+		case LOOT:
+			object = new Architecture(
+				_idCount,
+				position,
+				rotation,
+				AI::Vec2D((int)position.x, (int)position.z),
+				type,
+				renderObject);
+			break;
+		case SPAWN:
+			object = new SpawnPoint(
+				_idCount,
+				position,
+				rotation,
+				AI::Vec2D((int)position.x, (int)position.z),
+				type,
+				renderObject,
+				180, 2);
+			break;
+		case ENEMY:
+			object = new Enemy(
+				_idCount,
+				position,
+				rotation,
+				AI::Vec2D((int)position.x, (int)position.z),
+				type,
+				renderObject,
+				_tilemap);
+			break;
+		case GUARD:
+			object = new Guard(
+				_idCount,
+				position,
+				rotation,
+				AI::Vec2D((int)position.x, (int)position.z),
+				type,
+				renderObject,
+				_tilemap);
+			break;
+		case TRAP:
+			object = new Trap(
+				_idCount,
+				position,
+				rotation,
+				AI::Vec2D((int)position.x, (int)position.z),
+				type,
+				renderObject,
+				_tilemap,
+				TrapType(subType),
+				{ 1,0 },
+				0);
+			break;
+		default:
+			break;
+		}
+
+		bool addedObject = _tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
+
+		//Temporary check for traps. Could be more general if other objects are allowed to take up multiple tiles
+		if (object != nullptr && addedObject)
+		{
+			if (type == TRAP)
+			{
+				Trap* trap = static_cast<Trap*>(object);
+				int i = 0;
+				addedObject = true;
+				AI::Vec2D* arr = trap->GetTiles();
+				for (int i = 0; i < trap->GetTileSize() && addedObject; i++)
+				{
+					if (!_tilemap->CanPlaceObject(arr[i]))
+					{
+						addedObject = false;
+					}
+				}
+				if (addedObject)
+				{
+					for (int i = 0; i < trap->GetTileSize() && addedObject; i++)
+					{
+						_tilemap->AddObjectToTile(arr[i], object);
+						_tilemap->GetObjectOnTile(arr[i], FLOOR)->AddColorOffset({ 2,0,0 });
+					}
+				}
+			}
+
+			_idCount++;
+			_gameObjects[type].push_back(object);
+			for (auto i : object->GetRenderObject()->_mesh._spotLights)
+			{
+				//TODO: Add settings variables to this function below! Alex
+				_spotlights[object] = new Renderer::Spotlight(_device, i, 256, 256, 0.1f, 1000.0f);
+			}
+			_objectCount++;
+			return true;
 		}
 	}
 	return false;
@@ -437,21 +547,46 @@ void ObjectHandler::EnlargeTilemap(int offset)
 
 bool ObjectHandler::LoadLevel(int lvlIndex)
 {
-	int dimX, dimY;
-	vector<GameObjectData> gameObjectData;
-	bool result = _assetManager->ParseLevel(lvlIndex, gameObjectData, dimX, dimY);
-	if (result)
+	bool result = false;
+	LevelFormat* levelData = _assetManager->ParseLevel(lvlIndex);
+	if (levelData != nullptr)
 	{
+		result = true;
 		delete _tilemap;
-		_tilemap = new Tilemap(AI::Vec2D(dimX, dimY));
+		_tilemap = new Tilemap(AI::Vec2D(levelData->_tileMapWidth, levelData->_tileMapHeight));
 
-		for (auto i : gameObjectData)
+		for (int i = 0; i < levelData->_gameObjectData.size() && result; i++)
 		{
-		Add((Type)i._tileType, 0, DirectX::XMFLOAT3(i._posX, 0, i._posZ), DirectX::XMFLOAT3(0, i._rotY, 0));
+			float rotation;
+			if (levelData->_gameObjectData[i][2] == 3)
+			{
+				rotation = 0;
+			}
+			else if (levelData->_gameObjectData[i][2] == 0)
+			{
+				rotation = DirectX::XM_PIDIV2;
+			}
+			else if (levelData->_gameObjectData[i][2] == 1)
+			{
+				rotation = DirectX::XM_PI;
+			}
+			else
+			{
+				rotation = DirectX::XM_PI + DirectX::XM_PIDIV2;
+			}
+			result = Add(DirectX::XMFLOAT3(
+				levelData->_gameObjectData[i][0], 0, levelData->_gameObjectData[i][1]), 
+				DirectX::XMFLOAT3(0, rotation, 0), 
+				Type(levelData->_gameObjectData[i][3]), 
+				levelData->_gameObjectData[i][4], 
+				levelData->_gameObjectData[i][5], 
+				levelData->_gameObjectData[i][6]);
 		}
 	}
 	return result;
 }
+
+
 
 void ObjectHandler::InitPathfinding()
 {

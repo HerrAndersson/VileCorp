@@ -10,6 +10,7 @@
 #include "WICTextureLoader.h"
 #include "RenderUtils.h"
 #include "rapidjson\reader.h"
+#include "LevelFormat.h"
 
 using namespace std;
 using namespace DirectX;
@@ -122,21 +123,9 @@ struct MatHeader
 	int _diffuseNameLength, _specularNameLength;
 };
 
-struct LevelHeader
-{
-	int _version, _tileGridSizeX, _tileGridSizeY, _nrOfGameObjects;
-};
-
 struct SkeletonHeader
 {
 	unsigned int _version, _framerate, _actionCount, _boneCount;
-};
-
-struct GameObjectData
-{
-	int _posX, _posZ;
-	float _rotY;
-	int _tileType;
 };
 
 static bool GetFilenamesInDirectory(char* folder, char* extension, vector<string> &listToFill)
@@ -175,7 +164,7 @@ static bool GetFilenamesInDirectory(char* folder, char* extension, vector<string
 class ASSET_MANAGER_EXPORT AssetManager
 {
 private:
-	typedef RenderObject* (AssetManager::*_scanFunc)();
+	typedef Mesh* (AssetManager::*_scanFunc)();
 	typedef std::map<int, AssetManager::_scanFunc> _scanFuncMap;
 
 	_scanFuncMap _meshFormatVersion;
@@ -190,17 +179,21 @@ private:
 	vector<Skeleton*>* _skeletons;
 
 	vector<RenderObject*>* _renderObjects;
-	vector<RenderObject*>* _renderObjectsToFlush;
 
 	vector<Texture*>* _textures;
 	vector<Texture*>* _texturesToFlush;
 
+	vector<Mesh*>* _meshes;
+	vector<Mesh*>* _meshesToFlush;
+
+	LevelFormat _currentLevelData;
+
 	bool LoadModel(string file_path, RenderObject* renderObject);
 	void Flush();
-	RenderObject* ScanModel24();
-	RenderObject* ScanModel26();
-	RenderObject* ScanModel27();
-	RenderObject* ScanModel(string file_path);
+	Mesh* ScanModel24();
+	Mesh* ScanModel26();
+	Mesh* ScanModel27();
+	Mesh* ScanModel(string file_path);
 	Texture* ScanTexture(string filename);
 	Skeleton* LoadSkeleton(string filename);
 	ID3D11Buffer* CreateVertexBuffer(vector<WeightedVertex> *weightedVertices, vector<Vertex> *vertices, int skeleton);
@@ -210,9 +203,10 @@ public:
 	AssetManager(ID3D11Device* device);
 	~AssetManager();
 	RenderObject* GetRenderObject(int index);
+	RenderObject* GetRenderObject(int modelReference, int textureReference);
 	uint GetRenderObjectByType(Type type, uint index);
 	void UnloadModel(int index, bool force);
-	bool ParseLevel(int index, vector<GameObjectData> &gameObjects, int &dimX, int &dimY);
+	LevelFormat* ParseLevel(int index);
 	bool ActivateTileset(string name);
 	ID3D11ShaderResourceView* GetTexture(string filename);
 };

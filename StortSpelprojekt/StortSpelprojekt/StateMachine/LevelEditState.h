@@ -2,7 +2,7 @@
 
 #include "BaseState.h"
 #include "BaseEdit.h"
-#include "..\LevelFormat.h"
+#include "LevelFormat.h"
 
 class LevelEditState : public BaseState
 {

@@ -1,5 +1,5 @@
 #include "Controls.h"
-#include "rapidjson/writer.h"
+#include "rapidjson\writer.h"
 #include "rapidjson\prettywriter.h"
 
 using namespace std;
@@ -58,7 +58,7 @@ namespace System
 
 		Document d;
 
-		d.Parse<0>(str.c_str());
+		d.Parse(str.c_str());
 
 		//Loop through all the states
 		for (Value::ConstMemberIterator it = d.MemberBegin(); it != d.MemberEnd(); ++it)

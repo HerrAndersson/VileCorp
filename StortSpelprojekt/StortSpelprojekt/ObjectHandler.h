@@ -63,6 +63,7 @@ public:
 	~ObjectHandler();
 
 	//Add a gameobject
+	bool Add(XMFLOAT3 position, XMFLOAT3 rotation, Type type, int subType, int modelReference, int textureReference);
 	bool Add(Type type, int index, XMFLOAT3 position, XMFLOAT3 rotation);
 	bool Add(Type type, std::string name, XMFLOAT3 position, XMFLOAT3 rotation);
 	

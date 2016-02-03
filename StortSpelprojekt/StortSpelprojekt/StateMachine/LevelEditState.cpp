@@ -285,12 +285,14 @@ void LevelEditState::ExportLevel()
 	Tilemap* tileMap = _objectHandler->GetTileMap();
 	exportedLevel._tileMapWidth = tileMap->GetWidth();
 	exportedLevel._tileMapHeight = tileMap->GetHeight();
-	exportedLevel._modelPath = MODEL_FOLDER_PATH;
-	std::string texturePath(TEXTURE_FOLDER_PATH_W.begin(), TEXTURE_FOLDER_PATH_W.end());
-	exportedLevel._texturePath = texturePath;
 
 	std::vector<std::vector<GameObject*>>* gameObjects = _objectHandler->GetGameObjects();
 	exportedLevel._gameObjectData.resize(_objectHandler->GetObjectCount());
+
+	float topLeftCenterAngle = DirectX::XM_PIDIV4;
+	float topRightCenterAngle = DirectX::XM_PI - DirectX::XM_PIDIV4;
+	float bottomRightCenterAngle = DirectX::XM_PI + DirectX::XM_PIDIV4;
+	float bottomLeftCenterAngle = DirectX::XM_2PI - DirectX::XM_PIDIV4;
 
 	int gameObjectIndex = 0;
 	for (uint i = 0; i < gameObjects->size(); i++)
@@ -305,17 +307,16 @@ void LevelEditState::ExportLevel()
 			exportedLevel._gameObjectData[gameObjectIndex][1] = static_cast<int>(position._y);
 
 			//rotation
-			DirectX::XMFLOAT3 rotation = g->GetRotation();
-			float eps = std::numeric_limits<float>::epsilon();
-			if ((rotation.x > 0 && rotation.z > 0) || (rotation.x < eps && rotation.z < eps))
+			float rotation = g->GetRotation().y;
+			if (rotation >= topLeftCenterAngle && rotation < topRightCenterAngle)
 			{
 				exportedLevel._gameObjectData[gameObjectIndex][2] = 0;
 			}
-			else if (rotation.x < 0 && rotation.z > 0)
+			else if (rotation >= topRightCenterAngle && rotation < bottomLeftCenterAngle)
 			{
 				exportedLevel._gameObjectData[gameObjectIndex][2] = 1;
 			}
-			else if (rotation.x < 0 && rotation.z < 0)
+			else if (rotation >= bottomLeftCenterAngle && rotation < bottomRightCenterAngle)
 			{
 				exportedLevel._gameObjectData[gameObjectIndex][2] = 2;
 			}
@@ -366,7 +367,7 @@ void LevelEditState::ExportLevel()
 	
 	std::ofstream out(levelPath);
 	cereal::BinaryOutputArchive archive(out);
-	//cereal::JSONOutputArchive archive(out);
+	//cereal::XMLOutputArchive archive(out);
 	archive(exportedLevel);
 }
 

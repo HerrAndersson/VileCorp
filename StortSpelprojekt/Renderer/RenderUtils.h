@@ -81,13 +81,23 @@ struct Point
 struct Mesh
 {
 	ID3D11Buffer* _vertexBuffer;
+	bool _meshLoaded;
+	bool _isSkinned = false;
+	bool DecrementUsers();
+	short _activeUsers = 0;
+	Skeleton* _skeleton;
 	int _vertexBufferSize, _toMesh;
+	std::string _name;
 	std::vector<PointlightData> _pointLights;
 	std::vector<SpotlightData> _spotLights;
 	~Mesh()
 	{
 		_pointLights.clear();
 		_spotLights.clear();
+		if (_meshLoaded && _vertexBuffer != nullptr)
+		{
+			_vertexBuffer->Release();
+		}
 	}
 };
 
@@ -95,9 +105,8 @@ struct Texture
 {
 	HRESULT LoadTexture(ID3D11Device* device);
 	bool DecrementUsers();
-	bool _loaded = false;
 	short _activeUsers = 0;
-	std::wstring _filePath;
+	bool _loaded = false;
 	std::string _name;
 	ID3D11ShaderResourceView* _data = nullptr;
 };
@@ -105,15 +114,9 @@ struct Texture
 struct RenderObject
 {
 	Type _type = Type::FLOOR;
-	bool _meshLoaded, _toUnload;
-	bool _isSkinned = false;
-	std::string _name;
-	std::string _skeletonName;
-	Skeleton* _skeleton;
-	float _diffuse[4], _specular[4];
 	Texture* _diffuseTexture = nullptr;
 	Texture* _specularTexture = nullptr;
-	Mesh _mesh;
+	Mesh* _mesh;
 	~RenderObject()
 	{
 		if (_diffuseTexture != nullptr)
@@ -124,9 +127,6 @@ struct RenderObject
 		{
 			_specularTexture->DecrementUsers();
 		}
-		if (_meshLoaded && _mesh._vertexBuffer != nullptr)
-		{
-			_mesh._vertexBuffer->Release();
-		}
+		_mesh->DecrementUsers();
 	}
 };
