@@ -112,6 +112,11 @@ Type GameObject::GetType() const
 	return _type;
 }
 
+bool GameObject::IsCenteredOnTile() const
+{
+	return abs(_position.x - _tilePosition._x) < TILE_EPSILON && abs(_position.z - _tilePosition._y) < TILE_EPSILON;
+}
+
 bool GameObject::IsVisible() const
 {
 	return _visible;
@@ -149,14 +154,18 @@ DirectX::XMFLOAT3 GameObject::GetColorOffset() const
 
 void GameObject::SetColorOffset(DirectX::XMFLOAT3 colorOffset)
 {
+#ifdef _DEBUG
 	_colorOffset = colorOffset;
+#endif
 }
 
 void GameObject::AddColorOffset(DirectX::XMFLOAT3 colorOffset)
 {
+#ifdef _DEBUG
 	_colorOffset.x += colorOffset.x;
 	_colorOffset.y += colorOffset.y;
 	_colorOffset.z += colorOffset.z;
+#endif
 }
 
 void* GameObject::operator new(size_t i)

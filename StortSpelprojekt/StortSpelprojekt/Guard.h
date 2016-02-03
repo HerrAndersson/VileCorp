@@ -18,5 +18,10 @@ public:
 	void act(GameObject* obj);
 	void SetPatrolPoint(AI::Vec2D patrolPoint);
 	void RemovePatrol();
+
+	void Wait();
 	void Release();
+
+	void Update(float deltaTime);
+	void SetNextTile();			//replacement for move
 };

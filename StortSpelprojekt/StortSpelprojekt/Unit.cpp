@@ -7,14 +7,26 @@ void Unit::CalculatePath()
 		_path = _aStar->GetPath();
 		_pathLength = _aStar->GetPathLength();
 		_isMoving = true;
-		_direction = _path[--_pathLength] - _tilePosition;
-		Rotate();
+
+		if (IsCenteredOnTile())
+		{
+			_moveState = MoveState::SWITCHING_NODE;
+		}
+		else
+		{
+			_moveState = MoveState::MOVING;
+		}
+
+		//_direction = _path[--_pathLength] - _tilePosition;
+		//Rotate();
 		//_aStar->printMap();
 	}
 	else
 	{
 		_path = nullptr;
 		_pathLength = 0;
+		_moveState = MoveState::IDLE;
+		_nextTile = _tilePosition;
 		//	_aStar->printMap();
 	}
 }
@@ -57,7 +69,7 @@ void Unit::Flee()
 	{
 		_isFleeing = false;
 		CheckAllTiles();
-		Wait(20);
+	//	Wait(20);
 	}
 	else
 	{
@@ -105,6 +117,7 @@ Unit::Unit()
 	_path = nullptr;
 	_isMoving = false;
 	_direction = {0, -1};
+	_nextTile = _tilePosition;
 	Rotate();
 }
 
@@ -126,11 +139,13 @@ Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	_path = nullptr;
 	_isMoving = false;
 	_direction = {0, 1};
+	_nextTile = _tilePosition;
 	Rotate();
 	if (_renderObject->_isSkinned)
 	{
 		_animation = new Animation(_renderObject->_skeleton);
 	}
+	_moveState = MoveState::IDLE;
 }
 
 Unit::~Unit()
@@ -241,23 +256,29 @@ Moves the goal and finds the path to the new goal
 */
 void Unit::SetGoal(AI::Vec2D goal)
 {
-	_goalTilePosition = goal;
-	_objective = _tileMap->GetObjectOnTile(goal, FLOOR);		//Note: Make sure walled tiles aren't valid goals
-	//_objective->SetColorOffset({5,0,0});
-	_aStar->CleanMap();
-	_aStar->SetStartPosition(_tilePosition);
-	_aStar->SetGoalPosition(goal);
-	CalculatePath();
+	if (_tileMap->IsFloorOnTile(goal))
+	{
+		SetGoal(_tileMap->GetObjectOnTile(goal, FLOOR));
+	}
 }
 
 void Unit::SetGoal(GameObject * objective)
 {
+
 	_goalTilePosition = objective->GetTilePosition();
 	_objective = objective;
 	_aStar->CleanMap();
-	_aStar->SetStartPosition(_tilePosition);
+	if (IsCenteredOnTile())
+	{
+		_aStar->SetStartPosition(_tilePosition);
+	}
+	else
+	{
+		_aStar->SetStartPosition(_tilePosition + _direction);
+	}
 	_aStar->SetGoalPosition(_goalTilePosition);
 	CalculatePath();
+
 }
 
 /*
@@ -299,7 +320,7 @@ void Unit::Move()
 		}
 		//_direction = {0,0};
 		CheckAllTiles();
-		Wait(10);
+		//Wait(10);
 	}
 	Rotate();
 	CheckVisibleTiles();
@@ -344,9 +365,8 @@ void Unit::Update(float deltaTime)
 void Unit::Release()
 {}
 
-void Unit::Wait(int frames)
+void Unit::Wait()
 {
-	_waiting = frames;
 }
 
 void Unit::ClearObjective()

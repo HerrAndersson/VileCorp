@@ -489,52 +489,48 @@ void ObjectHandler::Update(float deltaTime)
 				g->SetPickUpState(ONTILE);
 			}
 
-			if (g->GetType() == GUARD || g->GetType() == ENEMY)									//Handle unit movement
-			{
-				Unit* unit = static_cast<Unit*>(g);
+			//if (g->GetType() == ENEMY)									//Handle unit movement
+			//{
+			//	Unit* unit = static_cast<Unit*>(g);
 
-				GameObject* heldObject = unit->GetHeldObject();
+			//	GameObject* heldObject = unit->GetHeldObject();
 
-				if (heldObject != nullptr)
-				{
-					heldObject->SetPosition(DirectX::XMFLOAT3(unit->GetPosition().x, unit->GetPosition().y + 2, unit->GetPosition().z));
-				}
-				if (unit->GetHealth() <= 0)
-				{
-					//TODO: drop held object and set its tile position --Victor
-					if (heldObject != nullptr)
-					{
-						Remove(heldObject);
-					}
-					Remove(g);
-					g = nullptr;
-					j--;
-				}
-				else
-				{
-					float xOffset = abs(g->GetPosition().x - g->GetTilePosition()._x);
-					float zOffset = abs(g->GetPosition().z - g->GetTilePosition()._y);
-					if (xOffset > 0.99 || zOffset > 0.99)																		 //If unit is on a new tile	
-					{
-						_tilemap->RemoveObjectFromTile(g->GetTilePosition(), unit);
-						unit->Move();
-						_tilemap->AddObjectToTile(g->GetTilePosition(), unit);
+			//	if (heldObject != nullptr)
+			//	{
+			//		heldObject->SetPosition(DirectX::XMFLOAT3(unit->GetPosition().x, unit->GetPosition().y + 2, unit->GetPosition().z));
+			//	}
+			//	if (unit->GetHealth() <= 0)
+			//	{
+			//		//TODO: drop held object and set its tile position --Victor
+			//		if (heldObject != nullptr)
+			//		{
+			//			Remove(heldObject);
+			//		}
+			//		Remove(g);
+			//		g = nullptr;
+			//		j--;
+			//	}
+			//	else
+			//	{
+			//		float xOffset = abs(g->GetPosition().x - g->GetTilePosition()._x);
+			//		float zOffset = abs(g->GetPosition().z - g->GetTilePosition()._y);
+			//		if (xOffset > 0.99 || zOffset > 0.99)																		 //If unit is on a new tile	
+			//		{
+			//			_tilemap->RemoveObjectFromTile(g->GetTilePosition(), unit);
+			//			unit->Move();
+			//			_tilemap->AddObjectToTile(g->GetTilePosition(), unit);
 
-						/*if (_tilemap->IsTrapOnTile(g->GetTilePosition()._x, g->GetTilePosition()._y))
-						{
-							static_cast<Trap*>(_tilemap->GetObjectOnTile(g->GetTilePosition()._x, g->GetTilePosition()._y, TRAP))->Activate(unit);
-						}*/
-					}
-					if (unit->GetType() == GUARD && _tilemap->IsEnemyOnTile(g->GetTilePosition()))
-					{
-						unit->act(_tilemap->GetObjectOnTile(g->GetTilePosition(), ENEMY));
-					}
-					if (unit->GetType() == ENEMY)
-					{
-						//unit->SetVisibility(false);
-					}
-				}
-			}
+			//			/*if (_tilemap->IsTrapOnTile(g->GetTilePosition()._x, g->GetTilePosition()._y))
+			//			{
+			//				static_cast<Trap*>(_tilemap->GetObjectOnTile(g->GetTilePosition()._x, g->GetTilePosition()._y, TRAP))->Activate(unit);
+			//			}*/
+			//		}
+			//		//if (unit->GetType() == GUARD && _tilemap->IsEnemyOnTile(g->GetTilePosition()))
+			//		//{
+			//		//	unit->act(_tilemap->GetObjectOnTile(g->GetTilePosition(), ENEMY));
+			//		//}
+			//	}
+			//}
 			else if (g->GetType() == SPAWN)															//Manage enemy spawning
 			{
 				if (static_cast<SpawnPoint*>(g)->isSpawning())

@@ -43,7 +43,7 @@ void Player::MoveUnits(AI::Vec2D movePoint)
 		}
 		_selectedUnits[i]->SetGoal(movePoint);
 		//_selectedUnits[i]->Move();
-		_selectedUnits[i]->Wait(-1);
+		//_selectedUnits[i]->Wait(-1);
 		
 	}
 }

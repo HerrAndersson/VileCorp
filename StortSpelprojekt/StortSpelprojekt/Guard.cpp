@@ -56,17 +56,20 @@ void Guard::EvaluateTile(GameObject * obj)
 			break;
 		}
 		tempPriority;
-		if (tempPriority > 0 && obj->GetTilePosition() != _tilePosition && (_pathLength <= 0 || tempPriority * GetApproxDistance(obj->GetTilePosition()) < _goalPriority * GetApproxDistance(GetGoal())))
+		if (tempPriority > 0 && obj->GetTilePosition() != _tilePosition && (_pathLength <= 0 || tempPriority * GetApproxDistance(obj->GetTilePosition()) < _goalPriority * GetApproxDistance(GetGoal())))			//TODO Either optimize properly or check path properly --Victor
 		{
 			_goalPriority = tempPriority;
-			SetGoal(obj);
+		//	SetGoal(obj);
+			_goalTilePosition = obj->GetTilePosition();
+			_moveState = MoveState::FINDING_PATH;
 		}
 	}
 }
 
 void Guard::act(GameObject* obj)
 {
-	if (obj != nullptr)
+	AI::Vec2D dist = obj->GetTilePosition() - _tilePosition;
+	if (obj != nullptr && abs(dist._x) < 2 && abs(dist._y) < 2)
 	{
 		switch (obj->GetType())
 		{
@@ -92,6 +95,11 @@ void Guard::act(GameObject* obj)
 			break;
 		}
 	}
+	else
+	{
+		_moveState = MoveState::IDLE;
+		_nextTile = _tilePosition;
+	}
 }
 
 void Guard::SetPatrolPoint(AI::Vec2D patrolPoint)
@@ -112,5 +120,78 @@ void Guard::RemovePatrol()
 	_currentPatrolGoal = 0;
 }
 
+
+
+void Guard::Wait()
+{
+	if (_waiting > 0)
+	{
+		_waiting--;
+	}
+	else
+	{
+		CheckVisibleTiles();
+		if (_moveState == MoveState::IDLE)
+		{
+			_waiting = 30;			//Arbitrary number. Just pick something you like
+		}
+	}
+}
+
 void Guard::Release()
 {}
+
+
+void Guard::Update(float deltaTime) 
+{
+	switch( _moveState ) {
+	case MoveState::IDLE:
+		Wait();
+		break;
+	case MoveState::FINDING_PATH:
+		SetGoal(_goalTilePosition); //Switch state at the end
+		break;
+	case MoveState::MOVING:
+		if (_direction._x == 0 || _direction._y == 0)		//Right angle movement
+		{
+			_position.x += MOVE_SPEED * _direction._x;
+			_position.z += MOVE_SPEED * _direction._y;
+		}
+		else												//Diagonal movement
+		{
+			_position.x += AI::SQRT2 * 0.5f * MOVE_SPEED * _direction._x;
+			_position.z += AI::SQRT2 * 0.5f *MOVE_SPEED * _direction._y;
+		}
+		CalculateMatrix();
+		if (IsCenteredOnTile())
+		{
+			_moveState = MoveState::SWITCHING_NODE;
+		}
+		break;
+	case MoveState::SWITCHING_NODE:
+		SetNextTile();
+		break;
+	case MoveState::AT_OBJECTIVE:
+		act(_objective);
+		break;
+	default:
+		break;
+	}
+}
+
+void Guard::SetNextTile() {
+	_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,0});
+	_tilePosition = _nextTile;
+	_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,4,0});
+
+	if (_pathLength > 0)
+	{
+		_nextTile = _path[--_pathLength];
+		_direction = _nextTile - _tilePosition;
+	}
+	else
+	{
+		_moveState = MoveState::AT_OBJECTIVE;
+	}
+	CheckVisibleTiles();
+}

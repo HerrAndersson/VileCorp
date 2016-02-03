@@ -8,7 +8,9 @@ class Unit : public GameObject
 {
 public:
 	const float MOVE_SPEED = 0.02f;				//Movement per frame
-private:
+
+	enum MoveState {IDLE, FINDING_PATH, MOVING, SWITCHING_NODE, AT_OBJECTIVE};
+protected:
 	AI::AStar* _aStar;
 	AI::Vec2D _goalTilePosition;
 	AI::Vec2D* _path;
@@ -32,8 +34,8 @@ private:
 	void CalculatePath();
 	void Rotate();
 
-protected:
 	AI::Vec2D _direction;
+	AI::Vec2D _nextTile;
 	const Tilemap* _tileMap;		//Pointer to the tileMap in objectHandler(?). Units should preferably have read-, but not write-access.
 	int _goalPriority;				//Lower value means higher priority
 	int _pathLength;
@@ -42,6 +44,8 @@ protected:
 
 	bool _isFleeing;
 	GameObject* _pursuer;
+
+	MoveState _moveState;
 
 	int GetApproxDistance(AI::Vec2D target)const;
 	void Flee();
@@ -62,11 +66,12 @@ public:
 	virtual void EvaluateTile(GameObject* obj) = 0;
 	void SetGoal(AI::Vec2D goal);
 	void SetGoal(GameObject* objective);
-	void Move();
-	void Update(float deltaTime);
+	virtual void Move();						//TODO Kill with fire --Victor
+
+	virtual void Update(float deltaTime);
 	virtual void Release();
 	virtual void act(GameObject* obj) = 0;									//context specific action on the unit's objective
-	void Wait(int frames);
+	virtual void Wait();
 	void ClearObjective();
 	void TakeDamage(int damage);
 	void SetVisibility(bool visible);
