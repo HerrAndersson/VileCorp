@@ -33,8 +33,8 @@ namespace Renderer
 		virtual ~Pointlight();
 
 		void SetRange(float range);
-		void SetColor(DirectX::XMFLOAT3 color);
-		void SetPosition(DirectX::XMFLOAT3 position);
+		void SetColor(const DirectX::XMFLOAT3& color);
+		void SetPosition(const DirectX::XMFLOAT3& position);
 
 		DirectX::XMMATRIX* GetWorldMatrix();
 		DirectX::XMFLOAT3 GetPosition() const;

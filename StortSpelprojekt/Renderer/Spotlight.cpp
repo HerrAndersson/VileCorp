@@ -124,19 +124,19 @@ namespace Renderer
 		_worldMatrix = rotationMatrix * XMMatrixTranslation(_position.x, _position.y, _position.z);
 	}
 
-	void Spotlight::SetPosition(XMFLOAT3 position)
+	void Spotlight::SetPosition(const XMFLOAT3& position)
 	{
 		_position = position;
 		Update();
 	}
 
-	void Spotlight::SetRotation(DirectX::XMFLOAT3 rotation)
+	void Spotlight::SetRotation(const DirectX::XMFLOAT3& rotation)
 	{
 		_rotation = rotation;
 		Update();
 	}
 
-	void Spotlight::SetPositionAndRotation(XMFLOAT3 position, XMFLOAT3 rotation)
+	void Spotlight::SetPositionAndRotation(const XMFLOAT3& position, const XMFLOAT3& rotation)
 	{
 		_rotation = rotation;
 		_position = position;
@@ -149,20 +149,10 @@ namespace Renderer
 		XMVECTOR pos, rot, scale;
 		XMMatrixDecompose(&scale, &rot, &pos, matrix);
 
-		//Prepare vectors for Matrix initialization
-		XMFLOAT3 dir = DirectX::XMFLOAT3(0, 0, 1);
-		XMMATRIX rotationMatrix = XMMatrixRotationQuaternion(rot);
+		XMStoreFloat3(&_position, pos);
+		XMStoreFloat3(&_rotation, rot);
 
-		XMVECTOR vPos = pos;
-		XMVECTOR vDir = XMVector3TransformCoord(DirectX::XMLoadFloat3(&dir), rotationMatrix);
-		XMVECTOR vUp = XMVector3TransformCoord(DirectX::XMLoadFloat3(&_up), rotationMatrix);
-
-		XMStoreFloat3(&dir, vDir);
-		XMStoreFloat3(&_up, vUp);
-		_direction = dir;
-
-		_viewMatrix = DirectX::XMMatrixLookAtLH(vPos, vPos + vDir, vUp);
-		_worldMatrix = rotationMatrix * XMMatrixTranslation(_position.x, _position.y, _position.z);
+		Update();
 	}
 
 	XMFLOAT3 Spotlight::GetPosition()const
@@ -204,7 +194,7 @@ namespace Renderer
 		_range = range;
 	}
 
-	void Spotlight::SetColor(XMFLOAT3 color)
+	void Spotlight::SetColor(const XMFLOAT3& color)
 	{
 		_color = color;
 	}

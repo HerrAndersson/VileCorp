@@ -290,7 +290,7 @@ namespace Renderer
 		_worldMatrix = XMMatrixScaling(_range, _range, _range) * XMMatrixTranslation(_position.x, _position.y, _position.z);
 	}
 
-	void Pointlight::SetPosition(XMFLOAT3 position)
+	void Pointlight::SetPosition(const XMFLOAT3& position)
 	{
 		_position = position;
 		Update();
@@ -302,7 +302,7 @@ namespace Renderer
 		Update();
 	}
 
-	void Pointlight::SetColor(XMFLOAT3 color)
+	void Pointlight::SetColor(const XMFLOAT3& color)
 	{
 		_color = color;
 	}

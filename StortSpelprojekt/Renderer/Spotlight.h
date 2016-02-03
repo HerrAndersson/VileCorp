@@ -42,14 +42,14 @@ namespace Renderer
 		Spotlight(ID3D11Device* device, SpotlightData lightdata, int width, int height, float nearClip, float farClip, int resolution = 72);
 		~Spotlight();
 
-		void SetPosition(DirectX::XMFLOAT3 position);
-		void SetRotation(DirectX::XMFLOAT3 rotation);
-		void SetPositionAndRotation(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation);
-		void SetPositionAndRotation(DirectX::XMFLOAT4X4 &matrix);
+		void SetPosition(const DirectX::XMFLOAT3& position);
+		void SetRotation(const DirectX::XMFLOAT3& rotation);
+		void SetPositionAndRotation(const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& rotation);
+		void SetPositionAndRotation(DirectX::XMFLOAT4X4& matrix);
 
 		void SetIntensity(float intensity);
 		void SetRange(float range);
-		void SetColor(DirectX::XMFLOAT3 color);
+		void SetColor(const DirectX::XMFLOAT3& color);
 
 		float GetIntensity() const;
 		float GetRange() const;

@@ -153,7 +153,7 @@ namespace Renderer
 		deviceContext->VSSetConstantBuffers(0, 1, &_matrixBufferPerFrame);
 	}
 
-	void RenderModule::SetDataPerSkinnedObject(XMMATRIX* world, std::vector<DirectX::XMFLOAT4X4>* extra, DirectX::XMFLOAT3 colorOffset)
+	void RenderModule::SetDataPerSkinnedObject(XMMATRIX* world, std::vector<DirectX::XMFLOAT4X4>* extra, const DirectX::XMFLOAT3& colorOffset)
 	{
 		HRESULT result;
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -210,7 +210,7 @@ namespace Renderer
 		deviceContext->PSSetShaderResources(1, 1, &specularData);
 	}
 
-	void RenderModule::SetDataPerObject(XMMATRIX* world, DirectX::XMFLOAT3 colorOffset)
+	void RenderModule::SetDataPerObject(XMMATRIX* world, const DirectX::XMFLOAT3& colorOffset)
 	{
 		HRESULT result;
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -471,13 +471,13 @@ namespace Renderer
 		_d3d->BeginScene(red, green, blue, alpha);
 	}
 
-	void RenderModule::Render(DirectX::XMMATRIX* world, int vertexBufferSize, DirectX::XMFLOAT3 colorOffset)
+	void RenderModule::Render(DirectX::XMMATRIX* world, int vertexBufferSize, const DirectX::XMFLOAT3& colorOffset)
 	{
 		SetDataPerObject(world, colorOffset);
 		_d3d->GetDeviceContext()->Draw(vertexBufferSize, 0);
 	}
 
-	void RenderModule::RenderAnimation(DirectX::XMMATRIX* world, int vertexBufferSize, std::vector<DirectX::XMFLOAT4X4>* extra, DirectX::XMFLOAT3 colorOffset)
+	void RenderModule::RenderAnimation(DirectX::XMMATRIX* world, int vertexBufferSize, std::vector<DirectX::XMFLOAT4X4>* extra, const DirectX::XMFLOAT3& colorOffset)
 	{
 		SetDataPerSkinnedObject(world, extra, colorOffset);
 		_d3d->GetDeviceContext()->Draw(vertexBufferSize, 0);
@@ -501,8 +501,9 @@ namespace Renderer
 			{
 				D3D11_MAPPED_SUBRESOURCE mappedResource;
 				HRESULT result;
+				ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
 
-				result = _d3d->GetDeviceContext()->Map(_matrixBufferHUD, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+				result = deviceContext->Map(_matrixBufferHUD, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 				if (FAILED(result))
 				{
 					throw std::runtime_error("RenderModule::SetResourcesPerObject: Failed to Map _matrixBufferHUD");
@@ -517,12 +518,12 @@ namespace Renderer
 				dataPtr->_model = XMMatrixTranspose(t);
 				dataPtr->_colorOffset = current->GetColorOffset();
 
-				_d3d->GetDeviceContext()->Unmap(_matrixBufferHUD, 0);
+				deviceContext->Unmap(_matrixBufferHUD, 0);
 
-				_d3d->GetDeviceContext()->VSSetConstantBuffers(1, 1, &_matrixBufferHUD);
-				_d3d->GetDeviceContext()->PSSetShaderResources(0, 1, &tex);
+				deviceContext->VSSetConstantBuffers(1, 1, &_matrixBufferHUD);
+				deviceContext->PSSetShaderResources(0, 1, &tex);
 
-				_d3d->GetDeviceContext()->Draw(6, 0);
+				deviceContext->Draw(6, 0);
 			}
 			//Render text
 			int len = current->GetText().length();
@@ -553,7 +554,7 @@ namespace Renderer
 		}
 	}
 
-	void RenderModule::RenderLineList(XMMATRIX* world, int nrOfPoints, XMFLOAT3 colorOffset)
+	void RenderModule::RenderLineList(XMMATRIX* world, int nrOfPoints, const XMFLOAT3& colorOffset)
 	{
 		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
 

@@ -27,6 +27,7 @@ namespace GUI
 				_screenHeight = screenHeight;
 			}
 		};
+
 	private:
 
 		DirectX::XMMATRIX _modelMatrix;
@@ -50,8 +51,11 @@ namespace GUI
 
 		void UpdateMatrix();
 	protected:
+
 		std::vector<Node*> _children;
+
 	public:
+
 		Node(NodeInfo* info, DirectX::XMFLOAT2 position = DirectX::XMFLOAT2(0.0f, 0.0f),
 			DirectX::XMFLOAT2 scale = DirectX::XMFLOAT2(1.0f, 1.0f), 
 			DirectX::XMFLOAT4 colorOffset = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f),
@@ -71,7 +75,7 @@ namespace GUI
 		void SetColor(UINT32 color);
 		void SetFontSize(float fontSize);
 		void SetTexture(ID3D11ShaderResourceView* texture);
-		void SetColorOffset(DirectX::XMFLOAT4 colorOffset);
+		void SetColorOffset(const DirectX::XMFLOAT4& colorOffset);
 		void SetAlpha(float alpha);
 		void SetCentered(bool centered);
 		void SetHidden(bool hidden);
@@ -94,6 +98,7 @@ namespace GUI
 
 		void AddChild(Node* child);
 		void UpdateFont();
+
 		//Overloading these guarantees 16B alignment of XMMATRIX
 		void* operator new(size_t i);
 		void operator delete(void* p);

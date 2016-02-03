@@ -133,8 +133,8 @@ namespace Renderer
 		void InitializeConstantBuffers();
 		void InitializeScreenQuadBuffer();
 
-		void SetDataPerObject(DirectX::XMMATRIX* world, DirectX::XMFLOAT3 colorOffset = DirectX::XMFLOAT3(0, 0, 0));
-		void SetDataPerSkinnedObject(DirectX::XMMATRIX* world, std::vector<DirectX::XMFLOAT4X4>* extra, DirectX::XMFLOAT3 colorOffset = DirectX::XMFLOAT3(0, 0, 0));
+		void SetDataPerObject(DirectX::XMMATRIX* world, const DirectX::XMFLOAT3& colorOffset = DirectX::XMFLOAT3(0, 0, 0));
+		void SetDataPerSkinnedObject(DirectX::XMMATRIX* world, std::vector<DirectX::XMFLOAT4X4>* extra, const DirectX::XMFLOAT3& colorOffset = DirectX::XMFLOAT3(0, 0, 0));
 		void SetDataPerMesh(ID3D11Buffer* vertexBuffer, int vertexSize);
 		void SetShadowMapDataPerObject(DirectX::XMMATRIX* world);
 
@@ -169,10 +169,10 @@ namespace Renderer
 		void SetShaderStage(ShaderStage stage);
 
 		void BeginScene(float red, float green, float blue, float alpha);
-		void Render(DirectX::XMMATRIX* world, int vertexBufferSize, DirectX::XMFLOAT3 colorOffset = DirectX::XMFLOAT3(0, 0, 0));
-		void RenderAnimation(DirectX::XMMATRIX* world, int vertexBufferSize, std::vector<DirectX::XMFLOAT4X4>* extra = nullptr, DirectX::XMFLOAT3 colorOffset = DirectX::XMFLOAT3(0, 0, 0));
+		void Render(DirectX::XMMATRIX* world, int vertexBufferSize, const DirectX::XMFLOAT3& colorOffset = DirectX::XMFLOAT3(0, 0, 0));
+		void RenderAnimation(DirectX::XMMATRIX* world, int vertexBufferSize, std::vector<DirectX::XMFLOAT4X4>* extra = nullptr, const DirectX::XMFLOAT3& colorOffset = DirectX::XMFLOAT3(0, 0, 0));
 		void Render(GUI::Node* root, FontWrapper* fontWrapper);
-		void RenderLineList(DirectX::XMMATRIX* world, int nrOfPoints, DirectX::XMFLOAT3 colorOffset = DirectX::XMFLOAT3(0,0,0));
+		void RenderLineList(DirectX::XMMATRIX* world, int nrOfPoints, const DirectX::XMFLOAT3& colorOffset = DirectX::XMFLOAT3(0,0,0));
 		void RenderShadowMap(DirectX::XMMATRIX* world, int vertexBufferSize);
 		void RenderScreenQuad();
 		void EndScene();
