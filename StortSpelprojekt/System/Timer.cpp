@@ -20,6 +20,9 @@ namespace System
 
 		_frameTime = 0;
 		_gameTime = 0;
+		_frequency = 0;
+		_startTime = 0;
+		_tempTime = 0;
 	}
 
 	Timer::~Timer()

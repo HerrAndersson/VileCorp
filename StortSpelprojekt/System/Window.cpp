@@ -132,7 +132,7 @@ namespace System
 		return result;
 	}
 
-	void Window::ResizeWindow(WindowSettings settings)
+	void Window::ResizeWindow(const WindowSettings& settings)
 	{
 		_settings = settings;
 		int screenWidth = GetSystemMetrics(SM_CXSCREEN);
