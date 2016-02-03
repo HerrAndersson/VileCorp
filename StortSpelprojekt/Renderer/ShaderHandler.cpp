@@ -117,8 +117,12 @@ namespace Renderer
 
 		_lightPassVS = CreateVertexShader(device, L"Assets/Shaders/LightVS.hlsl", lightInputDesc, numElements);
 		_lightPassPS = CreatePixelShader(device, L"Assets/Shaders/LightPS.hlsl");
-		_lightApplyLightVolumePS = CreatePixelShader(device, L"Assets/Shaders/LightApplyLightVolumePS.hlsl");
+		_lightApplySpotlightVolumePS = CreatePixelShader(device, L"Assets/Shaders/LightApplySpotlightVolumePS.hlsl");
 		_lightApplyScreenQuadPS = CreatePixelShader(device, L"Assets/Shaders/LightApplyScreenQuadPS.hlsl");
+		_lightApplyPointlightVolumePS = CreatePixelShader(device, L"Assets/Shaders/LightApplyPointlightVolumePS.hlsl");
+
+		//Fxaa pass init
+		_fxaaPassPS = CreatePixelShader(device, L"Assets/Shaders/FxaaPS.hlsl");
 
 		//Shadow map shaders init
 		D3D11_INPUT_ELEMENT_DESC shadowInputDesc[] =
@@ -142,7 +146,7 @@ namespace Renderer
 
 		numElements = sizeof(animInputDesc) / sizeof(animInputDesc[0]);
 		_animPassVS = CreateVertexShader(device, L"Assets/Shaders/AnimVS.hlsl", animInputDesc, numElements);
-		
+
 		//Grid pass init
 		D3D11_INPUT_ELEMENT_DESC gridInputDesc[] =
 		{
@@ -154,7 +158,7 @@ namespace Renderer
 
 		_gridPassVS = CreateVertexShader(device, L"Assets/Shaders/GridVS.hlsl", gridInputDesc, numElements);
 		_gridPassPS = CreatePixelShader(device, L"Assets/Shaders/GridPS.hlsl");
-		
+
 		//HUD pass init
 		numElements = sizeof(lightInputDesc) / sizeof(lightInputDesc[0]);
 
@@ -177,9 +181,10 @@ namespace Renderer
 		SAFE_RELEASE(_geoPassPS);
 		SAFE_RELEASE(_lightPassPS);
 		SAFE_RELEASE(_gridPassPS);
-		SAFE_RELEASE(_lightApplyLightVolumePS);
+		SAFE_RELEASE(_lightApplySpotlightVolumePS);
 		SAFE_RELEASE(_lightApplyScreenQuadPS);
 		SAFE_RELEASE(_hudPassPS);
+		SAFE_RELEASE(_lightApplyPointlightVolumePS);
 
 		SAFE_RELEASE(_samplerWRAP);
 		SAFE_RELEASE(_samplerPOINT);
@@ -205,7 +210,7 @@ namespace Renderer
 			}
 			else
 			{
-				std::string s = ATL::CW2A (fileName);
+				std::string s = ATL::CW2A(fileName);
 				throw std::runtime_error("ShaderHandler::CreateVertexShader: Shader file not found. Filename: " + s);
 			}
 		}
@@ -245,7 +250,7 @@ namespace Renderer
 				throw std::runtime_error("ShaderHandler::CreateHullShader: Shader file not found. Filename: " + s);
 			}
 		}
-		
+
 		result = device->CreateHullShader(shaderBuffer->GetBufferPointer(), shaderBuffer->GetBufferSize(), NULL, &hullShader);
 		if (FAILED(result))
 		{
@@ -278,7 +283,7 @@ namespace Renderer
 				throw std::runtime_error("ShaderHandler::CreateGeometryShader: Shader file not found. Filename: " + s);
 			}
 		}
-		
+
 		result = device->CreateGeometryShader(shaderBuffer->GetBufferPointer(), shaderBuffer->GetBufferSize(), NULL, &geometryShader);
 		if (FAILED(result))
 		{
@@ -416,7 +421,7 @@ namespace Renderer
 		// Set shaders
 		deviceContext->VSSetShader(_geoPassVS->_vertexShader, nullptr, 0);
 		deviceContext->HSSetShader(nullptr, nullptr, 0);
-		deviceContext->GSSetShader(nullptr , nullptr, 0);
+		deviceContext->GSSetShader(nullptr, nullptr, 0);
 		deviceContext->DSSetShader(nullptr, nullptr, 0);
 		deviceContext->PSSetShader(_geoPassPS, nullptr, 0);
 		deviceContext->CSSetShader(nullptr, nullptr, 0);
@@ -478,7 +483,7 @@ namespace Renderer
 		//Set sampler
 		deviceContext->PSSetSamplers(0, 1, &_samplerWRAP);
 	}
-	
+
 	void ShaderHandler::SetHUDPassShaders(ID3D11DeviceContext * deviceContext)
 	{
 		//Set vertex layout
@@ -515,35 +520,54 @@ namespace Renderer
 		deviceContext->PSSetSamplers(0, 2, samplers);
 	}
 
-	void ShaderHandler::SetLightApplicationShaders(ID3D11DeviceContext* deviceContext, int screenOrVolume)
+	void ShaderHandler::SetSpotlightApplicationShaders(ID3D11DeviceContext* deviceContext)
 	{
+		//Set vertex layout
+		deviceContext->IASetInputLayout(_lightApplyLightVolumeVS->_inputLayout);
 
-		if (screenOrVolume == 1)
-		{
-			//Set vertex layout
-			deviceContext->IASetInputLayout(_lightPassVS->_inputLayout);
+		//Set shaders
+		deviceContext->VSSetShader(_lightApplyLightVolumeVS->_vertexShader, nullptr, 0);
+		deviceContext->HSSetShader(nullptr, nullptr, 0);
+		deviceContext->GSSetShader(nullptr, nullptr, 0);
+		deviceContext->DSSetShader(nullptr, nullptr, 0);
+		deviceContext->PSSetShader(_lightApplySpotlightVolumePS, nullptr, 0);
+		deviceContext->CSSetShader(nullptr, nullptr, 0);
 
-			//Set shaders
-			deviceContext->VSSetShader(_lightPassVS->_vertexShader, nullptr, 0);
-			deviceContext->HSSetShader(nullptr, nullptr, 0);
-			deviceContext->GSSetShader(nullptr, nullptr, 0);
-			deviceContext->DSSetShader(nullptr, nullptr, 0);
-			deviceContext->PSSetShader(_lightApplyScreenQuadPS, nullptr, 0);
-			deviceContext->CSSetShader(nullptr, nullptr, 0);
-		}
-		else if (screenOrVolume == 2)
-		{
-			//Set vertex layout
-			deviceContext->IASetInputLayout(_lightApplyLightVolumeVS->_inputLayout);
+		//Set sampler
+		ID3D11SamplerState* samplers[2] = { _samplerWRAP, _samplerCLAMP };
+		deviceContext->PSSetSamplers(0, 2, samplers);
+	}
 
-			//Set shaders
-			deviceContext->VSSetShader(_lightApplyLightVolumeVS->_vertexShader, nullptr, 0);
-			deviceContext->HSSetShader(nullptr, nullptr, 0);
-			deviceContext->GSSetShader(nullptr, nullptr, 0);
-			deviceContext->DSSetShader(nullptr, nullptr, 0);
-			deviceContext->PSSetShader(_lightApplyLightVolumePS, nullptr, 0);
-			deviceContext->CSSetShader(nullptr, nullptr, 0);
-		}
+	void ShaderHandler::SetPointlightApplicationShaders(ID3D11DeviceContext* deviceContext)
+	{
+		//Set vertex layout
+		deviceContext->IASetInputLayout(_lightApplyLightVolumeVS->_inputLayout);
+
+		//Set shaders
+		deviceContext->VSSetShader(_lightApplyLightVolumeVS->_vertexShader, nullptr, 0);
+		deviceContext->HSSetShader(nullptr, nullptr, 0);
+		deviceContext->GSSetShader(nullptr, nullptr, 0);
+		deviceContext->DSSetShader(nullptr, nullptr, 0);
+		deviceContext->PSSetShader(_lightApplyPointlightVolumePS, nullptr, 0);
+		deviceContext->CSSetShader(nullptr, nullptr, 0);
+
+		//Set sampler
+		ID3D11SamplerState* samplers[2] = { _samplerWRAP, _samplerCLAMP };
+		deviceContext->PSSetSamplers(0, 2, samplers);
+	}
+
+	void ShaderHandler::SetFXAAPassShaders(ID3D11DeviceContext* deviceContext)
+	{
+		// Set vertex layout
+		deviceContext->IASetInputLayout(_lightPassVS->_inputLayout);
+
+		// Set shaders
+		deviceContext->VSSetShader(_lightPassVS->_vertexShader, nullptr, 0);
+		deviceContext->HSSetShader(nullptr, nullptr, 0);
+		deviceContext->GSSetShader(nullptr, nullptr, 0);
+		deviceContext->DSSetShader(nullptr, nullptr, 0);
+		deviceContext->PSSetShader(_fxaaPassPS, nullptr, 0);
+		deviceContext->CSSetShader(nullptr, nullptr, 0);
 
 		//Set sampler
 		ID3D11SamplerState* samplers[2] = { _samplerWRAP, _samplerCLAMP };

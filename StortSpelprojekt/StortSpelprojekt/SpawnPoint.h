@@ -13,6 +13,8 @@ private:
 	int _timer;
 	int _time;
 	int _unitsToSpawn;
+	bool _enabled;
+
 public:
 	SpawnPoint();
 	SpawnPoint(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject* renderObject);
@@ -21,4 +23,6 @@ public:
 	void Update(float deltaTime);
 	void Release();
 	bool isSpawning();
+	void Disable();
+	void Enable();
 };

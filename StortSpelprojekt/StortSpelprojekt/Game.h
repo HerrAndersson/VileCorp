@@ -13,6 +13,7 @@
 #include "Grid.h"
 #include "PickingDevice.h"
 #include "Spotlight.h"
+#include "Pointlight.h"
 #include "GameObjectDataLoader.h"
 #include "ShadowMap.h"
 #include "LightCulling.h"
@@ -43,17 +44,17 @@ private:
 
 	//Resizing window, directx resources, camera
 	void ResizeResources(System::WindowSettings settings); //TODO: Test all scenarios and fix bugs /Jonas
-	void Update(float deltaTime);
+	bool Update(float deltaTime);
 	void Render();
 	void CheckSettings();
-
+	
 	//TODO: TEMP! Move this to objectHandler
 	std::vector<Renderer::Spotlight*> _spotlights;
+	std::vector<Renderer::Pointlight*> _pointlights;
 	LightCulling* _lightCulling;
 
 	std::vector<GameObject*> _enemies;
 	std::vector<GameObject*> _loot;
-
 public:
 
 	Game(HINSTANCE hInstance, int nCmdShow);

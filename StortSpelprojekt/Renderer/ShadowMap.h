@@ -24,16 +24,16 @@ namespace Renderer
 
 		struct MatrixBufferPerObject
 		{
-			DirectX::XMMATRIX modelWorld;
+			DirectX::XMMATRIX _modelWorld;
 		};
 
 		struct MatrixBufferPerFrame
 		{
-			DirectX::XMMATRIX lightView;
-			DirectX::XMMATRIX lightProjection;
+			DirectX::XMMATRIX _lightView;
+			DirectX::XMMATRIX _lightProjection;
 		};
 
-		int dimensions;
+		int _dimensions;
 
 		ID3D11DepthStencilView*			_shadowDepthStencilView;
 		ID3D11ShaderResourceView*		_shadowShaderResourceView;

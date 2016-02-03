@@ -11,6 +11,7 @@
 #include "JsonStructs.h"
 #include "AssetManager.h"
 #include "StateMachine\States.h"
+#include "Spotlight.h"
 
 /*
 ObjectHandler
@@ -38,8 +39,7 @@ class ObjectHandler
 {
 private:
 	vector<vector<GameObject*>> _gameObjects;
-	//vector<RenderList> _renderLists;
-	GameObjectInfo* _gameObjectData;
+	GameObjectInfo* _gameObjectInfo;
 	void ActivateTileset(string name);
 	Tilemap* _tilemap;
 
@@ -47,13 +47,24 @@ private:
 	int _objectCount = 0;
 
 	AssetManager* _assetManager;
+	ID3D11Device* _device;
+	map< GameObject*, Renderer::Spotlight*> _spotlights;
+
+	Architecture*	MakeFloor(GameObjectFloorInfo* data, XMFLOAT3 position, XMFLOAT3 rotation);
+	Architecture*	MakeWall(GameObjectWallInfo* data, XMFLOAT3 position, XMFLOAT3 rotation);
+	Architecture*	MakeLoot(GameObjectLootInfo* data, XMFLOAT3 position, XMFLOAT3 rotation);
+	SpawnPoint*		MakeSpawn(GameObjectSpawnInfo* data, XMFLOAT3 position, XMFLOAT3 rotation);
+	Trap*			MakeTrap(GameObjectTrapInfo* data, XMFLOAT3 position, XMFLOAT3 rotation);
+	Guard*			MakeGuard(GameObjectGuardInfo* data, XMFLOAT3 position, XMFLOAT3 rotation);
+	Enemy*			MakeEnemy(GameObjectEnemyInfo* data, XMFLOAT3 position, XMFLOAT3 rotation);
 
 public:
 	ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data);
 	~ObjectHandler();
 
 	//Add a gameobject
-	bool Add(Type type, XMFLOAT3 position, XMFLOAT3 rotation);
+	bool Add(Type type, int index, XMFLOAT3 position, XMFLOAT3 rotation);
+	bool Add(Type type, std::string name, XMFLOAT3 position, XMFLOAT3 rotation);
 	
 	bool Remove(int ID);
 	bool Remove(Type type, int ID);
@@ -68,14 +79,20 @@ public:
 	RenderList GetAllByType(int renderObjectID);
 	vector<vector<GameObject*>>* GetGameObjects();
 
+	GameObjectInfo* GetBlueprints();
+
 	int GetObjectCount() const;
 
 	Tilemap* GetTileMap() const;
 	void SetTileMap(Tilemap* tilemap);
+	void MinimizeTileMap();
+	void EnlargeTilemap(int offset);
 
 	bool LoadLevel(int lvlIndex);
 
 	void InitPathfinding();
+	void EnableSpawnPoints();
+	void DisableSpawnPoints();
 
 	//Update gamelogic of all objects
 	void Update(float deltaTime);

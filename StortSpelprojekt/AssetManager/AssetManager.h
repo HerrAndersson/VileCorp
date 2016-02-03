@@ -92,10 +92,6 @@ struct TilesetHandler
 		{
 			_cur = &_tileset->_objects[TRAP];
 		}
-		else if (!strcmp("triggers", str))
-		{
-			_cur = &_tileset->_objects[TRIGGER];
-		}
 		else if (!strcmp("guards", str))
 		{
 			_cur = &_tileset->_objects[GUARD];
@@ -179,8 +175,7 @@ static bool GetFilenamesInDirectory(char* folder, char* extension, vector<string
 class ASSET_MANAGER_EXPORT AssetManager
 {
 private:
-
-	typedef RenderObject* (AssetManager::*_scanFunc)(string file_path, ifstream* _infile);
+	typedef RenderObject* (AssetManager::*_scanFunc)();
 	typedef std::map<int, AssetManager::_scanFunc> _scanFuncMap;
 
 	_scanFuncMap _meshFormatVersion;
@@ -202,8 +197,9 @@ private:
 
 	bool LoadModel(string file_path, RenderObject* renderObject);
 	void Flush();
-	RenderObject* ScanModel24(string file_path, ifstream* _infile);
-	RenderObject* ScanModel26(string file_path, ifstream* _infile);
+	RenderObject* ScanModel24();
+	RenderObject* ScanModel26();
+	RenderObject* ScanModel27();
 	RenderObject* ScanModel(string file_path);
 	Texture* ScanTexture(string filename);
 	Skeleton* LoadSkeleton(string filename);
@@ -213,7 +209,7 @@ private:
 public:
 	AssetManager(ID3D11Device* device);
 	~AssetManager();
-	RenderObject* GetRenderObject(int index);
+	RenderObject* GetRenderObject(int index, string texture);
 	uint GetRenderObjectByType(Type type, uint index);
 	void UnloadModel(int index, bool force);
 	bool ParseLevel(int index, vector<GameObjectData> &gameObjects, int &dimX, int &dimY);

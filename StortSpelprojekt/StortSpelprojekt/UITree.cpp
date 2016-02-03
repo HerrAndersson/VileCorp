@@ -23,7 +23,7 @@ namespace GUI
 		bool found = false;
 		for (Value::ConstMemberIterator i = d.MemberBegin(); i != d.MemberEnd(); ++i)
 		{
-			if (i->name.IsString() &&  string(i->name.GetString()) == statename)
+			if (i->name.IsString() && string(i->name.GetString()) == statename)
 			{
 				found = true;
 				_root = LoadGUITree("root", i->value.MemberBegin(), i->value.MemberEnd());
@@ -108,6 +108,14 @@ namespace GUI
 			else if (i->name == "fontsize")
 			{
 				returnNode->SetFontSize((float)i->value.GetDouble());
+			}
+			else if (i->name == "centered")
+			{
+				returnNode->SetCentered(i->value.GetBool());
+			}
+			else if (i->name == "hidden")
+			{
+				returnNode->SetHidden(i->value.GetBool());
 			}
 			else
 			{
@@ -197,5 +205,34 @@ namespace GUI
 	{
 		Node* node = _root;
 		return FindNode(_root, id);
+	}
+
+	void UITree::ReloadTree(const std::string& filename, const std::string& statename)
+	{
+		Release(_root);
+		ifstream file(filename);
+		if (!file.good())
+		{
+			throw std::runtime_error("Failed to open " + filename);
+		}
+		string str((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
+		file.close();
+
+		Document d;
+		d.Parse(str.c_str());
+
+		bool found = false;
+		for (Value::ConstMemberIterator i = d.MemberBegin(); i != d.MemberEnd(); ++i)
+		{
+			if (i->name.IsString() && string(i->name.GetString()) == statename)
+			{
+				found = true;
+				_root = LoadGUITree("root", i->value.MemberBegin(), i->value.MemberEnd());
+			}
+		}
+		if (!found)
+		{
+			throw std::runtime_error("Could not find " + statename + " in " + filename);
+		}
 	}
 }

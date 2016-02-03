@@ -1,0 +1,7 @@
+{
+    "sample": {
+        "_name": "wall2_proto",
+        "_renderObjectName": "wall",
+		"_textureName": "wall2.png"
+    }
+}

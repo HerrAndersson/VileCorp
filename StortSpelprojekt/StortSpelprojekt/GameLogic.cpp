@@ -19,6 +19,7 @@ void GameLogic::Initialize(ObjectHandler* objectHandler, System::Camera* camera,
 	_controls = controls;
 	_pickingDevice = pickingDevice;
 
+	//_objectHandler->LoadLevel(3);
 	//Either import the level here or in the LevelEdit.cpp, otherwise the level will be loaded twice
 	//System::loadJSON(&_levelLoad, "../../../../StortSpelprojekt/Assets/LevelLoad.json");
 	//_objectHandler->LoadLevel(_levelLoad.level);
@@ -36,7 +37,6 @@ void GameLogic::Update(float deltaTime)
 
 void GameLogic::HandleInput()
 {
-	
 	//Selecting a Unit and moving selected units
 	if (_controls->IsFunctionKeyDown("PLAY:SELECT"))
 	{
