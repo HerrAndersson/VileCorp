@@ -32,8 +32,6 @@ private:
 	AI::Vec2D* _markedTile;
 
 	System::MouseCoord _mouseCoord;
-	int _tileMultiplier;
-	int _tilemapHeight, _tilemapWidth;
 	std::vector<ButtonInfo> buttonInfo;
 	
 	// FLAGS
