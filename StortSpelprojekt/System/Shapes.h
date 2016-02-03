@@ -159,15 +159,16 @@ static Vec3 FindClosestPointOnVector(Vec3 &point, Ray &vector)
 
 
 //Separating Axis Theorem check for vectors
-static bool SATVectorCheck(Vec2 &axis, std::vector<Vec2> &firstObjectCorners, std::vector<Vec2> &secondObjectCorners)
+static bool SATVectorCheck(Vec2 &axis, std::vector<Vec2> *firstObjectCorners, std::vector<Vec2> *secondObjectCorners)
 {
 	bool collision = false;
-	float firstMinPoint = axis.Dot(firstObjectCorners[0]);
+	float firstMinPoint = axis.Dot(firstObjectCorners->at(0));
 	float firstMaxPoint = firstMinPoint;
 
-	for (unsigned int i = 0; i < firstObjectCorners.size(); i++)
+	unsigned int size = firstObjectCorners->size();
+	for (unsigned int i = 0; i < size; i++)
 	{
-		float point = axis.Dot(firstObjectCorners[i]);
+		float point = axis.Dot(firstObjectCorners->at(i));
 
 		if (point < firstMinPoint)
 		{
@@ -179,12 +180,13 @@ static bool SATVectorCheck(Vec2 &axis, std::vector<Vec2> &firstObjectCorners, st
 		}
 	}
 
-	float secondMinPoint = axis.Dot(secondObjectCorners[0]);
+	float secondMinPoint = axis.Dot(secondObjectCorners->at(0));
 	float secondMaxPoint = secondMinPoint;
 
-	for (unsigned int i = 0; i < secondObjectCorners.size(); i++)
+	size = secondObjectCorners->size();
+	for (unsigned int i = 0; i < size; i++)
 	{
-		float point = axis.Dot(secondObjectCorners[i]);
+		float point = axis.Dot(secondObjectCorners->at(i));
 
 		if (point < secondMinPoint)
 		{
@@ -208,15 +210,16 @@ static bool SATVectorCheck(Vec2 &axis, std::vector<Vec2> &firstObjectCorners, st
 	return collision;
 }
 
-static bool SATVectorCheck(Vec3 &axis, std::vector<Vec3> &firstObjectCorners, std::vector<Vec3> &secondObjectCorners)
+static bool SATVectorCheck(Vec3 &axis, std::vector<Vec3> *firstObjectCorners, std::vector<Vec3> *secondObjectCorners)
 {
 	bool collision = false;
-	float firstMinPoint = axis.Dot(firstObjectCorners[0]);
+	float firstMinPoint = axis.Dot(firstObjectCorners->at(0));
 	float firstMaxPoint = firstMinPoint;
 
-	for (unsigned int i = 0; i < firstObjectCorners.size(); i++)
+	unsigned int size = firstObjectCorners->size();
+	for (unsigned int i = 0; i < size; i++)
 	{
-		float point = axis.Dot(firstObjectCorners[i]);
+		float point = axis.Dot(firstObjectCorners->at(i));
 
 		if (point < firstMinPoint)
 		{
@@ -228,12 +231,13 @@ static bool SATVectorCheck(Vec3 &axis, std::vector<Vec3> &firstObjectCorners, st
 		}
 	}
 
-	float secondMinPoint = axis.Dot(secondObjectCorners[0]);
+	float secondMinPoint = axis.Dot(secondObjectCorners->at(0));
 	float secondMaxPoint = secondMinPoint;
 
-	for (unsigned int i = 0; i < secondObjectCorners.size(); i++)
+	size = secondObjectCorners->size();
+	for (unsigned int i = 0; i < size; i++)
 	{
-		float point = axis.Dot(secondObjectCorners[i]);
+		float point = axis.Dot(secondObjectCorners->at(i));
 
 		if (point < secondMinPoint)
 		{
@@ -262,46 +266,59 @@ static bool SATVectorCheck(Vec3 &axis, std::vector<Vec3> &firstObjectCorners, st
 
 
 //Finds the cornerpoints in a shape
-static std::vector<Vec3> FindCorners(Box &box)
+static std::vector<Vec2>* FindSquareCorners(Square &square)
 {
-	std::vector<Vec3> corners;
+	std::vector<Vec2>* squarePoints = new std::vector<Vec2>;
+	squarePoints->reserve(4);
+	squarePoints->push_back(square._minPos);
+	squarePoints->push_back(Vec2(square._maxPos._x, square._minPos._y));
+	squarePoints->push_back(Vec2(square._minPos._x, square._maxPos._y));
+	squarePoints->push_back(square._maxPos);
 
-	corners.push_back(box._position
+	return squarePoints;
+}
+
+static std::vector<Vec3>* FindBoxCorners(Box &box)
+{
+	std::vector<Vec3>* corners = new std::vector<Vec3>();
+	corners->reserve(8);
+
+	corners->push_back(box._position
 		+ (box._xSlab._normal * box._xSlab._offset)
 		+ (box._ySlab._normal * box._ySlab._offset)
 		+ (box._zSlab._normal * box._zSlab._offset));
 
-	corners.push_back(box._position
+	corners->push_back(box._position
 		- (box._xSlab._normal * box._xSlab._offset)
 		+ (box._ySlab._normal * box._ySlab._offset)
 		+ (box._zSlab._normal * box._zSlab._offset));
 
-	corners.push_back(box._position
+	corners->push_back(box._position
 		+ (box._xSlab._normal * box._xSlab._offset)
 		- (box._ySlab._normal * box._ySlab._offset)
 		+ (box._zSlab._normal * box._zSlab._offset));
 
-	corners.push_back(box._position
+	corners->push_back(box._position
 		+ (box._xSlab._normal * box._xSlab._offset)
 		+ (box._ySlab._normal * box._ySlab._offset)
 		- (box._zSlab._normal * box._zSlab._offset));
 
-	corners.push_back(box._position
+	corners->push_back(box._position
 		- (box._xSlab._normal * box._xSlab._offset)
 		- (box._ySlab._normal * box._ySlab._offset)
 		+ (box._zSlab._normal * box._zSlab._offset));
 
-	corners.push_back(box._position
+	corners->push_back(box._position
 		- (box._xSlab._normal * box._xSlab._offset)
 		+ (box._ySlab._normal * box._ySlab._offset)
 		- (box._zSlab._normal * box._zSlab._offset));
 
-	corners.push_back(box._position
+	corners->push_back(box._position
 		+ (box._xSlab._normal * box._xSlab._offset)
 		- (box._ySlab._normal * box._ySlab._offset)
 		- (box._zSlab._normal * box._zSlab._offset));
 
-	corners.push_back(box._position
+	corners->push_back(box._position
 		- (box._xSlab._normal * box._xSlab._offset)
 		- (box._ySlab._normal * box._ySlab._offset)
 		- (box._zSlab._normal * box._zSlab._offset));
@@ -310,20 +327,13 @@ static std::vector<Vec3> FindCorners(Box &box)
 }
 
 
+
 static const bool Collision(Vec2 &point, Square &square)
 {
 	return (point._x < square._maxPos._x &&
 		point._x > square._minPos._x &&
 		point._y < square._maxPos._y &&
 		point._y > square._minPos._y);
-}
-
-static const bool Collision(Vec3 &point, Square &square)
-{
-	return (point._x < square._maxPos._x &&
-		point._x > square._minPos._x &&
-		point._z < square._maxPos._y &&
-		point._z > square._minPos._y);
 }
 
 static const bool Collision(Vec2 &point, Triangle &triangle)
@@ -345,6 +355,182 @@ static const bool Collision(Vec2 &point, Triangle &triangle)
 static const bool Collision(Vec2 &point, Circle &circle)
 {
 	return (point - circle._position).Length() < circle._radius;
+}
+
+static const bool Collision(Triangle &triangle, Square &square)
+{
+	bool collision = true;
+
+	std::vector<Vec2>* trianglePoints = new std::vector<Vec2>();
+	std::vector<Vec2>* squarePoints = new std::vector<Vec2>();
+	squarePoints = FindSquareCorners(square);
+
+	trianglePoints->push_back(Vec2(triangle._pos1._x, triangle._pos1._z));
+	trianglePoints->push_back(Vec2(triangle._pos2._x, triangle._pos2._z));
+	trianglePoints->push_back(Vec2(triangle._pos3._x, triangle._pos3._z));
+
+	Vec2 vec1 = trianglePoints->at(0) - trianglePoints->at(1);
+	Vec2 vec2 = trianglePoints->at(0) - trianglePoints->at(2);
+	Vec2 vec3 = trianglePoints->at(1) - trianglePoints->at(2);
+
+
+	if (!SATVectorCheck(Vec2(-vec1._y, vec1._x).Normalize(), trianglePoints, squarePoints))
+	{
+		collision = false;
+	}
+
+	else if (!SATVectorCheck(Vec2(-vec2._y, vec2._x).Normalize(), trianglePoints, squarePoints))
+	{
+		collision = false;
+	}
+
+	else if (!SATVectorCheck(Vec2(-vec3._y, vec3._x).Normalize(), trianglePoints, squarePoints))
+	{
+		collision = false;
+	}
+
+	else if (!SATVectorCheck(Vec2(1.0f, 0.0f).Normalize(), trianglePoints, squarePoints))
+	{
+		collision = false;
+	}
+
+	else if (!SATVectorCheck(Vec2(0.0f, 1.0f).Normalize(), trianglePoints, squarePoints))
+	{
+		collision = false;
+	}
+
+	delete squarePoints;
+	delete trianglePoints;
+
+	return collision;
+}
+
+static const bool Collision(Circle &circle, Square &square)
+{
+	bool collision = false;
+	//Hit if any of the corners are in the circle
+	if (Collision(square._maxPos, circle))
+	{
+		collision = true;
+	}
+	else if (Collision(square._minPos, circle))
+	{
+		collision = true;
+	}
+	else if (Collision(Vec2(square._maxPos._x, square._minPos._y), circle))
+	{
+		collision = true;
+	}
+	else if (Collision(Vec2(square._minPos._x, square._maxPos._y), circle))
+	{
+		collision = true;
+	}
+	//if the circle is inside the square and don't touch any corners
+	else if ((circle._position._x + circle._radius<square._maxPos._x || circle._position._x - circle._radius > square._minPos._x) &&
+		(circle._position._y + circle._radius<square._maxPos._y || circle._position._y - circle._radius > square._minPos._y))
+	{
+		collision = true;
+	}
+
+	return collision;
+}
+
+static const bool Collision(Square &square1, Square &square2)
+{
+	bool collision = true;
+
+	std::vector<Vec2>* squarePoints1 = FindSquareCorners(square1);
+	std::vector<Vec2>* squarePoints2 = FindSquareCorners(square2);
+
+
+	if (!SATVectorCheck(Vec2(1.0f, 0.0f), squarePoints1, squarePoints2))
+	{
+		collision = false;
+	}
+
+	else if (!SATVectorCheck(Vec2(0.0f, 1.0f), squarePoints1, squarePoints2))
+	{
+		collision = false;
+	}
+
+	delete squarePoints1;
+	delete squarePoints2;
+	return collision;
+}
+
+static const bool Collision(Square &square, std::vector<Vec2>* polygon)
+{
+	bool collision = true;
+	std::vector<Vec2>* squarePoints = FindSquareCorners(square);
+
+
+	if (!SATVectorCheck(Vec2(1.0f, 0.0f).Normalize(), polygon, squarePoints))
+	{
+		collision = false;
+	}
+
+	else if (!SATVectorCheck(Vec2(0.0f, 1.0f).Normalize(), polygon, squarePoints))
+	{
+		collision = false;
+	}
+
+	else
+	{
+		unsigned int size = polygon->size();
+		for (unsigned int i = 1; i < size; i++)
+		{
+			Vec2 vec = (polygon->at(i) - polygon->at(i - 1)).Normalize();
+			vec = Vec2(-vec._y, vec._x);
+
+			if (!SATVectorCheck(vec, polygon, squarePoints))
+			{
+				collision = false;
+			}
+		}
+	}
+
+	delete squarePoints;
+	return collision;
+}
+
+static const bool Collision(std::vector<Vec2>* polygon1, std::vector<Vec2>* polygon2)
+{
+	bool collision = true;
+
+	unsigned int size = polygon1->size();
+	for (unsigned int i = 1; i < size && collision; i++)
+	{
+		Vec2 vec = (polygon1->at(i) - polygon1->at(i - 1)).Normalize();
+		vec = Vec2(-vec._y, vec._x);
+
+		if (!SATVectorCheck(vec, polygon1, polygon2))
+		{
+			collision = false;
+		}
+	}
+
+	size = polygon2->size();
+	for (unsigned int i = 1; i < size && collision; i++)
+	{
+		Vec2 vec = (polygon2->at(i) - polygon2->at(i - 1)).Normalize();
+		vec = Vec2(-vec._y, vec._x);
+
+		if (!SATVectorCheck(vec, polygon1, polygon2))
+		{
+			collision = false;
+		}
+	}
+	
+	return collision;
+}
+
+
+static const bool Collision(Vec3 &point, Square &square)
+{
+	return (point._x < square._maxPos._x &&
+		point._x > square._minPos._x &&
+		point._z < square._maxPos._y &&
+		point._z > square._minPos._y);
 }
 
 static const bool Collision(Vec3 &point, Sphere &sphere)
@@ -444,8 +630,8 @@ static const bool Collision(Ray &ray, Box &box)
 static const bool Collision(Box &box1, Box &box2)
 {
 	bool collision = true;
-	std::vector<Vec3>firstBoxCorners = FindCorners(box1);
-	std::vector<Vec3>secondBoxCorners = FindCorners(box2);
+	std::vector<Vec3>* firstBoxCorners = FindBoxCorners(box1);
+	std::vector<Vec3>* secondBoxCorners = FindBoxCorners(box2);
 
 
 	if (!SATVectorCheck(box1._xSlab._normal, firstBoxCorners, secondBoxCorners))
@@ -476,32 +662,33 @@ static const bool Collision(Box &box1, Box &box2)
 	return collision;
 }
 
+
 static const bool Collision(Box &box, Square &square)
 {
 	bool collision = true;
-	std::vector<Vec3>boxCorners = FindCorners(box);
-	std::vector<Vec3>squareCorners;
+	std::vector<Vec3>* boxCorners = FindBoxCorners(box);
+	std::vector<Vec3>* squareCorners;
 
-	squareCorners.push_back(Vec3(square._minPos._x, 0.0f, square._minPos._y));
-	squareCorners.push_back(Vec3(square._maxPos._x, 0.0f, square._minPos._y));
-	squareCorners.push_back(Vec3(square._minPos._x, 0.0f, square._maxPos._y));
-	squareCorners.push_back(Vec3(square._maxPos._x, 0.0f, square._maxPos._y));
+	squareCorners->push_back(Vec3(square._minPos._x, 1.0f, square._minPos._y));
+	squareCorners->push_back(Vec3(square._maxPos._x, 1.0f, square._minPos._y));
+	squareCorners->push_back(Vec3(square._minPos._x, 1.0f, square._maxPos._y));
+	squareCorners->push_back(Vec3(square._maxPos._x, 1.0f, square._maxPos._y));
 
-	if (!SATVectorCheck(Ray(Vec3(), box._xSlab._normal), squareCorners, boxCorners))
+	if (!SATVectorCheck(box._xSlab._normal, squareCorners, boxCorners))
 	{
 		collision = false;
 	}
 
-	else if (!SATVectorCheck(Ray(Vec3(), box._zSlab._normal), squareCorners, boxCorners))
+	else if (!SATVectorCheck(box._zSlab._normal, squareCorners, boxCorners))
 	{
 		collision = false;
 	}
-	else if (!SATVectorCheck(Ray(Vec3(), squareCorners[0] - squareCorners[1]), squareCorners, boxCorners))
+	else if (!SATVectorCheck(Vec3(1.0f, 0.0f, 0.0f), squareCorners, boxCorners))
 	{
 		collision = false;
 	}
 
-	else if (!SATVectorCheck(Ray(Vec3(), squareCorners[0] - squareCorners[2]), squareCorners, boxCorners))
+	else if (!SATVectorCheck(Vec3(0.0f, 0.0f, 1.0f), squareCorners, boxCorners))
 	{
 		collision = false;
 	}
@@ -510,125 +697,4 @@ static const bool Collision(Box &box, Square &square)
 
 }
 
-static const bool Collision(Triangle &triangle, Square &square)
-{
-	bool collision = true;
 
-	std::vector<Vec2> trianglePoints;
-	std::vector<Vec2> squarePoints;
-
-	trianglePoints.push_back(Vec2(triangle._pos1._x, triangle._pos1._z));
-	trianglePoints.push_back(Vec2(triangle._pos2._x, triangle._pos2._z));
-	trianglePoints.push_back(Vec2(triangle._pos3._x, triangle._pos3._z));
-
-	squarePoints.push_back(square._minPos);
-	squarePoints.push_back(Vec2(square._maxPos._x, square._minPos._y));
-	squarePoints.push_back(Vec2(square._minPos._x, square._maxPos._y));
-	squarePoints.push_back(square._maxPos);
-
-
-	Vec2 vec1 = trianglePoints[0] - trianglePoints[1];
-	Vec2 vec2 = trianglePoints[0] - trianglePoints[2];
-	Vec2 vec3 = trianglePoints[1] - trianglePoints[2];
-
-	if (!SATVectorCheck(Vec2(-vec1._y, vec1._x).Normalize(), trianglePoints, squarePoints))
-	{
-		collision = false;
-	}
-
-	else if (!SATVectorCheck(Vec2(-vec2._y, vec2._x).Normalize(), trianglePoints, squarePoints))
-	{
-		collision = false;
-	}
-
-	else if (!SATVectorCheck(Vec2(-vec3._y, vec3._x).Normalize(), trianglePoints, squarePoints))
-	{
-		collision = false;
-	}
-
-	else if (!SATVectorCheck(Vec2(1.0f, 0.0f).Normalize(), trianglePoints, squarePoints))
-	{
-		collision = false;
-	}
-
-	else if (!SATVectorCheck(Vec2(0.0f, 1.0f).Normalize(), trianglePoints, squarePoints))
-	{
-		collision = false;
-	}
-	
-
-	return collision;
-}
-
-static const bool Collision(Circle &circle, Square &square)
-{
-	bool collision = false;
-	//Hit if any of the corners are in the circle
-	if (Collision(square._maxPos, circle))
-	{
-		collision = true;
-	}
-	else if (Collision(square._minPos, circle))
-	{
-		collision = true;
-	}
-	else if (Collision(Vec2(square._maxPos._x, square._minPos._y), circle))
-	{
-		collision = true;
-	}
-	else if (Collision(Vec2(square._minPos._x, square._maxPos._y), circle))
-	{
-		collision = true;
-	}
-	//if the circle is inside the square and don't touch any corners
-	else if ((circle._position._x + circle._radius<square._maxPos._x || circle._position._x - circle._radius > square._minPos._x) &&
-		(circle._position._y + circle._radius<square._maxPos._y || circle._position._y - circle._radius > square._minPos._y))
-	{
-		collision = true;
-	}
-
-	return collision;
-}
-
-static const bool Collision(Square &square1, Square &square2)
-{
-	bool collision = true;
-
-	std::vector<Vec3> squarePoints1;
-	std::vector<Vec3> squarePoints2;
-
-	squarePoints1.push_back(Vec3(square1._minPos._x, 0.0f, square1._minPos._y));
-	squarePoints1.push_back(Vec3(square1._maxPos._x, 0.0f, square1._minPos._y));
-	squarePoints1.push_back(Vec3(square1._minPos._x, 0.0f, square1._maxPos._y));
-	squarePoints1.push_back(Vec3(square1._maxPos._x, 0.0f, square1._maxPos._y));
-
-	squarePoints2.push_back(Vec3(square2._minPos._x, 0.0f, square2._minPos._y));
-	squarePoints2.push_back(Vec3(square2._maxPos._x, 0.0f, square2._minPos._y));
-	squarePoints2.push_back(Vec3(square2._minPos._x, 0.0f, square2._maxPos._y));
-	squarePoints2.push_back(Vec3(square2._maxPos._x, 0.0f, square2._maxPos._y));
-
-
-	if (!SATVectorCheck((squarePoints1[0]-squarePoints1[1]).Normalize(), squarePoints1, squarePoints2))
-	{
-		collision = false;
-	}
-
-	else if (!SATVectorCheck((squarePoints1[0] - squarePoints1[2]).Normalize(), squarePoints1, squarePoints2))
-	{
-		collision = false;
-	}
-
-	else if (!SATVectorCheck((squarePoints2[0] - squarePoints2[1]).Normalize(), squarePoints1, squarePoints2))
-	{
-		collision = false;
-	}
-
-	else if (!SATVectorCheck((squarePoints2[0] - squarePoints2[2]).Normalize(), squarePoints1, squarePoints2))
-	{
-		collision = false;
-	}
-
-	
-
-	return collision;
-}

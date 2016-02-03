@@ -62,6 +62,7 @@ Tilemap::~Tilemap()
 		delete[] _map[i];
 	}
 	delete[] _map;
+	
 }
 
 bool Tilemap::AddObjectToTile(int x, int z, GameObject * obj)
@@ -209,6 +210,8 @@ GameObject * Tilemap::GetObjectOnTile(int x, int z, Type type) const
 		switch (type)
 		{
 		case FLOOR:
+			result = _map[x][z]._objectsOnTile[0];
+			break;
 		case WALL:
 			result = _map[x][z]._objectsOnTile[0];
 			break;
@@ -219,7 +222,11 @@ GameObject * Tilemap::GetObjectOnTile(int x, int z, Type type) const
 			result = _map[x][z]._objectsOnTile[2];
 			break;
 		case LOOT:
+			result = _map[x][z]._objectsOnTile[3];
+			break;
 		case SPAWN:
+			result = _map[x][z]._objectsOnTile[3];
+			break;
 		case TRAP:
 			result = _map[x][z]._objectsOnTile[3];
 			break;
@@ -350,4 +357,3 @@ bool Tilemap::IsTileVisible(int x, int z) const
 {
 	return _map[x][z]._isVisible;
 }
-

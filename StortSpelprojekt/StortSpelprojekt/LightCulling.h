@@ -13,21 +13,21 @@ class LightCulling
 private:
 	QuadTree* _quadTreeRoot;
 	Tilemap* _tilemap;
+	std::vector<std::vector<GameObject*>>* _objectsInLight;
 
 	//LightCulling
-	Triangle TransformSpotlight(Renderer::Spotlight* spotlight);
-	void GatherObjectsOnSquare(Square &square, std::vector<std::vector<GameObject*>> &allObjects);
+	std::vector<Vec2>* TransformSpotlight(Renderer::Spotlight* spotlight);
 
 	//FrustumCulling
-	Ray CalculateFrustumEdge(float x, float y, System::Camera* camera);
+	//Ray CalculateFrustumEdge(float x, float y, System::Camera* camera);
 
 public:
 	LightCulling();
 	LightCulling(Tilemap* tilemap);
 	~LightCulling();
 
-	std::vector<std::vector<GameObject*>> GetObjectsInSpotlight(Renderer::Spotlight* spotlight);
-	std::vector<std::vector<GameObject*>> GetObjectsInFrustum(System::Camera* camera);
+	std::vector<std::vector<GameObject*>>* GetObjectsInSpotlight(Renderer::Spotlight* spotlight);
+	//std::vector<std::vector<GameObject*>> GetObjectsInFrustum(System::Camera* camera);
 
 };
 

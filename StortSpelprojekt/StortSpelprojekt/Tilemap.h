@@ -11,7 +11,7 @@ private:
 	struct Tile
 	{
 		static const int OBJECT_CAPACITY = 4;
-		GameObject* _objectsOnTile[OBJECT_CAPACITY];					//0 = floor or wall, 1 = enemy, 2 = guard, 3 = trap or thief objectives or spawnpoint
+		GameObject* _objectsOnTile[OBJECT_CAPACITY];				//0 = floor or wall, 1 = enemy, 2 = guard, 3 = trap or thief objectives or spawnpoint
 		bool _isVisible;
 		Tile()
 		{
@@ -30,6 +30,7 @@ private:
 				_objectsOnTile[i] = comp._objectsOnTile[i];
 			}
 			return *this;
+
 		}
 	};
 	int _height;
@@ -68,4 +69,6 @@ public:
 	bool IsSpawnOnTile(int x, int z)const;
 	bool IsTypeOnTile(int x, int z, Type type)const;
 	bool IsTileVisible(int x, int z) const;
+
+
 };

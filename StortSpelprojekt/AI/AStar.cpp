@@ -195,7 +195,7 @@ namespace AI
 			}
 		}
 		_openQueue.empty();
-		_openQueue = Heap<Node>();
+	//	_openQueue = Heap<Node>();
 	}
 
 	/*

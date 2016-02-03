@@ -3,7 +3,7 @@ using namespace DirectX;
 
 namespace Renderer
 {
-	Pointlight::Pointlight(XMFLOAT3 position, float range, float intensity, int resolution, XMFLOAT3 color = XMFLOAT3(0, 0, 0))
+	Pointlight::Pointlight(XMFLOAT3 position, float range, float intensity, int resolution, XMFLOAT3 color)
 	{
 		_position = position;
 		_range = range;

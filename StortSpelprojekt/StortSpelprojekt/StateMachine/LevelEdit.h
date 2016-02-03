@@ -63,9 +63,9 @@ private:
 	bool _place = false;
 	bool _guardPlace = false;
 	bool _trapPlace = false;
-	int _budget = 100;
-	int _trapCost = 25;
-	int _guardCost = 50;
+	int _budget = 10000;
+	int _trapCost = 1;
+	int _guardCost = 1;
 	GUI::Node* _uiNode;
 
 	System::MouseCoord _mouseCoord;

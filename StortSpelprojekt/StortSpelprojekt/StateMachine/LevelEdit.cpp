@@ -89,7 +89,7 @@ void LevelEdit::Initialize(ObjectHandler* objectHandler, System::Controls* contr
 	System::loadJSON(&_levelLoad, "../../../../StortSpelprojekt/Assets/LevelLoad.json");
 	LoadLevel(_levelLoad.level);
 
-	_budget = 100;
+	//_budget = 100;
 	_uiNode = _uiTree->GetNode("BudgetValue");
 	_uiNode->SetText(std::to_wstring(_budget));
 
