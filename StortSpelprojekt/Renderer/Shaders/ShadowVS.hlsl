@@ -1,3 +1,8 @@
+/*--------------------------------------------------------------------------------------------------------------------
+| Vertex shader used for generate the depth buffer for objects that should cast shadows.							 |
+| Binds null-rendertarget and a depth stencil view																     |
+--------------------------------------------------------------------------------------------------------------------*/
+
 cbuffer matrixBufferPerFrame : register(b4)
 {
 	matrix viewMatrix;

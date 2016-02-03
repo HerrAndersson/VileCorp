@@ -48,8 +48,9 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	{
 		SpotlightData lightdata;
 		lightdata._angle = XM_PIDIV4;
-		lightdata._color = XMFLOAT3(1.0f, 1.0f, 1.0f);
+		lightdata._color = XMFLOAT3(0.6f, 0.6f, 0.6f);
 		lightdata._range = 9.5f;
+		lightdata._intensity = 1.0f;
 		int d = _renderModule->SHADOWMAP_DIMENSIONS;
 		spot = new Renderer::Spotlight(_renderModule->GetDevice(), lightdata, d, d, 0.1f, 1000.0f);
 		spot->SetPositionAndRotation(XMFLOAT3(3 + i*2, 1, 2 + i * 2), XMFLOAT3(0,-65*i,0));
@@ -154,23 +155,30 @@ bool Game::Update(float deltaTime)
 			//TODO: Add something to notify the player that they've SUCK and they can replay the level
 		}
 	}
-	//Save for debugging //Jonas
-	//	rot.y -= 0.2f;
 
-	//	XMFLOAT3 color = _spotlights[i]->GetColor();
+
+	//Save for debugging //Jonas
+	//int i = 0;
+	//for (auto s : _spotlights)
+	//{
+	//	XMFLOAT3 color = s->GetColor();
 	//	color.x = sin(_timer.GetGameTime() / 1000 + 100 * i);
 	//	color.y = sin(_timer.GetGameTime() / 1000 + 100 * i + XMConvertToRadians(120));
 	//	color.z = sin(_timer.GetGameTime() / 1000 + 100 * i + XMConvertToRadians(240));
-	//	_spotlights[i]->SetColor(color);
+	//	s->SetColor(color);
+	//	XMFLOAT3 rot = s->GetRotation();
+	//	rot.y -= 0.2f;
+	//	s->SetRotation(rot);
+	//	i++;
 	//}
-	
-	//int i = 0;
+	//i = 0;
 	//for (auto p : _pointlights)
 	//{
 	//	i++;
 	//	XMFLOAT3 pos = p->GetPosition();
-	//	p->SetPosition(XMFLOAT3(pos.x + (sin((_timer.GetGameTime() / 1000) * sin(120 * i))) / 10, pos.y, pos.z + (sin((_timer.GetGameTime() / 1000) * sin(17 * i * i))) / 10));
+	//	p->SetPosition(XMFLOAT3(pos.x + (sin((_timer.GetGameTime() / 1000) * sin(120 * i))) / 20, pos.y, pos.z + (sin((_timer.GetGameTime() / 1000) * sin(17 * i * i))) / 20));
 	//}
+
 	return run;
 }
 
@@ -206,6 +214,8 @@ void Game::Render()
 
 				for (GameObject* g : i)
 				{
+					//if (g->GetType() == FLOOR || g->GetType() == WALL)
+					//	break;
 					_renderModule->Render(g->GetMatrix(), vertexBufferSize, g->GetColorOffset());
 					//g->SetColorOffset(XMFLOAT3(0, 0, 0));
 				}
@@ -325,8 +335,7 @@ void Game::Render()
 		}
 	}
 
-	/*-----------------------------------------------------------  FXAA  -------------------------------------------------------------------
-	Anti aliasing after light stage																									      */
+	/*-----------------------------------------------------------  FXAA  -----------------------------------------------------------------*/
 
 	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::AA_STAGE);
 	_renderModule->RenderScreenQuad();
@@ -360,14 +369,14 @@ int Game::Run()
 		{
 			_timer.Update();
 			if (_timer.GetFrameTime() >= MS_PER_FRAME)
-			{				
+			{
 				if (_hasFocus)
 				{
 					Update(_timer.GetFrameTime());
-				}			{
-					Render();
-					string s = to_string(_timer.GetFrameTime()) + " " + to_string(_timer.GetFPS());
 
+					Render();
+
+					string s = to_string(_timer.GetFrameTime()) + " " + to_string(_timer.GetFPS());
 					SetWindowText(_window->GetHWND(), s.c_str());
 
 					_timer.Reset();

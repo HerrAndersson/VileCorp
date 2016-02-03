@@ -39,12 +39,14 @@ Render targets:
 IMPORTANT:
 
 ~ For blending to work, never use 1.0f as alpha during the geometry pass.
+~ If other shaders than pixel and vertex are used, make sure to set that shader to nullptr in ShaderHandler set shaders function for those stages who does not use it
 
 Before rendering to shadow map:
-
 ~ Activate FRONT-FACE culling
 ~ Set vertex buffer before the Draw/DrawIndexed call
 ~ Set topology
+
+
 
 */
 

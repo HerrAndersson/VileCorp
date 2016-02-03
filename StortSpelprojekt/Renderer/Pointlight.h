@@ -29,7 +29,7 @@ namespace Renderer
 
 	public:
 
-		Pointlight(ID3D11Device* device, DirectX::XMFLOAT3 position, float range, float intensity, DirectX::XMFLOAT3 color = DirectX::XMFLOAT3(0,0,0));
+		Pointlight(ID3D11Device* device, DirectX::XMFLOAT3 position, float range, float intensity, DirectX::XMFLOAT3 color = DirectX::XMFLOAT3(0, 0, 0));
 		virtual ~Pointlight();
 
 		void SetRange(float range);
@@ -43,7 +43,7 @@ namespace Renderer
 		float GetIntensity() const;
 
 		ID3D11Buffer* GetVolumeBuffer();
-		
+
 		int GetVertexCount() const;
 		int GetVertexSize() const;
 

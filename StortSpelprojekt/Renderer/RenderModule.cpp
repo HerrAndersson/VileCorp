@@ -10,7 +10,6 @@ namespace Renderer
 		_screenWidth = screenWidth;
 		_screenHeight = screenHeight;
 		_shaderHandler = new ShaderHandler(_d3d->GetDevice());
-		_shaderHandler->SetDefaultShaders(_d3d->GetDeviceContext());
 
 		InitializeScreenQuadBuffer();
 		InitializeConstantBuffers();
@@ -416,8 +415,8 @@ namespace Renderer
 		}
 		case LIGHT_APPLICATION_SPOTLIGHT:
 		{
+			_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::FRONT);
 			_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::ENABLE);
-			_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::BACK);
 
 			int nrOfSRVs = _d3d->SetLightStage();
 
@@ -581,9 +580,6 @@ namespace Renderer
 		HRESULT result;
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
 		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
-
-		_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::FRONT);
-		_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::ENABLE);
 
 		XMMATRIX worldMatrixC = XMMatrixTranspose(*world);
 
