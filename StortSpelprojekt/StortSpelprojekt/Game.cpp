@@ -35,9 +35,6 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	_SM = new StateMachine(_controls, _objectHandler, _camera, _pickingDevice, "Assets/gui.json", _assetManager, _fontWrapper, _windowSettings._width, _windowSettings._height);
 
 	_SM->Update(_timer.GetFrameTime());
-	
-	//TODO: Use dimensions from the tilemap /Jonas
-	_grid = new Grid(_renderModule->GetDevice(), 1, 100,100, DirectX::XMFLOAT3(0.4f, 1.0f, 0.3f));
 
 	_enemiesHasSpawned = false;
 
@@ -102,7 +99,6 @@ Game::~Game()
 	SAFE_DELETE(_controls);
 	SAFE_DELETE(_assetManager);
 	SAFE_DELETE(_pickingDevice);
-	SAFE_DELETE(_grid);
 	SAFE_DELETE(_fontWrapper);
 	SAFE_DELETE(_lightCulling);
 	for(auto s : _spotlights)
@@ -282,13 +278,15 @@ void Game::Render()
 
 	if (_SM->GetState() == LEVELEDITSTATE)
 	{
-		_renderModule->SetShaderStage(Renderer::RenderModule::GRID_STAGE);
-		_renderModule->SetDataPerLineList(_grid->GetLineBuffer(), _grid->GetVertexSize());
+		Grid* gr = _objectHandler->GetBuildingGrid();
 
-		std::vector<DirectX::XMMATRIX>* gridMatrices = _grid->GetGridMatrices();
+		_renderModule->SetShaderStage(Renderer::RenderModule::GRID_STAGE);
+		_renderModule->SetDataPerLineList(gr->GetLineBuffer(), gr->GetVertexSize());
+
+		std::vector<DirectX::XMMATRIX>* gridMatrices = gr->GetGridMatrices();
 		for (auto &matrix : *gridMatrices)
 		{
-			_renderModule->RenderLineList(&matrix, _grid->GetNrOfPoints(), _grid->GetColorOffset());
+			_renderModule->RenderLineList(&matrix, gr->GetNrOfPoints(), gr->GetColorOffset());
 		}
 	}
 

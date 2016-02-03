@@ -32,7 +32,6 @@ private:
 //	Animation*					_animation;
 	System::Controls*			_controls;
 	AssetManager*				_assetManager;
-	Grid*						_grid;
 	FontWrapper*				_fontWrapper;
 	PickingDevice*				_pickingDevice;
 	PlayerInfo					_playerInfo;

@@ -30,8 +30,6 @@ void BaseEdit::Initialize(ObjectHandler* objectHandler, System::Controls* contro
 
 	_marker = nullptr;
 	_markedTile = nullptr;
-
-	//_grid = new Grid(_renderModule->GetDevice(), 1, 10);
 }
 
 BaseEdit::~BaseEdit()

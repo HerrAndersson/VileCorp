@@ -5,6 +5,7 @@ ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, G
 	_idCount = 0;
 	_assetManager = assetManager;
 	_tilemap = nullptr;
+	_buildingGrid = new Grid(device, 1, 1, 1, XMFLOAT3(1.0f, 1.0f, 0.7f));
 	_gameObjectInfo = data;
 	_device = device;
 
@@ -19,6 +20,7 @@ ObjectHandler::~ObjectHandler()
 {
 	Release();
 	delete _tilemap;
+	SAFE_DELETE(_buildingGrid);
 	delete _gameObjectInfo;
 }
 
@@ -394,6 +396,8 @@ void ObjectHandler::MinimizeTileMap()
 
 		delete _tilemap;
 		_tilemap = minimized;
+
+		_buildingGrid->ChangeGridSize(_tilemap->GetWidth(), _tilemap->GetHeight(), 1);
 	}
 	else
 	{
@@ -430,7 +434,14 @@ void ObjectHandler::EnlargeTilemap(int offset)
 
 		delete _tilemap;
 		_tilemap = large;
+
+		_buildingGrid->ChangeGridSize(large->GetWidth(), large->GetHeight(), 1);
 	}
+}
+
+Grid * ObjectHandler::GetBuildingGrid()
+{
+	return _buildingGrid;
 }
 
 

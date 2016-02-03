@@ -19,7 +19,6 @@ private:
 	Tilemap*				_tileMap;
 	ObjectHandler*			_objectHandler;
 	PickingDevice*			_pickingDevice;
-	Grid*					_grid;
 	//Renderer::RenderModule*	_renderModule;
 
 	struct ButtonInfo
@@ -30,14 +29,15 @@ private:
 
 	GameObject* _marker;
 	AI::Vec2D* _markedTile;
-
-	System::MouseCoord _mouseCoord;
-	std::vector<ButtonInfo> buttonInfo;
 	
 	// FLAGS
 	bool _isSelectionMode;
 	bool _isDragAndPlaceMode;
 	bool _isPlace;
+
+	
+
+	// No placement grids?
 
 	void HandleInput();
 	void LoadLevel(int levelID);
