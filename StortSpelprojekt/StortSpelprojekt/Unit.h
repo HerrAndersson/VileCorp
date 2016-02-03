@@ -76,5 +76,7 @@ public:
 	void TakeDamage(int damage);
 	void SetVisibility(bool visible);
 
+	void SetTilePosition(AI::Vec2D pos);
+
 };
 

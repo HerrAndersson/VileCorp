@@ -188,6 +188,7 @@ void Guard::SetNextTile() {
 	{
 		_nextTile = _path[--_pathLength];
 		_direction = _nextTile - _tilePosition;
+		_moveState = MoveState::MOVING;
 	}
 	else
 	{

@@ -390,5 +390,11 @@ void Unit::SetVisibility(bool visible)
 	}
 }
 
+void Unit::SetTilePosition(AI::Vec2D pos)
+{
+	GameObject::SetTilePosition(pos);
+	_nextTile = pos;
+}
+
 
 
