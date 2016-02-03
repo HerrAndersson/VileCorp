@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include "stdafx.h"
 #include "GameObject.h"
 #include "Unit.h"
 #include "Trap.h"
@@ -12,6 +13,7 @@
 #include "AssetManager.h"
 #include "StateMachine\States.h"
 #include "Spotlight.h"
+#include "Grid.h"
 
 /*
 ObjectHandler
@@ -42,6 +44,7 @@ private:
 	GameObjectInfo* _gameObjectInfo;
 	void ActivateTileset(const string& name);
 	Tilemap* _tilemap;
+	Grid* _buildingGrid;
 
 	int _idCount = 0;
 	int _objectCount = 0;
@@ -87,6 +90,7 @@ public:
 	void SetTileMap(Tilemap* tilemap);
 	void MinimizeTileMap();
 	void EnlargeTilemap(int offset);
+	Grid* GetBuildingGrid();
 
 	bool LoadLevel(int lvlIndex);
 
