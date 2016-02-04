@@ -47,8 +47,6 @@ Before rendering to shadow map:
 ~ Set vertex buffer before the Draw/DrawIndexed call
 ~ Set topology
 
-
-
 */
 
 namespace Renderer
@@ -144,10 +142,7 @@ namespace Renderer
 
 	public:
 
-		//TODO: Import these from settings file
-		const int SHADOWMAP_DIMENSIONS = 256;
 		const DirectX::XMFLOAT3 AMBIENT_LIGHT = DirectX::XMFLOAT3(0.1f, 0.1f, 0.1f);
-
 		enum ShaderStage { GEO_PASS, SHADOW_GENERATION, LIGHT_APPLICATION_SPOTLIGHT, LIGHT_APPLICATION_POINTLIGHT, GRID_STAGE, ANIM_STAGE, HUD_STAGE, AA_STAGE };
 
 		RenderModule(HWND hwnd, System::Settings* settings);
