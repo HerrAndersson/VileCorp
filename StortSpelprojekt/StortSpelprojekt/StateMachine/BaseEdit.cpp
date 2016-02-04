@@ -28,7 +28,7 @@ void BaseEdit::Initialize(ObjectHandler* objectHandler, System::Controls* contro
 
 	LoadLevel(3);
 
-	_marker = nullptr;
+	_marker._g = nullptr;
 	_markedTile = nullptr;
 }
 
@@ -39,12 +39,12 @@ BaseEdit::~BaseEdit()
 // Other functions
 GameObject* BaseEdit::GetSelectedObject()
 {
-	return _marker;
+	return _marker._g;
 }
 
 bool BaseEdit::Add(Type type, const std::string& name)
 {
-	return _objectHandler->Add(type, name, _marker->GetPosition(), XMFLOAT3(0.0f, 0.0f, 0.0f));
+	return _objectHandler->Add(type, name, _marker._g->GetPosition(), XMFLOAT3(0.0f, 0.0f, 0.0f));
 }
 
 bool BaseEdit::Delete(Type type)
@@ -52,7 +52,7 @@ bool BaseEdit::Delete(Type type)
 	vector<GameObject*>* vec = &_objectHandler->GetGameObjects()->at(type);
 	for (GameObject* g : *vec)
 	{
-		if (_marker != g && compareFloat3(_marker->GetPosition(), g->GetPosition()))
+		if (_marker._g != g && compareFloat3(_marker._g->GetPosition(), g->GetPosition()))
 		{
 			_objectHandler->Remove(g->GetType(), g->GetID());
 			return true;
@@ -67,7 +67,7 @@ bool BaseEdit::TypeOn(Type type)
 	vector<GameObject*>* vec = &_objectHandler->GetGameObjects()->at(type);
 	for (GameObject* g : *vec)
 	{
-		if (_marker != g && compareFloat3(_marker->GetPosition(), g->GetPosition()))
+		if (_marker._g != g && compareFloat3(_marker._g->GetPosition(), g->GetPosition()))
 		{
 			return true;
 		}
@@ -78,7 +78,7 @@ bool BaseEdit::TypeOn(Type type)
 
 void BaseEdit::DragAndDrop(Type type)
 {
-	if (_marker != nullptr && _isSelectionMode && _controls->IsFunctionKeyDown("MOUSE:DRAG"))
+	if (_marker._g != nullptr && _isSelectionMode && _controls->IsFunctionKeyDown("MOUSE:DRAG"))
 	{
 		AI::Vec2D pickedTile = _pickingDevice->pickTile(_controls->GetMouseCoord()._pos);
 		Tilemap* tilemap = _objectHandler->GetTileMap();
@@ -89,10 +89,10 @@ void BaseEdit::DragAndDrop(Type type)
 			{
 				GameObject* objectOnTile = tilemap->GetObjectOnTile(pickedTile._x, pickedTile._y, type);
 
-				if (objectOnTile == nullptr && _marker->GetType() == type)
+				if (objectOnTile == nullptr && _marker._g->GetType() == type)
 				{
 					// Update positions
-					XMFLOAT3 p = XMFLOAT3(_marker->GetPosition());
+					XMFLOAT3 p = XMFLOAT3(_marker._g->GetPosition());
 					p.x = pickedTile._x;
 					p.z = pickedTile._y;
 
@@ -104,17 +104,42 @@ void BaseEdit::DragAndDrop(Type type)
 							return;
 						}
 
-						if (_isPlace && !_marker->IsVisible())
+						if (_isPlace && !_marker._g->IsVisible())
 						{
-							_marker->SetVisibility(true);
+							_marker._g->SetVisibility(true);
+						}
+
+						_marker._placeable = true;
+						if (type == GUARD || type == ENEMY)
+						{
+							if (tilemap->IsTrapOnTile(pickedTile))
+							{
+								_marker._placeable = false;
+							}
+						}
+						else if (type == TRAP)
+						{
+							if (tilemap->IsEnemyOnTile(pickedTile) || tilemap->IsGuardOnTile(pickedTile))
+							{
+								_marker._placeable = false;
+							}
+						}
+
+						if (!_marker._placeable)
+						{
+							_marker._g->SetColorOffset(XMFLOAT3(1.0f, 0.0f, 0.0f));
+						}
+						else
+						{
+							_marker._g->SetColorOffset(XMFLOAT3(0.0f, 1.0f, 0.0f));
 						}
 
 						// Remove from old tile
-						tilemap->RemoveObjectFromTile(_marker);
+						tilemap->RemoveObjectFromTile(_marker._g);
 
 						//Update the object to the new position
-						_marker->SetPosition(p);
-						tilemap->AddObjectToTile(p.x, p.z, _marker);
+						_marker._g->SetPosition(p);
+						tilemap->AddObjectToTile(p.x, p.z, _marker._g);
 					}
 				}
 			}
@@ -124,11 +149,35 @@ void BaseEdit::DragAndDrop(Type type)
 	{
 		if (_isSelectionMode)
 		{
-			if (_marker != nullptr && _isPlace && !_marker->IsVisible())
+			_marker._g->SetColorOffset(XMFLOAT3(0.0f, 0.0f, 0.0f));
+
+			if (!_marker._placeable)
 			{
-				_objectHandler->Remove(_marker);
+				// Remove from old tile
+				_objectHandler->GetTileMap()->RemoveObjectFromTile(_marker._g);
+
+				XMFLOAT3 p = XMFLOAT3(_marker._g->GetPosition());
+				p.x = _marker._origPos._x;
+				p.z = _marker._origPos._y;
+
+				//Update the object to the new position
+				_marker._g->SetPosition(p);
+				_objectHandler->GetTileMap()->AddObjectToTile(p.x, p.z, _marker._g);
 			}
-			_marker = nullptr;
+
+			if (_marker._g != nullptr && _isPlace)
+			{
+				if (!_marker._g->IsVisible())
+				{
+					_objectHandler->Remove(_marker._g);
+				}
+				if (_marker._created == false && _marker._placeable == false)
+				{
+					_objectHandler->Remove(_marker._g);
+				}
+			}
+
+			_marker.Reset();
 			_isPlace = false;
 		}
 	}
@@ -136,9 +185,9 @@ void BaseEdit::DragAndDrop(Type type)
 
 void BaseEdit::DragAndDrop()
 {
-	if (_marker != nullptr)
+	if (_marker._g != nullptr)
 	{
-		DragAndDrop(_marker->GetType());
+		DragAndDrop(_marker._g->GetType());
 	}
 }
 
@@ -224,7 +273,7 @@ void BaseEdit::DragActivate(Type type, const std::string& objectName)
 {
 	_isPlace = false;
 	AI::Vec2D pickedTile = _pickingDevice->pickTile(_controls->GetMouseCoord()._pos);
-	
+
 	XMFLOAT3 pos;
 
 	Tilemap* tm = _objectHandler->GetTileMap();
@@ -237,8 +286,9 @@ void BaseEdit::DragActivate(Type type, const std::string& objectName)
 				pos = XMFLOAT3(x, 0, z);
 				if (_objectHandler->Add(type, objectName, pos, XMFLOAT3(0.0f, 0.0f, 0.0f)))
 				{
-					_marker = _objectHandler->GetGameObjects()->at(type).back();
-					_marker->SetVisibility(false);
+					_marker._g = _objectHandler->GetGameObjects()->at(type).back();
+					_marker._g->SetVisibility(false);
+					_marker._created = false;
 					_isPlace = true;
 					return;
 				}
@@ -289,7 +339,8 @@ void BaseEdit::HandleInput()
 			if (!objectsOnTile.empty())
 			{
 				//Fetches either the floor if there is no other object on the tile, or the object that is on the tile
-				_marker = objectsOnTile.back();
+				_marker._g = objectsOnTile.back();
+				_marker._origPos = pickedTile;
 			}
 		}
 		if (_isDragAndPlaceMode)
@@ -308,18 +359,18 @@ void BaseEdit::HandleInput()
 		}
 	}
 
-	if (_marker != nullptr)
+	if (_marker._g != nullptr)
 	{
 		// Rotation
-		if (_controls->IsFunctionKeyDown("MAP_EDIT:ROTATE_MARKER_CLOCK"))
+		if (_controls->IsFunctionKeyDown("MAP_EDIT:ROTATE_marker._g_CLOCK"))
 		{
-			XMFLOAT3 tempRot = _marker->GetRotation();
-			_marker->SetRotation(XMFLOAT3(tempRot.x, tempRot.y + (DirectX::XM_PI / 4), tempRot.z));
+			XMFLOAT3 tempRot = _marker._g->GetRotation();
+			_marker._g->SetRotation(XMFLOAT3(tempRot.x, tempRot.y + (DirectX::XM_PI / 4), tempRot.z));
 		}
-		if (_controls->IsFunctionKeyDown("MAP_EDIT:ROTATE_MARKER_COUNTERCLOCK"))
+		if (_controls->IsFunctionKeyDown("MAP_EDIT:ROTATE_marker._g_COUNTERCLOCK"))
 		{
-			XMFLOAT3 tempRot = _marker->GetRotation();
-			_marker->SetRotation(XMFLOAT3(tempRot.x, tempRot.y - (DirectX::XM_PI / 4), tempRot.z));
+			XMFLOAT3 tempRot = _marker._g->GetRotation();
+			_marker._g->SetRotation(XMFLOAT3(tempRot.x, tempRot.y - (DirectX::XM_PI / 4), tempRot.z));
 		}
 	}
 
@@ -351,7 +402,7 @@ void BaseEdit::HandleInput()
 	XMFLOAT3 right(0, 0, 0);
 	bool isMoving = false;
 	float v = 0.06f + (_camera->GetPosition().y * 0.01);
-	
+
 	if (_controls->IsFunctionKeyDown("DEBUG:ENABLE_FREECAM"))
 	{
 		if (_camera->GetMode() == System::LOCKED_CAM)

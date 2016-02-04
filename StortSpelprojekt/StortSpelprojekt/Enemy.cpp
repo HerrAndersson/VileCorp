@@ -38,7 +38,7 @@ void Enemy::EvaluateTile(Type objective, AI::Vec2D tile)
 void Enemy::EvaluateTile(GameObject* obj)
 {
 	int tempPriority = 0;
-	if (obj!= nullptr)
+	if (obj != nullptr)
 	{
 		switch (obj->GetType())
 		{
@@ -47,6 +47,7 @@ void Enemy::EvaluateTile(GameObject* obj)
 			{
 				tempPriority = 2;
 			}
+			break;
 		case SPAWN:
 			if (_heldObject != nullptr)
 			{
