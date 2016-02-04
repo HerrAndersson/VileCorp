@@ -20,17 +20,7 @@ namespace System
 		float _farClip;
 		float _fov;
 	public:
-		Settings(int screenWidth = 1920,
-			int screenHeight = 1080,
-			int shadowMapWidth = 256,
-			int shadowMapHeight = 256,
-			bool fullscreen = true,
-			bool borderless = false,
-			bool showMouseCursor = true,
-			float nearClip = 0.1f,
-			float farClip = 1000.0f,
-			float fov = 1.57079f //almost PI/2
-			);
+		Settings();
 		~Settings();
 
 		template<class A>

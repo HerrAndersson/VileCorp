@@ -9,6 +9,8 @@
 #include "VectorMath.h"
 #include "Shapes.h"
 
+#include "Settings/Settings.h"
+
 using namespace std;
 using namespace DirectX;
 
