@@ -489,6 +489,16 @@ void ObjectHandler::Update(float deltaTime)
 				g->SetPickUpState(ONTILE);
 			}
 
+			if (g->GetType() == GUARD)
+			{
+				Unit* unit = static_cast<Unit*>(g);
+				if (unit->IsSwitchingTile())
+				{
+					_tilemap->RemoveObjectFromTile(g->GetTilePosition(), unit);
+					_tilemap->AddObjectToTile(g->GetTilePosition(), unit);
+				}
+			}
+
 			//if (g->GetType() == ENEMY)									//Handle unit movement
 			//{
 			//	Unit* unit = static_cast<Unit*>(g);

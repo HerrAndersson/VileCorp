@@ -15,7 +15,8 @@ Guard::~Guard()
 
 void Guard::EvaluateTile(Type objective, AI::Vec2D tile)
 {
-	int tempPriority = 0;
+	EvaluateTile(_tileMap->GetObjectOnTile(tile, objective));
+	/*int tempPriority = 0;
 	switch (objective)
 	{ 
 	case LOOT:
@@ -33,7 +34,7 @@ void Guard::EvaluateTile(Type objective, AI::Vec2D tile)
 	{
 		_goalPriority = tempPriority;
 		SetGoal(tile);
-	}
+	}*/
 }
 
 void Guard::EvaluateTile(GameObject * obj)
@@ -86,8 +87,14 @@ void Guard::act(GameObject* obj)
 			if (_tilePosition == _patrolRoute[_currentPatrolGoal % _patrolRoute.size()])
 			{
 				_currentPatrolGoal++;
-				SetGoal(_patrolRoute[_currentPatrolGoal % _patrolRoute.size()]);
+				//SetGoal(_patrolRoute[_currentPatrolGoal % _patrolRoute.size()]);
+				_goalTilePosition = _patrolRoute[_currentPatrolGoal % _patrolRoute.size()];
+				_moveState = MoveState::FINDING_PATH;
 			}
+		}
+		else
+		{
+			_moveState = MoveState::IDLE;
 		}
 
 		break;
@@ -111,7 +118,8 @@ void Guard::SetPatrolPoint(AI::Vec2D patrolPoint)
 
 	}
 	_patrolRoute.push_back(patrolPoint);
-	SetGoal(_patrolRoute[_currentPatrolGoal % _patrolRoute.size()]);
+	_goalTilePosition = _patrolRoute[_currentPatrolGoal % _patrolRoute.size()];
+	_moveState = MoveState::FINDING_PATH;
 }
 
 void Guard::RemovePatrol()
@@ -163,7 +171,7 @@ void Guard::Update(float deltaTime)
 			_position.z += AI::SQRT2 * 0.5f *MOVE_SPEED * _direction._y;
 		}
 		CalculateMatrix();
-		if (IsCenteredOnTile())
+		if (IsCenteredOnTile(_nextTile))
 		{
 			_moveState = MoveState::SWITCHING_NODE;
 		}
@@ -180,19 +188,23 @@ void Guard::Update(float deltaTime)
 }
 
 void Guard::SetNextTile() {
-	_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,0});
-	_tilePosition = _nextTile;
-	_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,4,0});
+	
 
-	if (_pathLength > 0)
+	//_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,0});
+	_tilePosition = _nextTile;																			//Note: Tileposition is now updated at the start of movement, whereas before it was updated at the end.
+	_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,4,0});
+	if (_pathLength > 0)			//TODO: Avoid tile if it's already occupied --Victor
 	{
 		_nextTile = _path[--_pathLength];
 		_direction = _nextTile - _tilePosition;
+		Rotate();
+
 		_moveState = MoveState::MOVING;
 	}
 	else
 	{
 		_moveState = MoveState::AT_OBJECTIVE;
 	}
+	_isSwitchingTile = true;
 	CheckVisibleTiles();
 }

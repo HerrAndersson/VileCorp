@@ -8,7 +8,7 @@ void Unit::CalculatePath()
 		_pathLength = _aStar->GetPathLength();
 		_isMoving = true;
 
-		if (IsCenteredOnTile())
+		if (IsCenteredOnTile(_tilePosition))
 		{
 			_moveState = MoveState::SWITCHING_NODE;
 		}
@@ -49,7 +49,7 @@ void Unit::Rotate()
 		}
 		CalculateMatrix();
 	}
-	_visionCone->ColorVisibleTiles({0,0,0});
+	//_visionCone->ColorVisibleTiles({0,0,0});
 	_visionCone->FindVisibleTiles(_tilePosition, _direction);
 //	_visionCone->ColorVisibleTiles({0,0,3});
 }
@@ -118,6 +118,7 @@ Unit::Unit()
 	_isMoving = false;
 	_direction = {0, -1};
 	_nextTile = _tilePosition;
+	_isSwitchingTile = false;
 	Rotate();
 }
 
@@ -140,6 +141,7 @@ Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	_isMoving = false;
 	_direction = {0, 1};
 	_nextTile = _tilePosition;
+	_isSwitchingTile = false;
 	Rotate();
 	if (_renderObject->_isSkinned)
 	{
@@ -186,6 +188,21 @@ GameObject * Unit::GetHeldObject() const
 	return _heldObject;
 }
 
+Unit::MoveState Unit::GetMoveState() const
+{
+	return _moveState;
+}
+
+
+bool Unit::IsSwitchingTile() const
+{
+	return _isSwitchingTile;
+}
+
+void Unit::SetSwitchingTile(const bool switchTile)
+{
+	_isSwitchingTile = switchTile;
+}
 
 /*
 Checks tiles that are visible to the unit
@@ -268,14 +285,15 @@ void Unit::SetGoal(GameObject * objective)
 	_goalTilePosition = objective->GetTilePosition();
 	_objective = objective;
 	_aStar->CleanMap();
-	if (IsCenteredOnTile())
-	{
-		_aStar->SetStartPosition(_tilePosition);
-	}
-	else
-	{
-		_aStar->SetStartPosition(_tilePosition + _direction);
-	}
+	//if (IsCenteredOnTile())
+	//{
+	//	_aStar->SetStartPosition(_tilePosition);
+	//}
+	//else
+	//{
+	//	_aStar->SetStartPosition(_tilePosition + _direction);
+	//}
+	_aStar->SetStartPosition(_nextTile);
 	_aStar->SetGoalPosition(_goalTilePosition);
 	CalculatePath();
 
@@ -291,9 +309,9 @@ void Unit::Move()
 {
 	if (_isMoving)
 	{
-		_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,0});
+	//	_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,0});
 		_tilePosition += _direction;
-		_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,4,0});
+	//	_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,4,0});
 	}
 	if (_objective != nullptr && _objective->GetPickUpState() != ONTILE)			//Check that no one took your objective
 	{
@@ -393,7 +411,10 @@ void Unit::SetVisibility(bool visible)
 void Unit::SetTilePosition(AI::Vec2D pos)
 {
 	GameObject::SetTilePosition(pos);
-	_nextTile = pos;
+	if (_moveState == MoveState::IDLE)
+	{
+		_nextTile = pos;
+	}
 }
 
 

@@ -112,9 +112,9 @@ Type GameObject::GetType() const
 	return _type;
 }
 
-bool GameObject::IsCenteredOnTile() const
+bool GameObject::IsCenteredOnTile(AI::Vec2D tile) const
 {
-	return abs(_position.x - _tilePosition._x) < TILE_EPSILON && abs(_position.z - _tilePosition._y) < TILE_EPSILON;
+	return abs(_position.x - tile._x) < TILE_EPSILON && abs(_position.z - tile._y) < TILE_EPSILON;
 }
 
 bool GameObject::IsVisible() const

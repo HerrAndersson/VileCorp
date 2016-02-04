@@ -14,7 +14,7 @@ If the object has a renderObject but is out of sight _visibility will be false.
 */
 
 enum PickUpState{ONTILE, HELD, PICKINGUP, DROPPING};
-const float TILE_EPSILON = 0.01f;			//Maximum offset for a position to be considered centered on a tile
+const float TILE_EPSILON = 0.05f;			//Maximum offset for a position to be considered centered on a tile
 class GameObject
 {
 protected:
@@ -65,7 +65,7 @@ public:
 	virtual void SetTilePosition(AI::Vec2D pos);
 	Type GetType() const;
 
-	bool IsCenteredOnTile()const;
+	bool IsCenteredOnTile(AI::Vec2D tile)const;
 
 	bool IsVisible() const;
 	void SetVisibility(bool visible);
