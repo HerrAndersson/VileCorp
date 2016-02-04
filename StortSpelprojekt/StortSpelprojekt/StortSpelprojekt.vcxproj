@@ -38,6 +38,7 @@
     <ClCompile Include="StateMachine\BaseEdit.cpp" />
     <ClCompile Include="StateMachine\LevelEditState.cpp" />
     <ClCompile Include="PickingDevice.cpp" />
+    <ClCompile Include="StateMachine\LevelSelectState.cpp" />
     <ClCompile Include="StateMachine\MenuState.cpp" />
     <ClCompile Include="StateMachine\OptionsState.cpp" />
     <ClCompile Include="StateMachine\PlacementState.cpp" />
@@ -70,6 +71,7 @@
     <ClInclude Include="PickingDevice.h" />
     <ClInclude Include="StateMachine\BaseEdit.h" />
     <ClInclude Include="StateMachine\LevelEditState.h" />
+    <ClInclude Include="StateMachine\LevelSelectState.h" />
     <ClInclude Include="StateMachine\MenuState.h" />
     <ClInclude Include="StateMachine\OptionsState.h" />
     <ClInclude Include="StateMachine\PlacementState.h" />
