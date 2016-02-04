@@ -239,7 +239,6 @@ void Game::Render()
 	}
 
 	//TEMPORARY!!
-	//TODO: LightCulling does not work correctly, which makes the light shine through walls sometimes. The functionality for the light is correct, but the data passed to it is not complete.
 	std::vector<std::vector<std::vector<GameObject*>>> inLight;
 	if (_SM->GetState() == PLAYSTATE)
 	{
@@ -251,7 +250,7 @@ void Game::Render()
 
 		for (unsigned int i = 0; i < _spotlights.size(); i++)
 		{
-			inLight.push_back(_lightCulling->GetObjectsInSpotlight(_spotlights[i]));
+			inLight.push_back(*_lightCulling->GetObjectsInSpotlight(_spotlights[i]));
 		}
 
 		//"Fog of War"

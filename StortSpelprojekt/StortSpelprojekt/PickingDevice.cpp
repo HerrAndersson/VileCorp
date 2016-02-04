@@ -3,7 +3,7 @@
 
 
 
-Ray PickingDevice::calculatePickRay(long x, long y)
+Ray PickingDevice::CalculatePickRay(long x, long y)
 {
 	XMFLOAT3 mouseViewPos;
 	XMFLOAT4X4 viewMatrix;
@@ -19,7 +19,7 @@ Ray PickingDevice::calculatePickRay(long x, long y)
 	float yPos = (float)y;
 
 
-	mouseViewPos.x = (((2 * xPos) / width)- 1.0f) / projMatrix._11;
+	mouseViewPos.x = (((2 * xPos) / width) - 1.0f) / projMatrix._11;
 	mouseViewPos.y = (((-2 * yPos) / height) + 1.0f) / projMatrix._22;
 	mouseViewPos.z = 1.0f;
 
@@ -33,22 +33,19 @@ Ray PickingDevice::calculatePickRay(long x, long y)
 	return ray;
 }
 
-Box PickingDevice::createPickBox(Vec3 points[4])
+std::vector<Vec2> PickingDevice::CreatePickBox(Vec3 points[4])
 {
-	Box pickBox = Box(
-		Vec3((points[0]._x + points[3]._x)*0.5f, (points[0]._y - points[3]._y)*0.5f, (points[0]._z - points[3]._z)*0.5f),
-		std::abs(points[0]._x - points[3]._x),
-		1.0f,
-		std::abs(points[0]._z - points[3]._z),
-		points[0]-points[3],
-		Vec3(0.0f,1.0f,0.0f),
-		points[3]-points[4]
-		);
+	std::vector<Vec2> pickBox;
+	pickBox.reserve(4);
+	for (int i = 0; i < 4; i++)
+	{
+		pickBox.push_back(Vec2(points[i]._x, points[i]._z));
+	}
 
 	return pickBox;
 }
 
-vector<GameObject*> PickingDevice::sortByDistance(vector<GameObject*> pickedObjects)
+vector<GameObject*> PickingDevice::SortByDistance(vector<GameObject*> pickedObjects)
 {
 	vector<GameObject*> sortedObjects;
 
@@ -69,7 +66,7 @@ vector<GameObject*> PickingDevice::sortByDistance(vector<GameObject*> pickedObje
 			}
 		}
 		sortedObjects.push_back(pickedObjects[shortestIndex]);
-		pickedObjects.erase(pickedObjects.begin()+shortestIndex);
+		pickedObjects.erase(pickedObjects.begin() + shortestIndex);
 	}
 
 
@@ -90,26 +87,26 @@ PickingDevice::~PickingDevice()
 	_window = nullptr;
 }
 
-AI::Vec2D PickingDevice::pickTile(POINT mousePoint)
+AI::Vec2D PickingDevice::PickTile(POINT mousePoint)
 {
 	Plane pickPlane = Plane(Vec3(), Vec3(0.0f, 1.0f, 0.0f), 0.0f);
 	Vec3 pickedPoint;
 
-	Ray ray = calculatePickRay(mousePoint.x, mousePoint.y);
+	Ray ray = CalculatePickRay(mousePoint.x, mousePoint.y);
 	if (Collision(ray, pickPlane))
 	{
 		pickedPoint = Intersection(ray, pickPlane);
 	}
-	
-	return AI::Vec2D((int)(pickedPoint._x + 0.5f), (int)(pickedPoint._z + 0.5f));
+
+	return AI::Vec2D((int)(pickedPoint._x), (int)(pickedPoint._z));
 }
 
-XMFLOAT3 PickingDevice::pickPoint(POINT mousePoint)
+XMFLOAT3 PickingDevice::PickPoint(POINT mousePoint)
 {
 	Plane pickPlane = Plane(Vec3(), Vec3(0.0f, 1.0f, 0.0f), 0.0f);
 	Vec3 pickedPoint;
 
-	Ray ray = calculatePickRay(mousePoint.x, mousePoint.y);
+	Ray ray = CalculatePickRay(mousePoint.x, mousePoint.y);
 	if (Collision(ray, pickPlane))
 	{
 		pickedPoint = Intersection(ray, pickPlane);
@@ -118,12 +115,12 @@ XMFLOAT3 PickingDevice::pickPoint(POINT mousePoint)
 	return pickedPoint.convertToXMFLOAT();
 }
 
-vector<GameObject*> PickingDevice::pickObjects(POINT mousePoint, vector<GameObject*> pickableObjects)
+vector<GameObject*> PickingDevice::PickObjects(POINT mousePoint, vector<GameObject*> pickableObjects)
 {
 	vector<GameObject*> pickedObjects;
 
 
-	Ray ray = calculatePickRay(mousePoint.x, mousePoint.y);
+	Ray ray = CalculatePickRay(mousePoint.x, mousePoint.y);
 
 	for (unsigned int i = 0; i < pickableObjects.size(); i++)
 	{
@@ -139,24 +136,24 @@ vector<GameObject*> PickingDevice::pickObjects(POINT mousePoint, vector<GameObje
 
 	for (unsigned int i = 0; i < pickableObjects.size(); i++)
 	{
-		if (pickableObjects[i]->GetTilePosition() == pickTile(mousePoint))
+		if (pickableObjects[i]->GetTilePosition() == PickTile(mousePoint))
 		{
 			pickedObjects.push_back(pickableObjects[i]);
 		}
 	}
 
-	return sortByDistance(pickedObjects);
+	return SortByDistance(pickedObjects);
 }
 
-vector<GameObject*> PickingDevice::boxPickObjects(POINT mousePoint, vector<GameObject*> pickableObjects)
+vector<GameObject*> PickingDevice::BoxPickObjects(POINT mousePoint, vector<GameObject*> pickableObjects)
 {
 	vector<GameObject*> pickedObjects;
 
-	Ray rays[4] = { calculatePickRay(_firstBoxPoint.x, _firstBoxPoint.y),
-					calculatePickRay(mousePoint.x, _firstBoxPoint.y),
-					calculatePickRay(_firstBoxPoint.x, mousePoint.y),
-					calculatePickRay(mousePoint.x, mousePoint.y) };
-	
+	Ray rays[4] = { CalculatePickRay(_firstBoxPoint.x, _firstBoxPoint.y),
+		CalculatePickRay(mousePoint.x, _firstBoxPoint.y),
+		CalculatePickRay(_firstBoxPoint.x, mousePoint.y),
+		CalculatePickRay(mousePoint.x, mousePoint.y) };
+
 
 	Vec3 points[4];
 	Plane pickPlane = Plane(Vec3(), Vec3(0.0f, 1.0f, 0.0f), 0.0f);
@@ -177,50 +174,29 @@ vector<GameObject*> PickingDevice::boxPickObjects(POINT mousePoint, vector<GameO
 
 	if (legitForReal)
 	{
-		Vec3 minPoint = points[0];
-		Vec3 maxPoint = points[0];
-
-		for (int i = 0; i < 4; i++)
-		{
-			if (points[i]._x <= minPoint._x)
-			{
-				minPoint._x = points[i]._x;
-			}
-			if (points[i]._z <= minPoint._z)
-			{
-				minPoint._z = points[i]._z;
-			}
-			if (points[i]._x >= maxPoint._x)
-			{
-				maxPoint._x = points[i]._x;
-			}
-			if (points[i]._z >= maxPoint._z)
-			{
-				maxPoint._z = points[i]._z;
-			}
-
-		}
-
+		std::vector<Vec2> point;
+		std::vector<Vec2> box = CreatePickBox(points);
 		for (unsigned int i = 0; i < pickableObjects.size(); i++)
 		{
 			Vec3 pos = Vec3(pickableObjects[i]->GetPosition());
-			if (pos._x < maxPoint._x && pos._x > minPoint._x &&
-				pos._z < maxPoint._z && pos._z > minPoint._z)
+			point.push_back(Vec2(pos._x, pos._z));
+			if (Collision(&point, &box))
 			{
 				pickedObjects.push_back(pickableObjects[i]);
 			}
+			point.clear();
 		}
 	}
 
 	return pickedObjects;
 }
 
-vector<GameObject*> PickingDevice::pickTilemap(POINT mousePoint, Tilemap* tilemap)
+vector<GameObject*> PickingDevice::PickTilemap(POINT mousePoint, Tilemap* tilemap)
 {
-	return tilemap->GetAllObjectsOnTile(pickTile(mousePoint));
+	return tilemap->GetAllObjectsOnTile(PickTile(mousePoint));
 }
 
-void PickingDevice::setFirstBoxPoint(POINT mousePoint)
+void PickingDevice::SetFirstBoxPoint(POINT mousePoint)
 {
 	_firstBoxPoint = mousePoint;
 }
