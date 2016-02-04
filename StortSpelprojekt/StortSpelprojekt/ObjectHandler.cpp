@@ -17,13 +17,13 @@ ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, G
 ObjectHandler::~ObjectHandler()
 {
 	Release();
+	SAFE_DELETE(_buildingGrid);
 }
 
 void ObjectHandler::Release()
 {
 	ReleaseGameObjects();
 	SAFE_DELETE( _tilemap);
-	SAFE_DELETE(_buildingGrid);
 }
 
 void ObjectHandler::ActivateTileset(const string& name)
