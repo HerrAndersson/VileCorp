@@ -8,7 +8,6 @@ Game::Game(HINSTANCE hInstance, int nCmdShow):
 {
 	System::Settings* settings = _settingsReader.GetSettings();
 
-
 	_gameHandle = this;
 	_window = new System::Window("Amazing game", hInstance, settings, WndProc);
 
@@ -25,9 +24,6 @@ Game::Game(HINSTANCE hInstance, int nCmdShow):
 	_camera->SetPosition(XMFLOAT3(3, 20, 0));
 	_camera->SetRotation(XMFLOAT3(60, 0, 0));
 
-	_timer = System::Timer();
-
-	//GameObjectInfo* _data = new GameObjectInfo();
 	GameObjectDataLoader gameObjectDataLoader;
 	gameObjectDataLoader.WriteSampleGameObjects();
 	gameObjectDataLoader.LoadGameObjectInfo(&_data);
@@ -43,22 +39,21 @@ Game::Game(HINSTANCE hInstance, int nCmdShow):
 	//_controls->SaveKeyBindings(System::MAP_EDIT_KEYMAP, "MOVE_CAMERA_UP", "M");
 
 	Renderer::Spotlight* spot;
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i < 1; i++)
 	{
 		SpotlightData lightdata;
 		lightdata._angle = XM_PIDIV4;
 		lightdata._color = XMFLOAT3(0.6f, 0.6f, 0.6f);
 		lightdata._range = 9.5f;
 		lightdata._intensity = 1.0f;
-		int d = _renderModule->SHADOWMAP_DIMENSIONS;
-		spot = new Renderer::Spotlight(_renderModule->GetDevice(), lightdata, d, d, 0.1f, 1000.0f);
-		spot->SetPositionAndRotation(XMFLOAT3(3 + i*2, 1, 2 + i * 2), XMFLOAT3(0,-65*i,0));
+		spot = new Renderer::Spotlight(_renderModule->GetDevice(), lightdata, settings->_shadowMapHeight, settings->_nearClip, settings->_farClip);
+		spot->SetPositionAndRotation(XMFLOAT3(13 + i*2, 1, 12 + i * 2), XMFLOAT3(0,-65*i,0));
 		_spotlights.push_back(spot);
 	}
 	Renderer::Pointlight* point;
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < 11; i++)
 	{
-		point = new Renderer::Pointlight(_renderModule->GetDevice(), XMFLOAT3(5 + 3 * sin(25 + i * 2 + rand() % ((i+1)) / 8) * sin(i) + 1, 0.05f, 5 + 3 * sin(25 + i * 2 + rand() % ((i + 1)) / 8) * cos(i)), 1.0f, 1.0f, XMFLOAT3(sin(i*i * 6), sin(i * 50 * i), sin(120 * i * i)));
+		point = new Renderer::Pointlight(_renderModule->GetDevice(), XMFLOAT3(5 + 3 * sin(25 + i * 2 + rand() % ((i+1)) / 8) * sin(i) + 1, 0.05f, 5 + 3 * sin(25 + i * 2 + rand() % ((i + 1)) / 8) * cos(i)), rand() % 3, 1.0f, XMFLOAT3(sin(i*i * 6), sin(i * 50 * i), sin(120 * i * i)));
 		_pointlights.push_back(point);
 	}
 
@@ -77,12 +72,12 @@ Game::~Game()
 	SAFE_DELETE(_pickingDevice);
 	SAFE_DELETE(_fontWrapper);
 	SAFE_DELETE(_lightCulling);
+
 	for(auto s : _spotlights)
 	{
 		SAFE_DELETE(s);
 	}
-
-	for (auto p : _pointlights)
+	for(auto p : _pointlights)
 	{
 		SAFE_DELETE(p);
 	}

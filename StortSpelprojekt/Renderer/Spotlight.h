@@ -39,7 +39,7 @@ namespace Renderer
 
 	public:
 
-		Spotlight(ID3D11Device* device, SpotlightData lightdata, int width, int height, float nearClip, float farClip, int resolution = 72);
+		Spotlight(ID3D11Device* device, SpotlightData lightdata, int size, float nearClip, float farClip, int resolution = 72);
 		~Spotlight();
 
 		void SetPosition(const DirectX::XMFLOAT3& position);
