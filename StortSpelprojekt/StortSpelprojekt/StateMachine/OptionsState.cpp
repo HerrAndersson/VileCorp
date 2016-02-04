@@ -85,7 +85,7 @@ void OptionsState::Update(float deltaTime)
 	{
 		ChangeState(State::MENUSTATE);
 	}
-	if (_controls->IsFunctionKeyDown("MENU:CLICK"))
+	if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
 		bool showApplyButton = false;
 		showApplyButton = showApplyButton || HandleOptionSwitch("res_left", "res_right", "res_content", _resolutionOption, _resolution, RESOLUTION_MAX);
@@ -102,7 +102,6 @@ void OptionsState::Update(float deltaTime)
 		System::MouseCoord coord = _controls->GetMouseCoord();
 		if (_uiTree.IsButtonColliding("apply", coord._pos.x, coord._pos.y))
 		{
-			//TODO: Apply to the game in runtime with ResizeResources
 			System::Settings* settings = _settingsReader->GetSettings();
 
 			//Resolution
@@ -130,7 +129,8 @@ void OptionsState::Update(float deltaTime)
 				settings->_borderless = false;
 				settings->_showMouseCursor = true;
 			}
-			//TODO: Antialiasing option
+			//TODO: Antialiasing option //Mattias
+			//TODO: Window size is separate from resolution //Mattias
 
 			_settingsReader->ApplySettings();
 			_uiTree.GetNode("apply")->SetHidden(true);
