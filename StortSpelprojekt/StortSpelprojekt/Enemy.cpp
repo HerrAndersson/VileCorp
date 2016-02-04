@@ -47,6 +47,7 @@ void Enemy::EvaluateTile(GameObject* obj)
 			{
 				tempPriority = 2;
 			}
+			break;
 		case SPAWN:
 			if (_heldObject != nullptr)
 			{
@@ -62,9 +63,19 @@ void Enemy::EvaluateTile(GameObject* obj)
 		default:
 			break;
 		}
-		if (obj->GetPickUpState() == ONTILE && tempPriority > 0 && obj->GetTilePosition() != _tilePosition && (_pathLength <= 0 || tempPriority * GetApproxDistance(obj->GetTilePosition()) < _goalPriority * GetApproxDistance(GetGoal())))
+
+		//Head to the objective
+		if (obj->GetPickUpState() == ONTILE && 
+			tempPriority > 0 &&
+			obj->GetTilePosition() != _tilePosition && 
+			(_pathLength <= 0 || tempPriority * GetApproxDistance(obj->GetTilePosition()) < _goalPriority * GetApproxDistance(GetGoal())))
 		{
 			_goalPriority = tempPriority;
+			SetGoal(obj);
+		}
+		//Head for the exit, all objectives are taken
+		else if (_heldObject == nullptr && _pathLength <= 0)
+		{
 			SetGoal(obj);
 		}
 	}

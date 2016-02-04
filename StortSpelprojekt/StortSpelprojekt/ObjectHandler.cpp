@@ -210,9 +210,7 @@ bool ObjectHandler::Remove(Type type, int ID)
 
 			// Remove pointer value to avoid various problems
 			_gameObjects[type].pop_back();
-
 			_objectCount--;
-
 
 			return true;
 		}
@@ -316,7 +314,10 @@ Tilemap * ObjectHandler::GetTileMap() const
 
 void ObjectHandler::SetTileMap(Tilemap * tilemap)
 {
-	delete _tilemap;
+	if (_tilemap != nullptr)
+	{
+		delete _tilemap;
+	}
 	_tilemap = tilemap;
 }
 
@@ -500,7 +501,7 @@ void ObjectHandler::DisableSpawnPoints()
 
 void ObjectHandler::Update(float deltaTime)
 {
-	//Update all objects gamelogic
+	//Update all object's gamelogic
 
 	for (int i = 0; i < NR_OF_TYPES; i++)
 	{
@@ -523,29 +524,35 @@ void ObjectHandler::Update(float deltaTime)
 			if (g->GetType() == GUARD || g->GetType() == ENEMY)									//Handle unit movement
 			{
 				Unit* unit = static_cast<Unit*>(g);
-
 				GameObject* heldObject = unit->GetHeldObject();
 
 				if (heldObject != nullptr)
 				{
 					heldObject->SetPosition(DirectX::XMFLOAT3(unit->GetPosition().x, unit->GetPosition().y + 2, unit->GetPosition().z));
+					heldObject->SetTilePosition(AI::Vec2D(heldObject->GetPosition().x, heldObject->GetPosition().z));
 				}
 
 				if (unit->GetHealth() <= 0)
 				{
-					for (unsigned int k = 0; k < _gameObjects[SPAWN].size(); k++)
-					{
-						//If the enemy is at the despawn point with the diamond, remove the diamond and the enemy, Aron
-						if ((int)unit->GetTilePosition()._x == (int)_gameObjects[SPAWN][k]->GetTilePosition()._x &&
-							(int)unit->GetTilePosition()._y == (int)_gameObjects[SPAWN][k]->GetTilePosition()._y)
-						{
-							Remove(heldObject);
-						}
-					}
-
 					if (heldObject != nullptr)
 					{
-						heldObject->SetPosition(XMFLOAT3(heldObject->GetPosition().x, 0.0f, heldObject->GetPosition().z));
+						bool lootRemoved = false;
+
+						for (uint k = 0; k < _gameObjects[SPAWN].size() && !lootRemoved; k++)
+						{
+							//If the enemy is at the despawn point with an objective, remove the objective and the enemy, Aron
+							if ((int)unit->GetTilePosition()._x == (int)_gameObjects[SPAWN][k]->GetTilePosition()._x &&
+								(int)unit->GetTilePosition()._y == (int)_gameObjects[SPAWN][k]->GetTilePosition()._y)
+							{
+								lootRemoved = Remove(heldObject);
+							}
+						}
+
+						if (!lootRemoved)
+						{
+							heldObject->SetPickUpState(DROPPING);
+							heldObject->SetPosition(XMFLOAT3(heldObject->GetPosition().x, 0.0f, heldObject->GetPosition().z));
+						}
 					}
 
 					Remove(g);
@@ -567,9 +574,31 @@ void ObjectHandler::Update(float deltaTime)
 							static_cast<Trap*>(_tilemap->GetObjectOnTile(g->GetTilePosition()._x, g->GetTilePosition()._y, TRAP))->Activate(unit);
 						}*/
 					}
+
 					if (unit->GetType() == GUARD && _tilemap->IsEnemyOnTile(g->GetTilePosition()))
 					{
 						unit->act(_tilemap->GetObjectOnTile(g->GetTilePosition(), ENEMY));
+					}
+
+					//If all the objectives are looted and the enemy is at a (de)spawn point, despawn them.
+					bool allLootIsCarried = true;
+					for (uint k = 0; k < _gameObjects[SPAWN].size(); k++)
+					{
+						for (uint l = 0; l < _gameObjects[LOOT].size() && allLootIsCarried; l++)
+						{
+							if (_gameObjects[LOOT][l]->GetPickUpState() == ONTILE || _gameObjects[LOOT][l]->GetPickUpState() == DROPPING)
+							{
+								allLootIsCarried = false;
+							}
+						}
+
+						if (unit->GetType() != GUARD &&
+							(_gameObjects[LOOT].size() == 0 || allLootIsCarried) &&
+							(int)unit->GetTilePosition()._x == (int)_gameObjects[SPAWN][k]->GetTilePosition()._x &&
+							(int)unit->GetTilePosition()._y == (int)_gameObjects[SPAWN][k]->GetTilePosition()._y)
+						{
+							unit->TakeDamage(10);
+						}
 					}
 				}
 			}
