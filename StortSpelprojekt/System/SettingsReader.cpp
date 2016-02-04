@@ -7,15 +7,16 @@ namespace System
 {
 	SettingsReader::SettingsReader(const std::string& settingsFileName) :
 		_settings(),
-		_settingsFileName(settingsFileName),
 		_settingsHasChanged(false)
 	{
-		LoadXML(_settingsFileName, _settings);
+		_settingsFileName = new std::string(settingsFileName);
+		LoadXML(*_settingsFileName, _settings);
 	}
 
 
 	SettingsReader::~SettingsReader()
 	{
+		delete _settingsFileName;
 	}
 
 	Settings* SettingsReader::GetSettings()
@@ -26,7 +27,7 @@ namespace System
 	void SettingsReader::ApplySettings()
 	{
 		_settingsHasChanged = true;
-		SaveXML(_settingsFileName, _settings);
+		SaveXML(*_settingsFileName, _settings);
 	}
 
 	bool SettingsReader::GetSettingsChanged()

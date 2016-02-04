@@ -10,7 +10,7 @@ namespace System
 	{
 	private:
 		Settings _settings;
-		std::string _settingsFileName;
+		std::string* _settingsFileName;
 		bool _settingsHasChanged;
 	public:
 		SettingsReader(const std::string& settingsFileName);
