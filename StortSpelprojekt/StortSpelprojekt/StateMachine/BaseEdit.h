@@ -35,8 +35,6 @@ private:
 	bool _isDragAndPlaceMode;
 	bool _isPlace;
 
-	
-
 	// No placement grids?
 
 	void HandleInput();

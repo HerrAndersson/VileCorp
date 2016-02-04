@@ -42,8 +42,7 @@ void MenuState::Update(float deltaTime)
 		}
 		if (_uiTree.IsButtonColliding("exitbutton", coord._pos.x, coord._pos.y))
 		{
-			//TODO: This is a hack, this fuction should instead return a value if the game should quit //Mattias
-			PostQuitMessage(0);
+			ChangeState(State::EXITSTATE);
 		}
 	}
 	if (_controls->IsFunctionKeyDown("MENU:MENU"))
