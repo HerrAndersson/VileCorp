@@ -89,7 +89,7 @@ void BaseEdit::DragAndDrop(Type type)
 
 	if (_marker != nullptr && _isSelectionMode && _controls->IsFunctionKeyDown("MAP_EDIT:DRAG"))
 	{
-		AI::Vec2D pickedTile = _pickingDevice->pickTile(_controls->GetMouseCoord()._pos);
+		AI::Vec2D pickedTile = _pickingDevice->PickTile(_controls->GetMouseCoord()._pos);
 		
 		if (_objectHandler->GetTileMap()->IsValid(pickedTile._x, pickedTile._y))
 		{
@@ -152,7 +152,7 @@ void BaseEdit::DragAndPlace(Type type, std::string objectName)
 {
 	if (_isDragAndPlaceMode && _controls->IsFunctionKeyUp("MAP_EDIT:SELECT"))
 	{
-		AI::Vec2D pickedTile = _pickingDevice->pickTile(_controls->GetMouseCoord()._pos);
+		AI::Vec2D pickedTile = _pickingDevice->PickTile(_controls->GetMouseCoord()._pos);
 
 		// Identify min and max
 		int minX, maxX;
@@ -229,7 +229,7 @@ void BaseEdit::DragAndPlace(Type type, std::string objectName)
 void BaseEdit::DragActivate(Type type, std::string objectName)
 {
 	_isPlace = false;
-	AI::Vec2D pickedTile = _pickingDevice->pickTile(_controls->GetMouseCoord()._pos);
+	AI::Vec2D pickedTile = _pickingDevice->PickTile(_controls->GetMouseCoord()._pos);
 	
 	XMFLOAT3 pos;
 
@@ -290,7 +290,7 @@ void BaseEdit::HandleInput()
 	{
 		if (_isSelectionMode && !_isPlace)
 		{
-			AI::Vec2D pickedTile = _pickingDevice->pickTile(_controls->GetMouseCoord()._pos);
+			AI::Vec2D pickedTile = _pickingDevice->PickTile(_controls->GetMouseCoord()._pos);
 			std::vector<GameObject*> objectsOnTile = _objectHandler->GetTileMap()->GetAllObjectsOnTile(pickedTile);
 			if (!objectsOnTile.empty())
 			{
@@ -301,7 +301,7 @@ void BaseEdit::HandleInput()
 		if (_isDragAndPlaceMode)
 		{
 			_isPlace = true;
-			_markedTile = new AI::Vec2D(_pickingDevice->pickTile(_controls->GetMouseCoord()._pos));
+			_markedTile = new AI::Vec2D(_pickingDevice->PickTile(_controls->GetMouseCoord()._pos));
 		}
 	}
 
@@ -310,7 +310,7 @@ void BaseEdit::HandleInput()
 		if (_isDragAndPlaceMode)
 		{
 			_isPlace = false;
-			_markedTile = new AI::Vec2D(_pickingDevice->pickTile(_controls->GetMouseCoord()._pos));
+			_markedTile = new AI::Vec2D(_pickingDevice->PickTile(_controls->GetMouseCoord()._pos));
 		}
 	}
 

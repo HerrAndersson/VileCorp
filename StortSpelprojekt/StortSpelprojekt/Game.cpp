@@ -44,7 +44,7 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	//_controls->SaveKeyBindings(System::MAP_EDIT_KEYMAP, "MOVE_CAMERA_UP", "M");
 
 	Renderer::Spotlight* spot;
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i < 10; i++)
 	{
 		SpotlightData lightdata;
 		lightdata._angle = XM_PIDIV4;
@@ -192,7 +192,7 @@ void Game::Render()
 	std::vector<std::vector<GameObject*>>* gameObjects = _objectHandler->GetGameObjects();
 
 	/*------------------------------------------------  Render non-skinned objects  ---------------------------------------------------*/
-	for (auto i : gameObjects)
+	for (auto i : *gameObjects)
 	{
 		if (i.size() > 0)
 		{
@@ -237,45 +237,16 @@ void Game::Render()
 
 
  
-	std::vector<std::vector<std::vector<GameObject*>>> inLight;
+	std::vector<std::vector<GameObject*>> inLight;
 	if (_SM->GetState() == PLAYSTATE)
 	{
-		
-		//inLight.push_back(gameObjects);
-		
-		
 		if (!init)
 		{
 			init = true;
 			_lightCulling = new LightCulling(_objectHandler->GetTileMap());
 		}
-
-		for (int i = 0; i < _spotlights.size(); i++)
-		{
-			inLight.push_back(_lightCulling->GetObjectsInSpotlight(_spotlights[i]));
-		}
-
-		//"Fog of War"
-		for (int i = 0; i < _spotlights.size(); i++)
-		{
-			if (inLight.at(i).size() >= ENEMY)
-			{
-				if (inLight.at(i).at(ENEMY).size() > 0)
-				{
-					RenderObject* renderObject = inLight.at(i).at(ENEMY).at(0)->GetRenderObject();
-
-					_renderModule->SetDataPerObjectType(renderObject);
-					int vertexBufferSize = renderObject->_mesh._vertexBufferSize;
-
-					for (GameObject* a : inLight.at(i).at(ENEMY))
-					{
-						//_renderModule->RenderAnimation(a->GetMatrix(), vertexBufferSize, a->GetAnimation()->GetTransforms(), a->GetColorOffset());
-						_renderModule->Render(a->GetMatrix(), vertexBufferSize, a->GetColorOffset());
-					}
-				}
-			}
-		}
 	}
+
 
 	if (_SM->GetState() == LEVELEDITSTATE)
 	{
@@ -298,8 +269,9 @@ void Game::Render()
 		_renderModule->SetLightDataPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
 		for (unsigned int i = 0; i < _spotlights.size(); i++)
 		{
-			std::vector<vector<GameObject*>>* inLight = _lightCulling->GetObjectsInSpotlight(_spotlights[i]);
 			//std::vector<vector<GameObject*>>* inLight = _objectHandler->GetGameObjects();
+			std::vector<vector<GameObject*>>* inLight = _lightCulling->GetObjectsInSpotlight(_spotlights[i]);
+			
 
 			_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::SHADOW_GENERATION);
 			_renderModule->SetShadowMapDataPerSpotlight(_spotlights[i]->GetViewMatrix(), _spotlights[i]->GetProjectionMatrix());

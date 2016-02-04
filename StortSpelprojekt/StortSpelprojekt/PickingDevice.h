@@ -22,9 +22,9 @@ private:
 
 	
 
-	Ray calculatePickRay(long x, long y);
-	Box createPickBox(Vec3 points[4]);
-	vector<GameObject*> sortByDistance(vector<GameObject*> pickedObjects);
+	Ray CalculatePickRay(long x, long y);
+	std::vector<Vec2> CreatePickBox(Vec3 points[4]);
+	vector<GameObject*> SortByDistance(vector<GameObject*> pickedObjects);
 
 
 public:
@@ -32,14 +32,14 @@ public:
 	~PickingDevice();
 	POINT _firstBoxPoint;
 	//This function only works if the level is aligned worldspace, must check x&y>=0 && <height&width /Markus
-	AI::Vec2D pickTile(POINT mousePoint);
+	AI::Vec2D PickTile(POINT mousePoint);
 
-	XMFLOAT3 pickPoint(POINT mousePoint);
-	vector<GameObject*> pickObjects(POINT mousePoint, vector<GameObject*> pickableObjects);
-	vector<GameObject*> boxPickObjects(POINT mousePoint, vector<GameObject*> pickableObjects);
-	vector<GameObject*> pickTilemap(POINT mousePoint, Tilemap* tilemap);
+	XMFLOAT3 PickPoint(POINT mousePoint);
+	vector<GameObject*> PickObjects(POINT mousePoint, vector<GameObject*> pickableObjects);
+	vector<GameObject*> BoxPickObjects(POINT mousePoint, vector<GameObject*> pickableObjects);
+	vector<GameObject*> PickTilemap(POINT mousePoint, Tilemap* tilemap);
 
 	//Used to save the first mouseposition when boxselecting
-	void setFirstBoxPoint(POINT mousePoint);
+	void SetFirstBoxPoint(POINT mousePoint);
 };
 

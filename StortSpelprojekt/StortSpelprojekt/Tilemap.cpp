@@ -210,7 +210,7 @@ GameObject * Tilemap::GetObjectOnTile(AI::Vec2D pos, Type type) const
 		switch (type)
 		{
 		case FLOOR:
-			result = _map[x][z]._objectsOnTile[0];
+			result = _map[pos._x][pos._y]._objectsOnTile[0];
 			break;
 		case WALL:
 			result = _map[pos._x][pos._y]._objectsOnTile[0];
@@ -222,10 +222,10 @@ GameObject * Tilemap::GetObjectOnTile(AI::Vec2D pos, Type type) const
 			result = _map[pos._x][pos._y]._objectsOnTile[2];
 			break;
 		case LOOT:
-			result = _map[x][z]._objectsOnTile[3];
+			result = _map[pos._x][pos._y]._objectsOnTile[3];
 			break;
 		case SPAWN:
-			result = _map[x][z]._objectsOnTile[3];
+			result = _map[pos._x][pos._y]._objectsOnTile[3];
 			break;
 		case TRAP:
 			result = _map[pos._x][pos._y]._objectsOnTile[3];
