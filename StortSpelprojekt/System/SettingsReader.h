@@ -16,9 +16,8 @@ namespace System
 		SettingsReader(const std::string& settingsFileName);
 		~SettingsReader();
 
-
 		Settings* GetSettings();
-		void ApplySettings(const Settings& settings);
+		void ApplySettings();
 		bool GetSettingsChanged();
 		void SetSettingsChanged(bool changed);
 

@@ -23,9 +23,8 @@ namespace System
 		return &_settings;
 	}
 
-	void SettingsReader::ApplySettings(const Settings& settings)
+	void SettingsReader::ApplySettings()
 	{
-		_settings = settings;
 		_settingsHasChanged = true;
 		SaveXML(_settingsFileName, _settings);
 	}

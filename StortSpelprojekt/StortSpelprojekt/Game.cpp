@@ -34,7 +34,7 @@ Game::Game(HINSTANCE hInstance, int nCmdShow):
 
 	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager, data);
 	_pickingDevice = new PickingDevice(_camera, settings);
-	_SM = new StateMachine(_controls, _objectHandler, _camera, _pickingDevice, "Assets/gui.json", _assetManager, _fontWrapper, settings);
+	_SM = new StateMachine(_controls, _objectHandler, _camera, _pickingDevice, "Assets/gui.json", _assetManager, _fontWrapper, settings, &_settingsReader);
 
 	_SM->Update(_timer.GetFrameTime());
 	

@@ -7,7 +7,8 @@ StateMachine::StateMachine(System::Controls* controls,
 	const std::string& filename,
 	AssetManager* assetManager,
 	FontWrapper* fontWrapper,
-	System::Settings* settings)
+	System::Settings* settings,
+	System::SettingsReader* settingsReader)
 {
 	_currentState = State::SPLASHSTATE;
 
@@ -17,7 +18,7 @@ StateMachine::StateMachine(System::Controls* controls,
 	_baseStates.push_back(new PlacementState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settings));
 	_baseStates.push_back(new LevelEditState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settings));
 	_baseStates.push_back(new LevelSelectState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settings));
-	_baseStates.push_back(new OptionsState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settings));
+	_baseStates.push_back(new OptionsState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settings, settingsReader));
 }
 
 StateMachine::~StateMachine()

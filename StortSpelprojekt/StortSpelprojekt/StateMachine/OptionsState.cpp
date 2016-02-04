@@ -2,14 +2,11 @@
 
 #include "../Game.h"
 
-OptionsState::OptionsState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::Settings* settings)
+OptionsState::OptionsState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::Settings* settings, System::SettingsReader* settingsReader)
 	: BaseState (controls, objectHandler, camera, pickingDevice, filename, "OPTIONS", assetManager, fontWrapper, settings)
 {
 	_controls = controls;
 	_objectHandler = objectHandler;
-
-	_camera = camera;
-	_pickingDevice = pickingDevice;
 
 	//Resolution options
 	_resolution[0] = { L"1920x1080", 1920, 1080 };
@@ -37,6 +34,8 @@ OptionsState::OptionsState(System::Controls* controls, ObjectHandler* objectHand
 	_aaOption = 0;
 
 	_volumeOption = 100.0f;
+
+	_settingsReader = settingsReader;
 }
 
 OptionsState::~OptionsState()
@@ -104,7 +103,36 @@ void OptionsState::Update(float deltaTime)
 		if (_uiTree.IsButtonColliding("apply", coord._pos.x, coord._pos.y))
 		{
 			//TODO: Apply to the game in runtime with ResizeResources
+			System::Settings* settings = _settingsReader->GetSettings();
 
+			//Resolution
+			settings->_screenWidth = _resolution[_resolutionOption]._value;
+			settings->_screenHeight = _resolution[_resolutionOption]._value2;
+			//Shadow map resolution
+			settings->_shadowMapWidth = _shadowmap[_shadowmapOption]._value;
+			settings->_shadowMapHeight = _shadowmap[_shadowmapOption]._value2;
+			//Window options
+			if (_window[_windowOption]._value == 1)
+			{
+				settings->_fullscreen = true;
+				settings->_borderless = false;
+				settings->_showMouseCursor = true;
+			}
+			else if (_window[_windowOption]._value == 2)
+			{
+				settings->_fullscreen = false;
+				settings->_borderless = true;
+				settings->_showMouseCursor = true;
+			}
+			else if (_window[_windowOption]._value == 3)
+			{
+				settings->_fullscreen = false;
+				settings->_borderless = false;
+				settings->_showMouseCursor = true;
+			}
+			//TODO: Antialiasing option
+
+			_settingsReader->ApplySettings();
 			_uiTree.GetNode("apply")->SetHidden(true);
 		}
 		if (_uiTree.IsButtonColliding("cancel", coord._pos.x, coord._pos.y))

@@ -32,7 +32,8 @@ public:
 		const std::string& filename,
 		AssetManager* assetManager,
 		FontWrapper* fontWrapper,
-		System::Settings* settings);
+		System::Settings* settings,
+		System::SettingsReader* settingsReader);
 	~StateMachine();
 
 	bool Update(float deltaTime);
