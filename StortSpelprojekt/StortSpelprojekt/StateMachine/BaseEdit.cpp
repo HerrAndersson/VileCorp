@@ -38,6 +38,11 @@ BaseEdit::~BaseEdit()
 {
 }
 
+void BaseEdit::Release()
+{
+	_objectHandler->Release();
+}
+
 // Other functions
 GameObject* BaseEdit::GetSelectedObject()
 {

@@ -1,4 +1,5 @@
 #include "ObjectHandler.h"
+#include "stdafx.h"
 
 ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data)
 {
@@ -8,23 +9,24 @@ ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, G
 	_gameObjectInfo = data;
 	_device = device;
 
-	for (int i = 0; i < NR_OF_TYPES; i++)
-	{
-		_gameObjects.push_back(std::vector<GameObject*>());
-	}
+	
 	ActivateTileset("default2");
 }
 
 ObjectHandler::~ObjectHandler()
 {
 	Release();
-	delete _tilemap;
-	delete _gameObjectInfo;
+}
+
+void ObjectHandler::Release()
+{
+	ReleaseGameObjects();
+	SAFE_DELETE( _tilemap);
 }
 
 void ObjectHandler::ActivateTileset(const string& name)
 {
-	Release();
+	ReleaseGameObjects();
 	_assetManager->ActivateTileset(name);
 
 	for (uint a = 0; a < Type::NR_OF_TYPES; a++)
@@ -443,12 +445,20 @@ bool ObjectHandler::LoadLevel(int lvlIndex)
 	bool result = _assetManager->ParseLevel(lvlIndex, gameObjectData, dimX, dimY);
 	if (result)
 	{
+		if (_gameObjects.size() < 1)
+		{
+			for (int i = 0; i < NR_OF_TYPES; i++)
+			{
+				_gameObjects.push_back(std::vector<GameObject*>());
+			}
+		}
+
 		delete _tilemap;
 		_tilemap = new Tilemap(AI::Vec2D(dimX, dimY));
 
 		for (auto i : gameObjectData)
 		{
-		Add((Type)i._tileType, 0, DirectX::XMFLOAT3(i._posX, 0, i._posZ), DirectX::XMFLOAT3(0, i._rotY, 0));
+			Add((Type)i._tileType, 0, DirectX::XMFLOAT3(i._posX, 0, i._posZ), DirectX::XMFLOAT3(0, i._rotY, 0));
 		}
 	}
 	return result;
@@ -612,16 +622,29 @@ void ObjectHandler::Update(float deltaTime)
 	}
 }
 
-void ObjectHandler::Release()
+void ObjectHandler::ReleaseGameObjects()
 {
-	for (int i = 0; i < NR_OF_TYPES; i++)
+	int debug;
+	std::vector<GameObject*> tempVector;
+
+	if (_gameObjects.size() > 0)
 	{
-		for (GameObject* g : _gameObjects[i])
+		for (int i = 0; i < NR_OF_TYPES; i++)
 		{
-			g->Release();
-			delete g;
+			for (GameObject* g : _gameObjects[i])
+			{
+				g->Release();
+				delete g;
+			}
+			_gameObjects[i].clear();
+			std::vector<GameObject*>().swap(_gameObjects[i]);
+			_gameObjects[i].shrink_to_fit();
+			debug = _gameObjects[i].size();
 		}
-		_gameObjects[i].clear();
+		_gameObjects.clear();
+		std::vector<GameObject*>().swap(tempVector);
+		_gameObjects.shrink_to_fit();
+		debug = _gameObjects.size();
 	}
 	_idCount = 0;
 	_objectCount = 0;

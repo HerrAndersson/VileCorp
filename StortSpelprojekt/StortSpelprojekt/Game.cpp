@@ -25,12 +25,12 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 
 	_timer = System::Timer();
 
-	GameObjectInfo* data = new GameObjectInfo();
+	//GameObjectInfo* _data = new GameObjectInfo();
 	GameObjectDataLoader gameObjectDataLoader;
 	gameObjectDataLoader.WriteSampleGameObjects();
-	gameObjectDataLoader.LoadGameObjectInfo(data);
+	gameObjectDataLoader.LoadGameObjectInfo(&_data);
 
-	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager, data);
+	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager, &_data);
 	_pickingDevice = new PickingDevice(_camera, _window);
 	_SM = new StateMachine(_controls, _objectHandler, _camera, _pickingDevice, "Assets/gui.json", _assetManager, _fontWrapper, _windowSettings._width, _windowSettings._height);
 
@@ -135,7 +135,7 @@ bool Game::Update(float deltaTime)
 		_window->ResizeWindow(windowSettings);
 	}
 
-
+	/*
 	_enemies = _objectHandler->GetAllByType(ENEMY);
 	_loot = _objectHandler->GetAllByType(LOOT);
 
@@ -155,7 +155,7 @@ bool Game::Update(float deltaTime)
 			//TODO: Add something to notify the player that they've SUCK and they can replay the level
 		}
 	}
-
+	*/
 
 	//Save for debugging //Jonas
 	int i = 0;

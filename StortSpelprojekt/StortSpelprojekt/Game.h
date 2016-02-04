@@ -38,6 +38,7 @@ private:
 	PlayerInfo					_playerInfo;
 	SettingInfo					_gameSettings;
 	System::WindowSettings		_windowSettings;
+	GameObjectInfo				_data;
 
 	bool						_hasFocus;
 	bool						_enemiesHasSpawned;
