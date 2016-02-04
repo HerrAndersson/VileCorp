@@ -39,7 +39,17 @@ private:
 			bool _created = true;
 		}
 	} _marker;
-	AI::Vec2D* _markedTile;
+	AI::Vec2D* _markedTile; // Make into Marker instead...
+
+	/*
+	TODO: For Drag&Place:
+	Update _marker dynamically when mouse is moved and 
+	_markedTile statically when left button down.
+	Change color of the tiles between _marker and _markedTile.
+	Use GREEN for valid and RED for invalid.
+	This is a cheaper approach than creating/destroying objects
+	every time the mousepointer moves to another tile.
+	*/
 
 	// FLAGS
 	bool _isSelectionMode;
