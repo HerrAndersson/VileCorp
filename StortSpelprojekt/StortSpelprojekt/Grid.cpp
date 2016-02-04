@@ -1,23 +1,21 @@
 #include "Grid.h"
 
-Grid::Grid(ID3D11Device* device, float gridOffset, int gridSize)
+Grid::Grid(ID3D11Device* device, float gridOffset, int gridSizeX, int gridSizeY, DirectX::XMFLOAT3 colorOffset)
 {
-	float lineOffset = (gridOffset * gridSize);
-	DirectX::XMFLOAT3 lineVertices[2] =
-	{
-		{
-			lineOffset, 0.0f, 0.0f
-		},
-		{
-			-lineOffset, 0.0f, 0.0f
-		},
-	};
+	_vertexSize = sizeof(DirectX::XMFLOAT3);
+	_nrOfPoints = 2;
+	_colorOffset = colorOffset;
+	_gridSizeX = gridSizeX;
+	_gridSizeY = gridSizeY;
+	_gridOffset = gridOffset;
+
+	DirectX::XMFLOAT3 lineVertices[2] = { { 0.0f, 0.0f, 0.0f },{ 1.0f, 0.0f, 0.0f } };
 
 	D3D11_BUFFER_DESC bufferDesc;
 	ZeroMemory(&bufferDesc, sizeof(bufferDesc));
 	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	bufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	bufferDesc.ByteWidth = sizeof(DirectX::XMFLOAT3) * 2;
+	bufferDesc.ByteWidth = _vertexSize * 2;
 
 	D3D11_SUBRESOURCE_DATA data;
 	data.pSysMem = lineVertices;
@@ -27,19 +25,61 @@ Grid::Grid(ID3D11Device* device, float gridOffset, int gridSize)
 		throw std::runtime_error("Grid: could not create buffer.");
 	}
 
-	_gridMatrices = std::vector<DirectX::XMMATRIX>();
-	_gridMatrices.reserve(gridSize * 4 + 2);
-
-	for (int i = -gridSize; i <= gridSize; i++)
-	{
-		_gridMatrices.push_back(DirectX::XMMatrixTranslation(0.5f, 0.01f, i * gridOffset + 0.5f));
-		_gridMatrices.push_back((DirectX::XMMatrixRotationY(DirectX::XM_PIDIV2) * DirectX::XMMatrixTranslation(i * gridOffset + 0.5f, 0.01f, 0.5f)));
-	}
+	CreateGrid();
 }
 
 Grid::~Grid()
 {
 	_lineBuffer->Release();
+}
+
+void Grid::CreateGrid()
+{
+	_gridMatrices = std::vector<DirectX::XMMATRIX>();
+	_gridMatrices.reserve(_gridSizeY * 4 + 2);
+
+	for (int i = -1; i <= _gridSizeY; i++)
+	{
+		_gridMatrices.push_back(DirectX::XMMatrixScaling(_gridSizeX + 1.0f, 1.0f, 1.0f) * DirectX::XMMatrixTranslation(-0.5f, 0.01f, i * _gridOffset + 0.5f));
+	}
+	for (int i = -1; i <= _gridSizeX; i++)
+	{
+		_gridMatrices.push_back(DirectX::XMMatrixScaling(-_gridSizeY - 1.0f, 1.0f, 1.0f) * (DirectX::XMMatrixRotationY(DirectX::XM_PIDIV2) * DirectX::XMMatrixTranslation(i * _gridOffset + 0.5f, 0.01f, -0.5f)));
+	}
+}
+
+std::vector<DirectX::XMMATRIX>* Grid::GetGridMatrices()
+{
+	return &_gridMatrices;
+}
+
+ID3D11Buffer* Grid::GetLineBuffer()
+{
+	return _lineBuffer;
+}
+
+int Grid::GetVertexSize() const
+{
+	return _vertexSize;
+}
+
+int Grid::GetNrOfPoints() const
+{
+	return _nrOfPoints;
+}
+
+DirectX::XMFLOAT3 Grid::GetColorOffset() const
+{
+	return _colorOffset;
+}
+
+void Grid::ChangeGridSize(int gridSizeX, int gridSizeY, int gridOffset)
+{
+	_gridSizeX = gridSizeX;
+	_gridSizeY = gridSizeY;
+	_gridOffset = (float)gridOffset;
+
+	CreateGrid();
 }
 
 void* Grid::operator new(size_t i)
@@ -50,14 +90,4 @@ void* Grid::operator new(size_t i)
 void Grid::operator delete(void* p)
 {
 	_mm_free(p);
-}
-
-std::vector<DirectX::XMMATRIX>* Grid::GetGridMatrices()
-{
-	return &_gridMatrices;
-}
-
-ID3D11Buffer * Grid::GetLineBuffer()
-{
-	return _lineBuffer;
 }

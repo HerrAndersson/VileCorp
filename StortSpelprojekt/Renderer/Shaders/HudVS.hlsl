@@ -1,10 +1,11 @@
-/* ------------------------------------------
-	TEXTURE - VERTEX SHADER
-------------------------------------------*/
+/*----------------------------------------------------------------------------------------------------------------------
+| Vertex shader that is used to render a flat quad to the screen, offset with the quads position.					   |
+----------------------------------------------------------------------------------------------------------------------*/
 
 cbuffer TextureModelMatrix : register(b1)
 {
-	matrix	model;
+	matrix model;
+	float4 colorOffset;
 };
 
 struct VS_IN
@@ -17,6 +18,7 @@ struct VS_OUT
 {
 	float4 pos : SV_POSITION;
 	float2 uv : TEXCOORD0;
+	float4 colorOffset : COLOROFFSET;
 };
 
 VS_OUT main(VS_IN input)
@@ -27,6 +29,7 @@ VS_OUT main(VS_IN input)
 
 	output.pos = pos;
 	output.uv = input.uv;
+	output.colorOffset = colorOffset;
 
 	return output;
 }

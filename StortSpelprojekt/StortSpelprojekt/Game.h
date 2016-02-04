@@ -13,8 +13,10 @@
 #include "Grid.h"
 #include "PickingDevice.h"
 #include "Spotlight.h"
+#include "Pointlight.h"
 #include "GameObjectDataLoader.h"
 #include "ShadowMap.h"
+#include "LightCulling.h"
 
 #include "SettingsReader.h"
 
@@ -32,7 +34,6 @@ private:
 //	Animation*					_animation;
 	System::Controls*			_controls;
 	AssetManager*				_assetManager;
-	Grid*						_grid;
 	FontWrapper*				_fontWrapper;
 	PickingDevice*				_pickingDevice;
 	PlayerInfo					_playerInfo;
@@ -40,20 +41,20 @@ private:
 	System::SettingsReader		_settingsReader;
 
 	bool						_hasFocus;
-	
 	bool						_enemiesHasSpawned;
 
 	//Resizing window, directx resources, camera
-	void ResizeResources(System::Settings* settings); //TODO: Test all scenarios and fix bugs /Jonas
+	void ResizeResources(System::Settings* settings);
 	bool Update(float deltaTime);
 	void Render();
-
+	
 	//TODO: TEMP! Move this to objectHandler
 	std::vector<Renderer::Spotlight*> _spotlights;
+	std::vector<Renderer::Pointlight*> _pointlights;
+	LightCulling* _lightCulling;
 
 	std::vector<GameObject*> _enemies;
 	std::vector<GameObject*> _loot;
-
 public:
 
 	Game(HINSTANCE hInstance, int nCmdShow);

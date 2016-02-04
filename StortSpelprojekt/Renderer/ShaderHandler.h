@@ -29,9 +29,8 @@ namespace Renderer
 		};
 
 		//Vertex shaders
-		VertexShaderData*		_defaultVS;
 		VertexShaderData*		_geoPassVS;
-		VertexShaderData*		_lightPassVS;
+		VertexShaderData*		_passthroughVS;
 		VertexShaderData*		_animPassVS;
 		VertexShaderData*		_shadowMapVS;
 		VertexShaderData*		_gridPassVS;
@@ -39,13 +38,12 @@ namespace Renderer
 		VertexShaderData*		_lightApplyLightVolumeVS;
 
 		//Pixel shaders
-		ID3D11PixelShader*		_defaultPS;
 		ID3D11PixelShader*		_geoPassPS;
-		ID3D11PixelShader*		_lightPassPS;
 		ID3D11PixelShader*		_gridPassPS;
-		ID3D11PixelShader*		_lightApplyLightVolumePS;
-		ID3D11PixelShader*		_lightApplyScreenQuadPS;
+		ID3D11PixelShader*		_lightApplySpotlightVolumePS;
+		ID3D11PixelShader*		_lightApplyPointlightVolumePS;
 		ID3D11PixelShader*		_hudPassPS;
+		ID3D11PixelShader*		_fxaaPassPS;
 
 		//Samplers
 		ID3D11SamplerState*		_samplerWRAP;
@@ -66,14 +64,14 @@ namespace Renderer
 		ShaderHandler(ID3D11Device* device);
 		~ShaderHandler();
 
-		void SetDefaultShaders(ID3D11DeviceContext* deviceContext);
 		void SetGeometryStageShaders(ID3D11DeviceContext* deviceContext);
-		void SetFinalPassShaders(ID3D11DeviceContext* deviceContext);
 		void SetAnimationPassShaders(ID3D11DeviceContext* deviceContext);
 		void SetGridPassShaders(ID3D11DeviceContext* deviceContest);
 		void SetShadowGenerationShaders(ID3D11DeviceContext* deviceContext);
-		void SetLightApplicationShaders(ID3D11DeviceContext* deviceContext, int screenOrVolume = 1); //Screen = 1, Volume = 2
+		void SetSpotlightApplicationShaders(ID3D11DeviceContext* deviceContext);
+		void SetPointlightApplicationShaders(ID3D11DeviceContext* deviceContext);
 		void SetHUDPassShaders(ID3D11DeviceContext* deviceContext);
+		void SetFXAAPassShaders(ID3D11DeviceContext* deviceContext);
 	};
 }
 

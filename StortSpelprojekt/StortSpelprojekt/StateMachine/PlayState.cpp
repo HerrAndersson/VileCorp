@@ -16,6 +16,8 @@ PlayState::~PlayState()
 
 void PlayState::Update(float deltaTime)
 {
+	HandleInput();
+
 	IngameMenu();
 	if (!_gamePaused)
 	{
@@ -32,13 +34,20 @@ void PlayState::OnStateEnter()
 
 void PlayState::OnStateExit()
 {
+	_gamePaused = false;
+}
 
+void PlayState::HandleInput()
+{
+	if (_controls->IsFunctionKeyDown("MENU:MENU"))
+	{
+		ChangeState(MENUSTATE);
+	}
 }
 
 void PlayState::IngameMenu()
 {
-
-	if (_controls->IsFunctionKeyDown("PLAY:SHOWMENU"))
+	if (_controls->IsFunctionKeyDown("MENU:MENU"))
 	{
 		//TODO::unhide menu
 		_gamePaused = true;
@@ -46,7 +55,7 @@ void PlayState::IngameMenu()
 	
 	if (_gamePaused)
 	{
-	if (_controls->IsFunctionKeyDown("MENU:CLICK"))
+	if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
 		System::MouseCoord coord = _controls->GetMouseCoord();
 		if (_uiTree.IsButtonColliding("resume", coord._pos.x, coord._pos.y))
@@ -67,5 +76,4 @@ void PlayState::IngameMenu()
 		
 		}
 	}
-	
 }

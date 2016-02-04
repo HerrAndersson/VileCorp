@@ -19,10 +19,6 @@ private:
 	std::vector<BaseState*>	_baseStates;
 	void ProcessStateRequest();
 
-	ObjectHandler*			_objectHandler;
-	System::Camera*			_camera;
-	PickingDevice*			_pickingDevice;
-
 public:
 	StateMachine(
 		System::Controls* controls,

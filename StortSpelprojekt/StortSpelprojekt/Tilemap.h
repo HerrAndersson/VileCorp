@@ -40,7 +40,6 @@ private:
 
 public:
 	Tilemap();
-	Tilemap(int x, int z);
 	Tilemap(AI::Vec2D size);
 	Tilemap(const Tilemap& copy);
 	~Tilemap();

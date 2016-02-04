@@ -1,3 +1,8 @@
+/*----------------------------------------------------------------------------------------------------------------------
+| Vertex shader used to "render" the geometric volumes of spotlights and pointlights.								   |
+| These will be invisible themselves, but will shade the pixels contained in the volumes.					           |
+----------------------------------------------------------------------------------------------------------------------*/
+
 cbuffer matrixBufferPerFrame : register(b0)
 {
 	matrix viewMatrix;
@@ -12,12 +17,12 @@ cbuffer matrixBufferPerObject : register(b1)
 
 struct VS_IN
 {
-	float3 pos		: POSITION;
+	float3 pos : POSITION;
 };
 
 struct VS_OUT
 {
-	float4 pos			: SV_POSITION;
+	float4 pos : SV_POSITION;
 };
 
 VS_OUT main(VS_IN input)

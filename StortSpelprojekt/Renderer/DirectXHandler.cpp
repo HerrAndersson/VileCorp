@@ -341,10 +341,18 @@ namespace Renderer
 	{
 		_deviceContext->OMSetDepthStencilState(_depthStateEnable, 1);
 		_deviceContext->RSSetViewports(1, &_viewport);
-		_deferredRTVArray[2] = _backBufferRTV;
-		_deviceContext->OMSetRenderTargets(BUFFER_COUNT + 1, _deferredRTVArray, _backBufferDSV);
-		
+		_deviceContext->OMSetRenderTargets(BUFFER_COUNT, _deferredRTVArray, _backBufferDSV);
+
 		return BUFFER_COUNT + 1;
+	}
+
+	void DirectXHandler::SetAntiAliasingState()
+	{
+		_deviceContext->OMSetDepthStencilState(_depthStateDisable, 1);
+		_deviceContext->RSSetViewports(1, &_viewport);
+		_deviceContext->OMSetRenderTargets(1, &_backBufferRTV, nullptr);
+
+		_deviceContext->PSSetShaderResources(0, BUFFER_COUNT + 1, _deferredSRVarray);
 	}
 
 	void DirectXHandler::SetShadowGenerationStage()
@@ -354,8 +362,7 @@ namespace Renderer
 
 	int DirectXHandler::SetLightStage()
 	{
-		//TODO: Should the final rendering of the light volumes use depth testing? /Jonas
-		_deviceContext->OMSetRenderTargets(1, &_backBufferRTV, nullptr);
+		_deviceContext->OMSetRenderTargets(1, &_deferredRTVArray[2], nullptr);
 		_deviceContext->RSSetViewports(1, &_viewport);
 
 		//Setting Diffuse, Normal and Camera depth. Shadow map is set in RenderModule
@@ -412,6 +419,7 @@ namespace Renderer
 
 	void DirectXHandler::SetHUDStage()
 	{
+		_deviceContext->RSSetViewports(1, &_viewport);
 		_deviceContext->OMSetRenderTargets(1, &_backBufferRTV, nullptr);
 		_deviceContext->RSSetState(_rasterizerStateBack);
 		_deviceContext->OMSetDepthStencilState(_depthStateDisable, 1);

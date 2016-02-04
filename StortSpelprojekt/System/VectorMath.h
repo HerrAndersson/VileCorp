@@ -65,6 +65,7 @@ struct Vec2
 	{
 		return Vec2(_x * rhs, _y * rhs);
 	}
+
 	float Dot(Vec2 vector)
 	{
 		XMFLOAT4 temp;
@@ -75,7 +76,7 @@ struct Vec2
 	Vec2 Cross(Vec2 vector)
 	{
 		XMFLOAT4 temp;
-		XMStoreFloat4(&temp, XMVector2Cross(XMVectorSet(_x,_y, 1.0f, 1.0f), XMVectorSet(vector._x, vector._y, 1.0f, 1.0f)));
+		XMStoreFloat4(&temp, XMVector2Cross(XMVectorSet(_x, _y, 1.0f, 1.0f), XMVectorSet(vector._x, vector._y, 1.0f, 1.0f)));
 
 		return Vec2(temp.x, temp.y);
 	}
@@ -159,7 +160,7 @@ struct Vec3
 
 		return temp.x;
 	}
-	Vec3 Cross(Vec3 vector)
+	Vec3 Cross(const Vec3& vector)
 	{
 		XMFLOAT4 temp;
 		XMStoreFloat4(&temp, XMVector3Cross(XMVectorSet(_x, _y, _z, 1.0f), XMVectorSet(vector._x, vector._y, vector._z, 1.0f)));
@@ -243,7 +244,7 @@ struct Vec4
 	{
 		return Vec4(_x * rhs, _y * rhs, _z * rhs, _w * rhs);
 	}
-	float Dot(Vec4 vector)
+	float Dot(const Vec4& vector)
 	{
 		XMFLOAT4 temp;
 		XMStoreFloat4(&temp, XMVector4Dot(XMVectorSet(_x, _y, _z, _w), XMVectorSet(vector._x, vector._y, vector._z, vector._w)));
@@ -251,7 +252,7 @@ struct Vec4
 		return temp.x;
 	}
 
-	Vec4 Cross(Vec4 vector)
+	Vec4 Cross(const Vec4& vector)
 	{
 		XMFLOAT4 temp;
 		XMStoreFloat4(&temp, XMVector3Cross(XMVectorSet(_x, _y, _z, _w), XMVectorSet(vector._x, vector._y, vector._z, vector._w)));
