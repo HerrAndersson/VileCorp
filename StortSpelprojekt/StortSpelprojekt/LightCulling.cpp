@@ -38,10 +38,10 @@ void LightCulling::GatherObjectsOnSquare(Square &square, std::vector<std::vector
 	std::vector<GameObject*> gatheredObjects;
 
 	//Loop through width/x
-	for (unsigned int x = (int)square._minPos._x; x < (int)square._maxPos._x + 1; x++)
+	for (int x = (int)square._minPos._x; x < (int)square._maxPos._x + 1; x++)
 	{
 		//Loop through height/y
-		for (unsigned int y = (int)square._minPos._y; y < (int)square._maxPos._y + 1; y++)
+		for (int y = (int)square._minPos._y; y < (int)square._maxPos._y + 1; y++)
 		{
 			gatheredObjects = _tilemap->GetAllObjectsOnTile(AI::Vec2D(x, y));
 			if (!gatheredObjects.empty())
@@ -64,7 +64,8 @@ Ray LightCulling::CalculateFrustumEdge(float x, float y, System::Camera* camera)
 
 	XMStoreFloat3(&mouseViewPos, XMVector3TransformCoord(XMVectorSet(x, y, 1.0f, 0.0f), inverseViewMatrix));
 
-	Ray ray = Ray(Vec3(camera->GetPosition()), (Vec3(mouseViewPos) - Vec3(camera->GetPosition())));
+	XMFLOAT3 camPos = camera->GetPosition();
+	Ray ray = Ray(Vec3(camPos), (Vec3(mouseViewPos) - Vec3(camPos)));
 
 	return ray;
 }

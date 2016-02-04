@@ -46,7 +46,7 @@ namespace System
 		virtual ~Window();
 
 		bool Run();
-		void ResizeWindow(WindowSettings settings);
+		void ResizeWindow(const WindowSettings& settings);
 
 		HWND GetHWND();
 

@@ -40,11 +40,11 @@ void Grid::CreateGrid()
 
 	for (int i = -1; i <= _gridSizeY; i++)
 	{
-		_gridMatrices.push_back(DirectX::XMMatrixScaling(_gridSizeX + 1, 1, 1) * DirectX::XMMatrixTranslation(-0.5f, 0.01f, i * _gridOffset + 0.5f));
+		_gridMatrices.push_back(DirectX::XMMatrixScaling(_gridSizeX + 1.0f, 1.0f, 1.0f) * DirectX::XMMatrixTranslation(-0.5f, 0.01f, i * _gridOffset + 0.5f));
 	}
 	for (int i = -1; i <= _gridSizeX; i++)
 	{
-		_gridMatrices.push_back(DirectX::XMMatrixScaling(-_gridSizeY - 1, 1, 1) * (DirectX::XMMatrixRotationY(DirectX::XM_PIDIV2) * DirectX::XMMatrixTranslation(i * _gridOffset + 0.5f, 0.01f, -0.5f)));
+		_gridMatrices.push_back(DirectX::XMMatrixScaling(-_gridSizeY - 1.0f, 1.0f, 1.0f) * (DirectX::XMMatrixRotationY(DirectX::XM_PIDIV2) * DirectX::XMMatrixTranslation(i * _gridOffset + 0.5f, 0.01f, -0.5f)));
 	}
 }
 
@@ -77,7 +77,7 @@ void Grid::ChangeGridSize(int gridSizeX, int gridSizeY, int gridOffset)
 {
 	_gridSizeX = gridSizeX;
 	_gridSizeY = gridSizeY;
-	_gridOffset = gridOffset;
+	_gridOffset = (float)gridOffset;
 
 	CreateGrid();
 }

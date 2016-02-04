@@ -16,10 +16,7 @@ Tilemap::Tilemap()
 		}
 	}
 }
-Tilemap::Tilemap(int x, int z)
-{
-	Tilemap(AI::Vec2D(x, z));
-}
+
 Tilemap::Tilemap(AI::Vec2D size)
 {
 	if (size._x > 0 && size._y > 0)
@@ -95,9 +92,9 @@ bool Tilemap::AddObjectToTile(AI::Vec2D pos, GameObject * obj)
 			if (_map[pos._x][pos._y]._objectsOnTile[arrayPos] == nullptr)
 			{
 				_map[pos._x][pos._y]._objectsOnTile[arrayPos] = obj;
+				obj->SetTilePosition(pos);
 				result = true;
 			}
-			obj->SetTilePosition(pos);
 		}
 	}
 	return result;

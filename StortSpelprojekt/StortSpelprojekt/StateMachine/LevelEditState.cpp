@@ -36,7 +36,7 @@ void LevelEditState::OnStateEnter()
 	_uiTree.GetNode("UnitLeaf")->SetHidden(true);
 	_uiTree.GetNode("DecLeaf")->SetHidden(true);
 
-	//_objectHandler->EnlargeTilemap(50);
+	_objectHandler->EnlargeTilemap(50);
 
 	XMFLOAT3 campos;
 	campos.x = _objectHandler->GetTileMap()->GetWidth() / 2;
@@ -59,7 +59,7 @@ void LevelEditState::HandleInput()
 		InitNewLevel();
 	}
 
-	if (_controls->IsFunctionKeyDown("MAP_EDIT:MENU"))
+	if (_controls->IsFunctionKeyDown("MENU:MENU"))
 	{
 		ChangeState(MENUSTATE);
 	}
@@ -68,7 +68,7 @@ void LevelEditState::HandleInput()
 void LevelEditState::HandleButtons()
 {
 	System::MouseCoord coord = _controls->GetMouseCoord();
-	if (_uiTree.IsButtonColliding("Traps", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("PLACEMENT:CLICK"))
+	if (_uiTree.IsButtonColliding("Traps", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
 		_uiTree.GetNode("TrapLeaf")->SetHidden(false);
 		_uiTree.GetNode("UnitLeaf")->SetHidden(true);
@@ -88,7 +88,7 @@ void LevelEditState::HandleButtons()
 		}
 	}
 
-	if (_uiTree.IsButtonColliding("Units", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("PLACEMENT:CLICK"))
+	if (_uiTree.IsButtonColliding("Units", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
 		_uiTree.GetNode("UnitLeaf")->SetHidden(false);
 		_uiTree.GetNode("TrapLeaf")->SetHidden(true);
@@ -109,7 +109,7 @@ void LevelEditState::HandleButtons()
 	}
 
 
-	if (_uiTree.IsButtonColliding("Decorations", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("PLACEMENT:CLICK"))
+	if (_uiTree.IsButtonColliding("Decorations", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
 		_uiTree.GetNode("DecLeaf")->SetHidden(false);
 		_uiTree.GetNode("TrapLeaf")->SetHidden(true);
@@ -122,7 +122,7 @@ void LevelEditState::HandleButtons()
 		// Not really implemented
 	}
 
-	if (_controls->IsFunctionKeyDown("PLACEMENT:CLICK") && _trapButtonClick == false && _unitButtonClick == false && _decButtonClick == false)
+	if (_controls->IsFunctionKeyDown("MOUSE:SELECT") && _trapButtonClick == false && _unitButtonClick == false && _decButtonClick == false)
 	{
 		_uiTree.GetNode("DecLeaf")->SetHidden(true);
 		_uiTree.GetNode("TrapLeaf")->SetHidden(true);

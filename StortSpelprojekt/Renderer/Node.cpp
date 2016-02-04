@@ -2,17 +2,8 @@
 
 namespace GUI
 {
-	Node::Node(NodeInfo* info,
-		DirectX::XMFLOAT2 position,
-		DirectX::XMFLOAT2 scale,
-		DirectX::XMFLOAT3 colorOffset,
-		ID3D11ShaderResourceView* texture,
-		const std::string& id,
-		const std::wstring& text,
-		UINT32 color,
-		float fontSize,
-		bool centered,
-		bool hidden)
+	Node::Node(NodeInfo* info, DirectX::XMFLOAT2 position, DirectX::XMFLOAT2 scale, DirectX::XMFLOAT4 colorOffset, ID3D11ShaderResourceView* texture,
+		const std::string& id, const std::wstring& text, UINT32 color, float fontSize, bool centered, bool hidden)
 	{
 		_info = info;
 		_position = position;
@@ -29,7 +20,6 @@ namespace GUI
 		UpdateMatrix();
 		UpdateFont();
 	}
-
 
 	Node::~Node()
 	{
@@ -49,16 +39,8 @@ namespace GUI
 		{
 			_font._textFormat->Release();
 		}
-		hr = writeFactory->CreateTextFormat(
-				_info->_fontWrapper->GetFontName(),
-				_info->_fontWrapper->GetFontCollection(),
-				DWRITE_FONT_WEIGHT_NORMAL,
-				DWRITE_FONT_STYLE_NORMAL,
-				DWRITE_FONT_STRETCH_NORMAL,
-				_fontSize,
-				_info->_fontWrapper->GetFontName(),
-				&_font._textFormat
-			);
+		hr = writeFactory->CreateTextFormat(_info->_fontWrapper->GetFontName(), _info->_fontWrapper->GetFontCollection(),
+			DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, _fontSize, _info->_fontWrapper->GetFontName(), &_font._textFormat);
 		if (FAILED(hr))
 		{
 			throw std::runtime_error("Failed to update TextFormat");
@@ -71,14 +53,8 @@ namespace GUI
 		
 		float x = _scale.x * _info->_screenWidth;
 		float y = _scale.y * _info->_screenHeight;
-		hr = writeFactory->CreateTextLayout(
-				_text.c_str(),
-				_text.length(),
-				_font._textFormat,
-				x,
-				y,
-				&_font._textLayout
-			);
+
+		hr = writeFactory->CreateTextLayout(_text.c_str(), _text.length(), _font._textFormat, x, y, &_font._textLayout);
 		if (FAILED(hr))
 		{
 			throw std::runtime_error("Failed to update TextLayout");
@@ -131,14 +107,23 @@ namespace GUI
 		_texture = texture;
 	}
 
-	void Node::SetColorOffset(DirectX::XMFLOAT3 colorOffset)
+	void Node::SetColorOffset(const DirectX::XMFLOAT4& colorOffset)
 	{
 		_colorOffset = colorOffset;
 	}
 
-	DirectX::XMFLOAT3 Node::GetColorOffset()
+	void Node::SetAlpha(float alpha)
+	{
+		_colorOffset.w = alpha;
+	}
+
+	DirectX::XMFLOAT4 Node::GetColorOffset() const
 	{
 		return _colorOffset;
+	}
+	float Node::GetAlpha() const
+	{
+		return _colorOffset.w;
 	}
 
 	void Node::SetCentered(bool centered)

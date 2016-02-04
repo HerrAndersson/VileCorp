@@ -35,39 +35,33 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	_SM = new StateMachine(_controls, _objectHandler, _camera, _pickingDevice, "Assets/gui.json", _assetManager, _fontWrapper, _windowSettings._width, _windowSettings._height);
 
 	_SM->Update(_timer.GetFrameTime());
-	
-	if (_SM->GetState() == LEVELEDITSTATE)
-	{
-		//TODO: Use dimensions from the tilemap /Jonas
-		_grid = new Grid(_renderModule->GetDevice(), 1, 1, 1, DirectX::XMFLOAT3(0.4f, 1.0f, 0.3f));
-	}
-	else
-	{
-		_grid = nullptr;
-	}
 
 	_enemiesHasSpawned = false;
 
 	//_controls->SaveKeyBindings(System::MAP_EDIT_KEYMAP, "MOVE_CAMERA_UP", "M");
 
 	Renderer::Spotlight* spot;
-	for (int i = 0; i < 1; i++)
+	for (int i = 0; i < 2; i++)
 	{
+		SpotlightData lightdata;
+		lightdata._angle = XM_PIDIV4;
+		lightdata._color = XMFLOAT3(0.6f, 0.6f, 0.6f);
+		lightdata._range = 9.5f;
+		lightdata._intensity = 1.0f;
 		int d = _renderModule->SHADOWMAP_DIMENSIONS;
-		spot = new Renderer::Spotlight(_renderModule->GetDevice(), 0.1f, 1000.0f, XM_PIDIV4, d, d, 1.0f, 9.5f, XMFLOAT3(1.0f, 1.0f, 1.0f), 72);
-		spot->SetPositionAndRotation(XMFLOAT3(14 + i*2, 1, 8 + i * 2), XMFLOAT3(0,-35*i,0));
+		spot = new Renderer::Spotlight(_renderModule->GetDevice(), lightdata, d, d, 0.1f, 1000.0f);
+		spot->SetPositionAndRotation(XMFLOAT3(3 + i*2, 1, 2 + i * 2), XMFLOAT3(0,-65*i,0));
 		_spotlights.push_back(spot);
 	}
 
 	Renderer::Pointlight* point;
-	for (int i = 0; i < 50; i++)
+	for (int i = 0; i < 10; i++)
 	{
-		point = new Renderer::Pointlight(_renderModule->GetDevice(), XMFLOAT3(25 + 20 * sin(25 + i * 2 + rand() % ((i+1)) / 8) * sin(i) + 1, 0.05f, 25 + 20 * sin(25 + i * 2 + rand() % ((i + 1)) / 8) * cos(i)), 1.0f, 1.0f, XMFLOAT3(sin(i*i * 6), sin(i * 50 * i), sin(120 * i * i)));
+		point = new Renderer::Pointlight(_renderModule->GetDevice(), XMFLOAT3(5 + 3 * sin(25 + i * 2 + rand() % ((i+1)) / 8) * sin(i) + 1, 0.05f, 5 + 3 * sin(25 + i * 2 + rand() % ((i + 1)) / 8) * cos(i)), 1.0f, 1.0f, XMFLOAT3(sin(i*i * 6), sin(i * 50 * i), sin(120 * i * i)));
 		_pointlights.push_back(point);
 	}
 
 	_lightCulling = new LightCulling();
-
 }
 
 void Game::CheckSettings()
@@ -105,10 +99,8 @@ Game::~Game()
 	SAFE_DELETE(_controls);
 	SAFE_DELETE(_assetManager);
 	SAFE_DELETE(_pickingDevice);
-	SAFE_DELETE(_grid);
 	SAFE_DELETE(_fontWrapper);
 	SAFE_DELETE(_lightCulling);
-
 	for(auto s : _spotlights)
 	{
 		SAFE_DELETE(s);
@@ -120,7 +112,7 @@ Game::~Game()
 	}
 }
 
-void Game::ResizeResources(System::WindowSettings settings)
+void Game::ResizeResources(const System::WindowSettings& settings)
 {
 	_window->ResizeWindow(settings);
 	_renderModule->ResizeResources(_window->GetHWND(), settings._width, settings._height);
@@ -159,23 +151,30 @@ bool Game::Update(float deltaTime)
 			//TODO: Add something to notify the player that they've SUCK and they can replay the level
 		}
 	}
-	//Save for debugging //Jonas
-	//	rot.y -= 0.2f;
 
-	//	XMFLOAT3 color = _spotlights[i]->GetColor();
-	//	color.x = sin(_timer.GetGameTime() / 1000 + 100 * i);
-	//	color.y = sin(_timer.GetGameTime() / 1000 + 100 * i + XMConvertToRadians(120));
-	//	color.z = sin(_timer.GetGameTime() / 1000 + 100 * i + XMConvertToRadians(240));
-	//	_spotlights[i]->SetColor(color);
-	//}
-	
-	//int i = 0;
-	//for (auto p : _pointlights)
-	//{
-	//	i++;
-	//	XMFLOAT3 pos = p->GetPosition();
-	//	p->SetPosition(XMFLOAT3(pos.x + (sin((_timer.GetGameTime() / 1000) * sin(120 * i))) / 10, pos.y, pos.z + (sin((_timer.GetGameTime() / 1000) * sin(17 * i * i))) / 10));
-	//}
+
+	//Save for debugging //Jonas
+	int i = 0;
+	for (auto s : _spotlights)
+	{
+		XMFLOAT3 color = s->GetColor();
+		color.x = sin(_timer.GetGameTime() / 1000 + 100 * i);
+		color.y = sin(_timer.GetGameTime() / 1000 + 100 * i + XMConvertToRadians(120));
+		color.z = sin(_timer.GetGameTime() / 1000 + 100 * i + XMConvertToRadians(240));
+		s->SetColor(color);
+		XMFLOAT3 rot = s->GetRotation();
+		rot.y -= 0.2f;
+		s->SetRotation(rot);
+		i++;
+	}
+	i = 0;
+	for (auto p : _pointlights)
+	{
+		i++;
+		XMFLOAT3 pos = p->GetPosition();
+		p->SetPosition(XMFLOAT3(pos.x + (sin((_timer.GetGameTime() / 1000) * sin(120 * i))) / 20, pos.y, pos.z + (sin((_timer.GetGameTime() / 1000) * sin(17 * i * i))) / 20));
+	}
+
 	return run;
 }
 
@@ -211,6 +210,8 @@ void Game::Render()
 
 				for (GameObject* g : i)
 				{
+					//if (g->GetType() == FLOOR || g->GetType() == WALL)
+					//	break;
 					_renderModule->Render(g->GetMatrix(), vertexBufferSize, g->GetColorOffset());
 					//g->SetColorOffset(XMFLOAT3(0, 0, 0));
 				}
@@ -231,16 +232,16 @@ void Game::Render()
 
 			for (GameObject* a : gameObjects->at(GUARD))
 			{
-				_renderModule->RenderAnimation(a->GetMatrix(), vertexBufferSize, a->GetAnimation()->GetTransforms(), a->GetColorOffset());
+				// temporary uncommenting
+				//_renderModule->RenderAnimation(a->GetMatrix(), vertexBufferSize, a->GetAnimation()->GetTransforms(), a->GetColorOffset());
 			}
 		}
 	}
 
-
 	//TEMPORARY!!
 	//TODO: LightCulling does not work correctly, which makes the light shine through walls sometimes. The functionality for the light is correct, but the data passed to it is not complete.
 	std::vector<std::vector<std::vector<GameObject*>>> inLight;
-	if (_SM->GetState() != MENUSTATE)
+	if (_SM->GetState() == PLAYSTATE)
 	{
 		if (!init)
 		{
@@ -248,13 +249,13 @@ void Game::Render()
 			_lightCulling = new LightCulling(_objectHandler->GetTileMap());
 		}
 
-		for (int i = 0; i < _spotlights.size(); i++)
+		for (unsigned int i = 0; i < _spotlights.size(); i++)
 		{
 			inLight.push_back(_lightCulling->GetObjectsInSpotlight(_spotlights[i]));
 		}
 
 		//"Fog of War"
-		for (int i = 0; i < _spotlights.size(); i++)
+		for (unsigned int i = 0; i < _spotlights.size(); i++)
 		{
 			if (inLight.at(i).size() >= ENEMY)
 			{
@@ -277,13 +278,15 @@ void Game::Render()
 
 	if (_SM->GetState() == LEVELEDITSTATE)
 	{
-		_renderModule->SetShaderStage(Renderer::RenderModule::GRID_STAGE);
-		_renderModule->SetDataPerLineList(_grid->GetLineBuffer(), _grid->GetVertexSize());
+		Grid* gr = _objectHandler->GetBuildingGrid();
 
-		std::vector<DirectX::XMMATRIX>* gridMatrices = _grid->GetGridMatrices();
+		_renderModule->SetShaderStage(Renderer::RenderModule::GRID_STAGE);
+		_renderModule->SetDataPerLineList(gr->GetLineBuffer(), gr->GetVertexSize());
+
+		std::vector<DirectX::XMMATRIX>* gridMatrices = gr->GetGridMatrices();
 		for (auto &matrix : *gridMatrices)
 		{
-			_renderModule->RenderLineList(&matrix, _grid->GetNrOfPoints(), _grid->GetColorOffset());
+			_renderModule->RenderLineList(&matrix, gr->GetNrOfPoints(), gr->GetColorOffset());
 		}
 	}
 
@@ -294,7 +297,7 @@ void Game::Render()
 	Generate the shadow map for each spotlight, then apply the lighting/shadowing to the render target with additive blending.           */
 
 		_renderModule->SetLightDataPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
-		for (int i = 0; i < _spotlights.size(); i++)
+		for (unsigned int i = 0; i < _spotlights.size(); i++)
 		{
 			_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::SHADOW_GENERATION);
 			_renderModule->SetShadowMapDataPerSpotlight(_spotlights[i]->GetViewMatrix(), _spotlights[i]->GetProjectionMatrix());
@@ -330,8 +333,7 @@ void Game::Render()
 		}
 	}
 
-	/*-----------------------------------------------------------  FXAA  -------------------------------------------------------------------
-	Anti aliasing after light stage																									      */
+	/*-----------------------------------------------------------  FXAA  -----------------------------------------------------------------*/
 
 	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::AA_STAGE);
 	_renderModule->RenderScreenQuad();
@@ -365,14 +367,14 @@ int Game::Run()
 		{
 			_timer.Update();
 			if (_timer.GetFrameTime() >= MS_PER_FRAME)
-			{				
+			{
 				if (_hasFocus)
 				{
 					Update(_timer.GetFrameTime());
-				}			{
-					Render();
-					string s = to_string(_timer.GetFrameTime()) + " " + to_string(_timer.GetFPS());
 
+					Render();
+
+					string s = to_string(_timer.GetFrameTime()) + " " + to_string(_timer.GetFPS());
 					SetWindowText(_window->GetHWND(), s.c_str());
 
 					_timer.Reset();
@@ -425,7 +427,6 @@ LRESULT CALLBACK Game::WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM l
 		_gameHandle->_hasFocus = false;
 		break;
 	}
-
 	default:
 	{
 		return _gameHandle->MessageHandler(hwnd, umessage, wparam, lparam);

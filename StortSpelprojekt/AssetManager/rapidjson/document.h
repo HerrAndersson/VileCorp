@@ -256,7 +256,7 @@ struct GenericMemberIterator<true,Encoding,Allocator> {
     \see StringRef, GenericValue::SetString
 */
 template<typename CharType>
-struct GenericStringRef {
+struct GenericStringRef { //-V690
     typedef CharType Ch; //!< character type of the string
 
     //! Create string reference from \c const character array
@@ -1304,7 +1304,7 @@ public:
         RAPIDJSON_ASSERT(index < data_.a.size);
         return data_.a.elements[index];
     }
-    const GenericValue& operator[](SizeType index) const { return const_cast<GenericValue&>(*this)[index]; }
+    const GenericValue& operator[](SizeType index) const { return const_cast<GenericValue&>(*this)[index]; } //-V659
 
     //! Element iterator
     /*! \pre IsArray() == true */
@@ -1543,7 +1543,7 @@ public:
             if (!handler.StartObject())
                 return false;
             for (ConstMemberIterator m = MemberBegin(); m != MemberEnd(); ++m) {
-                RAPIDJSON_ASSERT(m->name.IsString()); // User may change the type of name by MemberIterator.
+                RAPIDJSON_ASSERT(m->name.IsString()); // User may change the type of name by MemberIterator. //-V807
                 if (!handler.Key(m->name.GetString(), m->name.GetStringLength(), (m->name.flags_ & kCopyFlag) != 0))
                     return false;
                 if (!m->value.Accept(handler))

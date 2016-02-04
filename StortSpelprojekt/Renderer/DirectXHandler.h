@@ -32,14 +32,14 @@ namespace Renderer
 		ID3D11Device*			     _device;
 		ID3D11DeviceContext*		 _deviceContext;
 		D3D11_VIEWPORT				 _viewport;
-									 
+
 		ID3D11DepthStencilState*	 _depthStateEnable;
 		ID3D11DepthStencilState*	 _depthStateDisable;
-									 
+
 		ID3D11RasterizerState*		 _rasterizerStateBack;
 		ID3D11RasterizerState*		 _rasterizerStateFront;
 		ID3D11RasterizerState*		 _rasterizerStateNone;
-									 
+
 		ID3D11BlendState*			 _blendStateEnable;
 		ID3D11BlendState*			 _blendStateDisable;
 

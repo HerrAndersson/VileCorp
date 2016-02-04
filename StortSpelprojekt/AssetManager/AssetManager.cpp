@@ -16,6 +16,7 @@ AssetManager::AssetManager(ID3D11Device* device)
 
 	_meshFormatVersion[24] = &AssetManager::ScanModel24;
 	_meshFormatVersion[26] = &AssetManager::ScanModel26;
+	_meshFormatVersion[27] = &AssetManager::ScanModel27;
 
 	SetupTilesets();
 
@@ -101,7 +102,7 @@ void AssetManager::SetupTilesets()
 }
 
 //Do not call, call _objectHandler->ActivateTileset() - Fredrik
-bool AssetManager::ActivateTileset(string name)
+bool AssetManager::ActivateTileset(const string& name)
 {
 	if (!strcmp(name.c_str(), _activeTileset->_name.c_str()))
 	{
@@ -259,7 +260,8 @@ bool Texture::DecrementUsers()
 }
 
 //Loads a model to the GPU
-bool AssetManager::LoadModel(string fileName, RenderObject* renderObject) {
+bool AssetManager::LoadModel(const string& fileName, RenderObject* renderObject) 
+{
 
 	string file_path = "Assets/Models/";
 
@@ -309,7 +311,7 @@ bool AssetManager::LoadModel(string fileName, RenderObject* renderObject) {
 	return true;
 }
 
-Texture* AssetManager::ScanTexture(string filename)
+Texture* AssetManager::ScanTexture(const string& filename)
 {
 	for (Texture* texture : *_textures)
 	{
@@ -329,9 +331,8 @@ Texture* AssetManager::ScanTexture(string filename)
 }
 
 //Creates a RenderObject for the specified model without loading it
-RenderObject* AssetManager::ScanModel(string fileName)
+RenderObject* AssetManager::ScanModel(const string& fileName)
 {
-
 	string file_path = "Assets/Models/";
 
 	file_path.append(fileName);
@@ -349,7 +350,7 @@ RenderObject* AssetManager::ScanModel(string fileName)
 	{
 		throw std::runtime_error("Failed to load " + file_path + ":\nIncorrect fileversion");
 	}
-	RenderObject* renderObject = (this->*(_meshFormatVersion[version]))(fileName, _infile);
+	RenderObject* renderObject = (this->*(_meshFormatVersion[version]))();
 
 	renderObject->_name = fileName;
 
@@ -385,7 +386,41 @@ RenderObject* AssetManager::ScanModel(string fileName)
 	return renderObject;
 }
 
-RenderObject* AssetManager::ScanModel26(string fileName, ifstream* _infile)
+RenderObject* AssetManager::ScanModel27()
+{
+	RenderObject* renderObject = new RenderObject;
+	int skeletonStringLength;
+	_infile->read((char*)&skeletonStringLength, 4);
+	renderObject->_skeletonName.resize(skeletonStringLength);
+	_infile->read((char*)renderObject->_skeletonName.data(), skeletonStringLength);
+
+	renderObject->_isSkinned = strcmp(renderObject->_skeletonName.data(), "Unrigged") != 0;
+
+	_infile->read((char*)&renderObject->_mesh._toMesh, 4);
+
+	MeshHeader26 meshHeader;
+	_infile->read((char*)&meshHeader, sizeof(MeshHeader26));
+
+	if (renderObject->_isSkinned)
+	{
+		_infile->seekg(meshHeader._numberOfVertices * sizeof(WeightedVertex), ios::cur);
+	}
+	else
+	{
+		_infile->seekg(meshHeader._numberOfVertices * sizeof(Vertex), ios::cur);
+	}
+
+	renderObject->_mesh._pointLights.resize(meshHeader._numberPointLights);
+	_infile->read((char*)renderObject->_mesh._pointLights.data(), sizeof(PointlightData) * meshHeader._numberPointLights);
+
+	renderObject->_mesh._spotLights.resize(meshHeader._numberSpotLights);
+	_infile->read((char*)renderObject->_mesh._spotLights.data(), sizeof(SpotlightData) * meshHeader._numberSpotLights);
+
+	renderObject->_mesh._vertexBufferSize = meshHeader._numberOfVertices;
+	return renderObject;
+}
+
+RenderObject* AssetManager::ScanModel26()
 {
 	RenderObject* renderObject = new RenderObject;
 	int skeletonStringLength;
@@ -409,22 +444,34 @@ RenderObject* AssetManager::ScanModel26(string fileName, ifstream* _infile)
 		_infile->seekg(meshHeader._numberOfVertices*sizeof(Vertex), ios::cur);
 	}
 
-	if (meshHeader._numberPointLights)
+	renderObject->_mesh._pointLights.resize(meshHeader._numberPointLights);
+	for (int i = 0; i < meshHeader._numberPointLights; i++)
 	{
-		renderObject->_mesh._pointLights.resize(sizeof(PointLight)*meshHeader._numberPointLights);
-		_infile->read((char*)renderObject->_mesh._pointLights.data(), sizeof(PointLight)*meshHeader._numberPointLights);
+		PointlightData pld = renderObject->_mesh._pointLights[i];
+		_infile->read((char*)&pld._bone, 1);
+		_infile->read((char*)&pld._pos, 12);
+		_infile->read((char*)&pld._col, 12);
+		_infile->read((char*)&pld._intensity, 4);
+		pld._range = 100;
 	}
 
-	if (meshHeader._numberSpotLights)
+	renderObject->_mesh._spotLights.resize(meshHeader._numberSpotLights);
+	for (int i = 0; i < meshHeader._numberSpotLights; i++)
 	{
-		renderObject->_mesh._spotLights.resize(sizeof(SpotLight)*meshHeader._numberSpotLights);
-		_infile->read((char*)renderObject->_mesh._spotLights.data(), sizeof(SpotLight)*meshHeader._numberSpotLights);
+		SpotlightData sld = renderObject->_mesh._spotLights[i];
+		_infile->read((char*)&sld._bone, 1);
+		_infile->read((char*)&sld._pos, 12);
+		_infile->read((char*)&sld._color, 12);
+		_infile->read((char*)&sld._intensity, 4);
+		_infile->read((char*)&sld._angle, 4);
+		_infile->read((char*)&sld._direction, 12);
+		sld._range = 100;
 	}
 	renderObject->_mesh._vertexBufferSize = meshHeader._numberOfVertices;
 	return renderObject;
 }
 
-RenderObject* AssetManager::ScanModel24(string fileName, ifstream* _infile)
+RenderObject* AssetManager::ScanModel24()
 {
 	RenderObject* renderObject = new RenderObject;
 	int meshes;
@@ -455,20 +502,28 @@ RenderObject* AssetManager::ScanModel24(string fileName, ifstream* _infile)
 				_infile->seekg(meshHeader._numberOfVertices*sizeof(Vertex), ios::cur);
 			}
 
-			renderObject->_mesh._pointLights.resize(sizeof(PointLight)*meshHeader._numberPointLights);
+			renderObject->_mesh._pointLights.resize(meshHeader._numberPointLights);
 			for (int i = 0; i < meshHeader._numberPointLights; i++)
 			{
-				_infile->seekg(-1, ios::cur);
-				_infile->read((char*)&renderObject->_mesh._pointLights[i], sizeof(PointLight));
-				renderObject->_mesh._pointLights[i]._bone = 0;
+				PointlightData pld = renderObject->_mesh._pointLights[i];
+				_infile->read((char*)&pld._pos, 12);
+				_infile->read((char*)&pld._col, 12);
+				_infile->read((char*)&pld._intensity, 4);
+				pld._bone = 0;
+				pld._range = 100;
 			}
 
-			renderObject->_mesh._spotLights.resize(sizeof(SpotLight)*meshHeader._numberSpotLights);
+			renderObject->_mesh._spotLights.resize(meshHeader._numberSpotLights);
 			for (int i = 0; i < meshHeader._numberSpotLights; i++)
 			{
-				_infile->seekg(-1, ios::cur);
-				_infile->read((char*)&renderObject->_mesh._spotLights[i], sizeof(SpotLight));
-				renderObject->_mesh._spotLights[i]._bone = 0;
+				SpotlightData sld = renderObject->_mesh._spotLights[i];
+				_infile->read((char*)&sld._pos, 12);
+				_infile->read((char*)&sld._color, 12);
+				_infile->read((char*)&sld._intensity, 4);
+				_infile->read((char*)&sld._angle, 4);
+				_infile->read((char*)&sld._direction, 12);
+				sld._bone = 0;
+				sld._range = 100;
 			}
 			renderObject->_mesh._vertexBufferSize = meshHeader._numberOfVertices;
 		}
@@ -489,12 +544,12 @@ RenderObject* AssetManager::ScanModel24(string fileName, ifstream* _infile)
 
 			if (meshHeader._numberPointLights)
 			{
-				_infile->seekg(sizeof(PointLight)*meshHeader._numberPointLights, ios::cur);
+				_infile->seekg(sizeof(PointlightData)*meshHeader._numberPointLights, ios::cur);
 			}
 
 			if (meshHeader._numberSpotLights)
 			{
-				_infile->seekg(sizeof(SpotLight)*meshHeader._numberSpotLights, ios::cur);
+				_infile->seekg(sizeof(SpotlightData)*meshHeader._numberSpotLights, ios::cur);
 			}
 		}
 	}
@@ -536,10 +591,10 @@ ID3D11Buffer* AssetManager::CreateVertexBuffer(vector<WeightedVertex> *weightedV
 }
 
 //How AssetManager interfaces with the renderer. Don't save the return, request it anew everytime unless you are certain the model won't be unloaded
-RenderObject* AssetManager::GetRenderObject(int index, string texture)
+RenderObject* AssetManager::GetRenderObject(int index, const string& texture)
 {
 	RenderObject* renderObject = nullptr;
-	if (index >= 0 && index < _renderObjects->size())
+	if (index >= 0 && (unsigned int)index < _renderObjects->size())
 	{
 		renderObject = _renderObjects->at(index);
 		if (!renderObject->_meshLoaded)
@@ -577,16 +632,15 @@ uint AssetManager::GetRenderObjectByType(Type type, uint index)
 	return 0;
 }
 
-ID3D11ShaderResourceView* AssetManager::GetTexture(string filename)
+ID3D11ShaderResourceView* AssetManager::GetTexture(const string& filename)
 {
 	Texture* texture = ScanTexture(filename);
 	texture->LoadTexture(_device);
 	return texture->_data;
 }
 
-Skeleton* AssetManager::LoadSkeleton(string filename)
+Skeleton* AssetManager::LoadSkeleton(const string& filename)
 {
-
 	for (Skeleton* skeleton : *_skeletons)
 	{
 		if (strcmp(skeleton->_name.c_str(), filename.data()))

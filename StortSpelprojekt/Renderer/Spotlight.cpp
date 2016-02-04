@@ -6,23 +6,24 @@ using namespace DirectX;
 
 namespace Renderer
 {
-	Spotlight::Spotlight(ID3D11Device* device, float nearClip, float farClip, float fov, int width, int height, float intensity, float range, DirectX::XMFLOAT3 color, int resolution)
+	Spotlight::Spotlight(ID3D11Device* device, SpotlightData lightdata, int width, int height, float nearClip, float farClip, int resolution)
 	{
 		_position = XMFLOAT3(0, 0, 0);
 		_rotation = XMFLOAT3(0, 0, 0);
 		_direction = XMFLOAT3(0, 0, 1);
 		_up = XMFLOAT3(0, 1, 0);
 
-		_angle = fov;
-		_intensity = intensity;
-		_range = range;
-
-		_color = color;
+		_angle = lightdata._angle;
+		_intensity = lightdata._intensity;
+		_range = lightdata._range;
+		_color = lightdata._color;
+		_bone = lightdata._bone;
+		_active = true;
 
 		XMMATRIX rotationMatrix = XMMatrixRotationRollPitchYaw(XMConvertToRadians(_rotation.x), XMConvertToRadians(_rotation.y), XMConvertToRadians(_rotation.z));
 		_worldMatrix = rotationMatrix * XMMatrixTranslation(_position.x, _position.y, _position.z);
 
-		if (height <= 0 || range < std::numeric_limits<float>::epsilon())
+		if (height <= 0 || _range < std::numeric_limits<float>::epsilon())
 		{
 			throw std::runtime_error("Spotlight::Spotlight: Division by Zero");
 		}
@@ -33,21 +34,21 @@ namespace Renderer
 		XMVECTOR vUp = XMLoadFloat3(&_up);
 
 		_viewMatrix = XMMatrixLookAtLH(vPos, vPos + vDir, vUp);
-		
+
 		/// --------------------------------------- Create a cone that represents the light as a volume --------------------------------------- ///
 		XMVECTOR pos = XMVectorSet(_position.x, _position.y, _position.z, 0);
-		XMVECTOR dir = XMVector4Normalize(XMVectorSet(_direction.x, _direction.y, _direction.z, 0));																												
+		XMVECTOR dir = XMVector4Normalize(XMVectorSet(_direction.x, _direction.y, _direction.z, 0));
 
-		XMVECTOR baseCenter = pos + dir * range; //Center of the cone base.
-		double baseRadius = range * sin(fov/2.0f);	 //Radius of the cone base.
+		XMVECTOR baseCenter = pos + dir * _range; //Center of the cone base.
+		double baseRadius = _range * sin(_angle / 2.0f);	 //Radius of the cone base.
 
-		double shadowMapFov = std::tan(baseRadius / range);
-		_projectionMatrix = XMMatrixPerspectiveFovLH(fov, (float)width / (float)height, nearClip, farClip);
+		double shadowMapFov = std::tan(baseRadius / _range);
+		_projectionMatrix = XMMatrixPerspectiveFovLH(_angle, (float)width / (float)height, nearClip, farClip);
 
 		XMVECTOR X = XMVectorSet(1, 0, 0, 0);
 		XMVECTOR Y = XMVectorSet(0, 1, 0, 0);
 
-	    //The vertices of the cone base are given by: v(t) = pos + basecenter * (x * cos t + y * sin t), with t varying from 0 to 2*pi.
+		//The vertices of the cone base are given by: v(t) = pos + basecenter * (x * cos t + y * sin t), with t varying from 0 to 2*pi.
 		double pi2 = 2 * XM_PI;
 		std::vector<XMFLOAT3> points;
 		XMFLOAT3 element;
@@ -62,12 +63,12 @@ namespace Renderer
 		std::vector<XMFLOAT3>triangles;
 		XMFLOAT3 basePos;
 		XMStoreFloat3(&basePos, baseCenter);
-		for (int i = 0; i < resolution-1; i++)
+		for (int i = 0; i < resolution - 1; i++)
 		{
 			triangles.push_back(points[++pc]);
 			triangles.push_back(points[pc - 1]);
 			triangles.push_back(_position);
-			
+
 			triangles.push_back(basePos);
 			triangles.push_back(points[pc2]);
 			triangles.push_back(points[++pc2]);
@@ -76,7 +77,7 @@ namespace Renderer
 		triangles.push_back(points[0]);
 		triangles.push_back(points[pc]);
 		triangles.push_back(_position);
-		
+
 		triangles.push_back(basePos);
 		triangles.push_back(points[pc2]);
 		triangles.push_back(points[0]);
@@ -123,22 +124,34 @@ namespace Renderer
 		_worldMatrix = rotationMatrix * XMMatrixTranslation(_position.x, _position.y, _position.z);
 	}
 
-	void Spotlight::SetPosition(XMFLOAT3 position)
+	void Spotlight::SetPosition(const XMFLOAT3& position)
 	{
 		_position = position;
 		Update();
 	}
 
-	void Spotlight::SetRotation(DirectX::XMFLOAT3 rotation)
+	void Spotlight::SetRotation(const DirectX::XMFLOAT3& rotation)
 	{
 		_rotation = rotation;
 		Update();
 	}
 
-	void Spotlight::SetPositionAndRotation(XMFLOAT3 position, XMFLOAT3 rotation)
+	void Spotlight::SetPositionAndRotation(const XMFLOAT3& position, const XMFLOAT3& rotation)
 	{
 		_rotation = rotation;
 		_position = position;
+		Update();
+	}
+
+	void Spotlight::SetPositionAndRotation(DirectX::XMFLOAT4X4 &mfloat)
+	{
+		XMMATRIX matrix = XMLoadFloat4x4(&mfloat);
+		XMVECTOR pos, rot, scale;
+		XMMatrixDecompose(&scale, &rot, &pos, matrix);
+
+		XMStoreFloat3(&_position, pos);
+		XMStoreFloat3(&_rotation, rot);
+
 		Update();
 	}
 
@@ -181,7 +194,7 @@ namespace Renderer
 		_range = range;
 	}
 
-	void Spotlight::SetColor(XMFLOAT3 color)
+	void Spotlight::SetColor(const XMFLOAT3& color)
 	{
 		_color = color;
 	}
@@ -221,13 +234,28 @@ namespace Renderer
 		return _lightConeVolume;
 	}
 
+	unsigned char Spotlight::GetBone()
+	{
+		return _bone;
+	}
+
+	bool Spotlight::IsActive() const
+	{
+		return _active;
+	}
+
+	void Spotlight::SetActive(bool active)
+	{
+		_active = active;
+	}
+
 	//Overloading these guarantees 16B alignment of XMMATRIX
 	void* Spotlight::operator new(size_t i)
 	{
 		return _mm_malloc(i, 16);
 	}
 
-	void Spotlight::operator delete(void* p)
+		void Spotlight::operator delete(void* p)
 	{
 		_mm_free(p);
 	}

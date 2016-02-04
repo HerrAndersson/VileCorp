@@ -7,7 +7,7 @@
 		{
 			"position": [0.0, 0.0],
 			"scale": [1.0, 1.0],
-			"texture": "../Menues/menu1.png"
+			"texture": "../Menues/startmenu1.png"
 		},
 		
 		"files":
@@ -15,56 +15,59 @@
 			"position": [0.64, 0.0],
 			"play":
 			{
-				"position": [0.0, -0.1],
-				"scale": [1.0, 1.0],
+				"position": [-0.02, -0.10],
+				"scale": [0.65, 0.5],
 				"texture": "../Menues/menu2.png",
 				
 				"playbutton":
 				{
-					"position" : [-0.46, 0.36],
-					"scale": [0.15, 0.06],
+					"position" : [-0.47, 0.40],
+					"scale": [0.14, 0.07],
 					"text": "Play",
 					"color": "FF000000",
-					"fontsize" : 30.0
+					"fontsize" : 30.0,
+					"centered": true
 				}
 			},
 			"options":
 			{
-				"position": [-0.03, -0.3],
-				"scale": [1.0, 1.0],
+				"position": [-0.10, -0.30],
+				"scale": [0.65, 0.5],
 				"texture": "../Menues/menu2.png",
 				
 				"optionsbutton":
 				{
-					"position" : [-0.46, 0.36],
-					"scale": [0.15, 0.06],
+					"position" : [-0.47, 0.41],
+					"scale": [0.14, 0.07],
 					"text": "Level editor",
 					"color": "FF000000",
-					"fontsize" : 30.0
+					"fontsize": 30.0,
+					"centered": true
 				}
 			},
 			"exit":
 			{
-				"position": [-0.06, -0.5],
-				"scale": [1.0, 1.0],
+				"position": [-0.18, -0.5],
+				"scale": [0.65, 0.5],
 				"texture": "../Menues/menu2.png",
 				
 				"exitbutton":
 				{
-					"position" : [-0.46, 0.36],
-					"scale": [0.15, 0.06],
+					"position" : [-0.47, 0.4],
+					"scale": [0.14, 0.07],
 					"text": "Exit",
 					"color": "FF000000",
-					"fontsize" : 30.0
+					"fontsize": 30.0,
+					"centered": true
 				}
 			}
 		},
 		
 		"foreground" :
 		{
-			"position": [0.0, 0.0],
-			"scale": [1.0, 1.0],
-			"texture": "../Menues/menu3.png"
+			"position": [0.4, -0.78],
+			"scale": [0.595, 0.215],
+			"texture": "../Menues/startmenu3.png"
 		}
   },
   "SPLASH" : {},

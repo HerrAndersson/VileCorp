@@ -144,7 +144,6 @@ static bool GetFilenamesInDirectory(char* folder, char* extension, vector<string
 	bool result = false;
 	if (folder != nullptr && extension != nullptr)
 	{
-		ofstream testout;
 		string search_path = folder;
 		search_path.append("*");
 		search_path.append(extension);
@@ -176,7 +175,7 @@ class ASSET_MANAGER_EXPORT AssetManager
 {
 private:
 
-	typedef RenderObject* (AssetManager::*_scanFunc)(string file_path, ifstream* _infile);
+	typedef RenderObject* (AssetManager::*_scanFunc)();
 	typedef std::map<int, AssetManager::_scanFunc> _scanFuncMap;
 
 	_scanFuncMap _meshFormatVersion;
@@ -196,23 +195,32 @@ private:
 	vector<Texture*>* _textures;
 	vector<Texture*>* _texturesToFlush;
 
-	bool LoadModel(string file_path, RenderObject* renderObject);
+	bool LoadModel(const string& file_path, RenderObject* renderObject);
+	Skeleton* LoadSkeleton(const string& filename);
 	void Flush();
-	RenderObject* ScanModel24(string file_path, ifstream* _infile);
-	RenderObject* ScanModel26(string file_path, ifstream* _infile);
-	RenderObject* ScanModel(string file_path);
-	Texture* ScanTexture(string filename);
-	Skeleton* LoadSkeleton(string filename);
+
+	RenderObject* ScanModel24();
+	RenderObject* ScanModel26();
+	RenderObject* ScanModel27();
+	RenderObject* ScanModel(const string& file_path);
+	Texture* ScanTexture(const string& filename);
+
 	ID3D11Buffer* CreateVertexBuffer(vector<WeightedVertex> *weightedVertices, vector<Vertex> *vertices, int skeleton);
+
 	bool SetupRenderObjectList(Tileset* tileset);
 	void SetupTilesets();
+
 public:
+
 	AssetManager(ID3D11Device* device);
 	~AssetManager();
-	RenderObject* GetRenderObject(int index, string texture);
+
+	RenderObject* GetRenderObject(int index, const string& texture);
 	uint GetRenderObjectByType(Type type, uint index);
+	ID3D11ShaderResourceView* GetTexture(const string& filename);
+
 	void UnloadModel(int index, bool force);
 	bool ParseLevel(int index, vector<GameObjectData> &gameObjects, int &dimX, int &dimY);
-	bool ActivateTileset(string name);
-	ID3D11ShaderResourceView* GetTexture(string filename);
+
+	bool ActivateTileset(const string& name);
 };

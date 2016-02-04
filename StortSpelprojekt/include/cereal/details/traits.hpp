@@ -1307,7 +1307,7 @@ namespace cereal
     {
       static void load_andor_construct( A & ar, construct<T> & construct )
       {
-        access::load_and_construct<T>( ar, construct );
+        access::load_and_construct<T>( ar, construct ); //-V510
       }
     };
 
@@ -1316,7 +1316,7 @@ namespace cereal
     {
       static void load_andor_construct( A & ar, construct<T> & construct )
       {
-        LoadAndConstruct<T>::load_and_construct( ar, construct );
+        LoadAndConstruct<T>::load_and_construct( ar, construct ); //-V510
       }
     };
   } // namespace detail
