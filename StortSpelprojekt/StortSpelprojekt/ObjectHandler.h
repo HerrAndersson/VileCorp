@@ -61,6 +61,8 @@ private:
 	Guard*			MakeGuard(GameObjectGuardInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation);
 	Enemy*			MakeEnemy(GameObjectEnemyInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation);
 
+	void ReleaseGameObjects();
+
 public:
 	ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data);
 	~ObjectHandler();

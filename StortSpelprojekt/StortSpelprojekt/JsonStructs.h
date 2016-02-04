@@ -206,41 +206,14 @@ struct GameObjectInfo
 	}
 	~GameObjectInfo()
 	{
-		for (GameObjectBaseInfo* obj : *_objects[FLOOR])
+		for (int i = 0; i < NR_OF_TYPES; i++)
 		{
-			delete (GameObjectFloorInfo*)obj;
+			for (GameObjectBaseInfo* obj : *_objects[i])
+			{
+				delete (GameObjectEnemyInfo*)obj;
+			}
+			delete _objects[i];
 		}
-		for (GameObjectBaseInfo* obj : *_objects[WALL])
-		{
-			delete (GameObjectWallInfo*)obj;
-		}
-		for (GameObjectBaseInfo* obj : *_objects[LOOT])
-		{
-			delete (GameObjectLootInfo*)obj;
-		}
-		for (GameObjectBaseInfo* obj : *_objects[SPAWN])
-		{
-			delete (GameObjectSpawnInfo*)obj;
-		}
-		for (GameObjectBaseInfo* obj : *_objects[TRAP])
-		{
-			delete (GameObjectTrapInfo*)obj;
-		}
-		for (GameObjectBaseInfo* obj : *_objects[GUARD])
-		{
-			delete (GameObjectGuardInfo*)obj;
-		}
-		for (GameObjectBaseInfo* obj : *_objects[ENEMY])
-		{
-			delete (GameObjectEnemyInfo*)obj;
-		}
-		delete _objects[FLOOR];
-		delete _objects[WALL];
-		delete _objects[LOOT];
-		delete _objects[SPAWN];
-		delete _objects[TRAP];
-		delete _objects[GUARD];
-		delete _objects[ENEMY];
 	}
 
 	GameObjectFloorInfo* Floors(unsigned i)

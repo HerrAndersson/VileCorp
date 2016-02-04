@@ -591,7 +591,7 @@ ID3D11Buffer* AssetManager::CreateVertexBuffer(vector<WeightedVertex> *weightedV
 }
 
 //How AssetManager interfaces with the renderer. Don't save the return, request it anew everytime unless you are certain the model won't be unloaded
-RenderObject* AssetManager::GetRenderObject(int index, const string& texture)
+RenderObject* AssetManager::GetRenderObject(int index)
 {
 	RenderObject* renderObject = nullptr;
 	if (index >= 0 && (unsigned int)index < _renderObjects->size())
@@ -605,10 +605,6 @@ RenderObject* AssetManager::GetRenderObject(int index, const string& texture)
 		{
 			renderObject->_toUnload = false;
 		}
-	}
-	if (texture != "")
-	{
-		renderObject->_diffuseTexture->_data = GetTexture(texture);
 	}
 	return renderObject;
 }

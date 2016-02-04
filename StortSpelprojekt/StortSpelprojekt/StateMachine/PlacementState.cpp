@@ -24,9 +24,6 @@ void PlacementState::Update(float deltaTime)
 
 	HandleInput();
 	HandleButtons();
-
-
-
 }
 
 void PlacementState::OnStateEnter()
@@ -43,6 +40,7 @@ void PlacementState::OnStateEnter()
 
 void PlacementState::OnStateExit()
 {
+	_baseEdit.Release();
 }
 
 void PlacementState::HandleInput()

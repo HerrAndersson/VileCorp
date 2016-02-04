@@ -1,4 +1,5 @@
 #include "ObjectHandler.h"
+#include "stdafx.h"
 
 ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data)
 {
@@ -9,24 +10,25 @@ ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, G
 	_gameObjectInfo = data;
 	_device = device;
 
-	for (int i = 0; i < NR_OF_TYPES; i++)
-	{
-		_gameObjects.push_back(std::vector<GameObject*>());
-	}
+	
 	ActivateTileset("default2");
 }
 
 ObjectHandler::~ObjectHandler()
 {
 	Release();
-	delete _tilemap;
+}
+
+void ObjectHandler::Release()
+{
+	ReleaseGameObjects();
+	SAFE_DELETE( _tilemap);
 	SAFE_DELETE(_buildingGrid);
-	delete _gameObjectInfo;
 }
 
 void ObjectHandler::ActivateTileset(const string& name)
 {
-	Release();
+	ReleaseGameObjects();
 	_assetManager->ActivateTileset(name);
 
 	for (uint a = 0; a < Type::NR_OF_TYPES; a++)
@@ -272,14 +274,14 @@ RenderList ObjectHandler::GetAllByType(int renderObjectID)
 	// TODO make it so that it returns a vector of renderlists to improve performance /Markus
 
 	RenderList list;
-	list._renderObject = _assetManager->GetRenderObject(renderObjectID, "");;
+	list._renderObject = _assetManager->GetRenderObject(renderObjectID);
 
 	int count = 0;
 	for (int i = 0; i < NR_OF_TYPES; i++)
 	{
 		for (GameObject* g : _gameObjects[i])
 		{
-			if (g->GetRenderObject() == _assetManager->GetRenderObject(renderObjectID, ""))
+			if (g->GetRenderObject() == _assetManager->GetRenderObject(renderObjectID))
 			{
 				//TODO _modelMatrices should hold XMMATRIX* instead to ensure proper alignment of the matrices |Jonas a.k.a. ] 0 |\| /-\ 5
 				list._modelMatrices[count] = *g->GetMatrix();
@@ -454,12 +456,20 @@ bool ObjectHandler::LoadLevel(int lvlIndex)
 	bool result = _assetManager->ParseLevel(lvlIndex, gameObjectData, dimX, dimY);
 	if (result)
 	{
+		if (_gameObjects.size() < 1)
+		{
+			for (int i = 0; i < NR_OF_TYPES; i++)
+			{
+				_gameObjects.push_back(std::vector<GameObject*>());
+			}
+		}
+
 		delete _tilemap;
 		_tilemap = new Tilemap(AI::Vec2D(dimX, dimY));
 
 		for (auto i : gameObjectData)
 		{
-		Add((Type)i._tileType, 0, DirectX::XMFLOAT3(i._posX, 0, i._posZ), DirectX::XMFLOAT3(0, i._rotY, 0));
+			Add((Type)i._tileType, 0, DirectX::XMFLOAT3(i._posX, 0, i._posZ), DirectX::XMFLOAT3(0, i._rotY, 0));
 		}
 	}
 	return result;
@@ -623,16 +633,29 @@ void ObjectHandler::Update(float deltaTime)
 	}
 }
 
-void ObjectHandler::Release()
+void ObjectHandler::ReleaseGameObjects()
 {
-	for (int i = 0; i < NR_OF_TYPES; i++)
+	int debug;
+	std::vector<GameObject*> tempVector;
+
+	if (_gameObjects.size() > 0)
 	{
-		for (GameObject* g : _gameObjects[i])
+		for (int i = 0; i < NR_OF_TYPES; i++)
 		{
-			g->Release();
-			delete g;
+			for (GameObject* g : _gameObjects[i])
+			{
+				g->Release();
+				delete g;
+			}
+			_gameObjects[i].clear();
+			std::vector<GameObject*>().swap(_gameObjects[i]);
+			_gameObjects[i].shrink_to_fit();
+			debug = _gameObjects[i].size();
 		}
-		_gameObjects[i].clear();
+		_gameObjects.clear();
+		std::vector<GameObject*>().swap(tempVector);
+		_gameObjects.shrink_to_fit();
+		debug = _gameObjects.size();
 	}
 	_idCount = 0;
 	_objectCount = 0;
@@ -649,7 +672,7 @@ Architecture * ObjectHandler::MakeFloor(GameObjectFloorInfo * data, const XMFLOA
 		rotation,
 		AI::Vec2D((int)position.x, (int)position.z),
 		FLOOR,
-		_assetManager->GetRenderObject(data->_renderObject, data->_textureName));
+		_assetManager->GetRenderObject(data->_renderObject));
 
 	if (!_tilemap->AddObjectToTile((int)position.x, (int)position.z, obj))
 	{
@@ -668,7 +691,7 @@ Architecture * ObjectHandler::MakeWall(GameObjectWallInfo * data, const XMFLOAT3
 		rotation,
 		AI::Vec2D((int)position.x, (int)position.z),
 		WALL,
-		_assetManager->GetRenderObject(data->_renderObject, data->_textureName));
+		_assetManager->GetRenderObject(data->_renderObject));
 
 	if (!_tilemap->AddObjectToTile((int)position.x, (int)position.z, obj))
 	{
@@ -687,7 +710,7 @@ Architecture * ObjectHandler::MakeLoot(GameObjectLootInfo * data, const XMFLOAT3
 		rotation,
 		AI::Vec2D((int)position.x, (int)position.z),
 		LOOT,
-		_assetManager->GetRenderObject(data->_renderObject, data->_textureName));
+		_assetManager->GetRenderObject(data->_renderObject));
 
 	// read more data
 
@@ -708,7 +731,7 @@ SpawnPoint * ObjectHandler::MakeSpawn(GameObjectSpawnInfo * data, const XMFLOAT3
 		rotation,
 		AI::Vec2D((int)position.x, (int)position.z),
 		SPAWN,
-		_assetManager->GetRenderObject(data->_renderObject, ""),
+		_assetManager->GetRenderObject(data->_renderObject),
 		180, 2);
 
 	// read more data
@@ -732,7 +755,7 @@ Trap * ObjectHandler::MakeTrap(GameObjectTrapInfo * data, const XMFLOAT3& positi
 		rotation,
 		AI::Vec2D((int)position.x, (int)position.z),
 		TRAP,
-		_assetManager->GetRenderObject(data->_renderObject, ""),
+		_assetManager->GetRenderObject(data->_renderObject),
 		_tilemap,
 		SPIKE,
 		{ 1,0 },
@@ -757,7 +780,7 @@ Guard * ObjectHandler::MakeGuard(GameObjectGuardInfo * data, const XMFLOAT3& pos
 		rotation,
 		AI::Vec2D((int)position.x, (int)position.z),
 		GUARD,
-		_assetManager->GetRenderObject(data->_renderObject, data->_textureName),
+		_assetManager->GetRenderObject(data->_renderObject),
 		_tilemap);
 
 	// read more data
@@ -779,7 +802,7 @@ Enemy * ObjectHandler::MakeEnemy(GameObjectEnemyInfo * data, const XMFLOAT3& pos
 		rotation,
 		AI::Vec2D((int)position.x, (int)position.z),
 		ENEMY,
-		_assetManager->GetRenderObject(data->_renderObject, data->_textureName),
+		_assetManager->GetRenderObject(data->_renderObject),
 		_tilemap);
 
 	// read more data

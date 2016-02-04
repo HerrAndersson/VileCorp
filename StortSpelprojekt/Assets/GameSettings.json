@@ -1,8 +1,8 @@
 {
     "Game Settings": {
         "_default": false,
-        "_resX": 1920,
-        "_resY": 1080,
+        "_resX": 1280,
+        "_resY": 720,
 		"_shadowResX": 256,
         "_shadowResY": 256,
 		"_shadowmap": true,
