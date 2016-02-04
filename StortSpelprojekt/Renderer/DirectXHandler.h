@@ -19,9 +19,6 @@ namespace Renderer
 
 		static const int BUFFER_COUNT = 2;
 
-		int _textureWidth;
-		int _textureHeight;
-
 		ID3D11RenderTargetView*		 _deferredRTVArray[BUFFER_COUNT + 2];
 		ID3D11ShaderResourceView*	 _deferredSRVarray[BUFFER_COUNT + 2];
 
@@ -45,7 +42,7 @@ namespace Renderer
 		ID3D11BlendState*			 _blendStateEnable;
 		ID3D11BlendState*			 _blendStateDisable;
 
-		void InitializeDeferredBuffers();
+		void InitializeDeferredBuffers(int width, int height);
 
 	public:
 

@@ -5,8 +5,6 @@ namespace Renderer
 	DirectXHandler::DirectXHandler(HWND hwnd, System::Settings* settings)
 	{
 		HRESULT hResult;
-		_textureWidth = settings->_screenWidth;
-		_textureHeight = settings->_screenHeight;
 
 		//////////////////////////////////////////////////// Swap chain, back buffer RTV //////////////////////////////////////////////////// 
 		//Describe the swap chain
@@ -175,21 +173,21 @@ namespace Renderer
 		_viewport.TopLeftY = 0.0f;
 
 		//Set context data and other
-		InitializeDeferredBuffers();
+		InitializeDeferredBuffers(settings->_screenWidth, settings->_screenHeight);
 		_deviceContext->RSSetState(_rasterizerStateFront);
 		_deviceContext->OMSetDepthStencilState(_depthStateEnable, 1);
 		_deviceContext->RSSetViewports(1, &_viewport);
 	}
 
-	void DirectXHandler::InitializeDeferredBuffers()
+	void DirectXHandler::InitializeDeferredBuffers(int width, int height)
 	{
 		HRESULT result;
 
 		D3D11_TEXTURE2D_DESC textureDesc;
 		ZeroMemory(&textureDesc, sizeof(textureDesc));
 		//Render target texture description
-		textureDesc.Width = _textureWidth;
-		textureDesc.Height = _textureHeight;
+		textureDesc.Width = (UINT)width;
+		textureDesc.Height = (UINT)height;
 		textureDesc.MipLevels = 1;
 		textureDesc.ArraySize = 1;
 		//textureDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
@@ -252,8 +250,8 @@ namespace Renderer
 		/////////////////////////////////////////////////////// Depth buffer, DSV, SRV ///////////////////////////////////////////////////////
 		D3D11_TEXTURE2D_DESC depthBufferDesc;
 		ZeroMemory(&depthBufferDesc, sizeof(depthBufferDesc));
-		depthBufferDesc.Width = _textureWidth;
-		depthBufferDesc.Height = _textureHeight;
+		depthBufferDesc.Width = width;
+		depthBufferDesc.Height = height;
 		depthBufferDesc.MipLevels = 1;
 		depthBufferDesc.ArraySize = 1;
 		depthBufferDesc.Format = DXGI_FORMAT_R32_TYPELESS;
@@ -487,9 +485,7 @@ namespace Renderer
 				SAFE_RELEASE(_deferredRTVArray[i]);
 			}
 
-			_textureWidth = settings->_screenWidth;
-
-			InitializeDeferredBuffers();
+			InitializeDeferredBuffers(settings->_screenWidth, settings->_screenHeight);
 		}
 	}
 
