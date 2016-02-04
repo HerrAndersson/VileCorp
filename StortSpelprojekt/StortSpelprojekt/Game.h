@@ -1,5 +1,7 @@
 #pragma once
 
+#include "SoundModule.h"
+
 #include "stdafx.h"
 #include "StateMachine/StateMachine.h"
 #include "Window.h"
@@ -17,6 +19,8 @@
 #include "GameObjectDataLoader.h"
 #include "ShadowMap.h"
 #include "LightCulling.h"
+
+
 
 class Game
 {
@@ -38,6 +42,8 @@ private:
 	PlayerInfo					_playerInfo;
 	SettingInfo					_gameSettings;
 	System::WindowSettings		_windowSettings;
+
+	System::SoundModule			_soundTestModule;
 
 	bool						_hasFocus;
 	bool						_enemiesHasSpawned;

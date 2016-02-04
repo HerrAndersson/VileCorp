@@ -64,6 +64,13 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	}
 
 	_lightCulling = new LightCulling();
+
+	bool added = _soundTestModule.AddSound("yay.waw");
+	if (added)
+	{
+		_soundTestModule.Play("yay.waw");
+	}
+
 }
 
 void Game::CheckSettings()

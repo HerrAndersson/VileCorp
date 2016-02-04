@@ -26,10 +26,10 @@ namespace System
 
 		int		_arraySize;
 		int		_nrOfSounds;
-		Sound*	_allSounds;
+		Sound**	_allSounds;
 
 		/*Helpers*/
-		int findSoundIndex(Sound array[], std::string soundName, int imin, int imax);
+		int findSoundIndex(Sound* array[], std::string soundName, int imin, int imax);
 		void expandArray();
 
 	public:
@@ -37,8 +37,8 @@ namespace System
 		SoundModule();
 		~SoundModule();
 
-		void AddSound();
-		void RemoveSound();   //Not needed but good to have
+		bool AddSound(char* fileName, float volume = 1.0f, float speed = 1.0f, bool relative = true, bool looping = true);
+		bool RemoveSound(char* fileName);   //Not needed but good to have
 
 		void Update(/*position*/);
 		bool Play(std::string soundName);
