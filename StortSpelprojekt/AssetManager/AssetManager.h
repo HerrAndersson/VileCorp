@@ -215,7 +215,7 @@ public:
 	AssetManager(ID3D11Device* device);
 	~AssetManager();
 
-	RenderObject* GetRenderObject(int index, const string& texture);
+	RenderObject* GetRenderObject(int index);
 	uint GetRenderObjectByType(Type type, uint index);
 	ID3D11ShaderResourceView* GetTexture(const string& filename);
 

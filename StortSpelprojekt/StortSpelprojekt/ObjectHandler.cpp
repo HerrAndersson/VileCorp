@@ -272,14 +272,14 @@ RenderList ObjectHandler::GetAllByType(int renderObjectID)
 	// TODO make it so that it returns a vector of renderlists to improve performance /Markus
 
 	RenderList list;
-	list._renderObject = _assetManager->GetRenderObject(renderObjectID, "");;
+	list._renderObject = _assetManager->GetRenderObject(renderObjectID);
 
 	int count = 0;
 	for (int i = 0; i < NR_OF_TYPES; i++)
 	{
 		for (GameObject* g : _gameObjects[i])
 		{
-			if (g->GetRenderObject() == _assetManager->GetRenderObject(renderObjectID, ""))
+			if (g->GetRenderObject() == _assetManager->GetRenderObject(renderObjectID))
 			{
 				//TODO _modelMatrices should hold XMMATRIX* instead to ensure proper alignment of the matrices |Jonas a.k.a. ] 0 |\| /-\ 5
 				list._modelMatrices[count] = *g->GetMatrix();
@@ -661,7 +661,7 @@ Architecture * ObjectHandler::MakeFloor(GameObjectFloorInfo * data, const XMFLOA
 		rotation,
 		AI::Vec2D((int)position.x, (int)position.z),
 		FLOOR,
-		_assetManager->GetRenderObject(data->_renderObject, data->_textureName));
+		_assetManager->GetRenderObject(data->_renderObject));
 
 	if (!_tilemap->AddObjectToTile((int)position.x, (int)position.z, obj))
 	{
@@ -680,7 +680,7 @@ Architecture * ObjectHandler::MakeWall(GameObjectWallInfo * data, const XMFLOAT3
 		rotation,
 		AI::Vec2D((int)position.x, (int)position.z),
 		WALL,
-		_assetManager->GetRenderObject(data->_renderObject, data->_textureName));
+		_assetManager->GetRenderObject(data->_renderObject));
 
 	if (!_tilemap->AddObjectToTile((int)position.x, (int)position.z, obj))
 	{
@@ -699,7 +699,7 @@ Architecture * ObjectHandler::MakeLoot(GameObjectLootInfo * data, const XMFLOAT3
 		rotation,
 		AI::Vec2D((int)position.x, (int)position.z),
 		LOOT,
-		_assetManager->GetRenderObject(data->_renderObject, data->_textureName));
+		_assetManager->GetRenderObject(data->_renderObject));
 
 	// read more data
 
@@ -720,7 +720,7 @@ SpawnPoint * ObjectHandler::MakeSpawn(GameObjectSpawnInfo * data, const XMFLOAT3
 		rotation,
 		AI::Vec2D((int)position.x, (int)position.z),
 		SPAWN,
-		_assetManager->GetRenderObject(data->_renderObject, ""),
+		_assetManager->GetRenderObject(data->_renderObject),
 		180, 2);
 
 	// read more data
@@ -744,7 +744,7 @@ Trap * ObjectHandler::MakeTrap(GameObjectTrapInfo * data, const XMFLOAT3& positi
 		rotation,
 		AI::Vec2D((int)position.x, (int)position.z),
 		TRAP,
-		_assetManager->GetRenderObject(data->_renderObject, ""),
+		_assetManager->GetRenderObject(data->_renderObject),
 		_tilemap,
 		SPIKE,
 		{ 1,0 },
@@ -769,7 +769,7 @@ Guard * ObjectHandler::MakeGuard(GameObjectGuardInfo * data, const XMFLOAT3& pos
 		rotation,
 		AI::Vec2D((int)position.x, (int)position.z),
 		GUARD,
-		_assetManager->GetRenderObject(data->_renderObject, data->_textureName),
+		_assetManager->GetRenderObject(data->_renderObject),
 		_tilemap);
 
 	// read more data
@@ -791,7 +791,7 @@ Enemy * ObjectHandler::MakeEnemy(GameObjectEnemyInfo * data, const XMFLOAT3& pos
 		rotation,
 		AI::Vec2D((int)position.x, (int)position.z),
 		ENEMY,
-		_assetManager->GetRenderObject(data->_renderObject, data->_textureName),
+		_assetManager->GetRenderObject(data->_renderObject),
 		_tilemap);
 
 	// read more data
