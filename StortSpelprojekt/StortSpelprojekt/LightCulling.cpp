@@ -1,6 +1,6 @@
 #include "LightCulling.h"
 
-std::vector<Vec2>* LightCulling::TransformSpotlight(Renderer::Spotlight* spotlight)
+void LightCulling::TransformSpotlight(Renderer::Spotlight* spotlight, std::vector<Vec2>* triangle)
 {
 	//Transforming the spotlight to a triangle
 	Vec3 direction = Vec3(spotlight->GetDirection()).Normalize();
@@ -8,12 +8,10 @@ std::vector<Vec2>* LightCulling::TransformSpotlight(Renderer::Spotlight* spotlig
 	Vec3 width = direction.Cross(Vec3(0.0f, 1.0f, 0.0f)) * (range * std::sin(spotlight->GetAngle()*0.5f)).Length();
 	Vec3 pos = Vec3(spotlight->GetPosition());
 
-	std::vector<Vec2>* triangle = new std::vector<Vec2>();
+	//std::vector<Vec2>* triangle = new std::vector<Vec2>();
 	triangle->push_back(Vec2(pos._x, pos._z));
 	triangle->push_back(Vec2(pos._x, pos._z) + Vec2(range._x, range._z) + Vec2(width._x, width._z));
 	triangle->push_back(Vec2(pos._x, pos._z) + Vec2(range._x, range._z) - Vec2(width._x, width._z));
-
-	return triangle;
 }
 
 //Ray LightCulling::CalculateFrustumEdge(float x, float y, System::Camera* camera)
@@ -65,21 +63,30 @@ LightCulling::~LightCulling()
 		_quadTreeRoot->Release();
 		delete _quadTreeRoot;
 	}
+	/*
+	if (_objectsInLight != nullptr)
+	{
+		for (int i = 0; i < NR_OF_TYPES; i++)
+		{
+			_objectsInLight->at(i).clear();
+		}
+	}*/
+	_objectsInLight->clear();
 	delete _objectsInLight;
-
 }
 
 std::vector<std::vector<GameObject*>>* LightCulling::GetObjectsInSpotlight(Renderer::Spotlight* spotlight)
 {
-	std::vector<Vec2>* triangle = TransformSpotlight(spotlight);
+	std::vector<Vec2> triangle;
+	TransformSpotlight(spotlight, &triangle);
 
 	for (int i = 0; i < NR_OF_TYPES; i++)
 	{
 		_objectsInLight->at(i).clear();
 	}
-	_quadTreeRoot->GetObjects(triangle, _objectsInLight, _tilemap);
+	_quadTreeRoot->GetObjects(&triangle, _objectsInLight, _tilemap);
+	triangle.clear();
 
-	delete triangle;
 	return _objectsInLight;
 }
 
