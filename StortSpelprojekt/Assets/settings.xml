@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cereal>
+	<value0>
+		<_screenWidth>10029</_screenWidth>
+		<_screenHeight>1337</_screenHeight>
+		<_shadowMapWidth>256</_shadowMapWidth>
+		<_shadowMapHeight>256</_shadowMapHeight>
+		<_fullScreen>true</_fullScreen>
+		<_bordeless>false</_bordeless>
+		<_showMouseCursor>true</_showMouseCursor>
+	</value0>
+</cereal>
+

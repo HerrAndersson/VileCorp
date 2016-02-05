@@ -2,7 +2,12 @@
 
 GameObject::GameObject()
 {
-
+	_ID = -1;
+	_type = FLOOR;
+	_visible = true;
+	_active = false;
+	_renderObject = nullptr;
+	_pickUpState = PickUpState::DROPPING;
 }
 
 GameObject::GameObject(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation,  AI::Vec2D tilePosition, Type type, RenderObject * renderObject, DirectX::XMFLOAT3 colorOffset)
@@ -16,6 +21,9 @@ GameObject::GameObject(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::X
 	_type = type;
 	_renderObject = renderObject;
 	_pickUpState = ONTILE;
+	_active = true;
+	_visible = true;
+
 	CalculateMatrix();
 	_visible = true;
 }
@@ -122,6 +130,16 @@ bool GameObject::IsVisible() const
 	return _visible;
 }
 
+bool GameObject::IsActive() const
+{
+	return _active;
+}
+
+void GameObject::SetActive(bool active)
+{
+	_active = active;
+}
+
 void GameObject::SetVisibility(bool visible)
 {
 	_visible = visible;
@@ -152,14 +170,14 @@ DirectX::XMFLOAT3 GameObject::GetColorOffset() const
 	return _colorOffset;
 }
 
-void GameObject::SetColorOffset(DirectX::XMFLOAT3 colorOffset)
+void GameObject::SetColorOffset(const DirectX::XMFLOAT3& colorOffset)
 {
 #ifdef _DEBUG
 	_colorOffset = colorOffset;
 #endif
 }
 
-void GameObject::AddColorOffset(DirectX::XMFLOAT3 colorOffset)
+void GameObject::AddColorOffset(const DirectX::XMFLOAT3& colorOffset)
 {
 #ifdef _DEBUG
 	_colorOffset.x += colorOffset.x;

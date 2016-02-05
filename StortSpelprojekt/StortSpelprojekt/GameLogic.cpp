@@ -5,6 +5,11 @@
 GameLogic::GameLogic()
 {
 	_player = nullptr;
+	_objectHandler = nullptr;
+	_camera = nullptr;
+	_controls = nullptr;
+	_pickingDevice = nullptr;
+	_levelLoad = LevelLoad();
 }
 
 GameLogic::~GameLogic()
@@ -20,7 +25,6 @@ void GameLogic::Initialize(ObjectHandler* objectHandler, System::Camera* camera,
 	_pickingDevice = pickingDevice;
 
 	//_objectHandler->LoadLevel(3);
-	
 	//Either import the level here or in the LevelEdit.cpp, otherwise the level will be loaded twice
 	//System::loadJSON(&_levelLoad, "../../../../StortSpelprojekt/Assets/LevelLoad.json");
 	//_objectHandler->LoadLevel(_levelLoad.level);
@@ -39,22 +43,22 @@ void GameLogic::Update(float deltaTime)
 void GameLogic::HandleInput()
 {
 	//Selecting a Unit and moving selected units
-	if (_controls->IsFunctionKeyDown("PLAY:SELECT"))
+	if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
-		vector<GameObject*> pickedUnits = _pickingDevice->pickObjects(_controls->GetMouseCoord()._pos, _objectHandler->GetAllByType(GUARD));
+		vector<GameObject*> pickedUnits = _pickingDevice->PickObjects(_controls->GetMouseCoord()._pos, _objectHandler->GetAllByType(GUARD));
 
 
 		if (pickedUnits.empty())
 		{
 			if (_player->AreUnitsSelected())
 			{
-				_player->MoveUnits(_pickingDevice->pickTile(_controls->GetMouseCoord()._pos));
+				_player->MoveUnits(_pickingDevice->PickTile(_controls->GetMouseCoord()._pos));
 			}
 		}
 		else
 		{
 			vector<Unit*> units = _player->GetSelectedUnits();
-			for (int i = 0; i < units.size(); i++)
+			for (unsigned int i = 0; i < units.size(); i++)
 			{
 				units[i]->SetScale(DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f));
 			}
@@ -68,7 +72,7 @@ void GameLogic::HandleInput()
 		}
 	}
 	//Deselect Units
-	if (_controls->IsFunctionKeyDown("PLAY:DESELECT"))
+	if (_controls->IsFunctionKeyDown("MOUSE:DESELECT"))
 	{
 		if (_player->AreUnitsSelected())
 		{
@@ -81,22 +85,23 @@ void GameLogic::HandleInput()
 		}
 	}
 	
+	//Boxselect Units
 	XMFLOAT3 forward(0, 0, 0);
 	XMFLOAT3 position = _camera->GetPosition();
 	XMFLOAT3 right(0, 0, 0);
 	bool isMoving = false;
 	float v = 0.06f + (_camera->GetPosition().y * 0.01);
 
-	if(_controls->IsFunctionKeyDown("PLAY:BOX_SELECT"))
+	if(_controls->IsFunctionKeyDown("MOUSE:BOX_SELECT"))
 	{
-		_pickingDevice->setFirstBoxPoint(_controls->GetMouseCoord()._pos);
+		_pickingDevice->SetFirstBoxPoint(_controls->GetMouseCoord()._pos);
 	}
 
-	if (_controls->IsFunctionKeyUp("PLAY:BOX_SELECT"))
+	if (_controls->IsFunctionKeyUp("MOUSE:BOX_SELECT"))
 	{
-		vector<GameObject*> pickedUnits = _pickingDevice->boxPickObjects(_controls->GetMouseCoord()._pos, _objectHandler->GetAllByType(GUARD));
+		vector<GameObject*> pickedUnits = _pickingDevice->BoxPickObjects(_controls->GetMouseCoord()._pos, _objectHandler->GetAllByType(GUARD));
 
-		for (int i = 0; i < pickedUnits.size(); i++)
+		for (unsigned int i = 0; i < pickedUnits.size(); i++)
 		{
 			_player->SelectUnit((Unit*)pickedUnits[i]);
 			pickedUnits[i]->SetScale(DirectX::XMFLOAT3(1.2f, 1.2f, 1.2f));
@@ -109,7 +114,7 @@ void GameLogic::HandleInput()
 	{
 		if (_player->AreUnitsSelected())
 		{
-			_player->PatrolUnits(_pickingDevice->pickTile(_controls->GetMouseCoord()._pos));
+			_player->PatrolUnits(_pickingDevice->PickTile(_controls->GetMouseCoord()._pos));
 		}
 	}
 
@@ -117,12 +122,12 @@ void GameLogic::HandleInput()
 
 	if (_camera->GetMode() == System::LOCKED_CAM)
 	{
-		if (_controls->IsFunctionKeyDown("PLAY:SCROLLDOWN") &&
+		if (_controls->IsFunctionKeyDown("CAMERA:SCROLLDOWN") &&
 			_camera->GetPosition().y > 10.0f)
 		{
 			_camera->Move(XMFLOAT3(0.0f, -1.0f, 0.0f));
 		}
-		else if (_controls->IsFunctionKeyDown("PLAY:SCROLLUP") &&
+		else if (_controls->IsFunctionKeyDown("CAMERA:SCROLLUP") &&
 			_camera->GetPosition().y < 30.0f)
 		{
 			_camera->Move(XMFLOAT3(0.0f, 1.0f, 0.0f));
@@ -146,7 +151,7 @@ void GameLogic::HandleInput()
 		}
 	}
 
-	if (_controls->IsFunctionKeyDown("DEBUG:MOVE_CAMERA_UP"))
+	if (_controls->IsFunctionKeyDown("CAMERA:MOVE_CAMERA_UP"))
 	{
 		if (_camera->GetMode() == System::FREE_CAM)
 		{
@@ -159,7 +164,7 @@ void GameLogic::HandleInput()
 
 		isMoving = true;
 	}
-	else if (_controls->IsFunctionKeyDown("DEBUG:MOVE_CAMERA_DOWN"))
+	else if (_controls->IsFunctionKeyDown("CAMERA:MOVE_CAMERA_DOWN"))
 	{
 		if (_camera->GetMode() == System::FREE_CAM)
 		{
@@ -176,12 +181,12 @@ void GameLogic::HandleInput()
 		isMoving = true;
 	}
 
-	if (_controls->IsFunctionKeyDown("DEBUG:MOVE_CAMERA_RIGHT"))
+	if (_controls->IsFunctionKeyDown("CAMERA:MOVE_CAMERA_RIGHT"))
 	{
 		right = _camera->GetRightVector();
 		isMoving = true;
 	}
-	else if (_controls->IsFunctionKeyDown("DEBUG:MOVE_CAMERA_LEFT"))
+	else if (_controls->IsFunctionKeyDown("CAMERA:MOVE_CAMERA_LEFT"))
 	{
 		right = _camera->GetRightVector();
 		right.x *= -1;

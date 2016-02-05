@@ -28,6 +28,7 @@ protected:
 	AI::Vec2D _tilePosition;
 	Type _type;
 	bool _visible;
+	bool _active;
 	RenderObject* _renderObject;
 	Animation* _animation = nullptr;
 
@@ -53,9 +54,9 @@ public:
 	void SetPosition(const DirectX::XMFLOAT3& position);
 	void SetRotation(const DirectX::XMFLOAT3& rotation);
 	void SetScale(const DirectX::XMFLOAT3& scale);
-	void SetColorOffset(DirectX::XMFLOAT3 colorOffset);
+	void SetColorOffset(const DirectX::XMFLOAT3& colorOffset);
 
-	void AddColorOffset(DirectX::XMFLOAT3 colorOffset);
+	void AddColorOffset(const DirectX::XMFLOAT3& colorOffset);
 
 	void Translate(const DirectX::XMFLOAT3& offset);
 	void Scale(const DirectX::XMFLOAT3& scale);
@@ -68,6 +69,8 @@ public:
 	bool IsCenteredOnTile(AI::Vec2D tile)const;
 
 	bool IsVisible() const;
+	bool IsActive() const;
+	void SetActive(bool active);
 	void SetVisibility(bool visible);
 
 	RenderObject* GetRenderObject() const;

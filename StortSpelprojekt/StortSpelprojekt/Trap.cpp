@@ -15,14 +15,14 @@ void Trap::CalculateCircleAOE(int radius)
 			for (int i = -x; i <= x; i++)
 			{
 				pos = {y, i};
-				if (isUnblocked(pos))
+				if (IsUnblocked(pos))
 				{
 					_areaOfEffect[_nrOfAOETiles++] = pos + _tilePosition;
 				}
 				if (y != 0)
 				{
 					pos = {-y, i};
-					if (isUnblocked(pos))
+					if (IsUnblocked(pos))
 					{
 						_areaOfEffect[_nrOfAOETiles++] = pos + _tilePosition;
 					}
@@ -39,14 +39,14 @@ void Trap::CalculateCircleAOE(int radius)
 			for (int i = -y + 1; i < y; i++)
 			{
 				pos = {x, i};
-				if (isUnblocked(pos))
+				if (IsUnblocked(pos))
 				{
 					_areaOfEffect[_nrOfAOETiles++] = pos + _tilePosition;
 				}
 				if (x != 0)			//If x = 0, -x is also 0
 				{
 					pos = {-x, i};
-					if (isUnblocked(pos))
+					if (IsUnblocked(pos))
 					{
 						_areaOfEffect[_nrOfAOETiles++] = pos + _tilePosition;
 					}
@@ -75,7 +75,7 @@ void Trap::CalculateLineAOE(int length, AI::Vec2D direction)
 }
 
 //Check that there's an unblocked Bresenham line to the centre of the trap
-bool Trap::isUnblocked( AI::Vec2D pos)
+bool Trap::IsUnblocked( AI::Vec2D pos)
 {
 	int octant = 0;
 
@@ -96,7 +96,7 @@ bool Trap::isUnblocked( AI::Vec2D pos)
 		octant+= 3;
 	}
 
-	pos = convertOctant(octant, pos);
+	pos = ConvertOctant(octant, pos);
 	AI::Vec2D* line = new AI::Vec2D[max(pos._x, pos._y)];
 	line[0] = {0,0};
 	int lineLength = 1;
@@ -109,7 +109,7 @@ bool Trap::isUnblocked( AI::Vec2D pos)
 	}
 	for (int x = 0; x < pos._x; x++)
 	{
-		AI::Vec2D outPos = convertOctant(octant, {x + 1, y}, false);
+		AI::Vec2D outPos = ConvertOctant(octant, {x + 1, y}, false);
 		line[lineLength++] = outPos;
 		D += 2 * pos._y;
 		if (D > 0)
@@ -129,7 +129,7 @@ bool Trap::isUnblocked( AI::Vec2D pos)
 	return result;
 }
 
-AI::Vec2D Trap::convertOctant(int octant, AI::Vec2D pos, bool in)
+AI::Vec2D Trap::ConvertOctant(int octant, AI::Vec2D pos, bool in)
 {
 	AI::Vec2D convertedPos;
 	switch (octant)
@@ -203,10 +203,6 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 {
 	_cost = cost;
 	_direction = direction;
-	_trapType = trapType;
-	//_trapType = SHARK;
-	_tileMap = tileMap;
-	_nrOfAOETiles = 0;
 	_isVisibleToEnemies = false;
 
 	int radius = 0;

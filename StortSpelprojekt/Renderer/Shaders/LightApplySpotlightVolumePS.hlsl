@@ -1,6 +1,8 @@
-// ------------------------------------------
-//		LIGHT PASS - PIXEL SHADER
-// ------------------------------------------
+/*----------------------------------------------------------------------------------------------------------------------
+| Pixel shader that handles the pixels contained in the geometric volume of the spotlight.							   |
+| These pixels will be shaded using additive blending with the temp-backbuffer,										   |
+| which is then rendered to the screen in the FXAA stage															   |
+----------------------------------------------------------------------------------------------------------------------*/
 
 cbuffer matrixBufferLightPassPerFrame : register(b2)
 {
@@ -10,7 +12,7 @@ cbuffer matrixBufferLightPassPerFrame : register(b2)
 	int screenHeight;
 };
 
-cbuffer matrixBufferLightPassPerLight : register(b3)
+cbuffer matrixBufferLightPassPerSpotlight : register(b3)
 {
 	matrix lightView;
 	matrix lightProj;
@@ -30,8 +32,8 @@ struct VS_OUT
 
 Texture2D diffuseTex : register(t0);
 Texture2D normalTex : register(t1);
-Texture2D camDepthMap : register(t2);
-Texture2D lightDepthMap : register(t3);
+Texture2D camDepthMap : register(t3);
+Texture2D lightDepthMap : register(t4);
 
 SamplerState samplerWrap : register(s0);
 SamplerState samplerClamp : register(s1);
@@ -59,6 +61,7 @@ float4 main(VS_OUT input) : SV_TARGET
 
 	float4 normal = normalize(float4(normalTex.Sample(samplerWrap, uv).xyz, 0.0f));
 
+	//Save this for debugging //Jonas
 	//if (uv.x < 0.75f && uv.y < 0.75f && uv.x > 0.25f && uv.y > 0.25f)
 	//{
 	//	return pow(camDepthMap.Sample(samplerWrap, uv).r,10);
@@ -80,7 +83,7 @@ float4 main(VS_OUT input) : SV_TARGET
 	float pixToLightAngle = acos(dot(nLightDir, -pixToLight));
 	
 	//Inside of the volume
-	if (howMuchLight > 0.0f && pixToLightAngle <= lightAngleDiv2)
+	if (howMuchLight > 0.0f && l < lightRange && pixToLightAngle <= lightAngleDiv2)
 	{
 		//Sample and add shadows for the shadow map.
 		float4 lightSpacePos = float4(worldPos, 1.0f);
@@ -110,19 +113,19 @@ float4 main(VS_OUT input) : SV_TARGET
 		//In light
 		if (shadowCoeff > depth - epsilon)
 		{
-			float4 finalColor = float4((diffuse.xyz * lightColor * lightIntensity), 1.0f);
+			float4 finalColor = float4((diffuse.xyz * lightColor * lightIntensity), 0.5f);
 
-			if (pixToLightAngle > lightAngleDiv2 * 0.85)
+			if (pixToLightAngle > lightAngleDiv2 * 0.85f)
 			{
-				finalColor *= float4(0.1f, 0.1f, 0.1f, 0.1f);
+				finalColor *= float4(0.1f, 0.1f, 0.1f, 0.05f);
 			}
-			else if (pixToLightAngle > lightAngleDiv2 * 0.75)
+			else if (pixToLightAngle > lightAngleDiv2 * 0.75f)
 			{
-				finalColor *= float4(0.35f, 0.35f, 0.35f, 0.35f);
+				finalColor *= float4(0.35f, 0.35f, 0.35f, 0.15f);
 			}
-			else if (pixToLightAngle > lightAngleDiv2 * 0.65)
+			else if (pixToLightAngle > lightAngleDiv2 * 0.65f)
 			{
-				finalColor *= float4(0.7f, 0.7f, 0.7f, 0.65f);
+				finalColor *= float4(0.7f, 0.7f, 0.7f, 0.5f);
 			}
 
 			return finalColor;
@@ -130,8 +133,8 @@ float4 main(VS_OUT input) : SV_TARGET
 		else
 		{
 			//In shadow
-			//Test how far away the lit parts are to generate the "toon" falloff
-			return float4(diffuse.xyz * float3(0.1, 0.1, 0.1), 0.5f);
+			//Test how far away the lit parts are to generate the "toon" falloff //Jonas
+			/*return float4(diffuse.xyz * float3(0.1, 0.1, 0.1), 0.5f);*/
 		}
 	}
 

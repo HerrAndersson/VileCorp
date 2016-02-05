@@ -1,20 +1,13 @@
-// ------------------------------------------
-//		GRID PASS - PIXEL SHADER
-// ------------------------------------------
-
-SamplerState samplerWrap : register(s0);
-
-
+/*----------------------------------------------------------------------------------------------------------------------
+| Pixel shader used specifically for the grid, or other linelists. Renders the color to the render target.			   |
+----------------------------------------------------------------------------------------------------------------------*/
 struct VS_OUT
 {
 	float4 pos		: SV_POSITION;
-	float4 color : COLOR;
-	float4 worldPos : POSITION;
+	float3 colorOffset : COLOROFFSET;
 };
 
-float4 main(VS_OUT input) : SV_TARGET
+float4 main(VS_OUT input) : SV_TARGET2
 {
-	input.color = float4(1.0, 1.0, 1.0, 1.0);
-
-	return input.color;
+	return float4(input.colorOffset, 1.0f);
 }

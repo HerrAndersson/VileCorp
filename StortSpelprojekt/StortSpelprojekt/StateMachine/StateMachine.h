@@ -9,6 +9,7 @@
 #include "PlacementState.h"
 #include "LevelEditState.h"
 #include "OptionsState.h"
+#include "LevelSelectState.h"
 #include <vector>
 
 class StateMachine
@@ -17,10 +18,6 @@ private:
 	State					_currentState;
 	std::vector<BaseState*>	_baseStates;
 	void ProcessStateRequest();
-
-	ObjectHandler*			_objectHandler;
-	System::Camera*			_camera;
-	PickingDevice*			_pickingDevice;
 
 public:
 	StateMachine(
@@ -31,12 +28,12 @@ public:
 		const std::string& filename,
 		AssetManager* assetManager,
 		FontWrapper* fontWrapper,
-		int width,
-		int height);
+		System::Settings* settings,
+		System::SettingsReader* settingsReader);
 	~StateMachine();
 
 	bool Update(float deltaTime);
 	State GetState();
 	BaseState* GetCurrentStatePointer() const;
-	void Resize(int width, int height);
+	void Resize(System::Settings* settings);
 };

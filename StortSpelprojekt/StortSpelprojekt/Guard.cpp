@@ -2,12 +2,16 @@
 
 Guard::Guard()
 	: Unit()
-{}
+{
+	_isSelected = false;
+	_currentPatrolGoal = -1;
+}
 
 Guard::Guard(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject * renderObject, const Tilemap * tileMap)
 	: Unit(ID, position, rotation, tilePosition, type, renderObject, tileMap)
 {
 	_currentPatrolGoal = 0;
+	_isSelected = 0;
 }
 
 Guard::~Guard()

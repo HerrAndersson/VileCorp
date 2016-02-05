@@ -197,7 +197,7 @@ struct BaseReaderHandler {
     bool Key(const Ch* str, SizeType len, bool copy) { return static_cast<Override&>(*this).String(str, len, copy); }
     bool EndObject(SizeType) { return static_cast<Override&>(*this).Default(); }
     bool StartArray() { return static_cast<Override&>(*this).Default(); }
-    bool EndArray(SizeType) { return static_cast<Override&>(*this).Default(); }
+    bool EndArray(SizeType) { return static_cast<Override&>(*this).Default(); } //-V524
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -787,7 +787,7 @@ private:
 
         RAPIDJSON_FORCEINLINE Ch Peek() const { return is.Peek(); }
         RAPIDJSON_FORCEINLINE Ch TakePush() { return is.Take(); }
-        RAPIDJSON_FORCEINLINE Ch Take() { return is.Take(); }
+        RAPIDJSON_FORCEINLINE Ch Take() { return is.Take(); } //-V524
         size_t Tell() { return is.Tell(); }
         size_t Length() { return 0; }
         const char* Pop() { return 0; }
