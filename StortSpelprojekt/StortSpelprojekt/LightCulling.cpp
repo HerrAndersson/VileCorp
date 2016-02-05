@@ -57,7 +57,6 @@ LightCulling::LightCulling(Tilemap* tilemap)
 
 LightCulling::~LightCulling()
 {
-	_tilemap = nullptr;
 	if (_quadTreeRoot != nullptr)
 	{
 		_quadTreeRoot->Release();
