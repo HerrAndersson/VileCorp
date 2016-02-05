@@ -378,68 +378,68 @@
   
   		"Units":
 		{
-			"position": [-0.7, -0.875],	
+			"position": [-0.7, -0.855],	
 			"scale": [0.3, 0.2],
 			"texture": "../Menues/PlacementStateGUI/placementUnits1.png",
 			
 			"Guard" :
 			{
-				"position": [-0.18, 0.08],	
-				"scale": [0.05, 0.083],
+				"position": [-0.18, 0.057],	
+				"scale": [0.048, 0.083],
 				"texture": "../Menues/PlacementStateGUI/units/Guardbutton1.png",
 				
 				"GuardText":
 				{
-					"position" : [0.97, -1.08],
+					"position" : [0.975, -1.08],
 					"scale": [1.0, 1.0],
 					"text": "Guard",
 					"color": "FF000000",
-					"fontsize" : 22.0
-				}
+					"fontsize" : 18.0
+				}				
 			},
 			"AnvilTrap" :
 			{
-				"position": [-0.06, 0.08],	
-				"scale": [0.05, 0.083],
+				"position": [-0.06, 0.057],	
+				"scale": [0.048, 0.083],
 				"texture": "../Menues/PlacementStateGUI/units/Anvilbutton1.png",
 				
 				"AnvilText":
 				{
-					"position" : [0.955, -1.08],
+					"position" : [0.96, -1.08],
 					"scale": [1.0, 1.0],
 					"text": "Anvil Trap",
 					"color": "FF000000",
-					"fontsize" : 22.0
+					"fontsize" : 18.0
 				}
 			},
 			"TeslaTrap" :
 			{
-				"position": [0.06, 0.08],	
-				"scale": [0.05, 0.083],
+				"position": [0.06, 0.057],	
+				"scale": [0.048, 0.083],
 				"texture": "../Menues/PlacementStateGUI/units/Teslabutton1.png",
 				
 				"TeslaText":
 				{
-					"position" : [0.955, -1.08],
+					"position" : [0.96, -1.08],
 					"scale": [1.0, 1.0],
 					"text": "Tesla Trap",
 					"color": "FF000000",
-					"fontsize" : 22.0
+					"fontsize" : 18.0
 				}
 			},
 			"Camera" :
 			{
-				"position": [0.18, 0.08],	
-				"scale": [0.05, 0.083],
+				"position": [0.18, 0.057],	
+				"scale": [0.048, 0.083],
 				"texture": "../Menues/PlacementStateGUI/units/Camerabutton1.png",
 				
 				"CameraText":
 				{
-					"position" : [0.965, -1.08],
+					"position" : [0.97, -1.08],
 					"scale": [1.0, 1.0],
 					"text": "Camera",
 					"color": "FF000000",
-					"fontsize" : 22.0
+					"fontsize" : 18.0
 				}
 			}
 		},
@@ -451,11 +451,11 @@
 			
 			"PlayText":
 			{
-				"position" : [0.97, -0.964],
+				"position" : [0.975, -0.968],
 				"scale": [1.0, 1.0],
 				"text": "Play",
 				"color": "FF000000",
-				"fontsize" : 30.0
+				"fontsize" : 25.0
 			}
 		},
 		"Budget" :
@@ -466,7 +466,7 @@
 			
 			"BudgetText":
 			{
-				"position" : [0.92, -0.965],
+				"position" : [0.923, -0.968],
 				"scale": [1.0, 1.0],
 				"text": "Budget:",
 				"color": "FF000000",
@@ -475,7 +475,7 @@
 			
 			"BudgetValue":
 			{
-				"position" : [1.01, -0.965],
+				"position" : [1.02, -0.968],
 				"scale": [1.0, 1.0],
 				"text": "1000",
 				"color": "FF000000",
