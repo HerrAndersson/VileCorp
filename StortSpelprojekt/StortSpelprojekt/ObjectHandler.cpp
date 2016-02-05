@@ -42,7 +42,7 @@ void ObjectHandler::ActivateTileset(const string& name)
 
 
 
-bool ObjectHandler::Add(Type type, int index, const XMFLOAT3& position, const XMFLOAT3& rotation)
+bool ObjectHandler::Add(Type type, int index, const XMFLOAT3& position, const XMFLOAT3& rotation, const int subIndex)
 {
 	GameObject* object = nullptr;
 
@@ -67,8 +67,20 @@ bool ObjectHandler::Add(Type type, int index, const XMFLOAT3& position, const XM
 		object = MakeGuard(_gameObjectInfo->Guards(index), position, rotation);
 		break;
 	case TRAP:
-		object = MakeTrap(_gameObjectInfo->Traps(index), position, rotation);
-		break;
+		switch (subIndex)
+		{
+		case SPIKE:
+			object = MakeTrap(_gameObjectInfo->Traps(index), position, rotation, SPIKE);
+			break;
+		case TESLACOIL:
+			object = MakeTrap(_gameObjectInfo->Traps(index), position, rotation, TESLACOIL);
+			break;
+		case SHARK:
+			object = MakeTrap(_gameObjectInfo->Traps(index), position, rotation, SHARK);
+			break;
+		default:
+			break;
+		}
 	default:	
 		break;
 	}
@@ -119,13 +131,13 @@ bool ObjectHandler::Add(Type type, int index, const XMFLOAT3& position, const XM
 	return false;
 }
 
-bool ObjectHandler::Add(Type type, const std::string& name, const XMFLOAT3& position = XMFLOAT3(0.0f, 0.0f, 0.0f), const XMFLOAT3& rotation = XMFLOAT3(0.0f, 0.0f, 0.0f))
+bool ObjectHandler::Add(Type type, const std::string& name, const XMFLOAT3& position = XMFLOAT3(0.0f, 0.0f, 0.0f), const XMFLOAT3& rotation = XMFLOAT3(0.0f, 0.0f, 0.0f), const int subIndex)
 {
 	for (unsigned int i = 0; i < _gameObjectInfo->_objects[type]->size(); i++)
 	{
 		if (_gameObjectInfo->_objects[type]->at(i)->_name == name)
 		{
-			return Add(type, i, position, rotation);
+			return Add(type, i, position, rotation, subIndex);
 		}
 	}
 	return false;
@@ -776,7 +788,7 @@ SpawnPoint * ObjectHandler::MakeSpawn(GameObjectSpawnInfo * data, const XMFLOAT3
 	return obj;
 }
 
-Trap * ObjectHandler::MakeTrap(GameObjectTrapInfo * data, const XMFLOAT3& position, const XMFLOAT3& rotation)
+Trap * ObjectHandler::MakeTrap(GameObjectTrapInfo * data, const XMFLOAT3& position, const XMFLOAT3& rotation, const int subIndex)
 {
 	Trap* obj = new Trap(
 		_idCount,

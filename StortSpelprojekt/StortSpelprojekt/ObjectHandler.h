@@ -57,7 +57,7 @@ private:
 	Architecture*	MakeWall(GameObjectWallInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation);
 	Architecture*	MakeLoot(GameObjectLootInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation);
 	SpawnPoint*		MakeSpawn(GameObjectSpawnInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation);
-	Trap*			MakeTrap(GameObjectTrapInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation);
+	Trap*			MakeTrap(GameObjectTrapInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation, const int subIndex = 0);
 	Guard*			MakeGuard(GameObjectGuardInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation);
 	Enemy*			MakeEnemy(GameObjectEnemyInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation);
 
@@ -68,8 +68,8 @@ public:
 	~ObjectHandler();
 
 	//Add a gameobject
-	bool Add(Type type, int index, const XMFLOAT3& position, const XMFLOAT3& rotation);
-	bool Add(Type type, const std::string& name, const XMFLOAT3& position, const XMFLOAT3& rotation);
+	bool Add(Type type, int index, const XMFLOAT3& position, const XMFLOAT3& rotation, const int subIndex = 0);
+	bool Add(Type type, const std::string& name, const XMFLOAT3& position, const XMFLOAT3& rotation, const int subIndex = 0);
 	
 	bool Remove(int ID);
 	bool Remove(Type type, int ID);
