@@ -61,8 +61,6 @@ Game::Game(HINSTANCE hInstance, int nCmdShow):
 		point = new Renderer::Pointlight(_renderModule->GetDevice(), XMFLOAT3(5 + 3 * sin(25 + i * 2 + rand() % ((i+1)) / 8) * sin(i) + 1, 0.05f, 5 + 3 * sin(25 + i * 2 + rand() % ((i + 1)) / 8) * cos(i)), 1.0f, 1.0f, XMFLOAT3(sin(i*i * 6), sin(i * 50 * i), sin(120 * i * i)));
 		_pointlights.push_back(point);
 	}
-
-	_lightCulling = new LightCulling();
 }
 
 Game::~Game()
@@ -216,7 +214,7 @@ void Game::Render()
 			}
 		}
 	}
-
+	
 	//TEMPORARY!!
 	std::vector<std::vector<std::vector<GameObject*>>> inLight;
 	if (_SM->GetState() == PLAYSTATE)
@@ -267,12 +265,12 @@ void Game::Render()
 			_renderModule->RenderLineList(&matrix, gr->GetNrOfPoints(), gr->GetColorOffset());
 		}
 	}
-
+	
 	////////////////////////////////////////////////////////////  Light pass  //////////////////////////////////////////////////////////////
 	if (_SM->GetState() == PLAYSTATE)
 	{
-	/*----------------------------------------------------------  Spotlights  -------------------------------------------------------------
-	Generate the shadow map for each spotlight, then apply the lighting/shadowing to the render target with additive blending.           */
+	//----------------------------------------------------------  Spotlights  -------------------------------------------------------------
+	//Generate the shadow map for each spotlight, then apply the lighting/shadowing to the render target with additive blending.           
 
 		_renderModule->SetLightDataPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
 		for (unsigned int i = 0; i < _spotlights.size(); i++)
@@ -280,6 +278,7 @@ void Game::Render()
 			_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::SHADOW_GENERATION);
 			_renderModule->SetShadowMapDataPerSpotlight(_spotlights[i]->GetViewMatrix(), _spotlights[i]->GetProjectionMatrix());
 
+			
 			for (auto j : inLight.at(i))
 			{
 				if (j.size() > 0)
@@ -301,7 +300,7 @@ void Game::Render()
 
 			_renderModule->RenderLightVolume(_spotlights[i]->GetVolumeBuffer(), _spotlights[i]->GetWorldMatrix(), _spotlights[i]->GetVertexCount(), _spotlights[i]->GetVertexSize());
 		}
-
+		
 	/*---------------------------------------------------------  Pointlights  ------------------------------------------------------------*/
 		_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::LIGHT_APPLICATION_POINTLIGHT);
 		for (auto p : _pointlights)

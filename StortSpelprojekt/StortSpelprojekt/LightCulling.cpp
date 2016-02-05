@@ -63,15 +63,6 @@ LightCulling::~LightCulling()
 		_quadTreeRoot->Release();
 		delete _quadTreeRoot;
 	}
-	/*
-	if (_objectsInLight != nullptr)
-	{
-		for (int i = 0; i < NR_OF_TYPES; i++)
-		{
-			_objectsInLight->at(i).clear();
-		}
-	}*/
-	_objectsInLight->clear();
 	delete _objectsInLight;
 }
 
@@ -85,7 +76,6 @@ std::vector<std::vector<GameObject*>>* LightCulling::GetObjectsInSpotlight(Rende
 		_objectsInLight->at(i).clear();
 	}
 	_quadTreeRoot->GetObjects(&triangle, _objectsInLight, _tilemap);
-	triangle.clear();
 
 	return _objectsInLight;
 }
