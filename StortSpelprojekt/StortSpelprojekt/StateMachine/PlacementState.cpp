@@ -64,7 +64,7 @@ void PlacementState::HandleButtons()
 		ChangeState(PLAYSTATE);
 	}
 
-	if (_uiTree.IsButtonColliding("Trap", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
+	if (_uiTree.IsButtonColliding("AnvilTrap", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
 		// Temp, should be replaced with blueprint
 		_toPlace._type = TRAP;

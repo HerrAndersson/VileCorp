@@ -351,58 +351,95 @@
   "PLACEMENT" : {
   		"Play" :
 		{
-			"position": [0.9, 0.9],	
-			"scale": [0.1, 0.1],
-			"texture": "../Menues/Button.png",
+			"position": [0.86, 0.67],	
+			"scale": [0.12, 0.08],
+			"texture": "../Menues/PlacementStateGUI/placementResources.png",
 			
 			"PlayText":
 			{
-				"position" : [0.97, -0.96],
+				"position" : [0.97, -0.964],
 				"scale": [1.0, 1.0],
 				"text": "Play",
 				"color": "FF000000",
 				"fontsize" : 30.0
 			}
 		},
-		"Trap" :
+		"Units" :
 		{
-			"position": [-0.1, -0.9],	
-			"scale": [0.1, 0.1],
-			"texture": "../Menues/Button.png",
+			"position": [-0.7, -0.875],	
+			"scale": [0.3, 0.2],
+			"texture": "../Menues/PlacementStateGUI/placementUnits1.png",
 			
-			"TrapText":
+			"Guard" :
 			{
-				"position" : [0.97, -0.96],
-				"scale": [1.0, 1.0],
-				"text": "Trap",
-				"color": "FF000000",
-				"fontsize" : 30.0
-			}
-		},
-		"Guard" :
-		{
-			"position": [0.1, -0.9],	
-			"scale": [0.1, 0.1],
-			"texture": "../Menues/Button.png",
-			
-			"GuardText":
+				"position": [-0.18, 0.08],	
+				"scale": [0.05, 0.083],
+				"texture": "../Menues/PlacementStateGUI/units/Guardbutton1.png",
+				
+				"GuardText":
+				{
+					"position" : [0.97, -1.08],
+					"scale": [1.0, 1.0],
+					"text": "Guard",
+					"color": "FF000000",
+					"fontsize" : 22.0
+				}
+			},
+			"AnvilTrap" :
 			{
-				"position" : [0.97, -0.96],
-				"scale": [1.0, 1.0],
-				"text": "Guard",
-				"color": "FF000000",
-				"fontsize" : 30.0
+				"position": [-0.06, 0.08],	
+				"scale": [0.05, 0.083],
+				"texture": "../Menues/PlacementStateGUI/units/Anvilbutton1.png",
+				
+				"AnvilText":
+				{
+					"position" : [0.955, -1.08],
+					"scale": [1.0, 1.0],
+					"text": "Anvil Trap",
+					"color": "FF000000",
+					"fontsize" : 22.0
+				}
+			},
+			"TeslaTrap" :
+			{
+				"position": [0.06, 0.08],	
+				"scale": [0.05, 0.083],
+				"texture": "../Menues/PlacementStateGUI/units/Teslabutton1.png",
+				
+				"TeslaText":
+				{
+					"position" : [0.955, -1.08],
+					"scale": [1.0, 1.0],
+					"text": "Tesla Trap",
+					"color": "FF000000",
+					"fontsize" : 22.0
+				}
+			},
+			"Camera" :
+			{
+				"position": [0.18, 0.08],	
+				"scale": [0.05, 0.083],
+				"texture": "../Menues/PlacementStateGUI/units/Camerabutton1.png",
+				
+				"CameraText":
+				{
+					"position" : [0.965, -1.08],
+					"scale": [1.0, 1.0],
+					"text": "Camera",
+					"color": "FF000000",
+					"fontsize" : 22.0
+				}
 			}
 		},
 		"Budget" :
 		{
-			"position": [-0.9, 0.9],	
-			"scale": [0.1, 0.1],
-			"texture": "../Menues/Budget.png",
+			"position": [0.86, 0.9],	
+			"scale": [0.12, 0.08],
+			"texture": "../Menues/PlacementStateGUI/placementResources.png",
 			
 			"BudgetText":
 			{
-				"position" : [0.91, -0.96],
+				"position" : [0.92, -0.965],
 				"scale": [1.0, 1.0],
 				"text": "Budget:",
 				"color": "FF000000",
@@ -411,7 +448,7 @@
 			
 			"BudgetValue":
 			{
-				"position" : [1.0, -0.96],
+				"position" : [1.01, -0.965],
 				"scale": [1.0, 1.0],
 				"text": "1000",
 				"color": "FF000000",
