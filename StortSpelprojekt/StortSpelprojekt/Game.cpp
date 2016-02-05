@@ -65,10 +65,10 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 
 	_lightCulling = new LightCulling();
 
-	bool added = _soundTestModule.AddSound("yay.waw");
+	bool added = _soundTestModule.AddSound("Assets/Sounds/yay.wav");
 	if (added)
 	{
-		_soundTestModule.Play("yay.waw");
+		_soundTestModule.Play("Assets/Sounds/yay.wav");
 	}
 
 }
@@ -132,6 +132,8 @@ void Game::ResizeResources(System::WindowSettings settings)
 
 bool Game::Update(float deltaTime)
 {
+	_soundTestModule.Update();
+
 	bool run = true;
 	_controls->Update();
 	run = _SM->Update(deltaTime);

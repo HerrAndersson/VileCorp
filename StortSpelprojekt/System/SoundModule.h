@@ -3,8 +3,9 @@
 
 #define SYSTEM_EXPORT __declspec(dllexport)
 
-#include <sstream>
 #include "yse\yse.hpp"
+#include <map>
+#include <string>
 
 #pragma comment(lib, "libyse32.lib")
 
@@ -17,28 +18,15 @@ namespace System
 	class SYSTEM_EXPORT SoundModule
 	{
 	private:
-		struct Sound
-		{
-			std::string _soundName;
-			YSE::sound _sound;
-			Sound() {};
-		};
-
-		int		_arraySize;
-		int		_nrOfSounds;
-		Sound**	_allSounds;
-
-		/*Helpers*/
-		int findSoundIndex(Sound* array[], std::string soundName, int imin, int imax);
-		void expandArray();
+		std::map<std::string, YSE::sound> _allSounds;
 
 	public:
 		/*Functions*/
 		SoundModule();
 		~SoundModule();
 
-		bool AddSound(char* fileName, float volume = 1.0f, float speed = 1.0f, bool relative = true, bool looping = true);
-		bool RemoveSound(char* fileName);   //Not needed but good to have
+		bool AddSound(const std::string &fileName, float volume = 1.0f, float speed = 1.0f, bool relative = true, bool looping = true);
+		bool RemoveSound(const std::string &fileName);   //Not needed but good to have
 
 		void Update(/*position*/);
 		bool Play(std::string soundName);
