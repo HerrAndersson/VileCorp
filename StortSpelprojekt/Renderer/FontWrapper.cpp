@@ -8,7 +8,7 @@ FontWrapper::FontWrapper(ID3D11Device* device, LPWSTR fontPath, LPWSTR fontName)
 
 	//Create _fontWrapper
 	FW1CreateFactory(FW1_VERSION, &_factory);
-	hr = _factory->CreateFontWrapper(device, NULL, &_fontWrapper);
+	hr = _factory->CreateFontWrapper(device, 0, &_fontWrapper);
 	if (FAILED(hr))
 	{
 		throw std::runtime_error("Failed to create font wrapper");

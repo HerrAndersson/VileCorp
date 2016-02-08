@@ -54,7 +54,7 @@ namespace System
 		}
 		string str((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
 		file.close();
-		_allKeys = str;
+		_allKeys = &str;
 
 		Document d;
 
@@ -218,10 +218,10 @@ namespace System
 		}
 	}
 
-	void Controls::SaveKeyBindings(int keyMap, std::string action, std::string newKey, std::string newKey2, std::string newKey3, std::string newKey4)
+	void Controls::SaveKeyBindings(int keyMap, const std::string& action, const std::string& newKey, const std::string& newKey2, const std::string& newKey3, const std::string& newKey4)
 	{
 		Document d;
-		d.Parse(_allKeys.c_str());
+		d.Parse(_allKeys->c_str());
 		int currentKeyMap = 0;
 		//Loop through all the states
 		for (Value::MemberIterator it = d.MemberBegin(); it != d.MemberEnd(); ++it)
@@ -236,15 +236,15 @@ namespace System
 					{
 						i->value[0].SetString(newKey.c_str(), newKey.size(), d.GetAllocator());
 
-						if (newKey2 != "")
+						if (!newKey2.empty())
 						{
 							i->value[1].SetString(newKey2.c_str(), newKey2.size(), d.GetAllocator());
 						}
-						if (newKey3 != "")
+						if (!newKey3.empty())
 						{
 							i->value[2].SetString(newKey3.c_str(), newKey3.size(), d.GetAllocator());
 						}
-						if (newKey4 != "")
+						if (!newKey4.empty())
 						{
 							i->value[3].SetString(newKey4.c_str(), newKey4.size(), d.GetAllocator());
 						}

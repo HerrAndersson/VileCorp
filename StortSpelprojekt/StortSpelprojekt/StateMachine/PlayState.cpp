@@ -1,7 +1,7 @@
 #include "PlayState.h"
 
-PlayState::PlayState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, int width, int height)
-	: BaseState(controls, objectHandler, camera, pickingDevice, filename, "PLAY", assetManager, fontWrapper, width, height)
+PlayState::PlayState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::Settings* settings)
+	: BaseState(controls, objectHandler, camera, pickingDevice, filename, "PLAY", assetManager, fontWrapper, settings)
 {
 	_controls = controls;
 	_objectHandler = objectHandler;
@@ -28,54 +28,48 @@ void PlayState::Update(float deltaTime)
 void PlayState::OnStateEnter()
 {
 	_gameLogic.Initialize(_objectHandler, _camera, _controls, _pickingDevice);
-	//TODO: hide ingame menu
+	_uiTree.GetNode("root")->SetHidden(true);
 	_objectHandler->EnableSpawnPoints();
 }
 
 void PlayState::OnStateExit()
 {
-
+	_gamePaused = false;
 }
 
 void PlayState::HandleInput()
 {
-	if (_controls->IsFunctionKeyDown("MAP_EDIT:MENU"))
-	{
-		ChangeState(MENUSTATE);
-	}
+	
 }
 
 void PlayState::IngameMenu()
 {
-
-	if (_controls->IsFunctionKeyDown("PLAY:SHOWMENU"))
+	if (_controls->IsFunctionKeyDown("MENU:MENU"))
 	{
-		//TODO::unhide menu
+		_uiTree.GetNode("root")->SetHidden(false);
 		_gamePaused = true;
 	}
 	
 	if (_gamePaused)
 	{
-	if (_controls->IsFunctionKeyDown("MENU:CLICK"))
-	{
-		System::MouseCoord coord = _controls->GetMouseCoord();
-		if (_uiTree.IsButtonColliding("resume", coord._pos.x, coord._pos.y))
+		if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
 		{
-			//TODO: hide menu
-			_gamePaused = false;
-		}
+			System::MouseCoord coord = _controls->GetMouseCoord();
+			if (_uiTree.IsButtonColliding("resume", coord._pos.x, coord._pos.y))
+			{
+				_uiTree.GetNode("root")->SetHidden(true);
+				_gamePaused = false;
+			}
 		
-		if (_uiTree.IsButtonColliding("mainmenu", coord._pos.x, coord._pos.y))
-		{
-			ChangeState(State::MENUSTATE);
-		}
+			if (_uiTree.IsButtonColliding("mainmenu", coord._pos.x, coord._pos.y) || _controls->IsFunctionKeyDown("MENU:MENU"))
+			{
+				ChangeState(State::MENUSTATE);
+			}
 		
-		if (_uiTree.IsButtonColliding("quit", coord._pos.x, coord._pos.y))
-		{
-			ChangeState(State::EXITSTATE);
-		}
-		
+			if (_uiTree.IsButtonColliding("quit", coord._pos.x, coord._pos.y))
+			{
+				ChangeState(State::EXITSTATE);
+			}
 		}
 	}
-	
 }

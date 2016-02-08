@@ -6,7 +6,7 @@ using namespace DirectX;
 
 namespace GUI
 {
-	UITree::UITree(const std::string& filename, const std::string& statename, AssetManager* assetManager, FontWrapper* fontWrapper, int width, int height) : _info(fontWrapper, width, height)
+	UITree::UITree(const std::string& filename, const std::string& statename, AssetManager* assetManager, FontWrapper* fontWrapper, System::Settings* settings) : _info(fontWrapper, settings->_screenWidth, settings->_screenHeight)
 	{
 		_AM = assetManager;
 		ifstream file(filename);
@@ -45,10 +45,10 @@ namespace GUI
 		return _root;
 	}
 
-	void UITree::Resize(int width, int height)
+	void UITree::Resize(System::Settings* settings)
 	{
-		_info._screenWidth = width;
-		_info._screenHeight = height;
+		_info._screenWidth = settings->_screenWidth;
+		_info._screenHeight = settings->_screenHeight;
 		Resize(_root);
 	}
 

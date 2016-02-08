@@ -1,7 +1,7 @@
 #include "MenuState.h"
 
-MenuState::MenuState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, int width, int height)
-	: BaseState (controls, objectHandler, camera, pickingDevice, filename, "MENU", assetManager, fontWrapper, width, height)
+MenuState::MenuState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::Settings* settings)
+	: BaseState (controls, objectHandler, camera, pickingDevice, filename, "MENU", assetManager, fontWrapper, settings)
 {
 	_controls = controls;
 	_objectHandler = objectHandler;
@@ -17,7 +17,11 @@ MenuState::~MenuState()
 
 void MenuState::Update(float deltaTime)
 {
-	if (_controls->IsFunctionKeyDown("MENU:CLICK"))
+	if (_controls->IsFunctionKeyDown("DEBUG:RELOAD_GUI"))
+	{
+		_uiTree.ReloadTree("../../../../StortSpelprojekt/Assets/gui.json", "MENU");
+	}
+	if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
 		System::MouseCoord coord = _controls->GetMouseCoord();
 		if (_uiTree.IsButtonColliding("playbutton", coord._pos.x, coord._pos.y))
@@ -26,12 +30,19 @@ void MenuState::Update(float deltaTime)
 		}
 		if (_uiTree.IsButtonColliding("optionsbutton", coord._pos.x, coord._pos.y))
 		{
+			ChangeState(State::OPTIONSSTATE);
+		}
+		if (_uiTree.IsButtonColliding("leveleditbutton", coord._pos.x, coord._pos.y))
+		{
 			ChangeState(State::LEVELEDITSTATE);
+		}
+		if (_uiTree.IsButtonColliding("levelselectbutton", coord._pos.x, coord._pos.y))
+		{
+			ChangeState(State::LEVELSELECTSTATE);
 		}
 		if (_uiTree.IsButtonColliding("exitbutton", coord._pos.x, coord._pos.y))
 		{
-			//TODO: This is a hack, this fuction should instead return a value if the game should quit //Mattias
-			PostQuitMessage(0);
+			ChangeState(State::EXITSTATE);
 		}
 	}
 	if (_controls->IsFunctionKeyDown("MENU:MENU"))

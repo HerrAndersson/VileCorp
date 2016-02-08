@@ -12,7 +12,6 @@ bool compareFloat3(XMFLOAT3 a, XMFLOAT3 b)
 // Instancing
 BaseEdit::BaseEdit()
 {
-	_aStar = nullptr;
 }
 
 void BaseEdit::Initialize(ObjectHandler* objectHandler, System::Controls* controls, PickingDevice* pickingDevice, System::Camera* camera)
@@ -21,9 +20,6 @@ void BaseEdit::Initialize(ObjectHandler* objectHandler, System::Controls* contro
 	_controls = controls;
 	_pickingDevice = pickingDevice;
 	_camera = camera;
-	_aStar = new AI::AStar();
-
-	_tileMultiplier = 1;
 
 	// Don´t let both be true
 	_isSelectionMode = true;
@@ -34,13 +30,15 @@ void BaseEdit::Initialize(ObjectHandler* objectHandler, System::Controls* contro
 
 	_marker = nullptr;
 	_markedTile = nullptr;
-
-	//_grid = new Grid(_renderModule->GetDevice(), 1, 10);
 }
 
 BaseEdit::~BaseEdit()
 {
-	delete _aStar;
+}
+
+void BaseEdit::Release()
+{
+	_objectHandler->Release();
 }
 
 // Other functions
@@ -49,7 +47,7 @@ GameObject* BaseEdit::GetSelectedObject()
 	return _marker;
 }
 
-bool BaseEdit::Add(Type type, std::string name)
+bool BaseEdit::Add(Type type, const std::string& name)
 {
 	return _objectHandler->Add(type, name, _marker->GetPosition(), XMFLOAT3(0.0f, 0.0f, 0.0f));
 }
@@ -85,48 +83,49 @@ bool BaseEdit::TypeOn(Type type)
 
 void BaseEdit::DragAndDrop(Type type)
 {
-
-
-	if (_marker != nullptr && _isSelectionMode && _controls->IsFunctionKeyDown("MAP_EDIT:DRAG"))
+	if (_marker != nullptr && _isSelectionMode && _controls->IsFunctionKeyDown("MOUSE:DRAG"))
 	{
-		AI::Vec2D pickedTile = _pickingDevice->pickTile(_controls->GetMouseCoord()._pos);
-		
-		if (_objectHandler->GetTileMap()->IsValid(pickedTile._x, pickedTile._y))
+		AI::Vec2D pickedTile = _pickingDevice->PickTile(_controls->GetMouseCoord()._pos);
+		Tilemap* tilemap = _objectHandler->GetTileMap();
+
+		if (tilemap)
 		{
-			GameObject* objectOnTile = _objectHandler->GetTileMap()->GetObjectOnTile(pickedTile._x, pickedTile._y, type);
-
-			if (objectOnTile == nullptr && _marker->GetType() == type)
+			if (tilemap->IsValid(pickedTile._x, pickedTile._y))
 			{
-				// Update positions
-				XMFLOAT3 p = XMFLOAT3(_marker->GetPosition());
-				p.x = pickedTile._x;
-				p.z = pickedTile._y;
-				Tilemap* tm = _objectHandler->GetTileMap();
+				GameObject* objectOnTile = tilemap->GetObjectOnTile(pickedTile._x, pickedTile._y, type);
 
-				//Check to see if the tile the object will be placed on is free, Aron
-				if (tm->IsPlaceable(p.x, p.z, type))
+				if (objectOnTile == nullptr && _marker->GetType() == type)
 				{
-					if (type == WALL && !tm->IsTileEmpty(p.x, p.z))
+					// Update positions
+					XMFLOAT3 p = XMFLOAT3(_marker->GetPosition());
+					p.x = pickedTile._x;
+					p.z = pickedTile._y;
+
+					//Check to see if the tile the object will be placed on is free, Aron
+					if (tilemap->IsPlaceable(p.x, p.z, type))
 					{
-						return;
+						if (type == WALL && !tilemap->IsTileEmpty(p.x, p.z))
+						{
+							return;
+						}
+
+						if (_isPlace && !_marker->IsVisible())
+						{
+							_marker->SetVisibility(true);
+						}
+
+						// Remove from old tile
+						tilemap->RemoveObjectFromTile(_marker);
+
+						//Update the object to the new position
+						_marker->SetPosition(p);
+						tilemap->AddObjectToTile(p.x, p.z, _marker);
 					}
-
-					if (_isPlace && !_marker->IsVisible())
-					{
-						_marker->SetVisibility(true);
-					}
-
-					// Remove from old tile
-					_objectHandler->GetTileMap()->RemoveObjectFromTile(_marker);
-
-					//Update the object to the new position
-					_marker->SetPosition(p);
-					_objectHandler->GetTileMap()->AddObjectToTile(p.x, p.z, _marker);
-				}				
+				}
 			}
 		}
 	}
-	if (_controls->IsFunctionKeyUp("MAP_EDIT:SELECT"))
+	if (_controls->IsFunctionKeyUp("MOUSE:SELECT"))
 	{
 		if (_isSelectionMode)
 		{
@@ -148,11 +147,11 @@ void BaseEdit::DragAndDrop()
 	}
 }
 
-void BaseEdit::DragAndPlace(Type type, std::string objectName)
+void BaseEdit::DragAndPlace(Type type, const std::string& objectName)
 {
-	if (_isDragAndPlaceMode && _controls->IsFunctionKeyUp("MAP_EDIT:SELECT"))
+	if (_isDragAndPlaceMode && _controls->IsFunctionKeyUp("MOUSE:SELECT"))
 	{
-		AI::Vec2D pickedTile = _pickingDevice->pickTile(_controls->GetMouseCoord()._pos);
+		AI::Vec2D pickedTile = _pickingDevice->PickTile(_controls->GetMouseCoord()._pos);
 
 		// Identify min and max
 		int minX, maxX;
@@ -198,7 +197,7 @@ void BaseEdit::DragAndPlace(Type type, std::string objectName)
 					if (objectOnTile == nullptr)
 					{
 						// Add to valid place
-						_objectHandler->Add(type, objectName, XMFLOAT3(x, 0, y), XMFLOAT3(0.0f, 0.0f, 0.0f));
+						_objectHandler->Add(type, objectName, XMFLOAT3(x, 0, y), XMFLOAT3(0.0f, 0.0f, 0.0f), SHARK);
 					}
 				}
 			}
@@ -226,10 +225,10 @@ void BaseEdit::DragAndPlace(Type type, std::string objectName)
 	}
 }
 
-void BaseEdit::DragActivate(Type type, std::string objectName)
+void BaseEdit::DragActivate(Type type, const std::string& objectName, int subType)
 {
 	_isPlace = false;
-	AI::Vec2D pickedTile = _pickingDevice->pickTile(_controls->GetMouseCoord()._pos);
+	AI::Vec2D pickedTile = _pickingDevice->PickTile(_controls->GetMouseCoord()._pos);
 	
 	XMFLOAT3 pos;
 
@@ -241,7 +240,7 @@ void BaseEdit::DragActivate(Type type, std::string objectName)
 			if (tm->IsPlaceable(x, z, type))
 			{
 				pos = XMFLOAT3(x, 0, z);
-				if (_objectHandler->Add(type, objectName, pos, XMFLOAT3(0.0f, 0.0f, 0.0f)))
+				if (_objectHandler->Add(type, objectName, pos, XMFLOAT3(0.0f, 0.0f, 0.0f), subType))
 				{
 					_marker = _objectHandler->GetGameObjects()->at(type).back();
 					_marker->SetVisibility(false);
@@ -286,11 +285,11 @@ bool BaseEdit::IsPlace() const
 
 void BaseEdit::HandleInput()
 {
-	if (_controls->IsFunctionKeyDown("MAP_EDIT:SELECT"))
+	if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
 		if (_isSelectionMode && !_isPlace)
 		{
-			AI::Vec2D pickedTile = _pickingDevice->pickTile(_controls->GetMouseCoord()._pos);
+			AI::Vec2D pickedTile = _pickingDevice->PickTile(_controls->GetMouseCoord()._pos);
 			std::vector<GameObject*> objectsOnTile = _objectHandler->GetTileMap()->GetAllObjectsOnTile(pickedTile);
 			if (!objectsOnTile.empty())
 			{
@@ -301,16 +300,16 @@ void BaseEdit::HandleInput()
 		if (_isDragAndPlaceMode)
 		{
 			_isPlace = true;
-			_markedTile = new AI::Vec2D(_pickingDevice->pickTile(_controls->GetMouseCoord()._pos));
+			_markedTile = new AI::Vec2D(_pickingDevice->PickTile(_controls->GetMouseCoord()._pos));
 		}
 	}
 
-	if (_controls->IsFunctionKeyDown("MAP_EDIT:REMOVE"))
+	if (_controls->IsFunctionKeyDown("MOUSE:DESELECT"))
 	{
 		if (_isDragAndPlaceMode)
 		{
 			_isPlace = false;
-			_markedTile = new AI::Vec2D(_pickingDevice->pickTile(_controls->GetMouseCoord()._pos));
+			_markedTile = new AI::Vec2D(_pickingDevice->PickTile(_controls->GetMouseCoord()._pos));
 		}
 	}
 
@@ -331,12 +330,12 @@ void BaseEdit::HandleInput()
 
 	if (_camera->GetMode() == System::LOCKED_CAM)
 	{
-		if (_controls->IsFunctionKeyDown("PLAY:SCROLLDOWN") &&
+		if (_controls->IsFunctionKeyDown("CAMERA:ZOOM_CAMERA_IN") &&
 			_camera->GetPosition().y > 4.0f)
 		{
 			_camera->Move(XMFLOAT3(0.0f, -1.0f, 0.0f));
 		}
-		else if (_controls->IsFunctionKeyDown("PLAY:SCROLLUP") &&
+		else if (_controls->IsFunctionKeyDown("CAMERA:ZOOM_CAMERA_OUT") &&
 			_camera->GetPosition().y < 12.0f)
 		{
 			_camera->Move(XMFLOAT3(0.0f, 1.0f, 0.0f));
@@ -373,7 +372,7 @@ void BaseEdit::HandleInput()
 		}
 	}
 
-	if (_controls->IsFunctionKeyDown("MAP_EDIT:MOVE_CAMERA_UP"))
+	if (_controls->IsFunctionKeyDown("CAMERA:MOVE_CAMERA_UP"))
 	{
 		if (_camera->GetMode() == System::FREE_CAM)
 		{
@@ -387,7 +386,7 @@ void BaseEdit::HandleInput()
 		isMoving = true;
 	}
 
-	if (_controls->IsFunctionKeyDown("MAP_EDIT:MOVE_CAMERA_DOWN"))
+	if (_controls->IsFunctionKeyDown("CAMERA:MOVE_CAMERA_DOWN"))
 	{
 		if (_camera->GetMode() == System::FREE_CAM)
 		{
@@ -404,13 +403,13 @@ void BaseEdit::HandleInput()
 		isMoving = true;
 	}
 
-	if (_controls->IsFunctionKeyDown("MAP_EDIT:MOVE_CAMERA_RIGHT"))
+	if (_controls->IsFunctionKeyDown("CAMERA:MOVE_CAMERA_RIGHT"))
 	{
 		right = _camera->GetRightVector();
 		isMoving = true;
 	}
 
-	if (_controls->IsFunctionKeyDown("MAP_EDIT:MOVE_CAMERA_LEFT"))
+	if (_controls->IsFunctionKeyDown("CAMERA:MOVE_CAMERA_LEFT"))
 	{
 		right = _camera->GetRightVector();
 		right.x *= -1;
@@ -438,6 +437,4 @@ void BaseEdit::LoadLevel(int levelID)
 	_objectHandler->LoadLevel(levelID);
 
 	_tileMap = _objectHandler->GetTileMap();
-	_tilemapHeight = _tileMap->GetHeight();
-	_tilemapWidth = _tileMap->GetWidth();
 }

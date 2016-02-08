@@ -1,9 +1,11 @@
 #ifndef CAMERA_H
 #define CAMERA_H
-
-#define CAMERA_EXPORT __declspec(dllexport)
 #include <DirectXMath.h>
 
+#include "Settings/settings.h"
+
+
+#define CAMERA_EXPORT __declspec(dllexport)
 //Disable warning about DirectX  FLOAT3/MATRIX
 #pragma warning( disable: 4251 )
 
@@ -26,11 +28,6 @@ namespace System
 		DirectX::XMFLOAT3	_rotatedForward;
 		DirectX::XMFLOAT3	_rotation;
 
-		float				_nearClip;
-		float				_farClip;
-		float				_fieldOfView;
-		float				_aspectRatio;
-
 		DirectX::XMMATRIX	_view;
 		DirectX::XMMATRIX	_proj;
 		DirectX::XMMATRIX	_ortho;
@@ -40,15 +37,15 @@ namespace System
 
 	public:
 
-		Camera(float nearClip, float farClip, float fov, int width, int height);
+		Camera(System::Settings* settings);
 		~Camera();
 
 		void Update();
-		void Resize(int width, int height);
+		void Resize(System::Settings* settings);
 
-		void SetPosition(DirectX::XMFLOAT3 position);
-		void Move(DirectX::XMFLOAT3 offset);
-		void SetRotation(DirectX::XMFLOAT3 rotation);
+		void SetPosition(const DirectX::XMFLOAT3& position);
+		void Move(const DirectX::XMFLOAT3& offset);
+		void SetRotation(const DirectX::XMFLOAT3& rotation);
 
 		DirectX::XMFLOAT3 GetPosition()const;
 		DirectX::XMFLOAT3 GetRotation()const;

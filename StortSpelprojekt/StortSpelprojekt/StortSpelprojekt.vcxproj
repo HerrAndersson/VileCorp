@@ -28,15 +28,18 @@
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Guard.cpp" />
     <ClCompile Include="Grid.cpp" />
+    <ClCompile Include="LightCulling.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ObjectHandler.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="QuadTree.cpp" />
     <ClCompile Include="SecurityCamera.cpp" />
     <ClCompile Include="SpawnPoint.cpp" />
     <ClCompile Include="StateMachine\BaseState.cpp" />
     <ClCompile Include="StateMachine\BaseEdit.cpp" />
     <ClCompile Include="StateMachine\LevelEditState.cpp" />
     <ClCompile Include="PickingDevice.cpp" />
+    <ClCompile Include="StateMachine\LevelSelectState.cpp" />
     <ClCompile Include="StateMachine\MenuState.cpp" />
     <ClCompile Include="StateMachine\OptionsState.cpp" />
     <ClCompile Include="StateMachine\PlacementState.cpp" />
@@ -57,6 +60,9 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameLogic.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="GameObjectDataLoader.h" />
+    <ClInclude Include="LightCulling.h" />
+    <ClInclude Include="QuadTree.h" />
     <ClInclude Include="SecurityCamera.h" />
     <ClInclude Include="SpawnPoint.h" />
     <ClInclude Include="Grid.h" />
@@ -68,6 +74,7 @@
     <ClInclude Include="PickingDevice.h" />
     <ClInclude Include="StateMachine\BaseEdit.h" />
     <ClInclude Include="StateMachine\LevelEditState.h" />
+    <ClInclude Include="StateMachine\LevelSelectState.h" />
     <ClInclude Include="StateMachine\MenuState.h" />
     <ClInclude Include="StateMachine\OptionsState.h" />
     <ClInclude Include="StateMachine\PlacementState.h" />

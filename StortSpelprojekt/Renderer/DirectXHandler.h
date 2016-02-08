@@ -6,6 +6,8 @@
 #include <stdexcept>
 #include "stdafx.h"
 
+#include "../System/Settings/settings.h"
+
 #pragma comment (lib, "d3d11.lib")
 #pragma comment (lib, "d3dcompiler.lib")
 
@@ -15,10 +17,7 @@ namespace Renderer
 	{
 	private:
 
-		static const int BUFFER_COUNT = 2;
-
-		int _textureWidth;
-		int _textureHeight;
+		static const int BUFFER_COUNT = 3;
 
 		ID3D11RenderTargetView*		 _deferredRTVArray[BUFFER_COUNT + 2];
 		ID3D11ShaderResourceView*	 _deferredSRVarray[BUFFER_COUNT + 2];
@@ -32,31 +31,32 @@ namespace Renderer
 		ID3D11Device*			     _device;
 		ID3D11DeviceContext*		 _deviceContext;
 		D3D11_VIEWPORT				 _viewport;
-									 
+
 		ID3D11DepthStencilState*	 _depthStateEnable;
 		ID3D11DepthStencilState*	 _depthStateDisable;
-									 
+
 		ID3D11RasterizerState*		 _rasterizerStateBack;
 		ID3D11RasterizerState*		 _rasterizerStateFront;
 		ID3D11RasterizerState*		 _rasterizerStateNone;
-									 
+
 		ID3D11BlendState*			 _blendStateEnable;
 		ID3D11BlendState*			 _blendStateDisable;
 
-		void InitializeDeferredBuffers();
+		void InitializeDeferredBuffers(int width, int height);
 
 	public:
 
 		enum CullingState { BACK, FRONT, NONE };
 		enum BlendState { ENABLE, DISABLE };
 
-		DirectXHandler(HWND hwnd, int screenWidth, int screenHeight, bool fullScreen);
+		DirectXHandler(HWND hwnd, System::Settings* settings);
 		~DirectXHandler();
 
 		ID3D11Device* GetDevice();
 		ID3D11DeviceContext* GetDeviceContext();
 
 		int SetGeometryStage();
+		void SetAntiAliasingState();
 		void SetShadowGenerationStage();
 		int SetLightStage();
 		void SetHUDStage();
@@ -65,7 +65,7 @@ namespace Renderer
 		void SetCullingState(CullingState state);
 		void SetBlendState(BlendState state);
 
-		void ResizeResources(HWND hwnd, int windowWidth, int windowHeight);
+		void ResizeResources(HWND hwnd, System::Settings* settings);
 
 		void BeginScene(float red, float green, float blue, float alpha);
 		void EndScene();

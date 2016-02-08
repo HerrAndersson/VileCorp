@@ -2,6 +2,8 @@
 #include <cereal/cereal.hpp>
 #include <cereal\types\vector.hpp>
 
+#include "GameObject.h"
+
 struct LevelLoad
 {
 	int level = 1;
@@ -34,6 +36,8 @@ struct SettingInfo
 {
 	int _resX = 1920;
 	int _resY = 1080;
+	int _shadowResX = 256;
+	int _shadowResY = 256;
 	bool _default = true;
 	bool _shadowmap = true;
 	bool _fullScreen = true;
@@ -47,6 +51,8 @@ struct SettingInfo
 		a((CEREAL_NVP(_default)),
 		(CEREAL_NVP(_resX)),
 		(CEREAL_NVP(_resY)),
+		(CEREAL_NVP(_shadowResX)),
+		(CEREAL_NVP(_shadowResY)),
 		(CEREAL_NVP(_shadowmap)),
 		(CEREAL_NVP(_fullScreen)),
 		(CEREAL_NVP(_debugMode)),
@@ -75,8 +81,9 @@ struct SettingInfo
 struct GameObjectBaseInfo
 {
 	std::string _name = "proto";
-	unsigned _renderObject;
+	unsigned int _renderObject;
 	std::string _textureName;
+	virtual ~GameObjectBaseInfo(){}
 };
 
 struct GameObjectFloorInfo : GameObjectBaseInfo
@@ -87,6 +94,8 @@ struct GameObjectFloorInfo : GameObjectBaseInfo
 		a(CEREAL_NVP(_name)),
 		a(CEREAL_NVP(_textureName));
 	}
+	virtual ~GameObjectFloorInfo()
+	{}
 };
 
 struct GameObjectWallInfo : GameObjectBaseInfo
@@ -97,6 +106,7 @@ struct GameObjectWallInfo : GameObjectBaseInfo
 		a(CEREAL_NVP(_name)),
 		a(CEREAL_NVP(_textureName));
 	}
+
 };
 
 struct GameObjectLootInfo : GameObjectBaseInfo
@@ -119,6 +129,26 @@ struct GameObjectLootInfo : GameObjectBaseInfo
 };
 
 struct GameObjectSpawnInfo : GameObjectBaseInfo
+{
+
+	template<class A>
+	void serialize(A& a)
+	{
+		a(CEREAL_NVP(_name));
+	}
+};
+
+struct GameObjectCameraInfo : GameObjectBaseInfo
+{
+
+	template<class A>
+	void serialize(A& a)
+	{
+		a(CEREAL_NVP(_name));
+	}
+};
+
+struct GameObjectFurnitureInfo : GameObjectBaseInfo
 {
 
 	template<class A>
@@ -196,10 +226,15 @@ struct GameObjectInfo
 	GameObjectInfo()
 	{
 		_objects.resize(NR_OF_TYPES);
-		for (int i = 0; i < NR_OF_TYPES; i++)
-		{
-			_objects[i] = new std::vector<GameObjectBaseInfo*>;
-		}
+		_objects[FLOOR] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectFloorInfo*>;
+		_objects[WALL] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectWallInfo*>;
+		_objects[LOOT] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectLootInfo*>;
+		_objects[SPAWN] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectSpawnInfo*>;
+		_objects[TRAP] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectTrapInfo*>;
+		_objects[CAMERA] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectCameraInfo*>;
+		_objects[GUARD] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectGuardInfo*>;
+		_objects[ENEMY] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectEnemyInfo*>;
+		_objects[FURNITURE] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectFurnitureInfo*>;
 	}
 	~GameObjectInfo()
 	{

@@ -65,6 +65,7 @@ struct Vec2
 	{
 		return Vec2(_x * rhs, _y * rhs);
 	}
+
 	float Dot(Vec2 vector)
 	{
 		XMFLOAT4 temp;
@@ -75,7 +76,7 @@ struct Vec2
 	Vec2 Cross(Vec2 vector)
 	{
 		XMFLOAT4 temp;
-		XMStoreFloat4(&temp, XMVector2Cross(XMVectorSet(_x,_y, 1.0f, 1.0f), XMVectorSet(vector._x, vector._y, 1.0f, 1.0f)));
+		XMStoreFloat4(&temp, XMVector2Cross(XMVectorSet(_x, _y, 1.0f, 1.0f), XMVectorSet(vector._x, vector._y, 1.0f, 1.0f)));
 
 		return Vec2(temp.x, temp.y);
 	}

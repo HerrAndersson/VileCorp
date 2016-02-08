@@ -39,7 +39,7 @@ namespace System
 	private:
 		InputDevice* _inputDevice;
 		std::map<std::string, Key>* _keymap;
-		std::string _allKeys;
+		std::string* _allKeys;
 
 		void StringToKeyMap(const std::string& key, unsigned char &mainKey, unsigned char& keyModifiers);
 	public:
@@ -48,7 +48,7 @@ namespace System
 		void Update();
 		void HandleRawInput(LPARAM lparam);
 		void ResetInputBuffers();
-		void SaveKeyBindings(int keyMap, std::string action, std::string newKey, std::string newKey2 = std::string(), std::string newKey3 = std::string(), std::string newKey4 = std::string());
+		void SaveKeyBindings(int keyMap, const std::string& action, const std::string& newKey, const std::string& newKey2 = std::string(), const std::string& newKey3 = std::string(), const std::string& newKey4 = std::string());
 		bool IsFunctionKeyDown(const std::string& key);
 		bool IsFunctionKeyUp(const std::string& key);
 		void ToggleCursorLock();

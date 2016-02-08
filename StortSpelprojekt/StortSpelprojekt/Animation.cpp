@@ -6,6 +6,7 @@ Animation::Animation(Skeleton* skeleton)
 	toRootTransforms.resize(_skeleton->_skeleton.size());
 	toParentTransforms.resize(_skeleton->_skeleton.size());
 	finalTransforms.resize(_skeleton->_skeleton.size());
+
 	for (unsigned int i = 0; i < finalTransforms.size(); i++)
 	{
 		DirectX::XMStoreFloat4x4(&finalTransforms[i], DirectX::XMMatrixIdentity());
@@ -13,6 +14,11 @@ Animation::Animation(Skeleton* skeleton)
 	_animTime = 0.0f;
 	_currentAction = -1;
 	_currentCycle = 0;
+	_time = 0;
+	_currTime = 0;
+	_nextTime = 0;
+	_lerpPercent = 0;
+	_lastFrame = 0;
 }
 
 Animation::~Animation()
@@ -87,18 +93,20 @@ DirectX::XMFLOAT4X4 Animation::Interpolate(unsigned int boneID, int action)
 	_lastFrame = _skeleton->_actions[action]._frameTime.size() - 1;
 	if (_animTime <= _skeleton->_actions[action]._frameTime[0])
 	{
-		DirectX::XMVECTOR s = DirectX::XMLoadFloat3(&_skeleton->_actions[action]._bones[boneID]._frames[0]._scale);
-		DirectX::XMVECTOR p = DirectX::XMLoadFloat3(&_skeleton->_actions[action]._bones[boneID]._frames[0]._translation);
-		DirectX::XMVECTOR q = DirectX::XMLoadFloat4(&_skeleton->_actions[action]._bones[boneID]._frames[0]._rotation);
+		Frame frame= _skeleton->_actions[action]._bones[boneID]._frames[0];
+		DirectX::XMVECTOR s = DirectX::XMLoadFloat3(&frame._scale);
+		DirectX::XMVECTOR p = DirectX::XMLoadFloat3(&frame._translation);
+		DirectX::XMVECTOR q = DirectX::XMLoadFloat4(&frame._rotation);
 
 		DirectX::XMStoreFloat4x4(&matrix, DirectX::XMMatrixAffineTransformation(s, _zeroVector, q, p));
 	}
 	
 	else if (_animTime >= _skeleton->_actions[action]._frameTime[_lastFrame])
 	{
-		DirectX::XMVECTOR s = DirectX::XMLoadFloat3(&_skeleton->_actions[action]._bones[boneID]._frames[_lastFrame]._scale);
-		DirectX::XMVECTOR p = DirectX::XMLoadFloat3(&_skeleton->_actions[action]._bones[boneID]._frames[_lastFrame]._translation);
-		DirectX::XMVECTOR q = DirectX::XMLoadFloat4(&_skeleton->_actions[action]._bones[boneID]._frames[_lastFrame]._rotation);
+		Frame frame = _skeleton->_actions[action]._bones[boneID]._frames[_lastFrame];
+		DirectX::XMVECTOR s = DirectX::XMLoadFloat3(&frame._scale);
+		DirectX::XMVECTOR p = DirectX::XMLoadFloat3(&frame._translation);
+		DirectX::XMVECTOR q = DirectX::XMLoadFloat4(&frame._rotation);
 
 		DirectX::XMStoreFloat4x4(&matrix, DirectX::XMMatrixAffineTransformation(s, _zeroVector, q, p));
 	}
@@ -113,14 +121,17 @@ DirectX::XMFLOAT4X4 Animation::Interpolate(unsigned int boneID, int action)
 			{
 				_lerpPercent = (_animTime - _currTime) / (_nextTime - _currTime);
 
-				DirectX::XMVECTOR s0 = DirectX::XMLoadFloat3(&_skeleton->_actions[action]._bones[boneID]._frames[i]._scale);
-				DirectX::XMVECTOR s1 = DirectX::XMLoadFloat3(&_skeleton->_actions[action]._bones[boneID]._frames[i + 1]._scale);
+				Frame framei = _skeleton->_actions[action]._bones[boneID]._frames[i];
+				Frame framei1 = _skeleton->_actions[action]._bones[boneID]._frames[i + 1];
 
-				DirectX::XMVECTOR p0 = DirectX::XMLoadFloat3(&_skeleton->_actions[action]._bones[boneID]._frames[i]._translation);
-				DirectX::XMVECTOR p1 = DirectX::XMLoadFloat3(&_skeleton->_actions[action]._bones[boneID]._frames[i + 1]._translation);
+				DirectX::XMVECTOR s0 = DirectX::XMLoadFloat3(&framei._scale);
+				DirectX::XMVECTOR s1 = DirectX::XMLoadFloat3(&framei1._scale);
 
-				DirectX::XMVECTOR q0 = DirectX::XMLoadFloat4(&_skeleton->_actions[action]._bones[boneID]._frames[i]._rotation);
-				DirectX::XMVECTOR q1 = DirectX::XMLoadFloat4(&_skeleton->_actions[action]._bones[boneID]._frames[i + 1]._rotation);
+				DirectX::XMVECTOR p0 = DirectX::XMLoadFloat3(&framei._translation);
+				DirectX::XMVECTOR p1 = DirectX::XMLoadFloat3(&framei1._translation);
+
+				DirectX::XMVECTOR q0 = DirectX::XMLoadFloat4(&framei._rotation);
+				DirectX::XMVECTOR q1 = DirectX::XMLoadFloat4(&framei1._rotation);
 
 				DirectX::XMVECTOR s = DirectX::XMVectorLerp(s0, s1, _lerpPercent);
 				DirectX::XMVECTOR p = DirectX::XMVectorLerp(p0, p1, _lerpPercent);
@@ -133,4 +144,14 @@ DirectX::XMFLOAT4X4 Animation::Interpolate(unsigned int boneID, int action)
 		}
 	}
 	return matrix;
+}
+
+void* Animation::operator new(size_t i)
+{
+	return _mm_malloc(i, 16);
+}
+
+void Animation::operator delete(void* p)
+{
+	_mm_free(p);
 }

@@ -58,7 +58,7 @@ namespace cereal
         serialization mechanisms to bind various archive types with
         different polymorphic classes */
     template <class T>
-    class CEREAL_DLL_EXPORT StaticObject
+    class CEREAL_DLL_EXPORT StaticObject //-V690
     {
       private:
         //! Forces instantiation at pre-execution time

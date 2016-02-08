@@ -7,17 +7,18 @@ StateMachine::StateMachine(System::Controls* controls,
 	const std::string& filename,
 	AssetManager* assetManager,
 	FontWrapper* fontWrapper,
-	int width,
-	int height)
+	System::Settings* settings,
+	System::SettingsReader* settingsReader)
 {
 	_currentState = State::SPLASHSTATE;
 
-	_baseStates.push_back(new SplashState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, width, height));
-	_baseStates.push_back(new MenuState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, width, height));
-	_baseStates.push_back(new PlayState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, width, height));
-	_baseStates.push_back(new PlacementState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, width, height));
-	_baseStates.push_back(new LevelEditState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, width, height));
-	_baseStates.push_back(new OptionsState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, width, height));
+	_baseStates.push_back(new SplashState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settings));
+	_baseStates.push_back(new MenuState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settings));
+	_baseStates.push_back(new PlayState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settings));
+	_baseStates.push_back(new PlacementState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settings));
+	_baseStates.push_back(new LevelEditState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settings));
+	_baseStates.push_back(new LevelSelectState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settings));
+	_baseStates.push_back(new OptionsState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settings, settingsReader));
 }
 
 StateMachine::~StateMachine()
@@ -64,10 +65,10 @@ BaseState* StateMachine::GetCurrentStatePointer() const
 	return _baseStates[_currentState];
 }
 
-void StateMachine::Resize(int width, int height)
+void StateMachine::Resize(System::Settings* settings)
 {
 	for (auto i : _baseStates)
 	{
-		i->Resize(width, height);
+		i->Resize(settings);
 	}
 }

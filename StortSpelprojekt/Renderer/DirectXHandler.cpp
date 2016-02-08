@@ -2,11 +2,9 @@
 
 namespace Renderer
 {
-	DirectXHandler::DirectXHandler(HWND hwnd, int screenWidth, int screenHeight, bool fullScreen)
+	DirectXHandler::DirectXHandler(HWND hwnd, System::Settings* settings)
 	{
 		HRESULT hResult;
-		_textureWidth = screenWidth;
-		_textureHeight = screenHeight;
 
 		//////////////////////////////////////////////////// Swap chain, back buffer RTV //////////////////////////////////////////////////// 
 		//Describe the swap chain
@@ -14,8 +12,8 @@ namespace Renderer
 		ZeroMemory(&swapChainDesc, sizeof(swapChainDesc));
 
 		swapChainDesc.BufferCount = 1;
-		swapChainDesc.BufferDesc.Width = screenWidth;
-		swapChainDesc.BufferDesc.Height = screenHeight;
+		swapChainDesc.BufferDesc.Width = settings->_screenWidth;
+		swapChainDesc.BufferDesc.Height = settings->_screenHeight;
 		swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 		swapChainDesc.BufferDesc.RefreshRate.Numerator = 0;
 		swapChainDesc.BufferDesc.RefreshRate.Denominator = 1;
@@ -25,7 +23,7 @@ namespace Renderer
 		swapChainDesc.SampleDesc.Count = 1;
 		swapChainDesc.SampleDesc.Quality = 0;
 
-		if (fullScreen)
+		if (settings->_fullscreen)
 		{
 			swapChainDesc.Windowed = false;
 		}
@@ -167,29 +165,29 @@ namespace Renderer
 
 		//////////////////////////////////////////////////////////// Other ////////////////////////////////////////////////////////////
 		//Set up viewport
-		_viewport.Width = (float)screenWidth;
-		_viewport.Height = (float)screenHeight;
+		_viewport.Width = (float)settings->_screenWidth;
+		_viewport.Height = (float)settings->_screenHeight;
 		_viewport.MinDepth = 0.0f;
 		_viewport.MaxDepth = 1.0f;
 		_viewport.TopLeftX = 0.0f;
 		_viewport.TopLeftY = 0.0f;
 
 		//Set context data and other
-		InitializeDeferredBuffers();
+		InitializeDeferredBuffers(settings->_screenWidth, settings->_screenHeight);
 		_deviceContext->RSSetState(_rasterizerStateFront);
 		_deviceContext->OMSetDepthStencilState(_depthStateEnable, 1);
 		_deviceContext->RSSetViewports(1, &_viewport);
 	}
 
-	void DirectXHandler::InitializeDeferredBuffers()
+	void DirectXHandler::InitializeDeferredBuffers(int width, int height)
 	{
 		HRESULT result;
 
 		D3D11_TEXTURE2D_DESC textureDesc;
 		ZeroMemory(&textureDesc, sizeof(textureDesc));
 		//Render target texture description
-		textureDesc.Width = _textureWidth;
-		textureDesc.Height = _textureHeight;
+		textureDesc.Width = (UINT)width;
+		textureDesc.Height = (UINT)height;
 		textureDesc.MipLevels = 1;
 		textureDesc.ArraySize = 1;
 		//textureDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
@@ -252,8 +250,8 @@ namespace Renderer
 		/////////////////////////////////////////////////////// Depth buffer, DSV, SRV ///////////////////////////////////////////////////////
 		D3D11_TEXTURE2D_DESC depthBufferDesc;
 		ZeroMemory(&depthBufferDesc, sizeof(depthBufferDesc));
-		depthBufferDesc.Width = _textureWidth;
-		depthBufferDesc.Height = _textureHeight;
+		depthBufferDesc.Width = width;
+		depthBufferDesc.Height = height;
 		depthBufferDesc.MipLevels = 1;
 		depthBufferDesc.ArraySize = 1;
 		depthBufferDesc.Format = DXGI_FORMAT_R32_TYPELESS;
@@ -343,10 +341,18 @@ namespace Renderer
 	{
 		_deviceContext->OMSetDepthStencilState(_depthStateEnable, 1);
 		_deviceContext->RSSetViewports(1, &_viewport);
-		_deferredRTVArray[2] = _backBufferRTV;
-		_deviceContext->OMSetRenderTargets(BUFFER_COUNT + 1, _deferredRTVArray, _backBufferDSV);
-		
+		_deviceContext->OMSetRenderTargets(BUFFER_COUNT, _deferredRTVArray, _backBufferDSV);
+
 		return BUFFER_COUNT + 1;
+	}
+
+	void DirectXHandler::SetAntiAliasingState()
+	{
+		_deviceContext->OMSetDepthStencilState(_depthStateDisable, 1);
+		_deviceContext->RSSetViewports(1, &_viewport);
+		_deviceContext->OMSetRenderTargets(1, &_backBufferRTV, nullptr);
+
+		_deviceContext->PSSetShaderResources(0, BUFFER_COUNT + 1, _deferredSRVarray);
 	}
 
 	void DirectXHandler::SetShadowGenerationStage()
@@ -356,8 +362,7 @@ namespace Renderer
 
 	int DirectXHandler::SetLightStage()
 	{
-		//TODO: Should the final rendering of the light volumes use depth testing? /Jonas
-		_deviceContext->OMSetRenderTargets(1, &_backBufferRTV, nullptr);
+		_deviceContext->OMSetRenderTargets(1, &_deferredRTVArray[2], nullptr);
 		_deviceContext->RSSetViewports(1, &_viewport);
 
 		//Setting Diffuse, Normal and Camera depth. Shadow map is set in RenderModule
@@ -414,6 +419,7 @@ namespace Renderer
 
 	void DirectXHandler::SetHUDStage()
 	{
+		_deviceContext->RSSetViewports(1, &_viewport);
 		_deviceContext->OMSetRenderTargets(1, &_backBufferRTV, nullptr);
 		_deviceContext->RSSetState(_rasterizerStateBack);
 		_deviceContext->OMSetDepthStencilState(_depthStateDisable, 1);
@@ -425,9 +431,9 @@ namespace Renderer
 		_deviceContext->RSSetState(_rasterizerStateBack);
 	}
 
-	void DirectXHandler::ResizeResources(HWND hwnd, int windowWidth, int windowHeight)
+	void DirectXHandler::ResizeResources(HWND hwnd, System::Settings* settings)
 	{
-		if (_swapChain && windowHeight > 0 && windowWidth > 0)
+		if (_swapChain && settings->_screenHeight > 0 && settings->_screenWidth > 0)
 		{
 			HRESULT hr;
 			_deviceContext->OMSetRenderTargets(0, 0, 0);
@@ -435,8 +441,8 @@ namespace Renderer
 
 			DXGI_MODE_DESC modeDesc;
 			ZeroMemory(&modeDesc, sizeof(modeDesc));
-			modeDesc.Width = windowWidth;
-			modeDesc.Height = windowHeight;
+			modeDesc.Width = settings->_screenWidth;
+			modeDesc.Height = settings->_screenHeight;
 			modeDesc.Format = DXGI_FORMAT_UNKNOWN;
 
 			_swapChain->ResizeTarget(&modeDesc);
@@ -469,8 +475,8 @@ namespace Renderer
 
 			//Set up the new viewport.
 			D3D11_VIEWPORT vp;
-			vp.Width = (FLOAT)windowWidth;
-			vp.Height = (FLOAT)windowHeight;
+			vp.Width = (FLOAT)settings->_screenWidth;
+			vp.Height = (FLOAT)settings->_screenHeight;
 			vp.MinDepth = 0.0f;
 			vp.MaxDepth = 1.0f;
 			vp.TopLeftX = 0;
@@ -487,9 +493,7 @@ namespace Renderer
 				SAFE_RELEASE(_deferredRTVArray[i]);
 			}
 
-			_textureWidth = windowWidth;
-
-			InitializeDeferredBuffers();
+			InitializeDeferredBuffers(settings->_screenWidth, settings->_screenHeight);
 		}
 	}
 
