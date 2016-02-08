@@ -86,12 +86,6 @@ void GameLogic::HandleInput()
 	}
 	
 	//Boxselect Units
-	XMFLOAT3 forward(0, 0, 0);
-	XMFLOAT3 position = _camera->GetPosition();
-	XMFLOAT3 right(0, 0, 0);
-	bool isMoving = false;
-	float v = 0.06f + (_camera->GetPosition().y * 0.01);
-
 	if(_controls->IsFunctionKeyDown("MOUSE:BOX_SELECT"))
 	{
 		_pickingDevice->SetFirstBoxPoint(_controls->GetMouseCoord()._pos);
@@ -134,7 +128,11 @@ void GameLogic::HandleInput()
 		}
 	}
 	
-	
+	XMFLOAT3 forward(0, 0, 0);
+	XMFLOAT3 position = _camera->GetPosition();
+	XMFLOAT3 right(0, 0, 0);
+	bool isMoving = false;
+	float v = 0.06f + (_camera->GetPosition().y * 0.01);
 
 	if (_controls->IsFunctionKeyDown("DEBUG:ENABLE_FREECAM"))
 	{
