@@ -6,7 +6,8 @@ using namespace DirectX;
 
 namespace GUI
 {
-	UITree::UITree(const std::string& filename, const std::string& statename, AssetManager* assetManager, FontWrapper* fontWrapper, System::Settings* settings) : _info(fontWrapper, settings->_screenWidth, settings->_screenHeight)
+	UITree::UITree(const std::string& filename, const std::string& statename, AssetManager* assetManager, FontWrapper* fontWrapper, System::Settings* settings) :
+		_info(fontWrapper, settings->_screenWidth, settings->_screenHeight, settings->_windowWidth, settings->_windowHeight)
 	{
 		_AM = assetManager;
 		ifstream file(filename);
@@ -49,6 +50,8 @@ namespace GUI
 	{
 		_info._screenWidth = settings->_screenWidth;
 		_info._screenHeight = settings->_screenHeight;
+		_info._windowWidth = settings->_windowWidth;
+		_info._windowHeight = settings->_windowHeight;
 		Resize(_root);
 	}
 
@@ -149,11 +152,11 @@ namespace GUI
 			topLeft.y = py*-1.0f - scale.y;
 
 			//Convert coordinates to pixel coordinate system
-			topLeft.x = (topLeft.x + 1.0f) * 0.5f * _info._screenWidth;
-			topLeft.y = (topLeft.y + 1.0f) * 0.5f * _info._screenHeight;
+			topLeft.x = (topLeft.x + 1.0f) * 0.5f * _info._windowWidth;
+			topLeft.y = (topLeft.y + 1.0f) * 0.5f * _info._windowHeight;
 
-			size.x = scale.x * _info._screenWidth;
-			size.y = scale.y * _info._screenHeight;
+			size.x = scale.x * _info._windowWidth;
+			size.y = scale.y * _info._windowHeight;
 
 			//Check collision with mouse coord and return the result
 			found = true;

@@ -11,9 +11,6 @@ namespace System
 		_exStyle = 0;
 
 		InitializeWindow(wndProc);
-
-		_style = GetWindowLong(_hwnd, GWL_STYLE);
-		_exStyle = GetWindowLong(_hwnd, GWL_EXSTYLE);
 	}
 
 	Window::~Window()
@@ -45,7 +42,7 @@ namespace System
 
 		int posX, posY;
 
-		//Setup the windows class with default settings->
+		//Setup the windows class with default settings
 		WNDCLASSEX wc;
 		wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
 		wc.lpfnWndProc = wndProc;
@@ -61,15 +58,15 @@ namespace System
 		wc.cbSize = sizeof(WNDCLASSEX);
 
 		RegisterClassEx(&wc);
-
+		/*
 		int screenWidth = GetSystemMetrics(SM_CXSCREEN);
 		int screenHeight = GetSystemMetrics(SM_CYSCREEN);
 
 		//Setup the screen settings depending on whether it is running in full screen or in windowed mode.
 		if (_settings->_fullscreen)
 		{
-			_settings->_screenHeight = screenHeight;
-			_settings->_screenWidth = screenWidth;
+			_settings->_windowHeight = screenHeight;
+			_settings->_windowWidth = screenWidth;
 
 			//If full screen set the screen to maximum size of the users desktop and 32bit.
 			DEVMODE dmScreenSettings;
@@ -88,22 +85,28 @@ namespace System
 		else //If windowed
 		{
 			//Place the window in the middle of the screen.
-			posX = (screenWidth - _settings->_screenWidth) / 2;
-			posY = (screenHeight - _settings->_screenHeight) / 2;
+			posX = (screenWidth - _settings->_windowWidth) / 2;
+			posY = (screenHeight - _settings->_windowHeight) / 2;
 		}
 
-		RECT rc = { 0, 0, _settings->_screenWidth, _settings->_screenHeight };
+		RECT rc = { 0, 0, (LONG)_settings->_windowWidth, (LONG)_settings->_windowHeight };
 		AdjustWindowRect(&rc, (WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX), FALSE);
 
 		_hwnd = CreateWindowEx(WS_EX_APPWINDOW, _applicationName, _applicationName,
 			(WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX) | CW_USEDEFAULT | CW_USEDEFAULT,
-			posX, posY, rc.right - rc.left, rc.bottom - rc.top, NULL, NULL, _hinstance, NULL);
+			0, 0, rc.right - rc.left, rc.bottom - rc.top, NULL, NULL, _hinstance, NULL);
+		*/
 
+		_hwnd = CreateWindowEx(WS_EX_APPWINDOW, _applicationName, _applicationName,
+			(WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX) | CW_USEDEFAULT | CW_USEDEFAULT,
+			0, 0, 300, 300, NULL, NULL, _hinstance, NULL);
+
+		ResizeWindow(_settings);
 		ShowWindow(_hwnd, SW_SHOW);
 		SetForegroundWindow(_hwnd);
 		SetFocus(_hwnd);
 
-		SetCursorPos(screenWidth / 2, screenHeight / 2);
+		//SetCursorPos(screenWidth / 2, screenHeight / 2);
 		ShowCursor(_settings->_showMouseCursor);
 	}
 
@@ -135,55 +138,41 @@ namespace System
 	void Window::ResizeWindow(System::Settings* settings)
 	{
 		_settings = settings;
-		int screenWidth = GetSystemMetrics(SM_CXSCREEN);
-		int screenHeight = GetSystemMetrics(SM_CYSCREEN);
+		int systemWidth = GetSystemMetrics(SM_CXSCREEN);
+		int systemHeight = GetSystemMetrics(SM_CYSCREEN);
+		int windowWidth = _settings->_windowWidth;
+		int windowHeight = _settings->_windowHeight;
+		bool borderless = _settings->_borderless;
 
-		RECT rect = { 0, 0, _settings->_screenWidth, _settings->_screenHeight };
+		int windowPositionX = (systemWidth - windowWidth) / 2;
+		int windowPositionY = (systemHeight - windowHeight) / 2;
+		LONG style = GetWindowLong(_hwnd, GWL_STYLE);
+		LONG exStyle = GetWindowLong(_hwnd, GWL_EXSTYLE);
+		//style &= ~(WS_CAPTION | WS_THICKFRAME | WS_MINIMIZE | WS_MAXIMIZE | WS_SYSMENU);
 
-		//Removes borders around window and sets the window style to borderless
-		if (_settings->_borderless || _settings->_fullscreen)
+		//If settings is fullscreen, set the window to cover the entire screen and be borderless
+		if (borderless)
 		{
-			LONG style = _style;
-			LONG exStyle = _exStyle;
+			style = GetWindowLong(_hwnd, GWL_STYLE);
+			style &= ~(WS_CAPTION | WS_MINIMIZE | WS_MAXIMIZE | WS_SYSMENU | WS_POPUP | WS_BORDER);
 
-			style &= ~(WS_CAPTION | WS_THICKFRAME | WS_MINIMIZE | WS_MAXIMIZE | WS_SYSMENU);
-			SetWindowLong(_hwnd, GWL_STYLE, style);
-
+			exStyle = GetWindowLong(_hwnd, GWL_EXSTYLE);
 			exStyle &= ~(WS_EX_DLGMODALFRAME | WS_EX_CLIENTEDGE | WS_EX_STATICEDGE);
-			SetWindowLong(_hwnd, GWL_EXSTYLE, exStyle);
-
-			AdjustWindowRect(&rect, WS_POPUP, FALSE);
 		}
-		else //Sets the default style of the window, windowed with borders 
+		else //This is a window with borders - adjust the window size acordingly
 		{
-			SetWindowLong(_hwnd, GWL_STYLE, _style);
-			SetWindowLong(_hwnd, GWL_EXSTYLE, _exStyle);
-
-			AdjustWindowRect(&rect, (WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX), FALSE);
+			RECT rect = { 0, 0, windowWidth, windowHeight };
+			AdjustWindowRect(&rect, style, FALSE);
+			windowWidth = rect.right - rect.left;
+			windowHeight = rect.bottom - rect.top;
 		}
+		
+		SetWindowLong(_hwnd, GWL_STYLE, style);
+		SetWindowLong(_hwnd, GWL_EXSTYLE, exStyle);
 
-		//Sets window size and position
-		int posX = 0;
-		int posY = 0;
-		if (!(_settings->_fullscreen))
-		{
-			posX = (screenWidth - _settings->_screenWidth) / 2;
-			posY = (screenHeight - _settings->_screenHeight) / 2;
-
-			SetWindowPos(_hwnd, NULL, posX, posY, rect.right - rect.left, rect.bottom - rect.top, SWP_FRAMECHANGED |SWP_NOOWNERZORDER | SWP_NOZORDER);
-		}
-		else
-		{
-			_settings->_screenWidth = GetSystemMetrics(SM_CXSCREEN);
-			_settings->_screenHeight = GetSystemMetrics(SM_CYSCREEN);
-			ChangeDisplaySettings(nullptr, CDS_FULLSCREEN);
-			SetWindowPos(_hwnd, NULL, posX, posY, _settings->_screenWidth, _settings->_screenHeight, SWP_FRAMECHANGED | SWP_SHOWWINDOW);
-		}
-
+		SetWindowPos(_hwnd, NULL, windowPositionX, windowPositionY, windowWidth, windowHeight, SWP_FRAMECHANGED | SWP_NOOWNERZORDER | SWP_NOZORDER);
 		SetForegroundWindow(_hwnd);
 		SetFocus(_hwnd);
-
-		SetCursorPos(screenWidth / 2, screenHeight / 2);
 		ShowCursor(_settings->_showMouseCursor);
 	}
 

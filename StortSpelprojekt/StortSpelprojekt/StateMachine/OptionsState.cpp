@@ -33,6 +33,7 @@ OptionsState::OptionsState(System::Controls* controls, ObjectHandler* objectHand
 	_aa[1] = { L"Off", 0, 0 };
 	_aaOption = 0;
 
+	//TODO: Volume setting
 	_volumeOption = 100.0f;
 
 	_settingsReader = settingsReader;
@@ -108,13 +109,14 @@ void OptionsState::Update(float deltaTime)
 			settings->_screenWidth = _resolution[_resolutionOption]._value;
 			settings->_screenHeight = _resolution[_resolutionOption]._value2;
 			//Shadow map resolution
-			settings->_shadowMapWidth = _shadowmap[_shadowmapOption]._value;
-			settings->_shadowMapHeight = _shadowmap[_shadowmapOption]._value2;
+			settings->_shadowMapSize = _shadowmap[_shadowmapOption]._value;
 			//Window options
 			if (_window[_windowOption]._value == 1)
 			{
-				settings->_fullscreen = true;
-				settings->_borderless = false;
+				settings->_windowWidth = GetSystemMetrics(SM_CXSCREEN);
+				settings->_windowHeight = GetSystemMetrics(SM_CYSCREEN);
+
+				settings->_borderless = true;
 				settings->_showMouseCursor = true;
 			}
 			else if (_window[_windowOption]._value == 2)
@@ -129,7 +131,7 @@ void OptionsState::Update(float deltaTime)
 				settings->_borderless = false;
 				settings->_showMouseCursor = true;
 			}
-			//TODO: Antialiasing option //Mattias
+			settings->_antialiasing = _aa[_aaOption]._value;
 			//TODO: Window size is separate from resolution //Mattias
 
 			_settingsReader->ApplySettings();

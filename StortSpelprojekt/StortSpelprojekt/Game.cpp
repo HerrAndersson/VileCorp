@@ -32,7 +32,7 @@ Game::Game(HINSTANCE hInstance, int nCmdShow):
 	gameObjectDataLoader.WriteSampleGameObjects();
 	gameObjectDataLoader.LoadGameObjectInfo(&_data);
 
-	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager, &_data);
+	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager, &_data, settings);
 	_pickingDevice = new PickingDevice(_camera, settings);
 	_SM = new StateMachine(_controls, _objectHandler, _camera, _pickingDevice, "Assets/gui.json", _assetManager, _fontWrapper, settings, &_settingsReader);
 

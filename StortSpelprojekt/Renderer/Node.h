@@ -17,14 +17,18 @@ namespace GUI
 		struct NodeInfo
 		{
 			FontWrapper* _fontWrapper;
-			int _screenWidth;
-			int _screenHeight;
+			unsigned int _screenWidth;
+			unsigned int _screenHeight;
+			unsigned int _windowWidth;
+			unsigned int _windowHeight;
 
-			NodeInfo(FontWrapper* fontWrapper, int screenWidth, int screenHeight)
+			NodeInfo(FontWrapper* fontWrapper, unsigned int screenWidth, unsigned int screenHeight, unsigned int windowWidth, unsigned int windowHeight)
 			{
 				_fontWrapper = fontWrapper;
 				_screenWidth = screenWidth;
 				_screenHeight = screenHeight;
+				_windowWidth = windowWidth;
+				_windowHeight = windowHeight;
 			}
 		};
 
