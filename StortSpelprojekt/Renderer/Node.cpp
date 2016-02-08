@@ -33,6 +33,7 @@ namespace GUI
 	void Node::UpdateFont()
 	{
 		IDWriteFactory* writeFactory = _info->_fontWrapper->GetWriteFactory();
+		float scaledFontSize = _fontSize * (_info->_screenHeight / 1080.0f);
 
 		HRESULT hr;
 		if (_font._textFormat)
@@ -40,7 +41,7 @@ namespace GUI
 			_font._textFormat->Release();
 		}
 		hr = writeFactory->CreateTextFormat(_info->_fontWrapper->GetFontName(), _info->_fontWrapper->GetFontCollection(),
-			DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, _fontSize, _info->_fontWrapper->GetFontName(), &_font._textFormat);
+			DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, scaledFontSize, _info->_fontWrapper->GetFontName(), &_font._textFormat);
 		if (FAILED(hr))
 		{
 			throw std::runtime_error("Failed to update TextFormat");
@@ -62,7 +63,7 @@ namespace GUI
 
 		unsigned int uintTextSize = (UINT32)_text.length();
 		DWRITE_TEXT_RANGE allText = { 0, uintTextSize };
-		_font._textLayout->SetFontSize(_fontSize, allText);
+		_font._textLayout->SetFontSize(scaledFontSize, allText);
 		_font._textLayout->SetWordWrapping(DWRITE_WORD_WRAPPING_WHOLE_WORD);
 		if (_centered)
 		{

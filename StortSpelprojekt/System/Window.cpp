@@ -1,7 +1,7 @@
 #include "Window.h"
 namespace System
 {
-	Window::Window(LPCSTR applicationName, HINSTANCE hinstance, WindowSettings settings, WNDPROC wndProc)
+	Window::Window(LPCSTR applicationName, HINSTANCE hinstance, System::Settings* settings, WNDPROC wndProc)
 	{
 		_applicationName = applicationName;
 		_hinstance = hinstance;
@@ -25,7 +25,7 @@ namespace System
 	{
 		ShowCursor(true);
 
-		if (_settings._flags & WindowSettings::FULLSCREEN)
+		if (_settings->_fullscreen)
 		{
 			ChangeDisplaySettings(NULL, 0);
 		}
@@ -45,7 +45,7 @@ namespace System
 
 		int posX, posY;
 
-		//Setup the windows class with default settings.
+		//Setup the windows class with default settings->
 		WNDCLASSEX wc;
 		wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
 		wc.lpfnWndProc = wndProc;
@@ -66,10 +66,10 @@ namespace System
 		int screenHeight = GetSystemMetrics(SM_CYSCREEN);
 
 		//Setup the screen settings depending on whether it is running in full screen or in windowed mode.
-		if (_settings._flags & WindowSettings::FULLSCREEN)
+		if (_settings->_fullscreen)
 		{
-			_settings._height = screenHeight;
-			_settings._width = screenWidth;
+			_settings->_screenHeight = screenHeight;
+			_settings->_screenWidth = screenWidth;
 
 			//If full screen set the screen to maximum size of the users desktop and 32bit.
 			DEVMODE dmScreenSettings;
@@ -88,11 +88,11 @@ namespace System
 		else //If windowed
 		{
 			//Place the window in the middle of the screen.
-			posX = (screenWidth - _settings._width) / 2;
-			posY = (screenHeight - _settings._height) / 2;
+			posX = (screenWidth - _settings->_screenWidth) / 2;
+			posY = (screenHeight - _settings->_screenHeight) / 2;
 		}
 
-		RECT rc = { 0, 0, _settings._width, _settings._height };
+		RECT rc = { 0, 0, _settings->_screenWidth, _settings->_screenHeight };
 		AdjustWindowRect(&rc, (WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX), FALSE);
 
 		_hwnd = CreateWindowEx(WS_EX_APPWINDOW, _applicationName, _applicationName,
@@ -104,7 +104,7 @@ namespace System
 		SetFocus(_hwnd);
 
 		SetCursorPos(screenWidth / 2, screenHeight / 2);
-		ShowCursor(_settings._flags & WindowSettings::SHOW_CURSOR);
+		ShowCursor(_settings->_showMouseCursor);
 	}
 
 	bool Window::Run()
@@ -132,17 +132,16 @@ namespace System
 		return result;
 	}
 
-	void Window::ResizeWindow(const WindowSettings& settings)
+	void Window::ResizeWindow(System::Settings* settings)
 	{
 		_settings = settings;
 		int screenWidth = GetSystemMetrics(SM_CXSCREEN);
 		int screenHeight = GetSystemMetrics(SM_CYSCREEN);
 
-		RECT rect = { 0, 0, _settings._width, _settings._height };
+		RECT rect = { 0, 0, _settings->_screenWidth, _settings->_screenHeight };
 
 		//Removes borders around window and sets the window style to borderless
-		if (_settings._flags & WindowSettings::BORDERLESS ||
-			_settings._flags & WindowSettings::FULLSCREEN)
+		if (_settings->_borderless || _settings->_fullscreen)
 		{
 			LONG style = _style;
 			LONG exStyle = _exStyle;
@@ -166,37 +165,30 @@ namespace System
 		//Sets window size and position
 		int posX = 0;
 		int posY = 0;
-		if (!(_settings._flags & WindowSettings::FULLSCREEN))
+		if (!(_settings->_fullscreen))
 		{
-			posX = (screenWidth - _settings._width) / 2;
-			posY = (screenHeight - _settings._height) / 2;
+			posX = (screenWidth - _settings->_screenWidth) / 2;
+			posY = (screenHeight - _settings->_screenHeight) / 2;
 
 			SetWindowPos(_hwnd, NULL, posX, posY, rect.right - rect.left, rect.bottom - rect.top, SWP_FRAMECHANGED |SWP_NOOWNERZORDER | SWP_NOZORDER);
 		}
 		else
 		{
-			_settings._width = GetSystemMetrics(SM_CXSCREEN);
-			_settings._height = GetSystemMetrics(SM_CYSCREEN);
+			_settings->_screenWidth = GetSystemMetrics(SM_CXSCREEN);
+			_settings->_screenHeight = GetSystemMetrics(SM_CYSCREEN);
 			ChangeDisplaySettings(nullptr, CDS_FULLSCREEN);
-			SetWindowPos(_hwnd, NULL, posX, posY, _settings._width, _settings._height, SWP_FRAMECHANGED | SWP_SHOWWINDOW);
+			SetWindowPos(_hwnd, NULL, posX, posY, _settings->_screenWidth, _settings->_screenHeight, SWP_FRAMECHANGED | SWP_SHOWWINDOW);
 		}
 
 		SetForegroundWindow(_hwnd);
 		SetFocus(_hwnd);
 
 		SetCursorPos(screenWidth / 2, screenHeight / 2);
-		ShowCursor(_settings._flags & WindowSettings::SHOW_CURSOR);
+		ShowCursor(_settings->_showMouseCursor);
 	}
 
 	HWND Window::GetHWND()
 	{
 		return _hwnd;
-	}
-
-	WindowSettings Window::GetWindowSettings()
-	{
-		return _settings;
-	}
-
-	
+	}	
 }

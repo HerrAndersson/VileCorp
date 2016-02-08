@@ -62,7 +62,7 @@ public:
 	void Rotate(const DirectX::XMFLOAT3& rotate);
 
 	AI::Vec2D GetTilePosition()const;
-	void SetTilePosition(AI::Vec2D pos);
+	virtual void SetTilePosition(AI::Vec2D pos);
 	Type GetType() const;
 
 	bool IsVisible() const;

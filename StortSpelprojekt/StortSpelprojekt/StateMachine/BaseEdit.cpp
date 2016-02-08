@@ -36,6 +36,11 @@ BaseEdit::~BaseEdit()
 {
 }
 
+void BaseEdit::Release()
+{
+	_objectHandler->Release();
+}
+
 // Other functions
 GameObject* BaseEdit::GetSelectedObject()
 {
@@ -80,7 +85,7 @@ void BaseEdit::DragAndDropEvent()
 {
 	if (_controls->IsFunctionKeyDown("MOUSE:SELECT") && _isSelectionMode && !_isPlace)
 	{
-		AI::Vec2D pickedTile = _pickingDevice->pickTile(_controls->GetMouseCoord()._pos);
+		AI::Vec2D pickedTile = _pickingDevice->PickTile(_controls->GetMouseCoord()._pos);
 		std::vector<GameObject*> objectsOnTile = _objectHandler->GetTileMap()->GetAllObjectsOnTile(pickedTile);
 		if (!objectsOnTile.empty())
 		{
@@ -98,12 +103,12 @@ void BaseEdit::DragAndDrop(Type type)
 {
 	if (_marker._g != nullptr && _isSelectionMode && _controls->IsFunctionKeyDown("MOUSE:DRAG"))
 	{
-		AI::Vec2D pickedTile = _pickingDevice->pickTile(_controls->GetMouseCoord()._pos);
+		AI::Vec2D pickedTile = _pickingDevice->PickTile(_controls->GetMouseCoord()._pos);
 		Tilemap* tilemap = _objectHandler->GetTileMap();
 
 		if (tilemap)
 		{
-			if (tilemap->IsValid(pickedTile._x, pickedTile._y))
+			if (tilemap->IsValid(pickedTile._x, pickedTile._y) && _marker._g->GetType() == type)
 			{
 				GameObject* objectOnTile = tilemap->GetObjectOnTile(pickedTile._x, pickedTile._y, type);
 
@@ -165,7 +170,7 @@ void BaseEdit::DragAndDrop(Type type)
 			}
 		}
 	}
-	if (_controls->IsFunctionKeyUp("MOUSE:SELECT"))
+	if (_controls->IsFunctionKeyUp("MOUSE:SELECT") && _marker._g != nullptr)
 	{
 		if (_isSelectionMode)
 		{
@@ -214,7 +219,7 @@ void BaseEdit::DragAndPlace(Type type, const std::string& objectName)
 	if (_isDragAndPlaceMode && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
 		_isPlace = true;
-		_markedTile = new AI::Vec2D(_pickingDevice->pickTile(_controls->GetMouseCoord()._pos));
+		_markedTile = new AI::Vec2D(_pickingDevice->PickTile(_controls->GetMouseCoord()._pos));
 	}
 
 	// Not really diselect but activates remove mode (temp)
@@ -225,7 +230,7 @@ void BaseEdit::DragAndPlace(Type type, const std::string& objectName)
 
 	if (_isDragAndPlaceMode && _controls->IsFunctionKeyUp("MOUSE:SELECT"))
 	{
-		AI::Vec2D pickedTile = _pickingDevice->pickTile(_controls->GetMouseCoord()._pos);
+		AI::Vec2D pickedTile = _pickingDevice->PickTile(_controls->GetMouseCoord()._pos);
 
 		// Identify min and max
 		int minX, maxX;
@@ -271,7 +276,7 @@ void BaseEdit::DragAndPlace(Type type, const std::string& objectName)
 					if (objectOnTile == nullptr)
 					{
 						// Add to valid place
-						_objectHandler->Add(type, objectName, XMFLOAT3(x, 0, y), XMFLOAT3(0.0f, 0.0f, 0.0f));
+						_objectHandler->Add(type, objectName, XMFLOAT3(x, 0, y), XMFLOAT3(0.0f, 0.0f, 0.0f), SHARK);
 					}
 				}
 			}
@@ -299,10 +304,10 @@ void BaseEdit::DragAndPlace(Type type, const std::string& objectName)
 	}
 }
 
-void BaseEdit::DragActivate(Type type, const std::string& objectName)
+void BaseEdit::DragActivate(Type type, const std::string& objectName, int subType)
 {
 	_isPlace = false;
-	AI::Vec2D pickedTile = _pickingDevice->pickTile(_controls->GetMouseCoord()._pos);
+	AI::Vec2D pickedTile = _pickingDevice->PickTile(_controls->GetMouseCoord()._pos);
 
 	XMFLOAT3 pos;
 
@@ -314,7 +319,7 @@ void BaseEdit::DragActivate(Type type, const std::string& objectName)
 			if (tm->IsPlaceable(x, z, type))
 			{
 				pos = XMFLOAT3(x, 0, z);
-				if (_objectHandler->Add(type, objectName, pos, XMFLOAT3(0.0f, 0.0f, 0.0f)))
+				if (_objectHandler->Add(type, objectName, pos, XMFLOAT3(0.0f, 0.0f, 0.0f), subType))
 				{
 					_marker._g = _objectHandler->GetGameObjects()->at(type).back();
 					_marker._g->SetVisibility(false);
@@ -379,12 +384,12 @@ void BaseEdit::HandleInput()
 
 	if (_camera->GetMode() == System::LOCKED_CAM)
 	{
-		if (_controls->IsFunctionKeyDown("CAMERA:SCROLLDOWN") &&
+		if (_controls->IsFunctionKeyDown("CAMERA:ZOOM_CAMERA_IN") &&
 			_camera->GetPosition().y > 4.0f)
 		{
 			_camera->Move(XMFLOAT3(0.0f, -1.0f, 0.0f));
 		}
-		else if (_controls->IsFunctionKeyDown("CAMERA:SCROLLUP") &&
+		else if (_controls->IsFunctionKeyDown("CAMERA:ZOOM_CAMERA_OUT") &&
 			_camera->GetPosition().y < 12.0f)
 		{
 			_camera->Move(XMFLOAT3(0.0f, 1.0f, 0.0f));

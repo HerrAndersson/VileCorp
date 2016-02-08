@@ -12,7 +12,7 @@
 		
 		"files":
 		{
-			"position": [0.64, 0.0],
+			"position": [0.665, 0.2],
 			"play":
 			{
 				"position": [-0.02, -0.10],
@@ -29,15 +29,15 @@
 					"centered": true
 				}
 			},
-			"options":
+			"leveledit":
 			{
-				"position": [-0.10, -0.30],
+				"position": [-0.045, -0.3],
 				"scale": [0.65, 0.5],
 				"texture": "../Menues/menu2.png",
 				
-				"optionsbutton":
+				"leveleditbutton":
 				{
-					"position" : [-0.47, 0.41],
+					"position" : [-0.47, 0.40],
 					"scale": [0.14, 0.07],
 					"text": "Level editor",
 					"color": "FF000000",
@@ -45,9 +45,41 @@
 					"centered": true
 				}
 			},
+			"levelselect":
+			{
+				"position": [-0.07, -0.5],
+				"scale": [0.65, 0.5],
+				"texture": "../Menues/menu2.png",
+				
+				"levelselectbutton":
+				{
+					"position" : [-0.47, 0.40],
+					"scale": [0.14, 0.07],
+					"text": "Level select",
+					"color": "FF000000",
+					"fontsize" : 30.0,
+					"centered": true
+				}
+			},
+			"options":
+			{
+				"position": [-0.095, -0.7],
+				"scale": [0.65, 0.5],
+				"texture": "../Menues/menu2.png",
+				
+				"optionsbutton":
+				{
+					"position" : [-0.47, 0.41],
+					"scale": [0.14, 0.07],
+					"text": "Options",
+					"color": "FF000000",
+					"fontsize" : 30.0,
+					"centered": true
+				}
+			},
 			"exit":
 			{
-				"position": [-0.18, -0.5],
+				"position": [-0.12, -0.9],
 				"scale": [0.65, 0.5],
 				"texture": "../Menues/menu2.png",
 				
@@ -69,65 +101,372 @@
 			"scale": [0.595, 0.215],
 			"texture": "../Menues/startmenu3.png"
 		}
+	},
+	"SPLASH" : {},
+	"PLAY" : {
+		"position": [0.0, 0.0],
+		"scale": [1.0, 1.0],
+		"texture" : "../Menues/Pause Menu/pause-fade.png",
+
+		"pauseScreen":
+		{
+			"position": [0.025, 0.15],
+			"scale": [0.28, 0.6],
+			"texture" : "../Menues/Pause Menu/pause1.png",
+			
+			"paused":
+				{
+					"position" : [-0.038, 0.35],
+					"scale": [0.0, 0.0],
+					"text": "PAUSED",
+					"color": "FF000000",
+					"fontsize" : 72.0,
+					"centered" : true
+				},
+			"resume" :
+				{
+					"position": [-0.038, 0.05],
+					"scale": [0.15, 0.08],
+					"texture" : "../Menues/Pause Menu/pause-button.png",
+					
+					"resumeText":
+					{
+						"position" : [0.0, -0.963],
+						"scale": [1.0, 1.0],
+						"text": "Resume Game",
+						"color": "FF000000",
+						"centered" : true,
+						"fontsize" : 30.0
+					}
+				},
+			"mainmenu" :
+				{
+					"position": [-0.038, -0.15],
+					"scale": [0.15, 0.08],
+					"texture" : "../Menues/Pause Menu/pause-button.png",
+					
+					"menuText":
+					{
+						"position" : [0.0, -0.963],
+						"scale": [1.0, 1.0],
+						"text": "Main Menu",
+						"color": "FF000000",
+						"centered" : true,
+						"fontsize" : 30.0
+					}
+				},
+			"quit" :
+				{
+					"position": [-0.038, -0.35],
+					"scale": [0.15, 0.08],
+					"texture" : "../Menues/Pause Menu/pause-button.png",
+					
+					"quitText":
+					{
+						"position" : [0.0, -0.963],
+						"scale": [1.0, 1.0],
+						"text": "Quit Game",
+						"color": "FF000000",
+						"centered" : true,
+						"fontsize" : 30.0
+					}
+				}
+		}
+	},
+	"OPTIONS" : {
+		"bg" :
+		{
+			"position": [0.0, 0.0],
+			"scale": [1.0, 1.0],
+			"texture" : "../Menues/settings/settings1.png"
+		},
+		"title":
+		{
+			"position": [0.0, 0.0],
+			"scale" : [1.0, 0.8],
+			"text": "Options",
+			"centered" : true,
+			"color" : "FF000000",
+			"fontsize" : 60.0
+		},
+		"":
+		{
+			"position" : [0.0, 0.4],
+			
+			"" :
+			{
+				"position": [0.0, 0.0],
+				"scale": [1.0, 1.0],
+				"res_left" :
+				{
+					"position": [-0.32, 0.0],
+					"scale": [0.08, 0.08],
+					"texture" : "../Menues/settings/settings6-arrow2.png"
+				},
+				"res_right" :
+				{
+					"position": [0.32, 0.0],
+					"scale": [0.08, 0.08],
+					"texture" : "../Menues/settings/settings6-arrow.png"
+				},
+				"":
+				{
+					"scale": [0.25, 0.1],
+					"text" : "Resolution",
+					"centered" : true,
+					"color" : "FF000000"
+				},
+				"res_content":
+				{
+					"scale": [0.25, 0.0],
+					"text" : "1920x1080",
+					"centered" : true,
+					"color" : "FF888888",
+					"fontsize" : 25.0
+				}
+			},
+			"" :
+			{
+				"position": [0.0, -0.2],
+				"scale": [1.0, 1.0],
+				"win_left" :
+				{
+					"position": [-0.32, 0.0],
+					"scale": [0.08, 0.08],
+					"texture" : "../Menues/settings/settings6-arrow2.png"
+				},
+				"win_right" :
+				{
+					"position": [0.32, 0.0],
+					"scale": [0.08, 0.08],
+					"texture" : "../Menues/settings/settings6-arrow.png"
+				},
+				"":
+				{
+					"scale": [0.25, 0.1],
+					"text" : "Window mode",
+					"centered" : true,
+					"color" : "FF000000"
+				},
+				"win_content":
+				{
+					"scale": [0.25, 0.0],
+					"text" : "Fullscreen",
+					"centered" : true,
+					"color" : "FF888888",
+					"fontsize" : 25.0
+				}
+			},
+			"" :
+			{
+				"position": [0.0, -0.4],
+				"scale": [1.0, 1.0],
+				"shadow_left" :
+				{
+					"position": [-0.32, 0.0],
+					"scale": [0.08, 0.08],
+					"texture" : "../Menues/settings/settings6-arrow2.png"
+				},
+				"shadow_right" :
+				{
+					"position": [0.32, 0.0],
+					"scale": [0.08, 0.08],
+					"texture" : "../Menues/settings/settings6-arrow.png"
+				},
+				"":
+				{
+					"scale": [0.25, 0.1],
+					"text" : "Shadow map resolution",
+					"centered" : true,
+					"color" : "FF000000"
+				},
+				"shadow_content":
+				{
+					"scale": [0.25, 0.0],
+					"text" : "256x256",
+					"centered" : true,
+					"color" : "FF888888",
+					"fontsize" : 25.0
+				}
+			},
+			"" :
+			{
+				"position": [0.0, -0.6],
+				"scale": [1.0, 1.0],
+				"aa_left" :
+				{
+					"position": [-0.32, 0.0],
+					"scale": [0.08, 0.08],
+					"texture" : "../Menues/settings/settings6-arrow2.png"
+				},
+				"aa_right" :
+				{
+					"position": [0.32, 0.0],
+					"scale": [0.08, 0.08],
+					"texture" : "../Menues/settings/settings6-arrow.png"
+				},
+				"":
+				{
+					"scale": [0.25, 0.1],
+					"text" : "Antialiasing",
+					"centered" : true,
+					"color" : "FF000000"
+				},
+				"aa_content":
+				{
+					"scale": [0.25, 0.0],
+					"text" : "On",
+					"centered" : true,
+					"color" : "FF888888",
+					"fontsize" : 25.0
+				}
+			},
+			"" :
+			{
+				"position": [0.0, -0.8],
+				"scale": [1.0, 1.0],
+				"sound_left" :
+				{
+					"position": [-0.32, 0.0],
+					"scale": [0.08, 0.08],
+					"texture" : "../Menues/settings/settings6-arrow2.png"
+				},
+				"sound_right" :
+				{
+					"position": [0.32, 0.0],
+					"scale": [0.08, 0.08],
+					"texture" : "../Menues/settings/settings6-arrow.png"
+				},
+				"":
+				{
+					"scale": [0.25, 0.1],
+					"text" : "Sound volume",
+					"centered" : true,
+					"color" : "FF000000"
+				},
+				"sound_content":
+				{
+					"scale": [0.25, 0.0],
+					"text" : "100%",
+					"centered" : true,
+					"color" : "FF888888",
+					"fontsize" : 25.0
+				}
+			},
+			"apply" :
+			{
+				"position": [-0.2, -1.1],
+				"scale": [0.1, 0.07],
+				"text" : "Apply",
+				"centered" : true,
+				"color" : "FF000000",
+				"texture": "floor.png",
+				"hidden" : true
+			},
+			"cancel" :
+			{
+				"position": [0.2, -1.1],
+				"scale": [0.1, 0.07],
+				"text" : "Cancel",
+				"centered" : true,
+				"color" : "FF000000",
+				"texture": "floor.png"
+			}
+		}
   },
-  "SPLASH" : {},
-  "PLAY" : {},
-  "OPTIONS" : {},
   "PLACEMENT" : {
+  
+  		"Units":
+		{
+			"position": [-0.7, -0.855],	
+			"scale": [0.3, 0.2],
+			"texture": "../Menues/PlacementStateGUI/placementUnits1.png",
+			
+			"Guard" :
+			{
+				"position": [-0.18, 0.057],	
+				"scale": [0.048, 0.083],
+				"texture": "../Menues/PlacementStateGUI/units/Guardbutton1.png",
+				
+				"GuardText":
+				{
+					"position" : [0.975, -1.08],
+					"scale": [1.0, 1.0],
+					"text": "Guard",
+					"color": "FF000000",
+					"fontsize" : 18.0
+				}				
+			},
+			"AnvilTrap" :
+			{
+				"position": [-0.06, 0.057],	
+				"scale": [0.048, 0.083],
+				"texture": "../Menues/PlacementStateGUI/units/Anvilbutton1.png",
+				
+				"AnvilText":
+				{
+					"position" : [0.96, -1.08],
+					"scale": [1.0, 1.0],
+					"text": "Anvil Trap",
+					"color": "FF000000",
+					"fontsize" : 18.0
+				}
+			},
+			"TeslaTrap" :
+			{
+				"position": [0.06, 0.057],	
+				"scale": [0.048, 0.083],
+				"texture": "../Menues/PlacementStateGUI/units/Teslabutton1.png",
+				
+				"TeslaText":
+				{
+					"position" : [0.96, -1.08],
+					"scale": [1.0, 1.0],
+					"text": "Tesla Trap",
+					"color": "FF000000",
+					"fontsize" : 18.0
+				}
+			},
+			"Camera" :
+			{
+				"position": [0.18, 0.057],	
+				"scale": [0.048, 0.083],
+				"texture": "../Menues/PlacementStateGUI/units/Camerabutton1.png",
+				
+				"CameraText":
+				{
+					"position" : [0.97, -1.08],
+					"scale": [1.0, 1.0],
+					"text": "Camera",
+					"color": "FF000000",
+					"fontsize" : 18.0
+				}
+			}
+		},
   		"Play" :
 		{
-			"position": [0.9, 0.9],	
-			"scale": [0.1, 0.1],
-			"texture": "../Menues/Button.png",
+			"position": [0.86, 0.67],	
+			"scale": [0.12, 0.08],
+			"texture": "../Menues/PlacementStateGUI/placementResources.png",
 			
 			"PlayText":
 			{
-				"position" : [0.97, -0.96],
+				"position" : [0.975, -0.968],
 				"scale": [1.0, 1.0],
 				"text": "Play",
 				"color": "FF000000",
-				"fontsize" : 30.0
-			}
-		},
-		"Trap" :
-		{
-			"position": [-0.1, -0.9],	
-			"scale": [0.1, 0.1],
-			"texture": "../Menues/Button.png",
-			
-			"TrapText":
-			{
-				"position" : [0.97, -0.96],
-				"scale": [1.0, 1.0],
-				"text": "Trap",
-				"color": "FF000000",
-				"fontsize" : 30.0
-			}
-		},
-		"Guard" :
-		{
-			"position": [0.1, -0.9],	
-			"scale": [0.1, 0.1],
-			"texture": "../Menues/Button.png",
-			
-			"GuardText":
-			{
-				"position" : [0.97, -0.96],
-				"scale": [1.0, 1.0],
-				"text": "Guard",
-				"color": "FF000000",
-				"fontsize" : 30.0
+				"fontsize" : 25.0
 			}
 		},
 		"Budget" :
 		{
-			"position": [-0.9, 0.9],	
-			"scale": [0.1, 0.1],
-			"texture": "../Menues/Budget.png",
+			"position": [0.86, 0.9],	
+			"scale": [0.12, 0.08],
+			"texture": "../Menues/PlacementStateGUI/placementResources.png",
 			
 			"BudgetText":
 			{
-				"position" : [0.91, -0.96],
+				"position" : [0.923, -0.968],
 				"scale": [1.0, 1.0],
 				"text": "Budget:",
 				"color": "FF000000",
@@ -136,7 +475,7 @@
 			
 			"BudgetValue":
 			{
-				"position" : [1.0, -0.96],
+				"position" : [1.02, -0.968],
 				"scale": [1.0, 1.0],
 				"text": "1000",
 				"color": "FF000000",
@@ -308,6 +647,64 @@
 		}
     
   
-  }
-  
-  }
+  },
+	"LEVELSELECT" :
+	{
+		"bg" :
+		{
+			"position": [0.0, 0.0],
+			"scale": [1.0, 1.0],
+			"texture" : "../Menues/settings/settings1.png"
+		},
+		"title":
+		{
+			"position": [0.0, 0.0],
+			"scale" : [1.0, 0.8],
+			"text": "Level Select",
+			"centered" : true,
+			"color" : "FF000000",
+			"fontsize" : 60.0
+		},
+		"":
+		{
+			"position" : [0.0, 0.5],
+			
+			"" :
+			{
+				"position": [0.0, 0.0],
+				"scale": [1.0, 1.0],
+				
+				"playbutton" :
+				{
+					"position": [0.32, 0.0],
+					"scale": [0.08, 0.08],
+					"text" : "Play",
+					"centered": true,
+					"color" : "FFFFFFFF",
+					"texture": "../Menues/LevelEdit/GUI/placement4-button2.png"
+				},
+				"map" :
+				{
+					"position": [0.32, -0.16],
+					"scale": [0.08, 0.08],
+					"texture" : "floor.png"
+				},
+				"levelname":
+				{
+					"position" : [-0.08, 0.0],
+					"scale": [0.3, 0.05],
+					"text" : "Level name",
+					"color" : "FF000000"
+				},
+				"description":
+				{
+					"position" : [-0.08, -0.1],
+					"scale": [0.3, 0.05],
+					"text" : "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco",
+					"color" : "FF888888",
+					"fontsize" : 25.0
+				}
+			}
+		}
+	}
+}

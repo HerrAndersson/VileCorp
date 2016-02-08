@@ -2,37 +2,38 @@
   "name": "default2",
   "floors": [
     "floor-24.bin"
-    
+
   ],
   "walls": [
     "wall-24.bin",
-	"wall-24.bin"
+    "wall-24.bin"
 
   ],
   "loot": [
     "diamond-24.bin"
-    
+
   ],
   "spawns": [
     "entry-24.bin"
-    
+
   ],
   "traps": [
     "trap-24.bin",
-    "trap-24.bin"
+    "trap-24.bin",
+    "TeslaTrap-26.bin"
 
   ],
   "triggers": [
     "trigger-24.bin"
-    
+
   ],
   "guards": [
     "guard-24.bin",
-	"guard-24.bin"
+    "guard-24.bin"
 
   ],
   "enemies": [
     "enemy-24.bin"
-    
+
   ]
 }

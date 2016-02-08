@@ -66,6 +66,7 @@ public:
 	~BaseEdit();
 
 	void Initialize(ObjectHandler* objectHandler, System::Controls* controls, PickingDevice* pickingDevice, System::Camera* camera);
+	void Release();
 
 	GameObject* GetSelectedObject();
 	bool Add(Type type, const std::string& name);
@@ -75,7 +76,7 @@ public:
 	void DragAndDrop();
 	void DragAndPlace(Type type, const std::string& objectName);
 
-	void DragActivate(Type type, const std::string& objectName);
+	void DragActivate(Type type, const std::string& objectName, int subType = 0);
 	void ChangePlaceState();
 	bool IsSelection() const;
 	bool IsDragAndPlace() const;

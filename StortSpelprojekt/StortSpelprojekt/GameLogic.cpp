@@ -45,14 +45,14 @@ void GameLogic::HandleInput()
 	//Selecting a Unit and moving selected units
 	if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
-		vector<GameObject*> pickedUnits = _pickingDevice->pickObjects(_controls->GetMouseCoord()._pos, _objectHandler->GetAllByType(GUARD));
+		vector<GameObject*> pickedUnits = _pickingDevice->PickObjects(_controls->GetMouseCoord()._pos, _objectHandler->GetAllByType(GUARD));
 
 
 		if (pickedUnits.empty())
 		{
 			if (_player->AreUnitsSelected())
 			{
-				_player->MoveUnits(_pickingDevice->pickTile(_controls->GetMouseCoord()._pos));
+				_player->MoveUnits(_pickingDevice->PickTile(_controls->GetMouseCoord()._pos));
 			}
 		}
 		else
@@ -86,20 +86,14 @@ void GameLogic::HandleInput()
 	}
 	
 	//Boxselect Units
-	XMFLOAT3 forward(0, 0, 0);
-	XMFLOAT3 position = _camera->GetPosition();
-	XMFLOAT3 right(0, 0, 0);
-	bool isMoving = false;
-	float v = 0.06f + (_camera->GetPosition().y * 0.01);
-
 	if(_controls->IsFunctionKeyDown("MOUSE:BOX_SELECT"))
 	{
-		_pickingDevice->setFirstBoxPoint(_controls->GetMouseCoord()._pos);
+		_pickingDevice->SetFirstBoxPoint(_controls->GetMouseCoord()._pos);
 	}
 
 	if (_controls->IsFunctionKeyUp("MOUSE:BOX_SELECT"))
 	{
-		vector<GameObject*> pickedUnits = _pickingDevice->boxPickObjects(_controls->GetMouseCoord()._pos, _objectHandler->GetAllByType(GUARD));
+		vector<GameObject*> pickedUnits = _pickingDevice->BoxPickObjects(_controls->GetMouseCoord()._pos, _objectHandler->GetAllByType(GUARD));
 
 		for (unsigned int i = 0; i < pickedUnits.size(); i++)
 		{
@@ -114,7 +108,7 @@ void GameLogic::HandleInput()
 	{
 		if (_player->AreUnitsSelected())
 		{
-			_player->PatrolUnits(_pickingDevice->pickTile(_controls->GetMouseCoord()._pos));
+			_player->PatrolUnits(_pickingDevice->PickTile(_controls->GetMouseCoord()._pos));
 		}
 	}
 
@@ -122,19 +116,23 @@ void GameLogic::HandleInput()
 
 	if (_camera->GetMode() == System::LOCKED_CAM)
 	{
-		if (_controls->IsFunctionKeyDown("CAMERA:SCROLLDOWN") &&
-			_camera->GetPosition().y > 10.0f)
+		if (_controls->IsFunctionKeyDown("CAMERA:ZOOM_CAMERA_IN") &&
+			_camera->GetPosition().y > 4.0f)
 		{
 			_camera->Move(XMFLOAT3(0.0f, -1.0f, 0.0f));
 		}
-		else if (_controls->IsFunctionKeyDown("CAMERA:SCROLLUP") &&
-			_camera->GetPosition().y < 30.0f)
+		else if (_controls->IsFunctionKeyDown("CAMERA:ZOOM_CAMERA_OUT") &&
+			_camera->GetPosition().y < 12.0f)
 		{
 			_camera->Move(XMFLOAT3(0.0f, 1.0f, 0.0f));
 		}
 	}
 	
-	
+	XMFLOAT3 forward(0, 0, 0);
+	XMFLOAT3 position = _camera->GetPosition();
+	XMFLOAT3 right(0, 0, 0);
+	bool isMoving = false;
+	float v = 0.06f + (_camera->GetPosition().y * 0.01);
 
 	if (_controls->IsFunctionKeyDown("DEBUG:ENABLE_FREECAM"))
 	{

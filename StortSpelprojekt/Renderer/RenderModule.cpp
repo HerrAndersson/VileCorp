@@ -4,11 +4,10 @@ using namespace DirectX;
 
 namespace Renderer
 {
-	RenderModule::RenderModule(HWND hwnd, int screenWidth, int screenHeight, bool fullScreen)
+	RenderModule::RenderModule(HWND hwnd, System::Settings* settings)
 	{
-		_d3d = new DirectXHandler(hwnd, screenWidth, screenHeight, fullScreen);
-		_screenWidth = screenWidth;
-		_screenHeight = screenHeight;
+		_d3d = new DirectXHandler(hwnd, settings);
+		_settings = settings;
 		_shaderHandler = new ShaderHandler(_d3d->GetDevice());
 
 		InitializeScreenQuadBuffer();
@@ -117,11 +116,10 @@ namespace Renderer
 		}
 	}
 
-	void RenderModule::ResizeResources(HWND hwnd, int windowWidth, int windowHeight)
+	void RenderModule::ResizeResources(HWND hwnd, System::Settings* settings)
 	{
-		_d3d->ResizeResources(hwnd, windowWidth, windowHeight);
-		_screenWidth = windowWidth;
-		_screenHeight = windowHeight;
+		_d3d->ResizeResources(hwnd, settings);
+		_settings = settings;
 	}
 
 	void RenderModule::SetDataPerFrame(DirectX::XMMATRIX* view, DirectX::XMMATRIX* projection)
@@ -366,8 +364,8 @@ namespace Renderer
 		dataPtr = static_cast<MatrixBufferLightPassPerFrame*>(mappedResource.pData);
 		dataPtr->_invertedView = invView;
 		dataPtr->_invertedProjection = invProj;
-		dataPtr->_screenHeight = _screenHeight;
-		dataPtr->_screenWidth = _screenWidth;
+		dataPtr->_screenHeight = _settings->_screenHeight;
+		dataPtr->_screenWidth = _settings->_screenWidth;
 		deviceContext->Unmap(_matrixBufferLightPassPerFrame, 0);
 
 		deviceContext->PSSetConstantBuffers(2, 1, &_matrixBufferLightPassPerFrame);
@@ -541,8 +539,8 @@ namespace Renderer
 				y = pos.y*-1.0f - scale.y;
 
 				//x and y is in -1,1 coordinate system, convert to pixel coordinate system
-				x = (x + 1.0f) * 0.5f * _screenWidth;
-				y = (y + 1.0f) * 0.5f * _screenHeight;
+				x = (x + 1.0f) * 0.5f * _settings->_screenWidth;
+				y = (y + 1.0f) * 0.5f * _settings->_screenHeight;
 				fontWrapper->GetFontWrapper()->DrawTextLayout(_d3d->GetDeviceContext(), current->GetFont()->_textLayout, x, y, current->GetColor(), FW1_RESTORESTATE);
 			}
 			for (GUI::Node* i : *current->GetChildren())
