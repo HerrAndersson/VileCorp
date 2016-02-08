@@ -38,8 +38,8 @@ private:
 			bool _placeable = true;
 			bool _created = true;
 		}
-	} _marker;
-	AI::Vec2D* _markedTile; // Make into Marker instead...
+	} _marker, _baseMarker;
+	//AI::Vec2D* _markedTile; // Make into Marker instead...
 
 	/*
 	TODO: For Drag&Place (by Zache):
@@ -59,6 +59,8 @@ private:
 	void HandleInput();
 	void LoadLevel(int levelID);
 
+	void SetValidity(Marker* m, Type type);
+	void MarkerMoveEvent(Type type);
 	void DragAndDropEvent();
 
 public:
@@ -72,11 +74,13 @@ public:
 	bool Add(Type type, const std::string& name);
 	bool Delete(Type type);
 	bool TypeOn(Type type);
+
 	void DragAndDrop(Type type);
 	void DragAndDrop();
 	void DragAndPlace(Type type, const std::string& objectName);
-
 	void DragActivate(Type type, const std::string& objectName, int subType = 0);
+
+
 	void ChangePlaceState();
 	bool IsSelection() const;
 	bool IsDragAndPlace() const;

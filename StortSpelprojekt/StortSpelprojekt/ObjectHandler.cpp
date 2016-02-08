@@ -174,31 +174,6 @@ bool ObjectHandler::Remove(int ID)
 			}
 		}
 	}
-
-
-	//for (vector<GameObject*> v : _gameObjects)
-	//{
-	//	for (int i = 0; i < v.size(); i++)
-	//	{
-	//		if (v[i]->GetID() == ID)
-	//		{
-	//			// Release object resource
-	//			v[i]->Release();
-
-	//			delete v[i];
-
-	//			// Replace pointer with the last pointer int the vector
-	//			v[i] = v.back();
-
-	//			// Remove pointer value to avoid various problems
-	//			v.pop_back();
-
-	//			_objectCount--;
-
-	//			return true;
-	//		}
-	//	}
-	//}
 	return false;
 }
 
@@ -233,6 +208,11 @@ bool ObjectHandler::Remove(Type type, int ID)
 	return false;
 }
 
+bool ObjectHandler::Remove(GameObject* gameObject)
+{
+	return Remove(gameObject->GetType(), gameObject->GetID());
+}
+
 GameObject * ObjectHandler::Find(int ID)
 {
 	for (vector<GameObject*> v : _gameObjects)
@@ -246,11 +226,6 @@ GameObject * ObjectHandler::Find(int ID)
 		}
 	}
 	return nullptr;
-}
-
-bool ObjectHandler::Remove(GameObject* gameObject)
-{
-	return Remove(gameObject->GetType(), gameObject->GetID());
 }
 
 GameObject* ObjectHandler::Find(Type type, int ID)
