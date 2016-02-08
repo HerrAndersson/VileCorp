@@ -480,6 +480,6 @@ bool Tilemap::IsTileEmpty(int x, int z) const
 
 bool Tilemap::IsTileEmpty(AI::Vec2D pos) const
 {
-	return false;
+	return IsTileEmpty(pos._x, pos._y);
 }
 

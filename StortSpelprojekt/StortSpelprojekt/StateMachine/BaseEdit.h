@@ -42,7 +42,7 @@ private:
 	AI::Vec2D* _markedTile; // Make into Marker instead...
 
 	/*
-	TODO: For Drag&Place:
+	TODO: For Drag&Place (by Zache):
 	Update _marker dynamically when mouse is moved and 
 	_markedTile statically when left button down.
 	Change color of the tiles between _marker and _markedTile.
@@ -58,6 +58,8 @@ private:
 
 	void HandleInput();
 	void LoadLevel(int levelID);
+
+	void DragAndDropEvent();
 
 public:
 	BaseEdit();

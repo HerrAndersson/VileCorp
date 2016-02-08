@@ -76,6 +76,24 @@ bool BaseEdit::TypeOn(Type type)
 	return false;
 }
 
+void BaseEdit::DragAndDropEvent()
+{
+	if (_controls->IsFunctionKeyDown("MOUSE:SELECT") && _isSelectionMode && !_isPlace)
+	{
+		AI::Vec2D pickedTile = _pickingDevice->pickTile(_controls->GetMouseCoord()._pos);
+		std::vector<GameObject*> objectsOnTile = _objectHandler->GetTileMap()->GetAllObjectsOnTile(pickedTile);
+		if (!objectsOnTile.empty())
+		{
+			//Fetches either the floor if there is no other object on the tile, or the object that is on the tile
+			_marker._g = objectsOnTile.back();
+			_marker._origPos = pickedTile;
+
+			// Remove logically from old tile
+			_objectHandler->GetTileMap()->RemoveObjectFromTile(_marker._g);
+		}
+	}
+}
+
 void BaseEdit::DragAndDrop(Type type)
 {
 	if (_marker._g != nullptr && _isSelectionMode && _controls->IsFunctionKeyDown("MOUSE:DRAG"))
@@ -89,30 +107,31 @@ void BaseEdit::DragAndDrop(Type type)
 			{
 				GameObject* objectOnTile = tilemap->GetObjectOnTile(pickedTile._x, pickedTile._y, type);
 
-				if (objectOnTile == nullptr && _marker._g->GetType() == type)
+				// New position
+				XMFLOAT3 p = XMFLOAT3(_marker._g->GetPosition());
+				p.x = pickedTile._x;
+				p.z = pickedTile._y;
+
+				// Reset variable
+				_marker._placeable = true;
+
+				// Check validity of placement
+				if (objectOnTile == nullptr && tilemap->IsPlaceable(p.x, p.z, type))
 				{
-					// Update positions
-					XMFLOAT3 p = XMFLOAT3(_marker._g->GetPosition());
-					p.x = pickedTile._x;
-					p.z = pickedTile._y;
-
-					//Check to see if the tile the object will be placed on is free, Aron
-					if (tilemap->IsPlaceable(p.x, p.z, type))
+					if (type == WALL && !tilemap->IsTileEmpty(p.x, p.z))
 					{
-						if (type == WALL && !tilemap->IsTileEmpty(p.x, p.z))
-						{
-							return;
-						}
-
+						_marker._placeable = false;
+					}
+					else
+					{
 						if (_isPlace && !_marker._g->IsVisible())
 						{
 							_marker._g->SetVisibility(true);
 						}
 
-						_marker._placeable = true;
 						if (type == GUARD || type == ENEMY)
 						{
-							if (tilemap->IsTrapOnTile(pickedTile))
+							if (tilemap->IsTrapOnTile(pickedTile) || tilemap->UnitsOnTile(pickedTile))
 							{
 								_marker._placeable = false;
 							}
@@ -124,23 +143,24 @@ void BaseEdit::DragAndDrop(Type type)
 								_marker._placeable = false;
 							}
 						}
-
-						if (!_marker._placeable)
-						{
-							_marker._g->SetColorOffset(XMFLOAT3(1.0f, 0.0f, 0.0f));
-						}
-						else
-						{
-							_marker._g->SetColorOffset(XMFLOAT3(0.0f, 1.0f, 0.0f));
-						}
-
-						// Remove from old tile
-						tilemap->RemoveObjectFromTile(_marker._g);
-
-						//Update the object to the new position
-						_marker._g->SetPosition(p);
-						tilemap->AddObjectToTile(p.x, p.z, _marker._g);
 					}
+				}
+				else
+				{
+					_marker._placeable = false;
+				}
+
+				// Move marker grafically
+				_marker._g->SetPosition(p);
+
+				// Change color to represent placement validity
+				if (!_marker._placeable)
+				{
+					_marker._g->SetColorOffset(XMFLOAT3(1.0f, 0.0f, 0.0f));
+				}
+				else
+				{
+					_marker._g->SetColorOffset(XMFLOAT3(0.0f, 1.0f, 0.0f));
 				}
 			}
 		}
@@ -149,21 +169,19 @@ void BaseEdit::DragAndDrop(Type type)
 	{
 		if (_isSelectionMode)
 		{
+			Tilemap* tilemap = _objectHandler->GetTileMap();
 			_marker._g->SetColorOffset(XMFLOAT3(0.0f, 0.0f, 0.0f));
+			XMFLOAT3 p = XMFLOAT3(_marker._g->GetPosition());
 
 			if (!_marker._placeable)
 			{
-				// Remove from old tile
-				_objectHandler->GetTileMap()->RemoveObjectFromTile(_marker._g);
-
-				XMFLOAT3 p = XMFLOAT3(_marker._g->GetPosition());
+				//Redirect position to old pos
 				p.x = _marker._origPos._x;
 				p.z = _marker._origPos._y;
-
-				//Update the object to the new position
 				_marker._g->SetPosition(p);
-				_objectHandler->GetTileMap()->AddObjectToTile(p.x, p.z, _marker._g);
 			}
+			// Bind position logically
+			tilemap->AddObjectToTile(p.x, p.z, _marker._g);
 
 			if (_marker._g != nullptr && _isPlace)
 			{
@@ -193,6 +211,18 @@ void BaseEdit::DragAndDrop()
 
 void BaseEdit::DragAndPlace(Type type, const std::string& objectName)
 {
+	if (_isDragAndPlaceMode && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
+	{
+		_isPlace = true;
+		_markedTile = new AI::Vec2D(_pickingDevice->pickTile(_controls->GetMouseCoord()._pos));
+	}
+
+	// Not really diselect but activates remove mode (temp)
+	if (_isDragAndPlaceMode && _controls->IsFunctionKeyDown("MOUSE:DESELECT"))
+	{
+		_isPlace = false;
+	}
+
 	if (_isDragAndPlaceMode && _controls->IsFunctionKeyUp("MOUSE:SELECT"))
 	{
 		AI::Vec2D pickedTile = _pickingDevice->pickTile(_controls->GetMouseCoord()._pos);
@@ -330,34 +360,7 @@ bool BaseEdit::IsPlace() const
 
 void BaseEdit::HandleInput()
 {
-	if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
-	{
-		if (_isSelectionMode && !_isPlace)
-		{
-			AI::Vec2D pickedTile = _pickingDevice->pickTile(_controls->GetMouseCoord()._pos);
-			std::vector<GameObject*> objectsOnTile = _objectHandler->GetTileMap()->GetAllObjectsOnTile(pickedTile);
-			if (!objectsOnTile.empty())
-			{
-				//Fetches either the floor if there is no other object on the tile, or the object that is on the tile
-				_marker._g = objectsOnTile.back();
-				_marker._origPos = pickedTile;
-			}
-		}
-		if (_isDragAndPlaceMode)
-		{
-			_isPlace = true;
-			_markedTile = new AI::Vec2D(_pickingDevice->pickTile(_controls->GetMouseCoord()._pos));
-		}
-	}
-
-	if (_controls->IsFunctionKeyDown("MOUSE:DESELECT"))
-	{
-		if (_isDragAndPlaceMode)
-		{
-			_isPlace = false;
-			_markedTile = new AI::Vec2D(_pickingDevice->pickTile(_controls->GetMouseCoord()._pos));
-		}
-	}
+	DragAndDropEvent();
 
 	if (_marker._g != nullptr)
 	{
@@ -473,7 +476,6 @@ void BaseEdit::HandleInput()
 void BaseEdit::Update(float deltaTime)
 {
 	HandleInput();
-	_objectHandler->Update(deltaTime);
 }
 
 void BaseEdit::LoadLevel(int levelID)
