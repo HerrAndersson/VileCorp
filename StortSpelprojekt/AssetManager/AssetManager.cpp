@@ -604,7 +604,7 @@ RenderObject* AssetManager::GetRenderObject(unsigned index, string texture)
 	}
 	if (texture != "")
 	{
-		renderObject->_diffuseTexture->_data = GetTexture(texture);
+		renderObject->_diffuseTexture = GetTexture(texture);
 	}
 	return renderObject;
 }
@@ -628,11 +628,11 @@ uint AssetManager::GetRenderObjectByType(Type type, uint index)
 	return 0;
 }
 
-ID3D11ShaderResourceView* AssetManager::GetTexture(string filename)
+Texture* AssetManager::GetTexture(string filename)
 {
 	Texture* texture = ScanTexture(filename);
 	texture->LoadTexture(_device);
-	return texture->_data;
+	return texture;
 }
 
 Skeleton* AssetManager::LoadSkeleton(string filename)

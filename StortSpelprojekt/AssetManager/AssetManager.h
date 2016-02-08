@@ -214,5 +214,5 @@ public:
 	void UnloadModel(int index, bool force);
 	bool ParseLevel(int index, vector<GameObjectData> &gameObjects, int &dimX, int &dimY);
 	bool ActivateTileset(string name);
-	ID3D11ShaderResourceView* GetTexture(string filename);
+	Texture* GetTexture(string filename);
 };

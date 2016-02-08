@@ -65,6 +65,8 @@ VS_OUT main(VS_IN input)
 	output.pos = animPos;
 	output.normal = animNormal.xyz;
 	output.uv = input.uv;
+	output.ambientLight = ambientLight;
+	output.colorOffset = colorOffset;
 
 	return output;
 }

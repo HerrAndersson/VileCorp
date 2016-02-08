@@ -200,7 +200,7 @@ namespace Renderer
 		ID3D11VertexShader* vertexShader = nullptr;
 		ID3D11InputLayout* inputLayout = nullptr;
 
-		result = D3DCompileFromFile(fileName, NULL, NULL, "main", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, &shaderBuffer, &errorMessage);
+		result = D3DCompileFromFile(fileName, NULL, NULL, "main", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS | D3DCOMPILE_DEBUG, 0, &shaderBuffer, &errorMessage);
 		//result = D3DCompileFromFile(fileName, NULL, NULL, "main", "vs_5_0", D3DCOMPILE_DEBUG, 0, &shaderBuffer, &errorMessage);
 		if (FAILED(result))
 		{

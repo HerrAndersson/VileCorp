@@ -89,7 +89,7 @@ namespace GUI
 			}
 			else if (i->name == "texture")
 			{
-				returnNode->SetTexture(_AM->GetTexture(i->value.GetString()));
+				returnNode->SetTexture(_AM->GetTexture(i->value.GetString())->_data);
 			}
 			else if (i->name == "text")
 			{

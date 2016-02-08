@@ -10,7 +10,7 @@ namespace Renderer
 	{
 		_position = lightdata._pos;
 		_rotation = lightdata._rotation;
-		_direction = XMFLOAT3(0, 0, 0);
+		_direction = XMFLOAT3(0, 0, 1);
 		_up = XMFLOAT3(0, 1, 0);
 
 		_angle = lightdata._angle;
