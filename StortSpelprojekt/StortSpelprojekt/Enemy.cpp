@@ -23,32 +23,9 @@ Enemy::~Enemy()
 
 void Enemy::EvaluateTile(Type objective, AI::Vec2D tile)
 {
-	int tempPriority = 0;
-	switch (objective)
+	if (_tileMap->IsTypeOnTile(tile, objective));
 	{
-	case LOOT:
-		tempPriority = 2;
-	case GUARD:
-		if (IsVisible())
-		{
-			_isFleeing = true;
-			_pursuer = _tileMap->GetObjectOnTile(tile, GUARD);
-		}
-		else if (GetApproxDistance(tile) < 3)
-		{
-			tempPriority = 2;			//TODO Make actual calculations based on attack skill etc --Victor
-		}
-	case TRAP:
-		break;
-	case ENEMY:
-		break;
-	default:
-		break;
-	}
-	if (tempPriority > 0 && tile != _tilePosition && (_pathLength <= 0 || tempPriority * GetApproxDistance(tile) < _goalPriority * GetApproxDistance(GetGoal())))
-	{
-		_goalPriority = tempPriority;
-		SetGoal(tile);
+		EvaluateTile(_tileMap->GetObjectOnTile(tile, objective));
 	}
 }
 

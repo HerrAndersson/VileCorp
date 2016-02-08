@@ -319,6 +319,7 @@ void Trap::Update(float deltaTime)
 	{
 		Activate();
 		_isActive = false;
+		SetColorOffset({4,0,0});
 	}
 }
 
