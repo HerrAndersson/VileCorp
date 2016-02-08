@@ -92,6 +92,14 @@ namespace System
 		Update();
 	}
 
+	void Camera::Rotate(const DirectX::XMFLOAT3& offset)
+	{
+		_rotation.x += offset.x;
+		_rotation.y += offset.y;
+		_rotation.z += offset.z;
+		Update();
+	}
+
 	DirectX::XMMATRIX* Camera::GetViewMatrix()
 	{
 		return &_view;
