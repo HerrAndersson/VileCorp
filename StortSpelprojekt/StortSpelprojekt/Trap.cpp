@@ -25,11 +25,11 @@ void Trap::Initialize(int damage, int tileSize, int AOESize)
 }
 
 Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject * renderObject,
-	const Tilemap* tileMap, TrapType trapType, AI::Vec2D direction, int cost)
+	const Tilemap* tileMap, int trapType, AI::Vec2D direction, int cost)
 	: GameObject(ID, position, rotation, tilePosition, type, renderObject)
 {
 	_cost = cost;
-	_trapType = trapType;
+	_trapType = (TrapType)trapType;
 	_tileMap = tileMap;
 	_nrOfAOETiles = 0;
 	_isActive = true;

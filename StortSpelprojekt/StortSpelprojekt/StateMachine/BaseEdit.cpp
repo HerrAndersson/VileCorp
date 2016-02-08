@@ -225,7 +225,7 @@ void BaseEdit::DragAndPlace(Type type, const std::string& objectName)
 	}
 }
 
-void BaseEdit::DragActivate(Type type, const std::string& objectName)
+void BaseEdit::DragActivate(Type type, const std::string& objectName, int subType)
 {
 	_isPlace = false;
 	AI::Vec2D pickedTile = _pickingDevice->PickTile(_controls->GetMouseCoord()._pos);
@@ -240,7 +240,7 @@ void BaseEdit::DragActivate(Type type, const std::string& objectName)
 			if (tm->IsPlaceable(x, z, type))
 			{
 				pos = XMFLOAT3(x, 0, z);
-				if (_objectHandler->Add(type, objectName, pos, XMFLOAT3(0.0f, 0.0f, 0.0f)))
+				if (_objectHandler->Add(type, objectName, pos, XMFLOAT3(0.0f, 0.0f, 0.0f), subType))
 				{
 					_marker = _objectHandler->GetGameObjects()->at(type).back();
 					_marker->SetVisibility(false);

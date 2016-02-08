@@ -798,7 +798,7 @@ Trap * ObjectHandler::MakeTrap(GameObjectTrapInfo * data, const XMFLOAT3& positi
 		TRAP,
 		_assetManager->GetRenderObject(data->_renderObject),
 		_tilemap,
-		SPIKE,
+		subIndex,
 		{ 1,0 },
 		data->_cost);
 

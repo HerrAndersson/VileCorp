@@ -72,7 +72,17 @@ void PlacementState::HandleButtons()
 
 		if (_baseEdit.IsSelection() && !_baseEdit.IsPlace())
 		{
-			_baseEdit.DragActivate(_toPlace._type, _toPlace._name);
+			_baseEdit.DragActivate(_toPlace._type, _toPlace._name, SPIKE);
+		}
+	}
+	if (_uiTree.IsButtonColliding("TeslaTrap", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
+	{
+		_toPlace._type = TRAP;
+		_toPlace._name = "trap_proto";
+
+		if (_baseEdit.IsSelection() && !_baseEdit.IsPlace())
+		{
+			_baseEdit.DragActivate(_toPlace._type, _toPlace._name, TESLACOIL);
 		}
 	}
 
@@ -87,6 +97,11 @@ void PlacementState::HandleButtons()
 			_baseEdit.DragActivate(_toPlace._type, _toPlace._name);
 		}
 	}
+	//if (_uiTree.IsButtonColliding("Camera", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
+	//{
+	//	
+	//}
+
 }
 
 
