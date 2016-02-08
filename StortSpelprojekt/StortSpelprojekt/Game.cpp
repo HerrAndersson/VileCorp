@@ -32,7 +32,7 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 
 	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager, data);
 	_pickingDevice = new PickingDevice(_camera, _window);
-	_SM = new StateMachine(_controls, _objectHandler, _camera, _pickingDevice, "Assets/gui.json", _assetManager, _fontWrapper, _windowSettings._width, _windowSettings._height);
+	_SM = new StateMachine(_controls, _objectHandler, _camera, _pickingDevice, "Assets/gui.json", _assetManager, _fontWrapper, _windowSettings._width, _windowSettings._height, &_soundModule);
 
 	_SM->Update(_timer.GetFrameTime());
 	
@@ -64,13 +64,6 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	}
 
 	_lightCulling = new LightCulling();
-
-	bool added = _soundTestModule.AddSound("Assets/Sounds/yay.wav");
-	if (added)
-	{
-		_soundTestModule.Play("Assets/Sounds/yay.wav");
-	}
-
 }
 
 void Game::CheckSettings()
@@ -132,7 +125,7 @@ void Game::ResizeResources(System::WindowSettings settings)
 
 bool Game::Update(float deltaTime)
 {
-	_soundTestModule.Update();
+	_soundModule.Update();
 
 	bool run = true;
 	_controls->Update();

@@ -18,19 +18,19 @@ namespace System
 	class SYSTEM_EXPORT SoundModule
 	{
 	private:
-		std::map<std::string, YSE::sound> _allSounds;
+		std::map<std::string, YSE::sound*> _allSounds;
 
 	public:
 		/*Functions*/
 		SoundModule();
 		~SoundModule();
 
-		bool AddSound(const std::string &fileName, float volume = 1.0f, float speed = 1.0f, bool relative = true, bool looping = true);
-		bool RemoveSound(const std::string &fileName);   //Not needed but good to have
+		bool AddSound(const std::string &pathName, float volume = 1.0f, float speed = 1.0f, bool relative = true, bool looping = false);
+		bool RemoveSound(const std::string &pathName);   //Not needed but good to have
 
 		void Update(/*position*/);
-		bool Play(std::string soundName);
-		bool Stop(std::string soundName);
+		bool Play(std::string pathName);
+		bool Stop(std::string pathName);
 		//SetPosition();  //Sets position of a sound
 	};
 }

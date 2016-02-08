@@ -14,36 +14,47 @@ namespace System
 
 	SoundModule::~SoundModule()
 	{
+		for (auto &i: _allSounds)
+		{
+			delete i.second;
+		}
+
 		YSE::System().close();
 	}
 
-	bool SoundModule::AddSound(const std::string &fileName, float volume, float speed, bool relative, bool looping)
+	bool SoundModule::AddSound(const std::string &pathName, float volume, float speed, bool relative, bool looping)
 	{
 		bool answer = true;
-
-		_allSounds[fileName].create(fileName.c_str());
-		//Check if file could be loaded, if not delete the new Sound struct again
-		if (!_allSounds[fileName].isValid()) 
+		_allSounds[pathName] = new YSE::sound();
+		_allSounds[pathName]->create(pathName.c_str());
+		//Check if file could be loaded
+		if (!_allSounds[pathName]->isValid())
 		{
+			delete _allSounds[pathName];
+			_allSounds.erase(pathName);
 			answer = false;
+
+			throw std::runtime_error("Could not load audio: " + pathName);
 		}
 		else
 		{
-			_allSounds[fileName].setVolume(volume);
-			_allSounds[fileName].setSpeed(speed);
-			_allSounds[fileName].setRelative(relative);
-			_allSounds[fileName].setLooping(looping);
+			_allSounds[pathName]->setVolume(volume);
+			_allSounds[pathName]->setSpeed(speed);
+			_allSounds[pathName]->setRelative(relative);
+			_allSounds[pathName]->setLooping(looping);
 		}
 
 		return answer;
 	}
 
-	bool SoundModule::RemoveSound(const std::string &fileName)
+	bool SoundModule::RemoveSound(const std::string &pathName)
 	{
 		bool answer = false;
-		if (_allSounds.find(fileName) != _allSounds.end())
+		auto it = _allSounds.find(pathName);
+		if (it != _allSounds.end())
 		{
-			_allSounds.erase(fileName);
+			delete it->second;
+			_allSounds.erase(it);
 			answer = true;
 		}
 		
@@ -60,26 +71,30 @@ namespace System
 		YSE::System().update();
 	}
 
-	bool SoundModule::Play(std::string soundName)
+	bool SoundModule::Play(std::string pathName)
 	{
 		bool answer = false;
 
-		if (_allSounds.find(soundName) != _allSounds.end())
+		if (_allSounds.find(pathName) != _allSounds.end())
 		{
-			_allSounds[soundName].play();
+			_allSounds[pathName]->play();
 			answer = true;
+		}
+		else
+		{
+			throw std::runtime_error("Could not play audio: " + pathName);
 		}
 
 		return answer;
 	}
 
-	bool SoundModule::Stop(std::string soundName)
+	bool SoundModule::Stop(std::string pathName)
 	{
 		bool answer = false;
 
-		if (_allSounds.find(soundName) != _allSounds.end())
+		if (_allSounds.find(pathName) != _allSounds.end())
 		{
-			_allSounds[soundName].stop();
+			_allSounds[pathName]->stop();
 			answer = true;
 		}
 

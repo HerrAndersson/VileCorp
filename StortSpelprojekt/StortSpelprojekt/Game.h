@@ -1,9 +1,8 @@
 #pragma once
 
-#include "SoundModule.h"
-
-#include "stdafx.h"
 #include "StateMachine/StateMachine.h"
+#include "SoundModule.h"
+#include "stdafx.h"
 #include "Window.h"
 #include "RenderModule.h"
 #include "Camera.h"
@@ -42,8 +41,7 @@ private:
 	PlayerInfo					_playerInfo;
 	SettingInfo					_gameSettings;
 	System::WindowSettings		_windowSettings;
-
-	System::SoundModule			_soundTestModule;
+	System::SoundModule			_soundModule;
 
 	bool						_hasFocus;
 	bool						_enemiesHasSpawned;

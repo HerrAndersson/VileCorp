@@ -2,7 +2,7 @@
 
 State BaseState::_newStateRequest;
 
-BaseState::BaseState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, const std::string& statename, AssetManager* assetManager, FontWrapper* fontWrapper, int width, int height)
+BaseState::BaseState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, const std::string& statename, AssetManager* assetManager, FontWrapper* fontWrapper, int width, int height, System::SoundModule* soundModule)
 	: _uiTree(filename, statename, assetManager, fontWrapper, width, height)
 {
 	_controls			= controls;
@@ -10,6 +10,7 @@ BaseState::BaseState(System::Controls* controls, ObjectHandler* objectHandler, S
 	_camera				= camera;
 	_pickingDevice		= pickingDevice;
 	_newStateRequest	= SPLASHSTATE;
+	_soundModule		= soundModule;
 }
 
 BaseState::~BaseState()

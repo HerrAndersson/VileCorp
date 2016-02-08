@@ -1,7 +1,5 @@
 #pragma once
 
-#include "stdafx.h"
-
 #include "BaseState.h"
 #include "SplashState.h"
 #include "MenuState.h"
@@ -10,6 +8,7 @@
 #include "LevelEditState.h"
 #include "OptionsState.h"
 #include <vector>
+#include "stdafx.h"
 
 class StateMachine
 {
@@ -32,7 +31,8 @@ public:
 		AssetManager* assetManager,
 		FontWrapper* fontWrapper,
 		int width,
-		int height);
+		int height,
+		System::SoundModule* soundModule);
 	~StateMachine();
 
 	bool Update(float deltaTime);
