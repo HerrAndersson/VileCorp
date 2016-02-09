@@ -287,7 +287,7 @@ namespace Renderer
 
 	void Pointlight::Update()
 	{
-		_worldMatrix = XMMatrixScaling(_range, _range, _range) * XMMatrixTranslation(_position.x, _position.y, _position.z);
+		_worldMatrix = XMMatrixScaling(_range + 1, _range + 1, _range + 1) * XMMatrixTranslation(_position.x, _position.y, _position.z);
 	}
 
 	void Pointlight::SetPosition(const XMFLOAT3& position)

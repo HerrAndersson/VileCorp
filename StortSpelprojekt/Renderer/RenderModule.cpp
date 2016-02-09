@@ -120,6 +120,7 @@ namespace Renderer
 	{
 		_d3d->ResizeResources(hwnd, settings);
 		_settings = settings;
+
 		_shadowMap->Resize(_d3d->GetDevice(), settings->_shadowMapHeight);
 	}
 
@@ -428,7 +429,7 @@ namespace Renderer
 		case LIGHT_APPLICATION_POINTLIGHT:
 		{
 			_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::ENABLE);
-			_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::BACK);
+			_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::FRONT);
 
 			//TODO: Should activate the pointlight shaders!
 			int nrOfSRVs = _d3d->SetLightStage();
