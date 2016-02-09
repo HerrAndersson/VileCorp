@@ -34,7 +34,7 @@ Game::Game(HINSTANCE hInstance, int nCmdShow):
 
 	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager, &_data);
 	_pickingDevice = new PickingDevice(_camera, settings);
-	_SM = new StateMachine(_controls, _objectHandler, _camera, _pickingDevice, "Assets/gui.json", _assetManager, _fontWrapper, settings, &_settingsReader, &_soundModule);
+	_SM = new StateMachine(_controls, _objectHandler, _camera, _pickingDevice, "Assets/gui.json", _assetManager, _fontWrapper, settings, &_settingsReader, nullptr);
 
 	_SM->Update(_timer.GetFrameTime());
 
@@ -97,7 +97,7 @@ void Game::ResizeResources(System::Settings* settings)
 
 bool Game::Update(float deltaTime)
 {
-	_soundModule.Update();
+	//_soundModule.Update();
 
 	bool run = true;
 
