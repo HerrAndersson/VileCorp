@@ -113,7 +113,7 @@ Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 {
 	_isFleeing = false;
 	_goalPriority = -1;
-	_visionRadius = 5;
+	_visionRadius = 6;
 	_goalTilePosition = _tilePosition;
 	_tileMap = tileMap;
 	_visionCone = new VisionCone(_visionRadius, _tileMap);
@@ -241,23 +241,47 @@ Moves the goal and finds the path to the new goal
 */
 void Unit::SetGoal(AI::Vec2D goal)
 {
-	_goalTilePosition = goal;
-	_objective = _tileMap->GetObjectOnTile(goal, FLOOR);		//Note: Make sure walled tiles aren't valid goals
+ 	_goalTilePosition = goal;
+	if (_tileMap->IsTrapOnTile(goal))
+	{
+		_objective = _tileMap->GetObjectOnTile(goal, TRAP);
+	}
+	else
+	{
+		_objective = _tileMap->GetObjectOnTile(goal, FLOOR);		//Note: Make sure walled tiles aren't valid goals
+	}
 	//_objective->SetColorOffset({5,0,0});
-	_aStar->CleanMap();
-	_aStar->SetStartPosition(_tilePosition);
-	_aStar->SetGoalPosition(goal);
-	CalculatePath();
+	if (_objective != nullptr)
+	{
+		if (_objective->InRange(_tilePosition))
+		{
+			act(_objective);
+		}
+		else
+		{
+			_aStar->CleanMap();
+			_aStar->SetStartPosition(_tilePosition);
+			_aStar->SetGoalPosition(goal);
+			CalculatePath();
+		}
+	}
 }
 
 void Unit::SetGoal(GameObject * objective)
 {
 	_goalTilePosition = objective->GetTilePosition();
 	_objective = objective;
-	_aStar->CleanMap();
-	_aStar->SetStartPosition(_tilePosition);
-	_aStar->SetGoalPosition(_goalTilePosition);
-	CalculatePath();
+	if (_objective->InRange(_tilePosition))
+	{
+		act(_objective);
+	}
+	else
+	{
+		_aStar->CleanMap();
+		_aStar->SetStartPosition(_tilePosition);
+		_aStar->SetGoalPosition(_goalTilePosition);
+		CalculatePath();
+	}
 }
 
 /*
@@ -290,10 +314,10 @@ void Unit::Move()
 		AI::Vec2D nextTile = _path[--_pathLength];
 		_direction = nextTile - _tilePosition;
 	}
-	else
+	if (!_isFleeing && (_pathLength <= 0 || (_objective != nullptr && _objective->InRange(_tilePosition))))
 	{
 		_isMoving = false;
-		if (_objective != nullptr && _objective->GetTilePosition() == _tilePosition)
+		if (_objective != nullptr && _objective->InRange(_tilePosition))
 		{
 			act(_objective);
 		}

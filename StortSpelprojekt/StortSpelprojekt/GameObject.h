@@ -69,6 +69,7 @@ public:
 	bool IsActive() const;
 	void SetActive(bool active);
 	void SetVisibility(bool visible);
+	virtual bool InRange(AI::Vec2D pos)const;
 
 	RenderObject* GetRenderObject() const;
 	Animation* GetAnimation() const;

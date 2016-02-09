@@ -23,7 +23,7 @@ Enemy::~Enemy()
 
 void Enemy::EvaluateTile(Type objective, AI::Vec2D tile)
 {
-	if (_tileMap->IsTypeOnTile(tile, objective));
+	if (_tileMap->IsTypeOnTile(tile, objective))
 	{
 		EvaluateTile(_tileMap->GetObjectOnTile(tile, objective));
 	}
@@ -49,13 +49,16 @@ void Enemy::EvaluateTile(GameObject* obj)
 			}
 			break;
 		case TRAP:
-			if (SpotTrap(static_cast<Trap*>(obj)) && _disarmSkill - static_cast<Trap*>(obj)->GetDisarmDifficulty() > 20)
+		{
+			Trap* trap = static_cast<Trap*>(obj);
+			if (trap->IsTrapActive() && SpotTrap(trap) && (_disarmSkill - trap->GetDisarmDifficulty() > -20))
 			{
-				tempPriority = 5;
+				tempPriority = 1;
 			}
-			break;
+		}
+			break;	
 		case GUARD:
-			if (IsVisible())
+			if (!SafeToAttack(static_cast<Unit*>(obj)->GetDirection()))
 			{
 				_isFleeing = true;
 				_pursuer = obj;
@@ -63,7 +66,7 @@ void Enemy::EvaluateTile(GameObject* obj)
 			}
 			else if (GetApproxDistance(obj->GetTilePosition()) < 3)
 			{
-		//		tempPriority = 2;			//TODO Make actual calculations based on attack skill etc --Victor
+				tempPriority = 2;			//TODO Make actual calculations based on attack skill etc --Victor
 			}
 			break;
 		case ENEMY:
@@ -82,7 +85,7 @@ void Enemy::EvaluateTile(GameObject* obj)
 			SetGoal(obj);
 		}
 		//Head for the exit, all objectives are taken
-		else if (_heldObject == nullptr && _pathLength <= 0)
+		else if (_heldObject == nullptr && _pathLength <= 0 && !_isFleeing)
 		{
 			SetGoal(obj);
 		}
@@ -108,8 +111,14 @@ void Enemy::act(GameObject* obj)
 		}
 		break;
 	case TRAP:
+		{
+			DisarmTrap(static_cast<Trap*>(obj));
+		}
 		break;
 	case GUARD:
+		{
+			static_cast<Unit*>(obj)->TakeDamage(10);
+		}
 		break;
 	case ENEMY:
 		break;
@@ -149,6 +158,37 @@ bool Enemy::SpotTrap(Trap * trap)
 			trap->SetVisibleToEnemies(true);
 		}
 	}
-
+	trap->SetColorOffset({ 3, 0, 3 });
 	return trap->IsVisibleToEnemies();
+}
+
+void Enemy::DisarmTrap(Trap * trap)
+{
+	if (trap->IsTrapActive())
+	{
+		srand(time(NULL));
+		int disarmRoll = rand()%100;
+		if (disarmRoll + _disarmSkill - trap->GetDisarmDifficulty() >= 50)
+		{
+			trap->SetTrapActive(false);
+			trap->SetColorOffset({ 4,4,0 });
+		}
+		else
+		{
+			trap->Activate();
+		}
+	}
+}
+
+bool Enemy::SafeToAttack(AI::Vec2D direction)
+{
+	AI::Vec2D addedDirection = _direction + direction;
+	bool safeToAttack = true;
+
+	if (std::abs(addedDirection._x) + std::abs(addedDirection._y) < 2)
+	{
+		safeToAttack = false;
+	}
+
+	return safeToAttack;
 }
