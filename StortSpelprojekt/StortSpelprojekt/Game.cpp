@@ -183,7 +183,17 @@ void Game::Render()
 			}
 		}
 	}
-	
+
+	/*------------------------------------------------  Render billboarded objects  ---------------------------------------------------*/
+
+	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::BILLBOARDING_STAGE);
+
+	//_objectHandler->getparticles();
+	//for(particles)
+	//	render particle
+
+
+	/*-------------------------------------------------------  Render grid  -----------------------------------------------------------*/
 	if (_SM->GetState() == LEVELEDITSTATE)
 	{
 		Grid* gr = _objectHandler->GetBuildingGrid();

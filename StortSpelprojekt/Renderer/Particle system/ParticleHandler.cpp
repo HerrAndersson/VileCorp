@@ -23,7 +23,7 @@ namespace Renderer
 		}
 	}
 
-	void ParticleHandler::ActivateEmitter(ParticleType type, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT4& color, float particleCount, int timeLimit, bool isActive)
+	void ParticleHandler::ActivateEmitter(ParticleType type, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT4& color, int particleCount, float timeLimit, bool isActive)
 	{
 		bool found = false;
 		for (ParticleEmitter& p : _particleEmitters)

@@ -56,7 +56,7 @@ namespace Renderer
 			{
 				if (i.IsActive())
 				{
-					i.Update()
+					i.Update(deltaTime, _type);
 				}
 			}
 		}

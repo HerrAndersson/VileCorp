@@ -126,6 +126,10 @@ namespace Renderer
 		_shadowMapVS = CreateVertexShader(device, L"Assets/Shaders/ShadowVS.hlsl", shadowInputDesc, numElements);
 		_lightApplyLightVolumeVS = CreateVertexShader(device, L"Assets/Shaders/LightApplyLightVolumeVS.hlsl", shadowInputDesc, numElements);
 
+		_billboardingVS = CreateVertexShader(device, L"Assets/Shaders/BillboardingVS.hlsl", shadowInputDesc, numElements);
+		_billboardingPS = CreatePixelShader(device, L"Assets/Shaders/BillboardingPS.hlsl");
+		_billboardingGS = CreateGeometryShader(device, L"Assets/Shaders/BillboardingGS.hlsl");
+
 		//Animation pass init
 		D3D11_INPUT_ELEMENT_DESC animInputDesc[] =
 		{
@@ -161,12 +165,16 @@ namespace Renderer
 		delete _gridPassVS;
 		delete _hudPassVS;
 		delete _lightApplyLightVolumeVS;
+		delete _billboardingVS;
 
 		SAFE_RELEASE(_geoPassPS);
 		SAFE_RELEASE(_gridPassPS);
 		SAFE_RELEASE(_lightApplySpotlightVolumePS);
 		SAFE_RELEASE(_hudPassPS);
 		SAFE_RELEASE(_lightApplyPointlightVolumePS);
+		SAFE_RELEASE(_billboardingPS);
+
+		SAFE_RELEASE(_billboardingGS);
 
 		SAFE_RELEASE(_samplerWRAP);
 		SAFE_RELEASE(_samplerPOINT);
@@ -514,6 +522,24 @@ namespace Renderer
 		deviceContext->VSSetShader(_passthroughVS->_vertexShader, nullptr, 0);
 		deviceContext->PSSetShader(_fxaaPassPS, nullptr, 0);
 		deviceContext->GSSetShader(nullptr, nullptr, 0);
+		//deviceContext->HSSetShader(nullptr, nullptr, 0);
+		//deviceContext->DSSetShader(nullptr, nullptr, 0);
+		//deviceContext->CSSetShader(nullptr, nullptr, 0);
+
+		//Set sampler
+		ID3D11SamplerState* samplers[2] = { _samplerWRAP, _samplerCLAMP };
+		deviceContext->PSSetSamplers(0, 2, samplers);
+	}
+
+	void ShaderHandler::SetBillboardingStageShaders(ID3D11DeviceContext* deviceContext)
+	{
+		// Set vertex layout
+		deviceContext->IASetInputLayout(_billboardingVS->_inputLayout);
+
+		// Set shaders
+		deviceContext->VSSetShader(_billboardingVS->_vertexShader, nullptr, 0);
+		deviceContext->PSSetShader(_billboardingPS, nullptr, 0);
+		deviceContext->GSSetShader(_billboardingGS, nullptr, 0);
 		//deviceContext->HSSetShader(nullptr, nullptr, 0);
 		//deviceContext->DSSetShader(nullptr, nullptr, 0);
 		//deviceContext->CSSetShader(nullptr, nullptr, 0);

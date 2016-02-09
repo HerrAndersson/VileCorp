@@ -453,6 +453,15 @@ namespace Renderer
 			_shaderHandler->SetHUDPassShaders(_d3d->GetDeviceContext());
 			break;
 		}
+		case BILLBOARDING_STAGE:
+		{
+			//Since this is part of the geometry pass, there is no need to set render targets etc.
+			_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::ENABLE);
+			_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::BACK);
+			deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST); //TODO: use triangle strip instead, if the geometry shader supports this
+			_shaderHandler->SetBillboardingStageShaders(_d3d->GetDeviceContext());
+			break;
+		}
 		default:
 		{
 			throw std::runtime_error("RenderModule::SetShaderStage: Invalid shader stage");

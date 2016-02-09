@@ -2,7 +2,8 @@
 | Pixel shader used for the rendering of billboarded objects														   |
 ----------------------------------------------------------------------------------------------------------------------*/
 
-Texture2D txDiffuse : register(t0);
+Texture2D diffuse : register(t0);
+Texture2D specular : register(t1);
 SamplerState samplerWrap : register(s0);
 
 struct GS_OUT
@@ -15,21 +16,21 @@ struct GS_OUT
 
 struct PS_OUT
 {
-	float4 color : SV_Target0;
-	float3 normal : SV_Target1;
-	float4 worldPos : SV_Target2;
+	float4 diffuse		  : SV_Target0;
+	float4 normal	      : SV_Target1;
+	float4 backbuffercopy : SV_Target2;
 };
 
 
-PS_OUT main(GS_OUT input) : SV_Target
+PS_OUT main(GS_OUT input)
 {
 	PS_OUT output = (PS_OUT)0;
 
-	float3 s = txDiffuse.Sample(sampAni, input.tex).xyz;
+	float4 color = float4(diffuse.Sample(samplerWrap, input.tex).xyz, 1.0f);
 
-	output.color = float4(s, 1.0f);
-	output.normal = input.normal;
-	output.worldPos = input.worldPos;
+	output.diffuse = color;
+	output.normal = float4(input.normal, 1.0f);
+	output.backbuffercopy = color; //TODO: apply ambient? / Jonas
 
 	return output;
 }

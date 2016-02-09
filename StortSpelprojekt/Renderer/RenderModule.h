@@ -23,6 +23,7 @@ Constant buffer register setup:
 |    3	  |    LightPerLight. Spotlight data such as angle and range etc. Pointlight data such as range and position										  |
 |    4    |    ShadowMapPerFrame. Light view and projection matrices. Used to generate the shadow map.                                                        |
 |    5    |    PerSkinnedObject. Animation data matrices																									  |
+|    6    |    PerBillboardedObject. Holds necessary data used to generate for example billboarded particles. Geometry shader								  |
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Render targets:
@@ -142,8 +143,8 @@ namespace Renderer
 
 	public:
 
-		const DirectX::XMFLOAT3 AMBIENT_LIGHT = DirectX::XMFLOAT3(0.1f, 0.1f, 0.1f);
-		enum ShaderStage { GEO_PASS, SHADOW_GENERATION, LIGHT_APPLICATION_SPOTLIGHT, LIGHT_APPLICATION_POINTLIGHT, GRID_STAGE, ANIM_STAGE, HUD_STAGE, AA_STAGE };
+		const DirectX::XMFLOAT3 AMBIENT_LIGHT = DirectX::XMFLOAT3(0.5f, 0.5f, 0.5f);
+		enum ShaderStage { GEO_PASS, SHADOW_GENERATION, LIGHT_APPLICATION_SPOTLIGHT, LIGHT_APPLICATION_POINTLIGHT, GRID_STAGE, ANIM_STAGE, HUD_STAGE, AA_STAGE, BILLBOARDING_STAGE };
 
 		RenderModule(HWND hwnd, System::Settings* settings);
 		~RenderModule();

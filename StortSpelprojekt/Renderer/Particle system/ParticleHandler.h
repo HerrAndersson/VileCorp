@@ -24,7 +24,7 @@ namespace Renderer
 
 		void Update(double deltaTime);
 
-		void ActivateEmitter(ParticleType type, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT4& color, float particleCount, int timeLimit, bool isActive);
+		void ActivateEmitter(ParticleType type, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT4& color, int particleCount, float timeLimit, bool isActive);
 
 	};
 }
