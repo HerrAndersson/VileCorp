@@ -60,13 +60,9 @@ LightCulling::LightCulling(Tilemap* tilemap)
 LightCulling::~LightCulling()
 {
 	_tilemap = nullptr;
-	if (_quadTreeRoot != nullptr)
-	{
-		_quadTreeRoot->Release();
-		delete _quadTreeRoot;
-	}
-	delete _objectsInLight;
 
+	SAFE_DELETE(_objectsInLight);
+	SAFE_DELETE(_quadTreeRoot);
 }
 
 std::vector<std::vector<GameObject*>>* LightCulling::GetObjectsInSpotlight(Renderer::Spotlight* spotlight)

@@ -6,7 +6,7 @@ using namespace DirectX;
 
 namespace Renderer
 {
-	Spotlight::Spotlight(ID3D11Device* device, SpotlightData lightdata, int size, float nearClip, float farClip, int resolution)
+	Spotlight::Spotlight(ID3D11Device* device, SpotlightData lightdata, float nearClip, float farClip, int resolution)
 	{
 		_position = XMFLOAT3(0, 0, 0);
 		_rotation = XMFLOAT3(0, 0, 0);
@@ -23,7 +23,7 @@ namespace Renderer
 		XMMATRIX rotationMatrix = XMMatrixRotationRollPitchYaw(XMConvertToRadians(_rotation.x), XMConvertToRadians(_rotation.y), XMConvertToRadians(_rotation.z));
 		_worldMatrix = rotationMatrix * XMMatrixTranslation(_position.x, _position.y, _position.z);
 
-		if (size <= 0 || _range < std::numeric_limits<float>::epsilon())
+		if (_range < std::numeric_limits<float>::epsilon())
 		{
 			throw std::runtime_error("Spotlight::Spotlight: Division by Zero");
 		}
