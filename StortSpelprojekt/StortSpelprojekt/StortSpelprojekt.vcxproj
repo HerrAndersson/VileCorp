@@ -42,6 +42,7 @@
     <ClCompile Include="StateMachine\LevelSelectState.cpp" />
     <ClCompile Include="StateMachine\MenuState.cpp" />
     <ClCompile Include="StateMachine\OptionsState.cpp" />
+    <ClCompile Include="StateMachine\PauseState.cpp" />
     <ClCompile Include="StateMachine\PlacementState.cpp" />
     <ClCompile Include="StateMachine\PlayState.cpp" />
     <ClCompile Include="StateMachine\SplashState.cpp" />
@@ -77,6 +78,7 @@
     <ClInclude Include="StateMachine\LevelSelectState.h" />
     <ClInclude Include="StateMachine\MenuState.h" />
     <ClInclude Include="StateMachine\OptionsState.h" />
+    <ClInclude Include="StateMachine\PauseState.h" />
     <ClInclude Include="StateMachine\PlacementState.h" />
     <ClInclude Include="StateMachine\PlayState.h" />
     <ClInclude Include="StateMachine\SplashState.h" />

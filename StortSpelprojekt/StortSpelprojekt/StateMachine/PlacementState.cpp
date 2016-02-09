@@ -40,7 +40,7 @@ void PlacementState::OnStateEnter()
 
 void PlacementState::OnStateExit()
 {
-	
+	_baseEdit.Release();
 }
 
 void PlacementState::HandleInput()
@@ -50,8 +50,7 @@ void PlacementState::HandleInput()
 
 	if (_controls->IsFunctionKeyDown("MENU:MENU"))
 	{
-		ChangeState(MENUSTATE);
-		_baseEdit.Release();
+		ChangeState(PAUSESTATE);
 	}
 }
 
