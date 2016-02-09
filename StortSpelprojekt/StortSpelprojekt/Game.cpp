@@ -153,8 +153,10 @@ void Game::Render()
 
 				for (GameObject* g : i)
 				{
+					if (g->IsVisible())
+					{
 						_renderModule->Render(g->GetMatrix(), vertexBufferSize, g->GetColorOffset());
-						g->SetColorOffset(XMFLOAT3(0, 0, 0));
+					}
 					
 				}
 			}
@@ -179,7 +181,7 @@ void Game::Render()
 			}
 		}
 	}
-
+	
 	if (_SM->GetState() == LEVELEDITSTATE)
 	{
 		Grid* gr = _objectHandler->GetBuildingGrid();
@@ -193,13 +195,13 @@ void Game::Render()
 			_renderModule->RenderLineList(&matrix, gr->GetNrOfPoints(), gr->GetColorOffset());
 		}
 	}
-
+	
 	////////////////////////////////////////////////////////////  Light pass  //////////////////////////////////////////////////////////////
 	if (_SM->GetState() == PLAYSTATE)
 	{
-	/*----------------------------------------------------------  Spotlights  -------------------------------------------------------------
-	Generate the shadow map for each spotlight, then apply the lighting/shadowing to the render target with additive blending.           */
-		
+		//----------------------------------------------------------  Spotlights  -------------------------------------------------------------
+		//Generate the shadow map for each spotlight, then apply the lighting/shadowing to the render target with additive blending.           
+
 		_renderModule->SetLightDataPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
 
 		map<GameObject*, Renderer::Spotlight*>* spotlights = _objectHandler->GetSpotlights();
@@ -210,7 +212,6 @@ void Game::Render()
 				_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::SHADOW_GENERATION);
 				_renderModule->SetShadowMapDataPerSpotlight(spot.second->GetViewMatrix(), spot.second->GetProjectionMatrix());
 
-				//inlight = _lightCulling->GetObjectsInSpotlight(_spotlights[i]
 				vector<vector<GameObject*>>* inLight = _objectHandler->GetObjectsInLight(spot.second);
 				for (auto j : *inLight)
 				{
@@ -222,27 +223,31 @@ void Game::Render()
 
 						for (GameObject* g : j)
 						{
-							g->SetColorOffset(XMFLOAT3(0, 1, 0));
-							_renderModule->RenderShadowMap(g->GetMatrix(), vertexBufferSize);
+							if (g->IsVisible())
+							{
+								g->SetColorOffset(XMFLOAT3(0, 1, 0));
+
+								_renderModule->RenderShadowMap(g->GetMatrix(), vertexBufferSize);
+							}
 						}
 					}
 				}
+
+				_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::LIGHT_APPLICATION_SPOTLIGHT);
+				_renderModule->SetLightDataPerSpotlight(spot.second);
+
+				_renderModule->RenderLightVolume(spot.second->GetVolumeBuffer(), spot.second->GetWorldMatrix(), spot.second->GetVertexCount(), spot.second->GetVertexSize());
 			}
 
-			_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::LIGHT_APPLICATION_SPOTLIGHT);
-			_renderModule->SetLightDataPerSpotlight(spot.second);
+			/*---------------------------------------------------------  Pointlights  ------------------------------------------------------------*/
+			_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::LIGHT_APPLICATION_POINTLIGHT);
 
-			_renderModule->RenderLightVolume(spot.second->GetVolumeBuffer(), spot.second->GetWorldMatrix(), spot.second->GetVertexCount(), spot.second->GetVertexSize());
-		}
-
-	/*---------------------------------------------------------  Pointlights  ------------------------------------------------------------*/
-		_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::LIGHT_APPLICATION_POINTLIGHT);
-
-		map<GameObject*, Renderer::Pointlight*>* pointlights = _objectHandler->GetPointlights();
-		for (pair<GameObject*, Renderer::Pointlight*> pointlight : *pointlights)
-		{
-			_renderModule->SetLightDataPerPointlight(pointlight.second);
-			_renderModule->RenderLightVolume(pointlight.second->GetVolumeBuffer(), pointlight.second->GetWorldMatrix(), pointlight.second->GetVertexCount(), pointlight.second->GetVertexSize());
+			map<GameObject*, Renderer::Pointlight*>* pointlights = _objectHandler->GetPointlights();
+			for (pair<GameObject*, Renderer::Pointlight*> pointlight : *pointlights)
+			{
+				_renderModule->SetLightDataPerPointlight(pointlight.second);
+				_renderModule->RenderLightVolume(pointlight.second->GetVolumeBuffer(), pointlight.second->GetWorldMatrix(), pointlight.second->GetVertexCount(), pointlight.second->GetVertexSize());
+			}
 		}
 	}
 

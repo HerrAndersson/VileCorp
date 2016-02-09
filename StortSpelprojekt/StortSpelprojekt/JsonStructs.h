@@ -81,8 +81,9 @@ struct SettingInfo
 struct GameObjectBaseInfo
 {
 	std::string _name = "proto";
-	unsigned _renderObject;
+	unsigned int _renderObject;
 	std::string _textureName;
+	virtual ~GameObjectBaseInfo(){}
 };
 
 struct GameObjectFloorInfo : GameObjectBaseInfo
@@ -93,6 +94,8 @@ struct GameObjectFloorInfo : GameObjectBaseInfo
 		a(CEREAL_NVP(_name)),
 		a(CEREAL_NVP(_textureName));
 	}
+	virtual ~GameObjectFloorInfo()
+	{}
 };
 
 struct GameObjectWallInfo : GameObjectBaseInfo
@@ -103,6 +106,7 @@ struct GameObjectWallInfo : GameObjectBaseInfo
 		a(CEREAL_NVP(_name)),
 		a(CEREAL_NVP(_textureName));
 	}
+
 };
 
 struct GameObjectLootInfo : GameObjectBaseInfo
@@ -125,6 +129,26 @@ struct GameObjectLootInfo : GameObjectBaseInfo
 };
 
 struct GameObjectSpawnInfo : GameObjectBaseInfo
+{
+
+	template<class A>
+	void serialize(A& a)
+	{
+		a(CEREAL_NVP(_name));
+	}
+};
+
+struct GameObjectCameraInfo : GameObjectBaseInfo
+{
+
+	template<class A>
+	void serialize(A& a)
+	{
+		a(CEREAL_NVP(_name));
+	}
+};
+
+struct GameObjectFurnitureInfo : GameObjectBaseInfo
 {
 
 	template<class A>
@@ -207,8 +231,10 @@ struct GameObjectInfo
 		_objects[LOOT] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectLootInfo*>;
 		_objects[SPAWN] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectSpawnInfo*>;
 		_objects[TRAP] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectTrapInfo*>;
+		_objects[CAMERA] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectCameraInfo*>;
 		_objects[GUARD] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectGuardInfo*>;
 		_objects[ENEMY] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectEnemyInfo*>;
+		_objects[FURNITURE] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectFurnitureInfo*>;
 	}
 	~GameObjectInfo()
 	{
@@ -216,7 +242,7 @@ struct GameObjectInfo
 		{
 			for (GameObjectBaseInfo* obj : *_objects[i])
 			{
-				delete (GameObjectEnemyInfo*)obj;
+				delete obj;
 			}
 			delete _objects[i];
 		}

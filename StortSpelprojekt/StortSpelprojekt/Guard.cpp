@@ -50,8 +50,10 @@ void Guard::EvaluateTile(GameObject * obj)
 		case LOOT:
 		case GUARD:
 		case TRAP:
+		case CAMERA:				//Guards don't react to these
 			break;
 		case ENEMY:
+			static_cast<Enemy*>(obj)->ResetVisibilityTimer();
 			tempPriority = 10;
 			break;
 		default:
@@ -75,6 +77,7 @@ void Guard::act(GameObject* obj)
 		case LOOT:
 		case GUARD:
 		case TRAP:
+			break;
 		case ENEMY:											//The guard hits the enemy
 			static_cast<Unit*>(obj)->TakeDamage(1);
 			break;

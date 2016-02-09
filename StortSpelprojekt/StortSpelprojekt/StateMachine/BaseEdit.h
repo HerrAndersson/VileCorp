@@ -55,7 +55,7 @@ public:
 	void DragAndDrop();
 	void DragAndPlace(Type type, const std::string& objectName);
 	
-	void DragActivate(Type type, const std::string& objectName);
+	void DragActivate(Type type, const std::string& objectName, int subType = 0);
 	void ChangePlaceState();
 	bool IsSelection() const;
 	bool IsDragAndPlace() const;

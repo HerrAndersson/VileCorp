@@ -86,12 +86,6 @@ void GameLogic::HandleInput()
 	}
 	
 	//Boxselect Units
-	XMFLOAT3 forward(0, 0, 0);
-	XMFLOAT3 position = _camera->GetPosition();
-	XMFLOAT3 right(0, 0, 0);
-	bool isMoving = false;
-	float v = 0.06f + (_camera->GetPosition().y * 0.01);
-
 	if(_controls->IsFunctionKeyDown("MOUSE:BOX_SELECT"))
 	{
 		_pickingDevice->SetFirstBoxPoint(_controls->GetMouseCoord()._pos);
@@ -118,24 +112,9 @@ void GameLogic::HandleInput()
 		}
 	}
 
-
-
-	if (_camera->GetMode() == System::LOCKED_CAM)
-	{
-		if (_controls->IsFunctionKeyDown("CAMERA:SCROLLDOWN") &&
-			_camera->GetPosition().y > 10.0f)
-		{
-			_camera->Move(XMFLOAT3(0.0f, -1.0f, 0.0f));
-		}
-		else if (_controls->IsFunctionKeyDown("CAMERA:SCROLLUP") &&
-			_camera->GetPosition().y < 30.0f)
-		{
-			_camera->Move(XMFLOAT3(0.0f, 1.0f, 0.0f));
-		}
-	}
-	
-	
-
+	/*
+	Toggle free camera mode
+	*/
 	if (_controls->IsFunctionKeyDown("DEBUG:ENABLE_FREECAM"))
 	{
 		if (_camera->GetMode() == System::LOCKED_CAM)
@@ -151,6 +130,67 @@ void GameLogic::HandleInput()
 		}
 	}
 
+	/*
+	Camera scroll
+	*/
+	if (_camera->GetMode() == System::LOCKED_CAM)
+	{
+		if (_controls->IsFunctionKeyDown("CAMERA:ZOOM_CAMERA_IN") &&
+			_camera->GetPosition().y > 4.0f)
+		{
+			_camera->Move(XMFLOAT3(0.0f, -1.0f, 0.0f));
+		}
+		else if (_controls->IsFunctionKeyDown("CAMERA:ZOOM_CAMERA_OUT") &&
+			_camera->GetPosition().y < 12.0f)
+		{
+			_camera->Move(XMFLOAT3(0.0f, 1.0f, 0.0f));
+		}
+	}
+
+	/*
+	Camera rotation
+	*/
+	bool isRotating = false;
+	XMFLOAT3 rotation(0.0f, 0.0f, 0.0f);
+	float rotV = 1.4f;
+
+	if (_camera->GetMode() == System::LOCKED_CAM)
+	{
+		if (_controls->IsFunctionKeyDown("CAMERA:ROTATE_CAMERA_LEFT"))
+		{
+			rotation.y = 1.0f;
+			isRotating = true;
+		}
+		if (_controls->IsFunctionKeyDown("CAMERA:ROTATE_CAMERA_RIGHT"))
+		{
+			rotation.y = -1.0f;
+			isRotating = true;
+		}
+
+		if (isRotating)
+		{
+			_camera->Rotate(XMFLOAT3((rotation.x * rotV), (rotation.y * rotV), (rotation.z * rotV)));
+		}
+	}
+
+	//Camera rotation - locked mouse
+	if (_controls->CursorLocked())
+	{
+		XMFLOAT3 rotation = _camera->GetRotation();
+		rotation.x += _controls->GetMouseCoord()._deltaPos.y / 10.0f;
+		rotation.y += _controls->GetMouseCoord()._deltaPos.x / 10.0f;
+
+		_camera->SetRotation(rotation);
+	}
+
+	/*
+	Camera move
+	*/
+	XMFLOAT3 right(0.0f, 0.0f, 0.0f);
+	XMFLOAT3 forward(0.0f, 0.0f, 0.0f);
+	bool isMoving = false;
+	float v = 0.06f + (_camera->GetPosition().y * 0.01);
+
 	if (_controls->IsFunctionKeyDown("CAMERA:MOVE_CAMERA_UP"))
 	{
 		if (_camera->GetMode() == System::FREE_CAM)
@@ -159,12 +199,13 @@ void GameLogic::HandleInput()
 		}
 		else if (_camera->GetMode() == System::LOCKED_CAM)
 		{
-			forward = XMFLOAT3(0.0f, 0.0f, 1.0f);
+			forward = (Vec3(_camera->GetRightVector()).Cross(Vec3(XMFLOAT3(0.0f, 1.0f, 0.0f))).convertToXMFLOAT());
 		}
 
 		isMoving = true;
 	}
-	else if (_controls->IsFunctionKeyDown("CAMERA:MOVE_CAMERA_DOWN"))
+
+	if (_controls->IsFunctionKeyDown("CAMERA:MOVE_CAMERA_DOWN"))
 	{
 		if (_camera->GetMode() == System::FREE_CAM)
 		{
@@ -172,7 +213,7 @@ void GameLogic::HandleInput()
 		}
 		else if (_camera->GetMode() == System::LOCKED_CAM)
 		{
-			forward = XMFLOAT3(0.0f, 0.0f, 1.0f);
+			forward = (Vec3(_camera->GetRightVector()).Cross(Vec3(XMFLOAT3(0.0f, 1.0f, 0.0f))).convertToXMFLOAT());
 		}
 
 		forward.x *= -1;
@@ -186,7 +227,8 @@ void GameLogic::HandleInput()
 		right = _camera->GetRightVector();
 		isMoving = true;
 	}
-	else if (_controls->IsFunctionKeyDown("CAMERA:MOVE_CAMERA_LEFT"))
+
+	if (_controls->IsFunctionKeyDown("CAMERA:MOVE_CAMERA_LEFT"))
 	{
 		right = _camera->GetRightVector();
 		right.x *= -1;
@@ -197,17 +239,7 @@ void GameLogic::HandleInput()
 
 	if (isMoving)
 	{
-		_camera->SetPosition(XMFLOAT3(position.x + (forward.x + right.x) * v, position.y + (forward.y + right.y) * v, position.z + (forward.z + right.z) * v));
-	}
-	
-	if (_controls->CursorLocked())
-	{
-		XMFLOAT3 rotation = _camera->GetRotation();
-		System::MouseCoord mc = _controls->GetMouseCoord();
-		rotation.x += mc._deltaPos.y / 10.0f;
-		rotation.y += mc._deltaPos.x / 10.0f;
-
-		_camera->SetRotation(rotation);
+		_camera->Move(XMFLOAT3((forward.x + right.x) * v, (forward.y + right.y) * v, (forward.z + right.z) * v));
 	}
 	
 }
