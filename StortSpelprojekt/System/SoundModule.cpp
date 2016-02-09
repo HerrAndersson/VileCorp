@@ -5,7 +5,14 @@ namespace System
 	SoundModule::SoundModule()
 	{
 		_allSounds = new std::map<std::string, YSE::sound*>;
-		YSE::System().init();
+
+		int nrDevices = YSE::System().getNumDevices();
+
+		if (nrDevices > 0)
+		{
+			YSE::System().init();
+		}
+
 	}
 
 	SoundModule::~SoundModule()
