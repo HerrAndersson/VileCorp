@@ -110,7 +110,7 @@ bool ObjectHandler::Add(Type type, int index, const XMFLOAT3& position, const XM
 		for(auto i : object->GetRenderObject()->_mesh._spotLights)
 		{
 			//TODO: Add settings variables to this function below! Alex
-			_spotlights[object] = new Renderer::Spotlight(_device, i, 256, 256, 0.1f, 1000.0f);
+			_spotlights[object] = new Renderer::Spotlight(_device, i, 256, 0.1f, 1000.0f);
 		}
 		_objectCount++;
 		return true;
