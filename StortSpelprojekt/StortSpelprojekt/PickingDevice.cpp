@@ -93,7 +93,7 @@ AI::Vec2D PickingDevice::PickTile(POINT mousePoint)
 		pickedPoint = Intersection(ray, pickPlane);
 	}
 
-	return AI::Vec2D((int)(pickedPoint._x), (int)(pickedPoint._z));
+	return AI::Vec2D((int)(pickedPoint._x + 0.5f), (int)(pickedPoint._z + 0.5f));
 }
 
 XMFLOAT3 PickingDevice::PickPoint(POINT mousePoint)
