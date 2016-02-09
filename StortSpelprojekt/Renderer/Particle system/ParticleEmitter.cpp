@@ -52,50 +52,16 @@ namespace Renderer
 		}
 		else
 		{
-			switch (_type)
+			for (Particle& i : _particles)
 			{
-				case SPLASH:
+				if (i.IsActive())
 				{
-					for (Particle& i : _particles)
-					{
-						if (i.IsActive())
-						{
-							//TODO: Update particle positions in a splash pattern. /Jonas
-						}
-					}
-					break;
-				}
-				case SMOKE:
-				{
-					for (Particle& i : _particles)
-					{
-						if (i.IsActive())
-						{
-							//TODO: Update particle positions in a smoke pattern. /Jonas
-						}
-					}
-					break;
-				}
-				case ELECTRICITY:
-				{
-					for (Particle& i : _particles)
-					{
-						if (i.IsActive())
-						{
-							//TODO: Update particle positions in a pattern resembling flashes/elctricity. /Jonas
-						}
-					}
-					break;
-				}
-				default:
-				{
-					throw std::runtime_error("ParticleEmitter::Update: Invalid particle type");
-					break;
+					i.Update()
 				}
 			}
-
-			_timeLeft -= (float)deltaTime;
 		}
+
+		_timeLeft -= (float)deltaTime;
 	}
 
 	DirectX::XMFLOAT3 ParticleEmitter::GetPosition() const
@@ -127,6 +93,7 @@ namespace Renderer
 		int diff = particleCount - (signed)_particles.size();
 		if (diff > 0)
 		{
+			_particles.resize(particleCount);
 			for (int i = 0; i < diff; i++)
 			{
 				Particle particle(_position);
@@ -137,7 +104,7 @@ namespace Renderer
 
 	bool ParticleEmitter::HasTimeLeft() const
 	{
-		if(_timeLeft > 0)
+		return (_timeLeft > 0);
 	}
 
 	bool ParticleEmitter::IsActive() const

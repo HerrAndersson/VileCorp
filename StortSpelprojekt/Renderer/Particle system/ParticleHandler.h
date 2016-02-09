@@ -22,7 +22,9 @@ namespace Renderer
 		ParticleHandler();
 		virtual ~ParticleHandler();
 
-		void ActivateEmitter(ParticleType type, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT4& color, int particleCount, int timeLimit, bool isActive);
+		void Update(double deltaTime);
+
+		void ActivateEmitter(ParticleType type, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT4& color, float particleCount, int timeLimit, bool isActive);
 
 	};
 }

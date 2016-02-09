@@ -12,7 +12,18 @@ namespace Renderer
 	{
 	}
 
-	void ParticleHandler::ActivateEmitter(ParticleType type, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT4& color, int particleCount, int timeLimit, bool isActive)
+	void ParticleHandler::Update(double deltaTime)
+	{
+		for (ParticleEmitter& p : _particleEmitters)
+		{
+			if (p.IsActive())
+			{
+				p.Update(deltaTime);
+			}
+		}
+	}
+
+	void ParticleHandler::ActivateEmitter(ParticleType type, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT4& color, float particleCount, int timeLimit, bool isActive)
 	{
 		bool found = false;
 		for (ParticleEmitter& p : _particleEmitters)

@@ -10,8 +10,6 @@
 
 namespace Renderer
 {
-	enum ParticleType { SPLASH, SMOKE, ELECTRICITY };
-
 	class RENDERER_EXPORT ParticleEmitter
 	{
 
@@ -20,6 +18,8 @@ namespace Renderer
 		ParticleType _type;
 		DirectX::XMFLOAT3 _position;
 		std::vector<Particle> _particles;
+
+
 
 		bool _isActive;
 		float _timeLeft;

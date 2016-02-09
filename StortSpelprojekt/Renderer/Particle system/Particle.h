@@ -8,6 +8,8 @@
 
 namespace Renderer
 {
+	enum ParticleType { SPLASH, SMOKE, ELECTRICITY };
+
 	class RENDERER_EXPORT Particle
 	{
 
@@ -22,10 +24,11 @@ namespace Renderer
 	public:
 
 		Particle();
-		Particle(const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& direction = DirectX::XMFLOAT3(0,1,0), const DirectX::XMFLOAT4& color = DirectX::XMFLOAT4(0.0f, 0.5f, 0.5f, 1.0f));
+		Particle(const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& direction = DirectX::XMFLOAT3(0, 1, 0), const DirectX::XMFLOAT4& color = DirectX::XMFLOAT4(0.0f, 0.5f, 0.5f, 1.0f));
 		virtual ~Particle();
-
 		void Reset(const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& direction, const DirectX::XMFLOAT4& color);
+
+		void Update(double deltaTime, const ParticleType& type);
 
 		DirectX::XMFLOAT3 GetPosition() const;
 		DirectX::XMFLOAT3 GetDirection() const;

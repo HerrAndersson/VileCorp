@@ -1,4 +1,5 @@
 #include "Particle.h"
+#include <stdexcept>
 using namespace DirectX;
 
 namespace Renderer
@@ -27,6 +28,33 @@ namespace Renderer
 		_position = position;
 		_direction = direction;
 		_color = color;
+	}
+
+	void Particle::Update(double deltaTime, const ParticleType& type)
+	{
+		switch (type)
+		{
+			case SPLASH:
+			{
+
+				break;
+			}
+			case SMOKE:
+			{
+
+				break;
+			}
+			case ELECTRICITY:
+			{
+
+				break;
+			}
+			default:
+			{
+				throw std::runtime_error("ParticleEmitter::Update: Invalid particle type");
+				break;
+			}
+		}
 	}
 
 	XMFLOAT3 Particle::GetPosition() const
