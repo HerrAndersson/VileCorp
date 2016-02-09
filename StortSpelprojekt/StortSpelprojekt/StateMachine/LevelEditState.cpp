@@ -1,7 +1,7 @@
 #include "LevelEditState.h"
 
-LevelEditState::LevelEditState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, int width, int height)
-	: BaseState(controls, objectHandler, camera, pickingDevice, filename, "LEVELEDIT", assetManager, fontWrapper, width, height)
+LevelEditState::LevelEditState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::Settings* settings)
+	: BaseState(controls, objectHandler, camera, pickingDevice, filename, "LEVELEDIT", assetManager, fontWrapper, settings)
 {
 	_controls = controls;
 	_objectHandler = objectHandler;
@@ -66,7 +66,7 @@ void LevelEditState::HandleInput()
 		InitNewLevel();
 	}
 
-	if (_controls->IsFunctionKeyDown("MAP_EDIT:MENU"))
+	if (_controls->IsFunctionKeyDown("MENU:MENU"))
 	{
 		ChangeState(MENUSTATE);
 	}
@@ -278,97 +278,97 @@ void LevelEditState::InitNewLevel()
 
 void LevelEditState::ExportLevel()
 {
-	std::string levelName = "exportedLevel.lvl";
-
-	LevelFormat exportedLevel;
-	
-	Tilemap* tileMap = _objectHandler->GetTileMap();
-	exportedLevel._tileMapWidth = tileMap->GetWidth();
-	exportedLevel._tileMapHeight = tileMap->GetHeight();
-
-	std::vector<std::vector<GameObject*>>* gameObjects = _objectHandler->GetGameObjects();
-	exportedLevel._gameObjectData.resize(_objectHandler->GetObjectCount());
-
-	float topLeftCenterAngle = DirectX::XM_PIDIV4;
-	float topRightCenterAngle = DirectX::XM_PI - DirectX::XM_PIDIV4;
-	float bottomRightCenterAngle = DirectX::XM_PI + DirectX::XM_PIDIV4;
-	float bottomLeftCenterAngle = DirectX::XM_2PI - DirectX::XM_PIDIV4;
-
-	int gameObjectIndex = 0;
-	for (uint i = 0; i < gameObjects->size(); i++)
-	{
-		for (GameObject* g : gameObjects->at(i))
-		{
-			exportedLevel._gameObjectData[gameObjectIndex].resize(7);
-
-			//position
-			AI::Vec2D position = g->GetTilePosition();
-			exportedLevel._gameObjectData[gameObjectIndex][0] = static_cast<int>(position._x);
-			exportedLevel._gameObjectData[gameObjectIndex][1] = static_cast<int>(position._y);
-
-			//rotation
-			float rotation = g->GetRotation().y;
-			if (rotation >= topLeftCenterAngle && rotation < topRightCenterAngle)
-			{
-				exportedLevel._gameObjectData[gameObjectIndex][2] = 0;
-			}
-			else if (rotation >= topRightCenterAngle && rotation < bottomLeftCenterAngle)
-			{
-				exportedLevel._gameObjectData[gameObjectIndex][2] = 1;
-			}
-			else if (rotation >= bottomLeftCenterAngle && rotation < bottomRightCenterAngle)
-			{
-				exportedLevel._gameObjectData[gameObjectIndex][2] = 2;
-			}
-			else
-			{
-				exportedLevel._gameObjectData[gameObjectIndex][2] = 3;
-			}
-
-			//type
-			int type = g->GetType();
-			exportedLevel._gameObjectData[gameObjectIndex][3] = type;
-
-			//subtype
-			if (type == Type::TRAP)
-			{
-				exportedLevel._gameObjectData[gameObjectIndex][4] = static_cast<Trap*>(g)->GetTrapType();
-			}
-			else
-			{
-				exportedLevel._gameObjectData[gameObjectIndex][4] = 0;
-			}
-
-			//model
-			RenderObject* renderObject = g->GetRenderObject();
-			std::string modelName = renderObject->_mesh->_name;
-			exportedLevel._gameObjectData[gameObjectIndex][5] = GetVectorIndexOfString(&exportedLevel._modelReferences, modelName);
-
-			//texture
-			std::string textureName = renderObject->_diffuseTexture->_name.c_str();
-			exportedLevel._gameObjectData[gameObjectIndex][6] = GetVectorIndexOfString(&exportedLevel._textureReferences, textureName);
-
-			gameObjectIndex++;
-		}
-	}
-
-	std::string levelPath;
-
-#ifdef _DEBUG
-	char userPath[MAX_PATH];
-	SHGetFolderPathA(NULL, CSIDL_PROFILE, NULL, 0, userPath);
-	
-	levelPath = userPath;
-	levelPath += "\\Google Drive\\Stort spelprojekt\\Assets\\Levels\\";
-#else
-	levelPath = LEVEL_FOLDER_PATH + "/";
-#endif
-	levelPath += levelName;
-	
-	std::ofstream out(levelPath);
-	cereal::BinaryOutputArchive archive(out);
-	//cereal::XMLOutputArchive archive(out);
-	archive(exportedLevel);
+//	std::string levelName = "exportedLevel.lvl";
+//
+//	LevelFormat exportedLevel;
+//	
+//	Tilemap* tileMap = _objectHandler->GetTileMap();
+//	exportedLevel._tileMapWidth = tileMap->GetWidth();
+//	exportedLevel._tileMapHeight = tileMap->GetHeight();
+//
+//	std::vector<std::vector<GameObject*>>* gameObjects = _objectHandler->GetGameObjects();
+//	exportedLevel._gameObjectData.resize(_objectHandler->GetObjectCount());
+//
+//	float topLeftCenterAngle = DirectX::XM_PIDIV4;
+//	float topRightCenterAngle = DirectX::XM_PI - DirectX::XM_PIDIV4;
+//	float bottomRightCenterAngle = DirectX::XM_PI + DirectX::XM_PIDIV4;
+//	float bottomLeftCenterAngle = DirectX::XM_2PI - DirectX::XM_PIDIV4;
+//
+//	int gameObjectIndex = 0;
+//	for (uint i = 0; i < gameObjects->size(); i++)
+//	{
+//		for (GameObject* g : gameObjects->at(i))
+//		{
+//			exportedLevel._gameObjectData[gameObjectIndex].resize(7);
+//
+//			//position
+//			AI::Vec2D position = g->GetTilePosition();
+//			exportedLevel._gameObjectData[gameObjectIndex][0] = static_cast<int>(position._x);
+//			exportedLevel._gameObjectData[gameObjectIndex][1] = static_cast<int>(position._y);
+//
+//			//rotation
+//			float rotation = g->GetRotation().y;
+//			if (rotation >= topLeftCenterAngle && rotation < topRightCenterAngle)
+//			{
+//				exportedLevel._gameObjectData[gameObjectIndex][2] = 0;
+//			}
+//			else if (rotation >= topRightCenterAngle && rotation < bottomLeftCenterAngle)
+//			{
+//				exportedLevel._gameObjectData[gameObjectIndex][2] = 1;
+//			}
+//			else if (rotation >= bottomLeftCenterAngle && rotation < bottomRightCenterAngle)
+//			{
+//				exportedLevel._gameObjectData[gameObjectIndex][2] = 2;
+//			}
+//			else
+//			{
+//				exportedLevel._gameObjectData[gameObjectIndex][2] = 3;
+//			}
+//
+//			//type
+//			int type = g->GetType();
+//			exportedLevel._gameObjectData[gameObjectIndex][3] = type;
+//
+//			//subtype
+//			if (type == Type::TRAP)
+//			{
+//				exportedLevel._gameObjectData[gameObjectIndex][4] = static_cast<Trap*>(g)->GetTrapType();
+//			}
+//			else
+//			{
+//				exportedLevel._gameObjectData[gameObjectIndex][4] = 0;
+//			}
+//
+//			//model
+//			RenderObject* renderObject = g->GetRenderObject();
+//			std::string modelName = renderObject->_mesh->_name;
+//			exportedLevel._gameObjectData[gameObjectIndex][5] = GetVectorIndexOfString(&exportedLevel._modelReferences, modelName);
+//
+//			//texture
+//			std::string textureName = renderObject->_diffuseTexture->_name.c_str();
+//			exportedLevel._gameObjectData[gameObjectIndex][6] = GetVectorIndexOfString(&exportedLevel._textureReferences, textureName);
+//
+//			gameObjectIndex++;
+//		}
+//	}
+//
+//	std::string levelPath;
+//
+//#ifdef _DEBUG
+//	char userPath[MAX_PATH];
+//	SHGetFolderPathA(NULL, CSIDL_PROFILE, NULL, 0, userPath);
+//	
+//	levelPath = userPath;
+//	levelPath += "\\Google Drive\\Stort spelprojekt\\Assets\\Levels\\";
+//#else
+//	levelPath = LEVEL_FOLDER_PATH + "/";
+//#endif
+//	levelPath += levelName;
+//	
+//	std::ofstream out(levelPath);
+//	cereal::BinaryOutputArchive archive(out);
+//	//cereal::XMLOutputArchive archive(out);
+//	archive(exportedLevel);
 }
 
 int LevelEditState::GetVectorIndexOfString(std::vector<std::string>* vec, std::string str)

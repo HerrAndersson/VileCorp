@@ -5,7 +5,7 @@
 #include <DirectXMath.h>
 #include <map>
 
-enum Type { FLOOR, WALL, LOOT, SPAWN, TRAP, GUARD, ENEMY, NR_OF_TYPES/*Has to be last*/ };
+enum Type { FLOOR, WALL, LOOT, SPAWN, TRAP, CAMERA, GUARD, ENEMY, FURNITURE, NR_OF_TYPES/*Has to be last*/ };
 const std::string MODEL_FOLDER_PATH = "Assets/Models/";
 const std::wstring TEXTURE_FOLDER_PATH_W = L"Assets/Textures/";
 const std::string LEVEL_FOLDER_PATH = "Assets/Levels/";

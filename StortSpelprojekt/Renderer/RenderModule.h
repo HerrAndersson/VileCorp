@@ -11,6 +11,7 @@
 #include "Pointlight.h"
 #include "Node.h"
 #include "FontWrapper.h"
+#include "../System/Settings/settings.h"
 
 /*
 
@@ -39,12 +40,14 @@ Render targets:
 IMPORTANT:
 
 ~ For blending to work, never use 1.0f as alpha during the geometry pass.
+~ If other shaders than pixel and vertex are used, make sure to set that shader to nullptr in ShaderHandler set shaders function for those stages who does not use it
 
 Before rendering to shadow map:
-
 ~ Activate FRONT-FACE culling
 ~ Set vertex buffer before the Draw/DrawIndexed call
 ~ Set topology
+
+
 
 */
 
@@ -125,14 +128,13 @@ namespace Renderer
 		DirectXHandler*		_d3d;
 		ShaderHandler*		_shaderHandler;
 
-		int _screenWidth;
-		int _screenHeight;
+		System::Settings* _settings;
 
 		void InitializeConstantBuffers();
 		void InitializeScreenQuadBuffer();
 
-		void SetDataPerObject(DirectX::XMMATRIX* world, DirectX::XMFLOAT3 colorOffset = DirectX::XMFLOAT3(0, 0, 0));
-		void SetDataPerSkinnedObject(DirectX::XMMATRIX* world, std::vector<DirectX::XMFLOAT4X4>* extra, DirectX::XMFLOAT3 colorOffset = DirectX::XMFLOAT3(0, 0, 0));
+		void SetDataPerObject(DirectX::XMMATRIX* world, const DirectX::XMFLOAT3& colorOffset = DirectX::XMFLOAT3(0, 0, 0));
+		void SetDataPerSkinnedObject(DirectX::XMMATRIX* world, std::vector<DirectX::XMFLOAT4X4>* extra, const DirectX::XMFLOAT3& colorOffset = DirectX::XMFLOAT3(0, 0, 0));
 		void SetDataPerMesh(ID3D11Buffer* vertexBuffer, int vertexSize);
 		void SetShadowMapDataPerObject(DirectX::XMMATRIX* world);
 
@@ -148,10 +150,10 @@ namespace Renderer
 
 		enum ShaderStage { GEO_PASS, SHADOW_GENERATION, LIGHT_APPLICATION_SPOTLIGHT, LIGHT_APPLICATION_POINTLIGHT, GRID_STAGE, ANIM_STAGE, HUD_STAGE, AA_STAGE };
 
-		RenderModule(HWND hwnd, int screenWidth, int screenHeight, bool fullScreen);
+		RenderModule(HWND hwnd, System::Settings* settings);
 		~RenderModule();
 
-		void ResizeResources(HWND hwnd, int windowWidth, int windowHeight);
+		void ResizeResources(HWND hwnd, System::Settings* settings);
 
 		void SetDataPerFrame(DirectX::XMMATRIX* view, DirectX::XMMATRIX* projection);
 		void SetDataPerObjectType(RenderObject* renderObject);
@@ -167,10 +169,10 @@ namespace Renderer
 		void SetShaderStage(ShaderStage stage);
 
 		void BeginScene(float red, float green, float blue, float alpha);
-		void Render(DirectX::XMMATRIX* world, int vertexBufferSize, DirectX::XMFLOAT3 colorOffset = DirectX::XMFLOAT3(0, 0, 0));
-		void RenderAnimation(DirectX::XMMATRIX* world, int vertexBufferSize, std::vector<DirectX::XMFLOAT4X4>* extra = nullptr, DirectX::XMFLOAT3 colorOffset = DirectX::XMFLOAT3(0, 0, 0));
+		void Render(DirectX::XMMATRIX* world, int vertexBufferSize, const DirectX::XMFLOAT3& colorOffset = DirectX::XMFLOAT3(0, 0, 0));
+		void RenderAnimation(DirectX::XMMATRIX* world, int vertexBufferSize, std::vector<DirectX::XMFLOAT4X4>* extra = nullptr, const DirectX::XMFLOAT3& colorOffset = DirectX::XMFLOAT3(0, 0, 0));
 		void Render(GUI::Node* root, FontWrapper* fontWrapper);
-		void RenderLineList(DirectX::XMMATRIX* world, int nrOfPoints, DirectX::XMFLOAT3 colorOffset = DirectX::XMFLOAT3(0,0,0));
+		void RenderLineList(DirectX::XMMATRIX* world, int nrOfPoints, const DirectX::XMFLOAT3& colorOffset = DirectX::XMFLOAT3(0,0,0));
 		void RenderShadowMap(DirectX::XMMATRIX* world, int vertexBufferSize);
 		void RenderScreenQuad();
 		void EndScene();

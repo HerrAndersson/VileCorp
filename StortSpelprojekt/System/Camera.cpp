@@ -4,13 +4,8 @@ using namespace DirectX;
 
 namespace System
 {
-	Camera::Camera(float nearClip, float farClip, float fov, int width, int height)
+	Camera::Camera(System::Settings* settings)
 	{
-		_nearClip = nearClip;
-		_farClip = farClip;
-		_fieldOfView = fov;
-		_aspectRatio = (float)width / (float)height;
-
 		_position = DirectX::XMFLOAT3(0, 0, 0);
 		_right = DirectX::XMFLOAT3(1, 0, 0);
 		_up = DirectX::XMFLOAT3(0, 1, 0);
@@ -25,8 +20,11 @@ namespace System
 		vUp = DirectX::XMLoadFloat3(&_up);
 
 		_view = DirectX::XMMatrixLookAtLH(vPos, vFor, vUp);
-		_proj = DirectX::XMMatrixPerspectiveFovLH(_fieldOfView, _aspectRatio, _nearClip, _farClip);
-		_ortho = DirectX::XMMatrixOrthographicLH((float)width, (float)height, _nearClip, _farClip);
+		_proj = DirectX::XMMatrixPerspectiveFovLH(	settings->_fov,
+													(float)settings->_screenWidth / (float)settings->_screenHeight,
+													settings->_nearClip,
+													settings->_farClip);
+		_ortho = DirectX::XMMatrixOrthographicLH((float)settings->_screenWidth, (float)settings->_screenHeight, settings->_nearClip, settings->_farClip);
 		_baseView = DirectX::XMMatrixLookAtLH(DirectX::XMVectorNegate(vFor), vFor, vUp);
 
 		_mode = LOCKED_CAM;
@@ -58,11 +56,10 @@ namespace System
 		_view = XMMatrixLookAtLH(pos, pos + forward, up);
 	}
 
-	void Camera::Resize(int width, int height)
+	void Camera::Resize(System::Settings* settings)
 	{
-		_aspectRatio = (float)width / (float)height;
-		_proj = DirectX::XMMatrixPerspectiveFovLH(_fieldOfView, _aspectRatio, _nearClip, _farClip);
-		_ortho = DirectX::XMMatrixOrthographicLH((float)width, (float)height, _nearClip, _farClip);
+		_proj = DirectX::XMMatrixPerspectiveFovLH(settings->_fov, (float)settings->_screenWidth / (float)settings->_screenHeight, settings->_nearClip, settings->_farClip);
+		_ortho = DirectX::XMMatrixOrthographicLH((float)settings->_screenWidth, (float)settings->_screenHeight, settings->_nearClip, settings->_farClip);
 	}
 
 	DirectX::XMFLOAT3 Camera::GetPosition()const
@@ -70,13 +67,13 @@ namespace System
 		return _position;
 	}
 
-	void Camera::SetPosition(DirectX::XMFLOAT3 position)
+	void Camera::SetPosition(const DirectX::XMFLOAT3& position)
 	{
 		_position = position;
 		Update();
 	}
 
-	void Camera::Move(DirectX::XMFLOAT3 offset)
+	void Camera::Move(const DirectX::XMFLOAT3& offset)
 	{
 		_position.x += offset.x;
 		_position.y += offset.y;
@@ -89,9 +86,17 @@ namespace System
 		return _rotation;
 	}
 
-	void Camera::SetRotation(DirectX::XMFLOAT3 rotation)
+	void Camera::SetRotation(const DirectX::XMFLOAT3& rotation)
 	{
 		_rotation = rotation;
+		Update();
+	}
+
+	void Camera::Rotate(const DirectX::XMFLOAT3& offset)
+	{
+		_rotation.x += offset.x;
+		_rotation.y += offset.y;
+		_rotation.z += offset.z;
 		Update();
 	}
 

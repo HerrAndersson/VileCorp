@@ -10,12 +10,10 @@
 #include "WICTextureLoader.h"
 #include "RenderUtils.h"
 #include "LevelFormat.h"
-
 #include "cereal\cereal.hpp"
 #include "cereal\archives\json.hpp"
 #include "cereal\types\vector.hpp"
 #include "cereal\types\string.hpp"
-
 
 using namespace std;
 using namespace DirectX;
@@ -27,26 +25,13 @@ struct Tileset
 {
 	struct Object
 	{
-		string _mesh;
 		string _name;
+		string _mesh;
 		vector<string> _textures;
 		vector<string> _thumbnails;
-		template<class Archive>
-		void serialize(Archive & archive)
-		{
-			archive(_mesh, _name, _textures, _thumbnails);
-		}
 	};
-	Tileset()
-	{
-		_objects.resize(NR_OF_TYPES);
-	}
+	string _name;
 	vector<vector<Object>> _objects;
-	template<class Archive>
-	void serialize(Archive & archive)
-	{
-		archive(_objects);
-	}
 };
 
 struct MeshHeader24
@@ -105,6 +90,31 @@ static bool GetFilenamesInDirectory(char* folder, char* extension, vector<string
 class ASSET_MANAGER_EXPORT AssetManager
 {
 private:
+	struct TilesetData
+	{
+		struct Object
+		{
+			string _name;
+			int _type;
+			int _subType;
+			string _mesh;
+			vector<string> _textures;
+			vector<string> _thumbnails;
+			template<class Archive>
+			void serialize(Archive & archive)
+			{
+				archive(CEREAL_NVP(_name), CEREAL_NVP(_type), CEREAL_NVP(_subType), CEREAL_NVP(_mesh), CEREAL_NVP(_textures), CEREAL_NVP(_thumbnails));
+			}
+		};
+		string _name;
+		vector<Object> _objects;
+		template<class Archive>
+		void serialize(Archive & archive)
+		{
+			archive(CEREAL_NVP(_name), CEREAL_NVP(_objects));
+		}
+	};
+
 	typedef Mesh* (AssetManager::*_scanFunc)();
 	typedef std::map<int, AssetManager::_scanFunc> _scanFuncMap;
 
@@ -112,10 +122,8 @@ private:
 	int _animationFormatVersion = 10;
 	ifstream* _infile;
 	ID3D11Device* _device;
-	Tileset* _activeTileset;
 
 	vector<string>* _levelFileNames;
-	vector<Tileset>* _tilesets;
 	vector<Skeleton*>* _skeletons;
 
 	vector<RenderObject*>* _renderObjects;
@@ -135,13 +143,12 @@ private:
 	Mesh* GetModel(string name);
 	Skeleton* LoadSkeleton(string name);
 	ID3D11Buffer* CreateVertexBuffer(vector<WeightedVertex> *weightedVertices, vector<Vertex> *vertices, int skeleton);
-	bool SetupTileset(Tileset* tileset);
 public:
 	AssetManager(ID3D11Device* device);
 	~AssetManager();
 	RenderObject* GetRenderObject(int index);
-	RenderObject* GetRenderObject(int modelReference, int textureReference);
+	RenderObject* GetRenderObject(string meshName, string textureName);
 	LevelFormat* ParseLevel(int index);
-	bool ActivateTileset(string name);
+	Tileset LoadTileset(string name);
 	Texture* GetTexture(string name);
 };

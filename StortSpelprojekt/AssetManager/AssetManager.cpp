@@ -9,7 +9,6 @@ AssetManager::AssetManager(ID3D11Device* device)
 	_meshes = new vector<Mesh*>;
 	_textures = new vector<Texture*>;
 	_levelFileNames = new vector<string>;
-	_tilesets = new vector<Tileset>;
 	_skeletons = new vector<Skeleton*>;
 
 	_meshFormatVersion[24] = &AssetManager::ScanModel24;
@@ -17,18 +16,6 @@ AssetManager::AssetManager(ID3D11Device* device)
 	_meshFormatVersion[27] = &AssetManager::ScanModel27;
 
 
-	vector<string> tilesetFileNames;
-
-	GetFilenamesInDirectory((char*)TILESET_FOLDER_PATH.c_str(), ".json", tilesetFileNames);
-
-	for (string set : tilesetFileNames)
-	{
-		_infile->open(set);
-		cereal::JSONInputArchive tilesetIn(*_infile);
-		Tileset newtileset;
-		tilesetIn(newtileset);
-		_infile->close();
-	}
 
 	GetFilenamesInDirectory((char*)LEVEL_FOLDER_PATH.c_str(), ".lvl", *_levelFileNames);
 }
@@ -64,62 +51,34 @@ AssetManager::~AssetManager()
 	delete _textures;
 	delete _meshes;
 	delete _levelFileNames;
-	delete _tilesets;
 	delete _skeletons;
 }
 
-bool AssetManager::SetupTileset(Tileset* tileset)
-{
-	for (int i = 0; i < NR_OF_TYPES; i++)
-	{
-		//for (string str : tileset->_objects[i])
-		//{
-
-		//}
-	}
-
-	_activeTileset = tileset;
-	return true;
-}
-
 //Do not call, call _objectHandler->ActivateTileset() - Fredrik
-bool AssetManager::ActivateTileset(string name)
+Tileset AssetManager::LoadTileset(string name)
 {
-	//if (!strcmp(name.c_str(), _activeTileset->_name.c_str()))
-	//{
-	//	return true; //Specified tileset is already the current tileset
-	//}
-
-	for (Texture* texture : *_textures)
+	Tileset newtileset;
+	_infile->open(name);
+	cereal::JSONInputArchive tilesetIn(*_infile);
+	TilesetData newTilesetData;
+	tilesetIn(newTilesetData);
+	_infile->close();
+	newtileset._objects.resize(NR_OF_TYPES);
+	for each (TilesetData::Object object in newTilesetData._objects)
 	{
-		if (texture->_loaded)
+		Tileset::Object newObject;
+		newObject._mesh = object._mesh;
+		newObject._name = object._name;
+		newObject._textures = object._textures;
+		newObject._thumbnails = object._thumbnails;
+		if (object._subType >= newtileset._objects[object._type].size())
 		{
-			texture->_data->Release();
+			newtileset._objects[object._type].resize(object._subType + 1);
 		}
-		delete texture;
+		newtileset._objects[object._type][object._subType] = newObject;
 	}
-	for (uint i = 0; i < _renderObjects->size(); i++)
-	{
-		delete _renderObjects->at(i);
-	}
-	for (uint i = 0; i < _skeletons->size(); i++)
-	{
-		delete _skeletons->at(i);
-	}
-	_textures->clear();
-	_renderObjects->clear();
-	_skeletons->clear();
 
-	for (Tileset set : *_tilesets)
-	{
-		//if (!strcmp(name.c_str(), set._name.c_str()))
-		//{
-		//	//Tileset was found
-		//	return SetupTileset(&set);
-		//	//If false one or more .bins in tileset was invalid
-		//}
-	}
-	return false;
+	return newtileset;
 }
 
 LevelFormat* AssetManager::ParseLevel(int index)
@@ -512,19 +471,19 @@ RenderObject* AssetManager::GetRenderObject(int index)
 	return renderObject;
 }
 
-RenderObject* AssetManager::GetRenderObject(int modelReference, int textureReference)
+RenderObject* AssetManager::GetRenderObject(string meshName, string textureName)
 {
 	for (RenderObject* renderObject : *_renderObjects)
 	{
-		if (_currentLevelData._modelReferences[modelReference] == renderObject->_mesh->_name &&
-			_currentLevelData._textureReferences[textureReference] == renderObject->_diffuseTexture->_name)
+		if (meshName == renderObject->_mesh->_name &&
+			textureName == renderObject->_diffuseTexture->_name)
 		{
 			return renderObject;
 		}
 	}
 	RenderObject* renderObject = new RenderObject;
-	renderObject->_mesh = GetModel(_currentLevelData._modelReferences[modelReference]);
-	renderObject->_diffuseTexture = GetTexture(_currentLevelData._textureReferences[textureReference]);
+	renderObject->_mesh = GetModel(meshName);
+	renderObject->_diffuseTexture = GetTexture(textureName);
 }
 
 Texture* AssetManager::GetTexture(string name)

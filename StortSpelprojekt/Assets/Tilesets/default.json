@@ -1,0 +1,131 @@
+{
+    "default": {
+        "_name": "default",
+        "_objects": [
+			{
+				"_mesh": "floor-24.bin",
+				"_name": "Floor",
+				"_type": 0,
+				"_subType": 0,
+				"_textures": [
+					"Floor.png",
+					"Floor2.png",
+					"Floor3.png"
+				],
+				"_thumbnails": [
+					"floor.png",
+					"floor2.png",
+					"floor3.png"
+				]
+			},
+			{
+				"_mesh": "wall-24.bin",
+				"_name": "Wall",
+				"_type": 1,
+				"_subType": 0,
+				"_textures": [
+					"wall.png",
+					"wall2.png",
+					"wall3.png"
+				],
+				"_thumbnails": [
+					"wall.png",
+					"wall2.png",
+					"wall3.png"
+				]
+			},
+			{
+				"_mesh": "diamond-24.bin",
+				"_name": "Diamond",
+				"_type": 2,
+				"_subType": 0,
+				"_textures": [
+					"diamond.png",
+					"diamond2.png",
+					"diamond3.png"
+				],
+				"_thumbnails": [
+					"diamond.png",
+					"diamond2.png",
+					"diamond3.png"
+				]
+			},
+			{
+				"_mesh": "entry-24.bin",
+				"_name": "Entry",
+				"_type": 3,
+				"_subType": 0,
+				"_textures": [
+					"Entry window.png"
+				],
+				"_thumbnails": [
+					"entry1.png"
+				]
+			},
+			{
+				"_mesh": "trap-24.bin",
+				"_name": "Spiketrap",
+				"_type": 4,
+				"_subType": 0,
+				"_textures": [
+					"spiketrap.png"
+				],
+				"_thumbnails": [
+					"spiketrap.png"
+				]
+			},
+			{
+				"_mesh": "trap-24.bin",
+				"_name": "Teslatrap",
+				"_type": 4,
+				"_subType": 1,
+				"_textures": [
+					"spiketrap.png"
+				],
+				"_thumbnails": [
+					"spiketrap.png"
+				]
+			},
+			{
+				"_mesh": "trigger-24.bin",
+				"_name": "Trigger",
+				"_type": 5,
+				"_subType": 0,
+				"_textures": [
+					"trigger.png"
+				],
+				"_thumbnails": [
+					"trigger.png"
+				]
+			},
+			{
+				"_mesh": "guard-24.bin",
+				"_name": "Guard",
+				"_type": 6,
+				"_subType": 0,
+				"_textures": [
+					"textureblue.png",
+					"textureblue2.png",
+					"texturebrown.png"
+				],
+				"_thumbnails": [
+					"textureblue.png",
+					"textureblue2.png",
+					"texturebrown.png"
+				]
+			},
+			{
+				"_mesh": "enemy-24.bin",
+				"_name": "Enemy",
+				"_type": 7,
+				"_subType": 0,
+				"_textures": [
+					"Enemy.png"
+				],
+				"_thumbnails": [
+					"Enemy.png"
+				]
+			}
+		]
+    }
+}

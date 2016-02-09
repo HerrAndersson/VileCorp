@@ -3,41 +3,39 @@
 #include <DirectXMath.h>
 #include <sstream>
 
-Game::Game(HINSTANCE hInstance, int nCmdShow)
+Game::Game(HINSTANCE hInstance, int nCmdShow):
+	_settingsReader("Assets/settings.xml")
 {
+	System::Settings* settings = _settingsReader.GetSettings();
 
-	CheckSettings();
 	_gameHandle = this;
-	_window = new System::Window("Amazing game", hInstance, _windowSettings, WndProc);
+	_window = new System::Window("Amazing game", hInstance, settings, WndProc);
 
 	_timer = System::Timer();
 
-	_renderModule = new Renderer::RenderModule(_window->GetHWND(), _windowSettings._width, _windowSettings._height, _gameSettings._fullScreen);
+	_renderModule = new Renderer::RenderModule(_window->GetHWND(), settings);
 	
 	_assetManager = new AssetManager(_renderModule->GetDevice());
 	_controls = new System::Controls(_window->GetHWND());
 	_fontWrapper = new FontWrapper(_renderModule->GetDevice(), L"Assets/Fonts/Calibri.ttf", L"Calibri");
 
 	//Init camera
-	_camera = new System::Camera(0.1f, 1000.0f, DirectX::XM_PIDIV2, _windowSettings._width, _windowSettings._height);
+	_camera = new System::Camera(settings);
 	_camera->SetPosition(XMFLOAT3(3, 20, 0));
 	_camera->SetRotation(XMFLOAT3(60, 0, 0));
 
 	_timer = System::Timer();
 
-	GameObjectInfo* data = new GameObjectInfo();
+	//GameObjectInfo* _data = new GameObjectInfo();
 	GameObjectDataLoader gameObjectDataLoader;
 	gameObjectDataLoader.WriteSampleGameObjects();
-	gameObjectDataLoader.LoadGameObjectInfo(data);
+	gameObjectDataLoader.LoadGameObjectInfo(&_data);
 
-	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager, data);
-	_pickingDevice = new PickingDevice(_camera, _window);
-	_SM = new StateMachine(_controls, _objectHandler, _camera, _pickingDevice, "Assets/gui.json", _assetManager, _fontWrapper, _windowSettings._width, _windowSettings._height);
+	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager, &_data);
+	_pickingDevice = new PickingDevice(_camera, settings);
+	_SM = new StateMachine(_controls, _objectHandler, _camera, _pickingDevice, "Assets/gui.json", _assetManager, _fontWrapper, settings, &_settingsReader);
 
 	_SM->Update(_timer.GetFrameTime());
-	
-	//TODO: Use dimensions from the tilemap /Jonas
-	_grid = new Grid(_renderModule->GetDevice(), 1, 100,100, DirectX::XMFLOAT3(0.4f, 1.0f, 0.3f));
 
 	_enemiesHasSpawned = false;
 
@@ -48,50 +46,24 @@ Game::Game(HINSTANCE hInstance, int nCmdShow)
 	{
 		SpotlightData lightdata;
 		lightdata._angle = XM_PIDIV4;
-		lightdata._color = XMFLOAT3(1.0f, 1.0f, 1.0f);
+		lightdata._color = XMFLOAT3(0.6f, 0.6f, 0.6f);
 		lightdata._range = 9.5f;
+		lightdata._intensity = 1.0f;
 		int d = _renderModule->SHADOWMAP_DIMENSIONS;
 		spot = new Renderer::Spotlight(_renderModule->GetDevice(), lightdata, d, d, 0.1f, 1000.0f);
 		spot->SetPositionAndRotation(XMFLOAT3(3 + i*2, 1, 2 + i * 2), XMFLOAT3(0,-65*i,0));
 		_spotlights.push_back(spot);
 	}
-
 	Renderer::Pointlight* point;
 	for (int i = 0; i < 10; i++)
 	{
 		point = new Renderer::Pointlight(_renderModule->GetDevice(), XMFLOAT3(5 + 3 * sin(25 + i * 2 + rand() % ((i+1)) / 8) * sin(i) + 1, 0.05f, 5 + 3 * sin(25 + i * 2 + rand() % ((i + 1)) / 8) * cos(i)), 1.0f, 1.0f, XMFLOAT3(sin(i*i * 6), sin(i * 50 * i), sin(120 * i * i)));
 		_pointlights.push_back(point);
 	}
-
-	_lightCulling = new LightCulling();
+	_lightCulling = nullptr;
 }
 
-void Game::CheckSettings()
-{
-	//System::saveJSON(&_gameSettings, "Assets/GameSettings.json", "Game Settings");
-	System::loadJSON(&_gameSettings, "Assets/GameSettings.json");
-
-	if (_gameSettings._default == false)
-	{
-		_windowSettings._width = _gameSettings._resX;
-		_windowSettings._height = _gameSettings._resY;
-		_windowSettings._flags = 0;
-		if (_gameSettings._fullScreen == true)
-		{
-			_windowSettings._flags |= System::WindowSettings::FULLSCREEN;
-		}
-		if (_gameSettings._bordeless == true)
-		{
-			_windowSettings._flags |= System::WindowSettings::BORDERLESS;
-		}
-		if (_gameSettings._showMouseCursor == true)
-		{
-			_windowSettings._flags |= System::WindowSettings::SHOW_CURSOR;
-		}
-	}
-}
-
-Game::~Game() 
+Game::~Game()
 {
 	SAFE_DELETE(_window);
 	SAFE_DELETE(_renderModule);
@@ -101,7 +73,6 @@ Game::~Game()
 	SAFE_DELETE(_controls);
 	SAFE_DELETE(_assetManager);
 	SAFE_DELETE(_pickingDevice);
-	SAFE_DELETE(_grid);
 	SAFE_DELETE(_fontWrapper);
 	SAFE_DELETE(_lightCulling);
 	for(auto s : _spotlights)
@@ -115,26 +86,29 @@ Game::~Game()
 	}
 }
 
-void Game::ResizeResources(System::WindowSettings settings)
+void Game::ResizeResources(System::Settings* settings)
 {
 	_window->ResizeWindow(settings);
-	_renderModule->ResizeResources(_window->GetHWND(), settings._width, settings._height);
-	_camera->Resize(settings._width, settings._height);
-	_SM->Resize(settings._width, settings._height);
+	_renderModule->ResizeResources(_window->GetHWND(), settings);
+	_camera->Resize(settings);
+	_SM->Resize(settings);
 }
 
 bool Game::Update(float deltaTime)
 {
 	bool run = true;
-	_controls->Update();
-	run = _SM->Update(deltaTime);
-	if (_controls->IsFunctionKeyDown("EVERYWHERE:FULLSCREEN"))
+
+	//Apply settings if they has changed
+	if (_settingsReader.GetSettingsChanged())
 	{
-		System::WindowSettings windowSettings = _window->GetWindowSettings();
-		_window->ResizeWindow(windowSettings);
+		ResizeResources(_settingsReader.GetSettings());
+		_settingsReader.SetSettingsChanged(false);
 	}
 
+	_controls->Update();
+	run = _SM->Update(deltaTime);
 
+	/*
 	_enemies = _objectHandler->GetAllByType(ENEMY);
 	_loot = _objectHandler->GetAllByType(LOOT);
 
@@ -154,23 +128,30 @@ bool Game::Update(float deltaTime)
 			//TODO: Add something to notify the player that they've SUCK and they can replay the level
 		}
 	}
-	//Save for debugging //Jonas
-	//	rot.y -= 0.2f;
+	*/
 
-	//	XMFLOAT3 color = _spotlights[i]->GetColor();
-	//	color.x = sin(_timer.GetGameTime() / 1000 + 100 * i);
-	//	color.y = sin(_timer.GetGameTime() / 1000 + 100 * i + XMConvertToRadians(120));
-	//	color.z = sin(_timer.GetGameTime() / 1000 + 100 * i + XMConvertToRadians(240));
-	//	_spotlights[i]->SetColor(color);
-	//}
-	
-	//int i = 0;
-	//for (auto p : _pointlights)
-	//{
-	//	i++;
-	//	XMFLOAT3 pos = p->GetPosition();
-	//	p->SetPosition(XMFLOAT3(pos.x + (sin((_timer.GetGameTime() / 1000) * sin(120 * i))) / 10, pos.y, pos.z + (sin((_timer.GetGameTime() / 1000) * sin(17 * i * i))) / 10));
-	//}
+	//Save for debugging //Jonas
+	int i = 0;
+	for (auto s : _spotlights)
+	{
+		XMFLOAT3 color = s->GetColor();
+		color.x = sin(_timer.GetGameTime() / 1000 + 100 * i);
+		color.y = sin(_timer.GetGameTime() / 1000 + 100 * i + XMConvertToRadians(120));
+		color.z = sin(_timer.GetGameTime() / 1000 + 100 * i + XMConvertToRadians(240));
+		s->SetColor(color);
+		XMFLOAT3 rot = s->GetRotation();
+		rot.y -= 0.2f;
+		s->SetRotation(rot);
+		i++;
+	}
+	i = 0;
+	for (auto p : _pointlights)
+	{
+		i++;
+		XMFLOAT3 pos = p->GetPosition();
+		p->SetPosition(XMFLOAT3(pos.x + (sin((_timer.GetGameTime() / 1000) * sin(120 * i))) / 20, pos.y, pos.z + (sin((_timer.GetGameTime() / 1000) * sin(17 * i * i))) / 20));
+	}
+
 	return run;
 }
 
@@ -206,7 +187,10 @@ void Game::Render()
 
 				for (GameObject* g : i)
 				{
+					if (g->IsVisible())
+					{
 					_renderModule->Render(g->GetMatrix(), vertexBufferSize, g->GetColorOffset());
+					}
 					//g->SetColorOffset(XMFLOAT3(0, 0, 0));
 				}
 			}
@@ -231,9 +215,8 @@ void Game::Render()
 			}
 		}
 	}
-
+	
 	//TEMPORARY!!
-	//TODO: LightCulling does not work correctly, which makes the light shine through walls sometimes. The functionality for the light is correct, but the data passed to it is not complete.
 	std::vector<std::vector<std::vector<GameObject*>>> inLight;
 	if (_SM->GetState() == PLAYSTATE)
 	{
@@ -243,13 +226,13 @@ void Game::Render()
 			_lightCulling = new LightCulling(_objectHandler->GetTileMap());
 		}
 
-		for (int i = 0; i < _spotlights.size(); i++)
+		for (unsigned int i = 0; i < _spotlights.size(); i++)
 		{
-			inLight.push_back(_lightCulling->GetObjectsInSpotlight(_spotlights[i]));
+			inLight.push_back(*_lightCulling->GetObjectsInSpotlight(_spotlights[i]));
 		}
 
 		//"Fog of War"
-		for (int i = 0; i < _spotlights.size(); i++)
+		for (unsigned int i = 0; i < _spotlights.size(); i++)
 		{
 			if (inLight.at(i).size() >= ENEMY)
 			{
@@ -272,28 +255,31 @@ void Game::Render()
 
 	if (_SM->GetState() == LEVELEDITSTATE)
 	{
-		_renderModule->SetShaderStage(Renderer::RenderModule::GRID_STAGE);
-		_renderModule->SetDataPerLineList(_grid->GetLineBuffer(), _grid->GetVertexSize());
+		Grid* gr = _objectHandler->GetBuildingGrid();
 
-		std::vector<DirectX::XMMATRIX>* gridMatrices = _grid->GetGridMatrices();
+		_renderModule->SetShaderStage(Renderer::RenderModule::GRID_STAGE);
+		_renderModule->SetDataPerLineList(gr->GetLineBuffer(), gr->GetVertexSize());
+
+		std::vector<DirectX::XMMATRIX>* gridMatrices = gr->GetGridMatrices();
 		for (auto &matrix : *gridMatrices)
 		{
-			_renderModule->RenderLineList(&matrix, _grid->GetNrOfPoints(), _grid->GetColorOffset());
+			_renderModule->RenderLineList(&matrix, gr->GetNrOfPoints(), gr->GetColorOffset());
 		}
 	}
-
+	
 	////////////////////////////////////////////////////////////  Light pass  //////////////////////////////////////////////////////////////
 	if (_SM->GetState() == PLAYSTATE)
 	{
-	/*----------------------------------------------------------  Spotlights  -------------------------------------------------------------
-	Generate the shadow map for each spotlight, then apply the lighting/shadowing to the render target with additive blending.           */
+	//----------------------------------------------------------  Spotlights  -------------------------------------------------------------
+	//Generate the shadow map for each spotlight, then apply the lighting/shadowing to the render target with additive blending.           
 
 		_renderModule->SetLightDataPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
-		for (int i = 0; i < _spotlights.size(); i++)
+		for (unsigned int i = 0; i < _spotlights.size(); i++)
 		{
 			_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::SHADOW_GENERATION);
 			_renderModule->SetShadowMapDataPerSpotlight(_spotlights[i]->GetViewMatrix(), _spotlights[i]->GetProjectionMatrix());
 
+			
 			for (auto j : inLight.at(i))
 			{
 				if (j.size() > 0)
@@ -304,18 +290,20 @@ void Game::Render()
 
 					for (GameObject* g : j)
 					{
-						//g->SetColorOffset(XMFLOAT3(0, 1, 0));
+					if (g->IsVisible())
+					{
 						_renderModule->RenderShadowMap(g->GetMatrix(), vertexBufferSize);
 					}
 				}
 			}
+		}
 
 			_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::LIGHT_APPLICATION_SPOTLIGHT);
 			_renderModule->SetLightDataPerSpotlight(_spotlights[i]);
 
 			_renderModule->RenderLightVolume(_spotlights[i]->GetVolumeBuffer(), _spotlights[i]->GetWorldMatrix(), _spotlights[i]->GetVertexCount(), _spotlights[i]->GetVertexSize());
 		}
-
+		
 	/*---------------------------------------------------------  Pointlights  ------------------------------------------------------------*/
 		_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::LIGHT_APPLICATION_POINTLIGHT);
 		for (auto p : _pointlights)
@@ -325,8 +313,7 @@ void Game::Render()
 		}
 	}
 
-	/*-----------------------------------------------------------  FXAA  -------------------------------------------------------------------
-	Anti aliasing after light stage																									      */
+	/*-----------------------------------------------------------  FXAA  -----------------------------------------------------------------*/
 
 	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::AA_STAGE);
 	_renderModule->RenderScreenQuad();
@@ -360,17 +347,20 @@ int Game::Run()
 		{
 			_timer.Update();
 			if (_timer.GetFrameTime() >= MS_PER_FRAME)
-			{				
+			{
 				if (_hasFocus)
 				{
-					Update(_timer.GetFrameTime());
-				}			{
-					Render();
-					string s = to_string(_timer.GetFrameTime()) + " " + to_string(_timer.GetFPS());
+					run = Update(_timer.GetFrameTime());
 
-					SetWindowText(_window->GetHWND(), s.c_str());
+					if (run)
+					{
+						Render();
 
-					_timer.Reset();
+						string s = to_string(_timer.GetFrameTime()) + " " + to_string(_timer.GetFPS());
+						SetWindowText(_window->GetHWND(), s.c_str());
+
+						_timer.Reset();
+					}
 				}
 			}
 		}
@@ -420,7 +410,6 @@ LRESULT CALLBACK Game::WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM l
 		_gameHandle->_hasFocus = false;
 		break;
 	}
-
 	default:
 	{
 		return _gameHandle->MessageHandler(hwnd, umessage, wparam, lparam);

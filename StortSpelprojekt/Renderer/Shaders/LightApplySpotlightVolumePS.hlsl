@@ -1,6 +1,8 @@
-// ------------------------------------------
-//		LIGHT PASS - PIXEL SHADER
-// ------------------------------------------
+/*----------------------------------------------------------------------------------------------------------------------
+| Pixel shader that handles the pixels contained in the geometric volume of the spotlight.							   |
+| These pixels will be shaded using additive blending with the temp-backbuffer,										   |
+| which is then rendered to the screen in the FXAA stage															   |
+----------------------------------------------------------------------------------------------------------------------*/
 
 cbuffer matrixBufferLightPassPerFrame : register(b2)
 {

@@ -1,7 +1,8 @@
-// ------------------------------------------
-//		GEOMETRY PASS - PIXEL SHADER
-// ------------------------------------------
-
+/*----------------------------------------------------------------------------------------------------------------------
+| Pixel shader used for the rendering of static geometry.															   |	
+| As this is used in deferred shading it outputs to diffuse and normal render targets.							       |
+| It also applies ambient to the color and outputs this to a "copy" of the backbuffer, which is used for the FXAA	   |
+----------------------------------------------------------------------------------------------------------------------*/
 Texture2D diffuse : register(t0);
 Texture2D specular : register(t1);
 
@@ -22,7 +23,6 @@ struct PS_OUT
 	float4 normal	    : SV_Target1;
 	float4 backbuffercopy: SV_Target2;
 };
-
 
 PS_OUT main(VS_OUT input)
 {

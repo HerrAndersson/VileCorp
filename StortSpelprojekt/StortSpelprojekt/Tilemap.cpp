@@ -92,9 +92,9 @@ bool Tilemap::AddObjectToTile(AI::Vec2D pos, GameObject * obj)
 			if (_map[pos._x][pos._y]._objectsOnTile[arrayPos] == nullptr)
 			{
 				_map[pos._x][pos._y]._objectsOnTile[arrayPos] = obj;
+				obj->SetTilePosition(pos);
 				result = true;
 			}
-			obj->SetTilePosition(pos);
 		}
 	}
 	return result;
@@ -480,6 +480,5 @@ bool Tilemap::IsTileEmpty(int x, int z) const
 
 bool Tilemap::IsTileEmpty(AI::Vec2D pos) const
 {
-	return false;
+	return IsTileEmpty(pos._x, pos._y);
 }
-

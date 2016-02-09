@@ -75,9 +75,9 @@ typedef unsigned SizeType;
 /*! By default, rapidjson uses C assert() for assertion.
 	User can override it by defining RAPIDJSON_ASSERT(x) macro.
 */
-#ifndef CEREAL_RAPIDJSON_ASSERT
+#ifndef RAPIDJSON_ASSERT
 #include <cassert>
-#define CEREAL_RAPIDJSON_ASSERT(x) assert(x)
+#define RAPIDJSON_ASSERT(x) assert(x)
 #endif // RAPIDJSON_ASSERT
 
 ///////////////////////////////////////////////////////////////////////////////

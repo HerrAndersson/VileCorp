@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include "stdafx.h"
 #include "GameObject.h"
 #include "Unit.h"
 #include "Trap.h"
@@ -12,6 +13,7 @@
 #include "AssetManager.h"
 #include "StateMachine\States.h"
 #include "Spotlight.h"
+#include "Grid.h"
 
 /*
 ObjectHandler
@@ -40,8 +42,9 @@ class ObjectHandler
 private:
 	vector<vector<GameObject*>> _gameObjects;
 	GameObjectInfo* _gameObjectInfo;
-	void ActivateTileset(string name);
+	Tileset _activeTileset;
 	Tilemap* _tilemap;
+	Grid* _buildingGrid;
 
 	int _idCount = 0;
 	int _objectCount = 0;
@@ -50,22 +53,24 @@ private:
 	ID3D11Device* _device;
 	map< GameObject*, Renderer::Spotlight*> _spotlights;
 
-	Architecture*	MakeFloor(GameObjectFloorInfo* data, XMFLOAT3 position, XMFLOAT3 rotation);
-	Architecture*	MakeWall(GameObjectWallInfo* data, XMFLOAT3 position, XMFLOAT3 rotation);
-	Architecture*	MakeLoot(GameObjectLootInfo* data, XMFLOAT3 position, XMFLOAT3 rotation);
-	SpawnPoint*		MakeSpawn(GameObjectSpawnInfo* data, XMFLOAT3 position, XMFLOAT3 rotation);
-	Trap*			MakeTrap(GameObjectTrapInfo* data, XMFLOAT3 position, XMFLOAT3 rotation);
-	Guard*			MakeGuard(GameObjectGuardInfo* data, XMFLOAT3 position, XMFLOAT3 rotation);
-	Enemy*			MakeEnemy(GameObjectEnemyInfo* data, XMFLOAT3 position, XMFLOAT3 rotation);
+	Architecture*	MakeFloor(GameObjectFloorInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation);
+	Architecture*	MakeWall(GameObjectWallInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation);
+	Architecture*	MakeLoot(GameObjectLootInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation);
+	SpawnPoint*		MakeSpawn(GameObjectSpawnInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation);
+	Trap*			MakeTrap(GameObjectTrapInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation, const int subIndex = 0);
+	Guard*			MakeGuard(GameObjectGuardInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation);
+	Enemy*			MakeEnemy(GameObjectEnemyInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation);
+
+	void ReleaseGameObjects();
 
 public:
 	ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data);
 	~ObjectHandler();
 
 	//Add a gameobject
-	bool Add(XMFLOAT3 position, XMFLOAT3 rotation, Type type, int subType, int modelReference, int textureReference);
-	bool Add(Type type, int index, XMFLOAT3 position, XMFLOAT3 rotation);
-	bool Add(Type type, std::string name, XMFLOAT3 position, XMFLOAT3 rotation);
+	bool Add(XMFLOAT3 position, XMFLOAT3 rotation, Type type, int subType, string textureReference);
+	bool Add(Type type, int index, const XMFLOAT3& position, const XMFLOAT3& rotation, const int subIndex = 0);
+	bool Add(Type type, const std::string& name, const XMFLOAT3& position, const XMFLOAT3& rotation, const int subIndex = 0);
 	
 	bool Remove(int ID);
 	bool Remove(Type type, int ID);
@@ -88,6 +93,7 @@ public:
 	void SetTileMap(Tilemap* tilemap);
 	void MinimizeTileMap();
 	void EnlargeTilemap(int offset);
+	Grid* GetBuildingGrid();
 
 	bool LoadLevel(int lvlIndex);
 

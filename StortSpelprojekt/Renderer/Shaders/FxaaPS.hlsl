@@ -1,6 +1,6 @@
-/* ------------------------------------------
-		FXAA PASS - PIXEL SHADER
-------------------------------------------*/
+/*--------------------------------------------------------------------------------------------------------------------
+| Pixel shader that applies FXAA to the backbuffer-copy, and then renders to the real backbuffer. 				     |
+--------------------------------------------------------------------------------------------------------------------*/
 
 Texture2D backbuffertemp : register(t2);
 
@@ -26,11 +26,11 @@ float4 main(VS_OUT input) : SV_TARGET
 	float2 texelSize = float2(1.0f / width, 1.0f / height);
 
 	float3 luma = float3(0.299f, 0.587, 0.114);
-	float lumaTL = dot(luma, backbuffertemp.Sample(samplerWrap, input.uv + (float2(-1.0f, 1.0f) * texelSize)));
-	float lumaTR = dot(luma, backbuffertemp.Sample(samplerWrap, input.uv + (float2(1.0f, 1.0f) * texelSize)));
-	float lumaBL = dot(luma, backbuffertemp.Sample(samplerWrap, input.uv + (float2(-1.0f, -1.0f) * texelSize)));
-	float lumaBR = dot(luma, backbuffertemp.Sample(samplerWrap, input.uv + (float2(1.0f, -1.0f) * texelSize)));
-	float lumaM = dot(luma, backbuffertemp.Sample(samplerWrap, input.uv));
+	float lumaTL = dot(luma, backbuffertemp.Sample(samplerWrap, input.uv + (float2(-1.0f, 1.0f) * texelSize)).xyz);
+	float lumaTR = dot(luma, backbuffertemp.Sample(samplerWrap, input.uv + (float2(1.0f, 1.0f) * texelSize)).xyz);
+	float lumaBL = dot(luma, backbuffertemp.Sample(samplerWrap, input.uv + (float2(-1.0f, -1.0f) * texelSize)).xyz);
+	float lumaBR = dot(luma, backbuffertemp.Sample(samplerWrap, input.uv + (float2(1.0f, -1.0f) * texelSize)).xyz);
+	float lumaM = dot(luma, backbuffertemp.Sample(samplerWrap, input.uv).xyz);
 
 	float2 dir;
 	dir.x = ((lumaTL + lumaTR) - (lumaBL + lumaBR));
@@ -44,11 +44,11 @@ float4 main(VS_OUT input) : SV_TARGET
 
 	float3 result1 = 0.5 * (
 		backbuffertemp.Sample(samplerWrap, input.uv + (dir * float2((1.0f/3.0f) - 0.5f, (1.0f / 3.0f) - 0.5f))) +
-		backbuffertemp.Sample(samplerWrap, input.uv + (dir * float2((2.0f / 3.0f) - 0.5f, (2.0f / 3.0f) - 0.5f))));
+		backbuffertemp.Sample(samplerWrap, input.uv + (dir * float2((2.0f / 3.0f) - 0.5f, (2.0f / 3.0f) - 0.5f)))).xyz;
 
 	float3 result2 = result1 * 0.5 + (1.0f / 4.0f) * (
 		backbuffertemp.Sample(samplerWrap, input.uv + (dir * float2((0.0f / 3.0f) - 0.5f, (0.0f / 3.0f) - 0.5f))) +
-		backbuffertemp.Sample(samplerWrap, input.uv + (dir * float2((3.0f / 3.0f) - 0.5f, (3.0f / 3.0f) - 0.5f))));
+		backbuffertemp.Sample(samplerWrap, input.uv + (dir * float2((3.0f / 3.0f) - 0.5f, (3.0f / 3.0f) - 0.5f)))).xyz;
 
 	float lumaMin = min(lumaM, min(min(lumaTL, lumaTR), min(lumaBL, lumaBR)));
 	float lumaMax = max(lumaM, max(max(lumaTL, lumaTR), max(lumaBL, lumaBR)));

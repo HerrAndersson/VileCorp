@@ -30,7 +30,7 @@ namespace cereal {
 	\implements Handler
 */
 template<typename Stream, typename Encoding = UTF8<>, typename Allocator = MemoryPoolAllocator<> >
-class Writer {
+class Writer { //-V690
 public:
 	typedef typename Encoding::Ch Ch;
 

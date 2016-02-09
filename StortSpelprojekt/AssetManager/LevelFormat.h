@@ -12,8 +12,6 @@ struct LevelFormat
 	int _levelVersion = 26;
 	int _tileMapHeight = 0;
 	int _tileMapWidth = 0;
-	std::vector<std::string> _modelReferences = std::vector<std::string>();
-	std::vector<std::string> _textureReferences = std::vector<std::string>();
 	std::vector<std::vector<int>> _gameObjectData = std::vector<std::vector<int>>();
 
 	template<class A>
@@ -23,8 +21,6 @@ struct LevelFormat
 			CEREAL_NVP(_levelVersion),
 			CEREAL_NVP(_tileMapHeight),
 			CEREAL_NVP(_tileMapWidth),
-			CEREAL_NVP(_modelReferences),
-			CEREAL_NVP(_textureReferences),
 			CEREAL_NVP(_gameObjectData)
 			);
 	}

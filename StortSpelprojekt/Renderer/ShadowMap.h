@@ -56,5 +56,4 @@ namespace Renderer
 		void SetDataPerObject(ID3D11DeviceContext* deviceContext, DirectX::XMMATRIX* modelWorld);
 		void SetDataPerFrame(ID3D11DeviceContext* deviceContext, DirectX::XMMATRIX* lightView, DirectX::XMMATRIX* lightProjection);
 	};
-
 }

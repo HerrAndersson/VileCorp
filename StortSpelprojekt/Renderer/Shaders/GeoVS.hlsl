@@ -1,6 +1,7 @@
-/* ------------------------------------------
-		GEOMETRY PASS - VERTEX SHADER
---------------------------------------------*/
+/*----------------------------------------------------------------------------------------------------------------------
+| Vertex shader used to transform the static geometry to the screenspace for rendering.								   |
+| Also passes through color offset and ambient light																   |
+----------------------------------------------------------------------------------------------------------------------*/
 
 cbuffer matrixBufferPerFrame : register(b0)
 {

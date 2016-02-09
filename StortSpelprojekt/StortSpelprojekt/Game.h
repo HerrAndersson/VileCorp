@@ -18,6 +18,8 @@
 #include "ShadowMap.h"
 #include "LightCulling.h"
 
+#include "SettingsReader.h"
+
 class Game
 {
 private:
@@ -32,21 +34,20 @@ private:
 //	Animation*					_animation;
 	System::Controls*			_controls;
 	AssetManager*				_assetManager;
-	Grid*						_grid;
 	FontWrapper*				_fontWrapper;
 	PickingDevice*				_pickingDevice;
 	PlayerInfo					_playerInfo;
 	SettingInfo					_gameSettings;
-	System::WindowSettings		_windowSettings;
+	System::SettingsReader		_settingsReader;
+	GameObjectInfo				_data;
 
 	bool						_hasFocus;
 	bool						_enemiesHasSpawned;
 
 	//Resizing window, directx resources, camera
-	void ResizeResources(System::WindowSettings settings); //TODO: Test all scenarios and fix bugs /Jonas
+	void ResizeResources(System::Settings* settings);
 	bool Update(float deltaTime);
 	void Render();
-	void CheckSettings();
 	
 	//TODO: TEMP! Move this to objectHandler
 	std::vector<Renderer::Spotlight*> _spotlights;

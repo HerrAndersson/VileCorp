@@ -447,9 +447,9 @@ namespace cereal
       class Iterator
       {
         public:
-          Iterator() : itsIndex( 0 ), itsType(Null_) {}
+          Iterator() : itsIndex( 0 ), itsType(Null_) {} //-V730
 
-          Iterator(MemberIterator begin, MemberIterator end) :
+          Iterator(MemberIterator begin, MemberIterator end) : //-V730
             itsMemberItBegin(begin), itsMemberItEnd(end), itsIndex(0), itsType(Member)
           { }
 
@@ -551,7 +551,7 @@ namespace cereal
       {
         search();
 
-        if(itsIteratorStack.back().value().IsArray())
+        if(itsIteratorStack.back().value().IsArray()) //-V807
           itsIteratorStack.emplace_back(itsIteratorStack.back().value().Begin(), itsIteratorStack.back().value().End());
         else
           itsIteratorStack.emplace_back(itsIteratorStack.back().value().MemberBegin(), itsIteratorStack.back().value().MemberEnd());
@@ -601,7 +601,7 @@ namespace cereal
       }
 
       //! Loads a value from the current node - bool overload
-      void loadValue(bool & val)        { search(); val = itsIteratorStack.back().value().GetBool_();   ++itsIteratorStack.back(); }
+      void loadValue(bool & val)        { search(); val = itsIteratorStack.back().value().GetBool();   ++itsIteratorStack.back(); }
       //! Loads a value from the current node - int64 overload
       void loadValue(int64_t & val)     { search(); val = itsIteratorStack.back().value().GetInt64();  ++itsIteratorStack.back(); }
       //! Loads a value from the current node - uint64 overload
