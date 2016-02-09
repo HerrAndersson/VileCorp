@@ -118,10 +118,25 @@ bool ObjectHandler::Add(Type type, int index, const XMFLOAT3& position, const XM
 	{
 		_idCount++;
 		_gameObjects[type].push_back(object);
-		for(auto i : object->GetRenderObject()->_mesh._spotLights)
+
+		//TODO: remove when proper loading can be done /Jonas
+		if (type == GUARD)
 		{
-			_spotlights[object] = new Renderer::Spotlight(_device, i, 0.1f, 1000.0f);
+			SpotlightData d;
+			d._angle = XM_PI / 4.0f;
+			d._bone = -1;
+			d._color = XMFLOAT3(0.9f, 0.9f, 0.9f);
+			d._direction = XMFLOAT3(1, 0, 1);
+			d._intensity = 1.0f;
+			d._pos = XMFLOAT3(0, 0, 0);
+			d._range = 9.5f;
+			_spotlights[object] = new Renderer::Spotlight(_device, d, 0.1f, 1000.0f);
 		}
+
+		//for(auto i : object->GetRenderObject()->_mesh._spotLights)
+		//{
+		//	_spotlights[object] = new Renderer::Spotlight(_device, i, 0.1f, 1000.0f);
+		//}
 		_objectCount++;
 		return true;
 	}
@@ -649,13 +664,15 @@ void ObjectHandler::Update(float deltaTime)
 	{
 		if (spot.second->IsActive() && spot.first->IsActive())
 		{
-			if (spot.second->GetBone() != -1)
+			if (spot.second->GetBone() != 255)
 			{
 				spot.second->SetPositionAndRotation(spot.first->GetAnimation()->GetTransforms()->at(spot.second->GetBone()));
 			}
 			else
 			{
-				spot.second->SetPositionAndRotation(spot.first->GetPosition(), spot.first->GetRotation());
+				XMFLOAT3 pos = spot.first->GetPosition();
+				pos.y = 0.5f;
+				spot.second->SetPositionAndRotation(pos, spot.first->GetRotation());
 			}
 		}
 	}
@@ -676,10 +693,20 @@ vector<vector<GameObject*>>* ObjectHandler::GetObjectsInLight(Renderer::Spotligh
 	return _lightCulling->GetObjectsInSpotlight(spotlight);
 }
 
+vector<Renderer::Particle>* ObjectHandler::GetParticles(int index)
+{
+	return _particleHandler.GetParticles(index);
+}
+
 void ObjectHandler::ReleaseGameObjects()
 {
 	int debug;
 	std::vector<GameObject*> tempVector;
+
+	for (pair<GameObject*, Renderer::Spotlight*> spot : _spotlights)
+	{
+		delete spot.second;
+	}
 
 	if (_gameObjects.size() > 0)
 	{

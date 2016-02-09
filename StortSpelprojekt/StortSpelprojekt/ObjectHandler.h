@@ -16,6 +16,7 @@
 #include "Pointlight.h"
 #include "Grid.h"
 #include "LightCulling.h"
+#include "Particle system\ParticleHandler.h"
 
 /*
 ObjectHandler
@@ -59,6 +60,8 @@ private:
 	map<GameObject*, Renderer::Pointlight*> _pointligths;
 	LightCulling* _lightCulling;
 
+	Renderer::ParticleHandler _particleHandler;
+
 	Architecture*	MakeFloor(GameObjectFloorInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation);
 	Architecture*	MakeWall(GameObjectWallInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation);
 	Architecture*	MakeLoot(GameObjectLootInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation);
@@ -94,6 +97,8 @@ public:
 	map<GameObject*, Renderer::Spotlight*>* GetSpotlights();
 	map<GameObject*, Renderer::Pointlight*>* GetPointlights();
 	vector<vector<GameObject*>>* GetObjectsInLight(Renderer::Spotlight* spotlight);
+
+	vector<Renderer::Particle>* GetParticles(int index);
 
 	GameObjectInfo* GetBlueprints();
 

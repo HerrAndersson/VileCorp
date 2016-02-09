@@ -237,8 +237,6 @@ void Game::Render()
 						{
 							if (g->IsVisible())
 							{
-								g->SetColorOffset(XMFLOAT3(0, 1, 0));
-
 								_renderModule->RenderShadowMap(g->GetMatrix(), vertexBufferSize);
 							}
 						}
