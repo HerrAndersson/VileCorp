@@ -138,6 +138,7 @@ Unit::~Unit()
 	//delete[] _visibleTiles;
 	delete _aStar;
 	_aStar = nullptr;
+	delete _visionCone;
 	//delete _heldObject;
 	//_heldObject = nullptr;
 	if (_animation != nullptr)
