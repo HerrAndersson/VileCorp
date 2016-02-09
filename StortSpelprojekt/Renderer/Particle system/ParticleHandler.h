@@ -16,6 +16,7 @@ namespace Renderer
 	private:
 
 		std::vector<ParticleEmitter> _particleEmitters;
+		int _emitterCount;
 
 	public:
 
@@ -25,6 +26,9 @@ namespace Renderer
 		void Update(double deltaTime);
 
 		void ActivateEmitter(ParticleType type, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT4& color, int particleCount, float timeLimit, bool isActive);
+
+		int GetEmitterCount() const;
+		std::vector<Particle>* GetParticles(int index);
 
 	};
 }

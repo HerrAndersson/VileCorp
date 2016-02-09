@@ -5,11 +5,13 @@ namespace Renderer
 
 	ParticleHandler::ParticleHandler()
 	{
-		_particleEmitters.reserve(10);
+		_emitterCount = 5;
+		_particleEmitters.reserve(_emitterCount);
 	}
 
 	ParticleHandler::~ParticleHandler()
 	{
+		_particleEmitters.clear();
 	}
 
 	void ParticleHandler::Update(double deltaTime)
@@ -41,7 +43,23 @@ namespace Renderer
 			ParticleEmitter particleEmitter;
 			particleEmitter.Reset(type, position, color, particleCount, timeLimit, isActive);
 			_particleEmitters.push_back(particleEmitter);
+			_emitterCount++;
 		}
+	}
+
+	int ParticleHandler::GetEmitterCount() const
+	{
+		return _emitterCount;
+	}
+
+	std::vector<Particle>* ParticleHandler::GetParticles(int index)
+	{
+		if (index >= _emitterCount)
+		{
+			throw std::runtime_error("ParticleHandler::GetParticles(int index): Invalid index");
+		}
+
+		return _particleEmitters.at(index).GetParticles();
 	}
 
 }

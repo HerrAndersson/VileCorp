@@ -26,6 +26,7 @@ namespace Renderer
 
 	ParticleEmitter::~ParticleEmitter()
 	{
+		_particles.clear();
 	}
 
 	void ParticleEmitter::Reset(const ParticleType& type, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT4 color, int particleCount, float timeLimit, bool isActive)
@@ -64,7 +65,12 @@ namespace Renderer
 		_timeLeft -= (float)deltaTime;
 	}
 
-	DirectX::XMFLOAT3 ParticleEmitter::GetPosition() const
+	std::vector<Particle>* ParticleEmitter::GetParticles()
+	{
+		return &_particles;
+	}
+
+	XMFLOAT3 ParticleEmitter::GetPosition() const
 	{
 		return _position;
 	}

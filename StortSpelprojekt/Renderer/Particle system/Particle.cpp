@@ -32,6 +32,7 @@ namespace Renderer
 
 	void Particle::Update(double deltaTime, const ParticleType& type)
 	{
+		//TODO: Update postions according to the type and how it moves
 		switch (type)
 		{
 			case SPLASH:

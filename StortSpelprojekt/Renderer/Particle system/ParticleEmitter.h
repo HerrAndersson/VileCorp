@@ -19,8 +19,6 @@ namespace Renderer
 		DirectX::XMFLOAT3 _position;
 		std::vector<Particle> _particles;
 
-
-
 		bool _isActive;
 		float _timeLeft;
 
@@ -34,6 +32,7 @@ namespace Renderer
 
 		void Update(double deltaTime);
 
+		std::vector<Particle>* GetParticles();
 		DirectX::XMFLOAT3 GetPosition() const;
 		ParticleType GetType() const;
 		int GetParticleCount() const;
