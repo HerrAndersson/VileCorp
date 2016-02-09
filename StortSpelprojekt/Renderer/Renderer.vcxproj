@@ -23,6 +23,9 @@
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="FontWrapper.cpp" />
     <ClCompile Include="Node.cpp" />
+    <ClCompile Include="Particle system\ParticleHandler.cpp" />
+    <ClCompile Include="Particle system\Particle.cpp" />
+    <ClCompile Include="Particle system\ParticleEmitter.cpp" />
     <ClCompile Include="Pointlight.cpp" />
     <ClCompile Include="RenderModule.cpp" />
     <ClCompile Include="ShaderHandler.cpp" />
@@ -36,6 +39,9 @@
     <ClInclude Include="FontWrapper.h" />
     <ClInclude Include="FW\FW1FontWrapper.h" />
     <ClInclude Include="Node.h" />
+    <ClInclude Include="Particle system\ParticleHandler.h" />
+    <ClInclude Include="Particle system\Particle.h" />
+    <ClInclude Include="Particle system\ParticleEmitter.h" />
     <ClInclude Include="Pointlight.h" />
     <ClInclude Include="RenderModule.h" />
     <ClInclude Include="RenderUtils.h" />
