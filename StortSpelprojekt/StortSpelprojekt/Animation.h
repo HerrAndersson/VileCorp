@@ -13,6 +13,7 @@ private:
 
 	XMMATRIX Interpolate(unsigned int boneID, int action);
 
+	bool _frozen;
 	float _time;
 	float _currTime;
 	float _nextTime;
@@ -31,7 +32,8 @@ public:
 	~Animation();
 
 	void Update(float time);
-	void SetActionAsCycle(int action);
+	void SetActionAsCycle(int action, bool reset);
+	void Freeze(bool freeze);
 	void PlayAction(int action);
 	XMMATRIX* GetTransforms()
 	{

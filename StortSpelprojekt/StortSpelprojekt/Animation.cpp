@@ -25,6 +25,10 @@ Animation::~Animation()
 
 void Animation::Update(float time)
 {
+	if (_frozen)
+	{
+		return;
+	}
 	_animTime += time / 1000;
 	if (_currentAction != -1)
 	{
@@ -67,10 +71,18 @@ void Animation::Update(float time)
 	}
 }
 
-void Animation::SetActionAsCycle(int action)
+void Animation::SetActionAsCycle(int action, bool reset)
 {
-	_animTime = 0.0f;
+	if (reset)
+	{
+		_animTime = 0.0f;
+	}
 	_currentCycle = action;
+}
+
+void Animation::Freeze(bool freeze)
+{
+	_frozen = freeze;
 }
 
 void Animation::PlayAction(int action)
