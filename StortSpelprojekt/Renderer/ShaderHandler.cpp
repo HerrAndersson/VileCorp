@@ -387,8 +387,8 @@ namespace Renderer
 		// Set shaders
 		deviceContext->VSSetShader(_geoPassVS->_vertexShader, nullptr, 0);
 		deviceContext->PSSetShader(_geoPassPS, nullptr, 0);
+		deviceContext->GSSetShader(nullptr, nullptr, 0);
 		//deviceContext->HSSetShader(nullptr, nullptr, 0);
-		//deviceContext->GSSetShader(nullptr, nullptr, 0);
 		//deviceContext->DSSetShader(nullptr, nullptr, 0);
 		//deviceContext->CSSetShader(nullptr, nullptr, 0);
 
@@ -405,8 +405,8 @@ namespace Renderer
 		// Set shaders
 		deviceContext->VSSetShader(_animPassVS->_vertexShader, nullptr, 0);
 		deviceContext->PSSetShader(_geoPassPS, nullptr, 0);
+		deviceContext->GSSetShader(nullptr, nullptr, 0);
 		//deviceContext->HSSetShader(nullptr, nullptr, 0);
-		//deviceContext->GSSetShader(nullptr, nullptr, 0);
 		//deviceContext->DSSetShader(nullptr, nullptr, 0);
 		//deviceContext->CSSetShader(nullptr, nullptr, 0);
 
@@ -423,8 +423,8 @@ namespace Renderer
 		// Set shaders
 		deviceContext->VSSetShader(_gridPassVS->_vertexShader, nullptr, 0);
 		deviceContext->PSSetShader(_gridPassPS, nullptr, 0);
+		deviceContext->GSSetShader(nullptr, nullptr, 0);
 		//deviceContext->HSSetShader(nullptr, nullptr, 0);
-		//deviceContext->GSSetShader(nullptr, nullptr, 0);
 		//deviceContext->DSSetShader(nullptr, nullptr, 0);
 		//deviceContext->CSSetShader(nullptr, nullptr, 0);
 
@@ -441,8 +441,8 @@ namespace Renderer
 		//Set shaders
 		deviceContext->VSSetShader(_hudPassVS->_vertexShader, nullptr, 0);
 		deviceContext->PSSetShader(_hudPassPS, nullptr, 0);
+		deviceContext->GSSetShader(nullptr, nullptr, 0);
 		//deviceContext->HSSetShader(nullptr, nullptr, 0);
-		//deviceContext->GSSetShader(nullptr, nullptr, 0);
 		//deviceContext->DSSetShader(nullptr, nullptr, 0);
 		//deviceContext->CSSetShader(nullptr, nullptr, 0);
 
@@ -459,8 +459,8 @@ namespace Renderer
 		//Set shaders
 		deviceContext->VSSetShader(_shadowMapVS->_vertexShader, nullptr, 0);
 		deviceContext->PSSetShader(nullptr, nullptr, 0);
+		deviceContext->GSSetShader(nullptr, nullptr, 0);
 		//deviceContext->HSSetShader(nullptr, nullptr, 0);
-		//deviceContext->GSSetShader(nullptr, nullptr, 0);
 		//deviceContext->DSSetShader(nullptr, nullptr, 0);
 		//deviceContext->CSSetShader(nullptr, nullptr, 0);
 
@@ -477,8 +477,8 @@ namespace Renderer
 		//Set shaders
 		deviceContext->VSSetShader(_lightApplyLightVolumeVS->_vertexShader, nullptr, 0);
 		deviceContext->PSSetShader(_lightApplySpotlightVolumePS, nullptr, 0);
+		deviceContext->GSSetShader(nullptr, nullptr, 0);
 		//deviceContext->HSSetShader(nullptr, nullptr, 0);
-		//deviceContext->GSSetShader(nullptr, nullptr, 0);
 		//deviceContext->DSSetShader(nullptr, nullptr, 0);
 		//deviceContext->CSSetShader(nullptr, nullptr, 0);
 
@@ -495,8 +495,8 @@ namespace Renderer
 		//Set shaders
 		deviceContext->VSSetShader(_lightApplyLightVolumeVS->_vertexShader, nullptr, 0);
 		deviceContext->PSSetShader(_lightApplyPointlightVolumePS, nullptr, 0);
+		deviceContext->GSSetShader(nullptr, nullptr, 0);
 		//deviceContext->HSSetShader(nullptr, nullptr, 0);
-		//deviceContext->GSSetShader(nullptr, nullptr, 0);
 		//deviceContext->DSSetShader(nullptr, nullptr, 0);
 		//deviceContext->CSSetShader(nullptr, nullptr, 0);
 
@@ -513,8 +513,8 @@ namespace Renderer
 		// Set shaders
 		deviceContext->VSSetShader(_passthroughVS->_vertexShader, nullptr, 0);
 		deviceContext->PSSetShader(_fxaaPassPS, nullptr, 0);
+		deviceContext->GSSetShader(nullptr, nullptr, 0);
 		//deviceContext->HSSetShader(nullptr, nullptr, 0);
-		//deviceContext->GSSetShader(nullptr, nullptr, 0);
 		//deviceContext->DSSetShader(nullptr, nullptr, 0);
 		//deviceContext->CSSetShader(nullptr, nullptr, 0);
 
