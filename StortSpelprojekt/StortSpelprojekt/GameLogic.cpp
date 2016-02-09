@@ -31,7 +31,7 @@ void GameLogic::Initialize(ObjectHandler* objectHandler, System::Camera* camera,
 
 	_objectHandler->InitPathfinding();
 
-	_player = new Player();
+	_player = new Player(objectHandler);
 }
 
 void GameLogic::Update(float deltaTime)

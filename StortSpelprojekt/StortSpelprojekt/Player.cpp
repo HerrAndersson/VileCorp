@@ -4,17 +4,24 @@
 
 Player::Player()
 {
+	_objectHandler = nullptr;
+}
 
+Player::Player(ObjectHandler* objectHandler)
+{
+	_objectHandler = objectHandler;
 }
 
 Player::~Player()
 {
-
+	_objectHandler = nullptr;
+	_selectedUnits.clear();
 }
 
 void Player::SelectUnit(Unit* pickedUnit)
 {
-	_selectedUnits.push_back(pickedUnit);
+	_selectedUnits.push_back(pickedUnit->GetID());
+	pickedUnit->TakeDamage(11110);
 }
 
 void Player::DeselectUnits()
@@ -29,35 +36,54 @@ bool Player::AreUnitsSelected()
 
 vector<Unit*> Player::GetSelectedUnits()
 {
-	return _selectedUnits;
+	vector<Unit*> units;
+	for (int i = 0; i < _selectedUnits.size(); i++)
+	{
+		Unit* unit = (Unit*)_objectHandler->Find(_selectedUnits.at(i));
+		if (unit != nullptr)
+		{
+			units.push_back(unit);
+		}
+	}
+
+	return units;
 }
 
 void Player::MoveUnits(AI::Vec2D movePoint)
 {
 	for (unsigned int i = 0; i < _selectedUnits.size(); i++)
 	{
-		//If a patrolling unit is told to move it will break its patrolroute
-		if (_selectedUnits[i]->GetType() == GUARD)
+		Unit* unit = (Unit*)_objectHandler->Find(_selectedUnits[i]);
+
+		if (unit != nullptr)
 		{
-			((Guard*)_selectedUnits[i])->RemovePatrol();
+			//If a patrolling unit is told to move it will break its patrolroute
+			if (unit->GetType() == GUARD)
+			{
+				((Guard*)unit)->RemovePatrol();
+			}
+			unit->SetGoal(movePoint);
+			unit->Wait(-1);
 		}
-		_selectedUnits[i]->SetGoal(movePoint);
-		//_selectedUnits[i]->Move();
-		_selectedUnits[i]->Wait(-1);
+
 		
+
 	}
 }
 
 void Player::PatrolUnits(AI::Vec2D patrolPoint)
 {
-
 	for (unsigned int i = 0; i < _selectedUnits.size(); i++)
 	{
-		if (_selectedUnits[i]->GetType() == GUARD)
+		Unit* unit = (Unit*)_objectHandler->Find(_selectedUnits[i]);
+
+		if (unit != nullptr)
 		{
-			((Guard*)_selectedUnits[i])->SetPatrolPoint(patrolPoint);
+			if (unit->GetType() == GUARD)
+			{
+				((Guard*)_selectedUnits[i])->SetPatrolPoint(patrolPoint);
+			}
 		}
-		
 
 	}
 }

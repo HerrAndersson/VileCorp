@@ -161,6 +161,7 @@ bool ObjectHandler::Remove(int ID)
 				}
 
 				delete _gameObjects[i][j];
+				
 
 				// Replace pointer with the last pointer int the vector
 				_gameObjects[i][j] = _gameObjects[i].back();
