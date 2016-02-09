@@ -90,8 +90,9 @@ Game::~Game()
 
 void Game::ResizeResources(System::Settings* settings)
 {
-	_window->ResizeWindow(settings);
+	//RenderModule måste uppdatera sin swapchain innan window sätter sin resize. /Alex
 	_renderModule->ResizeResources(_window->GetHWND(), settings);
+	_window->ResizeWindow(settings);
 	_camera->Resize(settings);
 	_SM->Resize(settings);
 }
