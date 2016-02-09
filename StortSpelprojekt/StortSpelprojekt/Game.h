@@ -1,7 +1,8 @@
 #pragma once
 
-#include "stdafx.h"
 #include "StateMachine/StateMachine.h"
+#include "SoundModule.h"
+#include "stdafx.h"
 #include "Window.h"
 #include "RenderModule.h"
 #include "Camera.h"
@@ -40,6 +41,7 @@ private:
 	SettingInfo					_gameSettings;
 	System::SettingsReader		_settingsReader;
 	GameObjectInfo				_data;
+	//System::SoundModule			_soundModule;
 
 	bool						_hasFocus;
 	bool						_enemiesHasSpawned;
