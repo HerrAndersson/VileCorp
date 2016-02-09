@@ -5,7 +5,6 @@ GameObject::GameObject()
 	_ID = -1;
 	_type = FLOOR;
 	_visible = true;
-	_active = false;
 	_renderObject = nullptr;
 	_pickUpState = PickUpState::DROPPING;
 }
@@ -21,7 +20,6 @@ GameObject::GameObject(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::X
 	_type = type;
 	_renderObject = renderObject;
 	_pickUpState = ONTILE;
-	_active = true;
 	_visible = true;
 
 	CalculateMatrix();
@@ -137,6 +135,24 @@ void GameObject::SetActive(bool active)
 void GameObject::SetVisibility(bool visible)
 {
 	_visible = visible;
+}
+
+bool GameObject::InRange(AI::Vec2D pos) const
+{
+	bool result = false;
+	AI::Vec2D tempPos = _tilePosition;
+	if (pos == tempPos)
+	{
+		result = true;
+	}
+	for (int i = 0; i < 8 && !result; i++)
+	{
+		if (pos == tempPos + AI::NEIGHBOUR_OFFSETS[i])
+		{
+			result = true;
+		}
+	}
+	return result;
 }
 
 RenderObject * GameObject::GetRenderObject() const

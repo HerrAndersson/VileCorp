@@ -218,7 +218,6 @@ bool ObjectHandler::Remove(Type type, int ID)
 			}
 
 			delete _gameObjects[type][i];
-
 			// Replace pointer with the last pointer int the vector
 			_gameObjects[type][i] = _gameObjects[type].back();
 
@@ -563,8 +562,7 @@ void ObjectHandler::Update(float deltaTime)
 						for (uint k = 0; k < _gameObjects[SPAWN].size() && !lootRemoved; k++)
 						{
 							//If the enemy is at the despawn point with an objective, remove the objective and the enemy, Aron
-							if ((int)unit->GetTilePosition()._x == (int)_gameObjects[SPAWN][k]->GetTilePosition()._x &&
-								(int)unit->GetTilePosition()._y == (int)_gameObjects[SPAWN][k]->GetTilePosition()._y)
+							if (_gameObjects[SPAWN][k]->InRange(unit->GetTilePosition()))
 							{
 								lootRemoved = Remove(heldObject);
 							}
@@ -620,8 +618,7 @@ void ObjectHandler::Update(float deltaTime)
 
 						if (unit->GetType() != GUARD &&
 							(_gameObjects[LOOT].size() == 0 || allLootIsCarried) &&
-							(int)unit->GetTilePosition()._x == (int)_gameObjects[SPAWN][k]->GetTilePosition()._x &&
-							(int)unit->GetTilePosition()._y == (int)_gameObjects[SPAWN][k]->GetTilePosition()._y)
+							unit->InRange(_gameObjects[SPAWN][k]->GetTilePosition()))
 						{
 							unit->TakeDamage(10);
 						}

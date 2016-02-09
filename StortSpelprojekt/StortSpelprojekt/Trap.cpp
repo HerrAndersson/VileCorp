@@ -290,6 +290,46 @@ int Trap::GetDisarmDifficulty() const
 	return _disarmDifficulty;
 }
 
+bool Trap::InRange(AI::Vec2D pos) const
+{
+	bool result = false;
+	AI::Vec2D tempPos = _tilePosition;
+	switch (_trapType)
+	{
+	case SPIKE:
+		result = GameObject::InRange(pos);
+		break;
+	case TESLACOIL:
+		for (int i = -2; i < 3 && !result; i++)
+		{
+			for (int j = -2; j < 3 && !result; j++)
+			{
+				if (pos == tempPos + AI::Vec2D(i, j))
+				{
+					result = true;
+				}
+			}
+		}
+		break;
+	case SHARK:
+		//TODO --Victor
+		break;
+	default:
+		break;
+	}
+	return result;
+}
+
+bool Trap::IsTrapActive() const
+{
+	return _isActive;
+}
+
+void Trap::SetTrapActive(bool active)
+{
+	_isActive = active;
+}
+
 void Trap::Activate()
 {
 	for (int i = 0; i < _nrOfAOETiles; i++)
@@ -356,11 +396,22 @@ void Trap::SetTilePosition(AI::Vec2D pos)
 		_areaOfEffect[_nrOfAOETiles++] = _tilePosition;
 		break;
 	case TESLACOIL:
+		for (int i = 0; i < _tileSize; i++)
+		{
+			if (_tileMap->IsFloorOnTile(_occupiedTiles[i]))
+			{
+				_tileMap->GetObjectOnTile(_occupiedTiles[i], FLOOR)->SetColorOffset({ 0,0,0 });
+			}
+		}
 		Initialize(2, 9, 37, 50, 50);
 		for (int i = 0; i < _tileSize; i++)
 		{
 			AI::Vec2D offset = { i / 3 - 1, i % 3 - 1 };
 			_occupiedTiles[i] = _tilePosition + offset;
+			if (_tileMap->IsFloorOnTile(_occupiedTiles[i]))
+			{
+				_tileMap->GetObjectOnTile(_occupiedTiles[i], FLOOR)->SetColorOffset({ 0,0,4 });
+			}
 		}
 		CalculateCircleAOE(3);
 		break;
