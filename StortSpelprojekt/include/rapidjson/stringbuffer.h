@@ -15,13 +15,19 @@
 #ifndef RAPIDJSON_STRINGBUFFER_H_
 #define RAPIDJSON_STRINGBUFFER_H_
 
-#include "rapidjson.h"
+#include "stream.h"
+#include "internal/stack.h"
 
 #if RAPIDJSON_HAS_CXX11_RVALUE_REFS
 #include <utility> // std::move
 #endif
 
 #include "internal/stack.h"
+
+#if defined(__clang__)
+RAPIDJSON_DIAG_PUSH
+RAPIDJSON_DIAG_OFF(c++98-compat)
+#endif
 
 RAPIDJSON_NAMESPACE_BEGIN
 
@@ -48,6 +54,7 @@ public:
 #endif
 
     void Put(Ch c) { *stack_.template Push<Ch>() = c; }
+    void PutUnsafe(Ch c) { *stack_.template PushUnsafe<Ch>() = c; }
     void Flush() {}
 
     void Clear() { stack_.Clear(); }
@@ -57,6 +64,8 @@ public:
         stack_.ShrinkToFit();
         stack_.template Pop<Ch>(1);
     }
+
+    void Reserve(size_t count) { stack_.template Reserve<Ch>(count); }
     Ch* Push(size_t count) { return stack_.template Push<Ch>(count); }
     void Pop(size_t count) { stack_.template Pop<Ch>(count); }
 
@@ -82,6 +91,16 @@ private:
 //! String buffer with UTF8 encoding
 typedef GenericStringBuffer<UTF8<> > StringBuffer;
 
+template<typename Encoding, typename Allocator>
+inline void PutReserve(GenericStringBuffer<Encoding, Allocator>& stream, size_t count) {
+    stream.Reserve(count);
+}
+
+template<typename Encoding, typename Allocator>
+inline void PutUnsafe(GenericStringBuffer<Encoding, Allocator>& stream, typename Encoding::Ch c) {
+    stream.PutUnsafe(c);
+}
+
 //! Implement specialized version of PutN() with memset() for better performance.
 template<>
 inline void PutN(GenericStringBuffer<UTF8<> >& stream, char c, size_t n) {
@@ -89,5 +108,9 @@ inline void PutN(GenericStringBuffer<UTF8<> >& stream, char c, size_t n) {
 }
 
 RAPIDJSON_NAMESPACE_END
+
+#if defined(__clang__)
+RAPIDJSON_DIAG_POP
+#endif
 
 #endif // RAPIDJSON_STRINGBUFFER_H_

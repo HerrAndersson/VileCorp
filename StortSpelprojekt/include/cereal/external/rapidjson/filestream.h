@@ -1,9 +1,9 @@
-#ifndef RAPIDJSON_FILESTREAM_H_
-#define RAPIDJSON_FILESTREAM_H_
+#ifndef CEREAL_RAPIDJSON_FILESTREAM_H_
+#define CEREAL_RAPIDJSON_FILESTREAM_H_
 
 #include <cstdio>
 
-namespace rapidjson {
+namespace cereal {
 
 //! Wrapper of C file stream for input or output.
 /*!

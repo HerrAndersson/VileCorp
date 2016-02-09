@@ -1,5 +1,5 @@
-#ifndef RAPIDJSON_DOCUMENT_H_
-#define RAPIDJSON_DOCUMENT_H_
+#ifndef CEREAL_RAPIDJSON_DOCUMENT_H_
+#define CEREAL_RAPIDJSON_DOCUMENT_H_
 
 #include "reader.h"
 #include "internal/strfunc.h"
@@ -10,7 +10,7 @@
 #pragma warning(disable : 4127) // conditional expression is constant
 #endif
 
-namespace rapidjson {
+namespace cereal {
 
 ///////////////////////////////////////////////////////////////////////////////
 // GenericValue

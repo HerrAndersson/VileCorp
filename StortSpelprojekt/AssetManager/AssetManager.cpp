@@ -72,10 +72,10 @@ bool AssetManager::SetupTileset(Tileset* tileset)
 {
 	for (int i = 0; i < NR_OF_TYPES; i++)
 	{
-		for (string str : tileset->_objects[i])
-		{
+		//for (string str : tileset->_objects[i])
+		//{
 
-		}
+		//}
 	}
 
 	_activeTileset = tileset;
@@ -85,10 +85,10 @@ bool AssetManager::SetupTileset(Tileset* tileset)
 //Do not call, call _objectHandler->ActivateTileset() - Fredrik
 bool AssetManager::ActivateTileset(string name)
 {
-	if (!strcmp(name.c_str(), _activeTileset->_name.c_str()))
-	{
-		return true; //Specified tileset is already the current tileset
-	}
+	//if (!strcmp(name.c_str(), _activeTileset->_name.c_str()))
+	//{
+	//	return true; //Specified tileset is already the current tileset
+	//}
 
 	for (Texture* texture : *_textures)
 	{
@@ -112,12 +112,12 @@ bool AssetManager::ActivateTileset(string name)
 
 	for (Tileset set : *_tilesets)
 	{
-		if (!strcmp(name.c_str(), set._name.c_str()))
-		{
-			//Tileset was found
-			return SetupTileset(&set);
-			//If false one or more .bins in tileset was invalid
-		}
+		//if (!strcmp(name.c_str(), set._name.c_str()))
+		//{
+		//	//Tileset was found
+		//	return SetupTileset(&set);
+		//	//If false one or more .bins in tileset was invalid
+		//}
 	}
 	return false;
 }

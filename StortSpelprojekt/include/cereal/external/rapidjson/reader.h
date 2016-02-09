@@ -1,5 +1,5 @@
-#ifndef RAPIDJSON_READER_H_
-#define RAPIDJSON_READER_H_
+#ifndef CEREAL_RAPIDJSON_READER_H_
+#define CEREAL_RAPIDJSON_READER_H_
 
 // Copyright (c) 2011 Milo Yip (miloyip@gmail.com)
 // Version 0.1
@@ -26,15 +26,15 @@
 #pragma warning(disable : 4702) // uncreachable code
 #endif
 
-#ifndef RAPIDJSON_PARSE_ERROR
-#define RAPIDJSON_PARSE_ERROR(msg, offset) \
-	RAPIDJSON_MULTILINEMACRO_BEGIN \
+#ifndef CEREAL_RAPIDJSON_PARSE_ERROR
+#define CEREAL_RAPIDJSON_PARSE_ERROR(msg, offset) \
+	CEREAL_RAPIDJSON_MULTILINEMACRO_BEGIN \
 	parseError_ = msg; \
 	errorOffset_ = offset; \
 	longjmp(jmpbuf_, 1); \
-	RAPIDJSON_MULTILINEMACRO_END
+	CEREAL_RAPIDJSON_MULTILINEMACRO_END
 #endif
-namespace rapidjson {
+namespace cereal {
 
 ///////////////////////////////////////////////////////////////////////////////
 // ParseFlag
@@ -242,17 +242,17 @@ public:
 		SkipWhitespace(stream);
 
 		if (stream.Peek() == '\0')
-			RAPIDJSON_PARSE_ERROR("Text only contains white space(s)", stream.Tell());
+			CEREAL_RAPIDJSON_PARSE_ERROR("Text only contains white space(s)", stream.Tell());
 		else {
 			switch (stream.Peek()) {
 				case '{': ParseObject<parseFlags>(stream, handler); break;
 				case '[': ParseArray<parseFlags>(stream, handler); break;
-				default: RAPIDJSON_PARSE_ERROR("Expect either an object or array at root", stream.Tell());
+				default: CEREAL_RAPIDJSON_PARSE_ERROR("Expect either an object or array at root", stream.Tell());
 			}
 			SkipWhitespace(stream);
 
 			if (stream.Peek() != '\0' && stream.Peek() != static_cast<Ch>(std::char_traits<Ch>::eof()))
-				RAPIDJSON_PARSE_ERROR("Nothing should follow the root object or array.", stream.Tell());
+				CEREAL_RAPIDJSON_PARSE_ERROR("Nothing should follow the root object or array.", stream.Tell());
 		}
 
 		return true;
@@ -266,7 +266,7 @@ private:
 	// Parse object: { string : value, ... }
 	template<unsigned parseFlags, typename Stream, typename Handler>
 	void ParseObject(Stream& stream, Handler& handler) {
-		RAPIDJSON_ASSERT(stream.Peek() == '{');
+		CEREAL_RAPIDJSON_ASSERT(stream.Peek() == '{');
 		stream.Take();	// Skip '{'
 		handler.StartObject();
 		SkipWhitespace(stream);
@@ -279,7 +279,7 @@ private:
 
 		for (SizeType memberCount = 0;;) {
 			if (stream.Peek() != '"') {
-				RAPIDJSON_PARSE_ERROR("Name of an object member must be a string", stream.Tell());
+				CEREAL_RAPIDJSON_PARSE_ERROR("Name of an object member must be a string", stream.Tell());
 				break;
 			}
 
@@ -287,7 +287,7 @@ private:
 			SkipWhitespace(stream);
 
 			if (stream.Take() != ':') {
-				RAPIDJSON_PARSE_ERROR("There must be a colon after the name of object member", stream.Tell());
+				CEREAL_RAPIDJSON_PARSE_ERROR("There must be a colon after the name of object member", stream.Tell());
 				break;
 			}
 			SkipWhitespace(stream);
@@ -300,7 +300,7 @@ private:
 			switch(stream.Take()) {
 				case ',': SkipWhitespace(stream); break;
 				case '}': handler.EndObject(memberCount); return;
-				default:  RAPIDJSON_PARSE_ERROR("Must be a comma or '}' after an object member", stream.Tell());
+				default:  CEREAL_RAPIDJSON_PARSE_ERROR("Must be a comma or '}' after an object member", stream.Tell());
 			}
 		}
 	}
@@ -308,7 +308,7 @@ private:
 	// Parse array: [ value, ... ]
 	template<unsigned parseFlags, typename Stream, typename Handler>
 	void ParseArray(Stream& stream, Handler& handler) {
-		RAPIDJSON_ASSERT(stream.Peek() == '[');
+		CEREAL_RAPIDJSON_ASSERT(stream.Peek() == '[');
 		stream.Take();	// Skip '['
 		handler.StartArray();
 		SkipWhitespace(stream);
@@ -327,7 +327,7 @@ private:
 			switch (stream.Take()) {
 				case ',': SkipWhitespace(stream); break;
 				case ']': handler.EndArray(elementCount); return;
-				default:  RAPIDJSON_PARSE_ERROR("Must be a comma or ']' after an array element.", stream.Tell());
+				default:  CEREAL_RAPIDJSON_PARSE_ERROR("Must be a comma or ']' after an array element.", stream.Tell());
 			}
 		}
 	}
@@ -335,7 +335,7 @@ private:
   // Parses for null or NaN
 	template<unsigned parseFlags, typename Stream, typename Handler>
 	void ParseNaNNull_(Stream& stream, Handler& handler) {
-		RAPIDJSON_ASSERT(stream.Peek() == 'n');
+		CEREAL_RAPIDJSON_ASSERT(stream.Peek() == 'n');
 		stream.Take();
 
     if( stream.Peek() == 'a' && stream.Take() == 'a' && stream.Take() == 'n' )
@@ -343,41 +343,41 @@ private:
     else if (stream.Take() == 'u' && stream.Take() == 'l' && stream.Take() == 'l')
 			handler.Null_();
     else
-			RAPIDJSON_PARSE_ERROR("Invalid value", stream.Tell() - 1);
+		CEREAL_RAPIDJSON_PARSE_ERROR("Invalid value", stream.Tell() - 1);
 	}
 
   // Parses for infinity
 	template<unsigned parseFlags, typename Stream, typename Handler>
 	void ParseInfinity(Stream& stream, Handler& handler) {
-		RAPIDJSON_ASSERT(stream.Peek() == 'i');
+		CEREAL_RAPIDJSON_ASSERT(stream.Peek() == 'i');
 		stream.Take();
 
     if (stream.Take() == 'n' && stream.Take() == 'f')
       handler.Double( std::numeric_limits<double>::infinity() );
     else
-			RAPIDJSON_PARSE_ERROR("Invalid value", stream.Tell() - 1);
+		CEREAL_RAPIDJSON_PARSE_ERROR("Invalid value", stream.Tell() - 1);
 	}
 
 	template<unsigned parseFlags, typename Stream, typename Handler>
 	void ParseTrue(Stream& stream, Handler& handler) {
-		RAPIDJSON_ASSERT(stream.Peek() == 't');
+		CEREAL_RAPIDJSON_ASSERT(stream.Peek() == 't');
 		stream.Take();
 
 		if (stream.Take() == 'r' && stream.Take() == 'u' && stream.Take() == 'e')
 			handler.Bool_(true);
 		else
-			RAPIDJSON_PARSE_ERROR("Invalid value", stream.Tell());
+			CEREAL_RAPIDJSON_PARSE_ERROR("Invalid value", stream.Tell());
 	}
 
 	template<unsigned parseFlags, typename Stream, typename Handler>
 	void ParseFalse(Stream& stream, Handler& handler) {
-		RAPIDJSON_ASSERT(stream.Peek() == 'f');
+		CEREAL_RAPIDJSON_ASSERT(stream.Peek() == 'f');
 		stream.Take();
 
 		if (stream.Take() == 'a' && stream.Take() == 'l' && stream.Take() == 's' && stream.Take() == 'e')
 			handler.Bool_(false);
 		else
-			RAPIDJSON_PARSE_ERROR("Invalid value", stream.Tell() - 1);
+			CEREAL_RAPIDJSON_PARSE_ERROR("Invalid value", stream.Tell() - 1);
 	}
 
 	// Helper function to parse four hexidecimal digits in \uXXXX in ParseString().
@@ -396,7 +396,7 @@ private:
 			else if (c >= 'a' && c <= 'f')
 				codepoint -= 'a' - 10;
 			else
-				RAPIDJSON_PARSE_ERROR("Incorrect hex digit after \\u escape", s.Tell() - 1);
+				CEREAL_RAPIDJSON_PARSE_ERROR("Incorrect hex digit after \\u escape", s.Tell() - 1);
 		}
 		stream = s; // Restore stream
 		return codepoint;
@@ -437,18 +437,18 @@ private:
 	// Parse string, handling the prefix and suffix double quotes and escaping.
 	template<unsigned parseFlags, typename Stream, typename Handler>
 	void ParseString(Stream& stream, Handler& handler) {
-#define Z16 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+#define CEREAL_Z16 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 		static const Ch escape[256] = {
-			Z16, Z16, 0, 0,'\"', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,'/',
-			Z16, Z16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,'\\', 0, 0, 0,
+			CEREAL_Z16, CEREAL_Z16, 0, 0,'\"', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,'/',
+			CEREAL_Z16, CEREAL_Z16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,'\\', 0, 0, 0,
 			0, 0,'\b', 0, 0, 0,'\f', 0, 0, 0, 0, 0, 0, 0,'\n', 0,
 			0, 0,'\r', 0,'\t', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-			Z16, Z16, Z16, Z16, Z16, Z16, Z16, Z16
+			CEREAL_Z16, CEREAL_Z16, CEREAL_Z16, CEREAL_Z16, CEREAL_Z16, CEREAL_Z16, CEREAL_Z16, CEREAL_Z16
 		};
-#undef Z16
+#undef CEREAL_Z16
 
 		Stream s = stream;	// Use a local copy for optimization
-		RAPIDJSON_ASSERT(s.Peek() == '\"');
+		CEREAL_RAPIDJSON_ASSERT(s.Peek() == '\"');
 		s.Take();	// Skip '\"'
 		Ch *head;
 		SizeType len;
@@ -457,7 +457,7 @@ private:
 		else
 			len = 0;
 
-#define RAPIDJSON_PUT(x) \
+#define CEREAL_RAPIDJSON_PUT(x) \
 	do { \
 		if (parseFlags & kParseInsituFlag) \
 			s.Put(x); \
@@ -472,17 +472,17 @@ private:
 			if (c == '\\') {	// Escape
 				Ch e = s.Take();
 				if ((sizeof(Ch) == 1 || characterOk(e)) && escape[(unsigned char)e])
-					RAPIDJSON_PUT(escape[(unsigned char)e]);
+					CEREAL_RAPIDJSON_PUT(escape[(unsigned char)e]);
 				else if (e == 'u') {	// Unicode
 					unsigned codepoint = ParseHex4(s);
 					if (codepoint >= 0xD800 && codepoint <= 0xDBFF) { // Handle UTF-16 surrogate pair
 						if (s.Take() != '\\' || s.Take() != 'u') {
-							RAPIDJSON_PARSE_ERROR("Missing the second \\u in surrogate pair", s.Tell() - 2);
+							CEREAL_RAPIDJSON_PARSE_ERROR("Missing the second \\u in surrogate pair", s.Tell() - 2);
 							return;
 						}
 						unsigned codepoint2 = ParseHex4(s);
 						if (codepoint2 < 0xDC00 || codepoint2 > 0xDFFF) {
-							RAPIDJSON_PARSE_ERROR("The second \\u in surrogate pair is invalid", s.Tell() - 2);
+							CEREAL_RAPIDJSON_PARSE_ERROR("The second \\u in surrogate pair is invalid", s.Tell() - 2);
 							return;
 						}
 						codepoint = (((codepoint - 0xD800) << 10) | (codepoint2 - 0xDC00)) + 0x10000;
@@ -500,36 +500,36 @@ private:
 					}
 				}
 				else {
-					RAPIDJSON_PARSE_ERROR("Unknown escape character", stream.Tell() - 1);
+					CEREAL_RAPIDJSON_PARSE_ERROR("Unknown escape character", stream.Tell() - 1);
 					return;
 				}
 			}
 			else if (c == '"') {	// Closing double quote
 				if (parseFlags & kParseInsituFlag) {
 					size_t length = s.PutEnd(head);
-					RAPIDJSON_ASSERT(length <= 0xFFFFFFFF);
-					RAPIDJSON_PUT('\0');	// null-terminate the string
+					CEREAL_RAPIDJSON_ASSERT(length <= 0xFFFFFFFF);
+					CEREAL_RAPIDJSON_PUT('\0');	// null-terminate the string
 					handler.String(head, SizeType(length), false);
 				}
 				else {
-					RAPIDJSON_PUT('\0');
+					CEREAL_RAPIDJSON_PUT('\0');
 					handler.String(stack_.template Pop<Ch>(len), len - 1, true);
 				}
 				stream = s;	// restore stream
 				return;
 			}
 			else if (c == '\0') {
-				RAPIDJSON_PARSE_ERROR("lacks ending quotation before the end of string", stream.Tell() - 1);
+				CEREAL_RAPIDJSON_PARSE_ERROR("lacks ending quotation before the end of string", stream.Tell() - 1);
 				return;
 			}
 			else if ((unsigned)c < 0x20) {	// RFC 4627: unescaped = %x20-21 / %x23-5B / %x5D-10FFFF
-				RAPIDJSON_PARSE_ERROR("Incorrect unescaped character in string", stream.Tell() - 1);
+				CEREAL_RAPIDJSON_PARSE_ERROR("Incorrect unescaped character in string", stream.Tell() - 1);
 				return;
 			}
 			else
-				RAPIDJSON_PUT(c);	// Normal character, just copy
+				CEREAL_RAPIDJSON_PUT(c);	// Normal character, just copy
 		}
-#undef RAPIDJSON_PUT
+#undef CEREAL_RAPIDJSON_PUT
 	}
 
 	template<unsigned parseFlags, typename Stream, typename Handler>
@@ -575,7 +575,7 @@ private:
 				}
 		}
 		else {
-			RAPIDJSON_PARSE_ERROR("Expect a value here.", stream.Tell());
+			CEREAL_RAPIDJSON_PARSE_ERROR("Expect a value here.", stream.Tell());
 			return;
 		}
 
@@ -610,7 +610,7 @@ private:
 			d = (double)i64;
 			while (s.Peek() >= '0' && s.Peek() <= '9') {
 				if (d >= 1E307) {
-					RAPIDJSON_PARSE_ERROR("Number too big to store in double", stream.Tell());
+					CEREAL_RAPIDJSON_PARSE_ERROR("Number too big to store in double", stream.Tell());
 					return;
 				}
 				d = d * 10 + (s.Take() - '0');
@@ -631,7 +631,7 @@ private:
 				--expFrac;
 			}
 			else {
-				RAPIDJSON_PARSE_ERROR("At least one digit in fraction part", stream.Tell());
+				CEREAL_RAPIDJSON_PARSE_ERROR("At least one digit in fraction part", stream.Tell());
 				return;
 			}
 
@@ -677,14 +677,14 @@ private:
             if( std::fpclassify( dd ) == FP_SUBNORMAL )
               handler.Double( dd );
             else
-						  RAPIDJSON_PARSE_ERROR("Number too big to store in double", stream.Tell());
+				CEREAL_RAPIDJSON_PARSE_ERROR("Number too big to store in double", stream.Tell());
 
 						return;
 					}
 				}
 			}
 			else {
-				RAPIDJSON_PARSE_ERROR("At least one digit in exponent", s.Tell());
+				CEREAL_RAPIDJSON_PARSE_ERROR("At least one digit in exponent", s.Tell());
 				return;
 			}
 

@@ -1,5 +1,5 @@
-#ifndef RAPIDJSON_WRITER_H_
-#define RAPIDJSON_WRITER_H_
+#ifndef CEREAL_RAPIDJSON_WRITER_H_
+#define CEREAL_RAPIDJSON_WRITER_H_
 
 #include "rapidjson.h"
 #include "internal/stack.h"
@@ -13,7 +13,7 @@
 #pragma warning(disable : 4127) // conditional expression is constant
 #endif
 
-namespace rapidjson {
+namespace cereal {
 
 //! JSON writer
 /*! Writer implements the concept Handler.
@@ -260,15 +260,15 @@ protected:
 	void WriteString(const Ch* str, SizeType length)  {
 		static const char hexDigits[] = "0123456789ABCDEF";
 		static const char escape[256] = {
-#define Z16 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+#define CEREAL_Z16 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 			//0    1    2    3    4    5    6    7    8    9    A    B    C    D    E    F
 			'u', 'u', 'u', 'u', 'u', 'u', 'u', 'u', 'b', 't', 'n', 'u', 'f', 'r', 'u', 'u', // 00
 			'u', 'u', 'u', 'u', 'u', 'u', 'u', 'u', 'u', 'u', 'u', 'u', 'u', 'u', 'u', 'u', // 10
 			  0,   0, '"',   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0, // 20
-			Z16, Z16,																		// 30~4F
+			CEREAL_Z16, CEREAL_Z16,																		// 30~4F
 			  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,'\\',   0,   0,   0, // 50
-			Z16, Z16, Z16, Z16, Z16, Z16, Z16, Z16, Z16, Z16								// 60~FF
-#undef Z16
+			CEREAL_Z16, CEREAL_Z16, CEREAL_Z16, CEREAL_Z16, CEREAL_Z16, CEREAL_Z16, CEREAL_Z16, CEREAL_Z16, CEREAL_Z16, CEREAL_Z16								// 60~FF
+#undef CEREAL_Z16
 		};
 
 		stream_.Put('\"');

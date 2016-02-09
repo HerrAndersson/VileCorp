@@ -1,6 +1,10 @@
 #pragma once
 #include "Node.h"
 #include "AssetManager.h"
+#include "rapidjson/reader.h"
+#include "rapidjson/document.h"
+#include "rapidjson/writer.h"
+#include "rapidjson/stringbuffer.h"
 #include <fstream>
 #include <locale>
 #include <codecvt>
