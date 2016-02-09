@@ -17,17 +17,16 @@ using namespace DirectX;
 class PickingDevice
 {
 private:
+
 	System::Camera* _camera;
 	System::Settings* _settings;
-
-
 
 	Ray CalculatePickRay(long x, long y);
 	std::vector<Vec2> CreatePickBox(Vec3 points[4]);
 	vector<GameObject*> SortByDistance(vector<GameObject*> pickedObjects);
 
-
 public:
+
 	PickingDevice(System::Camera* camera, System::Settings* settings);
 	~PickingDevice();
 	POINT _firstBoxPoint;

@@ -9,8 +9,8 @@ ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, G
 	_buildingGrid = new Grid(device, 1, 1, 1, XMFLOAT3(1.0f, 1.0f, 0.7f));
 	_gameObjectInfo = data;
 	_device = device;
+	_lightCulling = nullptr;
 
-	
 	ActivateTileset("default2");
 }
 
@@ -24,6 +24,7 @@ void ObjectHandler::Release()
 {
 	ReleaseGameObjects();
 	SAFE_DELETE( _tilemap);
+	SAFE_DELETE(_lightCulling);
 }
 
 void ObjectHandler::ActivateTileset(const string& name)
@@ -39,8 +40,6 @@ void ObjectHandler::ActivateTileset(const string& name)
 		}
 	}
 }
-
-
 
 bool ObjectHandler::Add(Type type, int index, const XMFLOAT3& position, const XMFLOAT3& rotation, const int subIndex)
 {
@@ -121,8 +120,7 @@ bool ObjectHandler::Add(Type type, int index, const XMFLOAT3& position, const XM
 		_gameObjects[type].push_back(object);
 		for(auto i : object->GetRenderObject()->_mesh._spotLights)
 		{
-			//TODO: Add settings variables to this function below! Alex
-			_spotlights[object] = new Renderer::Spotlight(_device, i, 256, 256, 0.1f, 1000.0f);
+			_spotlights[object] = new Renderer::Spotlight(_device, i, 0.1f, 1000.0f);
 		}
 		_objectCount++;
 		return true;
@@ -318,9 +316,6 @@ int ObjectHandler::GetObjectCount() const
 	return _objectCount;
 }
 
-
-/*Tilemap handling*/
-
 Tilemap * ObjectHandler::GetTileMap() const
 {
 	return _tilemap;
@@ -459,9 +454,6 @@ Grid * ObjectHandler::GetBuildingGrid()
 	return _buildingGrid;
 }
 
-
-
-
 bool ObjectHandler::LoadLevel(int lvlIndex)
 {
 	int dimX, dimY;
@@ -485,6 +477,9 @@ bool ObjectHandler::LoadLevel(int lvlIndex)
 			Add((Type)i._tileType, 0, DirectX::XMFLOAT3(i._posX, 0, i._posZ), DirectX::XMFLOAT3(0, i._rotY, 0));
 		}
 	}
+
+	_lightCulling = new LightCulling(_tilemap);
+
 	return result;
 }
 
@@ -650,18 +645,6 @@ void ObjectHandler::Update(float deltaTime)
 		}
 	}
 
-	/*
-	
-	if(animations uppdateringar)
-		if(active)
-			do ljus update
-
-	if(gameobject förflyttning)
-		if(active)
-			do ljus update
-	
-	*/
-
 	for (pair<GameObject*, Renderer::Spotlight*> spot : _spotlights)
 	{
 		if (spot.second->IsActive() && spot.first->IsActive())
@@ -676,6 +659,21 @@ void ObjectHandler::Update(float deltaTime)
 			}
 		}
 	}
+}
+
+map<GameObject*, Renderer::Spotlight*>* ObjectHandler::GetSpotlights()
+{
+	return &_spotlights;
+}
+
+map<GameObject*, Renderer::Pointlight*>* ObjectHandler::GetPointlights()
+{
+	return &_pointligths;
+}
+
+vector<vector<GameObject*>>* ObjectHandler::GetObjectsInLight(Renderer::Spotlight* spotlight)
+{
+	return _lightCulling->GetObjectsInSpotlight(spotlight);
 }
 
 void ObjectHandler::ReleaseGameObjects()
