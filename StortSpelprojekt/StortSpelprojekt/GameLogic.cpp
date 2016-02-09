@@ -60,7 +60,7 @@ void GameLogic::HandleInput()
 			vector<Unit*> units = _player->GetSelectedUnits();
 			for (unsigned int i = 0; i < units.size(); i++)
 			{
-				units[i]->SetScale(DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f));
+				units[i]->SetColorOffset(DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f));
 			}
 			_player->DeselectUnits();
 
@@ -68,7 +68,7 @@ void GameLogic::HandleInput()
 			Unit* unit = (Unit*)pickedUnits[0];
 			_player->SelectUnit(unit);
 
-			unit->SetScale(DirectX::XMFLOAT3(1.2f, 1.2f, 1.2f));
+			unit->SetColorOffset(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));
 		}
 	}
 	//Deselect Units
@@ -79,7 +79,7 @@ void GameLogic::HandleInput()
 			vector<Unit*> units = _player->GetSelectedUnits();
 			for (unsigned int i = 0; i < units.size(); i++)
 			{
-				units[i]->SetScale(DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f));
+				units[i]->SetColorOffset(DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f));
 			}
 			_player->DeselectUnits();
 		}
@@ -98,7 +98,7 @@ void GameLogic::HandleInput()
 		for (unsigned int i = 0; i < pickedUnits.size(); i++)
 		{
 			_player->SelectUnit((Unit*)pickedUnits[i]);
-			pickedUnits[i]->SetScale(DirectX::XMFLOAT3(1.2f, 1.2f, 1.2f));
+			pickedUnits[i]->SetColorOffset(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));
 		}
 
 	}
