@@ -1,7 +1,7 @@
-#ifndef RAPIDJSON_POW10_
-#define RAPIDJSON_POW10_
+#ifndef CEREAL_RAPIDJSON_POW10_
+#define CEREAL_RAPIDJSON_POW10_
 
-namespace rapidjson {
+namespace cereal {
 namespace internal {
 
 //! Computes integer powers of 10 in double (10.0^n).

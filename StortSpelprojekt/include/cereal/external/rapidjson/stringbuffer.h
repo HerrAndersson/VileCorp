@@ -1,10 +1,10 @@
-#ifndef RAPIDJSON_STRINGBUFFER_H_
-#define RAPIDJSON_STRINGBUFFER_H_
+#ifndef CEREAL_RAPIDJSON_STRINGBUFFER_H_
+#define CEREAL_RAPIDJSON_STRINGBUFFER_H_
 
 #include "rapidjson.h"
 #include "internal/stack.h"
 
-namespace rapidjson {
+namespace cereal {
 
 //! Represents an in-memory output stream.
 /*!
