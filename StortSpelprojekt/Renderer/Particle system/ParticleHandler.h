@@ -20,7 +20,7 @@ namespace Renderer
 		ID3D11DeviceContext* _deviceContext;
 
 		std::vector<ParticleRequestMessage> _queue;
-		ParticleRequestQueue _requestQueue;
+		ParticleRequestQueue* _requestQueue;
 		std::vector<ParticleEmitter> _particleEmitters;
 
 		int _emitterCount;
@@ -37,6 +37,7 @@ namespace Renderer
 		int GetEmitterCount() const;
 		std::vector<Particle>* GetParticles(int index);
 		ID3D11Buffer* GetParticleBuffer(int index);
+		int GetParticleCount(int index);
 
 		ParticleRequestQueue* GetParticleRequestQueue();
 

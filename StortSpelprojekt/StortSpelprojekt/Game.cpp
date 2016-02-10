@@ -2,10 +2,12 @@
 #include <stdexcept>
 #include <DirectXMath.h>
 #include <sstream>
+#include <random>
 
 Game::Game(HINSTANCE hInstance, int nCmdShow):
 	_settingsReader("Assets/settings.xml")
 {
+	srand(time(NULL));
 	System::Settings* settings = _settingsReader.GetSettings();
 
 	_gameHandle = this;
@@ -74,10 +76,21 @@ bool Game::Update(double deltaTime)
 
 	_controls->Update();
 	run = _SM->Update(deltaTime);
+
+
+
+
+	if (_controls->IsFunctionKeyDown("DEBUG:REQUEST_PARTICLE"))
+	{
+		XMFLOAT3 pos = XMFLOAT3(rand() % 20 + 1, 0.0f, rand() % 20 + 1);
+		XMFLOAT4 col = XMFLOAT4((rand() % 10) / 10.0f, (rand() % 10) / 10.0f, (rand() % 10) / 10.0f, 1.0f);
+
+		ParticleRequestMessage msg = ParticleRequestMessage(ParticleType::SPLASH, pos, col, 10000.0f, 50, true);
+		_particleHandler->GetParticleRequestQueue()->Insert(msg);
+	}
+	int witefoijesdjgsoieg = 34874685;
 	_particleHandler->Update(deltaTime);
-
-
-
+	int ewersdgfsdgsdssdg = 435634;
 
 
 
@@ -167,6 +180,19 @@ void Game::Render()
 	/*------------------------------------------------  Render billboarded objects  ---------------------------------------------------*/
 
 	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::BILLBOARDING_STAGE);
+
+	int count = _particleHandler->GetEmitterCount();
+	for (int i = 0; i < count; i++)
+	{
+		ID3D11Buffer* vertexBuffer = _particleHandler->GetParticleBuffer(i);
+		if (vertexBuffer)
+		{
+			int vertexCount = _particleHandler->GetParticleCount(i);
+			//TODO!
+			//_renderModule->SetDataPerParticleEmitter();
+			//_renderModule->RenderParticles();
+		}
+	}
 
 	//_objectHandler->getparticles();
 	//for(particles)

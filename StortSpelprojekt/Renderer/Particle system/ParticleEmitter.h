@@ -31,7 +31,7 @@ namespace Renderer
 		ID3D11DeviceContext* _deviceContext;
 		ID3D11Buffer* _particlePointsBuffer;
 
-		void BuildVertexBuffer();
+		void CreateVertexBuffer();
 		void UpdateVertexBuffer();
 
 	public:

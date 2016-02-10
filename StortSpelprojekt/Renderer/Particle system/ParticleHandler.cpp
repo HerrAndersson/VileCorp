@@ -3,16 +3,21 @@
 namespace Renderer
 {
 
-	ParticleHandler::ParticleHandler(ID3D11Device* device, ID3D11DeviceContext* deviceContext) : _requestQueue(&_queue)
+	ParticleHandler::ParticleHandler(ID3D11Device* device, ID3D11DeviceContext* deviceContext) 
 	{
 		_device = device;
 		_deviceContext = deviceContext;
 		_emitterCount = 5;
 		_particleEmitters.reserve(_emitterCount);
+		_queue.reserve(_emitterCount);
+
+		_requestQueue = new ParticleRequestQueue(&_queue);
 	}
 
 	ParticleHandler::~ParticleHandler()
 	{
+		delete _requestQueue;
+		_queue.clear();
 		_particleEmitters.clear();
 		_device = nullptr;
 		_deviceContext = nullptr;
@@ -34,7 +39,7 @@ namespace Renderer
 		{
 			for (ParticleRequestMessage& p : _queue)
 			{
-				ActivateEmitter(p.type, p.position, p.color, p.particleCount, p.timeLimit, p.isActive);
+				ActivateEmitter(p._type, p._position, p._color, p._particleCount, p._timeLimit, p._isActive);
 			}
 			_queue.clear();
 		}
@@ -43,6 +48,7 @@ namespace Renderer
 	void ParticleHandler::ActivateEmitter(ParticleType type, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT4& color, int particleCount, float timeLimit, bool isActive)
 	{
 		bool found = false;
+
 		for (ParticleEmitter& p : _particleEmitters)
 		{
 			if (!p.IsActive())
@@ -57,7 +63,11 @@ namespace Renderer
 		{
 			ParticleEmitter particleEmitter(_device, _deviceContext,type, position, color, particleCount, timeLimit, isActive);
 			_particleEmitters.push_back(particleEmitter);
-			_emitterCount++;
+
+			if (_emitterCount > _particleEmitters.capacity())
+			{
+				_emitterCount++;
+			}
 		}
 	}
 
@@ -76,6 +86,7 @@ namespace Renderer
 		return _particleEmitters.at(index).GetParticles();
 	}
 
+	//Only get the vertex buffer from the active emitters. Check result against nullptr before usage
 	ID3D11Buffer* ParticleHandler::GetParticleBuffer(int index)
 	{
 		if (index >= _emitterCount || index < 0)
@@ -83,12 +94,33 @@ namespace Renderer
 			throw std::runtime_error("ParticleHandler::GetParticles(int index): Invalid index");
 		}
 
-		return _particleEmitters.at(index).GetParticleBuffer();
+		 ID3D11Buffer* vertexBuffer = nullptr;
+		if (_particleEmitters.at(index).IsActive())
+		{
+			vertexBuffer = _particleEmitters.at(index).GetParticleBuffer();
+		}
+
+		return vertexBuffer;
 	}
 
 	ParticleRequestQueue* ParticleHandler::GetParticleRequestQueue()
 	{
-		return &_requestQueue;
+		return _requestQueue;
 	}
 
+	int ParticleHandler::GetParticleCount(int index)
+	{
+		if (index >= _emitterCount || index < 0)
+		{
+			throw std::runtime_error("ParticleHandler::GetParticles(int index): Invalid index");
+		}
+
+		int particleCount = -1;
+		if (_particleEmitters.at(index).IsActive())
+		{
+			particleCount = _particleEmitters.at(index).GetParticleCount();
+		}
+
+		return particleCount;
+	}
 }

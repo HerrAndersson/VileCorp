@@ -9,6 +9,12 @@ namespace Renderer
 	{
 		_device = device;
 		_deviceContext = deviceContext;
+		_isActive = false;
+		_type = SPLASH;
+		_position = XMFLOAT3(0, 0, 0);
+		_timeLeft = 0;
+		_particlePointsBuffer = nullptr;
+		_particles.reserve(20);
 	}
 
 	ParticleEmitter::ParticleEmitter(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const ParticleType& type, const XMFLOAT3& position, const XMFLOAT4 color, int particleCount, float timeLimit, bool isActive)
@@ -28,7 +34,7 @@ namespace Renderer
 			_particles.push_back(particle);
 		}
 
-		BuildVertexBuffer();
+		CreateVertexBuffer();
 	}
 
 	ParticleEmitter::~ParticleEmitter()
@@ -40,7 +46,7 @@ namespace Renderer
 	}
 
 	//Used for initializing the vertex buffer that is holding all the positions of the particles
-	void ParticleEmitter::BuildVertexBuffer()
+	void ParticleEmitter::CreateVertexBuffer()
 	{
 		SAFE_RELEASE(_particlePointsBuffer);
 
@@ -58,12 +64,18 @@ namespace Renderer
 		D3D11_BUFFER_DESC bufferDesc;
 		ZeroMemory(&bufferDesc, sizeof(bufferDesc));
 		bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-		bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+		bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
 		bufferDesc.ByteWidth = sizeof(ParticleVertex) * particleCount;
+		bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
 		D3D11_SUBRESOURCE_DATA data;
+		ZeroMemory(&data, sizeof(D3D11_SUBRESOURCE_DATA));
 		data.pSysMem = points.data();
 		HRESULT result = _device->CreateBuffer(&bufferDesc, &data, &_particlePointsBuffer);
+		if (FAILED(result))
+		{
+			throw std::runtime_error("ParticleEmitter::CreateVertexBuffer: Failed to create _particlePointsBuffer");
+		}
 	}
 
 	void ParticleEmitter::UpdateVertexBuffer()
@@ -80,7 +92,13 @@ namespace Renderer
 		}
 
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
-		_deviceContext->Map(_particlePointsBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+		ZeroMemory(&mappedResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
+		HRESULT hr = _deviceContext->Map(_particlePointsBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+		if (FAILED(hr))
+		{
+			throw std::runtime_error("ParticleEmitter::UpdateVertexBuffer: Failed to Map _particlePointsBuffer");
+		}
+
 		memcpy(mappedResource.pData, points.data(), sizeof(ParticleVertex) * particleCount);
 		_deviceContext->Unmap(_particlePointsBuffer, 0);
 	}
@@ -100,7 +118,7 @@ namespace Renderer
 			_particles.push_back(particle);
 		}
 
-		BuildVertexBuffer();
+		CreateVertexBuffer();
 	}
 
 	void ParticleEmitter::Update(double deltaTime)
@@ -172,7 +190,7 @@ namespace Renderer
 			}
 		}
 
-		BuildVertexBuffer();
+		CreateVertexBuffer();
 	}
 
 	bool ParticleEmitter::HasTimeLeft() const
