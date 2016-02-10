@@ -119,11 +119,11 @@
 				},
 				"unitnumber":
 				{
-					"position": [0.173333, -0.02],
+					"position": [0.223333, -0.02],
 					"scale": [0.08666, 0.15],
 					"centered" :true,
-					"color": "FFFFFFFF",
-					"fontsize" : 30.0
+					"color": "FF000000",
+					"fontsize" : 35.0
 				},
 				
 				"unitinfotext":

@@ -59,41 +59,7 @@ void GameLogic::HandleInput()
 			unit->SetColorOffset(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));
 		}
 	}
-	//Show selected units on the GUI
-	if (_player->AreUnitsSelected())
-	{
-		vector<Unit*> units = _player->GetSelectedUnits();
-		int nrOfUnits = _player->GetNumberOfSelectedUnits();
-		int healthSum = 0;
-
-		_uiTree->GetNode("unitinfocontainer")->SetHidden(false);
-
-		//TODO: Actually check if the units are guards //Mattias
-		_uiTree->GetNode("unitinfotext")->SetText(L"Guard");
-		_uiTree->GetNode("unitpicture")->SetTexture(_guardTexture);
-
-		//Calculate health sum
-		for (auto& i: units)
-		{
-			healthSum += i->GetHealth();
-		}
-		_uiTree->GetNode("unithealth")->SetText(std::to_wstring(healthSum));
-		
-		//Show the number of units selected
-		if (nrOfUnits > 1)
-		{
-			_uiTree->GetNode("unitnumber")->SetHidden(false);
-			_uiTree->GetNode("unitnumber")->SetText(std::to_wstring(nrOfUnits));
-		}
-		else
-		{
-			_uiTree->GetNode("unitnumber")->SetHidden(true);
-		}
-	}
-	else
-	{
-		_uiTree->GetNode("unitinfocontainer")->SetHidden(true);
-	}
+	
 
 	//Deselect Units
 	if (_controls->IsFunctionKeyDown("MOUSE:DESELECT"))
@@ -134,6 +100,43 @@ void GameLogic::HandleInput()
 		{
 			_player->PatrolUnits(_pickingDevice->PickTile(_controls->GetMouseCoord()._pos));
 		}
+	}
+
+	//Show selected units on the GUI
+	if (_player->AreUnitsSelected())
+	{
+		vector<Unit*> units = _player->GetSelectedUnits();
+		int nrOfUnits = _player->GetNumberOfSelectedUnits();
+		int healthSum = 0;
+
+		_uiTree->GetNode("unitinfocontainer")->SetHidden(false);
+
+		//TODO: Actually check if the units are guards //Mattias
+		_uiTree->GetNode("unitinfotext")->SetText(L"Guard");
+		_uiTree->GetNode("unitpicture")->SetTexture(_guardTexture);
+
+		//Calculate health sum
+		for (auto& i : units)
+		{
+			healthSum += i->GetHealth();
+		}
+		//TODO: Health is always 1? //Mattias
+		_uiTree->GetNode("unithealth")->SetText(std::to_wstring(healthSum * 100) + L"%");
+
+		//Show the number of units selected
+		if (nrOfUnits > 1)
+		{
+			_uiTree->GetNode("unitnumber")->SetHidden(false);
+			_uiTree->GetNode("unitnumber")->SetText(L"x " + std::to_wstring(nrOfUnits));
+		}
+		else
+		{
+			_uiTree->GetNode("unitnumber")->SetHidden(true);
+		}
+	}
+	else
+	{
+		_uiTree->GetNode("unitinfocontainer")->SetHidden(true);
 	}
 
 	/*
