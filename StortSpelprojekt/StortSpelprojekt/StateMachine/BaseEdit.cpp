@@ -12,7 +12,6 @@ bool compareFloat3(XMFLOAT3 a, XMFLOAT3 b)
 // Instancing
 BaseEdit::BaseEdit(ObjectHandler* objectHandler, System::Controls* controls, PickingDevice* pickingDevice, System::Camera* camera)
 {
-	_modeLock = false;
 	_objectHandler = objectHandler;
 	_controls = controls;
 	_pickingDevice = pickingDevice;
@@ -21,7 +20,9 @@ BaseEdit::BaseEdit(ObjectHandler* objectHandler, System::Controls* controls, Pic
 	// Don´t let both be true
 	_isSelectionMode = true;
 	_isDragAndPlaceMode = false;
+
 	_isPlace = false;
+	_modeLock = false;
 
 	_marker._g = nullptr;
 	_baseMarker._g = nullptr;
@@ -149,7 +150,8 @@ void BaseEdit::SetValidity(Marker* m, Type type)
 
 void BaseEdit::MarkerMoveEvent(Type type)
 {
-	if (_marker._g != nullptr && _marker._g->GetType() == type && _controls->IsFunctionKeyDown("MOUSE:DRAG"))
+	if (_marker._g != nullptr && _marker._g->GetType() == type && 
+		(_controls->IsFunctionKeyDown("MOUSE:DRAG") ||(_isDragAndPlaceMode && _modeLock)))
 	{
 		SetValidity(&_marker, type);
 	}
@@ -159,12 +161,12 @@ void BaseEdit::DragAndDropEvent(Type type)
 {
 	if (_controls->IsFunctionKeyDown("MOUSE:SELECT") && !_isPlace)
 	{
-		_modeLock = true;
-
 		AI::Vec2D pickedTile = _pickingDevice->PickTile(_controls->GetMouseCoord()._pos);
 
 		if (_tileMap->IsTypeOnTile(pickedTile, type))
 		{
+			_modeLock = true;
+
 			//Fetches either the floor if there is no other object on the tile, or the object that is on the tile
 			_marker._g = _tileMap->GetObjectOnTile(pickedTile, type);
 			_marker._origPos = pickedTile;
@@ -173,6 +175,20 @@ void BaseEdit::DragAndDropEvent(Type type)
 			_tileMap->RemoveObjectFromTile(_marker._g);
 		}
 	}
+}
+
+void BaseEdit::CreateBlueprints(Type type, const std::string & objectName)
+{
+	_modeLock = true;
+
+	// Create ghost/blueprint for _baseMarker
+	DragActivate(type, objectName);
+	_baseMarker = _marker;
+	SetValidity(&_baseMarker, _baseMarker._g->GetType());
+	_baseMarker._origPos = _baseMarker._g->GetTilePosition();
+
+	// Create ghost/blueprint for _marker
+	DragActivate(type, objectName);
 }
 
 void BaseEdit::ReleaseBlueprints()
@@ -250,97 +266,95 @@ void BaseEdit::DragAndDrop()
 
 void BaseEdit::DragAndPlace(Type type, const std::string& objectName)
 {
-	if (_isDragAndPlaceMode && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
+	if (_isDragAndPlaceMode)
 	{
-		_modeLock = true;
-		_isPlace = true;
-
-		// Create ghost/blueprint for _baseMarker
-		DragActivate(type, objectName);
-		_baseMarker = _marker;
-		SetValidity(&_baseMarker, _baseMarker._g->GetType());
-		_baseMarker._origPos = _baseMarker._g->GetTilePosition();
-
-		// Create ghost/blueprint for _marker
-		DragActivate(type, objectName);
-	}
-
-	// Not really diselect but activates remove mode (temp)
-	if (_isDragAndPlaceMode && _controls->IsFunctionKeyDown("MOUSE:DESELECT"))
-	{
-		_isPlace = false;
-	}
-
-	if (_isDragAndPlaceMode && _controls->IsFunctionKeyUp("MOUSE:SELECT"))
-	{
-		_modeLock = false;
-
-		_marker._origPos = _marker._g->GetTilePosition();
-
-		// Identify min and max
-		int minX, maxX;
-		if (_baseMarker._origPos._x < _marker._origPos._x)
+		if (!_modeLock)
 		{
-			minX = _baseMarker._origPos._x;
-			maxX = _marker._origPos._x;
-		}
-		else
-		{
-			minX = _marker._origPos._x;
-			maxX = _baseMarker._origPos._x;
-		}
-		int minY, maxY;
-		if (_baseMarker._origPos._y < _marker._origPos._y)
-		{
-			minY = _baseMarker._origPos._y;
-			maxY = _marker._origPos._y;
-		}
-		else
-		{
-			minY = _marker._origPos._y;
-			maxY = _baseMarker._origPos._y;
-		}
-
-		ReleaseBlueprints();
-
-		// Check if extreme poins is outside Tilemap
-		if (minX < 0) minX == 0;
-		if (minY < 0) minY == 0;
-		if (maxX >= _tileMap->GetWidth()) maxX >= _tileMap->GetWidth() - 1;
-		if (maxY >= _tileMap->GetHeight()) maxX >= _tileMap->GetHeight() - 1;
-
-
-		// Check tiles
-		GameObject* objectOnTile;
-		if (_isPlace) // Place
-		{
-			for (int x = minX; x <= maxX; x++)
+			if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
 			{
-				for (int y = minY; y <= maxY; y++)
-				{
-					objectOnTile = _tileMap->GetObjectOnTile(x, y, type);
+				CreateBlueprints(type, objectName);
+				_isPlace = true;
+			}
 
-					if (CheckValidity(AI::Vec2D(x, y), type))
+			// Not really diselect but activates remove mode (temp)
+			if (_controls->IsFunctionKeyDown("MOUSE:DESELECT"))
+			{
+				CreateBlueprints(type, objectName);
+				_isPlace = false;
+			}
+		}
+
+		if ((_controls->IsFunctionKeyUp("MOUSE:SELECT") && _isPlace) || (_controls->IsFunctionKeyUp("MOUSE:DESELECT") && !_isPlace))
+		{
+			_modeLock = false;
+
+			_marker._origPos = _marker._g->GetTilePosition();
+
+			// Identify min and max
+			int minX, maxX;
+			if (_baseMarker._origPos._x < _marker._origPos._x)
+			{
+				minX = _baseMarker._origPos._x;
+				maxX = _marker._origPos._x;
+			}
+			else
+			{
+				minX = _marker._origPos._x;
+				maxX = _baseMarker._origPos._x;
+			}
+			int minY, maxY;
+			if (_baseMarker._origPos._y < _marker._origPos._y)
+			{
+				minY = _baseMarker._origPos._y;
+				maxY = _marker._origPos._y;
+			}
+			else
+			{
+				minY = _marker._origPos._y;
+				maxY = _baseMarker._origPos._y;
+			}
+
+			ReleaseBlueprints();
+
+			// Check if extreme poins is outside Tilemap
+			if (minX < 0) minX == 0;
+			if (minY < 0) minY == 0;
+			if (maxX >= _tileMap->GetWidth()) maxX >= _tileMap->GetWidth() - 1;
+			if (maxY >= _tileMap->GetHeight()) maxX >= _tileMap->GetHeight() - 1;
+
+
+			// Check tiles
+			GameObject* objectOnTile;
+			if (_isPlace) // Place
+			{
+				for (int x = minX; x <= maxX; x++)
+				{
+					for (int y = minY; y <= maxY; y++)
 					{
-						// Add to valid place
-						_objectHandler->Add(type, objectName, XMFLOAT3(x, 0, y), XMFLOAT3(0.0f, 0.0f, 0.0f), SHARK);
+						objectOnTile = _tileMap->GetObjectOnTile(x, y, type);
+
+						if (CheckValidity(AI::Vec2D(x, y), type))
+						{
+							// Add to valid place
+							_objectHandler->Add(type, objectName, XMFLOAT3(x, 0, y), XMFLOAT3(0.0f, 0.0f, 0.0f), SHARK);
+						}
 					}
 				}
 			}
-		}
-		else // Remove
-		{
-			for (int x = minX; x <= maxX; x++)
+			else // Remove
 			{
-				for (int y = minY; y <= maxY; y++)
+				for (int x = minX; x <= maxX; x++)
 				{
-					// TRAP/LOOT/SPAWN OBS!
-					objectOnTile = _tileMap->GetObjectOnTile(x, y, type);
-
-					if (objectOnTile != nullptr && type == objectOnTile->GetType())
+					for (int y = minY; y <= maxY; y++)
 					{
-						// Remove
-						_objectHandler->Remove(objectOnTile);
+						// TRAP/LOOT/SPAWN OBS!
+						objectOnTile = _tileMap->GetObjectOnTile(x, y, type);
+
+						if (objectOnTile != nullptr && type == objectOnTile->GetType())
+						{
+							// Remove
+							_objectHandler->Remove(objectOnTile);
+						}
 					}
 				}
 			}

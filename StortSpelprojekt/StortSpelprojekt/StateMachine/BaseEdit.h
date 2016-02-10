@@ -47,6 +47,9 @@ private:
 	void MarkerMoveEvent(Type type);
 	void DragAndDropEvent(Type type);
 
+	void CreateBlueprints(Type type, const std::string& objectName);
+
+
 	void ReleaseBlueprints();
 
 public:
