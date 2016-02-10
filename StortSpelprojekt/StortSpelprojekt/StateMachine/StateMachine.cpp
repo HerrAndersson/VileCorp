@@ -20,6 +20,7 @@ StateMachine::StateMachine(System::Controls* controls,
 	_baseStates.push_back(new LevelEditState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settings, soundModule));
 	_baseStates.push_back(new LevelSelectState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settings, soundModule));
 	_baseStates.push_back(new OptionsState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settings, settingsReader, soundModule));
+	_baseStates.push_back(new PauseState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settings, soundModule));
 }
 
 StateMachine::~StateMachine()

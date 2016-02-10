@@ -8,6 +8,7 @@
 #include "LevelEditState.h"
 #include "OptionsState.h"
 #include "LevelSelectState.h"
+#include "PauseState.h"
 #include <vector>
 #include "stdafx.h"
 
