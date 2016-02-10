@@ -45,7 +45,7 @@ private:
 	bool CheckValidity(AI::Vec2D tile, Type type);
 	void SetValidity(Marker* m, Type type);
 	void MarkerMoveEvent(Type type);
-	void DragAndDropEvent();
+	void DragAndDropEvent(Type type);
 
 	void ReleaseBlueprints();
 
