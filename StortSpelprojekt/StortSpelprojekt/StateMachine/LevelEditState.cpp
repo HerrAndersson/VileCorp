@@ -54,6 +54,8 @@ void LevelEditState::OnStateEnter()
 void LevelEditState::OnStateExit()
 {
 	_objectHandler->MinimizeTileMap();
+	//TODO: Remove this function to LevelSelection when that state is created. /Alex
+	_objectHandler->UnloadLevel();
 	delete _baseEdit;
 	_baseEdit = nullptr;
 }
