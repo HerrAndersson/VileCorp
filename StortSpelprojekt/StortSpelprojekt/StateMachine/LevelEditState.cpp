@@ -8,10 +8,13 @@ LevelEditState::LevelEditState(System::Controls* controls, ObjectHandler* object
 
 	_camera = camera;
 	_pickingDevice = pickingDevice;
+	_baseEdit = nullptr;
 }
 
 LevelEditState::~LevelEditState()
-{}
+{
+	delete _baseEdit;
+}
 
 void LevelEditState::Update(float deltaTime)
 {
@@ -31,6 +34,8 @@ void LevelEditState::Update(float deltaTime)
 void LevelEditState::OnStateEnter()
 {
 	_baseEdit = new BaseEdit(_objectHandler, _controls, _pickingDevice, _camera);
+	//TODO: Move this function to LevelSelection when that state is created. /Alex
+	_objectHandler->LoadLevel(3);
 	_objectHandler->DisableSpawnPoints();
 	_uiTree.GetNode("TrapLeaf")->SetHidden(true);
 	_uiTree.GetNode("UnitLeaf")->SetHidden(true);
@@ -50,6 +55,7 @@ void LevelEditState::OnStateExit()
 {
 	_objectHandler->MinimizeTileMap();
 	delete _baseEdit;
+	_baseEdit = nullptr;
 }
 
 void LevelEditState::HandleInput()

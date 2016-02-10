@@ -2,37 +2,21 @@
 #include <DirectXMath.h>
 #include "InputDevice.h"
 
-GameLogic::GameLogic()
-{
-	_player = nullptr;
-	_objectHandler = nullptr;
-	_camera = nullptr;
-	_controls = nullptr;
-	_pickingDevice = nullptr;
-	_levelLoad = LevelLoad();
-}
-
-GameLogic::~GameLogic()
-{
-	delete _player;
-	_player = nullptr;
-}
-
-void GameLogic::Initialize(ObjectHandler* objectHandler, System::Camera* camera, System::Controls* controls, PickingDevice* pickingDevice)
+GameLogic::GameLogic(ObjectHandler* objectHandler, System::Camera* camera, System::Controls* controls, PickingDevice* pickingDevice)
 {
 	_objectHandler = objectHandler;
 	_camera = camera;
 	_controls = controls;
 	_pickingDevice = pickingDevice;
 
-	//_objectHandler->LoadLevel(3);
-	//Either import the level here or in the LevelEdit.cpp, otherwise the level will be loaded twice
-	//System::loadJSON(&_levelLoad, "../../../../StortSpelprojekt/Assets/LevelLoad.json");
-	//_objectHandler->LoadLevel(_levelLoad.level);
-
-	_objectHandler->InitPathfinding();
-
 	_player = new Player();
+	_objectHandler->InitPathfinding();
+}
+
+GameLogic::~GameLogic()
+{
+	delete _player;
+	_player = nullptr;
 }
 
 void GameLogic::Update(float deltaTime)

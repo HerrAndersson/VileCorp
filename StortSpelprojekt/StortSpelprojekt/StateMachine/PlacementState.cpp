@@ -5,12 +5,10 @@ PlacementState::PlacementState(System::Controls* controls, ObjectHandler* object
 {
 	_controls = controls;
 	_objectHandler = objectHandler;
-
 	_camera = camera;
 	_pickingDevice = pickingDevice;
 	_budget = 1000;
-
-
+	_baseEdit = nullptr;
 }
 
 
@@ -30,7 +28,7 @@ void PlacementState::Update(float deltaTime)
 
 void PlacementState::OnStateEnter()
 {
-	//TODO: Move this function to LevelSelection when that state is created.
+	//TODO: Move this function to LevelSelection when that state is created. /Alex
 	_objectHandler->LoadLevel(3);
 
 	_baseEdit = new BaseEdit(_objectHandler, _controls, _pickingDevice, _camera);

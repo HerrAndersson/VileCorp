@@ -5,13 +5,17 @@ PlayState::PlayState(System::Controls* controls, ObjectHandler* objectHandler, S
 {
 	_controls = controls;
 	_objectHandler = objectHandler;
-	
 	_camera = camera;
 	_pickingDevice = pickingDevice;
+
+	_gameLogic = nullptr;
 }
 
 PlayState::~PlayState()
-{}
+{
+	delete _gameLogic;
+	_gameLogic = nullptr;
+}
 
 void PlayState::Update(float deltaTime)
 {
@@ -20,15 +24,17 @@ void PlayState::Update(float deltaTime)
 		ChangeState(State::PAUSESTATE);
 	}
 
-	_gameLogic.Update(deltaTime);
+	_gameLogic->Update(deltaTime);
 }
 
 void PlayState::OnStateEnter()
 {
-	_gameLogic.Initialize(_objectHandler, _camera, _controls, _pickingDevice);
+	_gameLogic = new GameLogic(_objectHandler, _camera, _controls, _pickingDevice);
 	_objectHandler->EnableSpawnPoints();
 }
 
 void PlayState::OnStateExit()
 {
+	delete _gameLogic;
+	_gameLogic = nullptr;
 }
