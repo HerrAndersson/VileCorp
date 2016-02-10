@@ -18,8 +18,8 @@
     
   ],
   "traps": [
-    "trap-24.bin",
-    "trap-24.bin"
+    "Anvil-27.bin",
+    "Anvil-27.bin"
 
   ],
   "triggers": [
@@ -27,8 +27,8 @@
     
   ],
   "guards": [
-    "BasemanAnimated-27.bin",
-	  "BasemanAnimated-27.bin"
+    "EngineerMan-27.bin",
+	  "EngineerMan-27.bin"
 
   ],
   "enemies": [

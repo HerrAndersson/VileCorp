@@ -256,6 +256,11 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 			_tileMap->GetObjectOnTile(_areaOfEffect[i], FLOOR)->AddColorOffset({0,0,1});
 		}
 	}
+
+	if (_renderObject->_isSkinned)
+	{
+		_animation = new Animation(_renderObject->_skeleton);
+	}
 }
 
 Trap::~Trap()
@@ -264,6 +269,10 @@ Trap::~Trap()
 	_areaOfEffect = nullptr;
 	delete[] _occupiedTiles;
 	_occupiedTiles = nullptr;
+	if (_animation != nullptr)
+	{
+		delete _animation;
+	}
 }
 
 AI::Vec2D * Trap::GetTiles() const
@@ -294,6 +303,10 @@ void Trap::Activate()
 
 void Trap::Update(float deltaTime)
 {	
+	if (_animation != nullptr)
+	{
+		_animation->Update(deltaTime);
+	}
 	bool triggered = false;
 	for (int i = 0; i < _tileSize && !triggered; i++)
 	{

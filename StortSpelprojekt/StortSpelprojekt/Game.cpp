@@ -219,14 +219,14 @@ void Game::Render()
 	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::ANIM_STAGE);
 	if (gameObjects->size() > 0)
 	{
-		if (gameObjects->at(GUARD).size() > 0)
+		if (gameObjects->at(TRAP).size() > 0)
 		{
-			RenderObject* renderObject = gameObjects->at(GUARD).at(0)->GetRenderObject();
+			RenderObject* renderObject = gameObjects->at(TRAP).at(0)->GetRenderObject();
 
 			_renderModule->SetDataPerObjectType(renderObject);
 			int vertexBufferSize = renderObject->_mesh._vertexBufferSize;
 
-			for (GameObject* a : gameObjects->at(GUARD))
+			for (GameObject* a : gameObjects->at(TRAP))
 			{
 				if (a->GetRenderObject()->_isSkinned)
 				{
