@@ -2,36 +2,21 @@
 #include <DirectXMath.h>
 #include "InputDevice.h"
 
-GameLogic::GameLogic()
-{
-	_player = nullptr;
-	_objectHandler = nullptr;
-	_camera = nullptr;
-	_controls = nullptr;
-	_pickingDevice = nullptr;
-	_levelLoad = LevelLoad();
-}
-
-GameLogic::~GameLogic()
-{
-	delete _player;
-}
-
-void GameLogic::Initialize(ObjectHandler* objectHandler, System::Camera* camera, System::Controls* controls, PickingDevice* pickingDevice)
+GameLogic::GameLogic(ObjectHandler* objectHandler, System::Camera* camera, System::Controls* controls, PickingDevice* pickingDevice)
 {
 	_objectHandler = objectHandler;
 	_camera = camera;
 	_controls = controls;
 	_pickingDevice = pickingDevice;
 
-	//_objectHandler->LoadLevel(3);
-	//Either import the level here or in the LevelEdit.cpp, otherwise the level will be loaded twice
-	//System::loadJSON(&_levelLoad, "../../../../StortSpelprojekt/Assets/LevelLoad.json");
-	//_objectHandler->LoadLevel(_levelLoad.level);
-
-	_objectHandler->InitPathfinding();
-
 	_player = new Player();
+	_objectHandler->InitPathfinding();
+}
+
+GameLogic::~GameLogic()
+{
+	delete _player;
+	_player = nullptr;
 }
 
 void GameLogic::Update(float deltaTime)
@@ -60,7 +45,7 @@ void GameLogic::HandleInput()
 			vector<Unit*> units = _player->GetSelectedUnits();
 			for (unsigned int i = 0; i < units.size(); i++)
 			{
-				units[i]->SetScale(DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f));
+				units[i]->SetColorOffset(DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f));
 			}
 			_player->DeselectUnits();
 
@@ -68,7 +53,7 @@ void GameLogic::HandleInput()
 			Unit* unit = (Unit*)pickedUnits[0];
 			_player->SelectUnit(unit);
 
-			unit->SetScale(DirectX::XMFLOAT3(1.2f, 1.2f, 1.2f));
+			unit->SetColorOffset(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));
 		}
 	}
 	//Deselect Units
@@ -79,7 +64,7 @@ void GameLogic::HandleInput()
 			vector<Unit*> units = _player->GetSelectedUnits();
 			for (unsigned int i = 0; i < units.size(); i++)
 			{
-				units[i]->SetScale(DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f));
+				units[i]->SetColorOffset(DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f));
 			}
 			_player->DeselectUnits();
 		}
@@ -98,7 +83,7 @@ void GameLogic::HandleInput()
 		for (unsigned int i = 0; i < pickedUnits.size(); i++)
 		{
 			_player->SelectUnit((Unit*)pickedUnits[i]);
-			pickedUnits[i]->SetScale(DirectX::XMFLOAT3(1.2f, 1.2f, 1.2f));
+			pickedUnits[i]->SetColorOffset(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));
 		}
 
 	}

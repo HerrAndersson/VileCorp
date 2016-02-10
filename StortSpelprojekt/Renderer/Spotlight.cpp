@@ -6,7 +6,7 @@ using namespace DirectX;
 
 namespace Renderer
 {
-	Spotlight::Spotlight(ID3D11Device* device, SpotlightData lightdata, int width, int height, float nearClip, float farClip, int resolution)
+	Spotlight::Spotlight(ID3D11Device* device, SpotlightData lightdata, float nearClip, float farClip, int resolution)
 	{
 		_position = XMFLOAT3(0, 0, 0);
 		_rotation = XMFLOAT3(0, 0, 0);
@@ -23,7 +23,7 @@ namespace Renderer
 		XMMATRIX rotationMatrix = XMMatrixRotationRollPitchYaw(XMConvertToRadians(_rotation.x), XMConvertToRadians(_rotation.y), XMConvertToRadians(_rotation.z));
 		_worldMatrix = rotationMatrix * XMMatrixTranslation(_position.x, _position.y, _position.z);
 
-		if (height <= 0 || _range < std::numeric_limits<float>::epsilon())
+		if (_range < std::numeric_limits<float>::epsilon())
 		{
 			throw std::runtime_error("Spotlight::Spotlight: Division by Zero");
 		}
@@ -39,11 +39,11 @@ namespace Renderer
 		XMVECTOR pos = XMVectorSet(_position.x, _position.y, _position.z, 0);
 		XMVECTOR dir = XMVector4Normalize(XMVectorSet(_direction.x, _direction.y, _direction.z, 0));
 
-		XMVECTOR baseCenter = pos + dir * _range; //Center of the cone base.
+		XMVECTOR baseCenter = pos + dir * _range;			 //Center of the cone base.
 		double baseRadius = _range * sin(_angle / 2.0f);	 //Radius of the cone base.
 
-		double shadowMapFov = std::tan(baseRadius / _range);
-		_projectionMatrix = XMMatrixPerspectiveFovLH(_angle, (float)width / (float)height, nearClip, farClip);
+
+		_projectionMatrix = XMMatrixPerspectiveFovLH(_angle, 1.0f, nearClip, farClip);
 
 		XMVECTOR X = XMVectorSet(1, 0, 0, 0);
 		XMVECTOR Y = XMVectorSet(0, 1, 0, 0);

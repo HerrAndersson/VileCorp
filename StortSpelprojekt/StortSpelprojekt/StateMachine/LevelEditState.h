@@ -6,7 +6,7 @@
 class LevelEditState : public BaseState
 {
 private:
-	BaseEdit _baseEdit;
+	BaseEdit* _baseEdit;
 
 	struct LevelHeader
 	{
@@ -55,6 +55,5 @@ public:
 	void HandleInput();
 	void HandleButtons();
 
-	void InitNewLevel();
 	void ExportLevel();
 };

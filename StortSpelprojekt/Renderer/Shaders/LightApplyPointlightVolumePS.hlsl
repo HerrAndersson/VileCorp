@@ -71,15 +71,15 @@ float4 main(VS_OUT input) : SV_TARGET
 
 		if (len > lightRangeDiv2 * 0.85)
 		{
-			finalColor *= float4(0.1f, 0.1f, 0.1f, 0.1f);
+			finalColor.a = 0.05f;
 		}
 		else if (len > lightRangeDiv2 * 0.75)
 		{
-			finalColor *= float4(0.35f, 0.35f, 0.35f, 0.35f);
+			finalColor.a = 0.15f;
 		}
 		else if (len > lightRangeDiv2 * 0.65)
 		{
-			finalColor *= float4(0.7f, 0.7f, 0.7f, 0.65f);
+			finalColor.a = 0.35f;
 		}
 
 		return finalColor;

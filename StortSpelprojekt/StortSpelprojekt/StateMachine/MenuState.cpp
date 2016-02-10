@@ -9,7 +9,7 @@ MenuState::MenuState(System::Controls* controls, ObjectHandler* objectHandler, S
 	_camera = camera;
 	_pickingDevice = pickingDevice;
 
-	//_soundModule->AddSound("Assets/Sounds/yay.wav",0.5f, 1.2f, true, false);
+	_soundModule->AddSound("Assets/Sounds/yay.wav",0.5f, 1.2f, true, false);
 }
 
 MenuState::~MenuState()
@@ -28,7 +28,7 @@ void MenuState::Update(float deltaTime)
 		System::MouseCoord coord = _controls->GetMouseCoord();
 		if (_uiTree.IsButtonColliding("playbutton", coord._pos.x, coord._pos.y))
 		{
-			//_soundModule->Play("Assets/Sounds/yay.wav");
+			_soundModule->Play("Assets/Sounds/yay.wav");
 
 			ChangeState(State::PLACEMENTSTATE);
 		}
@@ -57,10 +57,11 @@ void MenuState::Update(float deltaTime)
 
 void MenuState::OnStateEnter()
 {
-	
+	//TODO: When Levelselection state is implemented. Move this codeline to OnStateExit(). 
+	_objectHandler->UnloadLevel();
 }
 
 void MenuState::OnStateExit()
 {
-
+	
 }
