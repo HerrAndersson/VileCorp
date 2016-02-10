@@ -57,10 +57,11 @@ void MenuState::Update(float deltaTime)
 
 void MenuState::OnStateEnter()
 {
-	
+	//TODO: When Levelselection state is implemented. Move this codeline to OnStateExit(). 
+	_objectHandler->UnloadLevel();
 }
 
 void MenuState::OnStateExit()
 {
-
+	
 }

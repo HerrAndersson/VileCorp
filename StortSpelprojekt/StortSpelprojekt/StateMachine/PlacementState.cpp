@@ -16,11 +16,13 @@ PlacementState::PlacementState(System::Controls* controls, ObjectHandler* object
 
 PlacementState::~PlacementState()
 {
+	delete _baseEdit;
+	_baseEdit = nullptr;
 }
 
 void PlacementState::Update(float deltaTime)
 {
-	_baseEdit.Update(deltaTime);
+	_baseEdit->Update(deltaTime);
 
 	HandleInput();
 	HandleButtons();
@@ -28,7 +30,10 @@ void PlacementState::Update(float deltaTime)
 
 void PlacementState::OnStateEnter()
 {
-	_baseEdit.Initialize(_objectHandler, _controls, _pickingDevice, _camera);
+	//TODO: Move this function to LevelSelection when that state is created.
+	_objectHandler->LoadLevel(3);
+
+	_baseEdit = new BaseEdit(_objectHandler, _controls, _pickingDevice, _camera);
 	_objectHandler->DisableSpawnPoints();
 
 	XMFLOAT3 campos;
@@ -40,13 +45,14 @@ void PlacementState::OnStateEnter()
 
 void PlacementState::OnStateExit()
 {
-	_baseEdit.Release();
+	delete _baseEdit;
+	_baseEdit = nullptr;
 }
 
 void PlacementState::HandleInput()
 {
-	_baseEdit.DragAndDrop(TRAP);
-	_baseEdit.DragAndDrop(GUARD);
+	_baseEdit->DragAndDrop(TRAP);
+	_baseEdit->DragAndDrop(GUARD);
 
 	if (_controls->IsFunctionKeyDown("MENU:MENU"))
 	{
@@ -69,9 +75,9 @@ void PlacementState::HandleButtons()
 		_toPlace._type = TRAP;
 		_toPlace._name = "trap_proto";
 
-		if (_baseEdit.IsSelection() && !_baseEdit.IsPlace())
+		if (_baseEdit->IsSelection() && !_baseEdit->IsPlace())
 		{
-			_baseEdit.DragActivate(_toPlace._type, _toPlace._name, SPIKE);
+			_baseEdit->DragActivate(_toPlace._type, _toPlace._name, SPIKE);
 		}
 	}
 	if (_uiTree.IsButtonColliding("TeslaTrap", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
@@ -79,9 +85,9 @@ void PlacementState::HandleButtons()
 		_toPlace._type = TRAP;
 		_toPlace._name = "trap_proto";
 
-		if (_baseEdit.IsSelection() && !_baseEdit.IsPlace())
+		if (_baseEdit->IsSelection() && !_baseEdit->IsPlace())
 		{
-			_baseEdit.DragActivate(_toPlace._type, _toPlace._name, TESLACOIL);
+			_baseEdit->DragActivate(_toPlace._type, _toPlace._name, TESLACOIL);
 		}
 	}
 
@@ -91,9 +97,9 @@ void PlacementState::HandleButtons()
 		_toPlace._type = GUARD;
 		_toPlace._name = "guard_proto";
 
-		if (_baseEdit.IsSelection())
+		if (_baseEdit->IsSelection())
 		{
-			_baseEdit.DragActivate(_toPlace._type, _toPlace._name);
+			_baseEdit->DragActivate(_toPlace._type, _toPlace._name);
 		}
 	}
 	//if (_uiTree.IsButtonColliding("Camera", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))

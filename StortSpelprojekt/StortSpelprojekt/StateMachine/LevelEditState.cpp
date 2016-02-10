@@ -17,20 +17,20 @@ void LevelEditState::Update(float deltaTime)
 {
 	if (_controls->IsFunctionKeyDown("MAP_EDIT:PLACEMENTFLAG"))
 	{
-		_baseEdit.ChangePlaceState();
+		_baseEdit->ChangePlaceState();
 	}
-	_baseEdit.Update(deltaTime);
+	_baseEdit->Update(deltaTime);
 	HandleInput();
 	HandleButtons();
 
 
-	_baseEdit.DragAndDrop();
-	_baseEdit.DragAndPlace(_toPlace._type, _toPlace._name);
+	_baseEdit->DragAndDrop();
+	_baseEdit->DragAndPlace(_toPlace._type, _toPlace._name);
 }
 
 void LevelEditState::OnStateEnter()
 {
-	_baseEdit.Initialize(_objectHandler, _controls, _pickingDevice, _camera);
+	_baseEdit = new BaseEdit(_objectHandler, _controls, _pickingDevice, _camera);
 	_objectHandler->DisableSpawnPoints();
 	_uiTree.GetNode("TrapLeaf")->SetHidden(true);
 	_uiTree.GetNode("UnitLeaf")->SetHidden(true);
@@ -49,6 +49,7 @@ void LevelEditState::OnStateEnter()
 void LevelEditState::OnStateExit()
 {
 	_objectHandler->MinimizeTileMap();
+	delete _baseEdit;
 }
 
 void LevelEditState::HandleInput()
@@ -56,7 +57,7 @@ void LevelEditState::HandleInput()
 	//Press C to init new level
 	if (_controls->IsFunctionKeyDown("MAP_EDIT:NEWLEVEL"))
 	{
-		InitNewLevel();
+		_objectHandler->UnloadLevel();
 	}
 
 	if (_controls->IsFunctionKeyDown("MENU:MENU"))
@@ -82,9 +83,9 @@ void LevelEditState::HandleButtons()
 		_toPlace._type = TRAP;
 		_toPlace._name = "trap_proto";
 
-		if (_baseEdit.IsSelection() && !_baseEdit.IsPlace())
+		if (_baseEdit->IsSelection() && !_baseEdit->IsPlace())
 		{
-			_baseEdit.DragActivate(_toPlace._type, _toPlace._name);
+			_baseEdit->DragActivate(_toPlace._type, _toPlace._name);
 		}
 	}
 
@@ -102,9 +103,9 @@ void LevelEditState::HandleButtons()
 		_toPlace._type = GUARD;
 		_toPlace._name = "guard_proto";
 
-		if (_baseEdit.IsSelection())
+		if (_baseEdit->IsSelection())
 		{
-			_baseEdit.DragActivate(_toPlace._type, _toPlace._name);
+			_baseEdit->DragActivate(_toPlace._type, _toPlace._name);
 		}
 	}
 
@@ -132,11 +133,6 @@ void LevelEditState::HandleButtons()
 	_trapButtonClick = false;
 	_unitButtonClick = false;
 	_decButtonClick = false;
-}
-
-void LevelEditState::InitNewLevel()
-{
-	_objectHandler->Release();
 }
 
 void LevelEditState::ExportLevel()

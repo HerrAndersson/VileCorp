@@ -6,7 +6,7 @@
 class PlacementState : public BaseState
 {
 private:
-	BaseEdit _baseEdit;
+	BaseEdit* _baseEdit;
 	bool _trapChosen = false;
 	int _budget;
 

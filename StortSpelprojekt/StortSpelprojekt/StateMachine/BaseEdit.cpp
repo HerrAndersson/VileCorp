@@ -10,11 +10,7 @@ bool compareFloat3(XMFLOAT3 a, XMFLOAT3 b)
 }
 
 // Instancing
-BaseEdit::BaseEdit()
-{
-}
-
-void BaseEdit::Initialize(ObjectHandler* objectHandler, System::Controls* controls, PickingDevice* pickingDevice, System::Camera* camera)
+BaseEdit::BaseEdit(ObjectHandler* objectHandler, System::Controls* controls, PickingDevice* pickingDevice, System::Camera* camera)
 {
 	_objectHandler = objectHandler;
 	_controls = controls;
@@ -26,19 +22,14 @@ void BaseEdit::Initialize(ObjectHandler* objectHandler, System::Controls* contro
 	_isDragAndPlaceMode = false;
 	_isPlace = false;
 
-	LoadLevel(3);
-
 	_marker = nullptr;
 	_markedTile = nullptr;
+	_tileMap = _objectHandler->GetTileMap();
 }
 
 BaseEdit::~BaseEdit()
 {
-}
-
-void BaseEdit::Release()
-{
-	_objectHandler->Release();
+	delete _markedTile;
 }
 
 // Other functions
@@ -463,13 +454,4 @@ void BaseEdit::Update(float deltaTime)
 {
 	HandleInput();
 	//_objectHandler->Update(deltaTime);
-}
-
-void BaseEdit::LoadLevel(int levelID)
-{
-	//load existing level.
-	_objectHandler->Release();
-	_objectHandler->LoadLevel(levelID);
-
-	_tileMap = _objectHandler->GetTileMap();
 }

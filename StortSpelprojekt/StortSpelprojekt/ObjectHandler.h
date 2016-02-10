@@ -106,6 +106,7 @@ public:
 	Grid* GetBuildingGrid();
 
 	bool LoadLevel(int lvlIndex);
+	void UnloadLevel();
 
 	void InitPathfinding();
 	void EnableSpawnPoints();
@@ -113,7 +114,5 @@ public:
 
 	//Update gamelogic of all objects
 	void Update(float deltaTime);
-	//Relase all object resources
-	void Release();
 };
 

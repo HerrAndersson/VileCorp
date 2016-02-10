@@ -16,14 +16,43 @@ ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, G
 
 ObjectHandler::~ObjectHandler()
 {
-	Release();
+	UnloadLevel();
 	SAFE_DELETE(_buildingGrid);
 }
 
-void ObjectHandler::Release()
+bool ObjectHandler::LoadLevel(int lvlIndex)
+{
+	int dimX, dimY;
+	vector<GameObjectData> gameObjectData;
+	bool result = _assetManager->ParseLevel(lvlIndex, gameObjectData, dimX, dimY);
+	if (result)
+	{
+		if (_gameObjects.size() < 1)
+		{
+			for (int i = 0; i < NR_OF_TYPES; i++)
+			{
+				_gameObjects.push_back(std::vector<GameObject*>());
+			}
+		}
+
+		delete _tilemap;
+		_tilemap = new Tilemap(AI::Vec2D(dimX, dimY));
+
+		for (auto i : gameObjectData)
+		{
+			Add((Type)i._tileType, 0, DirectX::XMFLOAT3(i._posX, 0, i._posZ), DirectX::XMFLOAT3(0, i._rotY, 0));
+		}
+	}
+
+	_lightCulling = new LightCulling(_tilemap);
+
+	return result;
+}
+
+void ObjectHandler::UnloadLevel()
 {
 	ReleaseGameObjects();
-	SAFE_DELETE( _tilemap);
+	SAFE_DELETE(_tilemap);
 	SAFE_DELETE(_lightCulling);
 }
 
@@ -454,34 +483,7 @@ Grid * ObjectHandler::GetBuildingGrid()
 	return _buildingGrid;
 }
 
-bool ObjectHandler::LoadLevel(int lvlIndex)
-{
-	int dimX, dimY;
-	vector<GameObjectData> gameObjectData;
-	bool result = _assetManager->ParseLevel(lvlIndex, gameObjectData, dimX, dimY);
-	if (result)
-	{
-		if (_gameObjects.size() < 1)
-		{
-			for (int i = 0; i < NR_OF_TYPES; i++)
-			{
-				_gameObjects.push_back(std::vector<GameObject*>());
-			}
-		}
 
-		delete _tilemap;
-		_tilemap = new Tilemap(AI::Vec2D(dimX, dimY));
-
-		for (auto i : gameObjectData)
-		{
-			Add((Type)i._tileType, 0, DirectX::XMFLOAT3(i._posX, 0, i._posZ), DirectX::XMFLOAT3(0, i._rotY, 0));
-		}
-	}
-
-	_lightCulling = new LightCulling(_tilemap);
-
-	return result;
-}
 
 void ObjectHandler::InitPathfinding()
 {
@@ -678,9 +680,6 @@ vector<vector<GameObject*>>* ObjectHandler::GetObjectsInLight(Renderer::Spotligh
 
 void ObjectHandler::ReleaseGameObjects()
 {
-	int debug;
-	std::vector<GameObject*> tempVector;
-
 	if (_gameObjects.size() > 0)
 	{
 		for (int i = 0; i < NR_OF_TYPES; i++)
@@ -691,14 +690,8 @@ void ObjectHandler::ReleaseGameObjects()
 				delete g;
 			}
 			_gameObjects[i].clear();
-			std::vector<GameObject*>().swap(_gameObjects[i]);
-			_gameObjects[i].shrink_to_fit();
-			debug = _gameObjects[i].size();
 		}
 		_gameObjects.clear();
-		std::vector<GameObject*>().swap(tempVector);
-		_gameObjects.shrink_to_fit();
-		debug = _gameObjects.size();
 	}
 	_idCount = 0;
 	_objectCount = 0;
