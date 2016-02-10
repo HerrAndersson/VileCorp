@@ -61,3 +61,8 @@ void Player::PatrolUnits(AI::Vec2D patrolPoint)
 
 	}
 }
+
+int Player::GetNumberOfSelectedUnits()
+{
+	return _selectedUnits.size();
+}

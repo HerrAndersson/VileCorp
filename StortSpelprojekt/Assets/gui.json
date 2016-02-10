@@ -110,29 +110,37 @@
 			"scale": [0.3, 0.2],
 			"texture": "../Menues/PlacementStateGUI/placementUnits1.png",
 			
-			"unitpicture":
+			"unitinfocontainer":
 			{
-				"position": [0.173333, -0.02],
-				"scale": [0.08666, 0.15],
-				"texture":"floor.png"
-			},
-			
-			"unitinfotext":
-			{
-				"position": [-0.08666, 0.04],
-				"scale": [0.1733, 0.08],
-				"text": "Basic guard",
-				"centered" :false,
-				"color": "FF000000",
-				"fontsize" : 30.0
-			},
-			"unithealth":
-			{
-				"position": [-0.08666, -0.02],
-				"scale": [0.1733, 0.08],
-				"text": "100%",
-				"color": "FF000000",
-				"fontsize" : 30.0
+				"unitpicture":
+				{
+					"position": [0.173333, -0.02],
+					"scale": [0.08666, 0.15]
+				},
+				"unitnumber":
+				{
+					"position": [0.173333, -0.02],
+					"scale": [0.08666, 0.15],
+					"centered" :true,
+					"color": "FFFFFFFF",
+					"fontsize" : 30.0
+				},
+				
+				"unitinfotext":
+				{
+					"position": [-0.08666, 0.04],
+					"scale": [0.1733, 0.08],
+					"centered" :false,
+					"color": "FF000000",
+					"fontsize" : 30.0
+				},
+				"unithealth":
+				{
+					"position": [-0.08666, -0.02],
+					"scale": [0.1733, 0.08],
+					"color": "FF000000",
+					"fontsize" : 30.0
+				}
 			}
 		},
 		"objective" :

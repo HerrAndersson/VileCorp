@@ -19,6 +19,6 @@ public:
 	vector<Unit*> GetSelectedUnits();
 	void MoveUnits(AI::Vec2D movePoint);
 	void PatrolUnits(AI::Vec2D patrolPoint);
-
+	int GetNumberOfSelectedUnits();
 };
 
