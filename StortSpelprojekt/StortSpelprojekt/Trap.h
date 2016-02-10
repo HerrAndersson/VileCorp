@@ -1,6 +1,7 @@
 #pragma once
 #include "GameObject.h"
 #include "Unit.h"
+#include <memory>
 
 enum TrapType{ SPIKE, TESLACOIL, SHARK};
 
