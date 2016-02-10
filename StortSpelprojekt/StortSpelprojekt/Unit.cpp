@@ -44,9 +44,9 @@ void Unit::Rotate()
 		}
 		CalculateMatrix();
 	}
-//	_visionCone->ColorVisibleTiles({0,0,0});
+	_visionCone->ColorVisibleTiles({0,0,0});
 	_visionCone->FindVisibleTiles(_tilePosition, _direction);
-//	_visionCone->ColorVisibleTiles({0,0,3});
+	_visionCone->ColorVisibleTiles({0,0,3});
 }
 
 int Unit::GetApproxDistance(AI::Vec2D target) const
@@ -170,6 +170,12 @@ AI::Vec2D Unit::GetGoal()
 AI::Vec2D Unit::GetDirection()
 {
 	return _direction;
+}
+
+void Unit::SetDirection(const AI::Vec2D direction)
+{
+	_direction = direction;
+	_visionCone->FindVisibleTiles(_tilePosition, _direction);
 }
 
 int Unit::GetHealth()

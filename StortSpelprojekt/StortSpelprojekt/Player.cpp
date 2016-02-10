@@ -52,7 +52,7 @@ void Player::MoveUnits(AI::Vec2D movePoint)
 {
 	for (unsigned int i = 0; i < _selectedUnits.size(); i++)
 	{
-		Unit* unit = (Unit*)_objectHandler->Find(_selectedUnits[i]);
+		Unit* unit = (Unit*)(_objectHandler->Find(_selectedUnits[i]));
 
 		if (unit != nullptr)
 		{

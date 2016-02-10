@@ -54,6 +54,7 @@ public:
 	int GetPathLength()const;
 	AI::Vec2D GetGoal();
 	AI::Vec2D GetDirection();
+	void SetDirection(const AI::Vec2D direction);
 	int GetHealth();
 	GameObject* GetHeldObject()const;
 	//void FindVisibleTiles();

@@ -9,7 +9,7 @@ GameLogic::GameLogic(ObjectHandler* objectHandler, System::Camera* camera, Syste
 	_controls = controls;
 	_pickingDevice = pickingDevice;
 
-	_player = new Player();
+	_player = new Player(_objectHandler);
 	_objectHandler->InitPathfinding();
 }
 

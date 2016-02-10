@@ -155,7 +155,7 @@ void Game::Render()
 
 				for (GameObject* g : i)
 				{
-					//if (g->IsVisible())
+					if (g->IsVisible())
 					{
 						_renderModule->Render(g->GetMatrix(), vertexBufferSize, g->GetColorOffset());
 					}
