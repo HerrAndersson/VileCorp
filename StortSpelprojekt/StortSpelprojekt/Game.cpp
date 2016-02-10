@@ -163,7 +163,7 @@ void Game::Render()
 					{
 						renderObject = i.at(j)->GetRenderObject();
 						_renderModule->SetDataPerObjectType(renderObject);
-						int vertexBufferSize = renderObject->_mesh._vertexBufferSize;
+						vertexBufferSize = renderObject->_mesh._vertexBufferSize;
 					}
 					if (i.at(j)->IsVisible())
 					{
@@ -177,19 +177,55 @@ void Game::Render()
 
 	/*--------------------------------------------------  Render skinned objects  -----------------------------------------------------*/
 	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::ANIM_STAGE);
-	if (gameObjects->size() > 0)
+	//if (gameObjects->size() > 0)
+	//{
+	//	if (gameObjects->at(TRAP).size() > 0)
+	//	{
+	//		RenderObject* renderObject = gameObjects->at(TRAP).at(0)->GetRenderObject();
+
+	//		_renderModule->SetDataPerObjectType(renderObject);
+	//		int vertexBufferSize = renderObject->_mesh._vertexBufferSize;
+
+	//		for (GameObject* a : gameObjects->at(TRAP))
+	//		{
+	//			// temporary uncommenting
+	//			_renderModule->RenderAnimation(a->GetMatrix(), vertexBufferSize, a->GetAnimation()->GetFloats(), a->GetColorOffset());
+	//		}
+	//	}
+	//}
+	// Now every gameobject can be animated
+	for (auto i : *gameObjects)
 	{
-		if (gameObjects->at(GUARD).size() > 0)
+		if (i.size() > 0)
 		{
-			RenderObject* renderObject = gameObjects->at(GUARD).at(0)->GetRenderObject();
-
-			_renderModule->SetDataPerObjectType(renderObject);
-			int vertexBufferSize = renderObject->_mesh._vertexBufferSize;
-
-			for (GameObject* a : gameObjects->at(GUARD))
+			RenderObject* renderObject = i.at(0)->GetRenderObject();
+			if (!renderObject->_isSkinned)
 			{
-				// temporary uncommenting
-				//_renderModule->RenderAnimation(a->GetMatrix(), vertexBufferSize, a->GetAnimation()->GetTransforms(), a->GetColorOffset());
+				continue;
+			}
+			else
+			{
+				_renderModule->SetDataPerObjectType(renderObject);
+				int vertexBufferSize = renderObject->_mesh._vertexBufferSize;
+				if (i.at(0)->IsVisible())
+				{
+					_renderModule->RenderAnimation(i.at(0)->GetMatrix(), vertexBufferSize, i.at(0)->GetAnimation()->GetFloats(), i.at(0)->GetColorOffset());
+				}
+
+				for (int j = 1; j < i.size(); j++)
+				{
+					if (i.at(j)->GetSubType() != i.at(j - 1)->GetSubType())
+					{
+						renderObject = i.at(j)->GetRenderObject();
+						_renderModule->SetDataPerObjectType(renderObject);
+						vertexBufferSize = renderObject->_mesh._vertexBufferSize;
+					}
+					if (i.at(j)->IsVisible())
+					{
+						_renderModule->RenderAnimation(i.at(j)->GetMatrix(), vertexBufferSize, i.at(j)->GetAnimation()->GetFloats(), i.at(j)->GetColorOffset());
+					}
+
+				}
 			}
 		}
 	}
