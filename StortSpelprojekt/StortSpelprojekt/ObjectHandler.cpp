@@ -22,6 +22,14 @@ ObjectHandler::~ObjectHandler()
 
 void ObjectHandler::Release()
 {
+	for (pair<GameObject*, Renderer::Spotlight*> spot : _spotlights)
+	{
+		SAFE_DELETE(spot.second);
+		spot.second = nullptr;
+		spot.first = nullptr;
+	}
+	_spotlights.clear();
+
 	ReleaseGameObjects();
 	SAFE_DELETE( _tilemap);
 	SAFE_DELETE(_lightCulling);
@@ -672,7 +680,13 @@ void ObjectHandler::Update(float deltaTime)
 			{
 				XMFLOAT3 pos = spot.first->GetPosition();
 				pos.y = 0.5f;
-				spot.second->SetPositionAndRotation(pos, spot.first->GetRotation());
+
+				XMFLOAT3 rot = spot.first->GetRotation();
+				rot.x = XMConvertToDegrees(rot.x);
+				rot.y = XMConvertToDegrees(rot.y) + 180;
+				rot.z = XMConvertToDegrees(rot.z);
+
+				spot.second->SetPositionAndRotation(pos, rot);
 			}
 		}
 	}
@@ -693,20 +707,10 @@ vector<vector<GameObject*>>* ObjectHandler::GetObjectsInLight(Renderer::Spotligh
 	return _lightCulling->GetObjectsInSpotlight(spotlight);
 }
 
-vector<Renderer::Particle>* ObjectHandler::GetParticles(int index)
-{
-	return _particleHandler.GetParticles(index);
-}
-
 void ObjectHandler::ReleaseGameObjects()
 {
 	int debug;
 	std::vector<GameObject*> tempVector;
-
-	for (pair<GameObject*, Renderer::Spotlight*> spot : _spotlights)
-	{
-		delete spot.second;
-	}
 
 	if (_gameObjects.size() > 0)
 	{

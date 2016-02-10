@@ -14,12 +14,12 @@ Game::Game(HINSTANCE hInstance, int nCmdShow):
 	_timer = System::Timer();
 
 	_renderModule = new Renderer::RenderModule(_window->GetHWND(), settings);
+	_particleHandler = new Renderer::ParticleHandler(_renderModule->GetDevice(), _renderModule->GetDeviceContext());
 	
 	_assetManager = new AssetManager(_renderModule->GetDevice());
 	_controls = new System::Controls(_window->GetHWND());
 	_fontWrapper = new FontWrapper(_renderModule->GetDevice(), L"Assets/Fonts/Calibri.ttf", L"Calibri");
 
-	//Init camera
 	_camera = new System::Camera(settings);
 	_camera->SetPosition(XMFLOAT3(3, 20, 0));
 	_camera->SetRotation(XMFLOAT3(60, 0, 0));
@@ -35,8 +35,6 @@ Game::Game(HINSTANCE hInstance, int nCmdShow):
 	_SM->Update(_timer.GetFrameTime());
 
 	_enemiesHasSpawned = false;
-
-	//_controls->SaveKeyBindings(System::MAP_EDIT_KEYMAP, "MOVE_CAMERA_UP", "M");
 }
 
 Game::~Game()
@@ -50,6 +48,7 @@ Game::~Game()
 	SAFE_DELETE(_assetManager);
 	SAFE_DELETE(_pickingDevice);
 	SAFE_DELETE(_fontWrapper);
+	SAFE_DELETE(_particleHandler);
 }
 
 void Game::ResizeResources(System::Settings* settings)
@@ -60,7 +59,7 @@ void Game::ResizeResources(System::Settings* settings)
 	_renderModule->ResizeResources(_window->GetHWND(), settings);
 }
 
-bool Game::Update(float deltaTime)
+bool Game::Update(double deltaTime)
 {
 	//_soundModule.Update();
 
@@ -75,6 +74,12 @@ bool Game::Update(float deltaTime)
 
 	_controls->Update();
 	run = _SM->Update(deltaTime);
+	_particleHandler->Update(deltaTime);
+
+
+
+
+
 
 	/*
 	_enemies = _objectHandler->GetAllByType(ENEMY);
@@ -97,31 +102,6 @@ bool Game::Update(float deltaTime)
 		}
 	}
 	*/
-
-	////Save for debugging //Jonas
-	//if (_SM->GetState() == PLAYSTATE)
-	//{
-	//	int i = 0;
-	//	for (auto s : _spotlights)
-	//	{
-	//		XMFLOAT3 color = s->GetColor();
-	//		color.x = sin(_timer.GetGameTime() / 1000 + 100 * i);
-	//		color.y = sin(_timer.GetGameTime() / 1000 + 100 * i + XMConvertToRadians(120));
-	//		color.z = sin(_timer.GetGameTime() / 1000 + 100 * i + XMConvertToRadians(240));
-	//		s->SetColor(color);
-	//		XMFLOAT3 rot = s->GetRotation();
-	//		rot.y -= 0.2f;
-	//		s->SetRotation(rot);
-	//		i++;
-	//	}
-	//	i = 0;
-	//	for (auto p : _pointlights)
-	//	{
-	//		i++;
-	//		XMFLOAT3 pos = p->GetPosition();
-	//		p->SetPosition(XMFLOAT3(pos.x + (sin((_timer.GetGameTime() / 1000) * sin(120 * i))) / 20, pos.y, pos.z + (sin((_timer.GetGameTime() / 1000) * sin(17 * i * i))) / 20));
-	//	}
-	//}
 
 	return run;
 }

@@ -15,6 +15,11 @@ namespace Renderer
 
 	private:
 
+		struct ParticleVertex
+		{
+			DirectX::XMFLOAT3 _position;
+		};
+
 		ParticleType _type;
 		DirectX::XMFLOAT3 _position;
 		std::vector<Particle> _particles;
@@ -22,10 +27,17 @@ namespace Renderer
 		bool _isActive;
 		float _timeLeft;
 
+		ID3D11Device* _device;
+		ID3D11DeviceContext* _deviceContext;
+		ID3D11Buffer* _particlePointsBuffer;
+
+		void BuildVertexBuffer();
+		void UpdateVertexBuffer();
+
 	public:
 
-		ParticleEmitter();
-		ParticleEmitter(const ParticleType& type, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT4 color, int particleCount, float timeLimit, bool isActive);
+		ParticleEmitter(ID3D11Device* device, ID3D11DeviceContext* deviceContext);
+		ParticleEmitter(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const ParticleType& type, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT4 color, int particleCount, float timeLimit, bool isActive);
 		virtual ~ParticleEmitter();
 
 		void Reset(const ParticleType& type, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT4 color, int particleCount, float timeLimit, bool isActive);
@@ -33,6 +45,8 @@ namespace Renderer
 		void Update(double deltaTime);
 
 		std::vector<Particle>* GetParticles();
+		ID3D11Buffer* GetParticleBuffer();
+
 		DirectX::XMFLOAT3 GetPosition() const;
 		ParticleType GetType() const;
 		int GetParticleCount() const;
