@@ -41,6 +41,8 @@ BaseEdit::~BaseEdit()
 void BaseEdit::Release()
 {
 	_objectHandler->Release();
+
+	ReleaseBlueprints();
 }
 
 // Other functions
@@ -298,13 +300,6 @@ void BaseEdit::DragAndPlace(Type type, const std::string& objectName)
 
 		ReleaseBlueprints();
 
-
-		//if (minX < 0 || maxX >= _tileMap->GetWidth() ||
-		//	minY < 0 || maxY >= _tileMap->GetHeight())
-		//{
-		//	return;
-		//}
-
 		// Check if extreme poins is outside Tilemap
 		if (minX < 0) minX == 0;
 		if (minY < 0) minY == 0;
@@ -322,7 +317,7 @@ void BaseEdit::DragAndPlace(Type type, const std::string& objectName)
 				{
 					objectOnTile = _objectHandler->GetTileMap()->GetObjectOnTile(x, y, type);
 
-					if (CheckValidity(/*objectOnTile,*/ AI::Vec2D(x, y), type))
+					if (CheckValidity(AI::Vec2D(x, y), type))
 					{
 						// Add to valid place
 						_objectHandler->Add(type, objectName, XMFLOAT3(x, 0, y), XMFLOAT3(0.0f, 0.0f, 0.0f), SHARK);
@@ -352,36 +347,14 @@ void BaseEdit::DragAndPlace(Type type, const std::string& objectName)
 
 void BaseEdit::DragActivate(Type type, const std::string& objectName, int subType)
 {
-	_isPlace = false;
 	AI::Vec2D pickedTile = _pickingDevice->PickTile(_controls->GetMouseCoord()._pos);
 
 	XMFLOAT3 pos = XMFLOAT3(pickedTile._x, 0, pickedTile._y);
 
 	_objectHandler->Add(type, objectName, pos, XMFLOAT3(0.0f, 0.0f, 0.0f), subType, true);
 	_marker._g = _objectHandler->GetGameObjects()->at(type).back();
-	//_marker._g->SetVisibility(false);
 	_marker._created = false;
 	_isPlace = true;
-
-	//Tilemap* tm = _objectHandler->GetTileMap();
-	//for (int x = 1; x < tm->GetWidth() - 1; x++)
-	//{
-	//	for (int z = 1; z < tm->GetHeight() - 1; z++)
-	//	{
-	//		if (tm->IsPlaceable(x, z, type))
-	//		{
-	//			pos = XMFLOAT3(x, 0, z);
-	//			if (_objectHandler->Add(type, objectName, pos, XMFLOAT3(0.0f, 0.0f, 0.0f), subType, true))
-	//			{
-	//				_marker._g = _objectHandler->GetGameObjects()->at(type).back();
-	//				//_marker._g->SetVisibility(false);
-	//				_marker._created = false;
-	//				_isPlace = true;
-	//				return;
-	//			}
-	//		}
-	//	}
-	//}
 }
 
 void BaseEdit::ChangePlaceState()

@@ -101,7 +101,7 @@ bool ObjectHandler::Add(Type type, int index, const XMFLOAT3& position, const XM
 	{
 		addedObject = true;
 	}
-	if (type == TRAP && addedObject)
+	if (type == TRAP && addedObject && !blueprint)
 	{
 		Trap* trap = static_cast<Trap*>(object);
 		int i = 0;
