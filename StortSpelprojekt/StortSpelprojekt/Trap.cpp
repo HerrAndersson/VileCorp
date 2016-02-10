@@ -328,6 +328,10 @@ bool Trap::IsTrapActive() const
 void Trap::SetTrapActive(bool active)
 {
 	_isActive = active;
+	if (active)
+	{
+		SetColorOffset({0,0,0});
+	}
 }
 
 void Trap::Activate()

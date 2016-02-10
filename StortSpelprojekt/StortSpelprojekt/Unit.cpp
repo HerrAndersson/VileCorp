@@ -6,6 +6,13 @@ void Unit::CalculatePath()
 	{
 		_path = _aStar->GetPath();
 		_pathLength = _aStar->GetPathLength();
+		for (int i = 0; i < _pathLength; i++)
+		{
+			if (_tileMap->IsFloorOnTile(_path[i]))
+			{
+				_tileMap->GetObjectOnTile(_path[i], FLOOR)->SetColorOffset({0,4,0});
+			}
+		}
 		_isMoving = true;
 		_direction = _path[--_pathLength] - _tilePosition;
 		Rotate();
@@ -37,7 +44,7 @@ void Unit::Rotate()
 		}
 		CalculateMatrix();
 	}
-	_visionCone->ColorVisibleTiles({0,0,0});
+//	_visionCone->ColorVisibleTiles({0,0,0});
 	_visionCone->FindVisibleTiles(_tilePosition, _direction);
 //	_visionCone->ColorVisibleTiles({0,0,3});
 }
@@ -85,6 +92,7 @@ void Unit::Flee()
 			}
 		}
 		_direction = bestDir;
+		Rotate();
 	}
 }
 
@@ -105,6 +113,7 @@ Unit::Unit()
 	_path = nullptr;
 	_isMoving = false;
 	_direction = {0, -1};
+	_trapInteractionTime = -1;
 	Rotate();
 }
 
@@ -131,6 +140,7 @@ Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	{
 		_animation = new Animation(_renderObject->_skeleton);
 	}
+	_trapInteractionTime = -1;
 }
 
 Unit::~Unit()
@@ -196,6 +206,10 @@ void Unit::CheckVisibleTiles()
 		if (_type != GUARD && _tileMap->IsGuardOnTile(visibleTiles[i]))
 		{
 			EvaluateTile(_tileMap->GetObjectOnTile(visibleTiles[i], GUARD));
+		}
+		if (_tileMap->IsObjectiveOnTile(visibleTiles[i]))
+		{
+			EvaluateTile(_tileMap->GetObjectOnTile(visibleTiles[i], LOOT));
 		}
 	}
 }
@@ -292,6 +306,7 @@ Name should be changed to make it clear that this is tile movement
 */
 void Unit::Move()
 {
+	bool foundNextTile = false;
 	if (_isMoving)
 	{
 		_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,0});
@@ -311,10 +326,11 @@ void Unit::Move()
 	else if (_pathLength > 0)
 	{
 		_isMoving = true;
+		foundNextTile = true;
 		AI::Vec2D nextTile = _path[--_pathLength];
 		_direction = nextTile - _tilePosition;
 	}
-	if (!_isFleeing && (_pathLength <= 0 || (_objective != nullptr && _objective->InRange(_tilePosition))))
+	if (!_isFleeing && (!foundNextTile || (_objective != nullptr && _objective->InRange(_tilePosition))))
 	{
 		_isMoving = false;
 		if (_objective != nullptr && _objective->InRange(_tilePosition))
@@ -335,33 +351,43 @@ void Unit::Update(float deltaTime)
 	{
 		_animation->Update(deltaTime);
 	}
-
-	if (_waiting > 0)
+	if (_trapInteractionTime >= 0)
 	{
-		_waiting--;
+		UseTrap();
 	}
-	else if (_waiting == 0 && !_isMoving)
+	else
 	{
-		_waiting--;
-		Move();
-	}
-	if(_isMoving)
-	{
-		if (_direction._x == 0 || _direction._y == 0)		//Right angle movement
+		if (_waiting > 0)
 		{
-			_position.x += MOVE_SPEED * _direction._x;
-			_position.z += MOVE_SPEED * _direction._y;
+			_waiting--;
 		}
-		else if (_direction._x == 0 && _direction._y == 0)	
+		else if (_waiting == 0 && !_isMoving)
 		{
-			CheckVisibleTiles();
+			_waiting--;
+			Move();
 		}
-		else												//Diagonal movement
+		if (_isMoving)
 		{
-			_position.x += AI::SQRT2 * 0.5f * MOVE_SPEED * _direction._x;
-			_position.z += AI::SQRT2 * 0.5f *MOVE_SPEED * _direction._y;
+			if (_direction._x == 0 || _direction._y == 0)		//Right angle movement
+			{
+				_position.x += MOVE_SPEED * _direction._x;
+				_position.z += MOVE_SPEED * _direction._y;
+			}
+			else if (_direction._x == 0 && _direction._y == 0)
+			{
+				CheckVisibleTiles();
+			}
+			else												//Diagonal movement
+			{
+				_position.x += AI::SQRT2 * 0.5f * MOVE_SPEED * _direction._x;
+				_position.z += AI::SQRT2 * 0.5f *MOVE_SPEED * _direction._y;
+			}
+			CalculateMatrix();
 		}
-		CalculateMatrix();
+		if (_tileMap->IsFloorOnTile(_tilePosition))
+		{
+			_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,4});
+		}
 	}
 }
 
@@ -391,6 +417,24 @@ void Unit::SetVisibility(bool visible)
 	if (_heldObject != nullptr)
 	{
 		_heldObject->SetVisibility(visible);
+	}
+}
+
+void Unit::UseTrap()
+{
+
+	if (_trapInteractionTime < 0)
+	{
+		_trapInteractionTime = 60;
+	}
+	else if (_trapInteractionTime > 0)
+	{
+		_trapInteractionTime--;
+	}
+	else
+	{
+		act(_objective);
+		_trapInteractionTime--;
 	}
 }
 

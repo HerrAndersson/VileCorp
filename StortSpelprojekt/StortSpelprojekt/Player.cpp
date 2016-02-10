@@ -21,7 +21,6 @@ Player::~Player()
 void Player::SelectUnit(Unit* pickedUnit)
 {
 	_selectedUnits.push_back(pickedUnit->GetID());
-	pickedUnit->TakeDamage(11110);
 }
 
 void Player::DeselectUnits()

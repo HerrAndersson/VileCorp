@@ -48,6 +48,8 @@ void Guard::EvaluateTile(GameObject * obj)
 		switch (obj->GetType())
 		{
 		case LOOT:
+			obj->SetVisibility(true);
+			break;
 		case GUARD:
 		case TRAP:
 		case CAMERA:				//Guards don't react to these
@@ -79,8 +81,15 @@ void Guard::act(GameObject* obj)
 		case TRAP:
 			if (!static_cast<Trap*>(obj)->IsTrapActive())
 			{
-				static_cast<Trap*>(obj)->SetTrapActive(true);
-				obj->SetColorOffset({ 0,0,0 });
+				if (_trapInteractionTime < 0)
+				{
+					UseTrap();
+				}
+				else if (_trapInteractionTime == 0)
+				{
+					static_cast<Trap*>(obj)->SetTrapActive(true);
+					obj->SetColorOffset({0,0,0});
+				}
 			}
 			ClearObjective();
 			break;
