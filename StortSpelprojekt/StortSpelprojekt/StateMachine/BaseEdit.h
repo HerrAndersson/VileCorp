@@ -55,13 +55,17 @@ private:
 	bool _isSelectionMode;
 	bool _isDragAndPlaceMode;
 	bool _isPlace;
+	bool _modeLock;
 
 	void HandleInput();
 	void LoadLevel(int levelID);
-
+	
+	bool CheckValidity(AI::Vec2D tile, Type type);
 	void SetValidity(Marker* m, Type type);
 	void MarkerMoveEvent(Type type);
 	void DragAndDropEvent();
+
+	void ReleaseBlueprints();
 
 public:
 	BaseEdit();

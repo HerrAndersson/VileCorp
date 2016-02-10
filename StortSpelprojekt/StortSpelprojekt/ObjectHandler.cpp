@@ -42,7 +42,7 @@ void ObjectHandler::ActivateTileset(const string& name)
 
 
 
-bool ObjectHandler::Add(Type type, int index, const XMFLOAT3& position, const XMFLOAT3& rotation, const int subIndex)
+bool ObjectHandler::Add(Type type, int index, const XMFLOAT3& position, const XMFLOAT3& rotation, const int subIndex, const bool blueprint)
 {
 	GameObject* object = nullptr;
 
@@ -85,7 +85,16 @@ bool ObjectHandler::Add(Type type, int index, const XMFLOAT3& position, const XM
 		break;
 	}
 
+	if (!blueprint)
+	{
+		if (!_tilemap->AddObjectToTile((int)position.x, (int)position.z, object))
+		{
+			delete object;
+			object = nullptr;
+		}
+	}
 
+	// Did I break this? /Zache
 	//Temporary check for traps. Could be more general if other objects are allowed to take up multiple tiles
 	bool addedObject = false;
 	if (object != nullptr)
@@ -131,13 +140,13 @@ bool ObjectHandler::Add(Type type, int index, const XMFLOAT3& position, const XM
 	return false;
 }
 
-bool ObjectHandler::Add(Type type, const std::string& name, const XMFLOAT3& position = XMFLOAT3(0.0f, 0.0f, 0.0f), const XMFLOAT3& rotation = XMFLOAT3(0.0f, 0.0f, 0.0f), const int subIndex)
+bool ObjectHandler::Add(Type type, const std::string& name, const XMFLOAT3& position = XMFLOAT3(0.0f, 0.0f, 0.0f), const XMFLOAT3& rotation = XMFLOAT3(0.0f, 0.0f, 0.0f), const int subIndex, const bool blueprint)
 {
 	for (unsigned int i = 0; i < _gameObjectInfo->_objects[type]->size(); i++)
 	{
 		if (_gameObjectInfo->_objects[type]->at(i)->_name == name)
 		{
-			return Add(type, i, position, rotation, subIndex);
+			return Add(type, i, position, rotation, subIndex, blueprint);
 		}
 	}
 	return false;
@@ -694,12 +703,6 @@ Architecture * ObjectHandler::MakeFloor(GameObjectFloorInfo * data, const XMFLOA
 		FLOOR,
 		_assetManager->GetRenderObject(data->_renderObject));
 
-	if (!_tilemap->AddObjectToTile((int)position.x, (int)position.z, obj))
-	{
-		delete obj;
-		obj = nullptr;
-	}
-
 	return obj;
 }
 
@@ -712,12 +715,6 @@ Architecture * ObjectHandler::MakeWall(GameObjectWallInfo * data, const XMFLOAT3
 		AI::Vec2D((int)position.x, (int)position.z),
 		WALL,
 		_assetManager->GetRenderObject(data->_renderObject));
-
-	if (!_tilemap->AddObjectToTile((int)position.x, (int)position.z, obj))
-	{
-		delete obj;
-		obj = nullptr;
-	}
 
 	return obj;
 }
@@ -734,12 +731,6 @@ Architecture * ObjectHandler::MakeLoot(GameObjectLootInfo * data, const XMFLOAT3
 
 	// read more data
 
-	if (!_tilemap->AddObjectToTile((int)position.x, (int)position.z, obj))
-	{
-		delete obj;
-		obj = nullptr;
-	}
-
 	return obj;
 }
 
@@ -755,14 +746,6 @@ SpawnPoint * ObjectHandler::MakeSpawn(GameObjectSpawnInfo * data, const XMFLOAT3
 		180, 2);
 
 	// read more data
-
-	//new SpawnPoint(_idCount, position, rotation, AI::Vec2D((int)position.x, (int)position.z), type, _assetManager->GetRenderObject(type), 180, 2);
-
-	if (!_tilemap->AddObjectToTile((int)position.x, (int)position.z, obj))
-	{
-		delete obj;
-		obj = nullptr;
-	}
 
 	return obj;
 }
@@ -783,12 +766,6 @@ Trap * ObjectHandler::MakeTrap(GameObjectTrapInfo * data, const XMFLOAT3& positi
 
 	// Read more data
 
-	if (!_tilemap->AddObjectToTile((int)position.x, (int)position.z, obj))
-	{
-		delete obj;
-		obj = nullptr;
-	}
-
 	return obj;
 }
 
@@ -805,12 +782,6 @@ Guard * ObjectHandler::MakeGuard(GameObjectGuardInfo * data, const XMFLOAT3& pos
 
 	// read more data
 
-	if (!_tilemap->AddObjectToTile((int)position.x, (int)position.z, obj))
-	{
-		delete obj;
-		obj = nullptr;
-	}
-
 	return obj;
 }
 
@@ -826,12 +797,6 @@ Enemy * ObjectHandler::MakeEnemy(GameObjectEnemyInfo * data, const XMFLOAT3& pos
 		_tilemap);
 
 	// read more data
-
-	if (!_tilemap->AddObjectToTile((int)position.x, (int)position.z, obj))
-	{
-		delete obj;
-		obj = nullptr;
-	}
 
 	return obj;
 }

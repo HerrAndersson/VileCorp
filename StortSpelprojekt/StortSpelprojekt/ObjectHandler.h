@@ -68,8 +68,8 @@ public:
 	~ObjectHandler();
 
 	//Add a gameobject
-	bool Add(Type type, int index, const XMFLOAT3& position, const XMFLOAT3& rotation, const int subIndex = 0);
-	bool Add(Type type, const std::string& name, const XMFLOAT3& position, const XMFLOAT3& rotation, const int subIndex = 0);
+	bool Add(Type type, int index, const XMFLOAT3& position, const XMFLOAT3& rotation, const int subIndex = 0, const bool blueprint = false);
+	bool Add(Type type, const std::string& name, const XMFLOAT3& position, const XMFLOAT3& rotation, const int subIndex = 0, const bool blueprint = false);
 	
 	bool Remove(int ID);
 	bool Remove(Type type, int ID);
