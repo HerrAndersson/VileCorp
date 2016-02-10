@@ -2,14 +2,13 @@
 #define RENDERER_EXPORT __declspec(dllexport)
 #include <DirectXMath.h>
 #include <d3d11.h>
+#include "ParticleUtils.h"
 
 //Disable warning about DirectX XMFLOAT3/XMMATRIX etc
 #pragma warning( disable: 4251 )
 
 namespace Renderer
 {
-	enum ParticleType { SPLASH, SMOKE, ELECTRICITY };
-
 	class RENDERER_EXPORT Particle
 	{
 

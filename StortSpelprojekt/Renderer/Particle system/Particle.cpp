@@ -52,7 +52,7 @@ namespace Renderer
 			}
 			default:
 			{
-				throw std::runtime_error("ParticleEmitter::Update: Invalid particle type");
+				throw std::runtime_error("Particle::Update: Invalid particle type");
 				break;
 			}
 		}
