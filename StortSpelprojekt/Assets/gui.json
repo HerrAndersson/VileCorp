@@ -481,7 +481,15 @@
 				"color": "FF000000",
 				"fontsize" : 25.0
 			}
-		}
+		},
+		"Tutorial":
+			{
+				"position" : [0.0, -0.0],
+				"scale": [0.75, 0.90],
+				"texture": "../Menues/PlacementStateGUI/tutorialplacement.png",
+				"fontsize" : 25.0
+			}
+		
   },
   "LEVELEDIT" : {
   
