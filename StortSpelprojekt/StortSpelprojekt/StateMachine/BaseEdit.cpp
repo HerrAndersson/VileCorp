@@ -234,7 +234,7 @@ void BaseEdit::DragActivate(Type type, const std::string& objectName, int subTyp
 				if (_objectHandler->Add(type, objectName, pos, XMFLOAT3(0.0f, 0.0f, 0.0f), subType))
 				{
 					_marker = _objectHandler->GetGameObjects()->at(type).back();
-					_marker->SetVisibility(false);
+					_marker->SetVisibility(true);
 					_isPlace = true;
 					return;
 				}

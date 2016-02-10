@@ -35,5 +35,9 @@
   "enemies": [
     "enemy-24.bin"
 
+  ],
+  "cameras": [
+    "SecurityCamera-26.bin"
+
   ]
 }

@@ -88,27 +88,18 @@ bool ObjectHandler::Add(Type type, int index, const XMFLOAT3& position, const XM
 	case SPAWN:
 		object = MakeSpawn(_gameObjectInfo->Spawns(index), position, rotation);
 		break;
+	case TRAP:
+		object = MakeTrap(_gameObjectInfo->Traps(index), position, rotation, subIndex);
+		break;
+	case CAMERA:
+		object = MakeSecurityCamera(_gameObjectInfo->Cameras(index), position, rotation);
+		break;
 	case ENEMY:
 		object = MakeEnemy(_gameObjectInfo->Enemies(index), position, rotation);
 		break;
 	case GUARD:
 		object = MakeGuard(_gameObjectInfo->Guards(index), position, rotation);
 		break;
-	case TRAP:
-		switch (subIndex)
-		{
-		case SPIKE:
-			object = MakeTrap(_gameObjectInfo->Traps(index), position, rotation, SPIKE);
-			break;
-		case TESLACOIL:
-			object = MakeTrap(_gameObjectInfo->Traps(index), position, rotation, TESLACOIL);
-			break;
-		case SHARK:
-			object = MakeTrap(_gameObjectInfo->Traps(index), position, rotation, SHARK);
-			break;
-		default:
-			break;
-		}
 	default:	
 		break;
 	}
@@ -653,7 +644,7 @@ void ObjectHandler::Update(float deltaTime)
 		{
 			if (spot.second->GetBone() != -1)
 			{
-				spot.second->SetPositionAndRotation(spot.first->GetAnimation()->GetTransforms()->at(spot.second->GetBone()));
+				spot.second->SetPositionAndRotation(spot.first->GetAnimation()->GetTransforms()[spot.second->GetBone()]);
 			}
 			else
 			{
@@ -796,6 +787,28 @@ Trap * ObjectHandler::MakeTrap(GameObjectTrapInfo * data, const XMFLOAT3& positi
 		subIndex,
 		{ 1,0 },
 		data->_cost);
+
+	// Read more data
+
+	if (!_tilemap->AddObjectToTile((int)position.x, (int)position.z, obj))
+	{
+		delete obj;
+		obj = nullptr;
+	}
+
+	return obj;
+}
+
+SecurityCamera*	ObjectHandler::MakeSecurityCamera(GameObjectCameraInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation)
+{
+	SecurityCamera* obj = new SecurityCamera(
+		_idCount,
+		position,
+		rotation,
+		AI::Vec2D((int)position.x, (int)position.z),
+		CAMERA,
+		_assetManager->GetRenderObject(data->_renderObject),
+		_tilemap);
 
 	// Read more data
 

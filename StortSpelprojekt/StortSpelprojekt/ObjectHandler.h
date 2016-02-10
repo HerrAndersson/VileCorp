@@ -4,6 +4,7 @@
 #include "GameObject.h"
 #include "Unit.h"
 #include "Trap.h"
+#include "SecurityCamera.h"
 #include "Architecture.h"
 #include "SpawnPoint.h"
 #include "Enemy.h"
@@ -64,6 +65,7 @@ private:
 	Architecture*	MakeLoot(GameObjectLootInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation);
 	SpawnPoint*		MakeSpawn(GameObjectSpawnInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation);
 	Trap*			MakeTrap(GameObjectTrapInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation, const int subIndex = 0);
+	SecurityCamera*	MakeSecurityCamera(GameObjectCameraInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation);
 	Guard*			MakeGuard(GameObjectGuardInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation);
 	Enemy*			MakeEnemy(GameObjectEnemyInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation);
 
