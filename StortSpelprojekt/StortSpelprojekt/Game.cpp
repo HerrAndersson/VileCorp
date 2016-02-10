@@ -152,12 +152,22 @@ void Game::Render()
 			{
 				_renderModule->SetDataPerObjectType(renderObject);
 				int vertexBufferSize = renderObject->_mesh._vertexBufferSize;
-
-				for (GameObject* g : i)
+				if (i.at(0)->IsVisible())
 				{
-					if (g->IsVisible())
+					_renderModule->Render(i.at(0)->GetMatrix(), vertexBufferSize, i.at(0)->GetColorOffset());
+				}
+
+				for (int j = 1; j < i.size(); j++)
+				{
+					if (i.at(j)->GetSubType() != i.at(j - 1)->GetSubType())
 					{
-						_renderModule->Render(g->GetMatrix(), vertexBufferSize, g->GetColorOffset());
+						renderObject = i.at(j)->GetRenderObject();
+						_renderModule->SetDataPerObjectType(renderObject);
+						int vertexBufferSize = renderObject->_mesh._vertexBufferSize;
+					}
+					if (i.at(j)->IsVisible())
+					{
+						_renderModule->Render(i.at(j)->GetMatrix(), vertexBufferSize, i.at(j)->GetColorOffset());
 					}
 					
 				}

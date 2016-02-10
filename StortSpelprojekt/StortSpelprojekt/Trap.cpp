@@ -208,6 +208,7 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	_tileMap = tileMap;
 	_nrOfAOETiles = 0;
 	_isVisibleToEnemies = false;
+	_subType = trapType;
 
 	int radius = 0;
 	
