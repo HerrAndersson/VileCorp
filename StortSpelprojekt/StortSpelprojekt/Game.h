@@ -1,7 +1,8 @@
 #pragma once
 
-#include "stdafx.h"
 #include "StateMachine/StateMachine.h"
+#include "SoundModule.h"
+#include "stdafx.h"
 #include "Window.h"
 #include "RenderModule.h"
 #include "Camera.h"
@@ -40,6 +41,7 @@ private:
 	SettingInfo					_gameSettings;
 	System::SettingsReader		_settingsReader;
 	GameObjectInfo				_data;
+	System::SoundModule			_soundModule;
 
 	bool						_hasFocus;
 	bool						_enemiesHasSpawned;
@@ -48,21 +50,17 @@ private:
 	void ResizeResources(System::Settings* settings);
 	bool Update(float deltaTime);
 	void Render();
-	
-	//TODO: TEMP! Move this to objectHandler
-	std::vector<Renderer::Spotlight*> _spotlights;
-	std::vector<Renderer::Pointlight*> _pointlights;
-	LightCulling* _lightCulling;
 
 	std::vector<GameObject*> _enemies;
 	std::vector<GameObject*> _loot;
+
 public:
 
 	Game(HINSTANCE hInstance, int nCmdShow);
 	~Game();
 
-	LRESULT CALLBACK MessageHandler(HWND, UINT, WPARAM, LPARAM);
-	static LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
+	LRESULT CALLBACK MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam);
+	static LRESULT CALLBACK WndProc(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam);
 
 	int Run();
 };

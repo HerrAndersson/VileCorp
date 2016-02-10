@@ -19,12 +19,6 @@ private:
 	ObjectHandler*			_objectHandler;
 	PickingDevice*			_pickingDevice;
 
-	struct ButtonInfo
-	{
-		int parent;
-		bool active = false;
-	};
-
 	struct Marker
 	{
 		GameObject* _g = nullptr;
@@ -47,7 +41,6 @@ private:
 	bool _modeLock;
 
 	void HandleInput();
-	void LoadLevel(int levelID);
 	
 	bool CheckValidity(AI::Vec2D tile, Type type);
 	void SetValidity(Marker* m, Type type);
@@ -57,11 +50,8 @@ private:
 	void ReleaseBlueprints();
 
 public:
-	BaseEdit();
+	BaseEdit(ObjectHandler* objectHandler, System::Controls* controls, PickingDevice* pickingDevice, System::Camera* camera);
 	~BaseEdit();
-
-	void Initialize(ObjectHandler* objectHandler, System::Controls* controls, PickingDevice* pickingDevice, System::Camera* camera);
-	void Release();
 
 	GameObject* GetSelectedObject();
 	bool Add(Type type, const std::string& name);

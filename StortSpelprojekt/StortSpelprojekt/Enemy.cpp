@@ -23,7 +23,7 @@ Enemy::~Enemy()
 
 void Enemy::EvaluateTile(Type objective, AI::Vec2D tile)
 {
-	if (_tileMap->IsTypeOnTile(tile, objective));
+	if (_tileMap->IsTypeOnTile(tile, objective))
 	{
 		EvaluateTile(_tileMap->GetObjectOnTile(tile, objective));
 	}

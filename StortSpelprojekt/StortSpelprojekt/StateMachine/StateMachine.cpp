@@ -8,17 +8,19 @@ StateMachine::StateMachine(System::Controls* controls,
 	AssetManager* assetManager,
 	FontWrapper* fontWrapper,
 	System::Settings* settings,
-	System::SettingsReader* settingsReader)
+	System::SettingsReader* settingsReader,
+	System::SoundModule* soundModule)
 {
 	_currentState = State::SPLASHSTATE;
 
-	_baseStates.push_back(new SplashState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settings));
-	_baseStates.push_back(new MenuState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settings));
-	_baseStates.push_back(new PlayState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settings));
-	_baseStates.push_back(new PlacementState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settings));
-	_baseStates.push_back(new LevelEditState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settings));
-	_baseStates.push_back(new LevelSelectState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settings));
-	_baseStates.push_back(new OptionsState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settings, settingsReader));
+	_baseStates.push_back(new SplashState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settings, soundModule));
+	_baseStates.push_back(new MenuState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settings, soundModule));
+	_baseStates.push_back(new PlayState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settings, soundModule));
+	_baseStates.push_back(new PlacementState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settings, soundModule));
+	_baseStates.push_back(new LevelEditState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settings, soundModule));
+	_baseStates.push_back(new LevelSelectState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settings, soundModule));
+	_baseStates.push_back(new OptionsState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settings, settingsReader, soundModule));
+	_baseStates.push_back(new PauseState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settings, soundModule));
 }
 
 StateMachine::~StateMachine()

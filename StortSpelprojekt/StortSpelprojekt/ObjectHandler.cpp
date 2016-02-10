@@ -9,21 +9,51 @@ ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, G
 	_buildingGrid = new Grid(device, 1, 1, 1, XMFLOAT3(1.0f, 1.0f, 0.7f));
 	_gameObjectInfo = data;
 	_device = device;
+	_lightCulling = nullptr;
 
-	
 	ActivateTileset("default2");
 }
 
 ObjectHandler::~ObjectHandler()
 {
-	Release();
+	UnloadLevel();
 	SAFE_DELETE(_buildingGrid);
 }
 
-void ObjectHandler::Release()
+bool ObjectHandler::LoadLevel(int lvlIndex)
+{
+	int dimX, dimY;
+	vector<GameObjectData> gameObjectData;
+	bool result = _assetManager->ParseLevel(lvlIndex, gameObjectData, dimX, dimY);
+	if (result)
+	{
+		if (_gameObjects.size() < 1)
+		{
+			for (int i = 0; i < NR_OF_TYPES; i++)
+			{
+				_gameObjects.push_back(std::vector<GameObject*>());
+			}
+		}
+
+		delete _tilemap;
+		_tilemap = new Tilemap(AI::Vec2D(dimX, dimY));
+
+		for (auto i : gameObjectData)
+		{
+			Add((Type)i._tileType, 0, DirectX::XMFLOAT3(i._posX, 0, i._posZ), DirectX::XMFLOAT3(0, i._rotY, 0));
+		}
+	}
+
+	_lightCulling = new LightCulling(_tilemap);
+
+	return result;
+}
+
+void ObjectHandler::UnloadLevel()
 {
 	ReleaseGameObjects();
-	SAFE_DELETE( _tilemap);
+	SAFE_DELETE(_tilemap);
+	SAFE_DELETE(_lightCulling);
 }
 
 void ObjectHandler::ActivateTileset(const string& name)
@@ -39,8 +69,6 @@ void ObjectHandler::ActivateTileset(const string& name)
 		}
 	}
 }
-
-
 
 bool ObjectHandler::Add(Type type, int index, const XMFLOAT3& position, const XMFLOAT3& rotation, const int subIndex, const bool blueprint)
 {
@@ -94,7 +122,6 @@ bool ObjectHandler::Add(Type type, int index, const XMFLOAT3& position, const XM
 		}
 	}
 
-	// Did I break this? /Zache
 	//Temporary check for traps. Could be more general if other objects are allowed to take up multiple tiles
 	bool addedObject = false;
 	if (object != nullptr)
@@ -130,8 +157,7 @@ bool ObjectHandler::Add(Type type, int index, const XMFLOAT3& position, const XM
 		_gameObjects[type].push_back(object);
 		for(auto i : object->GetRenderObject()->_mesh._spotLights)
 		{
-			//TODO: Add settings variables to this function below! Alex
-			_spotlights[object] = new Renderer::Spotlight(_device, i, 256, 256, 0.1f, 1000.0f);
+			_spotlights[object] = new Renderer::Spotlight(_device, i, 0.1f, 1000.0f);
 		}
 		_objectCount++;
 		return true;
@@ -219,6 +245,10 @@ bool ObjectHandler::Remove(Type type, int ID)
 
 bool ObjectHandler::Remove(GameObject* gameObject)
 {
+	if (gameObject == nullptr)
+	{
+		return false;
+	}
 	return Remove(gameObject->GetType(), gameObject->GetID());
 }
 
@@ -301,9 +331,6 @@ int ObjectHandler::GetObjectCount() const
 {
 	return _objectCount;
 }
-
-
-/*Tilemap handling*/
 
 Tilemap * ObjectHandler::GetTileMap() const
 {
@@ -444,33 +471,6 @@ Grid * ObjectHandler::GetBuildingGrid()
 }
 
 
-
-
-bool ObjectHandler::LoadLevel(int lvlIndex)
-{
-	int dimX, dimY;
-	vector<GameObjectData> gameObjectData;
-	bool result = _assetManager->ParseLevel(lvlIndex, gameObjectData, dimX, dimY);
-	if (result)
-	{
-		if (_gameObjects.size() < 1)
-		{
-			for (int i = 0; i < NR_OF_TYPES; i++)
-			{
-				_gameObjects.push_back(std::vector<GameObject*>());
-			}
-		}
-
-		delete _tilemap;
-		_tilemap = new Tilemap(AI::Vec2D(dimX, dimY));
-
-		for (auto i : gameObjectData)
-		{
-			Add((Type)i._tileType, 0, DirectX::XMFLOAT3(i._posX, 0, i._posZ), DirectX::XMFLOAT3(0, i._rotY, 0));
-		}
-	}
-	return result;
-}
 
 void ObjectHandler::InitPathfinding()
 {
@@ -634,18 +634,6 @@ void ObjectHandler::Update(float deltaTime)
 		}
 	}
 
-	/*
-	
-	if(animations uppdateringar)
-		if(active)
-			do ljus update
-
-	if(gameobject förflyttning)
-		if(active)
-			do ljus update
-	
-	*/
-
 	for (pair<GameObject*, Renderer::Spotlight*> spot : _spotlights)
 	{
 		if (spot.second->IsActive() && spot.first->IsActive())
@@ -662,11 +650,23 @@ void ObjectHandler::Update(float deltaTime)
 	}
 }
 
+map<GameObject*, Renderer::Spotlight*>* ObjectHandler::GetSpotlights()
+{
+	return &_spotlights;
+}
+
+map<GameObject*, Renderer::Pointlight*>* ObjectHandler::GetPointlights()
+{
+	return &_pointligths;
+}
+
+vector<vector<GameObject*>>* ObjectHandler::GetObjectsInLight(Renderer::Spotlight* spotlight)
+{
+	return _lightCulling->GetObjectsInSpotlight(spotlight);
+}
+
 void ObjectHandler::ReleaseGameObjects()
 {
-	int debug;
-	std::vector<GameObject*> tempVector;
-
 	if (_gameObjects.size() > 0)
 	{
 		for (int i = 0; i < NR_OF_TYPES; i++)
@@ -677,14 +677,8 @@ void ObjectHandler::ReleaseGameObjects()
 				delete g;
 			}
 			_gameObjects[i].clear();
-			std::vector<GameObject*>().swap(_gameObjects[i]);
-			_gameObjects[i].shrink_to_fit();
-			debug = _gameObjects[i].size();
 		}
 		_gameObjects.clear();
-		std::vector<GameObject*>().swap(tempVector);
-		_gameObjects.shrink_to_fit();
-		debug = _gameObjects.size();
 	}
 	_idCount = 0;
 	_objectCount = 0;

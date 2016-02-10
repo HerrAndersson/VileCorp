@@ -1,5 +1,16 @@
 #include "PickingDevice.h"
 
+PickingDevice::PickingDevice(System::Camera* camera, System::Settings* settings)
+{
+	_camera = camera;
+	_settings = settings;
+	_firstBoxPoint = POINT();
+}
+
+PickingDevice::~PickingDevice()
+{
+}
+
 Ray PickingDevice::CalculatePickRay(long x, long y)
 {
 	XMFLOAT3 mouseViewPos;
@@ -11,15 +22,12 @@ Ray PickingDevice::CalculatePickRay(long x, long y)
 	float width = (float)_settings->_screenWidth;
 	float xPos = (float)x;
 
-
 	float height = (float)_settings->_screenHeight;
 	float yPos = (float)y;
-
 
 	mouseViewPos.x = (((2 * xPos) / width) - 1.0f) / projMatrix._11;
 	mouseViewPos.y = (((-2 * yPos) / height) + 1.0f) / projMatrix._22;
 	mouseViewPos.z = 1.0f;
-
 
 	XMVECTOR determinant;
 	XMMATRIX inverseViewMatrix = XMMatrixInverse(&determinant, *_camera->GetViewMatrix());
@@ -46,7 +54,6 @@ vector<GameObject*> PickingDevice::SortByDistance(vector<GameObject*> pickedObje
 {
 	vector<GameObject*> sortedObjects;
 
-
 	for (unsigned int i = 0; i < pickedObjects.size(); i++)
 	{
 		int shortestIndex = -1;
@@ -66,20 +73,7 @@ vector<GameObject*> PickingDevice::SortByDistance(vector<GameObject*> pickedObje
 		pickedObjects.erase(pickedObjects.begin() + shortestIndex);
 	}
 
-
-
 	return sortedObjects;
-}
-
-PickingDevice::PickingDevice(System::Camera* camera, System::Settings* settings)
-{
-	_camera = camera;
-	_settings = settings;
-	_firstBoxPoint = POINT();
-}
-
-PickingDevice::~PickingDevice()
-{
 }
 
 AI::Vec2D PickingDevice::PickTile(POINT mousePoint)
@@ -115,7 +109,6 @@ vector<GameObject*> PickingDevice::PickObjects(POINT mousePoint, vector<GameObje
 {
 	vector<GameObject*> pickedObjects;
 
-
 	Ray ray = CalculatePickRay(mousePoint.x, mousePoint.y);
 
 	for (unsigned int i = 0; i < pickableObjects.size(); i++)
@@ -128,7 +121,6 @@ vector<GameObject*> PickingDevice::PickObjects(POINT mousePoint, vector<GameObje
 			pickedObjects.push_back(pickableObjects[i]);
 		}
 	}
-
 
 	for (unsigned int i = 0; i < pickableObjects.size(); i++)
 	{
@@ -149,7 +141,6 @@ vector<GameObject*> PickingDevice::BoxPickObjects(POINT mousePoint, vector<GameO
 		CalculatePickRay(mousePoint.x, _firstBoxPoint.y),
 		CalculatePickRay(_firstBoxPoint.x, mousePoint.y),
 		CalculatePickRay(mousePoint.x, mousePoint.y) };
-
 
 	Vec3 points[4];
 	Plane pickPlane = Plane(Vec3(), Vec3(0.0f, 1.0f, 0.0f), 0.0f);

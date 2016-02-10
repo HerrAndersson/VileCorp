@@ -103,7 +103,8 @@
 		}
 	},
 	"SPLASH" : {},
-	"PLAY" : {
+	"PLAY" : {},
+	"PAUSE" : {
 		"position": [0.0, 0.0],
 		"scale": [1.0, 1.0],
 		"texture" : "../Menues/Pause Menu/pause-fade.png",
@@ -172,7 +173,7 @@
 					}
 				}
 		}
-	},
+	},	
 	"OPTIONS" : {
 		"bg" :
 		{

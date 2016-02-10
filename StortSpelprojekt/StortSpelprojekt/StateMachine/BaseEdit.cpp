@@ -10,13 +10,9 @@ bool compareFloat3(XMFLOAT3 a, XMFLOAT3 b)
 }
 
 // Instancing
-BaseEdit::BaseEdit()
+BaseEdit::BaseEdit(ObjectHandler* objectHandler, System::Controls* controls, PickingDevice* pickingDevice, System::Camera* camera)
 {
 	_modeLock = false;
-}
-
-void BaseEdit::Initialize(ObjectHandler* objectHandler, System::Controls* controls, PickingDevice* pickingDevice, System::Camera* camera)
-{
 	_objectHandler = objectHandler;
 	_controls = controls;
 	_pickingDevice = pickingDevice;
@@ -27,21 +23,14 @@ void BaseEdit::Initialize(ObjectHandler* objectHandler, System::Controls* contro
 	_isDragAndPlaceMode = false;
 	_isPlace = false;
 
-	LoadLevel(3);
-
 	_marker._g = nullptr;
 	_baseMarker._g = nullptr;
 
+	_tileMap = _objectHandler->GetTileMap();
 }
 
 BaseEdit::~BaseEdit()
 {
-}
-
-void BaseEdit::Release()
-{
-	_objectHandler->Release();
-
 	ReleaseBlueprints();
 }
 
@@ -417,35 +406,9 @@ void BaseEdit::HandleInput()
 		}
 	}
 
-	if (_camera->GetMode() == System::LOCKED_CAM)
-	{
-		if (_controls->IsFunctionKeyDown("CAMERA:ZOOM_CAMERA_IN") &&
-			_camera->GetPosition().y > 4.0f)
-		{
-			_camera->Move(XMFLOAT3(0.0f, -1.0f, 0.0f));
-		}
-		else if (_controls->IsFunctionKeyDown("CAMERA:ZOOM_CAMERA_OUT") &&
-			_camera->GetPosition().y < 12.0f)
-		{
-			_camera->Move(XMFLOAT3(0.0f, 1.0f, 0.0f));
-		}
-	}
-
-	if (_controls->CursorLocked())
-	{
-		XMFLOAT3 rotation = _camera->GetRotation();
-		rotation.x += _controls->GetMouseCoord()._deltaPos.y / 10.0f;
-		rotation.y += _controls->GetMouseCoord()._deltaPos.x / 10.0f;
-
-		_camera->SetRotation(rotation);
-	}
-
-	XMFLOAT3 forward(0, 0, 0);
-	XMFLOAT3 position = _camera->GetPosition();
-	XMFLOAT3 right(0, 0, 0);
-	bool isMoving = false;
-	float v = 0.06f + (_camera->GetPosition().y * 0.01);
-
+	/*
+	Toggle free camera mode
+	*/
 	if (_controls->IsFunctionKeyDown("DEBUG:ENABLE_FREECAM"))
 	{
 		if (_camera->GetMode() == System::LOCKED_CAM)
@@ -460,6 +423,67 @@ void BaseEdit::HandleInput()
 			_camera->SetRotation(DirectX::XMFLOAT3(70, 0, 0));
 		}
 	}
+	
+	/*
+	Camera scroll
+	*/
+	if (_camera->GetMode() == System::LOCKED_CAM)
+	{
+		if (_controls->IsFunctionKeyDown("CAMERA:ZOOM_CAMERA_IN") &&
+			_camera->GetPosition().y > 4.0f)
+		{
+			_camera->Move(XMFLOAT3(0.0f, -1.0f, 0.0f));
+		}
+		else if (_controls->IsFunctionKeyDown("CAMERA:ZOOM_CAMERA_OUT") &&
+			_camera->GetPosition().y < 12.0f)
+		{
+			_camera->Move(XMFLOAT3(0.0f, 1.0f, 0.0f));
+		}
+	}
+
+	/*
+	Camera rotation
+	*/
+	bool isRotating = false;
+	XMFLOAT3 rotation(0.0f, 0.0f, 0.0f);
+	float rotV = 1.4f;
+
+	if (_camera->GetMode() == System::LOCKED_CAM)
+	{
+		if (_controls->IsFunctionKeyDown("CAMERA:ROTATE_CAMERA_LEFT"))
+		{
+			rotation.y = 1.0f;
+			isRotating = true;
+		}
+		if (_controls->IsFunctionKeyDown("CAMERA:ROTATE_CAMERA_RIGHT"))
+		{
+			rotation.y = -1.0f;
+			isRotating = true;
+		}
+
+		if (isRotating)
+		{
+			_camera->Rotate(XMFLOAT3((rotation.x * rotV), (rotation.y * rotV), (rotation.z * rotV)));
+		}
+	}
+
+	//Camera rotation - locked mouse
+	if (_controls->CursorLocked())
+	{
+		XMFLOAT3 rotation = _camera->GetRotation();
+		rotation.x += _controls->GetMouseCoord()._deltaPos.y / 10.0f;
+		rotation.y += _controls->GetMouseCoord()._deltaPos.x / 10.0f;
+
+		_camera->SetRotation(rotation);
+	}
+
+	/*
+	Camera move
+	*/
+	XMFLOAT3 right(0.0f, 0.0f, 0.0f);
+	XMFLOAT3 forward(0.0f, 0.0f, 0.0f);
+	bool isMoving = false;
+	float v = 0.06f + (_camera->GetPosition().y * 0.01);
 
 	if (_controls->IsFunctionKeyDown("CAMERA:MOVE_CAMERA_UP"))
 	{
@@ -469,7 +493,7 @@ void BaseEdit::HandleInput()
 		}
 		else if (_camera->GetMode() == System::LOCKED_CAM)
 		{
-			forward = XMFLOAT3(0.0f, 0.0f, 1.0f);
+			forward = (Vec3(_camera->GetRightVector()).Cross(Vec3(XMFLOAT3(0.0f, 1.0f, 0.0f))).convertToXMFLOAT());
 		}
 
 		isMoving = true;
@@ -483,7 +507,7 @@ void BaseEdit::HandleInput()
 		}
 		else if (_camera->GetMode() == System::LOCKED_CAM)
 		{
-			forward = XMFLOAT3(0.0f, 0.0f, 1.0f);
+			forward = (Vec3(_camera->GetRightVector()).Cross(Vec3(XMFLOAT3(0.0f, 1.0f, 0.0f))).convertToXMFLOAT());
 		}
 
 		forward.x *= -1;
@@ -509,20 +533,11 @@ void BaseEdit::HandleInput()
 
 	if (isMoving)
 	{
-		_camera->SetPosition(XMFLOAT3(position.x + (forward.x + right.x) * v, position.y + (forward.y + right.y) * v, position.z + (forward.z + right.z) * v));
+		_camera->Move(XMFLOAT3((forward.x + right.x) * v,(forward.y + right.y) * v, (forward.z + right.z) * v));
 	}
 }
 
 void BaseEdit::Update(float deltaTime)
 {
 	HandleInput();
-}
-
-void BaseEdit::LoadLevel(int levelID)
-{
-	//load existing level.
-	_objectHandler->Release();
-	_objectHandler->LoadLevel(levelID);
-
-	_tileMap = _objectHandler->GetTileMap();
 }
