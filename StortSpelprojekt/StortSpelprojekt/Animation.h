@@ -5,21 +5,24 @@
 #include <DirectXMath.h>
 #include "RenderUtils.h"
 
+using namespace DirectX;
+
 class Animation
 {
 private:
 
-	DirectX::XMFLOAT4X4 Interpolate(unsigned int boneID, int action);
+	XMMATRIX Interpolate(unsigned int boneID, int action);
 
+	bool _frozen;
 	float _time;
 	float _currTime;
 	float _nextTime;
 	float _lerpPercent;
-	int _lastFrame;
-	DirectX::XMVECTOR _zeroVector = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
-	std::vector<DirectX::XMFLOAT4X4> toRootTransforms;
-	std::vector<DirectX::XMFLOAT4X4> toParentTransforms;
-	std::vector<DirectX::XMFLOAT4X4> finalTransforms;
+	unsigned _lastFrame, _boneCount;
+	XMVECTOR _zeroVector = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
+	XMMATRIX* toRootTransforms;
+	XMMATRIX* toParentTransforms;
+	XMMATRIX* finalTransforms;
 	Skeleton* _skeleton;
 	float _animTime;
 	int _currentCycle, _currentAction;
@@ -29,14 +32,15 @@ public:
 	~Animation();
 
 	void Update(float time);
-	void SetActionAsCycle(int action);
+	void SetActionAsCycle(int action, bool reset);
+	void Freeze(bool freeze);
 	void PlayAction(int action);
-	std::vector<DirectX::XMFLOAT4X4>* GetTransforms()
+	XMMATRIX* GetTransforms()
 	{
-		return &finalTransforms;
+		return finalTransforms;
 	}
-
-	//Overloading these guarantees 16B alignment of XMMATRIX
-	void* operator new(size_t i);
-	void operator delete(void* p);
+	int GetBoneCount() const
+	{
+		return _boneCount;
+	} 
 };

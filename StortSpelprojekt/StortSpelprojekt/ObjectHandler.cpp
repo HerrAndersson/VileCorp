@@ -9,21 +9,51 @@ ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, G
 	_buildingGrid = new Grid(device, 1, 1, 1, XMFLOAT3(1.0f, 1.0f, 0.7f));
 	_gameObjectInfo = data;
 	_device = device;
+	_lightCulling = nullptr;
 
-	
 	ActivateTileset("default2");
 }
 
 ObjectHandler::~ObjectHandler()
 {
-	Release();
+	UnloadLevel();
 	SAFE_DELETE(_buildingGrid);
 }
 
-void ObjectHandler::Release()
+bool ObjectHandler::LoadLevel(int lvlIndex)
+{
+	int dimX, dimY;
+	vector<GameObjectData> gameObjectData;
+	bool result = _assetManager->ParseLevel(lvlIndex, gameObjectData, dimX, dimY);
+	if (result)
+	{
+		if (_gameObjects.size() < 1)
+		{
+			for (int i = 0; i < NR_OF_TYPES; i++)
+			{
+				_gameObjects.push_back(std::vector<GameObject*>());
+			}
+		}
+
+		delete _tilemap;
+		_tilemap = new Tilemap(AI::Vec2D(dimX, dimY));
+
+		for (auto i : gameObjectData)
+		{
+			Add((Type)i._tileType, 0, DirectX::XMFLOAT3(i._posX, 0, i._posZ), DirectX::XMFLOAT3(0, i._rotY, 0));
+		}
+	}
+
+	_lightCulling = new LightCulling(_tilemap);
+
+	return result;
+}
+
+void ObjectHandler::UnloadLevel()
 {
 	ReleaseGameObjects();
-	SAFE_DELETE( _tilemap);
+	SAFE_DELETE(_tilemap);
+	SAFE_DELETE(_lightCulling);
 }
 
 void ObjectHandler::ActivateTileset(const string& name)
@@ -39,8 +69,6 @@ void ObjectHandler::ActivateTileset(const string& name)
 		}
 	}
 }
-
-
 
 bool ObjectHandler::Add(Type type, int index, const XMFLOAT3& position, const XMFLOAT3& rotation, const int subIndex)
 {
@@ -60,27 +88,18 @@ bool ObjectHandler::Add(Type type, int index, const XMFLOAT3& position, const XM
 	case SPAWN:
 		object = MakeSpawn(_gameObjectInfo->Spawns(index), position, rotation);
 		break;
+	case TRAP:
+		object = MakeTrap(_gameObjectInfo->Traps(index), position, rotation, subIndex);
+		break;
+	case CAMERA:
+		object = MakeSecurityCamera(_gameObjectInfo->Cameras(index), position, rotation);
+		break;
 	case ENEMY:
 		object = MakeEnemy(_gameObjectInfo->Enemies(index), position, rotation);
 		break;
 	case GUARD:
 		object = MakeGuard(_gameObjectInfo->Guards(index), position, rotation);
 		break;
-	case TRAP:
-		switch (subIndex)
-		{
-		case SPIKE:
-			object = MakeTrap(_gameObjectInfo->Traps(index), position, rotation, SPIKE);
-			break;
-		case TESLACOIL:
-			object = MakeTrap(_gameObjectInfo->Traps(index), position, rotation, TESLACOIL);
-			break;
-		case SHARK:
-			object = MakeTrap(_gameObjectInfo->Traps(index), position, rotation, SHARK);
-			break;
-		default:
-			break;
-		}
 	default:	
 		break;
 	}
@@ -121,8 +140,7 @@ bool ObjectHandler::Add(Type type, int index, const XMFLOAT3& position, const XM
 		_gameObjects[type].push_back(object);
 		for(auto i : object->GetRenderObject()->_mesh._spotLights)
 		{
-			//TODO: Add settings variables to this function below! Alex
-			_spotlights[object] = new Renderer::Spotlight(_device, i, 256, 256, 0.1f, 1000.0f);
+			_spotlights[object] = new Renderer::Spotlight(_device, i, 0.1f, 1000.0f);
 		}
 		_objectCount++;
 		return true;
@@ -318,9 +336,6 @@ int ObjectHandler::GetObjectCount() const
 	return _objectCount;
 }
 
-
-/*Tilemap handling*/
-
 Tilemap * ObjectHandler::GetTileMap() const
 {
 	return _tilemap;
@@ -460,33 +475,6 @@ Grid * ObjectHandler::GetBuildingGrid()
 }
 
 
-
-
-bool ObjectHandler::LoadLevel(int lvlIndex)
-{
-	int dimX, dimY;
-	vector<GameObjectData> gameObjectData;
-	bool result = _assetManager->ParseLevel(lvlIndex, gameObjectData, dimX, dimY);
-	if (result)
-	{
-		if (_gameObjects.size() < 1)
-		{
-			for (int i = 0; i < NR_OF_TYPES; i++)
-			{
-				_gameObjects.push_back(std::vector<GameObject*>());
-			}
-		}
-
-		delete _tilemap;
-		_tilemap = new Tilemap(AI::Vec2D(dimX, dimY));
-
-		for (auto i : gameObjectData)
-		{
-			Add((Type)i._tileType, 0, DirectX::XMFLOAT3(i._posX, 0, i._posZ), DirectX::XMFLOAT3(0, i._rotY, 0));
-		}
-	}
-	return result;
-}
 
 void ObjectHandler::InitPathfinding()
 {
@@ -648,25 +636,13 @@ void ObjectHandler::Update(float deltaTime)
 		}
 	}
 
-	/*
-	
-	if(animations uppdateringar)
-		if(active)
-			do ljus update
-
-	if(gameobject förflyttning)
-		if(active)
-			do ljus update
-	
-	*/
-
 	for (pair<GameObject*, Renderer::Spotlight*> spot : _spotlights)
 	{
 		if (spot.second->IsActive() && spot.first->IsActive())
 		{
 			if (spot.second->GetBone() != -1)
 			{
-				spot.second->SetPositionAndRotation(spot.first->GetAnimation()->GetTransforms()->at(spot.second->GetBone()));
+				spot.second->SetPositionAndRotation(spot.first->GetAnimation()->GetTransforms()[spot.second->GetBone()]);
 			}
 			else
 			{
@@ -676,11 +652,23 @@ void ObjectHandler::Update(float deltaTime)
 	}
 }
 
+map<GameObject*, Renderer::Spotlight*>* ObjectHandler::GetSpotlights()
+{
+	return &_spotlights;
+}
+
+map<GameObject*, Renderer::Pointlight*>* ObjectHandler::GetPointlights()
+{
+	return &_pointligths;
+}
+
+vector<vector<GameObject*>>* ObjectHandler::GetObjectsInLight(Renderer::Spotlight* spotlight)
+{
+	return _lightCulling->GetObjectsInSpotlight(spotlight);
+}
+
 void ObjectHandler::ReleaseGameObjects()
 {
-	int debug;
-	std::vector<GameObject*> tempVector;
-
 	if (_gameObjects.size() > 0)
 	{
 		for (int i = 0; i < NR_OF_TYPES; i++)
@@ -691,14 +679,8 @@ void ObjectHandler::ReleaseGameObjects()
 				delete g;
 			}
 			_gameObjects[i].clear();
-			std::vector<GameObject*>().swap(_gameObjects[i]);
-			_gameObjects[i].shrink_to_fit();
-			debug = _gameObjects[i].size();
 		}
 		_gameObjects.clear();
-		std::vector<GameObject*>().swap(tempVector);
-		_gameObjects.shrink_to_fit();
-		debug = _gameObjects.size();
 	}
 	_idCount = 0;
 	_objectCount = 0;
@@ -803,6 +785,28 @@ Trap * ObjectHandler::MakeTrap(GameObjectTrapInfo * data, const XMFLOAT3& positi
 		subIndex,
 		{ 1,0 },
 		data->_cost);
+
+	// Read more data
+
+	if (!_tilemap->AddObjectToTile((int)position.x, (int)position.z, obj))
+	{
+		delete obj;
+		obj = nullptr;
+	}
+
+	return obj;
+}
+
+SecurityCamera*	ObjectHandler::MakeSecurityCamera(GameObjectCameraInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation)
+{
+	SecurityCamera* obj = new SecurityCamera(
+		_idCount,
+		position,
+		rotation,
+		AI::Vec2D((int)position.x, (int)position.z),
+		CAMERA,
+		_assetManager->GetRenderObject(data->_renderObject),
+		_tilemap);
 
 	// Read more data
 

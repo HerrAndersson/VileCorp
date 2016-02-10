@@ -6,7 +6,7 @@
 class PlacementState : public BaseState
 {
 private:
-	BaseEdit _baseEdit;
+	BaseEdit* _baseEdit;
 	bool _trapChosen = false;
 	int _budget;
 
@@ -23,7 +23,7 @@ private:
 	} _toPlace;
 
 public:
-	PlacementState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::Settings* settings);
+	PlacementState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::Settings* settings, System::SoundModule* soundModule);
 	~PlacementState();
 
 	void Update(float deltaTime);

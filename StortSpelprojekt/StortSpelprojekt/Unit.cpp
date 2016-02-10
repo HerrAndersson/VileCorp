@@ -150,6 +150,7 @@ Unit::~Unit()
 	_aStar = nullptr;
 	//delete _heldObject;
 	//_heldObject = nullptr;
+	delete _visionCone;
 	if (_animation != nullptr)
 	{
 		delete _animation;

@@ -20,9 +20,13 @@ QuadTree::QuadTree(Vec2 minPoint, Vec2 maxPoint)
 	_isLeaf = true;
 	_tiles = std::vector<AI::Vec2D>();
 }
+
 QuadTree::~QuadTree()
 {
-
+	for (int i = 0; i < 4; i++)
+	{
+		SAFE_DELETE(_children[i]);
+	}
 }
 
 void QuadTree::Divide(int nrOfDivisions)
@@ -128,14 +132,4 @@ void QuadTree::GetObjects(std::vector<Vec2>* polygon, std::vector<std::vector<Ga
 		}
 	}
 }
-void QuadTree::Release()
-{
-	for (int i = 0; i < 4; i++)
-	{
-		if (_children[i] != nullptr)
-		{
-			_children[i]->Release();
-		}
-		delete _children[i];
-	}
-}
+

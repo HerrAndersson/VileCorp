@@ -10,11 +10,60 @@ namespace Renderer
 	ShadowMap::ShadowMap(ID3D11Device* device, int dimensions)
 	{
 		_dimensions = dimensions;
+		CreateResources(device, dimensions);
+		
+		/////////////////////////////////////////////////////////// Buffers /////////////////////////////////////////////////////////////
+		D3D11_BUFFER_DESC matrixBufferDesc;
+		matrixBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+		matrixBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+		matrixBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+		matrixBufferDesc.MiscFlags = 0;
+		matrixBufferDesc.StructureByteStride = 0;
 
-		HRESULT hr;
+		matrixBufferDesc.ByteWidth = sizeof(MatrixBufferPerObject);
+
+		HRESULT hr = device->CreateBuffer(&matrixBufferDesc, NULL, &_matrixBufferPerObject);
+		if (FAILED(hr))
+		{
+			throw std::runtime_error("ShadowMap: Failed to create _matrixBufferPerObject");
+		}
+
+		matrixBufferDesc.ByteWidth = sizeof(MatrixBufferPerFrame);
+
+		hr = device->CreateBuffer(&matrixBufferDesc, NULL, &_matrixBufferPerFrame);
+		if (FAILED(hr))
+		{
+			throw std::runtime_error("ShadowMap: Failed to create _matrixBufferPerFrame");
+		}
+
+		/////////////////////////////////////////////////////////// Other ///////////////////////////////////////////////////////////////
+		D3D11_DEPTH_STENCIL_DESC shadowDepthStencilDesc;
+		ZeroMemory(&shadowDepthStencilDesc, sizeof(D3D11_DEPTH_STENCIL_DESC));
+		shadowDepthStencilDesc.DepthEnable = true;
+		shadowDepthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+		shadowDepthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+		shadowDepthStencilDesc.StencilEnable = false;
+
+		hr = device->CreateDepthStencilState(&shadowDepthStencilDesc, &_shadowDepthStencilState);
+		if (FAILED(hr))
+		{
+			throw runtime_error("ShadowMap: Could not create Depth stencil state");
+		}
+	}
+
+	ShadowMap::~ShadowMap()
+	{
+		_shadowDepthStencilView->Release();
+		_shadowShaderResourceView->Release();
+		_shadowDepthStencilState->Release();
+		_matrixBufferPerFrame->Release();
+		_matrixBufferPerObject->Release();
+	}
+
+	void ShadowMap::CreateResources(ID3D11Device* device, int dimensions)
+	{
 		ID3DBlob* errorMessage = nullptr;
 		ID3DBlob* pVS = nullptr;
-
 		ID3D11Texture2D* shadowMap;
 
 		///////////////////////////////////////////////////////// T2D, DSV, SRV /////////////////////////////////////////////////////////
@@ -43,7 +92,7 @@ namespace Renderer
 		shaderResourceViewDesc.Format = DXGI_FORMAT_R32_FLOAT;
 		shaderResourceViewDesc.Texture2D.MipLevels = 1;
 
-		hr = device->CreateTexture2D(&shadowMapDesc, nullptr, &shadowMap);
+		HRESULT hr = device->CreateTexture2D(&shadowMapDesc, nullptr, &shadowMap);
 		if (FAILED(hr))
 		{
 			throw runtime_error("ShadowMap: Could not create Shadow map Texture2D");
@@ -61,49 +110,13 @@ namespace Renderer
 			throw runtime_error("ShadowMap: Could not create Shadow map SRV");
 		}
 
-		/////////////////////////////////////////////////////////// Buffers /////////////////////////////////////////////////////////////
-		D3D11_BUFFER_DESC matrixBufferDesc;
-		matrixBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-		matrixBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-		matrixBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-		matrixBufferDesc.MiscFlags = 0;
-		matrixBufferDesc.StructureByteStride = 0;
-
-		matrixBufferDesc.ByteWidth = sizeof(MatrixBufferPerObject);
-
-		hr = device->CreateBuffer(&matrixBufferDesc, NULL, &_matrixBufferPerObject);
-		if (FAILED(hr))
-		{
-			throw std::runtime_error("ShadowMap: Failed to create matrixBufferPerObject");
-		}
-
-		matrixBufferDesc.ByteWidth = sizeof(MatrixBufferPerFrame);
-
-		hr = device->CreateBuffer(&matrixBufferDesc, NULL, &_matrixBufferPerFrame);
-		if (FAILED(hr))
-		{
-			throw std::runtime_error("ShadowMap: Failed to create matrixBufferPerFrame");
-		}
-
 		///////////////////////////////////////////////////////////// Other /////////////////////////////////////////////////////////////
-		ZeroMemory(&_shadowViewport, sizeof(D3D11_VIEWPORT));
-		_shadowViewport.Height = (FLOAT)dimensions;
-		_shadowViewport.Width = (FLOAT)dimensions;
+		_shadowViewport.Height = (FLOAT)_dimensions;
+		_shadowViewport.Width = (FLOAT)_dimensions;
 		_shadowViewport.MinDepth = 0.f;
 		_shadowViewport.MaxDepth = 1.f;
-
-		D3D11_DEPTH_STENCIL_DESC shadowDepthStencilDesc;
-		ZeroMemory(&shadowDepthStencilDesc, sizeof(D3D11_DEPTH_STENCIL_DESC));
-		shadowDepthStencilDesc.DepthEnable = true;
-		shadowDepthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-		shadowDepthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
-		shadowDepthStencilDesc.StencilEnable = false;
-
-		hr = device->CreateDepthStencilState(&shadowDepthStencilDesc, &_shadowDepthStencilState);
-		if (FAILED(hr))
-		{
-			throw runtime_error("ShadowMap: Could not create Depth stencil state");
-		}
+		_shadowViewport.TopLeftX = 0.0f;
+		_shadowViewport.TopLeftY = 0.0f;
 
 		if (shadowMap)
 		{
@@ -111,10 +124,14 @@ namespace Renderer
 		}
 	}
 
-	ShadowMap::~ShadowMap()
+	void ShadowMap::Resize(ID3D11Device* device, int dimensions)
 	{
 		_shadowDepthStencilView->Release();
 		_shadowShaderResourceView->Release();
+
+		_dimensions = dimensions;
+
+		CreateResources(device, dimensions);
 	}
 
 	void ShadowMap::SetShadowGenerationStage(ID3D11DeviceContext* deviceContext)

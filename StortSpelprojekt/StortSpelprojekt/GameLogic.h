@@ -15,13 +15,11 @@ private:
 	System::Controls*		_controls;
 	PickingDevice*			_pickingDevice;
 	Player*					_player;
-	LevelLoad				_levelLoad;
 
 	void HandleInput();
 public:
-	GameLogic();
+	GameLogic(ObjectHandler* objectHandler, System::Camera* camera, System::Controls* controls, PickingDevice* pickingDevice);
 	~GameLogic();
-	void Initialize(ObjectHandler* objectHandler, System::Camera* camera, System::Controls* controls, PickingDevice* pickingDevice);
 	void Update(float deltaTime);
 };
 

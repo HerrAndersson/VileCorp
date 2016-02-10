@@ -23,7 +23,6 @@ namespace Renderer
 		ID3D11ShaderResourceView*	 _deferredSRVarray[BUFFER_COUNT + 2];
 
 		ID3D11RenderTargetView*		 _backBufferRTV;
-
 		ID3D11DepthStencilView*		 _backBufferDSV;
 		ID3D11ShaderResourceView*	 _backBufferDepthSRV;
 
