@@ -14,4 +14,5 @@ public:
 	~Architecture();
 	void Update(float deltaTime);
 	void Release();
+	bool InRange(AI::Vec2D pos)const;
 };

@@ -7,6 +7,7 @@ PlayState::PlayState(System::Controls* controls, ObjectHandler* objectHandler, S
 	_objectHandler = objectHandler;
 	_camera = camera;
 	_pickingDevice = pickingDevice;
+	_assetManager = assetManager;
 
 	_gameLogic = nullptr;
 }
@@ -29,7 +30,7 @@ void PlayState::Update(float deltaTime)
 
 void PlayState::OnStateEnter()
 {
-	_gameLogic = new GameLogic(_objectHandler, _camera, _controls, _pickingDevice);
+	_gameLogic = new GameLogic(_objectHandler, _camera, _controls, _pickingDevice, &_uiTree, _assetManager);
 	_objectHandler->EnableSpawnPoints();
 }
 

@@ -48,6 +48,8 @@ void Guard::EvaluateTile(GameObject * obj)
 		switch (obj->GetType())
 		{
 		case LOOT:
+			obj->SetVisibility(true);
+			break;
 		case GUARD:
 		case TRAP:
 		case CAMERA:				//Guards don't react to these
@@ -77,9 +79,26 @@ void Guard::act(GameObject* obj)
 		case LOOT:
 		case GUARD:
 		case TRAP:
+			if (!static_cast<Trap*>(obj)->IsTrapActive())
+			{
+				if (_trapInteractionTime < 0)
+				{
+					UseTrap();
+				}
+				else if (_trapInteractionTime == 0)
+				{
+					static_cast<Trap*>(obj)->SetTrapActive(true);
+					obj->SetColorOffset({0,0,0});
+				}
+			}
+			ClearObjective();
 			break;
 		case ENEMY:											//The guard hits the enemy
 			static_cast<Unit*>(obj)->TakeDamage(1);
+			if (static_cast<Unit*>(obj)->GetHealth() < 0)
+			{
+				ClearObjective();
+			}
 			break;
 	case FLOOR:
 		if (!_patrolRoute.empty())
@@ -89,6 +108,10 @@ void Guard::act(GameObject* obj)
 				_currentPatrolGoal++;
 				SetGoal(_patrolRoute[_currentPatrolGoal % _patrolRoute.size()]);
 			}
+		}
+		else
+		{
+			ClearObjective();
 		}
 
 		break;

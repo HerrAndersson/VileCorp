@@ -7,7 +7,7 @@
 class Unit : public GameObject
 {
 public:
-	const float MOVE_SPEED = 0.02f;				//Movement per frame
+	const float MOVE_SPEED = 0.025f;				//Movement per frame
 private:
 	AI::AStar* _aStar;
 	AI::Vec2D _goalTilePosition;
@@ -22,9 +22,8 @@ private:
 	int _waiting;					//Temporarily counting frame. Should use a timer eventually
 
 	int _health;
-
-	GameObject* _objective;
 	bool _isMoving;
+	
 
 	//void ScanOctant(int depth, int octant, double &startSlope, double endSlope);
 	//double GetSlope(double x1, double y1, double x2, double y2, bool invert);
@@ -37,11 +36,13 @@ protected:
 	const Tilemap* _tileMap;		//Pointer to the tileMap in objectHandler(?). Units should preferably have read-, but not write-access.
 	int _goalPriority;				//Lower value means higher priority
 	int _pathLength;
-
+	int _trapInteractionTime;
 	GameObject* _heldObject;
+
 
 	bool _isFleeing;
 	GameObject* _pursuer;
+	GameObject* _objective;
 
 	int GetApproxDistance(AI::Vec2D target)const;
 	void Flee();
@@ -53,6 +54,7 @@ public:
 	int GetPathLength()const;
 	AI::Vec2D GetGoal();
 	AI::Vec2D GetDirection();
+	void SetDirection(const AI::Vec2D direction);
 	int GetHealth();
 	GameObject* GetHeldObject()const;
 	//void FindVisibleTiles();
@@ -70,6 +72,7 @@ public:
 	void ClearObjective();
 	void TakeDamage(int damage);
 	void SetVisibility(bool visible);
+	void UseTrap();
 
 };
 

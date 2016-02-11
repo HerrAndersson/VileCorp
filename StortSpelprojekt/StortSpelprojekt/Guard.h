@@ -19,4 +19,5 @@ public:
 	void SetPatrolPoint(AI::Vec2D patrolPoint);
 	void RemovePatrol();
 	void Release();
+
 };
