@@ -82,7 +82,7 @@ void Enemy::EvaluateTile(GameObject* obj)
 		//Head to the objective
 		if (obj->GetPickUpState() == ONTILE && 
 			tempPriority > 0 &&
-			obj->GetTilePosition() != _tilePosition && 
+ 			obj->GetTilePosition() != _tilePosition && 
 			(_pathLength <= 0 || tempPriority * GetApproxDistance(obj->GetTilePosition()) < _goalPriority * GetApproxDistance(GetGoal())))
 		{
 			_goalPriority = tempPriority;
@@ -91,6 +91,8 @@ void Enemy::EvaluateTile(GameObject* obj)
 		//Head for the exit, all objectives are taken
 		else if (_heldObject == nullptr && _pathLength <= 0 && !_isFleeing)
 		{
+			//Lowest possible priority, temporary solution that will be solved with the state machine, Aron and Victor
+			_goalPriority = _MAX_INT_DIG;
 			SetGoal(obj);
 		}
 	}
