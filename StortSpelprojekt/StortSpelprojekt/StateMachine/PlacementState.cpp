@@ -113,7 +113,6 @@ void PlacementState::HandleButtons()
 			_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_playerProfile[_currentPlayer]._gold));
 
 			//C:/dev/StortSpel-Grupp1/Output/Bin/x86/Debug/
-			System::saveJSON(&_playerProfile[_currentPlayer], _playerProfilesPath[_currentPlayer], "Player Profile");
 
 		}
 	}
@@ -128,7 +127,6 @@ void PlacementState::HandleButtons()
 			
 			_playerProfile[_currentPlayer]._gold -= 100;
 			_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_playerProfile[_currentPlayer]._gold));
-			System::saveJSON(&_playerProfile[_currentPlayer], _playerProfilesPath[_currentPlayer], "Player Profile");
 		}
 	}
 
@@ -144,9 +142,11 @@ void PlacementState::HandleButtons()
 			
 			_playerProfile[_currentPlayer]._gold -= 250;
 			_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_playerProfile[_currentPlayer]._gold));
-			System::saveJSON(&_playerProfile[_currentPlayer], _playerProfilesPath[_currentPlayer], "Player Profile");
+			
 		}
 	}
+//	System::saveJSON(&_playerProfile[_currentPlayer], _playerProfilesPath[_currentPlayer], "Player Profile");
+
 	//if (_uiTree.IsButtonColliding("Camera", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	//{
 	//	
