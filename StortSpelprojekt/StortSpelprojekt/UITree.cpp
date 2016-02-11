@@ -71,7 +71,7 @@ namespace GUI
 		for (unsigned i = 0; i < object->_thumbnails.size(); i++)
 		{
 			Node* newNode = new Node(&_info);
-			int row = (index + createdThumbnails) / 4, column = (index + createdThumbnails) % 4, page = (index + createdThumbnails) / 28;
+			int row = (index + createdThumbnails) % 28 / 4, column = (index + createdThumbnails) % 28 % 4, page = (index + createdThumbnails) / 28;
 			newNode->SetId(object->_name);
 			newNode->SetPosition(XMFLOAT2(-0.125 + (0.09 * column), 0.42 - (0.13 * row)));
 			newNode->SetScale(XMFLOAT2(0.04, 0.060));

@@ -115,7 +115,7 @@ void LevelEditState::HandleButtons()
 	System::MouseCoord coord = _controls->GetMouseCoord();
 
 
-	if (_controls->IsFunctionKeyDown("PLACEMENT:CLICK"))
+	if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
 		//Open Level editor placement GUI
 		bool buttonClicked = false;
@@ -154,7 +154,7 @@ void LevelEditState::HandleButtons()
 			}
 
 			//Need to go through "" json group to get to object buttons
-			if (_currentList != nullptr)
+			if (_currentList != nullptr && _currentList->GetChildren()->size())
 			{
 				buttonClicked = false;
 				std::vector<GUI::Node*>* currentPageRows = _currentList->GetChildren()->at(_currentPage)->GetChildren();
@@ -233,70 +233,6 @@ void LevelEditState::HandleButtons()
 			}
 		}
 	}
-
-	//if (_uiTree.GetNode("TrapLeaf")->GetHidden() == false)
-	//{
-	//	if (_uiTree.IsButtonColliding("Trap1", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("PLACEMENT:CLICK"))
-	//	{
-	//		_trapButtonClick = true;
-	//		_unitButtonClick = false;
-	//		_decButtonClick = false;
-
-	//		// Temp, should be replaced with blueprint
-	//		_toPlace._type = TRAP;
-	//		_toPlace._name = "trap_proto";
-	//	}
-	//	else if (_uiTree.IsButtonColliding("Trap2", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("PLACEMENT:CLICK"))
-	//	{
-	//		_trapButtonClick = true;
-	//		_unitButtonClick = false;
-	//		_decButtonClick = false;
-
-	//		// Temp, should be replaced with blueprint
-	//		_toPlace._type = TRAP;
-	//		_toPlace._name = "trap2_proto";
-	//	}
-	//}
-
-	//if (_uiTree.IsButtonColliding("Units", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("PLACEMENT:CLICK"))
-	//{
-	//	_uiTree.GetNode("UnitLeaf")->SetHidden(false);
-	//	_uiTree.GetNode("TrapLeaf")->SetHidden(true);
-	//	_uiTree.GetNode("DecLeaf")->SetHidden(true);
-
-	//	_trapButtonClick = false;
-	//	_unitButtonClick = true;
-	//	_decButtonClick = false;
-
-	//	// Temp, should be replaced with blueprint
-	//	_toPlace._type = GUARD;
-	//	_toPlace._name = "guard_proto";
-	//}
-
-
-	//if (_uiTree.IsButtonColliding("Decorations", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("PLACEMENT:CLICK"))
-	//{
-	//	_uiTree.GetNode("DecLeaf")->SetHidden(false);
-	//	_uiTree.GetNode("TrapLeaf")->SetHidden(true);
-	//	_uiTree.GetNode("UnitLeaf")->SetHidden(true);
-
-	//	_trapButtonClick = false;
-	//	_unitButtonClick = true;
-	//	_decButtonClick = false;
-
-	//	// Not really implemented
-	//}
-
-	//if (_controls->IsFunctionKeyDown("PLACEMENT:CLICK") && _trapButtonClick == false && _unitButtonClick == false && _decButtonClick == false)
-	//{
-	//	_uiTree.GetNode("DecLeaf")->SetHidden(true);
-	//	_uiTree.GetNode("TrapLeaf")->SetHidden(true);
-	//	_uiTree.GetNode("UnitLeaf")->SetHidden(true);
-	//}
-
-	//_trapButtonClick = false;
-	//_unitButtonClick = false;
-	//_decButtonClick = false;
 }
 
 void LevelEditState::ExportLevel()
