@@ -296,7 +296,7 @@ bool Tilemap::IsPlaceable(int x, int z, Type type) const
 
 bool Tilemap::IsPlaceable(AI::Vec2D pos, Type type) const
 {
-	return false;
+	return IsPlaceable(pos._x, pos._y, type);
 }
 /*
 To place an object, the tile should be empty besides a floor

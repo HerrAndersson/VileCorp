@@ -33,7 +33,6 @@ void LevelEditState::Update(float deltaTime)
 
 void LevelEditState::OnStateEnter()
 {
-	_baseEdit = new BaseEdit(_objectHandler, _controls, _pickingDevice, _camera);
 	//TODO: Move this function to LevelSelection when that state is created. /Alex
 	_objectHandler->LoadLevel(3);
 	_objectHandler->DisableSpawnPoints();
@@ -42,6 +41,8 @@ void LevelEditState::OnStateEnter()
 	_uiTree.GetNode("DecLeaf")->SetHidden(true);
 
 	_objectHandler->EnlargeTilemap(50);
+
+	_baseEdit = new BaseEdit(_objectHandler, _controls, _pickingDevice, _camera);
 
 	XMFLOAT3 campos;
 	campos.x = _objectHandler->GetTileMap()->GetWidth() / 2;
