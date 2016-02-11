@@ -1,18 +1,42 @@
 {
   "MENU": {
-    "position": [ 0.0, 0.0 ],
+	"position": [ 0.0, 0.0 ],
     "scale": [ 1.0, 1.0 ],
 
     "background": {
-      "position": [ 0.0, 0.0 ],
-      "scale": [ 1.0, 1.0 ],
-      "texture": "../Menues/startmenu1.png"
+		"position": [ 0.0, 0.0 ],
+		"scale": [ 1.0, 1.0 ],
+		"texture": "../Menues/startmenu1.png"
     },
-
     "files": {
       "position": [ 0.665, 0.2 ],
+	  
+	  "":
+	  {
+		"backgroundFolders": {
+			"position": [ 0.055, 0.5 ],
+			"scale": [ 0.65, 0.5 ],
+			"texture": "../Menues/menu2back.png"
+		},
+		"backgroundFolders": {
+			"position": [ 0.03, 0.3 ],
+			"scale": [ 0.65, 0.5 ],
+			"texture": "../Menues/menu2back.png"
+		},
+		"backgroundFolders": {
+			"position": [ 0.005, 0.1 ],
+			"scale": [ 0.65, 0.5 ],
+			"texture": "../Menues/menu2back.png"
+		},
+		"backgroundFolders": {
+			"position": [ -0.02, -0.1 ],
+			"scale": [ 0.65, 0.5 ],
+			"texture": "../Menues/menu2back.png"
+		}
+	  },
+	  
       "play": {
-        "position": [ -0.02, -0.10 ],
+        "position": [ -0.045, -0.3 ],
         "scale": [ 0.65, 0.5 ],
         "texture": "../Menues/menu2.png",
 
@@ -26,7 +50,7 @@
         }
       },
       "leveledit": {
-        "position": [ -0.045, -0.3 ],
+        "position": [ -0.07, -0.5 ],
         "scale": [ 0.65, 0.5 ],
         "texture": "../Menues/menu2.png",
 
@@ -34,20 +58,6 @@
           "position": [ -0.47, 0.40 ],
           "scale": [ 0.14, 0.07 ],
           "text": "Level editor",
-          "color": "FF000000",
-          "fontsize": 30.0,
-          "centered": true
-        }
-      },
-      "levelselect": {
-        "position": [ -0.07, -0.5 ],
-        "scale": [ 0.65, 0.5 ],
-        "texture": "../Menues/menu2.png",
-
-        "levelselectbutton": {
-          "position": [ -0.47, 0.40 ],
-          "scale": [ 0.14, 0.07 ],
-          "text": "Level select",
           "color": "FF000000",
           "fontsize": 30.0,
           "centered": true
@@ -98,8 +108,8 @@
 
       "unitinfocontainer": {
         "unitpicture": {
-          "position": [ 0.173333, -0.02 ],
-          "scale": [ 0.08666, 0.15 ]
+          "position": [ 0.2, 0.03 ],
+          "scale": [ 0.05866, 0.1 ]
         },
         "unitnumber": {
           "position": [ 0.223333, -0.02 ],
@@ -139,16 +149,14 @@
       }
     },
     "winscreen": {
-      "position": [ 0.0, -0.0 ],
+      "position": [ 0.0, 0.1 ],
       "scale": [ 0.35, 0.35 ],
-      "texture": "../Menues/Win/win3.png",
-      "fontsize": 25.0
+      "texture": "../Menues/Win/win3.png"
     },
     "losescreen": {
-      "position": [ 0.0, -0.0 ],
-      "scale": [ 0.35, 0.35 ],
-      "texture": "../Menues/Lose/lose2.png",
-      "fontsize": 25.0
+      "position": [ 0.0, 0.2 ],
+      "scale": [ 0.6, 0.6 ],
+      "texture": "../Menues/Lose/lose4.png"
     }
   },
 	"PAUSE" : {
@@ -1673,8 +1681,8 @@
 				},
 				"description":
 				{
-					"position" : [-0.08, -0.1],
-					"scale": [0.3, 0.05],
+					"position" : [-0.00, -0.1],
+					"scale": [0.38, 0.05],
 					"text" : "Vile Corp just got their most dangerous assignment yet. The international crime cooperation Google.com has hired VileCorp to protect the huge orange blood diamonds of Africa. CIA obtained information of the whereabouts of the diamonds. Your task is to protect the diamonds and kill any intruders that enter the premises.",
 					"color" : "FF888888",
 					"fontsize" : 25.0
