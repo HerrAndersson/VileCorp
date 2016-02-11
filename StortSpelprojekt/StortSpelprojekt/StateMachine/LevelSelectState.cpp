@@ -34,6 +34,7 @@ void LevelSelectState::Update(float deltaTime)
 		System::MouseCoord coord = _controls->GetMouseCoord();
 		if (_uiTree.IsButtonColliding("playbutton", coord._pos.x, coord._pos.y))
 		{
+			_soundModule->Play("Assets/Sounds/page.wav");
 			_objectHandler->LoadLevel(_levelSelection);
 			ChangeState(State::PLACEMENTSTATE);
 		}
