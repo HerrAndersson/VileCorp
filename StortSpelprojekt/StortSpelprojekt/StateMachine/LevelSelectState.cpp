@@ -42,6 +42,7 @@ void LevelSelectState::Update(float deltaTime)
 		{
 			if (_levelSelection > _levelSelectionMin)
 			{
+				_soundModule->Play("Assets/Sounds/page.wav");
 				_uiTree.GetNode(std::to_string(_levelSelection))->SetHidden(true);
 				_levelSelection--;
 				_uiTree.GetNode(std::to_string(_levelSelection))->SetHidden(false);
@@ -51,6 +52,7 @@ void LevelSelectState::Update(float deltaTime)
 		{
 			if (_levelSelection < _levelSelectionMax)
 			{
+				_soundModule->Play("Assets/Sounds/page.wav");
 				_uiTree.GetNode(std::to_string(_levelSelection))->SetHidden(true);
 				_levelSelection++;
 				_uiTree.GetNode(std::to_string(_levelSelection))->SetHidden(false);
