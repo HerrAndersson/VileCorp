@@ -33,6 +33,8 @@ namespace GUI
 		void Resize(System::Settings* settings);
 		void Resize(Node* current);
 
+		int CreateTilesetObject(Tileset::Object* object, Node* list, int index);
+
 		bool IsButtonColliding(const std::string& id, int x, int y);
 		bool IsButtonColliding(Node* current, int x, int y);
 		Node* GetNode(const std::string& id);

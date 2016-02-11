@@ -5,7 +5,7 @@
 			{
 				"_mesh": "floor-24.bin",
 				"_name": "Floor",
-				"_type": 0,
+				"_type": "FLOOR",
 				"_subType": 0,
 				"_textures": [
 					"Floor.png",
@@ -13,15 +13,15 @@
 					"Floor3.png"
 				],
 				"_thumbnails": [
-					"floor.png",
-					"floor2.png",
-					"floor3.png"
+					"../Menues/LevelEdit/Floors/floor1.png",
+					"../Menues/LevelEdit/Floors/floor2.png",
+					"../Menues/LevelEdit/Floors/floor3.png"
 				]
 			},
 			{
 				"_mesh": "wall-24.bin",
 				"_name": "Wall",
-				"_type": 1,
+				"_type": "WALL",
 				"_subType": 0,
 				"_textures": [
 					"wall.png",
@@ -29,15 +29,15 @@
 					"wall3.png"
 				],
 				"_thumbnails": [
-					"wall.png",
-					"wall2.png",
-					"wall3.png"
+					"../Menues/LevelEdit/Walls/wall1.png",
+					"../Menues/LevelEdit/Walls/wall2.png",
+					"../Menues/LevelEdit/Walls/wall3.png"
 				]
 			},
 			{
 				"_mesh": "diamond-24.bin",
 				"_name": "Diamond",
-				"_type": 2,
+				"_type": "LOOT",
 				"_subType": 0,
 				"_textures": [
 					"diamond.png",
@@ -45,63 +45,51 @@
 					"diamond3.png"
 				],
 				"_thumbnails": [
-					"diamond.png",
-					"diamond2.png",
-					"diamond3.png"
+					"../Menues/LevelEdit/Loot/diamond1.png",
+					"../Menues/LevelEdit/Loot/diamond2.png",
+					"../Menues/LevelEdit/Loot/diamond3.png"
 				]
 			},
-			{
-				"_mesh": "entry-24.bin",
-				"_name": "Entry",
-				"_type": 3,
-				"_subType": 0,
-				"_textures": [
-					"Entry window.png"
-				],
-				"_thumbnails": [
-					"entry1.png"
-				]
-			},
-			{
+      {
+        "_mesh": "entry-24.bin",
+        "_name": "Entry",
+        "_type": "SPAWN",
+        "_subType": 0,
+        "_textures": [
+          "Entry window.png"
+        ],
+        "_thumbnails": [
+          "../Menues/LevelEdit/Entry/entry1.png"
+        ]
+      },
+      {
 				"_mesh": "trap-24.bin",
 				"_name": "Spiketrap",
-				"_type": 4,
+				"_type": "TRAP",
 				"_subType": 0,
 				"_textures": [
 					"spiketrap.png"
 				],
 				"_thumbnails": [
-					"spiketrap.png"
+					"../Menues/LevelEdit/Traps/spiketrap.png"
 				]
 			},
 			{
-				"_mesh": "trap-24.bin",
+				"_mesh": "TeslaTrap-26.bin",
 				"_name": "Teslatrap",
-				"_type": 4,
+				"_type": "TRAP",
 				"_subType": 1,
 				"_textures": [
-					"spiketrap.png"
+					"Tesla.png"
 				],
 				"_thumbnails": [
-					"spiketrap.png"
-				]
-			},
-			{
-				"_mesh": "trigger-24.bin",
-				"_name": "Trigger",
-				"_type": 5,
-				"_subType": 0,
-				"_textures": [
-					"trigger.png"
-				],
-				"_thumbnails": [
-					"trigger.png"
+					"../Menues/LevelEdit/Traps/spiketrap.png"
 				]
 			},
 			{
 				"_mesh": "guard-24.bin",
 				"_name": "Guard",
-				"_type": 6,
+				"_type": "GUARD",
 				"_subType": 0,
 				"_textures": [
 					"textureblue.png",
@@ -117,7 +105,7 @@
 			{
 				"_mesh": "enemy-24.bin",
 				"_name": "Enemy",
-				"_type": 7,
+				"_type": "ENEMY",
 				"_subType": 0,
 				"_textures": [
 					"Enemy.png"

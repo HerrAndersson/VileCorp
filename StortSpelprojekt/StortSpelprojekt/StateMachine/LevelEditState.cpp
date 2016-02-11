@@ -5,14 +5,35 @@ LevelEditState::LevelEditState(System::Controls* controls, ObjectHandler* object
 {
 	_controls = controls;
 	_objectHandler = objectHandler;
-
+	_tileset = assetManager->LoadTileset("Assets/Tilesets/default.json");
 	_camera = camera;
 	_pickingDevice = pickingDevice;
 	_listId = -1;
 
 	_objectTabs = _uiTree.GetNode("Buttons")->GetChildren();
 
-	for (int i = 0; i < _objectTabs->size(); i++)
+	std::map<Type, std::string> typeLists =
+	{
+		{	   FLOOR, "floorlist"		},
+		{	    WALL, "walllist"		},
+		{	    LOOT, "objectivelist"	},
+		{	   SPAWN, "entrylist"		},
+		{	    TRAP, "traplist"		},
+		{	  CAMERA, "traplist"		},
+		{	   GUARD, "unitlist"		},
+		{	   ENEMY, "unitlist"		},
+		{  FURNITURE, "decorationlist"	}
+	};
+	for (unsigned i = 0; i < NR_OF_TYPES; i++)
+	{
+		int index = 0;
+		for (unsigned o = 0; o < _tileset->_objects[i].size(); o++)
+		{
+			index += _uiTree.CreateTilesetObject(&_tileset->_objects[i][o], _uiTree.GetNode(typeLists[(Type)i]), o);
+		}
+	}
+
+	for (unsigned i = 0; i < _objectTabs->size(); i++)
 	{
 		_buttonPositions[i] = _objectTabs->at(i)->GetPosition();
 	}
@@ -46,9 +67,9 @@ void LevelEditState::OnStateEnter()
 	_objectHandler->EnlargeTilemap(50);
 
 	XMFLOAT3 campos;
-	campos.x = _objectHandler->GetTileMap()->GetWidth() / 2;
+	campos.x = (float)_objectHandler->GetTileMap()->GetWidth() / 2;
 	campos.y = 15;
-	campos.z = _objectHandler->GetTileMap()->GetHeight() / 2 - 10;
+	campos.z = (float)_objectHandler->GetTileMap()->GetHeight() / 2 - 10;
 	_camera->SetPosition(campos);
 
 }
@@ -90,7 +111,7 @@ void LevelEditState::HandleButtons()
 	{
 		//Open Level editor placement GUI
 		bool buttonClicked = false;
-		for (int i = 0; i < _objectTabs->size() && !buttonClicked; i++)
+		for (unsigned i = 0; i < _objectTabs->size() && !buttonClicked; i++)
 		{
 			if (_uiTree.IsButtonColliding(_objectTabs->at(i), coord._pos.x, coord._pos.y))
 			{
@@ -111,7 +132,7 @@ void LevelEditState::HandleButtons()
 			//Changing pages for objects
 			if (_uiTree.IsButtonColliding("right", coord._pos.x, coord._pos.y))
 			{
-				if (_currentList->GetChildren()->size() - 1 > _currentPage)
+				if ((int)_currentList->GetChildren()->size() - 1 > _currentPage)
 				{
 					_currentPage++;
 				}
@@ -129,12 +150,12 @@ void LevelEditState::HandleButtons()
 			{
 				buttonClicked = false;
 				std::vector<GUI::Node*>* currentPageRows = _currentList->GetChildren()->at(_currentPage)->GetChildren();
-				for (int y = 0; y < currentPageRows->size() && !buttonClicked; y++)
+				for (unsigned y = 0; y < currentPageRows->size() && !buttonClicked; y++)
 				{
 					std::vector<GUI::Node*>* currentPageRowButtons = currentPageRows->at(y)->GetChildren();
 
 					//Object buttons 
-					for (int j = 0; j < currentPageRowButtons->size() && !buttonClicked; j++)
+					for (unsigned j = 0; j < currentPageRowButtons->size() && !buttonClicked; j++)
 					{
 						GUI::Node* currentButton = currentPageRowButtons->at(j);
 						if (_uiTree.IsButtonColliding(currentButton, coord._pos.x, coord._pos.y))
@@ -155,7 +176,7 @@ void LevelEditState::HandleButtons()
 		_currentPage = 0;
 		_uiTree.GetNode("wholelist")->SetHidden(true);
 		_uiTree.GetNode("listbuttons")->SetHidden(true);
-		for (int i = 0; i < _uiTree.GetNode("wholelist")->GetChildren()->size(); i++)
+		for (unsigned i = 0; i < _uiTree.GetNode("wholelist")->GetChildren()->size(); i++)
 		{
 			//Move gui
 			GUI::Node* node = _objectTabs->at(i);
@@ -166,7 +187,7 @@ void LevelEditState::HandleButtons()
 	{
 		//Show Gui
 		_uiTree.GetNode("wholelist")->SetHidden(false);
-		for (int i = 0; i < _uiTree.GetNode("wholelist")->GetChildren()->size(); i++)
+		for (unsigned i = 0; i < _uiTree.GetNode("wholelist")->GetChildren()->size(); i++)
 		{
 			//Move gui
 			GUI::Node* node = _objectTabs->at(i);
@@ -193,7 +214,7 @@ void LevelEditState::HandleButtons()
 				{
 					_uiTree.GetNode("listbuttons")->SetHidden(true);
 				}
-				for (int j = 0; j < _currentList->GetChildren()->size(); j++)
+				for (unsigned j = 0; j < _currentList->GetChildren()->size(); j++)
 				{
 					if (j != _currentPage)
 					{
@@ -375,7 +396,7 @@ int LevelEditState::GetVectorIndexOfString(std::vector<std::string>* vec, std::s
 {
 	int referenceIndex = 0;
 	bool foundReference = false;
-	for (int referenceIndex = 0; referenceIndex < vec->size() && !foundReference; referenceIndex++)
+	for (unsigned referenceIndex = 0; referenceIndex < vec->size() && !foundReference; referenceIndex++)
 	{
 		if (vec->at(referenceIndex) == str)
 		{

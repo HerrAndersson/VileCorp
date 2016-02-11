@@ -42,7 +42,7 @@ class ObjectHandler
 private:
 	vector<vector<GameObject*>> _gameObjects;
 	GameObjectInfo* _gameObjectInfo;
-	Tileset _activeTileset;
+	Tileset* _activeTileset;
 	Tilemap* _tilemap;
 	Grid* _buildingGrid;
 

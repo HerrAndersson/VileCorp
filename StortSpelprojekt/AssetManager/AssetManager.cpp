@@ -55,30 +55,42 @@ AssetManager::~AssetManager()
 }
 
 //Do not call, call _objectHandler->ActivateTileset() - Fredrik
-Tileset AssetManager::LoadTileset(string name)
+Tileset* AssetManager::LoadTileset(string name)
 {
-	Tileset newtileset;
+	std::map<std::string, Type> stringTypes =
+	{
+		{ "FLOOR", FLOOR },
+		{ "WALL", WALL },
+		{ "LOOT", LOOT },
+		{ "SPAWN", SPAWN },
+		{ "TRAP", TRAP },
+		{ "CAMERA", CAMERA },
+		{ "GUARD", GUARD },
+		{ "ENEMY", ENEMY },
+		{ "FURNITURE", FURNITURE }
+	};
 	_infile->open(name);
 	cereal::JSONInputArchive tilesetIn(*_infile);
 	TilesetData newTilesetData;
 	tilesetIn(newTilesetData);
 	_infile->close();
-	newtileset._objects.resize(NR_OF_TYPES);
-	for each (TilesetData::Object object in newTilesetData._objects)
+	_tileset._objects.resize(NR_OF_TYPES);
+	for (TilesetData::Object object : newTilesetData._objects)
 	{
+		int type = (int)stringTypes[object._type];
 		Tileset::Object newObject;
 		newObject._mesh = object._mesh;
 		newObject._name = object._name;
 		newObject._textures = object._textures;
 		newObject._thumbnails = object._thumbnails;
-		if (object._subType >= newtileset._objects[object._type].size())
+		if (object._subType >= (int)_tileset._objects[type].size())
 		{
-			newtileset._objects[object._type].resize(object._subType + 1);
+			_tileset._objects[type].resize(object._subType + 1);
 		}
-		newtileset._objects[object._type][object._subType] = newObject;
+		_tileset._objects[type][object._subType] = newObject;
 	}
 
-	return newtileset;
+	return &_tileset;
 }
 
 LevelFormat* AssetManager::ParseLevel(int index)
@@ -459,7 +471,7 @@ ID3D11Buffer* AssetManager::CreateVertexBuffer(vector<WeightedVertex> *weightedV
 RenderObject* AssetManager::GetRenderObject(int index)
 {
 	RenderObject* renderObject = nullptr;
-	if (index >= 0 && index < _renderObjects->size())
+	if (index >= 0 && index < (int)_renderObjects->size())
 	{
 		renderObject = _renderObjects->at(index);
 		if (!renderObject->_mesh->_meshLoaded)
@@ -484,6 +496,7 @@ RenderObject* AssetManager::GetRenderObject(string meshName, string textureName)
 	RenderObject* renderObject = new RenderObject;
 	renderObject->_mesh = GetModel(meshName);
 	renderObject->_diffuseTexture = GetTexture(textureName);
+	return renderObject;
 }
 
 Texture* AssetManager::GetTexture(string name)

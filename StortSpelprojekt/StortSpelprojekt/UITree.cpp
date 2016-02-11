@@ -61,6 +61,33 @@ namespace GUI
 		current->UpdateFont();
 	}
 
+	int UITree::CreateTilesetObject(Tileset::Object* object, Node* list, int index)
+	{
+		int createdThumbnails = 0;
+		if (list == nullptr)
+		{
+			throw runtime_error("UITree::CreateTilesetObject: list not found");
+		}
+		for (unsigned i = 0; i < object->_thumbnails.size(); i++)
+		{
+			Node* newNode = new Node(&_info);
+			int row = (index + createdThumbnails) / 4, column = (index + createdThumbnails) % 4, page = (index + createdThumbnails) / 28;
+			newNode->SetId(object->_name);
+			newNode->SetPosition(XMFLOAT2(-0.125 + (0.09 * column), 0.42 - (0.13 * row)));
+			newNode->SetScale(XMFLOAT2(0.04, 0.060));
+			newNode->SetTexture(_AM->GetTexture(object->_thumbnails[i])->_data);
+			createdThumbnails++;
+			if (page >= list->GetChildren()->size())
+			{
+				Node* newPage = new Node(&_info);
+				newPage->SetId(list->GetId() + "page" + to_string(page));
+				list->AddChild(newPage);
+			}
+			list->GetChildren()->at(page)->AddChild(newNode);
+		}
+		return createdThumbnails;
+	}
+
 	Node* UITree::LoadGUITree(const std::string& name, rapidjson::Value::ConstMemberIterator start, rapidjson::Value::ConstMemberIterator end)
 	{
 		Node* returnNode = new Node(&_info);

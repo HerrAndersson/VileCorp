@@ -26,8 +26,6 @@ void BaseEdit::Initialize(ObjectHandler* objectHandler, System::Controls* contro
 	_isDragAndPlaceMode = false;
 	_isPlace = false;
 
-	LoadLevel(3);
-
 	_marker = nullptr;
 	_markedTile = nullptr;
 }

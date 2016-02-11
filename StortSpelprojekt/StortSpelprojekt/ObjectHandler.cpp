@@ -5,10 +5,12 @@ ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, G
 {
 	_idCount = 0;
 	_assetManager = assetManager;
-	_tilemap = nullptr;
+	_tilemap = new Tilemap();
 	_buildingGrid = new Grid(device, 1, 1, 1, XMFLOAT3(1.0f, 1.0f, 0.7f));
 	_gameObjectInfo = data;
 	_device = device;
+
+	_gameObjects.resize(NR_OF_TYPES);
 
 	_activeTileset = _assetManager->LoadTileset("Assets/Tilesets/default.json");
 }
@@ -131,7 +133,7 @@ bool ObjectHandler::Add(XMFLOAT3 position, XMFLOAT3 rotation, Type type, int sub
 	GameObject* object = nullptr;
 	RenderObject* renderObject = nullptr;
 
-	_assetManager->GetRenderObject(_activeTileset._objects[type][subType]._mesh, textureReference);
+	_assetManager->GetRenderObject(_activeTileset->_objects[type][subType]._mesh, textureReference);
 
 
 	if (renderObject != nullptr)
@@ -804,7 +806,6 @@ void ObjectHandler::ReleaseGameObjects()
 			_gameObjects[i].shrink_to_fit();
 			debug = _gameObjects[i].size();
 		}
-		_gameObjects.clear();
 		std::vector<GameObject*>().swap(tempVector);
 		_gameObjects.shrink_to_fit();
 		debug = _gameObjects.size();

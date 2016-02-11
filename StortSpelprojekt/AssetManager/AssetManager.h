@@ -95,7 +95,7 @@ private:
 		struct Object
 		{
 			string _name;
-			int _type;
+			string _type;
 			int _subType;
 			string _mesh;
 			vector<string> _textures;
@@ -122,7 +122,7 @@ private:
 	int _animationFormatVersion = 10;
 	ifstream* _infile;
 	ID3D11Device* _device;
-
+	Tileset _tileset;
 	vector<string>* _levelFileNames;
 	vector<Skeleton*>* _skeletons;
 
@@ -149,6 +149,6 @@ public:
 	RenderObject* GetRenderObject(int index);
 	RenderObject* GetRenderObject(string meshName, string textureName);
 	LevelFormat* ParseLevel(int index);
-	Tileset LoadTileset(string name);
+	Tileset* LoadTileset(string name);
 	Texture* GetTexture(string name);
 };

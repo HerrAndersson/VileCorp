@@ -104,8 +104,7 @@ robocopy "$(SolutionDir)Assets" "$(OutDir)Assets" *.json /E /Z /XA:H /W:1 /R:1 /
 if errorlevel 1 exit 0 else exit %errorlevel%</Command>
     </CustomBuildStep>
     <CustomBuildStep>
-      <Outputs>
-      </Outputs>
+      <Outputs>a</Outputs>
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
