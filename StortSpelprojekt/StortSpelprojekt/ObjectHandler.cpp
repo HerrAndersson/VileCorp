@@ -23,30 +23,46 @@ ObjectHandler::~ObjectHandler()
 
 bool ObjectHandler::LoadLevel(int lvlIndex)
 {
-	int dimX, dimY;
-	vector<GameObjectData> gameObjectData;
-	bool result = _assetManager->ParseLevel(lvlIndex, gameObjectData, dimX, dimY);
-	if (result)
+	bool result = false;
+	LevelFormat* levelData = _assetManager->ParseLevel(lvlIndex);
+	if (levelData != nullptr)
 	{
-		if (_gameObjects.size() < 1)
-		{
-			for (int i = 0; i < NR_OF_TYPES; i++)
-			{
-				_gameObjects.push_back(std::vector<GameObject*>());
-			}
-		}
-
+		result = true;
 		delete _tilemap;
-		_tilemap = new Tilemap(AI::Vec2D(dimX, dimY));
+		_tilemap = new Tilemap(AI::Vec2D(levelData->_tileMapWidth, levelData->_tileMapHeight));
 
-		for (auto i : gameObjectData)
+		for (int i = 0; i < levelData->_gameObjectData.size() && result; i++)
 		{
-			Add((Type)i._tileType, 0, DirectX::XMFLOAT3(i._posX, 0, i._posZ), DirectX::XMFLOAT3(0, i._rotY, 0));
+			float rotation;
+			if (levelData->_gameObjectData[i][2] == 3)
+			{
+				rotation = 0;
+			}
+			else if (levelData->_gameObjectData[i][2] == 0)
+			{
+				rotation = DirectX::XM_PIDIV2;
+			}
+			else if (levelData->_gameObjectData[i][2] == 1)
+			{
+				rotation = DirectX::XM_PI;
+			}
+			else
+			{
+				rotation = DirectX::XM_PI + DirectX::XM_PIDIV2;
+			}
+			//result = Add(DirectX::XMFLOAT3(
+			//	levelData->_gameObjectData[i][0], 0, levelData->_gameObjectData[i][1]),
+			//	DirectX::XMFLOAT3(0, rotation, 0),
+			//	Type(levelData->_gameObjectData[i][3]),
+			//	levelData->_gameObjectData[i][4],
+			//	levelData->_gameObjectData[i][5],
+			//	levelData->_gameObjectData[i][6]);
 		}
 	}
-
-	_lightCulling = new LightCulling(_tilemap);
-
+	else
+	{
+		_tilemap = new Tilemap();
+	}
 	return result;
 }
 
@@ -294,7 +310,7 @@ bool ObjectHandler::Add(XMFLOAT3 position, XMFLOAT3 rotation, Type type, int sub
 			if (object->GetRenderObject()->_mesh->_spotLights.size())
 			{
 				//TODO: Add settings variables to this function below! Alex
-			_spotlights[object] = new Renderer::Spotlight(_device, object->GetRenderObject()->_mesh->_spotLights[0], 256, 256, 0.1f, 1000.0f);
+				_spotlights[object] = new Renderer::Spotlight(_device, object->GetRenderObject()->_mesh->_spotLights[0], 0.1f, 1000.0f);
 			}
 			_objectCount++;
 			return true;
@@ -558,6 +574,10 @@ void ObjectHandler::MinimizeTileMap()
 
 void ObjectHandler::EnlargeTilemap(int offset)
 {
+	if (!_tilemap)
+	{
+		_tilemap = new Tilemap();
+	}
 	if (offset > 0)
 	{
 		int o = 2 * offset;
@@ -593,47 +613,6 @@ void ObjectHandler::EnlargeTilemap(int offset)
 Grid * ObjectHandler::GetBuildingGrid()
 {
 	return _buildingGrid;
-}
-
-bool ObjectHandler::LoadLevel(int lvlIndex)
-{
-	bool result = false;
-	LevelFormat* levelData = _assetManager->ParseLevel(lvlIndex);
-	if (levelData != nullptr)
-	{
-		result = true;
-		delete _tilemap;
-		_tilemap = new Tilemap(AI::Vec2D(levelData->_tileMapWidth, levelData->_tileMapHeight));
-
-		for (int i = 0; i < levelData->_gameObjectData.size() && result; i++)
-		{
-			float rotation;
-			if (levelData->_gameObjectData[i][2] == 3)
-			{
-				rotation = 0;
-			}
-			else if (levelData->_gameObjectData[i][2] == 0)
-			{
-				rotation = DirectX::XM_PIDIV2;
-			}
-			else if (levelData->_gameObjectData[i][2] == 1)
-			{
-				rotation = DirectX::XM_PI;
-			}
-			else
-			{
-				rotation = DirectX::XM_PI + DirectX::XM_PIDIV2;
-			}
-			//result = Add(DirectX::XMFLOAT3(
-			//	levelData->_gameObjectData[i][0], 0, levelData->_gameObjectData[i][1]),
-			//	DirectX::XMFLOAT3(0, rotation, 0),
-			//	Type(levelData->_gameObjectData[i][3]),
-			//	levelData->_gameObjectData[i][4],
-			//	levelData->_gameObjectData[i][5],
-			//	levelData->_gameObjectData[i][6]);
-		}
-	}
-	return result;
 }
 
 void ObjectHandler::InitPathfinding()
@@ -837,18 +816,14 @@ vector<vector<GameObject*>>* ObjectHandler::GetObjectsInLight(Renderer::Spotligh
 
 void ObjectHandler::ReleaseGameObjects()
 {
-	if (_gameObjects.size() > 0)
+	for (int i = 0; i < NR_OF_TYPES; i++)
 	{
-		for (int i = 0; i < NR_OF_TYPES; i++)
+		for (GameObject* g : _gameObjects[i])
 		{
-			for (GameObject* g : _gameObjects[i])
-			{
-				g->Release();
-				delete g;
-			}
-			_gameObjects[i].clear();
+			g->Release();
+			delete g;
 		}
-		_gameObjects.clear();
+		_gameObjects[i].clear();
 	}
 	_idCount = 0;
 	_objectCount = 0;

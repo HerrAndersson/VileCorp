@@ -32,10 +32,6 @@ struct Tileset
 	};
 	string _name;
 	vector<vector<Object>> _objects;
-		else if (!strcmp("cameras", str))
-		{
-			_cur = &_tileset->_objects[CAMERA];
-		}
 };
 
 struct MeshHeader24

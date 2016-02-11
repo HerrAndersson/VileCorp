@@ -13,7 +13,7 @@ GameLogic::GameLogic(ObjectHandler* objectHandler, System::Camera* camera, Syste
 	_objectHandler->InitPathfinding();
 	_uiTree = uiTree;
 	_assetManager = assetManager;
-	_guardTexture = _assetManager->GetTexture("../Menues/PlacementStateGUI/units/Guardbutton1.png");
+	_guardTexture = _assetManager->GetTexture("../Menues/PlacementStateGUI/units/Guardbutton1.png")->_data;
 }
 
 GameLogic::~GameLogic()

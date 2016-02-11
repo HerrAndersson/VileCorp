@@ -217,9 +217,9 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	_occupiedTiles = nullptr;
 	_subType = trapType;
 
-	if (_renderObject->_isSkinned)
+	if (_renderObject->_mesh->_isSkinned)
 	{
-		_animation = new Animation(_renderObject->_skeleton);
+		_animation = new Animation(_renderObject->_mesh->_skeleton);
 		_animation->Freeze(false);
 		_animation->SetActionAsCycle(0, true);
 	}

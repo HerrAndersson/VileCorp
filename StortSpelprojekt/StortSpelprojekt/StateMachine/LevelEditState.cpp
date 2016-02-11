@@ -299,12 +299,6 @@ void LevelEditState::HandleButtons()
 	//_decButtonClick = false;
 }
 
-void LevelEditState::InitNewLevel()
-{
-	_objectHandler->Release();
-}
-
-
 void LevelEditState::ExportLevel()
 {
 //	std::string levelName = "exportedLevel.lvl";
