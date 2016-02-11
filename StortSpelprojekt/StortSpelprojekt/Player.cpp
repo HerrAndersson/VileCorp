@@ -20,7 +20,19 @@ Player::~Player()
 
 void Player::SelectUnit(Unit* pickedUnit)
 {
-	_selectedUnits.push_back(pickedUnit->GetID());
+	bool exists = false;
+	for (auto v : _selectedUnits)
+	{
+		if (v == pickedUnit->GetID())
+		{
+			exists = true;
+		}
+	}
+	if (!exists)
+	{
+		_selectedUnits.push_back(pickedUnit->GetID());
+	}
+	
 }
 
 void Player::DeselectUnits()
@@ -52,7 +64,7 @@ void Player::MoveUnits(AI::Vec2D movePoint)
 {
 	for (unsigned int i = 0; i < _selectedUnits.size(); i++)
 	{
-		Unit* unit = (Unit*)(_objectHandler->Find(_selectedUnits[i]));
+		Unit* unit = (Unit*)_objectHandler->Find(_selectedUnits[i]);
 
 		if (unit != nullptr)
 		{
@@ -65,7 +77,7 @@ void Player::MoveUnits(AI::Vec2D movePoint)
 			unit->Wait(-1);
 		}
 
-		
+
 
 	}
 }
