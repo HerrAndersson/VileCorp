@@ -6,6 +6,13 @@ void Unit::CalculatePath()
 	{
 		_path = _aStar->GetPath();
 		_pathLength = _aStar->GetPathLength();
+		for (int i = 0; i < _pathLength; i++)
+		{
+			if (_tileMap->IsFloorOnTile(_path[i]))
+			{
+				_tileMap->GetObjectOnTile(_path[i], FLOOR)->SetColorOffset({0,4,0});
+			}
+		}
 		_isMoving = true;
 		_direction = _path[--_pathLength] - _tilePosition;
 		Rotate();
@@ -39,7 +46,7 @@ void Unit::Rotate()
 	}
 	_visionCone->ColorVisibleTiles({0,0,0});
 	_visionCone->FindVisibleTiles(_tilePosition, _direction);
-//	_visionCone->ColorVisibleTiles({0,0,3});
+	_visionCone->ColorVisibleTiles({0,0,3});
 }
 
 int Unit::GetApproxDistance(AI::Vec2D target) const
@@ -85,6 +92,7 @@ void Unit::Flee()
 			}
 		}
 		_direction = bestDir;
+		Rotate();
 	}
 }
 
@@ -105,6 +113,7 @@ Unit::Unit()
 	_path = nullptr;
 	_isMoving = false;
 	_direction = {0, -1};
+	_trapInteractionTime = -1;
 	Rotate();
 }
 
@@ -113,7 +122,7 @@ Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 {
 	_isFleeing = false;
 	_goalPriority = -1;
-	_visionRadius = 5;
+	_visionRadius = 6;
 	_goalTilePosition = _tilePosition;
 	_tileMap = tileMap;
 	_visionCone = new VisionCone(_visionRadius, _tileMap);
@@ -131,6 +140,7 @@ Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	{
 		_animation = new Animation(_renderObject->_mesh->_skeleton);
 	}
+	_trapInteractionTime = -1;
 }
 
 Unit::~Unit()
@@ -138,6 +148,7 @@ Unit::~Unit()
 	//delete[] _visibleTiles;
 	delete _aStar;
 	_aStar = nullptr;
+	delete _visionCone;
 	//delete _heldObject;
 	//_heldObject = nullptr;
 	if (_animation != nullptr)
@@ -159,6 +170,12 @@ AI::Vec2D Unit::GetGoal()
 AI::Vec2D Unit::GetDirection()
 {
 	return _direction;
+}
+
+void Unit::SetDirection(const AI::Vec2D direction)
+{
+	_direction = direction;
+	_visionCone->FindVisibleTiles(_tilePosition, _direction);
 }
 
 int Unit::GetHealth()
@@ -196,6 +213,10 @@ void Unit::CheckVisibleTiles()
 		if (_type != GUARD && _tileMap->IsGuardOnTile(visibleTiles[i]))
 		{
 			EvaluateTile(_tileMap->GetObjectOnTile(visibleTiles[i], GUARD));
+		}
+		if (_tileMap->IsObjectiveOnTile(visibleTiles[i]))
+		{
+			EvaluateTile(_tileMap->GetObjectOnTile(visibleTiles[i], LOOT));
 		}
 	}
 }
@@ -241,23 +262,47 @@ Moves the goal and finds the path to the new goal
 */
 void Unit::SetGoal(AI::Vec2D goal)
 {
-	_goalTilePosition = goal;
-	_objective = _tileMap->GetObjectOnTile(goal, FLOOR);		//Note: Make sure walled tiles aren't valid goals
+ 	_goalTilePosition = goal;
+	if (_tileMap->IsTrapOnTile(goal))
+	{
+		_objective = _tileMap->GetObjectOnTile(goal, TRAP);
+	}
+	else
+	{
+		_objective = _tileMap->GetObjectOnTile(goal, FLOOR);		//Note: Make sure walled tiles aren't valid goals
+	}
 	//_objective->SetColorOffset({5,0,0});
-	_aStar->CleanMap();
-	_aStar->SetStartPosition(_tilePosition);
-	_aStar->SetGoalPosition(goal);
-	CalculatePath();
+	if (_objective != nullptr)
+	{
+		if (_objective->InRange(_tilePosition))
+		{
+			act(_objective);
+		}
+		else
+		{
+			_aStar->CleanMap();
+			_aStar->SetStartPosition(_tilePosition);
+			_aStar->SetGoalPosition(goal);
+			CalculatePath();
+		}
+	}
 }
 
 void Unit::SetGoal(GameObject * objective)
 {
 	_goalTilePosition = objective->GetTilePosition();
 	_objective = objective;
-	_aStar->CleanMap();
-	_aStar->SetStartPosition(_tilePosition);
-	_aStar->SetGoalPosition(_goalTilePosition);
-	CalculatePath();
+	if (_objective->InRange(_tilePosition))
+	{
+		act(_objective);
+	}
+	else
+	{
+		_aStar->CleanMap();
+		_aStar->SetStartPosition(_tilePosition);
+		_aStar->SetGoalPosition(_goalTilePosition);
+		CalculatePath();
+	}
 }
 
 /*
@@ -268,6 +313,7 @@ Name should be changed to make it clear that this is tile movement
 */
 void Unit::Move()
 {
+	bool foundNextTile = false;
 	if (_isMoving)
 	{
 		_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,0});
@@ -287,13 +333,14 @@ void Unit::Move()
 	else if (_pathLength > 0)
 	{
 		_isMoving = true;
+		foundNextTile = true;
 		AI::Vec2D nextTile = _path[--_pathLength];
 		_direction = nextTile - _tilePosition;
 	}
-	else
+	if (!_isFleeing && (!foundNextTile || (_objective != nullptr && _objective->InRange(_tilePosition))))
 	{
 		_isMoving = false;
-		if (_objective != nullptr && _objective->GetTilePosition() == _tilePosition)
+		if (_objective != nullptr && _objective->InRange(_tilePosition))
 		{
 			act(_objective);
 		}
@@ -311,33 +358,43 @@ void Unit::Update(float deltaTime)
 	{
 		_animation->Update(deltaTime);
 	}
-
-	if (_waiting > 0)
+	if (_trapInteractionTime >= 0)
 	{
-		_waiting--;
+		UseTrap();
 	}
-	else if (_waiting == 0 && !_isMoving)
+	else
 	{
-		_waiting--;
-		Move();
-	}
-	if(_isMoving)
-	{
-		if (_direction._x == 0 || _direction._y == 0)		//Right angle movement
+		if (_waiting > 0)
 		{
-			_position.x += MOVE_SPEED * _direction._x;
-			_position.z += MOVE_SPEED * _direction._y;
+			_waiting--;
 		}
-		else if (_direction._x == 0 && _direction._y == 0)	
+		else if (_waiting == 0 && !_isMoving)
 		{
-			CheckVisibleTiles();
+			_waiting--;
+			Move();
 		}
-		else												//Diagonal movement
+		if (_isMoving)
 		{
-			_position.x += AI::SQRT2 * 0.5f * MOVE_SPEED * _direction._x;
-			_position.z += AI::SQRT2 * 0.5f *MOVE_SPEED * _direction._y;
+			if (_direction._x == 0 || _direction._y == 0)		//Right angle movement
+			{
+				_position.x += MOVE_SPEED * _direction._x;
+				_position.z += MOVE_SPEED * _direction._y;
+			}
+			else if (_direction._x == 0 && _direction._y == 0)
+			{
+				CheckVisibleTiles();
+			}
+			else												//Diagonal movement
+			{
+				_position.x += AI::SQRT2 * 0.5f * MOVE_SPEED * _direction._x;
+				_position.z += AI::SQRT2 * 0.5f *MOVE_SPEED * _direction._y;
+			}
+			CalculateMatrix();
 		}
-		CalculateMatrix();
+		if (_tileMap->IsFloorOnTile(_tilePosition))
+		{
+			_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,4});
+		}
 	}
 }
 
@@ -368,6 +425,29 @@ void Unit::SetVisibility(bool visible)
 	{
 		_heldObject->SetVisibility(visible);
 	}
+}
+
+void Unit::UseTrap()
+{
+
+	if (_trapInteractionTime < 0)
+	{
+		_trapInteractionTime = 60;
+	}
+	else if (_trapInteractionTime > 0)
+	{
+		_trapInteractionTime--;
+	}
+	else
+	{
+		act(_objective);
+		_trapInteractionTime--;
+	}
+}
+
+int Unit::GetVisionRadius() const
+{
+	return _visionRadius;
 }
 
 

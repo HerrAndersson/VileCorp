@@ -62,9 +62,9 @@ void Trap::CalculateCircleAOE(int radius)
 
 void Trap::CalculateLineAOE(int length, AI::Vec2D direction)
 {
-	_areaOfEffectArrayCapacity = length;
+//	_areaOfEffectArrayCapacity = length;
 	_nrOfAOETiles = 0;
-	_areaOfEffect = new AI::Vec2D[_areaOfEffectArrayCapacity];
+//	_areaOfEffect = new AI::Vec2D[_areaOfEffectArrayCapacity];
 	AI::Vec2D pos = _tilePosition;
 
 	for (int i = 0; i < length && !_tileMap->IsWallOnTile(pos); i++)
@@ -97,7 +97,9 @@ bool Trap::IsUnblocked( AI::Vec2D pos)
 	}
 
 	pos = ConvertOctant(octant, pos);
-	AI::Vec2D* line = new AI::Vec2D[max(pos._x, pos._y)];
+	int size = max(pos._x, pos._y);
+	AI::Vec2D* line = new AI::Vec2D[size + 1];
+	//std::unique_ptr<AI::Vec2D[]> line(new AI::Vec2D[max(pos._x, pos._y)]);
 	line[0] = {0,0};
 	int lineLength = 1;
 	int D = 2 * pos._y - pos._x;
@@ -126,6 +128,7 @@ bool Trap::IsUnblocked( AI::Vec2D pos)
 			result = false;
 		}
 	}
+	delete[]line;
 	return result;
 }
 
@@ -181,6 +184,8 @@ AI::Vec2D Trap::ConvertOctant(int octant, AI::Vec2D pos, bool in)
 
 void Trap::Initialize(int damage, int tileSize, int AOESize, int detectDifficulty, int disarmDifficulty)
 {
+	delete[] _areaOfEffect;
+	delete[] _occupiedTiles;
 	_damage = damage;
 	_tileSize = tileSize;
 	_occupiedTiles = new AI::Vec2D[_tileSize];
@@ -208,6 +213,16 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	_tileMap = tileMap;
 	_nrOfAOETiles = 0;
 	_isVisibleToEnemies = false;
+	_areaOfEffect = nullptr;
+	_occupiedTiles = nullptr;
+	_subType = trapType;
+
+	if (_renderObject->_isSkinned)
+	{
+		_animation = new Animation(_renderObject->_skeleton);
+		_animation->Freeze(false);
+		_animation->SetActionAsCycle(0, true);
+	}
 
 	int radius = 0;
 	
@@ -268,6 +283,10 @@ Trap::~Trap()
 	_areaOfEffect = nullptr;
 	delete[] _occupiedTiles;
 	_occupiedTiles = nullptr;
+	if (_animation != nullptr)
+	{
+		delete _animation;
+	}
 }
 
 AI::Vec2D * Trap::GetTiles() const
@@ -298,6 +317,50 @@ int Trap::GetDisarmDifficulty() const
 	return _disarmDifficulty;
 }
 
+bool Trap::InRange(AI::Vec2D pos) const
+{
+	bool result = false;
+	AI::Vec2D tempPos = _tilePosition;
+	switch (_trapType)
+	{
+	case SPIKE:
+		result = GameObject::InRange(pos);
+		break;
+	case TESLACOIL:
+		for (int i = -2; i < 3 && !result; i++)
+		{
+			for (int j = -2; j < 3 && !result; j++)
+			{
+				if (pos == tempPos + AI::Vec2D(i, j))
+				{
+					result = true;
+				}
+			}
+		}
+		break;
+	case SHARK:
+		//TODO --Victor
+		break;
+	default:
+		break;
+	}
+	return result;
+}
+
+bool Trap::IsTrapActive() const
+{
+	return _isActive;
+}
+
+void Trap::SetTrapActive(bool active)
+{
+	_isActive = active;
+	if (active)
+	{
+		SetColorOffset({0,0,0});
+	}
+}
+
 void Trap::Activate()
 {
 	for (int i = 0; i < _nrOfAOETiles; i++)
@@ -311,10 +374,15 @@ void Trap::Activate()
 			static_cast<Unit*>(_tileMap->GetObjectOnTile(_areaOfEffect[i], GUARD))->TakeDamage(_damage);
 		}
 	}
+	//_animation->PlayAction(0);
 }
 
 void Trap::Update(float deltaTime)
 {	
+	if (_animation != nullptr)
+	{
+		_animation->Update(deltaTime);
+	}
 	bool triggered = false;
 	for (int i = 0; i < _tileSize && !triggered; i++)
 	{
@@ -359,22 +427,30 @@ void Trap::SetTilePosition(AI::Vec2D pos)
 	switch (_trapType)
 	{
 	case SPIKE:
-		Initialize(3, 1, 1, 50, 50);
 		_occupiedTiles[0] = _tilePosition;
 		_areaOfEffect[_nrOfAOETiles++] = _tilePosition;
 		break;
 	case TESLACOIL:
-		Initialize(2, 9, 37, 50, 50);
+		for (int i = 0; i < _tileSize; i++)
+		{
+			if (_tileMap->IsFloorOnTile(_occupiedTiles[i]))
+			{
+				_tileMap->GetObjectOnTile(_occupiedTiles[i], FLOOR)->SetColorOffset({ 0,0,0 });
+			}
+		}
 		for (int i = 0; i < _tileSize; i++)
 		{
 			AI::Vec2D offset = { i / 3 - 1, i % 3 - 1 };
 			_occupiedTiles[i] = _tilePosition + offset;
+			if (_tileMap->IsFloorOnTile(_occupiedTiles[i]))
+			{
+				_tileMap->GetObjectOnTile(_occupiedTiles[i], FLOOR)->SetColorOffset({ 0,0,4 });
+			}
 		}
 		CalculateCircleAOE(3);
 		break;
 	case SHARK:			//Trigger area is currently the same as the trap's physical area. Might be awkward since the shark trap is larger than its AOE.
 	{
-		Initialize(100, 18, 3, 50, 50);
 		AI::Vec2D offset = { _direction._y, _direction._x };
 		_nrOfAOETiles = 3;
 		_areaOfEffect[0] = pos;

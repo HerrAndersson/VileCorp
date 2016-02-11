@@ -32,6 +32,10 @@ struct Tileset
 	};
 	string _name;
 	vector<vector<Object>> _objects;
+		else if (!strcmp("cameras", str))
+		{
+			_cur = &_tileset->_objects[CAMERA];
+		}
 };
 
 struct MeshHeader24
@@ -51,7 +55,7 @@ struct MatHeader
 
 struct SkeletonHeader
 {
-	unsigned int _version, _framerate, _actionCount, _boneCount;
+	unsigned int _version, _framerate, _boneCount, _actionCount;
 };
 
 static bool GetFilenamesInDirectory(char* folder, char* extension, vector<string> &listToFill)

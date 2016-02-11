@@ -23,6 +23,7 @@ Constant buffer register setup:
 |    3	  |    LightPerLight. Spotlight data such as angle and range etc. Pointlight data such as range and position										  |
 |    4    |    ShadowMapPerFrame. Light view and projection matrices. Used to generate the shadow map.                                                        |
 |    5    |    PerSkinnedObject. Animation data matrices																									  |
+|    6    |    PerBillboardedObject. Holds necessary data used to generate for example billboarded particles. Geometry shader								  |
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Render targets:
@@ -46,8 +47,6 @@ Before rendering to shadow map:
 ~ Activate FRONT-FACE culling
 ~ Set vertex buffer before the Draw/DrawIndexed call
 ~ Set topology
-
-
 
 */
 
@@ -144,11 +143,8 @@ namespace Renderer
 
 	public:
 
-		//TODO: Import these from settings file
-		const int SHADOWMAP_DIMENSIONS = 256;
-		const DirectX::XMFLOAT3 AMBIENT_LIGHT = DirectX::XMFLOAT3(0.1f, 0.1f, 0.1f);
-
-		enum ShaderStage { GEO_PASS, SHADOW_GENERATION, LIGHT_APPLICATION_SPOTLIGHT, LIGHT_APPLICATION_POINTLIGHT, GRID_STAGE, ANIM_STAGE, HUD_STAGE, AA_STAGE };
+		const DirectX::XMFLOAT3 AMBIENT_LIGHT = DirectX::XMFLOAT3(0.14f, 0.15f, 0.2f);
+		enum ShaderStage { GEO_PASS, SHADOW_GENERATION, LIGHT_APPLICATION_SPOTLIGHT, LIGHT_APPLICATION_POINTLIGHT, GRID_STAGE, ANIM_STAGE, HUD_STAGE, AA_STAGE, BILLBOARDING_STAGE };
 
 		RenderModule(HWND hwnd, System::Settings* settings);
 		~RenderModule();
@@ -175,9 +171,9 @@ namespace Renderer
 		void RenderLineList(DirectX::XMMATRIX* world, int nrOfPoints, const DirectX::XMFLOAT3& colorOffset = DirectX::XMFLOAT3(0,0,0));
 		void RenderShadowMap(DirectX::XMMATRIX* world, int vertexBufferSize);
 		void RenderScreenQuad();
-		void EndScene();
-
+		void RenderParticles(ID3D11Buffer* particlePointsBuffer, int vertexBufferSize, int vertexCount, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& color, ID3D11ShaderResourceView** textures = nullptr, int textureCount = 0);
 		void RenderLightVolume(ID3D11Buffer* volume, DirectX::XMMATRIX* world, int vertexCount, int vertexSize);
+		void EndScene();
 
 		ID3D11Device* GetDevice() const;
 		ID3D11DeviceContext* GetDeviceContext() const;

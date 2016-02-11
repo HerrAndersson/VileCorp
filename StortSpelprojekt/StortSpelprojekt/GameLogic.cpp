@@ -2,36 +2,24 @@
 #include <DirectXMath.h>
 #include "InputDevice.h"
 
-GameLogic::GameLogic()
-{
-	_player = nullptr;
-	_objectHandler = nullptr;
-	_camera = nullptr;
-	_controls = nullptr;
-	_pickingDevice = nullptr;
-	_levelLoad = LevelLoad();
-}
-
-GameLogic::~GameLogic()
-{
-	delete _player;
-}
-
-void GameLogic::Initialize(ObjectHandler* objectHandler, System::Camera* camera, System::Controls* controls, PickingDevice* pickingDevice)
+GameLogic::GameLogic(ObjectHandler* objectHandler, System::Camera* camera, System::Controls* controls, PickingDevice* pickingDevice, GUI::UITree* uiTree, AssetManager* assetManager)
 {
 	_objectHandler = objectHandler;
 	_camera = camera;
 	_controls = controls;
 	_pickingDevice = pickingDevice;
 
-	//_objectHandler->LoadLevel(3);
-	//Either import the level here or in the LevelEdit.cpp, otherwise the level will be loaded twice
-	//System::loadJSON(&_levelLoad, "../../../../StortSpelprojekt/Assets/LevelLoad.json");
-	//_objectHandler->LoadLevel(_levelLoad.level);
-
+	_player = new Player(objectHandler);
 	_objectHandler->InitPathfinding();
+	_uiTree = uiTree;
+	_assetManager = assetManager;
+	_guardTexture = _assetManager->GetTexture("../Menues/PlacementStateGUI/units/Guardbutton1.png");
+}
 
-	_player = new Player();
+GameLogic::~GameLogic()
+{
+	delete _player;
+	_player = nullptr;
 }
 
 void GameLogic::Update(float deltaTime)
@@ -47,7 +35,6 @@ void GameLogic::HandleInput()
 	{
 		vector<GameObject*> pickedUnits = _pickingDevice->PickObjects(_controls->GetMouseCoord()._pos, _objectHandler->GetAllByType(GUARD));
 
-
 		if (pickedUnits.empty())
 		{
 			if (_player->AreUnitsSelected())
@@ -58,9 +45,10 @@ void GameLogic::HandleInput()
 		else
 		{
 			vector<Unit*> units = _player->GetSelectedUnits();
+			
 			for (unsigned int i = 0; i < units.size(); i++)
 			{
-				units[i]->SetScale(DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f));
+				units[i]->SetColorOffset(DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f));
 			}
 			_player->DeselectUnits();
 
@@ -68,9 +56,11 @@ void GameLogic::HandleInput()
 			Unit* unit = (Unit*)pickedUnits[0];
 			_player->SelectUnit(unit);
 
-			unit->SetScale(DirectX::XMFLOAT3(1.2f, 1.2f, 1.2f));
+			unit->SetColorOffset(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));
 		}
 	}
+	
+
 	//Deselect Units
 	if (_controls->IsFunctionKeyDown("MOUSE:DESELECT"))
 	{
@@ -79,7 +69,7 @@ void GameLogic::HandleInput()
 			vector<Unit*> units = _player->GetSelectedUnits();
 			for (unsigned int i = 0; i < units.size(); i++)
 			{
-				units[i]->SetScale(DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f));
+				units[i]->SetColorOffset(DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f));
 			}
 			_player->DeselectUnits();
 		}
@@ -98,7 +88,7 @@ void GameLogic::HandleInput()
 		for (unsigned int i = 0; i < pickedUnits.size(); i++)
 		{
 			_player->SelectUnit((Unit*)pickedUnits[i]);
-			pickedUnits[i]->SetScale(DirectX::XMFLOAT3(1.2f, 1.2f, 1.2f));
+			pickedUnits[i]->SetColorOffset(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));
 		}
 
 	}
@@ -110,6 +100,43 @@ void GameLogic::HandleInput()
 		{
 			_player->PatrolUnits(_pickingDevice->PickTile(_controls->GetMouseCoord()._pos));
 		}
+	}
+
+	//Show selected units on the GUI
+	if (_player->AreUnitsSelected())
+	{
+		vector<Unit*> units = _player->GetSelectedUnits();
+		int nrOfUnits = _player->GetNumberOfSelectedUnits();
+		int healthSum = 0;
+
+		_uiTree->GetNode("unitinfocontainer")->SetHidden(false);
+
+		//TODO: Actually check if the units are guards //Mattias
+		_uiTree->GetNode("unitinfotext")->SetText(L"Guard");
+		_uiTree->GetNode("unitpicture")->SetTexture(_guardTexture);
+
+		//Calculate health sum
+		for (auto& i : units)
+		{
+			healthSum += i->GetHealth();
+		}
+		//TODO: Health is always 1? //Mattias
+		_uiTree->GetNode("unithealth")->SetText(std::to_wstring(healthSum * 100) + L"%");
+
+		//Show the number of units selected
+		if (nrOfUnits > 1)
+		{
+			_uiTree->GetNode("unitnumber")->SetHidden(false);
+			_uiTree->GetNode("unitnumber")->SetText(L"x " + std::to_wstring(nrOfUnits));
+		}
+		else
+		{
+			_uiTree->GetNode("unitnumber")->SetHidden(true);
+		}
+	}
+	else
+	{
+		_uiTree->GetNode("unitinfocontainer")->SetHidden(true);
 	}
 
 	/*

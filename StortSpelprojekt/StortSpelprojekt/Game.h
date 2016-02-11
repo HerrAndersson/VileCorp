@@ -1,7 +1,8 @@
 #pragma once
 
-#include "stdafx.h"
 #include "StateMachine/StateMachine.h"
+#include "SoundModule.h"
+#include "stdafx.h"
 #include "Window.h"
 #include "RenderModule.h"
 #include "Camera.h"
@@ -16,8 +17,8 @@
 #include "Pointlight.h"
 #include "GameObjectDataLoader.h"
 #include "ShadowMap.h"
-#include "LightCulling.h"
-
+#include "Particle system\ParticleHandler.h"
+#include "Particle system\ParticleUtils.h"
 #include "SettingsReader.h"
 
 class Game
@@ -28,6 +29,7 @@ private:
 	StateMachine*				_SM;
 	System::Window*				_window;
 	Renderer::RenderModule*		_renderModule;
+	Renderer::ParticleHandler*  _particleHandler;
 	System::Camera*				_camera;
 	ObjectHandler*				_objectHandler;
 	System::Timer				_timer;
@@ -40,29 +42,26 @@ private:
 	SettingInfo					_gameSettings;
 	System::SettingsReader		_settingsReader;
 	GameObjectInfo				_data;
+	System::SoundModule			_soundModule;
 
 	bool						_hasFocus;
 	bool						_enemiesHasSpawned;
 
 	//Resizing window, directx resources, camera
 	void ResizeResources(System::Settings* settings);
-	bool Update(float deltaTime);
+	bool Update(double deltaTime);
 	void Render();
-	
-	//TODO: TEMP! Move this to objectHandler
-	std::vector<Renderer::Spotlight*> _spotlights;
-	std::vector<Renderer::Pointlight*> _pointlights;
-	LightCulling* _lightCulling;
 
 	std::vector<GameObject*> _enemies;
 	std::vector<GameObject*> _loot;
+
 public:
 
 	Game(HINSTANCE hInstance, int nCmdShow);
 	~Game();
 
-	LRESULT CALLBACK MessageHandler(HWND, UINT, WPARAM, LPARAM);
-	static LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
+	LRESULT CALLBACK MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam);
+	static LRESULT CALLBACK WndProc(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam);
 
 	int Run();
 };

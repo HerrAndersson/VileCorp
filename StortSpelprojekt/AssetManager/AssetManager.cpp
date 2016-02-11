@@ -223,7 +223,7 @@ Mesh* AssetManager::ScanModel(string name)
 	int version;
 	_infile->read((char*)&version, 4);
 
-	if (version != 24 && version != 26)
+	if (version != 24 && version != 26 && version != 27)
 	{
 		throw std::runtime_error("Failed to load " + file_path + ":\nIncorrect fileversion");
 	}
@@ -559,25 +559,39 @@ Skeleton* AssetManager::LoadSkeleton(string name)
 	{
 		throw runtime_error("Failed to load " + file_path + ":\nIncorrect fileversion");
 	}
-
-	vector<int> frameCountPerAction;
-	frameCountPerAction.resize(header._actionCount);
-	_infile->read((char*)frameCountPerAction.data(), header._actionCount * 4);
-
-	skeleton->_skeleton.resize(header._boneCount);
-	_infile->read((char*)skeleton->_skeleton.data(), header._boneCount * sizeof(Bone));
-
+	int frames;
+	XMFLOAT3 scale, translation;
+	XMFLOAT4 rotation;
+	XMFLOAT4X4 matrixin;
+	skeleton->_parents.resize(header._boneCount);
+	skeleton->_bindposes = (XMMATRIX*)_aligned_malloc(64 * header._boneCount, 16);
+	for (unsigned i = 0; i < header._boneCount; i++)
+	{
+		_infile->read((char*)&skeleton->_parents[i], sizeof(int));
+		_infile->read((char*)&matrixin, sizeof(XMFLOAT4X4));
+		skeleton->_bindposes[i] = XMLoadFloat4x4(&matrixin);
+	}
 	skeleton->_actions.resize(header._actionCount);
 	for (uint a = 0; a < skeleton->_actions.size(); a++)
 	{
-		skeleton->_actions[a]._frameTime.resize(frameCountPerAction[a]);
-		_infile->read((char*)skeleton->_actions[a]._frameTime.data(), frameCountPerAction[a] * 4);
-
 		skeleton->_actions[a]._bones.resize(header._boneCount);
 		for (uint b = 0; b < skeleton->_actions[a]._bones.size(); b++)
 		{
-			skeleton->_actions[a]._bones[b]._frames.resize(frameCountPerAction[a]);
-			_infile->read((char*)skeleton->_actions[a]._bones[b]._frames.data(), sizeof(Frame) * frameCountPerAction[a]);
+			_infile->read((char*)&frames, 4);
+			skeleton->_actions[a]._bones[b]._frameCount = frames;
+			skeleton->_actions[a]._bones[b]._frameTime.resize(frames);
+			_infile->read((char*)skeleton->_actions[a]._bones[b]._frameTime.data(), frames * sizeof(int));
+			skeleton->_actions[a]._bones[b]._frames.resize(frames);
+			
+			for (int i = 0; i < frames; i++)
+			{
+				_infile->read((char*)&translation, sizeof(XMFLOAT3));
+				_infile->read((char*)&rotation, sizeof(XMFLOAT4));
+				_infile->read((char*)&scale, sizeof(XMFLOAT3));
+				skeleton->_actions[a]._bones[b]._frames[i]._translation = XMLoadFloat3(&translation);
+				skeleton->_actions[a]._bones[b]._frames[i]._rotation = XMLoadFloat4(&rotation);
+				skeleton->_actions[a]._bones[b]._frames[i]._scale = XMLoadFloat3(&scale);
+			}
 		}
 	}
 

@@ -1,7 +1,8 @@
 {
   "MOUSE": {
 	"SELECT": ["leftmouse"],
-    "DESELECT": [ "rightmouse" ],
+  "DESELECT": [ "rightmouse" ],
+  "BOX_SELECT": [ "leftmouse", "shift" ],
 	"DRAG": ["leftmouse", "repeat"]
   },
   "MENU": {

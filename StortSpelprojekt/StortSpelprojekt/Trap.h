@@ -1,6 +1,7 @@
 #pragma once
 #include "GameObject.h"
 #include "Unit.h"
+#include <memory>
 
 enum TrapType{ SPIKE, TESLACOIL, SHARK};
 
@@ -41,6 +42,9 @@ public:
 	int GetDetectionDifficulty()const;
 	int GetTrapType()const;
 	int GetDisarmDifficulty()const;
+	bool InRange(AI::Vec2D pos) const;
+	bool IsTrapActive() const;
+	void SetTrapActive(bool active);
 
 	void Activate();
 	void Update(float deltaTime);

@@ -1,7 +1,7 @@
 #include "LevelEditState.h"
 
-LevelEditState::LevelEditState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::Settings* settings)
-	: BaseState(controls, objectHandler, camera, pickingDevice, filename, "LEVELEDIT", assetManager, fontWrapper, settings)
+LevelEditState::LevelEditState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::Settings* settings, System::SoundModule* soundModule)
+	: BaseState(controls, objectHandler, camera, pickingDevice, filename, "LEVELEDIT", assetManager, fontWrapper, settings, soundModule)
 {
 	_controls = controls;
 	_objectHandler = objectHandler;
@@ -9,6 +9,7 @@ LevelEditState::LevelEditState(System::Controls* controls, ObjectHandler* object
 	_camera = camera;
 	_pickingDevice = pickingDevice;
 	_listId = -1;
+	_baseEdit = nullptr;
 
 	_objectTabs = _uiTree.GetNode("Buttons")->GetChildren();
 
@@ -40,31 +41,34 @@ LevelEditState::LevelEditState(System::Controls* controls, ObjectHandler* object
 }
 
 LevelEditState::~LevelEditState()
-{}
+{
+	delete _baseEdit;
+}
 
 void LevelEditState::Update(float deltaTime)
 {
 	if (_controls->IsFunctionKeyDown("MAP_EDIT:PLACEMENTFLAG"))
 	{
-		_baseEdit.ChangePlaceState();
+		_baseEdit->ChangePlaceState();
 	}
-	_baseEdit.Update(deltaTime);
+	_baseEdit->Update(deltaTime);
 	HandleInput();
 	HandleButtons();
 
 
-	_baseEdit.DragAndDrop();
-	_baseEdit.DragAndPlace(_toPlace._type, _toPlace._name);
+	_baseEdit->DragAndDrop();
+	_baseEdit->DragAndPlace(_toPlace._type, _toPlace._name);
 }
 
 void LevelEditState::OnStateEnter()
 {
-	_baseEdit.Initialize(_objectHandler, _controls, _pickingDevice, _camera);
 	_objectHandler->DisableSpawnPoints();
 	_uiTree.GetNode("wholelist")->SetHidden(true);
 	_uiTree.GetNode("listbuttons")->SetHidden(true);
 
 	_objectHandler->EnlargeTilemap(50);
+
+	_baseEdit = new BaseEdit(_objectHandler, _controls, _pickingDevice, _camera);
 
 	XMFLOAT3 campos;
 	campos.x = (float)_objectHandler->GetTileMap()->GetWidth() / 2;
@@ -77,6 +81,10 @@ void LevelEditState::OnStateEnter()
 void LevelEditState::OnStateExit()
 {
 	_objectHandler->MinimizeTileMap();
+	//TODO: Remove this function to LevelSelection when that state is created. /Alex
+	_objectHandler->UnloadLevel();
+	delete _baseEdit;
+	_baseEdit = nullptr;
 }
 
 void LevelEditState::HandleInput()
@@ -84,7 +92,7 @@ void LevelEditState::HandleInput()
 	//Press C to init new level
 	if (_controls->IsFunctionKeyDown("MAP_EDIT:NEWLEVEL"))
 	{
-		InitNewLevel();
+		_objectHandler->UnloadLevel();
 	}
 
 	if (_controls->IsFunctionKeyDown("MENU:MENU"))

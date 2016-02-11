@@ -117,24 +117,18 @@ float4 main(VS_OUT input) : SV_TARGET
 
 			if (pixToLightAngle > lightAngleDiv2 * 0.85f)
 			{
-				finalColor *= float4(0.1f, 0.1f, 0.1f, 0.05f);
+				finalColor.a = 0.15f;
 			}
 			else if (pixToLightAngle > lightAngleDiv2 * 0.75f)
 			{
-				finalColor *= float4(0.35f, 0.35f, 0.35f, 0.15f);
+				finalColor.a = 0.25f;
 			}
 			else if (pixToLightAngle > lightAngleDiv2 * 0.65f)
 			{
-				finalColor *= float4(0.7f, 0.7f, 0.7f, 0.5f);
+				finalColor.a = 0.35f;
 			}
 
 			return finalColor;
-		}
-		else
-		{
-			//In shadow
-			//Test how far away the lit parts are to generate the "toon" falloff //Jonas
-			/*return float4(diffuse.xyz * float3(0.1, 0.1, 0.1), 0.5f);*/
 		}
 	}
 
