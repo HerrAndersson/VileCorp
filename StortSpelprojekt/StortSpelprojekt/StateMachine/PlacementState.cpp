@@ -82,6 +82,16 @@ void PlacementState::HandleInput()
 	{
 		ChangeState(PAUSESTATE);
 	}
+
+	if (_controls->IsFunctionKeyDown("MAP_EDIT:DELETE_UNIT"))
+	{
+		if (_baseEdit->GetSelectedObject() != nullptr)
+		{
+			_playerProfile[_currentPlayer]._gold += 10;
+			_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_playerProfile[_currentPlayer]._gold));
+			_baseEdit->DeleteSelectedObject();
+		}
+	}
 }
 
 void PlacementState::HandleButtons()
