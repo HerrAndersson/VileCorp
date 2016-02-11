@@ -11,14 +11,6 @@ PlacementState::PlacementState(System::Controls* controls, ObjectHandler* object
 	
 	//rezise vector that stores player profiles
 	_playerProfile.resize(_playerProfilesPath.size());
-
-	for (int i = 0; i < _playerProfilesPath.size(); i++)
-	{
-
-		System::loadJSON(&_playerProfile[i], _playerProfilesPath[i]);
-	}
-
-	
 	_controls = controls;
 	_objectHandler = objectHandler;
 	_camera = camera;
@@ -45,8 +37,15 @@ void PlacementState::Update(float deltaTime)
 
 void PlacementState::OnStateEnter()
 {
+	for (int i = 0; i < _playerProfilesPath.size(); i++)
+	{
+		System::loadJSON(&_playerProfile[i], _playerProfilesPath[i]);
+	}
+	//TODO: Temporarly solution for budget problem when changing back to placement state (Previously it kept spent budget and did not reset it)
+	_playerProfile[_currentPlayer]._gold = 700;
+	_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_playerProfile[_currentPlayer]._gold));
 	//TODO: Move this function to LevelSelection when that state is created. /Alex
-	_objectHandler->LoadLevel(9);
+	_objectHandler->LoadLevel(1);
 
 	_baseEdit = new BaseEdit(_objectHandler, _controls, _pickingDevice, _camera);
 	_objectHandler->DisableSpawnPoints();
@@ -61,9 +60,6 @@ void PlacementState::OnStateEnter()
 	{
 		_uiTree.GetNode("Tutorial")->SetHidden(true);
 	}
-
-	
-
 }
 
 void PlacementState::OnStateExit()
@@ -86,6 +82,11 @@ void PlacementState::HandleInput()
 
 void PlacementState::HandleButtons()
 {
+	int costOfAnvilTrap = 50;
+	int costOfTeslaCoil = 100;
+	int costOfGuard = 200;
+	int costOfCamera = 80;
+
 	System::MouseCoord coord = _controls->GetMouseCoord();
 
 	if (_uiTree.IsButtonColliding("Tutorial", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
@@ -103,7 +104,7 @@ void PlacementState::HandleButtons()
 		ChangeState(PLAYSTATE);
 	}
 
-	if (_uiTree.IsButtonColliding("AnvilTrap", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT") && _playerProfile[_currentPlayer]._gold >= 10)
+	if (_uiTree.IsButtonColliding("AnvilTrap", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT") && _playerProfile[_currentPlayer]._gold >= costOfAnvilTrap)
 	{
 		// Temp, should be replaced with blueprint
 		_toPlace._type = TRAP;
@@ -113,14 +114,14 @@ void PlacementState::HandleButtons()
 		{
 			_baseEdit->DragActivate(_toPlace._type, _toPlace._name, SPIKE);
 
-			_playerProfile[_currentPlayer]._gold -= 10;
+			_playerProfile[_currentPlayer]._gold -= costOfAnvilTrap;
 			_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_playerProfile[_currentPlayer]._gold));
 
 			//C:/dev/StortSpel-Grupp1/Output/Bin/x86/Debug/
 
 		}
 	}
-	if (_uiTree.IsButtonColliding("TeslaTrap", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT") && _playerProfile[_currentPlayer]._gold >= 100)
+	if (_uiTree.IsButtonColliding("TeslaTrap", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT") && _playerProfile[_currentPlayer]._gold >= costOfTeslaCoil)
 	{
 		_toPlace._type = TRAP;
 		_toPlace._name = "tesla_trap";
@@ -129,11 +130,11 @@ void PlacementState::HandleButtons()
 		{
 			_baseEdit->DragActivate(_toPlace._type, _toPlace._name, TESLACOIL);
 			
-			_playerProfile[_currentPlayer]._gold -= 100;
+			_playerProfile[_currentPlayer]._gold -= costOfTeslaCoil;
 			_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_playerProfile[_currentPlayer]._gold));
 		}
 	}
-	if (_uiTree.IsButtonColliding("Camera", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT") && _playerProfile[_currentPlayer]._gold >= 80)
+	if (_uiTree.IsButtonColliding("Camera", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT") && _playerProfile[_currentPlayer]._gold >= costOfCamera)
 	{
 		_toPlace._type = CAMERA;
 		_toPlace._name = "camera_proto";
@@ -141,12 +142,12 @@ void PlacementState::HandleButtons()
 		if (_baseEdit->IsSelection() && !_baseEdit->IsPlace())
 		{
 			_baseEdit->DragActivate(_toPlace._type, _toPlace._name);
-			_playerProfile[_currentPlayer]._gold -= 80;
+			_playerProfile[_currentPlayer]._gold -= costOfCamera;
 			_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_playerProfile[_currentPlayer]._gold));
 		}
 	}
 
-	if (_uiTree.IsButtonColliding("Guard", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT") && _playerProfile[_currentPlayer]._gold >= 250)
+	if (_uiTree.IsButtonColliding("Guard", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT") && _playerProfile[_currentPlayer]._gold >= costOfGuard)
 	{
 		// Temp, should be replaced with blueprint
 		_toPlace._type = GUARD;
@@ -156,7 +157,7 @@ void PlacementState::HandleButtons()
 		{
 			_baseEdit->DragActivate(_toPlace._type, _toPlace._name);
 			
-			_playerProfile[_currentPlayer]._gold -= 250;
+			_playerProfile[_currentPlayer]._gold -= costOfGuard;
 			_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_playerProfile[_currentPlayer]._gold));
 			
 		}
