@@ -51,6 +51,7 @@ void PlacementState::HandleInput()
 {
 	_baseEdit->DragAndDrop(TRAP);
 	_baseEdit->DragAndDrop(GUARD);
+	_baseEdit->DragAndDrop(CAMERA);
 
 	if (_controls->IsFunctionKeyDown("MENU:MENU"))
 	{
@@ -86,6 +87,16 @@ void PlacementState::HandleButtons()
 		if (_baseEdit->IsSelection() && !_baseEdit->IsPlace())
 		{
 			_baseEdit->DragActivate(_toPlace._type, _toPlace._name, TESLACOIL);
+		}
+	}
+	if (_uiTree.IsButtonColliding("Camera", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
+	{
+		_toPlace._type = CAMERA;
+		_toPlace._name = "camera_proto";
+
+		if (_baseEdit->IsSelection() && !_baseEdit->IsPlace())
+		{
+			_baseEdit->DragActivate(_toPlace._type, _toPlace._name);
 		}
 	}
 

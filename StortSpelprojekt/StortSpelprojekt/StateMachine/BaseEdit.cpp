@@ -240,7 +240,7 @@ void BaseEdit::DragActivate(Type type, const std::string& objectName, int subTyp
 				if (_objectHandler->Add(type, objectName, pos, XMFLOAT3(0.0f, 0.0f, 0.0f), subType))
 				{
 					_marker = _objectHandler->GetGameObjects()->at(type).back();
-					_marker->SetVisibility(false);
+					_marker->SetVisibility(true);
 					_isPlace = true;
 					return;
 				}
@@ -313,15 +313,33 @@ void BaseEdit::HandleInput()
 	if (_marker != nullptr)
 	{
 		// Rotation
+		bool rotated = false;
+		bool clockwise = false;
 		if (_controls->IsFunctionKeyDown("MAP_EDIT:ROTATE_MARKER_CLOCK"))
 		{
 			XMFLOAT3 tempRot = _marker->GetRotation();
 			_marker->SetRotation(XMFLOAT3(tempRot.x, tempRot.y + (DirectX::XM_PI / 4), tempRot.z));
+			rotated = true;
+			clockwise = true;
 		}
 		if (_controls->IsFunctionKeyDown("MAP_EDIT:ROTATE_MARKER_COUNTERCLOCK"))
 		{
 			XMFLOAT3 tempRot = _marker->GetRotation();
 			_marker->SetRotation(XMFLOAT3(tempRot.x, tempRot.y - (DirectX::XM_PI / 4), tempRot.z));
+			rotated = true;
+			clockwise = false;
+		}
+		if (rotated)
+		{
+			//TODO Make general for GameObject --Victor
+			if (_marker->GetType() == GUARD || _marker->GetType() == ENEMY)
+			{
+				static_cast<Unit*>(_marker)->SetDirection(AI::GetNextDirection(static_cast<Unit*>(_marker)->GetDirection(), clockwise));
+			}
+			else if (_marker->GetType() == CAMERA)
+			{
+				static_cast<SecurityCamera*>(_marker)->SetDirection(AI::GetNextDirection(static_cast<SecurityCamera*>(_marker)->GetDirection(), clockwise));
+			}
 		}
 	}
 
