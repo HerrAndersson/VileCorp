@@ -46,7 +46,7 @@ void PlacementState::Update(float deltaTime)
 void PlacementState::OnStateEnter()
 {
 	//TODO: Move this function to LevelSelection when that state is created. /Alex
-	_objectHandler->LoadLevel(3);
+	_objectHandler->LoadLevel(9);
 
 	_baseEdit = new BaseEdit(_objectHandler, _controls, _pickingDevice, _camera);
 	_objectHandler->DisableSpawnPoints();
