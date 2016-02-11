@@ -80,17 +80,17 @@ bool Game::Update(double deltaTime)
 
 
 
-	//if (_controls->IsFunctionKeyDown("DEBUG:REQUEST_PARTICLE"))
-	//{
-	//	XMFLOAT3 pos = XMFLOAT3(rand() % 20 + 1, 0.0f, rand() % 20 + 1);
-	//	XMFLOAT4 col = XMFLOAT4((rand() % 10) / 10.0f, (rand() % 10) / 10.0f, (rand() % 10) / 10.0f, 1.0f);
+	if (_controls->IsFunctionKeyDown("DEBUG:REQUEST_PARTICLE"))
+	{
+		XMFLOAT3 pos = XMFLOAT3(rand() % 20 + 1, 0.0f, rand() % 20 + 1);
+		XMFLOAT4 col = XMFLOAT4((rand() % 10) / 10.0f, (rand() % 10) / 10.0f, (rand() % 10) / 10.0f, 1.0f);
 
-	//	ParticleRequestMessage msg = ParticleRequestMessage(ParticleType::SPLASH, pos, col, 10000.0f, 50, true);
-	//	_particleHandler->GetParticleRequestQueue()->Insert(msg);
-	//}
-	//int witefoijesdjgsoieg = 34874685;
-	//_particleHandler->Update(deltaTime);
-	//int ewersdgfsdgsdssdg = 435634;
+		ParticleRequestMessage msg = ParticleRequestMessage(ParticleType::SPLASH, pos, col, 10000.0f, 50, true);
+		_particleHandler->GetParticleRequestQueue()->Insert(msg);
+	}
+	int witefoijesdjgsoieg = 34874685;
+	_particleHandler->Update(deltaTime);
+	int ewersdgfsdgsdssdg = 435634;
 
 
 
@@ -179,27 +179,28 @@ void Game::Render()
 
 	/*------------------------------------------------  Render billboarded objects  ---------------------------------------------------*/
 
-	//_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::BILLBOARDING_STAGE);
+	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::BILLBOARDING_STAGE);
 
-	//int count = _particleHandler->GetEmitterCount();
-	//for (int i = 0; i < count; i++)
-	//{
-	//    Renderer::ParticleEmitter* emitter = _particleHandler->GetEmitter(i);
+	int count = _particleHandler->GetEmitterCount();
+	for (int i = 0; i < count; i++)
+	{
+	    Renderer::ParticleEmitter* emitter = _particleHandler->GetEmitter(i);
 
-	//	if (emitter)
-	//	{
-	//		ID3D11Buffer* vertexBuffer = emitter->GetParticleBuffer();
+		if (emitter)
+		{
+			ID3D11Buffer* vertexBuffer = emitter->GetParticleBuffer();
 
-	//		if (vertexBuffer)
-	//		{
-	//			XMFLOAT3 color(0.1f, 0.6f, 0.25f);
-	//			XMFLOAT3 pos(12, 1, 12);
-	//			_renderModule->RenderParticles(vertexBuffer, emitter->GetBufferSize(), emitter->GetParticleCount(), pos, color);
+			if (vertexBuffer)
+			{
+				XMFLOAT4 color(0.1f, 0.6f, 0.25f, 1.0f);
+				XMFLOAT3 pos(11, 1, 11);
+				_renderModule->SetDataPerParticleEmitter(pos, color, _camera->GetViewMatrix(), _camera->GetProjectionMatrix(), _camera->GetPosition());
+				_renderModule->RenderParticles(vertexBuffer, emitter->GetBufferSize(), emitter->GetParticleCount());
 
-	//			//_renderModule->RenderParticles(vertexBuffer, emitter->GetBufferSize(), emitter->GetParticleCount(), emitter->GetPosition(), color, emitter->GetTextures(), emitter->GetTextureCount());
-	//		}
-	//	}
-	//}
+				//_renderModule->RenderParticles(vertexBuffer, emitter->GetBufferSize(), emitter->GetParticleCount(), emitter->GetPosition(), color, emitter->GetTextures(), emitter->GetTextureCount());
+			}
+		}
+	}
 
 	/*-------------------------------------------------------  Render grid  -----------------------------------------------------------*/
 	if (_SM->GetState() == LEVELEDITSTATE)

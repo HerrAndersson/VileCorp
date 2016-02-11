@@ -18,9 +18,9 @@ namespace Renderer
 
 	RenderModule::~RenderModule()
 	{
-		delete _d3d;
-		delete _shaderHandler;
-		delete _shadowMap;
+		SAFE_DELETE(_d3d);
+		SAFE_DELETE(_shaderHandler);
+		SAFE_DELETE(_shadowMap);
 
 		SAFE_RELEASE(_screenQuad);
 		SAFE_RELEASE(_matrixBufferPerObject);
@@ -30,6 +30,7 @@ namespace Renderer
 		SAFE_RELEASE(_matrixBufferLightPassPerFrame);
 		SAFE_RELEASE(_matrixBufferLightPassPerSpotlight);
 		SAFE_RELEASE(_matrixBufferLightPassPerPointlight);
+		SAFE_RELEASE(_matrixBufferParticles);
 	}
 
 	void RenderModule::InitializeScreenQuadBuffer()
@@ -98,7 +99,7 @@ namespace Renderer
 		result = device->CreateBuffer(&matrixBufferDesc, NULL, &_matrixBufferLightPassPerFrame);
 		if (FAILED(result))
 		{
-			throw std::runtime_error("RenderModule::InitializeConstantBuffers: Failed to create MatrixBufferLightPassPerFrame");
+			throw std::runtime_error("RenderModule::InitializeConstantBuffers: Failed to create _matrixBufferLightPassPerFrame");
 		}
 
 		matrixBufferDesc.ByteWidth = sizeof(MatrixBufferLightPassPerSpotlight);
@@ -112,7 +113,14 @@ namespace Renderer
 		result = device->CreateBuffer(&matrixBufferDesc, NULL, &_matrixBufferLightPassPerPointlight);
 		if (FAILED(result))
 		{
-			throw std::runtime_error("RenderModule::InitializeConstantBuffers: Failed to create _MatrixBufferLightPassPerPointlight");
+			throw std::runtime_error("RenderModule::InitializeConstantBuffers: Failed to create _matrixBufferLightPassPerPointlight");
+		}
+
+		matrixBufferDesc.ByteWidth = sizeof(MatrixBufferPerParticleEmitter);
+		result = device->CreateBuffer(&matrixBufferDesc, NULL, &_matrixBufferParticles);
+		if (FAILED(result))
+		{
+			throw std::runtime_error("RenderModule::InitializeConstantBuffers: Failed to create _matrixBufferParticles");
 		}
 	}
 
@@ -230,6 +238,33 @@ namespace Renderer
 		deviceContext->Unmap(_matrixBufferPerObject, 0);
 
 		deviceContext->VSSetConstantBuffers(1, 1, &_matrixBufferPerObject);
+	}
+
+	void RenderModule::SetDataPerParticleEmitter(const XMFLOAT3& position, const DirectX::XMFLOAT4& color, XMMATRIX* camView, XMMATRIX* camProjection, const XMFLOAT3& camPos)
+	{
+		HRESULT result;
+		D3D11_MAPPED_SUBRESOURCE mappedResource;
+		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
+
+		XMMATRIX world = XMMatrixTranslation(position.x, position.y, position.z);
+		XMMATRIX worldMatrixC = XMMatrixTranspose(world);
+
+		result = deviceContext->Map(_matrixBufferParticles, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+		if (FAILED(result))
+		{
+			throw std::runtime_error("RenderModule::SetDataPerObject: Failed to Map _matrixBufferPerObject");
+		}
+
+		MatrixBufferPerParticleEmitter* dataPtr = static_cast<MatrixBufferPerParticleEmitter*>(mappedResource.pData);
+		dataPtr->_world = worldMatrixC;
+		dataPtr->_camView = *camView;
+		dataPtr->_camProjection = *camProjection;
+		dataPtr->_camPosition = camPos;
+		dataPtr->_color = color;
+		dataPtr->_ambientLight = AMBIENT_LIGHT;
+		deviceContext->Unmap(_matrixBufferParticles, 0);
+
+		deviceContext->GSSetConstantBuffers(6, 1, &_matrixBufferParticles);
 	}
 
 	void RenderModule::SetDataPerMesh(ID3D11Buffer* vertexBuffer, int vertexSize)
@@ -456,9 +491,9 @@ namespace Renderer
 		case BILLBOARDING_STAGE:
 		{
 			//Since this is part of the geometry pass, there is no need to set render targets etc.
-			_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::ENABLE);
-			_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::BACK);
-			deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST); //TODO: use triangle strip instead, if the geometry shader supports this
+			_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::DISABLE);
+			_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::NONE);
+			deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 			_shaderHandler->SetBillboardingStageShaders(_d3d->GetDeviceContext());
 			break;
 		}
@@ -611,15 +646,13 @@ namespace Renderer
 		deviceContext->Draw(vertexCount, 0);
 	}
 
-	void RenderModule::RenderParticles(ID3D11Buffer* particlePointsBuffer, int vertexBufferSize, int vertexCount, const XMFLOAT3& position, const XMFLOAT3& color, ID3D11ShaderResourceView** textures, int textureCount)
+	void RenderModule::RenderParticles(ID3D11Buffer* particlePointsBuffer, int vertexBufferSize, int vertexCount, ID3D11ShaderResourceView** textures, int textureCount)
 	{
 		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
 
-		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
-
-		XMMATRIX world = XMMatrixTranslation(position.x, position.y, position.z);
-		SetDataPerObject(&world, color);
-		SetDataPerMesh(particlePointsBuffer, vertexBufferSize);
+		UINT32 offset = 0;
+		UINT32 vs = vertexBufferSize;
+		deviceContext->IASetVertexBuffers(0, 1, &particlePointsBuffer, &vs, &offset);
 
 		if (textures)
 		{

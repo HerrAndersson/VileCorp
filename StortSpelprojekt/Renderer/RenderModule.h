@@ -115,6 +115,17 @@ namespace Renderer
 			float			  _range;
 		};
 
+		struct MatrixBufferPerParticleEmitter
+		{
+			DirectX::XMMATRIX _world;
+			DirectX::XMMATRIX _camView;
+			DirectX::XMMATRIX _camProjection;
+			DirectX::XMFLOAT4 _color;
+			DirectX::XMFLOAT3 _camPosition;
+			float pad;
+			DirectX::XMFLOAT3 _ambientLight;
+		};
+
 		ID3D11Buffer*		_matrixBufferPerObject;
 		ID3D11Buffer* 		_matrixBufferPerSkinnedObject;
 		ID3D11Buffer*		_matrixBufferPerFrame;
@@ -123,6 +134,7 @@ namespace Renderer
 		ID3D11Buffer*		_matrixBufferLightPassPerPointlight;
 		ID3D11Buffer*		_screenQuad;
 		ID3D11Buffer*		_matrixBufferHUD;
+		ID3D11Buffer*		_matrixBufferParticles;
 
 		DirectXHandler*		_d3d;
 		ShaderHandler*		_shaderHandler;
@@ -143,7 +155,7 @@ namespace Renderer
 
 	public:
 
-		const DirectX::XMFLOAT3 AMBIENT_LIGHT = DirectX::XMFLOAT3(0.5f, 0.5f, 0.5f);
+		const DirectX::XMFLOAT3 AMBIENT_LIGHT = DirectX::XMFLOAT3(0.14f, 0.15f, 0.2f);
 		enum ShaderStage { GEO_PASS, SHADOW_GENERATION, LIGHT_APPLICATION_SPOTLIGHT, LIGHT_APPLICATION_POINTLIGHT, GRID_STAGE, ANIM_STAGE, HUD_STAGE, AA_STAGE, BILLBOARDING_STAGE };
 
 		RenderModule(HWND hwnd, System::Settings* settings);
@@ -154,6 +166,7 @@ namespace Renderer
 		void SetDataPerFrame(DirectX::XMMATRIX* view, DirectX::XMMATRIX* projection);
 		void SetDataPerObjectType(RenderObject* renderObject);
 		void SetDataPerLineList(ID3D11Buffer* lineList, int vertexSize);
+		void SetDataPerParticleEmitter(const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT4& color, DirectX::XMMATRIX* camView, DirectX::XMMATRIX* camProjection, const DirectX::XMFLOAT3& camPos);
 
 		void SetShadowMapDataPerObjectType(RenderObject* renderObject);
 		void SetShadowMapDataPerSpotlight(DirectX::XMMATRIX* lightView, DirectX::XMMATRIX* lightProjection);
@@ -171,7 +184,7 @@ namespace Renderer
 		void RenderLineList(DirectX::XMMATRIX* world, int nrOfPoints, const DirectX::XMFLOAT3& colorOffset = DirectX::XMFLOAT3(0,0,0));
 		void RenderShadowMap(DirectX::XMMATRIX* world, int vertexBufferSize);
 		void RenderScreenQuad();
-		void RenderParticles(ID3D11Buffer* particlePointsBuffer, int vertexBufferSize, int vertexCount, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& color, ID3D11ShaderResourceView** textures = nullptr, int textureCount = 0);
+		void RenderParticles(ID3D11Buffer* particlePointsBuffer, int vertexBufferSize, int vertexCount, ID3D11ShaderResourceView** textures = nullptr, int textureCount = 0);
 		void RenderLightVolume(ID3D11Buffer* volume, DirectX::XMMATRIX* world, int vertexCount, int vertexSize);
 		void EndScene();
 

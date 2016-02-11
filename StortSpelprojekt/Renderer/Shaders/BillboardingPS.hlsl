@@ -10,7 +10,8 @@ struct GS_OUT
 	float4 position : SV_POSITION;
 	float2 tex : TEXCOORD0;
 	float3 normal : NORMAL;
-	float4 worldPos : POS;
+	float4 color : COLOROFFSET;
+	float3 ambientLight : AMBIENT;
 };
 
 struct PS_OUT
@@ -26,11 +27,11 @@ PS_OUT main(GS_OUT input)
 	PS_OUT output = (PS_OUT)0;
 
 	//TODO: Randomize which texture to sample from
-	float4 color = float4(textures[0].Sample(samplerWrap, input.tex).xyz, 1.0f);
+	//float4 color = float4(textures[0].Sample(samplerWrap, input.tex).xyz, 1.0f);
 
-	output.diffuse = color;
+	output.diffuse = input.color;
 	output.normal = float4(input.normal, 1.0f);
-	output.backbuffercopy = color; //TODO: apply ambient? / Jonas
+	output.backbuffercopy = float4(output.diffuse.xyz * input.ambientLight, 0.0f);
 
 	return output;
 }

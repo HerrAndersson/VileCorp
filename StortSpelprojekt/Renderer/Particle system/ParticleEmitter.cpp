@@ -141,7 +141,7 @@ namespace Renderer
 			}
 		}
 
-		//UpdateVertexBuffer();
+		UpdateVertexBuffer();
 
 		_timeLeft -= (float)deltaTime;
 	}
