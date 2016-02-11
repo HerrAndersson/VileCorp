@@ -266,6 +266,14 @@ struct GameObjectInfo
 		}
 		return (GameObjectWallInfo*)_objects[WALL]->at(i);
 	}
+	GameObjectFurnitureInfo* Furnitures(unsigned i)
+	{
+		if (_objects[FURNITURE]->size() < i + 1)
+		{
+			_objects[FURNITURE]->push_back((GameObjectBaseInfo*)new GameObjectFurnitureInfo());
+		}
+		return (GameObjectFurnitureInfo*)_objects[FURNITURE]->at(i);
+	}
 	GameObjectLootInfo* Loot(unsigned i)
 	{
 		if (_objects[LOOT]->size() < i + 1)
