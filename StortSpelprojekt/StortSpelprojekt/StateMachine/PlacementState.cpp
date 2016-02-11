@@ -1,5 +1,26 @@
 #include "PlacementState.h"
 
+void PlacementState::EvaluateGoldCost()
+{
+	if (_toPlace._subType == SPIKE)
+	{
+		_toPlace._goldCost = 10;
+	}
+	else if (_toPlace._subType == TESLACOIL)
+	{
+		_toPlace._goldCost = 100;
+	}
+
+	if (_toPlace._type == CAMERA)
+	{
+		_toPlace._goldCost = 80;
+	}
+	else if (_toPlace._type == GUARD)
+	{
+		_toPlace._goldCost = 250;
+	}
+}
+
 PlacementState::PlacementState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::Settings* settings, System::SoundModule* soundModule)
 	: BaseState(controls, objectHandler, camera, pickingDevice, filename, "PLACEMENT", assetManager, fontWrapper, settings, soundModule)
 {
@@ -83,14 +104,29 @@ void PlacementState::HandleInput()
 		ChangeState(PAUSESTATE);
 	}
 
-	if (_controls->IsFunctionKeyDown("MAP_EDIT:DELETE_UNIT"))
+	if (_baseEdit->GetSelectedObject() != nullptr)
 	{
-		if (_baseEdit->GetSelectedObject() != nullptr)
+		_toPlace._type = _baseEdit->GetSelectedObject()->GetType();
+		_toPlace._subType =_baseEdit->GetSelectedObject()->GetSubType();
+		_toPlace._blueprintID = _baseEdit->GetSelectedObject()->GetID();
+		EvaluateGoldCost();
+		if (_controls->IsFunctionKeyDown("MAP_EDIT:DELETE_UNIT"))
 		{
-			_playerProfile[_currentPlayer]._gold += 10;
+			_playerProfile[_currentPlayer]._gold += _toPlace._goldCost;
 			_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_playerProfile[_currentPlayer]._gold));
 			_baseEdit->DeleteSelectedObject();
+			_toPlace.ResetTemps();
 		}
+	}
+
+
+
+	// placement invalid
+	if (_toPlace._goldCost != -1 && !_objectHandler->Find(_toPlace._type, _toPlace._blueprintID) && !_baseEdit->IsPlace())
+	{
+		_playerProfile[_currentPlayer]._gold += _toPlace._goldCost;
+		_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_playerProfile[_currentPlayer]._gold));
+		_toPlace.ResetTemps();
 	}
 }
 
@@ -113,6 +149,8 @@ void PlacementState::HandleButtons()
 		ChangeState(PLAYSTATE);
 	}
 
+	bool create = false;
+
 	if (_uiTree.IsButtonColliding("AnvilTrap", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT") && _playerProfile[_currentPlayer]._gold >= 10)
 	{
 		// Temp, should be replaced with blueprint
@@ -121,13 +159,8 @@ void PlacementState::HandleButtons()
 
 		if (_baseEdit->IsSelection() && !_baseEdit->IsPlace())
 		{
-			_baseEdit->DragActivate(_toPlace._type, _toPlace._name, SPIKE);
-
-			_playerProfile[_currentPlayer]._gold -= 10;
-			_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_playerProfile[_currentPlayer]._gold));
-
-			//C:/dev/StortSpel-Grupp1/Output/Bin/x86/Debug/
-
+			_toPlace._subType = SPIKE;
+			create = true;
 		}
 	}
 	if (_uiTree.IsButtonColliding("TeslaTrap", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT") && _playerProfile[_currentPlayer]._gold >= 100)
@@ -137,10 +170,8 @@ void PlacementState::HandleButtons()
 
 		if (_baseEdit->IsSelection() && !_baseEdit->IsPlace())
 		{
-			_baseEdit->DragActivate(_toPlace._type, _toPlace._name, TESLACOIL);
-			
-			_playerProfile[_currentPlayer]._gold -= 100;
-			_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_playerProfile[_currentPlayer]._gold));
+			_toPlace._subType = TESLACOIL;
+			create = true;
 		}
 	}
 	if (_uiTree.IsButtonColliding("Camera", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT") && _playerProfile[_currentPlayer]._gold >= 80)
@@ -150,9 +181,7 @@ void PlacementState::HandleButtons()
 
 		if (_baseEdit->IsSelection() && !_baseEdit->IsPlace())
 		{
-			_baseEdit->DragActivate(_toPlace._type, _toPlace._name);
-			_playerProfile[_currentPlayer]._gold -= 80;
-			_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_playerProfile[_currentPlayer]._gold));
+			create = true;
 		}
 	}
 
@@ -162,15 +191,21 @@ void PlacementState::HandleButtons()
 		_toPlace._type = GUARD;
 		_toPlace._name = "guard_proto";
 
-		if (_baseEdit->IsSelection())
+		if (_baseEdit->IsSelection() && !_baseEdit->IsPlace())
 		{
-			_baseEdit->DragActivate(_toPlace._type, _toPlace._name);
-			
-			_playerProfile[_currentPlayer]._gold -= 250;
-			_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_playerProfile[_currentPlayer]._gold));
-			
+			create = true;
 		}
 	}
+
+	if (create)
+	{
+		EvaluateGoldCost();
+		_baseEdit->DragActivate(_toPlace._type, _toPlace._name, _toPlace._subType);
+		_playerProfile[_currentPlayer]._gold -= _toPlace._goldCost;
+		_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_playerProfile[_currentPlayer]._gold));
+		_toPlace._blueprintID = _baseEdit->GetSelectedObject()->GetID();
+	}
+
 //	System::saveJSON(&_playerProfile[_currentPlayer], _playerProfilesPath[_currentPlayer], "Player Profile");
 
 	//if (_uiTree.IsButtonColliding("Camera", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
