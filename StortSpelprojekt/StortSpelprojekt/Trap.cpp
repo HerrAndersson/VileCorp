@@ -215,6 +215,14 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	_isVisibleToEnemies = false;
 	_areaOfEffect = nullptr;
 	_occupiedTiles = nullptr;
+	_subType = trapType;
+
+	if (_renderObject->_isSkinned)
+	{
+		_animation = new Animation(_renderObject->_skeleton);
+		_animation->Freeze(false);
+		_animation->SetActionAsCycle(0, true);
+	}
 
 	int radius = 0;
 	
@@ -275,6 +283,10 @@ Trap::~Trap()
 	_areaOfEffect = nullptr;
 	delete[] _occupiedTiles;
 	_occupiedTiles = nullptr;
+	if (_animation != nullptr)
+	{
+		delete _animation;
+	}
 }
 
 AI::Vec2D * Trap::GetTiles() const
@@ -354,10 +366,15 @@ void Trap::Activate()
 			static_cast<Unit*>(_tileMap->GetObjectOnTile(_areaOfEffect[i], GUARD))->TakeDamage(_damage);
 		}
 	}
+	//_animation->PlayAction(0);
 }
 
 void Trap::Update(float deltaTime)
 {	
+	if (_animation != nullptr)
+	{
+		_animation->Update(deltaTime);
+	}
 	bool triggered = false;
 	for (int i = 0; i < _tileSize && !triggered; i++)
 	{

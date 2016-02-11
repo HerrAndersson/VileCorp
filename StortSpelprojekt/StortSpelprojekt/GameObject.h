@@ -26,6 +26,7 @@ protected:
 	DirectX::XMFLOAT3 _colorOffset;
 	AI::Vec2D _tilePosition;
 	Type _type;
+	unsigned int _subType;
 	bool _visible;
 	bool _active;
 	RenderObject* _renderObject;
@@ -64,6 +65,7 @@ public:
 	AI::Vec2D GetTilePosition()const;
 	virtual void SetTilePosition(AI::Vec2D pos);
 	Type GetType() const;
+	unsigned int GetSubType() const;
 
 	bool IsVisible() const;
 	bool IsActive() const;

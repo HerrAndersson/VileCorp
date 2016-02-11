@@ -21,6 +21,7 @@ GameObject::GameObject(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::X
 	_renderObject = renderObject;
 	_pickUpState = ONTILE;
 	_visible = true;
+	_subType = 0;
 
 	CalculateMatrix();
 }
@@ -115,6 +116,11 @@ void GameObject::SetTilePosition(AI::Vec2D pos)
 Type GameObject::GetType() const
 {
 	return _type;
+}
+
+unsigned int GameObject::GetSubType() const
+{
+	return _subType;
 }
 
 bool GameObject::IsVisible() const
