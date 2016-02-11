@@ -88,3 +88,8 @@ void SecurityCamera::SetTilePosition(AI::Vec2D pos)
 	GameObject::SetTilePosition(pos);
 	_visionCone->FindVisibleTiles(_tilePosition, _direction);
 }
+
+int SecurityCamera::GetVisionRadius() const
+{
+	return _visionRadius;
+}

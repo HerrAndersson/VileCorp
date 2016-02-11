@@ -2,10 +2,12 @@
 #include <stdexcept>
 #include <DirectXMath.h>
 #include <sstream>
+#include <random>
 
 Game::Game(HINSTANCE hInstance, int nCmdShow):
 	_settingsReader("Assets/settings.xml")
 {
+	srand(time(NULL));
 	System::Settings* settings = _settingsReader.GetSettings();
 
 	_gameHandle = this;
@@ -14,12 +16,12 @@ Game::Game(HINSTANCE hInstance, int nCmdShow):
 	_timer = System::Timer();
 
 	_renderModule = new Renderer::RenderModule(_window->GetHWND(), settings);
+	_particleHandler = new Renderer::ParticleHandler(_renderModule->GetDevice(), _renderModule->GetDeviceContext());
 	
 	_assetManager = new AssetManager(_renderModule->GetDevice());
 	_controls = new System::Controls(_window->GetHWND());
 	_fontWrapper = new FontWrapper(_renderModule->GetDevice(), L"Assets/Fonts/Calibri.ttf", L"Calibri");
 
-	//Init camera
 	_camera = new System::Camera(settings);
 	_camera->SetPosition(XMFLOAT3(3, 20, 0));
 	_camera->SetRotation(XMFLOAT3(60, 0, 0));
@@ -35,8 +37,6 @@ Game::Game(HINSTANCE hInstance, int nCmdShow):
 	_SM->Update(_timer.GetFrameTime());
 
 	_enemiesHasSpawned = false;
-
-	//_controls->SaveKeyBindings(System::MAP_EDIT_KEYMAP, "MOVE_CAMERA_UP", "M");
 }
 
 Game::~Game()
@@ -50,6 +50,7 @@ Game::~Game()
 	SAFE_DELETE(_assetManager);
 	SAFE_DELETE(_pickingDevice);
 	SAFE_DELETE(_fontWrapper);
+	SAFE_DELETE(_particleHandler);
 }
 
 void Game::ResizeResources(System::Settings* settings)
@@ -60,7 +61,7 @@ void Game::ResizeResources(System::Settings* settings)
 	_renderModule->ResizeResources(_window->GetHWND(), settings);
 }
 
-bool Game::Update(float deltaTime)
+bool Game::Update(double deltaTime)
 {
 	_soundModule.Update();
 
@@ -75,6 +76,23 @@ bool Game::Update(float deltaTime)
 
 	_controls->Update();
 	run = _SM->Update(deltaTime);
+
+
+
+
+	//if (_controls->IsFunctionKeyDown("DEBUG:REQUEST_PARTICLE"))
+	//{
+	//	XMFLOAT3 pos = XMFLOAT3(rand() % 20 + 1, 0.0f, rand() % 20 + 1);
+	//	XMFLOAT4 col = XMFLOAT4((rand() % 10) / 10.0f, (rand() % 10) / 10.0f, (rand() % 10) / 10.0f, 1.0f);
+
+	//	ParticleRequestMessage msg = ParticleRequestMessage(ParticleType::SPLASH, pos, col, 10000.0f, 50, true);
+	//	_particleHandler->GetParticleRequestQueue()->Insert(msg);
+	//}
+	//int witefoijesdjgsoieg = 34874685;
+	//_particleHandler->Update(deltaTime);
+	//int ewersdgfsdgsdssdg = 435634;
+
+
 
 	/*
 	_enemies = _objectHandler->GetAllByType(ENEMY);
@@ -97,31 +115,6 @@ bool Game::Update(float deltaTime)
 		}
 	}
 	*/
-
-	////Save for debugging //Jonas
-	//if (_SM->GetState() == PLAYSTATE)
-	//{
-	//	int i = 0;
-	//	for (auto s : _spotlights)
-	//	{
-	//		XMFLOAT3 color = s->GetColor();
-	//		color.x = sin(_timer.GetGameTime() / 1000 + 100 * i);
-	//		color.y = sin(_timer.GetGameTime() / 1000 + 100 * i + XMConvertToRadians(120));
-	//		color.z = sin(_timer.GetGameTime() / 1000 + 100 * i + XMConvertToRadians(240));
-	//		s->SetColor(color);
-	//		XMFLOAT3 rot = s->GetRotation();
-	//		rot.y -= 0.2f;
-	//		s->SetRotation(rot);
-	//		i++;
-	//	}
-	//	i = 0;
-	//	for (auto p : _pointlights)
-	//	{
-	//		i++;
-	//		XMFLOAT3 pos = p->GetPosition();
-	//		p->SetPosition(XMFLOAT3(pos.x + (sin((_timer.GetGameTime() / 1000) * sin(120 * i))) / 20, pos.y, pos.z + (sin((_timer.GetGameTime() / 1000) * sin(17 * i * i))) / 20));
-	//	}
-	//}
 
 	return run;
 }
@@ -229,7 +222,32 @@ void Game::Render()
 			}
 		}
 	}
-	
+
+	/*------------------------------------------------  Render billboarded objects  ---------------------------------------------------*/
+
+	//_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::BILLBOARDING_STAGE);
+
+	//int count = _particleHandler->GetEmitterCount();
+	//for (int i = 0; i < count; i++)
+	//{
+	//    Renderer::ParticleEmitter* emitter = _particleHandler->GetEmitter(i);
+
+	//	if (emitter)
+	//	{
+	//		ID3D11Buffer* vertexBuffer = emitter->GetParticleBuffer();
+
+	//		if (vertexBuffer)
+	//		{
+	//			XMFLOAT3 color(0.1f, 0.6f, 0.25f);
+	//			XMFLOAT3 pos(12, 1, 12);
+	//			_renderModule->RenderParticles(vertexBuffer, emitter->GetBufferSize(), emitter->GetParticleCount(), pos, color);
+
+	//			//_renderModule->RenderParticles(vertexBuffer, emitter->GetBufferSize(), emitter->GetParticleCount(), emitter->GetPosition(), color, emitter->GetTextures(), emitter->GetTextureCount());
+	//		}
+	//	}
+	//}
+
+	/*-------------------------------------------------------  Render grid  -----------------------------------------------------------*/
 	if (_SM->GetState() == LEVELEDITSTATE)
 	{
 		Grid* gr = _objectHandler->GetBuildingGrid();
@@ -273,8 +291,6 @@ void Game::Render()
 						{
 							if (g->IsVisible())
 							{
-								g->SetColorOffset(XMFLOAT3(0, 1, 0));
-
 								_renderModule->RenderShadowMap(g->GetMatrix(), vertexBufferSize);
 							}
 						}

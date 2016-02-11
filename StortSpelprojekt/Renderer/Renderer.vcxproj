@@ -23,6 +23,10 @@
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="FontWrapper.cpp" />
     <ClCompile Include="Node.cpp" />
+    <ClCompile Include="Particle system\ParticleHandler.cpp" />
+    <ClCompile Include="Particle system\Particle.cpp" />
+    <ClCompile Include="Particle system\ParticleEmitter.cpp" />
+    <ClCompile Include="Particle system\ParticleRequestQueue.cpp" />
     <ClCompile Include="Pointlight.cpp" />
     <ClCompile Include="RenderModule.cpp" />
     <ClCompile Include="ShaderHandler.cpp" />
@@ -36,6 +40,11 @@
     <ClInclude Include="FontWrapper.h" />
     <ClInclude Include="FW\FW1FontWrapper.h" />
     <ClInclude Include="Node.h" />
+    <ClInclude Include="Particle system\ParticleHandler.h" />
+    <ClInclude Include="Particle system\Particle.h" />
+    <ClInclude Include="Particle system\ParticleEmitter.h" />
+    <ClInclude Include="Particle system\ParticleUtils.h" />
+    <ClInclude Include="Particle system\ParticleRequestQueue.h" />
     <ClInclude Include="Pointlight.h" />
     <ClInclude Include="RenderModule.h" />
     <ClInclude Include="RenderUtils.h" />
@@ -46,6 +55,30 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="Shaders\BillboardingGS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Geometry</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Geometry</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Geometry</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Geometry</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="Shaders\BillboardingPS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Shaders\BillboardingVS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
+    </FxCompile>
     <FxCompile Include="Shaders\FxaaPS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>

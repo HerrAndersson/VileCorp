@@ -51,6 +51,14 @@ bool ObjectHandler::LoadLevel(int lvlIndex)
 
 void ObjectHandler::UnloadLevel()
 {
+	for (pair<GameObject*, Renderer::Spotlight*> spot : _spotlights)
+	{
+		SAFE_DELETE(spot.second);
+		spot.second = nullptr;
+		spot.first = nullptr;
+	}
+	_spotlights.clear();
+
 	ReleaseGameObjects();
 	SAFE_DELETE(_tilemap);
 	SAFE_DELETE(_lightCulling);
@@ -138,10 +146,37 @@ bool ObjectHandler::Add(Type type, int index, const XMFLOAT3& position, const XM
 	{
 		_idCount++;
 		_gameObjects[type].push_back(object);
-		for(auto i : object->GetRenderObject()->_mesh._spotLights)
+
+		//TODO: remove when proper loading can be done /Jonas
+		if (type == GUARD)
 		{
-			_spotlights[object] = new Renderer::Spotlight(_device, i, 0.1f, 1000.0f);
+			SpotlightData d;
+			d._angle = 0.6f * XM_PI;
+			d._bone = -1;
+			d._color = XMFLOAT3(0.9f, 0.9f, 0.9f);
+			d._direction = XMFLOAT3(1, 0, 1);
+			d._intensity = 1.0f;
+			d._pos = XMFLOAT3(0, 0, 0);
+			d._range = (float)static_cast<Unit*>(object)->GetVisionRadius();
+			_spotlights[object] = new Renderer::Spotlight(_device, d, 0.1f, 1000.0f);
 		}
+		if (type == CAMERA)
+		{
+			SpotlightData d;
+			d._angle = 0.6f * XM_PI;
+			d._bone = -1;
+			d._color = XMFLOAT3(0.9f, 0.6f, 0.6f);
+			d._direction = XMFLOAT3(1, 0, 1);
+			d._intensity = 1.0f;
+			d._pos = XMFLOAT3(0, 0, 0);
+			d._range = (float)static_cast<SecurityCamera*>(object)->GetVisionRadius();
+			_spotlights[object] = new Renderer::Spotlight(_device, d, 0.1f, 1000.0f);
+		}
+
+		//for(auto i : object->GetRenderObject()->_mesh._spotLights)
+		//{
+		//	_spotlights[object] = new Renderer::Spotlight(_device, i, 0.1f, 1000.0f);
+		//}
 		_objectCount++;
 		return true;
 	}
@@ -640,13 +675,21 @@ void ObjectHandler::Update(float deltaTime)
 	{
 		if (spot.second->IsActive() && spot.first->IsActive())
 		{
-			if (spot.second->GetBone() != -1)
+			if (spot.second->GetBone() != 255)
 			{
 				spot.second->SetPositionAndRotation(spot.first->GetAnimation()->GetTransforms()[spot.second->GetBone()]);
 			}
 			else
 			{
-				spot.second->SetPositionAndRotation(spot.first->GetPosition(), spot.first->GetRotation());
+				XMFLOAT3 pos = spot.first->GetPosition();
+				pos.y = 0.5f;
+
+				XMFLOAT3 rot = spot.first->GetRotation();
+				rot.x = XMConvertToDegrees(rot.x);
+				rot.y = XMConvertToDegrees(rot.y) + 180;
+				rot.z = XMConvertToDegrees(rot.z);
+
+				spot.second->SetPositionAndRotation(pos, rot);
 			}
 		}
 	}

@@ -72,6 +72,7 @@ private:
 	void ReleaseGameObjects();
 
 public:
+
 	ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data);
 	~ObjectHandler();
 

@@ -73,6 +73,7 @@ public:
 	void TakeDamage(int damage);
 	void SetVisibility(bool visible);
 	void UseTrap();
+	int GetVisionRadius()const;
 
 };
 

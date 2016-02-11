@@ -148,9 +148,9 @@ Unit::~Unit()
 	//delete[] _visibleTiles;
 	delete _aStar;
 	_aStar = nullptr;
+	delete _visionCone;
 	//delete _heldObject;
 	//_heldObject = nullptr;
-	delete _visionCone;
 	if (_animation != nullptr)
 	{
 		delete _animation;
@@ -443,6 +443,11 @@ void Unit::UseTrap()
 		act(_objective);
 		_trapInteractionTime--;
 	}
+}
+
+int Unit::GetVisionRadius() const
+{
+	return _visionRadius;
 }
 
 
