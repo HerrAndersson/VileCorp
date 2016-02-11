@@ -7,7 +7,7 @@ void Trap::CalculateCircleAOE(int radius)
 	int y = 0;
 	int D = 1 - x;   // Decision criterion divided by 2 evaluated at x=r, y=0
 	AI::Vec2D pos = {0,0};
-
+	_nrOfAOETiles = 0;
 	while (y <= x)
 	{
 		if (y != x)
@@ -415,7 +415,7 @@ void Trap::SetTilePosition(AI::Vec2D pos)
 {
 	GameObject::SetTilePosition(pos);
 
-	_nrOfAOETiles = 0;
+//	_nrOfAOETiles = 0;
 
 	int radius = 0;
 
@@ -435,27 +435,27 @@ void Trap::SetTilePosition(AI::Vec2D pos)
 		}
 		for (int i = 0; i < _nrOfAOETiles; i++)
 		{
-			if (_tileMap->IsFloorOnTile(_occupiedTiles[i]))
+			if (_tileMap->IsFloorOnTile(_areaOfEffect[i]))
 			{
-				_tileMap->GetObjectOnTile(_occupiedTiles[i], FLOOR)->SetColorOffset({0,0,0});
+				_tileMap->GetObjectOnTile(_areaOfEffect[i], FLOOR)->SetColorOffset({0,0,0});
 			}
 		}
 		CalculateCircleAOE(3);
 
+		for (int i = 0; i < _nrOfAOETiles; i++)
+		{
+			if (_tileMap->IsFloorOnTile(_areaOfEffect[i]))
+			{
+				_tileMap->GetObjectOnTile(_areaOfEffect[i], FLOOR)->SetColorOffset({3.0f,1.0f,0.0f});
+			}
+		}
 		for (int i = 0; i < _tileSize; i++)
 		{
 			AI::Vec2D offset = { i / 3 - 1, i % 3 - 1 };
 			_occupiedTiles[i] = _tilePosition + offset;
 			if (_tileMap->IsFloorOnTile(_occupiedTiles[i]))
 			{
-				_tileMap->GetObjectOnTile(_occupiedTiles[i], FLOOR)->SetColorOffset({ 0,0,4 });
-			}
-		}
-		for (int i = 0; i < _nrOfAOETiles; i++)
-		{
-			if (_tileMap->IsFloorOnTile(_occupiedTiles[i]))
-			{
-				_tileMap->GetObjectOnTile(_occupiedTiles[i], FLOOR)->SetColorOffset({3,0,3});
+				_tileMap->GetObjectOnTile(_occupiedTiles[i], FLOOR)->SetColorOffset({ 2.0f, 2.0f, 0.0f });
 			}
 		}
 	//	CalculateCircleAOE(3);
