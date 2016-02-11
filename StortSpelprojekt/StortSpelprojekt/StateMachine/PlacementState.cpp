@@ -41,7 +41,7 @@ void PlacementState::OnStateEnter()
 	{
 		System::loadJSON(&_playerProfile[i], _playerProfilesPath[i]);
 	}
-	//TODO: Temporarly solution for budget problem when changing back to placement state (Previously it kept spent budget and did not reset it)
+	//TODO: Temporary solution for budget problem when changing back to placement state (Previously it kept spent budget and did not reset it)
 	_playerProfile[_currentPlayer]._gold = 700;
 	_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_playerProfile[_currentPlayer]._gold));
 	//TODO: Move this function to LevelSelection when that state is created. /Alex
