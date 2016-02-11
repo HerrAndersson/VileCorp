@@ -104,6 +104,10 @@ struct TilesetHandler
 		{
 			_cur = &_tileset->_objects[CAMERA];
 		}
+		else if (!strcmp("furnitures", str))
+		{
+			_cur = &_tileset->_objects[FURNITURE];
+		}
 		return true;
 	}
 	bool EndObject(rapidjson::SizeType memberCount) { return true; }

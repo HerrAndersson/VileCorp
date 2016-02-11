@@ -62,6 +62,7 @@ private:
 
 	Architecture*	MakeFloor(GameObjectFloorInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation);
 	Architecture*	MakeWall(GameObjectWallInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation);
+	Architecture*	MakeFurniture(GameObjectFurnitureInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation);
 	Architecture*	MakeLoot(GameObjectLootInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation);
 	SpawnPoint*		MakeSpawn(GameObjectSpawnInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation);
 	Trap*			MakeTrap(GameObjectTrapInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation, const int subIndex = 0);

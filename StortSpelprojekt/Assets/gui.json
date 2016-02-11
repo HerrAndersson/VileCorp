@@ -141,7 +141,7 @@
      "winscreen": {
         "position": [ 0.0, -0.0 ],
         "scale": [ 1.0, 1.0 ],
-        "texture": "../Menues/Win/win1.png",
+        "texture": "../Menues/Win/win3.png",
         "fontsize": 25.0
       },
       "losescreen":
