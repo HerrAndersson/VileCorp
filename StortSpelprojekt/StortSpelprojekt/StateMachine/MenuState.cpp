@@ -30,7 +30,7 @@ void MenuState::Update(float deltaTime)
 		{
 			_soundModule->Play("Assets/Sounds/yay.wav");
 
-			ChangeState(State::PLACEMENTSTATE);
+			ChangeState(State::LEVELSELECTSTATE);
 		}
 		if (_uiTree.IsButtonColliding("optionsbutton", coord._pos.x, coord._pos.y))
 		{
@@ -40,10 +40,6 @@ void MenuState::Update(float deltaTime)
 		{
 			ChangeState(State::LEVELEDITSTATE);
 		}
-		if (_uiTree.IsButtonColliding("levelselectbutton", coord._pos.x, coord._pos.y))
-		{
-			ChangeState(State::LEVELSELECTSTATE);
-		}
 		if (_uiTree.IsButtonColliding("exitbutton", coord._pos.x, coord._pos.y))
 		{
 			ChangeState(State::EXITSTATE);
@@ -51,13 +47,12 @@ void MenuState::Update(float deltaTime)
 	}
 	if (_controls->IsFunctionKeyDown("MENU:MENU"))
 	{
-		PostQuitMessage(0);
+		ChangeState(State::EXITSTATE);
 	}
 }
 
 void MenuState::OnStateEnter()
 {
-	//TODO: When Levelselection state is implemented. Move this codeline to OnStateExit(). 
 	_objectHandler->UnloadLevel();
 }
 
