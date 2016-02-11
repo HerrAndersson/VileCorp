@@ -34,7 +34,7 @@ void GameLogic::Update(float deltaTime)
 	{
 		if (_objectHandler->GetAllByType(LOOT).size() <= 0)				//You lost
 		{
-			_uiTree->GetNode("losescreen")->SetHidden(false);		//change to lose screen
+			_uiTree->GetNode("losescreen")->SetHidden(false);
 			_gameDone = true;
 		}
 		else if (_objectHandler->GetAllByType(ENEMY).size() <= 0)		//You won
@@ -43,6 +43,7 @@ void GameLogic::Update(float deltaTime)
 			_gameDone = true;
 		}
 	}
+	_uiTree->GetNode("objectivetext")->SetText(L"Defeat the intruders! \n" + std::to_wstring(_objectHandler->GetAllByType(ENEMY).size()) + L" enemies still remain.");
 }
 
 bool GameLogic::IsGameDone() const
