@@ -4,7 +4,7 @@
 #include <sstream>
 
 Game::Game(HINSTANCE hInstance, int nCmdShow):
-	_settingsReader("Assets/settings.xml")
+	_settingsReader("Assets/settings.xml", "Assets/profile.xml")
 {
 	System::Settings* settings = _settingsReader.GetSettings();
 

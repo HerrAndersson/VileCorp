@@ -27,7 +27,6 @@ namespace System
 
 		Profile* GetProfile();
 
-
 		template<typename Archive>
 		void LoadXML(const std::string& filename, Archive& a)
 		{
