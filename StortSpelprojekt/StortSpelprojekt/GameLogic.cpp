@@ -14,6 +14,9 @@ GameLogic::GameLogic(ObjectHandler* objectHandler, System::Camera* camera, Syste
 	_uiTree = uiTree;
 	_assetManager = assetManager;
 	_guardTexture = _assetManager->GetTexture("../Menues/PlacementStateGUI/units/Guardbutton1.png");
+	_uiTree->GetNode("winscreen")->SetHidden(true);
+	_uiTree->GetNode("losescreen")->SetHidden(true);
+	_gameDone = false;
 }
 
 GameLogic::~GameLogic()
@@ -26,6 +29,25 @@ void GameLogic::Update(float deltaTime)
 {
 	HandleInput();
 	_objectHandler->Update(deltaTime);
+
+	if (_objectHandler->GetRemainingToSpawn() <= 0)
+	{
+		if (_objectHandler->GetAllByType(LOOT).size() <= 0)				//You lost
+		{
+			_uiTree->GetNode("losescreen")->SetHidden(false);		//change to lose screen
+			_gameDone = true;
+		}
+		else if (_objectHandler->GetAllByType(ENEMY).size() <= 0)		//You won
+		{
+			_uiTree->GetNode("winscreen")->SetHidden(false);
+			_gameDone = true;
+		}
+	}
+}
+
+bool GameLogic::IsGameDone() const
+{
+	return _gameDone;
 }
 
 void GameLogic::HandleInput()
@@ -51,7 +73,6 @@ void GameLogic::HandleInput()
 				units[i]->SetColorOffset(DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f));
 			}
 			_player->DeselectUnits();
-
 
 			Unit* unit = (Unit*)pickedUnits[0];
 			_player->SelectUnit(unit);

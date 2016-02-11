@@ -20,15 +20,17 @@ struct LevelLoad
 struct PlayerInfo
 {
 	std::string _name = "Jonas";
-	int _gold = 100;
+	int _gold = 1000;
 	int _level = 0;
+	bool _firstTime = true;
 	
 	template<class A>
 	void serialize(A& a)
 	{
 		a((CEREAL_NVP(_name)),
 		(CEREAL_NVP(_gold)),
-		(CEREAL_NVP(_level)));
+		(CEREAL_NVP(_level)),
+		(CEREAL_NVP(_firstTime)));
 	}
 };
 

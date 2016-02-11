@@ -23,5 +23,6 @@ public:
 	void Update(float deltaTime);
 	void Release();
 	void SetTilePosition(AI::Vec2D pos);
+	int GetVisionRadius()const;
 };
 

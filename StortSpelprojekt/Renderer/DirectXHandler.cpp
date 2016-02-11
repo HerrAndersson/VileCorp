@@ -507,7 +507,9 @@ namespace Renderer
 		//{
 		//	_deviceContext->ClearRenderTargetView(_deferredRTVArray[i], color);
 		//}
-		//_deviceContext->ClearRenderTargetView(_deferredRTVArray[2], color);
+
+		// TODO: replace with something else
+		_deviceContext->ClearRenderTargetView(_deferredRTVArray[2], color);
 
 		_deviceContext->ClearDepthStencilView(_backBufferDSV, D3D11_CLEAR_DEPTH, 1.0f, 0);
 	}

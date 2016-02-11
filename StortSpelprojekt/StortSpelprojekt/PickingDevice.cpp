@@ -87,6 +87,7 @@ AI::Vec2D PickingDevice::PickTile(POINT mousePoint)
 		pickedPoint = Intersection(ray, pickPlane);
 	}
 
+	// OBS OFFSET!!! (temporary fix)
 	return AI::Vec2D((int)(pickedPoint._x + 0.5f), (int)(pickedPoint._z + 0.5f));
 }
 

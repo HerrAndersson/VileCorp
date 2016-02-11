@@ -2,6 +2,9 @@
 
 #include "BaseState.h"
 #include "BaseEdit.h"
+#include "../JsonStructs.h"
+#include "jsonparser.h"
+#include "Assetmanager.h"
 
 class PlacementState : public BaseState
 {
@@ -9,6 +12,11 @@ private:
 	BaseEdit* _baseEdit;
 	bool _trapChosen = false;
 	int _budget;
+
+	int _currentPlayer = 0;
+
+	std::vector<PlayerInfo> _playerProfile;
+	std::vector<string> _playerProfilesPath;
 
 	// Temp, should be replaced with blueprint
 	struct ToPlace
