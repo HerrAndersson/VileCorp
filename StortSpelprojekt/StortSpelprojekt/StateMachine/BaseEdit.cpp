@@ -33,6 +33,12 @@ BaseEdit::BaseEdit(ObjectHandler* objectHandler, System::Controls* controls, Pic
 BaseEdit::~BaseEdit()
 {
 	ReleaseBlueprints();
+	if (_camera->GetMode() != System::LOCKED_CAM)
+	{
+		_controls->ToggleCursorLock();
+		_camera->SetMode(System::LOCKED_CAM);
+		_camera->SetRotation(DirectX::XMFLOAT3(70, 0, 0));
+	}
 }
 
 // Other functions
@@ -91,14 +97,21 @@ bool BaseEdit::CheckValidity(AI::Vec2D tile, Type type)
 		{
 			if (type == GUARD || type == ENEMY)
 			{
-				if (_tileMap->IsTrapOnTile(tile) || _tileMap->UnitsOnTile(tile))
+				if (_tileMap->UnitsOnTile(tile) || _tileMap->IsTrapOnTile(tile) || _tileMap->IsTypeOnTile(tile, CAMERA))
 				{
 					valid = false;
 				}
 			}
 			else if (type == TRAP)
 			{
-				if (_tileMap->IsEnemyOnTile(tile) || _tileMap->IsGuardOnTile(tile))
+				if (_tileMap->UnitsOnTile(tile) || _tileMap->IsTypeOnTile(tile, CAMERA))
+				{
+					valid = false;
+				}
+			}
+			else if (type == CAMERA)
+			{
+				if (_tileMap->UnitsOnTile(tile) || _tileMap->IsTrapOnTile(tile))
 				{
 					valid = false;
 				}
@@ -417,15 +430,33 @@ void BaseEdit::HandleInput()
 	if (_marker._g != nullptr)
 	{
 		// Rotation
-		if (_controls->IsFunctionKeyDown("MAP_EDIT:ROTATE_marker._g_CLOCK"))
+		bool rotated = false;
+		bool clockwise = false;
+		if (_controls->IsFunctionKeyDown("MAP_EDIT:ROTATE_MARKER_CLOCK"))
 		{
 			XMFLOAT3 tempRot = _marker._g->GetRotation();
 			_marker._g->SetRotation(XMFLOAT3(tempRot.x, tempRot.y + (DirectX::XM_PI / 4), tempRot.z));
+			rotated = true;
+			clockwise = true;
 		}
-		if (_controls->IsFunctionKeyDown("MAP_EDIT:ROTATE_marker._g_COUNTERCLOCK"))
+		if (_controls->IsFunctionKeyDown("MAP_EDIT:ROTATE_MARKER_COUNTERCLOCK"))
 		{
 			XMFLOAT3 tempRot = _marker._g->GetRotation();
 			_marker._g->SetRotation(XMFLOAT3(tempRot.x, tempRot.y - (DirectX::XM_PI / 4), tempRot.z));
+			rotated = true;
+			clockwise = false;
+		}
+		if (rotated)
+		{
+			//TODO Make general for GameObject --Victor
+			if (_marker._g->GetType() == GUARD || _marker._g->GetType() == ENEMY)
+			{
+				static_cast<Unit*>(_marker._g)->SetDirection(AI::GetNextDirection(static_cast<Unit*>(_marker._g)->GetDirection(), clockwise));
+			}
+			else if (_marker._g->GetType() == CAMERA)
+			{
+				static_cast<SecurityCamera*>(_marker._g)->SetDirection(AI::GetNextDirection(static_cast<SecurityCamera*>(_marker._g)->GetDirection(), clockwise));
+			}
 		}
 	}
 

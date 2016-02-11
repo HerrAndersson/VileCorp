@@ -2,14 +2,17 @@
 #include "Unit.h"
 #include "Guard.h"
 #include "PickingDevice.h"
+#include "ObjectHandler.h"
 
 class Player
 {
 private:
-	vector<Unit*> _selectedUnits;
+	ObjectHandler* _objectHandler;
+	vector<short> _selectedUnits;
 
 public:
 	Player();
+	Player(ObjectHandler* objectHandler);
 	~Player();
 
 	//Unit Control
@@ -19,6 +22,6 @@ public:
 	vector<Unit*> GetSelectedUnits();
 	void MoveUnits(AI::Vec2D movePoint);
 	void PatrolUnits(AI::Vec2D patrolPoint);
-
+	int GetNumberOfSelectedUnits();
 };
 

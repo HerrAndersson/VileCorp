@@ -88,27 +88,18 @@ bool ObjectHandler::Add(Type type, int index, const XMFLOAT3& position, const XM
 	case SPAWN:
 		object = MakeSpawn(_gameObjectInfo->Spawns(index), position, rotation);
 		break;
+	case TRAP:
+		object = MakeTrap(_gameObjectInfo->Traps(index), position, rotation, subIndex);
+		break;
+	case CAMERA:
+		object = MakeSecurityCamera(_gameObjectInfo->Cameras(index), position, rotation);
+		break;
 	case ENEMY:
 		object = MakeEnemy(_gameObjectInfo->Enemies(index), position, rotation);
 		break;
 	case GUARD:
 		object = MakeGuard(_gameObjectInfo->Guards(index), position, rotation);
 		break;
-	case TRAP:
-		switch (subIndex)
-		{
-		case SPIKE:
-			object = MakeTrap(_gameObjectInfo->Traps(index), position, rotation, SPIKE);
-			break;
-		case TESLACOIL:
-			object = MakeTrap(_gameObjectInfo->Traps(index), position, rotation, TESLACOIL);
-			break;
-		case SHARK:
-			object = MakeTrap(_gameObjectInfo->Traps(index), position, rotation, SHARK);
-			break;
-		default:
-			break;
-		}
 	default:	
 		break;
 	}
@@ -196,6 +187,7 @@ bool ObjectHandler::Remove(int ID)
 				}
 
 				delete _gameObjects[i][j];
+				
 
 				// Replace pointer with the last pointer int the vector
 				_gameObjects[i][j] = _gameObjects[i].back();
@@ -228,7 +220,6 @@ bool ObjectHandler::Remove(Type type, int ID)
 			}
 
 			delete _gameObjects[type][i];
-
 			// Replace pointer with the last pointer int the vector
 			_gameObjects[type][i] = _gameObjects[type].back();
 
@@ -547,8 +538,7 @@ void ObjectHandler::Update(float deltaTime)
 						for (uint k = 0; k < _gameObjects[SPAWN].size() && !lootRemoved; k++)
 						{
 							//If the enemy is at the despawn point with an objective, remove the objective and the enemy, Aron
-							if ((int)unit->GetTilePosition()._x == (int)_gameObjects[SPAWN][k]->GetTilePosition()._x &&
-								(int)unit->GetTilePosition()._y == (int)_gameObjects[SPAWN][k]->GetTilePosition()._y)
+							if (_gameObjects[SPAWN][k]->InRange(unit->GetTilePosition()))
 							{
 								lootRemoved = Remove(heldObject);
 							}
@@ -604,8 +594,7 @@ void ObjectHandler::Update(float deltaTime)
 
 						if (unit->GetType() != GUARD &&
 							(_gameObjects[LOOT].size() == 0 || allLootIsCarried) &&
-							(int)unit->GetTilePosition()._x == (int)_gameObjects[SPAWN][k]->GetTilePosition()._x &&
-							(int)unit->GetTilePosition()._y == (int)_gameObjects[SPAWN][k]->GetTilePosition()._y)
+							unit->InRange(_gameObjects[SPAWN][k]->GetTilePosition()))
 						{
 							unit->TakeDamage(10);
 						}
@@ -640,7 +629,7 @@ void ObjectHandler::Update(float deltaTime)
 		{
 			if (spot.second->GetBone() != -1)
 			{
-				spot.second->SetPositionAndRotation(spot.first->GetAnimation()->GetTransforms()->at(spot.second->GetBone()));
+				spot.second->SetPositionAndRotation(spot.first->GetAnimation()->GetTransforms()[spot.second->GetBone()]);
 			}
 			else
 			{
@@ -757,6 +746,22 @@ Trap * ObjectHandler::MakeTrap(GameObjectTrapInfo * data, const XMFLOAT3& positi
 		subIndex,
 		{ 1,0 },
 		data->_cost);
+
+	// Read more data
+
+	return obj;
+}
+
+SecurityCamera*	ObjectHandler::MakeSecurityCamera(GameObjectCameraInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation)
+{
+	SecurityCamera* obj = new SecurityCamera(
+		_idCount,
+		position,
+		rotation,
+		AI::Vec2D((int)position.x, (int)position.z),
+		CAMERA,
+		_assetManager->GetRenderObject(data->_renderObject),
+		_tilemap);
 
 	// Read more data
 

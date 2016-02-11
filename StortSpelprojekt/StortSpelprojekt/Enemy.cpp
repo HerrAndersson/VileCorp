@@ -49,21 +49,28 @@ void Enemy::EvaluateTile(GameObject* obj)
 			}
 			break;
 		case TRAP:
-			if (SpotTrap(static_cast<Trap*>(obj)) && _disarmSkill - static_cast<Trap*>(obj)->GetDisarmDifficulty() > 20)
+		{
+			Trap* trap = static_cast<Trap*>(obj);
+			if (trap->IsTrapActive() && SpotTrap(trap) && (_disarmSkill - trap->GetDisarmDifficulty() > -20))
 			{
-				tempPriority = 5;
+				tempPriority = 1;
 			}
-			break;
+		}
+			break;	
 		case GUARD:
-			if (IsVisible())
+			if (static_cast<Unit*>(obj)->GetHealth() > 0)
 			{
-				_isFleeing = true;
-				_pursuer = obj;
-				ClearObjective();
-			}
-			else if (GetApproxDistance(obj->GetTilePosition()) < 3)
-			{
-		//		tempPriority = 2;			//TODO Make actual calculations based on attack skill etc --Victor
+				if (!SafeToAttack(static_cast<Unit*>(obj)->GetDirection()) && (obj != _objective || _visible))
+				{
+					_isFleeing = true;
+					_pursuer = obj;
+					ClearObjective();
+					Flee();
+				}
+				else if (GetApproxDistance(obj->GetTilePosition()) < 3 && !_visible)
+				{
+					tempPriority = 2;			//TODO Make actual calculations based on attack skill etc --Victor
+				}
 			}
 			break;
 		case ENEMY:
@@ -82,7 +89,7 @@ void Enemy::EvaluateTile(GameObject* obj)
 			SetGoal(obj);
 		}
 		//Head for the exit, all objectives are taken
-		else if (_heldObject == nullptr && _pathLength <= 0)
+		else if (_heldObject == nullptr && _pathLength <= 0 && !_isFleeing)
 		{
 			SetGoal(obj);
 		}
@@ -108,8 +115,30 @@ void Enemy::act(GameObject* obj)
 		}
 		break;
 	case TRAP:
+		{
+			if (static_cast<Trap*>(obj)->IsTrapActive())
+			{
+				if (_trapInteractionTime < 0)
+				{
+					UseTrap();
+				}
+				else if (_trapInteractionTime == 0)
+				{
+					DisarmTrap(static_cast<Trap*>(obj));
+					ClearObjective();
+				}
+			}
+			else
+			{
+				ClearObjective();
+			}
+		}
 		break;
 	case GUARD:
+		if (static_cast<Unit*>(obj)->GetHealth() > 0)
+		{
+			static_cast<Unit*>(obj)->TakeDamage(10);
+		}
 		break;
 	case ENEMY:
 		break;
@@ -129,6 +158,10 @@ void Enemy::Update(float deltaTime)
 	{
 		_visible = false;
 		_visibilityTimer = TIME_TO_HIDE;
+		if (_heldObject != nullptr)
+		{
+			_heldObject->SetVisibility(false);
+		}
 	}
 }
 
@@ -136,6 +169,10 @@ void Enemy::ResetVisibilityTimer()
 {
 	_visible = true;
 	_visibilityTimer = TIME_TO_HIDE;
+	if (_heldObject != nullptr)
+	{
+		_heldObject->SetVisibility(true);
+	}
 }
 
 bool Enemy::SpotTrap(Trap * trap)
@@ -149,6 +186,47 @@ bool Enemy::SpotTrap(Trap * trap)
 			trap->SetVisibleToEnemies(true);
 		}
 	}
-
+	trap->SetColorOffset({ 3, 0, 3 });
 	return trap->IsVisibleToEnemies();
+}
+
+void Enemy::DisarmTrap(Trap * trap)
+{
+	if (trap->IsTrapActive())
+	{
+		srand(time(NULL));
+		int disarmRoll = rand()%100;
+		if (disarmRoll + _disarmSkill - trap->GetDisarmDifficulty() >= 50)
+		{
+			trap->SetTrapActive(false);
+			trap->SetColorOffset({ 4,4,0 });
+		}
+		else
+		{
+			trap->Activate();
+		}
+	}
+}
+
+bool Enemy::SafeToAttack(AI::Vec2D direction)
+{
+	srand(time(NULL));
+	int weight = 0;
+	if (direction == _direction)
+	{
+		weight = 5;
+	}
+	else
+	{
+		weight = std::abs(_direction._x + direction._x) + std::abs(_direction._y + direction._y) + 1;
+	}
+	
+	bool safeToAttack = true;
+
+	if ((rand()%20) * weight > 13)
+	{
+		safeToAttack = false;
+	}
+
+	return safeToAttack;
 }

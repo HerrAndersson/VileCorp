@@ -81,6 +81,7 @@ bool Tilemap::AddObjectToTile(AI::Vec2D pos, GameObject * obj)
 		case TRAP:
 		case LOOT:
 		case SPAWN:
+		case CAMERA:
 			arrayPos = 3;
 			break;
 		default:
@@ -126,6 +127,7 @@ bool Tilemap::RemoveObjectFromTile(AI::Vec2D pos, GameObject * obj)
 		case TRAP:
 		case LOOT:
 		case SPAWN:
+		case CAMERA:
 			arrayPos = 3;
 			break;
 		default:
@@ -221,6 +223,7 @@ GameObject * Tilemap::GetObjectOnTile(AI::Vec2D pos, Type type) const
 		case LOOT:
 		case SPAWN:
 		case TRAP:
+		case CAMERA:
 			result = _map[pos._x][pos._y]._objectsOnTile[3];
 			break;
 		default:
@@ -275,6 +278,7 @@ bool Tilemap::IsPlaceable(int x, int z, Type type) const
 			case LOOT:
 			case SPAWN:
 			case TRAP:
+			case CAMERA:
 				result = _map[x][z]._objectsOnTile[3];
 				break;
 			default:

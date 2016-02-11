@@ -288,6 +288,14 @@ struct GameObjectInfo
 		}
 		return (GameObjectTrapInfo*)_objects[TRAP]->at(i);
 	}
+	GameObjectCameraInfo* Cameras(unsigned i)
+	{
+		if (_objects[CAMERA]->size() < i + 1)
+		{
+			_objects[CAMERA]->push_back((GameObjectBaseInfo*)new GameObjectCameraInfo());
+		}
+		return (GameObjectCameraInfo*)_objects[CAMERA]->at(i);
+	}
 	GameObjectGuardInfo* Guards(unsigned i)
 	{
 		if (_objects[GUARD]->size() < i + 1)

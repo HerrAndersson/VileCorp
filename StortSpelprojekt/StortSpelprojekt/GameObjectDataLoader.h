@@ -19,6 +19,7 @@ public:
 		{ TRAP, "Traps/" },
 		{ GUARD, "Guards/" },
 		{ ENEMY, "Enemies/" },
+		{ CAMERA, "Cameras/" },
 	};
 };
 
@@ -56,6 +57,9 @@ inline bool GameObjectDataLoader::LoadGameObjectInfo(GameObjectInfo* data)
 				break;
 			case TRAP:
 				System::loadJSON(data->Traps(i), filenames[i]);
+				break;
+			case CAMERA:
+				System::loadJSON(data->Cameras(i), filenames[i]);
 				break;
 			case GUARD:
 				System::loadJSON(data->Guards(i), filenames[i]);
