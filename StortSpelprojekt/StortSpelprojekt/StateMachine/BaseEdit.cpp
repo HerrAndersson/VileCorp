@@ -41,6 +41,14 @@ GameObject* BaseEdit::GetSelectedObject()
 	return _marker._g;
 }
 
+bool BaseEdit::DeleteSelectedObject()
+{
+	bool removed = _objectHandler->Remove(_marker._g);
+	_marker.Reset();
+	_isPlace = false;
+	return removed;
+}
+
 bool BaseEdit::Add(Type type, const std::string& name)
 {
 	return _objectHandler->Add(type, name, _marker._g->GetPosition(), XMFLOAT3(0.0f, 0.0f, 0.0f));

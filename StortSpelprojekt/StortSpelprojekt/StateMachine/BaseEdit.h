@@ -57,6 +57,8 @@ public:
 	~BaseEdit();
 
 	GameObject* GetSelectedObject();
+	bool DeleteSelectedObject();
+
 	bool Add(Type type, const std::string& name);
 	bool Delete(Type type);
 	bool TypeOn(Type type);
