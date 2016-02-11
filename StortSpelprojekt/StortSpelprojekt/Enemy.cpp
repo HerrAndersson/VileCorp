@@ -188,7 +188,7 @@ bool Enemy::SpotTrap(Trap * trap)
 			trap->SetVisibleToEnemies(true);
 		}
 	}
-	trap->SetColorOffset({ 3, 0, 3 });
+	//trap->SetColorOffset({ 3, 0, 3 });
 	return trap->IsVisibleToEnemies();
 }
 
@@ -201,7 +201,6 @@ void Enemy::DisarmTrap(Trap * trap)
 		if (disarmRoll + _disarmSkill - trap->GetDisarmDifficulty() >= 50)
 		{
 			trap->SetTrapActive(false);
-			trap->SetColorOffset({ 4,4,0 });
 		}
 		else
 		{
