@@ -293,10 +293,10 @@ void Game::Render()
 
 						for (GameObject* g : j)
 						{
-							//if (g->IsVisible())
-							//{
+							if (g->IsVisible())
+							{
 								_renderModule->RenderShadowMap(g->GetMatrix(), vertexBufferSize);
-							//}
+							}
 						}
 					}
 				}
