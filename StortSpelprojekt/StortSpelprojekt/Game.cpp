@@ -63,6 +63,10 @@ void Game::ResizeResources(System::Settings* settings)
 
 bool Game::Update(double deltaTime)
 {
+	if (_SM->GetState() == PLACEMENTSTATE)
+	{
+		_objectHandler->UpdateLights();
+	}
 	_soundModule.Update();
 
 	bool run = true;
@@ -263,7 +267,7 @@ void Game::Render()
 	}
 	
 	////////////////////////////////////////////////////////////  Light pass  //////////////////////////////////////////////////////////////
-	if (_SM->GetState() == PLAYSTATE)
+	if (_SM->GetState() == PLAYSTATE || _SM->GetState() == PLACEMENTSTATE)
 	{
 		//----------------------------------------------------------  Spotlights  -------------------------------------------------------------
 		//Generate the shadow map for each spotlight, then apply the lighting/shadowing to the render target with additive blending.           

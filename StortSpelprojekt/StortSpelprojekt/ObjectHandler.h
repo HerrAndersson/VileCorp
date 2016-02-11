@@ -119,5 +119,6 @@ public:
 
 	//Update gamelogic of all objects
 	void Update(float deltaTime);
+	void UpdateLights();
 };
 
