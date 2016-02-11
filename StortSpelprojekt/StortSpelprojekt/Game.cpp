@@ -174,22 +174,22 @@ void Game::Render()
 
 	/*--------------------------------------------------  Render skinned objects  -----------------------------------------------------*/
 	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::ANIM_STAGE);
-	//if (gameObjects->size() > 0)
-	//{
-	//	if (gameObjects->at(TRAP).size() > 0)
-	//	{
-	//		RenderObject* renderObject = gameObjects->at(TRAP).at(0)->GetRenderObject();
+	if (gameObjects->size() > 0)
+	{
+		if (gameObjects->at(GUARD).size() > 0)
+		{
+			RenderObject* renderObject = gameObjects->at(GUARD).at(0)->GetRenderObject();
 
-	//		_renderModule->SetDataPerObjectType(renderObject);
-	//		int vertexBufferSize = renderObject->_mesh._vertexBufferSize;
+			_renderModule->SetDataPerObjectType(renderObject);
+			int vertexBufferSize = renderObject->_mesh._vertexBufferSize;
 
-	//		for (GameObject* a : gameObjects->at(TRAP))
-	//		{
-	//			// temporary uncommenting
-	//			_renderModule->RenderAnimation(a->GetMatrix(), vertexBufferSize, a->GetAnimation()->GetFloats(), a->GetColorOffset());
-	//		}
-	//	}
-	//}
+			for (GameObject* a : gameObjects->at(GUARD))
+			{
+				// temporary uncommenting
+				_renderModule->RenderAnimation(a->GetMatrix(), vertexBufferSize, a->GetAnimation()->GetFloats(), a->GetColorOffset());
+			}
+		}
+	}
 	// Now every gameobject can be animated
 	for (auto i : *gameObjects)
 	{
@@ -293,10 +293,10 @@ void Game::Render()
 
 						for (GameObject* g : j)
 						{
-							if (g->IsVisible())
-							{
+							//if (g->IsVisible())
+							//{
 								_renderModule->RenderShadowMap(g->GetMatrix(), vertexBufferSize);
-							}
+							//}
 						}
 					}
 				}
