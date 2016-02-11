@@ -544,6 +544,16 @@ void ObjectHandler::DisableSpawnPoints()
 	}
 }
 
+int ObjectHandler::GetRemainingToSpawn() const
+{
+	int result = 0;
+	for (GameObject* g : _gameObjects[3])
+	{
+		result += static_cast<SpawnPoint*>(g)->GetUnitsToSpawn();
+	}
+	return result;
+}
+
 void ObjectHandler::Update(float deltaTime)
 {
 	//Update all objects' gamelogic

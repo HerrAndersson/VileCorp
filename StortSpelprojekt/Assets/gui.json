@@ -1,165 +1,157 @@
 {
-	"MENU": {
-		"position": [0.0, 0.0],
-		"scale": [1.0, 1.0],
-		
-		"background" :
-		{
-			"position": [0.0, 0.0],
-			"scale": [1.0, 1.0],
-			"texture": "../Menues/startmenu1.png"
-		},
-		
-		"files":
-		{
-			"position": [0.665, 0.2],
-			"play":
+  "MENU": {
+    "position": [ 0.0, 0.0 ],
+    "scale": [ 1.0, 1.0 ],
+
+    "background": {
+      "position": [ 0.0, 0.0 ],
+      "scale": [ 1.0, 1.0 ],
+      "texture": "../Menues/startmenu1.png"
+    },
+
+    "files": {
+      "position": [ 0.665, 0.2 ],
+      "play": {
+        "position": [ -0.02, -0.10 ],
+        "scale": [ 0.65, 0.5 ],
+        "texture": "../Menues/menu2.png",
+
+        "playbutton": {
+          "position": [ -0.47, 0.40 ],
+          "scale": [ 0.14, 0.07 ],
+          "text": "Play",
+          "color": "FF000000",
+          "fontsize": 30.0,
+          "centered": true
+        }
+      },
+      "leveledit": {
+        "position": [ -0.045, -0.3 ],
+        "scale": [ 0.65, 0.5 ],
+        "texture": "../Menues/menu2.png",
+
+        "leveleditbutton": {
+          "position": [ -0.47, 0.40 ],
+          "scale": [ 0.14, 0.07 ],
+          "text": "Level editor",
+          "color": "FF000000",
+          "fontsize": 30.0,
+          "centered": true
+        }
+      },
+      "levelselect": {
+        "position": [ -0.07, -0.5 ],
+        "scale": [ 0.65, 0.5 ],
+        "texture": "../Menues/menu2.png",
+
+        "levelselectbutton": {
+          "position": [ -0.47, 0.40 ],
+          "scale": [ 0.14, 0.07 ],
+          "text": "Level select",
+          "color": "FF000000",
+          "fontsize": 30.0,
+          "centered": true
+        }
+      },
+      "options": {
+        "position": [ -0.095, -0.7 ],
+        "scale": [ 0.65, 0.5 ],
+        "texture": "../Menues/menu2.png",
+
+        "optionsbutton": {
+          "position": [ -0.47, 0.41 ],
+          "scale": [ 0.14, 0.07 ],
+          "text": "Options",
+          "color": "FF000000",
+          "fontsize": 30.0,
+          "centered": true
+        }
+      },
+      "exit": {
+        "position": [ -0.12, -0.9 ],
+        "scale": [ 0.65, 0.5 ],
+        "texture": "../Menues/menu2.png",
+
+        "exitbutton": {
+          "position": [ -0.47, 0.4 ],
+          "scale": [ 0.14, 0.07 ],
+          "text": "Exit",
+          "color": "FF000000",
+          "fontsize": 30.0,
+          "centered": true
+        }
+      }
+    },
+
+    "foreground": {
+      "position": [ 0.4, -0.78 ],
+      "scale": [ 0.595, 0.215 ],
+      "texture": "../Menues/startmenu3.png"
+    }
+  },
+  "SPLASH": { },
+  "PLAY": {
+    "unitinfo": {
+      "position": [ -0.7, -0.855 ],
+      "scale": [ 0.3, 0.2 ],
+      "texture": "../Menues/PlacementStateGUI/placementUnits1.png",
+
+      "unitinfocontainer": {
+        "unitpicture": {
+          "position": [ 0.173333, -0.02 ],
+          "scale": [ 0.08666, 0.15 ]
+        },
+        "unitnumber": {
+          "position": [ 0.223333, -0.02 ],
+          "scale": [ 0.08666, 0.15 ],
+          "centered": true,
+          "color": "FF000000",
+          "fontsize": 35.0
+        },
+
+        "unitinfotext": {
+          "position": [ -0.08666, 0.04 ],
+          "scale": [ 0.1733, 0.08 ],
+          "centered": false,
+          "color": "FF000000",
+          "fontsize": 30.0
+        },
+        "unithealth": {
+          "position": [ -0.08666, -0.02 ],
+          "scale": [ 0.1733, 0.08 ],
+          "color": "FF000000",
+          "fontsize": 30.0
+        }
+      }
+    },
+    "objective": {
+      "position": [ 0.82, 0.88 ],
+      "scale": [ 0.18, 0.12 ],
+      "texture": "../Menues/PlayState GUI/gamegui-Resource.png",
+
+      "objectivetext": {
+        "position": [ 0.03, 0.045 ],
+        "scale": [ 0.15, 0.07 ],
+        "text": "Defeat the intruders!",
+        "centered": true,
+        "color": "FF000000",
+        "fontsize": 25.0
+      }
+    },
+     "winscreen": {
+        "position": [ 0.0, -0.0 ],
+        "scale": [ 1.0, 1.0 ],
+        "texture": "../Menues/Win/win1.png",
+        "fontsize": 25.0
+      },
+      "losescreen":
 			{
-				"position": [-0.02, -0.10],
-				"scale": [0.65, 0.5],
-				"texture": "../Menues/menu2.png",
-				
-				"playbutton":
-				{
-					"position" : [-0.47, 0.40],
-					"scale": [0.14, 0.07],
-					"text": "Play",
-					"color": "FF000000",
-					"fontsize" : 30.0,
-					"centered": true
-				}
-			},
-			"leveledit":
-			{
-				"position": [-0.045, -0.3],
-				"scale": [0.65, 0.5],
-				"texture": "../Menues/menu2.png",
-				
-				"leveleditbutton":
-				{
-					"position" : [-0.47, 0.40],
-					"scale": [0.14, 0.07],
-					"text": "Level editor",
-					"color": "FF000000",
-					"fontsize": 30.0,
-					"centered": true
-				}
-			},
-			"levelselect":
-			{
-				"position": [-0.07, -0.5],
-				"scale": [0.65, 0.5],
-				"texture": "../Menues/menu2.png",
-				
-				"levelselectbutton":
-				{
-					"position" : [-0.47, 0.40],
-					"scale": [0.14, 0.07],
-					"text": "Level select",
-					"color": "FF000000",
-					"fontsize" : 30.0,
-					"centered": true
-				}
-			},
-			"options":
-			{
-				"position": [-0.095, -0.7],
-				"scale": [0.65, 0.5],
-				"texture": "../Menues/menu2.png",
-				
-				"optionsbutton":
-				{
-					"position" : [-0.47, 0.41],
-					"scale": [0.14, 0.07],
-					"text": "Options",
-					"color": "FF000000",
-					"fontsize" : 30.0,
-					"centered": true
-				}
-			},
-			"exit":
-			{
-				"position": [-0.12, -0.9],
-				"scale": [0.65, 0.5],
-				"texture": "../Menues/menu2.png",
-				
-				"exitbutton":
-				{
-					"position" : [-0.47, 0.4],
-					"scale": [0.14, 0.07],
-					"text": "Exit",
-					"color": "FF000000",
-					"fontsize": 30.0,
-					"centered": true
-				}
-			}
-		},
-		
-		"foreground" :
-		{
-			"position": [0.4, -0.78],
-			"scale": [0.595, 0.215],
-			"texture": "../Menues/startmenu3.png"
-		}
-	},
-	"SPLASH" : {},
-	"PLAY" : {
-		"unitinfo":
-		{
-			"position": [-0.7, -0.855],	
-			"scale": [0.3, 0.2],
-			"texture": "../Menues/PlacementStateGUI/placementUnits1.png",
-			
-			"unitinfocontainer":
-			{
-				"unitpicture":
-				{
-					"position": [0.173333, -0.02],
-					"scale": [0.08666, 0.15]
-				},
-				"unitnumber":
-				{
-					"position": [0.223333, -0.02],
-					"scale": [0.08666, 0.15],
-					"centered" :true,
-					"color": "FF000000",
-					"fontsize" : 35.0
-				},
-				
-				"unitinfotext":
-				{
-					"position": [-0.08666, 0.04],
-					"scale": [0.1733, 0.08],
-					"centered" :false,
-					"color": "FF000000",
-					"fontsize" : 30.0
-				},
-				"unithealth":
-				{
-					"position": [-0.08666, -0.02],
-					"scale": [0.1733, 0.08],
-					"color": "FF000000",
-					"fontsize" : 30.0
-				}
-			}
-		},
-		"objective" :
-		{
-			"position": [0.82, 0.88],	
-			"scale": [0.18, 0.12],
-			"texture": "../Menues/PlayState GUI/gamegui-Resource.png",
-			
-			"objectivetext":
-			{
-				"position": [0.03, 0.045],
-				"scale": [0.15, 0.07],
-				"text": "Defeat the intruders!",
-				"centered" :true,
-				"color": "FF000000",
+				"position" : [0.0, -0.0],
+				"scale": [0.75, 0.90],
+				"texture": "../Menues/Lose/lose2.png",
 				"fontsize" : 25.0
 			}
-		}
-	},
+  },
 	"PAUSE" : {
 		"pause" :
 		{

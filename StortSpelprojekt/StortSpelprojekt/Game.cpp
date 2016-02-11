@@ -94,28 +94,28 @@ bool Game::Update(double deltaTime)
 
 
 
-	/*
-	_enemies = _objectHandler->GetAllByType(ENEMY);
-	_loot = _objectHandler->GetAllByType(LOOT);
-
-	if (_enemies.size() > 0)
+	if (_SM->GetState() == PLAYSTATE)
 	{
-		_enemiesHasSpawned = true;
-	}
+		_enemies = _objectHandler->GetAllByType(ENEMY);
+		_loot = _objectHandler->GetAllByType(LOOT);
 
-	if (_enemies.size() == 0 && _enemiesHasSpawned == true)
-	{
-		if (_loot.size() >= 1)
+		if (_enemies.size() > 0)
 		{
-			//TODO: Add something to notify the player that they've beat the level
+			_enemiesHasSpawned = true;
 		}
-		else
+
+		if (_enemies.size() == 0 && _enemiesHasSpawned == true)
 		{
-			//TODO: Add something to notify the player that they've SUCK and they can replay the level
+			if (_loot.size() >= 1)
+			{
+				//TODO: Add something to notify the player that they've beat the level
+			}
+			else
+			{
+				//TODO: Add something to notify the player that they've SUCK and they can replay the level
+			}
 		}
 	}
-	*/
-
 	return run;
 }
 
