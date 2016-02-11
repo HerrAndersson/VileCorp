@@ -138,19 +138,18 @@
         "fontsize": 25.0
       }
     },
-     "winscreen": {
-        "position": [ 0.0, -0.0 ],
-        "scale": [ 0.75, 0.90 ],
-        "texture": "../Menues/Win/win3.png",
-        "fontsize": 25.0
-      },
-      "losescreen":
-			{
-				"position" : [0.0, -0.0],
-				"scale": [0.75, 0.90],
-				"texture": "../Menues/Lose/lose2.png",
-				"fontsize" : 25.0
-			}
+    "winscreen": {
+      "position": [ 0.0, -0.0 ],
+      "scale": [ 0.35, 0.35 ],
+      "texture": "../Menues/Win/win3.png",
+      "fontsize": 25.0
+    },
+    "losescreen": {
+      "position": [ 0.0, -0.0 ],
+      "scale": [ 0.35, 0.35 ],
+      "texture": "../Menues/Lose/lose2.png",
+      "fontsize": 25.0
+    }
   },
 	"PAUSE" : {
 		"pause" :
