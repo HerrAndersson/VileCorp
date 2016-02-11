@@ -637,14 +637,13 @@ ID3D11ShaderResourceView* AssetManager::GetTexture(const string& filename)
 
 Skeleton* AssetManager::LoadSkeleton(const string& filename)
 {
-
-	for (Skeleton* skeleton : *_skeletons)
-	{
-		if (strcmp(skeleton->_name.c_str(), filename.data()))
-		{
-			return skeleton;
-		}
-	}
+	//for (Skeleton* skeleton : *_skeletons)
+	//{
+	//	if (strcmp(skeleton->_name.c_str(), filename.data()))
+	//	{
+	//		return skeleton;
+	//	}
+	//}
 
 	string file_path = "Assets/Animations/";
 

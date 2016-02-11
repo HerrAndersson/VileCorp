@@ -1,6 +1,6 @@
 #include"Animation.h"
 
-Animation::Animation(Skeleton* skeleton)
+Animation::Animation(Skeleton* skeleton, bool firstFrame)
 {
 	_skeleton = skeleton;
 	_boneCount = _skeleton->_parents.size();
@@ -8,14 +8,27 @@ Animation::Animation(Skeleton* skeleton)
 	toParentTransforms = (XMMATRIX*)_aligned_malloc(sizeof(XMMATRIX) * _boneCount, 16);
 	finalTransforms = (XMMATRIX*)_aligned_malloc(sizeof(XMMATRIX) * _boneCount, 16);
 	finalFloats.resize(_boneCount);
-	for (unsigned i = 0; i < _boneCount; i++)
-	{
-		finalTransforms[i] = XMMatrixIdentity();
-		XMStoreFloat4x4(&finalFloats[i], XMMatrixIdentity());
-	}
+
 	_animTime = 0.0f;
 	_currentAction = -1;
 	_currentCycle = 0;
+	_inactive = false;
+	_lastFrame = false;
+
+	if (firstFrame)
+	{
+		_frozen = false;
+		Update(_skeleton->_actions[0]._bones[0]._frameTime[0]);
+		_frozen = true;
+	}
+	else
+	{
+		for (unsigned i = 0; i < _boneCount; i++)
+		{
+			finalTransforms[i] = XMMatrixIdentity();
+			XMStoreFloat4x4(&finalFloats[i], XMMatrixIdentity());
+		}
+	}
 }
 
 Animation::~Animation()
@@ -36,8 +49,17 @@ void Animation::Update(float time)
 	{
 		if (_skeleton->_actions[_currentAction]._bones[0]._frameTime.back() < _animTime)
 		{
-			_currentAction = -1;
 			_animTime = 0.0f;
+			if (_lastFrameRender)
+			{
+				_animTime = _skeleton->_actions[_currentAction]._bones[0]._frameTime.back();
+			}
+			if (_inactive)
+			{
+				_inactive = false;
+				_frozen = true;
+			}
+			_currentAction = -1;
 		}
 		else
 		{
@@ -47,7 +69,7 @@ void Animation::Update(float time)
 			}
 		}
 	}
-	if (_currentAction == -1 && _currentCycle != -1)
+	if (_currentAction == -1)
 	{
 		if (_skeleton->_actions[_currentCycle]._bones[0]._frameTime.back() < _animTime)
 		{
@@ -88,10 +110,16 @@ void Animation::Freeze(bool freeze)
 	_frozen = freeze;
 }
 
-void Animation::PlayAction(int action)
+void Animation::PlayAction(int action, bool freeze, bool lastFrame)
 {
+	_frozen = false;
 	_animTime = 0.0f;
 	_currentAction = action;
+	if (freeze)
+	{
+		_inactive = true;
+	}
+	_lastFrameRender = lastFrame;
 }
 
 XMMATRIX Animation::Interpolate(unsigned boneID, int action)
