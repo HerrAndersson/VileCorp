@@ -504,7 +504,7 @@
 		},
   		"Play" :
 		{
-			"position": [0.86, 0.67],	
+			"position": [0.87, 0.91],
 			"scale": [0.12, 0.08],
 			"texture": "../Menues/PlacementStateGUI/placementResources.png",
 			
@@ -519,7 +519,7 @@
 		},
 		"Budget" :
 		{
-			"position": [0.86, 0.9],	
+			"position": [-0.88, 0.91],	
 			"scale": [0.12, 0.08],
 			"texture": "../Menues/PlacementStateGUI/placementResources.png",
 			

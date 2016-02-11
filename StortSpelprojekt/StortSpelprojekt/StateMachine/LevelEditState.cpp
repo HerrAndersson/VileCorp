@@ -78,70 +78,70 @@ void LevelEditState::HandleInput()
 void LevelEditState::HandleButtons()
 {
 	System::MouseCoord coord = _controls->GetMouseCoord();
-	if (_uiTree.IsButtonColliding("Traps", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
-	{
-		_uiTree.GetNode("TrapLeaf")->SetHidden(false);
-		_uiTree.GetNode("UnitLeaf")->SetHidden(true);
-		_uiTree.GetNode("DecLeaf")->SetHidden(true);
+	//if (_uiTree.IsButtonColliding("Traps", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
+	//{
+	//	_uiTree.GetNode("TrapLeaf")->SetHidden(false);
+	//	_uiTree.GetNode("UnitLeaf")->SetHidden(true);
+	//	_uiTree.GetNode("DecLeaf")->SetHidden(true);
 
-		_trapButtonClick = true;
-		_unitButtonClick = false;
-		_decButtonClick = false;
+	//	_trapButtonClick = true;
+	//	_unitButtonClick = false;
+	//	_decButtonClick = false;
 
-		// Temp, should be replaced with blueprint
-		_toPlace._type = TRAP;
-		_toPlace._name = "trap_proto";
+	//	// Temp, should be replaced with blueprint
+	//	_toPlace._type = TRAP;
+	//	_toPlace._name = "trap_proto";
 
-		if (_baseEdit->IsSelection() && !_baseEdit->IsPlace())
-		{
-			_baseEdit->DragActivate(_toPlace._type, _toPlace._name);
-		}
-	}
+	//	if (_baseEdit->IsSelection() && !_baseEdit->IsPlace())
+	//	{
+	//		_baseEdit->DragActivate(_toPlace._type, _toPlace._name);
+	//	}
+	//}
 
-	if (_uiTree.IsButtonColliding("Units", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
-	{
-		_uiTree.GetNode("UnitLeaf")->SetHidden(false);
-		_uiTree.GetNode("TrapLeaf")->SetHidden(true);
-		_uiTree.GetNode("DecLeaf")->SetHidden(true);
+	//if (_uiTree.IsButtonColliding("Units", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
+	//{
+	//	_uiTree.GetNode("UnitLeaf")->SetHidden(false);
+	//	_uiTree.GetNode("TrapLeaf")->SetHidden(true);
+	//	_uiTree.GetNode("DecLeaf")->SetHidden(true);
 
-		_trapButtonClick = false;
-		_unitButtonClick = true;
-		_decButtonClick = false;
+	//	_trapButtonClick = false;
+	//	_unitButtonClick = true;
+	//	_decButtonClick = false;
 
-		// Temp, should be replaced with blueprint
-		_toPlace._type = GUARD;
-		_toPlace._name = "guard_proto";
+	//	// Temp, should be replaced with blueprint
+	//	_toPlace._type = GUARD;
+	//	_toPlace._name = "guard_proto";
 
-		if (_baseEdit->IsSelection())
-		{
-			_baseEdit->DragActivate(_toPlace._type, _toPlace._name);
-		}
-	}
+	//	if (_baseEdit->IsSelection())
+	//	{
+	//		_baseEdit->DragActivate(_toPlace._type, _toPlace._name);
+	//	}
+	//}
 
 
-	if (_uiTree.IsButtonColliding("Decorations", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
-	{
-		_uiTree.GetNode("DecLeaf")->SetHidden(false);
-		_uiTree.GetNode("TrapLeaf")->SetHidden(true);
-		_uiTree.GetNode("UnitLeaf")->SetHidden(true);
+	//if (_uiTree.IsButtonColliding("Decorations", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
+	//{
+	//	_uiTree.GetNode("DecLeaf")->SetHidden(false);
+	//	_uiTree.GetNode("TrapLeaf")->SetHidden(true);
+	//	_uiTree.GetNode("UnitLeaf")->SetHidden(true);
 
-		_trapButtonClick = false;
-		_unitButtonClick = true;
-		_decButtonClick = false;
+	//	_trapButtonClick = false;
+	//	_unitButtonClick = true;
+	//	_decButtonClick = false;
 
-		// Not really implemented
-	}
+	//	// Not really implemented
+	//}
 
-	if (_controls->IsFunctionKeyDown("MOUSE:SELECT") && _trapButtonClick == false && _unitButtonClick == false && _decButtonClick == false)
-	{
-		_uiTree.GetNode("DecLeaf")->SetHidden(true);
-		_uiTree.GetNode("TrapLeaf")->SetHidden(true);
-		_uiTree.GetNode("UnitLeaf")->SetHidden(true);
-	}
+	//if (_controls->IsFunctionKeyDown("MOUSE:SELECT") && _trapButtonClick == false && _unitButtonClick == false && _decButtonClick == false)
+	//{
+	//	_uiTree.GetNode("DecLeaf")->SetHidden(true);
+	//	_uiTree.GetNode("TrapLeaf")->SetHidden(true);
+	//	_uiTree.GetNode("UnitLeaf")->SetHidden(true);
+	//}
 
-	_trapButtonClick = false;
-	_unitButtonClick = false;
-	_decButtonClick = false;
+	//_trapButtonClick = false;
+	//_unitButtonClick = false;
+	//_decButtonClick = false;
 }
 
 void LevelEditState::ExportLevel()
