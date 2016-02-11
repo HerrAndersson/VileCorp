@@ -688,7 +688,7 @@ Skeleton* AssetManager::LoadSkeleton(const string& filename)
 			skeleton->_actions[a]._bones[b]._frameTime.resize(frames);
 			_infile->read((char*)skeleton->_actions[a]._bones[b]._frameTime.data(), frames * sizeof(int));
 			skeleton->_actions[a]._bones[b]._frames.resize(frames);
-
+			
 			for (int i = 0; i < frames; i++)
 			{
 				_infile->read((char*)&translation, sizeof(XMFLOAT3));

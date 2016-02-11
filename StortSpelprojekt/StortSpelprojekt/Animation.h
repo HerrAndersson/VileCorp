@@ -23,6 +23,7 @@ private:
 	XMMATRIX* toRootTransforms;
 	XMMATRIX* toParentTransforms;
 	XMMATRIX* finalTransforms;
+	std::vector<XMFLOAT4X4> finalFloats;
 	Skeleton* _skeleton;
 	float _animTime;
 	int _currentCycle, _currentAction;
@@ -38,6 +39,10 @@ public:
 	XMMATRIX* GetTransforms()
 	{
 		return finalTransforms;
+	}
+	std::vector<XMFLOAT4X4>* GetFloats()
+	{
+		return &finalFloats;
 	}
 	int GetBoneCount() const
 	{
