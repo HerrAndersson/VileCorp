@@ -44,7 +44,6 @@ void PlacementState::OnStateEnter()
 	//TODO: Temporary solution for budget problem when changing back to placement state (Previously it kept spent budget and did not reset it)
 	_playerProfile[_currentPlayer]._gold = 700;
 	_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_playerProfile[_currentPlayer]._gold));
-	_objectHandler->LoadLevel(9);
 	_baseEdit = new BaseEdit(_objectHandler, _controls, _pickingDevice, _camera);
 	_objectHandler->DisableSpawnPoints();
 
