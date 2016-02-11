@@ -14,7 +14,7 @@
 
   ],
   "spawns": [
-    "entry-24.bin"
+    "WindowDouble-27.bin"
 
   ],
   "traps": [
@@ -37,7 +37,11 @@
 
   ],
   "cameras": [
-    "SecurityCamera-26.bin"
+    "SecurityCamera-27.bin"
+
+  ],
+  "furnitures": [
+    "Cupboard-27.bin"
 
   ]
 }
