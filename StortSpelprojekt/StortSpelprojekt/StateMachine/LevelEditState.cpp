@@ -36,9 +36,9 @@ void LevelEditState::OnStateEnter()
 	//TODO: Move this function to LevelSelection when that state is created. /Alex
 	_objectHandler->LoadLevel(3);
 	_objectHandler->DisableSpawnPoints();
-	_uiTree.GetNode("TrapLeaf")->SetHidden(true);
-	_uiTree.GetNode("UnitLeaf")->SetHidden(true);
-	_uiTree.GetNode("DecLeaf")->SetHidden(true);
+	//_uiTree.GetNode("TrapLeaf")->SetHidden(true);
+	//_uiTree.GetNode("UnitLeaf")->SetHidden(true);
+	//_uiTree.GetNode("DecLeaf")->SetHidden(true);
 
 	_objectHandler->EnlargeTilemap(50);
 
