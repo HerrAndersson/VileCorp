@@ -7,7 +7,7 @@ void Trap::CalculateCircleAOE(int radius)
 	int y = 0;
 	int D = 1 - x;   // Decision criterion divided by 2 evaluated at x=r, y=0
 	AI::Vec2D pos = {0,0};
-	_nrOfAOETiles = 0;
+	//_nrOfAOETiles = 0;
 	while (y <= x)
 	{
 		if (y != x)
@@ -415,13 +415,13 @@ void Trap::SetTilePosition(AI::Vec2D pos)
 {
 	GameObject::SetTilePosition(pos);
 
-//	_nrOfAOETiles = 0;
 
 	int radius = 0;
 
 	switch (_trapType)
 	{
 	case SPIKE:
+		_nrOfAOETiles = 0;
 		_occupiedTiles[0] = _tilePosition;
 		_areaOfEffect[_nrOfAOETiles++] = _tilePosition;
 		break;
@@ -440,6 +440,7 @@ void Trap::SetTilePosition(AI::Vec2D pos)
 				_tileMap->GetObjectOnTile(_areaOfEffect[i], FLOOR)->SetColorOffset({0,0,0});
 			}
 		}
+		_nrOfAOETiles = 0;
 		CalculateCircleAOE(3);
 
 		for (int i = 0; i < _nrOfAOETiles; i++)
@@ -462,6 +463,7 @@ void Trap::SetTilePosition(AI::Vec2D pos)
 		break;
 	case SHARK:			//Trigger area is currently the same as the trap's physical area. Might be awkward since the shark trap is larger than its AOE.
 	{
+		_nrOfAOETiles = 0;
 		AI::Vec2D offset = { _direction._y, _direction._x };
 		_nrOfAOETiles = 3;
 		_areaOfEffect[0] = pos;
