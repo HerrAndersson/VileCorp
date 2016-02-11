@@ -63,6 +63,10 @@ void Game::ResizeResources(System::Settings* settings)
 
 bool Game::Update(double deltaTime)
 {
+	if (_SM->GetState() == PLACEMENTSTATE)
+	{
+		_objectHandler->UpdateLights();
+	}
 	_soundModule.Update();
 
 	bool run = true;
@@ -170,22 +174,22 @@ void Game::Render()
 
 	/*--------------------------------------------------  Render skinned objects  -----------------------------------------------------*/
 	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::ANIM_STAGE);
-	//if (gameObjects->size() > 0)
-	//{
-	//	if (gameObjects->at(TRAP).size() > 0)
-	//	{
-	//		RenderObject* renderObject = gameObjects->at(TRAP).at(0)->GetRenderObject();
+	if (gameObjects->size() > 0)
+	{
+		if (gameObjects->at(GUARD).size() > 0)
+		{
+			RenderObject* renderObject = gameObjects->at(GUARD).at(0)->GetRenderObject();
 
-	//		_renderModule->SetDataPerObjectType(renderObject);
-	//		int vertexBufferSize = renderObject->_mesh._vertexBufferSize;
+			_renderModule->SetDataPerObjectType(renderObject);
+			int vertexBufferSize = renderObject->_mesh._vertexBufferSize;
 
-	//		for (GameObject* a : gameObjects->at(TRAP))
-	//		{
-	//			// temporary uncommenting
-	//			_renderModule->RenderAnimation(a->GetMatrix(), vertexBufferSize, a->GetAnimation()->GetFloats(), a->GetColorOffset());
-	//		}
-	//	}
-	//}
+			for (GameObject* a : gameObjects->at(GUARD))
+			{
+				// temporary uncommenting
+				_renderModule->RenderAnimation(a->GetMatrix(), vertexBufferSize, a->GetAnimation()->GetFloats(), a->GetColorOffset());
+			}
+		}
+	}
 	// Now every gameobject can be animated
 	for (auto i : *gameObjects)
 	{
@@ -263,7 +267,7 @@ void Game::Render()
 	}
 	
 	////////////////////////////////////////////////////////////  Light pass  //////////////////////////////////////////////////////////////
-	if (_SM->GetState() == PLAYSTATE)
+	if (_SM->GetState() == PLAYSTATE || _SM->GetState() == PLACEMENTSTATE)
 	{
 		//----------------------------------------------------------  Spotlights  -------------------------------------------------------------
 		//Generate the shadow map for each spotlight, then apply the lighting/shadowing to the render target with additive blending.           
