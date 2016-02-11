@@ -8,9 +8,33 @@
 		"scale": [ 1.0, 1.0 ],
 		"texture": "../Menues/startmenu1.png"
     },
-
     "files": {
       "position": [ 0.665, 0.2 ],
+	  
+	  "":
+	  {
+		"backgroundFolders": {
+			"position": [ 0.055, 0.5 ],
+			"scale": [ 0.65, 0.5 ],
+			"texture": "../Menues/menu2back.png"
+		},
+		"backgroundFolders": {
+			"position": [ 0.03, 0.3 ],
+			"scale": [ 0.65, 0.5 ],
+			"texture": "../Menues/menu2back.png"
+		},
+		"backgroundFolders": {
+			"position": [ 0.005, 0.1 ],
+			"scale": [ 0.65, 0.5 ],
+			"texture": "../Menues/menu2back.png"
+		},
+		"backgroundFolders": {
+			"position": [ -0.02, -0.1 ],
+			"scale": [ 0.65, 0.5 ],
+			"texture": "../Menues/menu2back.png"
+		}
+	  },
+	  
       "play": {
         "position": [ -0.045, -0.3 ],
         "scale": [ 0.65, 0.5 ],
@@ -84,8 +108,8 @@
 
       "unitinfocontainer": {
         "unitpicture": {
-          "position": [ 0.173333, -0.02 ],
-          "scale": [ 0.08666, 0.15 ]
+          "position": [ 0.2, 0.03 ],
+          "scale": [ 0.05866, 0.1 ]
         },
         "unitnumber": {
           "position": [ 0.223333, -0.02 ],
@@ -125,16 +149,14 @@
       }
     },
     "winscreen": {
-      "position": [ 0.0, -0.0 ],
+      "position": [ 0.0, 0.1 ],
       "scale": [ 0.35, 0.35 ],
-      "texture": "../Menues/Win/win3.png",
-      "fontsize": 25.0
+      "texture": "../Menues/Win/win3.png"
     },
     "losescreen": {
-      "position": [ 0.0, -0.0 ],
-      "scale": [ 0.35, 0.35 ],
-      "texture": "../Menues/Lose/lose2.png",
-      "fontsize": 25.0
+      "position": [ 0.0, 0.2 ],
+      "scale": [ 0.6, 0.6 ],
+      "texture": "../Menues/Lose/lose4.png"
     }
   },
 	"PAUSE" : {
