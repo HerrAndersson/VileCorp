@@ -92,7 +92,7 @@ void Player::PatrolUnits(AI::Vec2D patrolPoint)
 		{
 			if (unit->GetType() == GUARD)
 			{
-				((Guard*)_selectedUnits[i])->SetPatrolPoint(patrolPoint);
+				((Guard*)unit)->SetPatrolPoint(patrolPoint);
 			}
 		}
 
