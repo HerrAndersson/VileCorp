@@ -114,6 +114,7 @@ public:
 	void InitPathfinding();
 	void EnableSpawnPoints();
 	void DisableSpawnPoints();
+	int GetRemainingToSpawn()const;
 
 	//Update gamelogic of all objects
 	void Update(float deltaTime);
