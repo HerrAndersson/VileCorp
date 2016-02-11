@@ -5,8 +5,13 @@
 LevelSelectState::LevelSelectState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::Settings* settings, System::SoundModule* soundModule) :
 	BaseState(controls, objectHandler, camera, pickingDevice, filename, "LEVELSELECT", assetManager, fontWrapper, settings, soundModule)
 {
-	_levelSelection = 9;
-	_levelSelectionMax = 0; //TODO: Add to this if more levels are added
+	_levelSelection = 7;
+	_levelSelectionMin = 7;
+	_levelSelectionMax = 9; //TODO: Add to this if more levels are added
+	for (int i = _levelSelectionMin+1; i < _levelSelectionMax + 1; i++)
+	{
+		_uiTree.GetNode(std::to_string(i))->SetHidden(true);
+	}
 }
 
 
@@ -32,25 +37,24 @@ void LevelSelectState::Update(float deltaTime)
 			_objectHandler->LoadLevel(_levelSelection);
 			ChangeState(State::PLACEMENTSTATE);
 		}
-		
-		//TODO: Use this to make the buttons change level
-		//For the demo we only have one level (level 9)
-		//if (_uiTree.IsButtonColliding("prevlevel", coord._pos.x, coord._pos.y))
-		//{
-		//	_levelSelection--;
-		//}
-		//else if (_uiTree.IsButtonColliding("nextlevel", coord._pos.x, coord._pos.y))
-		//{
-		//	_levelSelection++;
-		//}
-		//if (_levelSelection == -1)
-		//{
-		//	_levelSelection = _levelSelection - 1;
-		//}
-		//else if (_levelSelection == _levelSelectionMax)
-		//{
-		//	_levelSelection = 0;
-		//}
+		if (_uiTree.IsButtonColliding("prevlevel", coord._pos.x, coord._pos.y))
+		{
+			if (_levelSelection > _levelSelectionMin)
+			{
+				_uiTree.GetNode(std::to_string(_levelSelection))->SetHidden(true);
+				_levelSelection--;
+				_uiTree.GetNode(std::to_string(_levelSelection))->SetHidden(false);
+			}
+		}
+		if (_uiTree.IsButtonColliding("nextlevel", coord._pos.x, coord._pos.y))
+		{
+			if (_levelSelection < _levelSelectionMax)
+			{
+				_uiTree.GetNode(std::to_string(_levelSelection))->SetHidden(true);
+				_levelSelection++;
+				_uiTree.GetNode(std::to_string(_levelSelection))->SetHidden(false);
+			}
+		}
 	}
 }
 

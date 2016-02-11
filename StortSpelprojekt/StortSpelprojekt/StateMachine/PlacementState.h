@@ -24,11 +24,23 @@ private:
 		ToPlace()
 		{
 			_type = TRAP;
+			_subType = 0;
 			_name = "trap_proto";
+			ResetTemps();
+		}
+		void ResetTemps()
+		{
+			_goldCost = -1;
+			_blueprintID = 1;
 		}
 		Type _type;
+		int _subType;
 		std::string _name;
+		int _goldCost;
+		int _blueprintID;
 	} _toPlace;
+
+	void EvaluateGoldCost();
 
 public:
 	PlacementState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::Settings* settings, System::SoundModule* soundModule);
