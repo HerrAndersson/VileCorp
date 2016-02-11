@@ -19,6 +19,10 @@ void LevelSelectState::Update(float deltaTime)
 	{
 		_uiTree.ReloadTree("../../../../StortSpelprojekt/Assets/gui.json", "LEVELSELECT");
 	}
+	if (_controls->IsFunctionKeyDown("MENU:MENU"))
+	{
+		ChangeState(State::MENUSTATE);
+	}
 }
 
 void LevelSelectState::OnStateEnter()

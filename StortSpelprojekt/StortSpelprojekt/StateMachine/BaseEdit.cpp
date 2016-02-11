@@ -30,12 +30,6 @@ BaseEdit::BaseEdit(ObjectHandler* objectHandler, System::Controls* controls, Pic
 BaseEdit::~BaseEdit()
 {
 	delete _markedTile;
-	if (_camera->GetMode() != System::LOCKED_CAM)
-	{
-		_controls->ToggleCursorLock();
-		_camera->SetMode(System::LOCKED_CAM);
-		_camera->SetRotation(DirectX::XMFLOAT3(70, 0, 0));
-	}
 }
 
 // Other functions
