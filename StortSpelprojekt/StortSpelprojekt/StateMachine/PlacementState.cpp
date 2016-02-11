@@ -183,7 +183,7 @@ void PlacementState::HandleButtons()
 		}
 	}
 
-	if (_uiTree.IsButtonColliding("Guard", coord._pos.x, coord._pos.y))
+	if (_uiTree.IsButtonColliding("Guard", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
 		// Temp, should be replaced with blueprint
 		_toPlace._type = GUARD;
@@ -205,6 +205,10 @@ void PlacementState::HandleButtons()
 			_playerProfile[_currentPlayer]._gold -= _toPlace._goldCost;
 			_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_playerProfile[_currentPlayer]._gold));
 			_toPlace._blueprintID = _baseEdit->GetSelectedObject()->GetID();
+		}
+		else
+		{
+			_toPlace._goldCost = -1;
 		}
 	}
 
