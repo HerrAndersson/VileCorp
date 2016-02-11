@@ -140,7 +140,7 @@
     },
      "winscreen": {
         "position": [ 0.0, -0.0 ],
-        "scale": [ 1.0, 1.0 ],
+        "scale": [ 0.75, 0.90 ],
         "texture": "../Menues/Win/win3.png",
         "fontsize": 25.0
       },
