@@ -9,6 +9,11 @@ namespace Renderer
 		_deviceContext = deviceContext;
 		_emitterCount = 5;
 		_particleEmitters.reserve(_emitterCount);
+		for (int i = 0; i < _emitterCount; i++)
+		{
+			_particleEmitters.push_back(ParticleEmitter(device, deviceContext));
+		}
+
 		_queue.reserve(_emitterCount);
 
 		_requestQueue = new ParticleRequestQueue(&_queue);
@@ -64,7 +69,7 @@ namespace Renderer
 			ParticleEmitter particleEmitter(_device, _deviceContext,type, position, color, particleCount, timeLimit, isActive);
 			_particleEmitters.push_back(particleEmitter);
 
-			if (_emitterCount > _particleEmitters.capacity())
+			if (_emitterCount > (signed)_particleEmitters.capacity())
 			{
 				_emitterCount++;
 			}
@@ -76,51 +81,25 @@ namespace Renderer
 		return _emitterCount;
 	}
 
-	std::vector<Particle>* ParticleHandler::GetParticles(int index)
-	{
-		if (index >= _emitterCount || index < 0)
-		{
-			throw std::runtime_error("ParticleHandler::GetParticles(int index): Invalid index");
-		}
-
-		return _particleEmitters.at(index).GetParticles();
-	}
-
-	//Only get the vertex buffer from the active emitters. Check result against nullptr before usage
-	ID3D11Buffer* ParticleHandler::GetParticleBuffer(int index)
-	{
-		if (index >= _emitterCount || index < 0)
-		{
-			throw std::runtime_error("ParticleHandler::GetParticles(int index): Invalid index");
-		}
-
-		 ID3D11Buffer* vertexBuffer = nullptr;
-		if (_particleEmitters.at(index).IsActive())
-		{
-			vertexBuffer = _particleEmitters.at(index).GetParticleBuffer();
-		}
-
-		return vertexBuffer;
-	}
-
 	ParticleRequestQueue* ParticleHandler::GetParticleRequestQueue()
 	{
 		return _requestQueue;
 	}
 
-	int ParticleHandler::GetParticleCount(int index)
+	//Only return if the emitter is both valid and active
+	ParticleEmitter* ParticleHandler::GetEmitter(int index)
 	{
 		if (index >= _emitterCount || index < 0)
 		{
-			throw std::runtime_error("ParticleHandler::GetParticles(int index): Invalid index");
+			throw std::runtime_error("ParticleHandler::GetEmitter(int index): Invalid index");
 		}
 
-		int particleCount = -1;
-		if (_particleEmitters.at(index).IsActive())
+		ParticleEmitter* emitter = &_particleEmitters.at(index);
+		if (!emitter->IsActive())
 		{
-			particleCount = _particleEmitters.at(index).GetParticleCount();
+			emitter = nullptr;
 		}
 
-		return particleCount;
+		return emitter;
 	}
 }

@@ -611,6 +611,24 @@ namespace Renderer
 		deviceContext->Draw(vertexCount, 0);
 	}
 
+	void RenderModule::RenderParticles(ID3D11Buffer* particlePointsBuffer, int vertexBufferSize, int vertexCount, const XMFLOAT3& position, const XMFLOAT3& color, ID3D11ShaderResourceView** textures, int textureCount)
+	{
+		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
+
+		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+
+		XMMATRIX world = XMMatrixTranslation(position.x, position.y, position.z);
+		SetDataPerObject(&world, color);
+		SetDataPerMesh(particlePointsBuffer, vertexBufferSize);
+
+		if (textures)
+		{
+			deviceContext->PSSetShaderResources(0, textureCount, textures);
+		}
+
+		deviceContext->Draw(vertexCount, 0);
+	}
+
 	void RenderModule::EndScene()
 	{
 		_d3d->EndScene();

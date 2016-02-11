@@ -35,9 +35,7 @@ namespace Renderer
 		void ActivateEmitter(ParticleType type, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT4& color, int particleCount, float timeLimit, bool isActive);
 
 		int GetEmitterCount() const;
-		std::vector<Particle>* GetParticles(int index);
-		ID3D11Buffer* GetParticleBuffer(int index);
-		int GetParticleCount(int index);
+		ParticleEmitter* GetEmitter(int index);
 
 		ParticleRequestQueue* GetParticleRequestQueue();
 

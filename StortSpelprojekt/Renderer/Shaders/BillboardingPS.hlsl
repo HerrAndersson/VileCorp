@@ -2,8 +2,7 @@
 | Pixel shader used for the rendering of billboarded objects														   |
 ----------------------------------------------------------------------------------------------------------------------*/
 
-Texture2D diffuse : register(t0);
-Texture2D specular : register(t1);
+Texture2D textures[4] : register(t0); //The same particle system can use no more than 4 textures to choose from.
 SamplerState samplerWrap : register(s0);
 
 struct GS_OUT
@@ -26,7 +25,8 @@ PS_OUT main(GS_OUT input)
 {
 	PS_OUT output = (PS_OUT)0;
 
-	float4 color = float4(diffuse.Sample(samplerWrap, input.tex).xyz, 1.0f);
+	//TODO: Randomize which texture to sample from
+	float4 color = float4(textures[0].Sample(samplerWrap, input.tex).xyz, 1.0f);
 
 	output.diffuse = color;
 	output.normal = float4(input.normal, 1.0f);
