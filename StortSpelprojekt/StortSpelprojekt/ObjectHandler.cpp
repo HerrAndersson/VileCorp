@@ -670,7 +670,11 @@ void ObjectHandler::Update(float deltaTime)
 			//}
 		}
 	}
+	UpdateLights();
+}
 
+void ObjectHandler::UpdateLights()
+{
 	for (pair<GameObject*, Renderer::Spotlight*> spot : _spotlights)
 	{
 		if (spot.second->IsActive() && spot.first->IsActive())
