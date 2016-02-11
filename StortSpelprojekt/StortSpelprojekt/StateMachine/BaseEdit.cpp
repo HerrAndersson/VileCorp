@@ -414,7 +414,7 @@ bool BaseEdit::IsPlace() const
 	return _isPlace;
 }
 
-void BaseEdit::HandleInput()
+void BaseEdit::HandleInput(double deltaTime)
 {
 	if (_marker._g != nullptr && _isDragAndPlaceMode)
 	{
@@ -480,12 +480,12 @@ void BaseEdit::HandleInput()
 		if (_controls->IsFunctionKeyDown("CAMERA:ZOOM_CAMERA_IN") &&
 			_camera->GetPosition().y > 4.0f)
 		{
-			_camera->Move(XMFLOAT3(0.0f, -1.0f, 0.0f));
+			_camera->Move(XMFLOAT3(0.0f, -1.0f, 0.0f), deltaTime);
 		}
 		else if (_controls->IsFunctionKeyDown("CAMERA:ZOOM_CAMERA_OUT") &&
 			_camera->GetPosition().y < 12.0f)
 		{
-			_camera->Move(XMFLOAT3(0.0f, 1.0f, 0.0f));
+			_camera->Move(XMFLOAT3(0.0f, 1.0f, 0.0f), deltaTime);
 		}
 	}
 
@@ -581,11 +581,11 @@ void BaseEdit::HandleInput()
 
 	if (isMoving)
 	{
-		_camera->Move(XMFLOAT3((forward.x + right.x) * v,(forward.y + right.y) * v, (forward.z + right.z) * v));
+		_camera->Move(XMFLOAT3((forward.x + right.x) * v,(forward.y + right.y) * v, (forward.z + right.z) * v), deltaTime);
 	}
 }
 
 void BaseEdit::Update(float deltaTime)
 {
-	HandleInput();
+	HandleInput(deltaTime);
 }

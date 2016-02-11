@@ -73,11 +73,11 @@ namespace System
 		Update();
 	}
 
-	void Camera::Move(const DirectX::XMFLOAT3& offset)
+	void Camera::Move(const DirectX::XMFLOAT3& offset, double deltaTime)
 	{
-		_position.x += offset.x;
-		_position.y += offset.y;
-		_position.z += offset.z;
+		_position.x += offset.x * deltaTime;
+		_position.y += offset.y * deltaTime;
+		_position.z += offset.z * deltaTime;
 		Update();
 	}
 
