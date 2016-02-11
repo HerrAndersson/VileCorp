@@ -24,6 +24,7 @@ protected:
 	System::SoundModule*	_soundModule;
 	
 	void ChangeState(State newState);
+	void ResetMouse();
 	State GetOldState() const;
 
 public:
