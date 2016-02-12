@@ -13,6 +13,10 @@ void Unit::CalculatePath()
 				_tileMap->GetObjectOnTile(_path[i], FLOOR)->SetColorOffset({0,4,0});
 			}
 		}
+		if (_renderObject->_isSkinned)
+		{
+			_animation->SetActionAsCycle(1, 3.0f, false);
+		}
 		_isMoving = true;
 		_direction = _path[--_pathLength] - _tilePosition;
 		Rotate();
@@ -320,6 +324,10 @@ void Unit::Move()
 		_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,0});
 		_tilePosition += _direction;
 		_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,4,0});
+	}
+	else if (_renderObject->_isSkinned)
+	{
+		_animation->SetActionAsCycle(0, 1.0f, false);
 	}
 	if (_objective != nullptr && _objective->GetPickUpState() != ONTILE)			//Check that no one took your objective
 	{

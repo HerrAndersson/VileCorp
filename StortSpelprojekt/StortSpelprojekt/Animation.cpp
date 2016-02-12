@@ -44,7 +44,7 @@ void Animation::Update(float time)
 	{
 		return;
 	}
-	_animTime += time / 1000;
+	_animTime += (time / 1000) * _speed;
 	if (_currentAction != -1)
 	{
 		if (_skeleton->_actions[_currentAction]._bones[0]._frameTime.back() < _animTime)
@@ -96,13 +96,14 @@ void Animation::Update(float time)
 	}
 }
 
-void Animation::SetActionAsCycle(int action, bool reset)
+void Animation::SetActionAsCycle(int action, float speed, bool reset)
 {
 	if (reset)
 	{
 		_animTime = 0.0f;
 	}
 	_currentCycle = action;
+	_speed = speed;
 }
 
 void Animation::Freeze(bool freeze)
@@ -110,7 +111,12 @@ void Animation::Freeze(bool freeze)
 	_frozen = freeze;
 }
 
-void Animation::PlayAction(int action, bool freeze, bool lastFrame)
+void Animation::SetSpeed(float speed)
+{
+	_speed = speed;
+}
+
+void Animation::PlayAction(int action, float speed, bool freeze, bool lastFrame)
 {
 	_frozen = false;
 	_animTime = 0.0f;
@@ -120,6 +126,7 @@ void Animation::PlayAction(int action, bool freeze, bool lastFrame)
 		_inactive = true;
 	}
 	_lastFrameRender = lastFrame;
+	_speed = speed;
 }
 
 XMMATRIX Animation::Interpolate(unsigned boneID, int action)

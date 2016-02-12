@@ -379,10 +379,10 @@ void Trap::Activate()
 		switch (_trapType)
 		{
 		case SPIKE:
-			_animation->PlayAction(0, true, true);
+			_animation->PlayAction(0, 1.0f, true, true);
 			break;
 		case TESLACOIL:
-			_animation->PlayAction(1, true, false);
+			_animation->PlayAction(1, 1.0f, true, false);
 			break;
 		case SHARK:
 			break;

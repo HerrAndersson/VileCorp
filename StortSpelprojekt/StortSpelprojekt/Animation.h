@@ -29,15 +29,17 @@ private:
 	int _currentCycle, _currentAction;
 	bool _inactive;
 	bool _lastFrameRender;
+	float _speed;
 
 public:
 	Animation(Skeleton* skeleton, bool firstFrame = false);
 	~Animation();
 
 	void Update(float time);
-	void SetActionAsCycle(int action, bool reset);
+	void SetActionAsCycle(int action, float speed, bool reset);
 	void Freeze(bool freeze);
-	void PlayAction(int action, bool freeze, bool lastFrame);
+	void SetSpeed(float speed);
+	void PlayAction(int action, float speed, bool freeze, bool lastFrame);
 	XMMATRIX* GetTransforms()
 	{
 		return finalTransforms;
