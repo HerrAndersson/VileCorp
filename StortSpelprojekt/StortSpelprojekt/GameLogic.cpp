@@ -56,37 +56,30 @@ void GameLogic::HandleInput(float deltaTime)
 	//Selecting a Unit and moving selected units
 	if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
-		if (!_uiTree->GetNode("Tutorial")->GetHidden())
+
+		vector<GameObject*> pickedUnits = _pickingDevice->PickObjects(_controls->GetMouseCoord()._pos, _objectHandler->GetAllByType(GUARD));
+
+		if (pickedUnits.empty())
 		{
-			_uiTree->GetNode("Tutorial")->SetHidden(true);
-			_objectHandler->EnableSpawnPoints();
+			if (_player->AreUnitsSelected())
+			{
+				_player->MoveUnits(_pickingDevice->PickTile(_controls->GetMouseCoord()._pos));
+			}
 		}
 		else
 		{
-			vector<GameObject*> pickedUnits = _pickingDevice->PickObjects(_controls->GetMouseCoord()._pos, _objectHandler->GetAllByType(GUARD));
+			vector<Unit*> units = _player->GetSelectedUnits();
 
-			if (pickedUnits.empty())
+			for (unsigned int i = 0; i < units.size(); i++)
 			{
-				if (_player->AreUnitsSelected())
-				{
-					_player->MoveUnits(_pickingDevice->PickTile(_controls->GetMouseCoord()._pos));
-				}
+				units[i]->SetColorOffset(DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f));
 			}
-			else
-			{
-				vector<Unit*> units = _player->GetSelectedUnits();
+			_player->DeselectUnits();
 
-				for (unsigned int i = 0; i < units.size(); i++)
-				{
-					units[i]->SetColorOffset(DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f));
-				}
-				_player->DeselectUnits();
+			Unit* unit = (Unit*)pickedUnits[0];
+			_player->SelectUnit(unit);
 
-				Unit* unit = (Unit*)pickedUnits[0];
-				_player->SelectUnit(unit);
-
-				unit->SetColorOffset(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));
-			}
+			unit->SetColorOffset(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));
 		}
 	}
 	
