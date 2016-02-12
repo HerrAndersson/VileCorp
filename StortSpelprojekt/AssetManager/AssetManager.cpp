@@ -640,7 +640,7 @@ Skeleton* AssetManager::LoadSkeleton(const string& filename)
 
 	for (Skeleton* skeleton : *_skeletons)
 	{
-		if (strcmp(skeleton->_name.c_str(), filename.data()))
+		if (skeleton->_name.c_str() == filename.data())
 		{
 			return skeleton;
 		}
@@ -658,7 +658,7 @@ Skeleton* AssetManager::LoadSkeleton(const string& filename)
 
 	Skeleton* skeleton = new Skeleton;
 	_skeletons->push_back(skeleton);
-
+	skeleton->_name = filename;
 	SkeletonHeader header;
 	_infile->read((char*)&header, sizeof(SkeletonHeader));
 	if (header._version != _animationFormatVersion)
