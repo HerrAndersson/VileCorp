@@ -157,7 +157,14 @@
       "position": [ 0.0, 0.2 ],
       "scale": [ 0.6, 0.6 ],
       "texture": "../Menues/Lose/lose4.png"
-    }
+    },
+    		"Tutorial":
+			{
+				"position" : [0.0, -0.0],
+				"scale": [0.75, 0.90],
+				"texture": "../Menues/PlacementStateGUI/tutorialplay.png",
+				"fontsize" : 25.0
+			}
   },
 	"PAUSE" : {
 		"pause" :
