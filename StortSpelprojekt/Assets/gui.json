@@ -450,7 +450,7 @@
 				{
 					"position" : [0.975, -1.08],
 					"scale": [1.0, 1.0],
-					"text": "Guard",
+					"text": "Guard 200$",
 					"color": "FF000000",
 					"fontsize" : 18.0
 				}				
@@ -465,7 +465,7 @@
 				{
 					"position" : [0.96, -1.08],
 					"scale": [1.0, 1.0],
-					"text": "Anvil Trap",
+					"text": "Anvil Trap 50$",
 					"color": "FF000000",
 					"fontsize" : 18.0
 				}
@@ -480,7 +480,7 @@
 				{
 					"position" : [0.96, -1.08],
 					"scale": [1.0, 1.0],
-					"text": "Tesla Trap",
+					"text": "Tesla Trap 100$",
 					"color": "FF000000",
 					"fontsize" : 18.0
 				}
@@ -495,7 +495,7 @@
 				{
 					"position" : [0.97, -1.08],
 					"scale": [1.0, 1.0],
-					"text": "Camera",
+					"text": "Camera 80$",
 					"color": "FF000000",
 					"fontsize" : 18.0
 				}
