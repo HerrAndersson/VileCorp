@@ -471,5 +471,19 @@ void Unit::Animate(Anim anim)
 				break;
 			}
 		}
+		if (_renderObject->_type == ENEMY)
+		{
+			switch (anim)
+			{
+			case IDLE:
+				_animation->SetActionAsCycle(0, 2.0f, false);
+				break;
+			case WALK:
+				_animation->SetActionAsCycle(1, 3.0f, false);
+				break;
+			default:
+				break;
+			}
+		}
 	}
 }
