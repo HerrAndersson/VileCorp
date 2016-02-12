@@ -27,7 +27,7 @@ GameLogic::~GameLogic()
 
 void GameLogic::Update(float deltaTime)
 {
-	HandleInput();
+	HandleInput(deltaTime);
 	_objectHandler->Update(deltaTime);
 
 	if (_objectHandler->GetRemainingToSpawn() <= 0)
@@ -51,7 +51,7 @@ bool GameLogic::IsGameDone() const
 	return _gameDone;
 }
 
-void GameLogic::HandleInput()
+void GameLogic::HandleInput(float deltaTime)
 {
 	//Selecting a Unit and moving selected units
 	if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
@@ -187,12 +187,12 @@ void GameLogic::HandleInput()
 		if (_controls->IsFunctionKeyDown("CAMERA:ZOOM_CAMERA_IN") &&
 			_camera->GetPosition().y > 4.0f)
 		{
-			_camera->Move(XMFLOAT3(0.0f, -1.0f, 0.0f));
+			_camera->Move(XMFLOAT3(0.0f, -1.0f, 0.0f), deltaTime);
 		}
 		else if (_controls->IsFunctionKeyDown("CAMERA:ZOOM_CAMERA_OUT") &&
 			_camera->GetPosition().y < 12.0f)
 		{
-			_camera->Move(XMFLOAT3(0.0f, 1.0f, 0.0f));
+			_camera->Move(XMFLOAT3(0.0f, 1.0f, 0.0f), deltaTime);
 		}
 	}
 
@@ -288,7 +288,7 @@ void GameLogic::HandleInput()
 
 	if (isMoving)
 	{
-		_camera->Move(XMFLOAT3((forward.x + right.x) * v, (forward.y + right.y) * v, (forward.z + right.z) * v));
+		_camera->Move(XMFLOAT3((forward.x + right.x) * v, (forward.y + right.y) * v, (forward.z + right.z) * v), deltaTime);
 	}
 	
 }

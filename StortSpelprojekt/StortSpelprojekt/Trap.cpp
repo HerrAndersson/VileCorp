@@ -370,13 +370,14 @@ void Trap::Activate()
 			static_cast<Unit*>(_tileMap->GetObjectOnTile(_areaOfEffect[i], GUARD))->TakeDamage(_damage);
 		}
 	}
+
 	SetActive(false);
 	//_animation->PlayAction(0);
 }
 
 void Trap::Update(float deltaTime)
 {	
-	if (_animation != nullptr)
+	if (_animation != nullptr && !_active)
 	{
 		_animation->Update(deltaTime);
 	}
