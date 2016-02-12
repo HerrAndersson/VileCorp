@@ -374,22 +374,7 @@ void Trap::Activate()
 			static_cast<Unit*>(_tileMap->GetObjectOnTile(_areaOfEffect[i], GUARD))->TakeDamage(_damage);
 		}
 	}
-	if (_animation != nullptr)
-	{
-		switch (_trapType)
-		{
-		case SPIKE:
-			_animation->PlayAction(0, 1.0f, true, true);
-			break;
-		case TESLACOIL:
-			_animation->PlayAction(1, 1.0f, true, false);
-			break;
-		case SHARK:
-			break;
-		default:
-			break;
-		}
-	}
+	Animate(ACTIVATE);
 }
 
 void Trap::Update(float deltaTime)
@@ -485,5 +470,40 @@ void Trap::SetTilePosition(AI::Vec2D pos)
 	default:
 		_areaOfEffect = nullptr;
 		break;
+	}
+}
+
+void Trap::Animate(Anim anim)
+{
+	if (_renderObject->_isSkinned)
+	{
+		if (_trapType == SPIKE)
+		{
+			switch (anim)
+			{
+			case IDLE:
+				_animation->SetActionAsCycle(0, 2.0f, false);
+				break;
+			case ACTIVATE:
+				_animation->PlayAction(0, 1.0f, true, true);
+				break;
+			default:
+				break;
+			}
+		}
+		else if (_trapType == TESLACOIL)
+		{
+			switch (anim)
+			{
+			case IDLE:
+				_animation->SetActionAsCycle(0, 2.0f, false);
+				break;
+			case ACTIVATE:
+				_animation->PlayAction(1, 1.0f, true, false);
+				break;
+			default:
+				break;
+			}
+		}
 	}
 }

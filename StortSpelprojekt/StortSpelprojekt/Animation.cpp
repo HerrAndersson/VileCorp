@@ -14,6 +14,7 @@ Animation::Animation(Skeleton* skeleton, bool firstFrame)
 	_currentCycle = 0;
 	_inactive = false;
 	_lastFrame = false;
+	_speed = 1.0f;
 
 	if (firstFrame)
 	{

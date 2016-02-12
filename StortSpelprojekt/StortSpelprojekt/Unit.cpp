@@ -13,10 +13,7 @@ void Unit::CalculatePath()
 				_tileMap->GetObjectOnTile(_path[i], FLOOR)->SetColorOffset({0,4,0});
 			}
 		}
-		if (_renderObject->_isSkinned)
-		{
-			_animation->SetActionAsCycle(1, 3.0f, false);
-		}
+		Animate(WALK);
 		_isMoving = true;
 		_direction = _path[--_pathLength] - _tilePosition;
 		Rotate();
@@ -142,7 +139,7 @@ Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	Rotate();
 	if (_renderObject->_isSkinned)
 	{
-		_animation = new Animation(_renderObject->_skeleton);
+		_animation = new Animation(_renderObject->_skeleton, true);
 		_animation->Freeze(false);
 	}
 	_trapInteractionTime = -1;
@@ -325,10 +322,6 @@ void Unit::Move()
 		_tilePosition += _direction;
 		_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,4,0});
 	}
-	else if (_renderObject->_isSkinned)
-	{
-		_animation->SetActionAsCycle(0, 1.0f, false);
-	}
 	if (_objective != nullptr && _objective->GetPickUpState() != ONTILE)			//Check that no one took your objective
 	{
 		_objective = nullptr;
@@ -348,6 +341,7 @@ void Unit::Move()
 	}
 	if (!_isFleeing && (!foundNextTile || (_objective != nullptr && _objective->InRange(_tilePosition))))
 	{
+		Animate(IDLE);
 		_isMoving = false;
 		if (_objective != nullptr && _objective->InRange(_tilePosition))
 		{
@@ -459,5 +453,23 @@ int Unit::GetVisionRadius() const
 	return _visionRadius;
 }
 
-
-
+void Unit::Animate(Anim anim)
+{
+	if (_renderObject->_isSkinned)
+	{
+		if (_renderObject->_type == GUARD)
+		{
+			switch (anim)
+			{
+			case IDLE:
+				_animation->SetActionAsCycle(0, 2.0f, false);
+				break;
+			case WALK:
+				_animation->SetActionAsCycle(1, 3.0f, false);
+				break;
+			default:
+				break;
+			}
+		}
+	}
+}
