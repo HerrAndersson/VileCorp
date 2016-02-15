@@ -4,7 +4,7 @@
 #include <vector>
 #include <stdexcept>
 
-class Grid
+class __declspec(dllexport) Grid
 {
 private:
 

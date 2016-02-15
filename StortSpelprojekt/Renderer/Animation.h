@@ -7,7 +7,7 @@
 
 using namespace DirectX;
 
-class Animation
+class __declspec(dllexport) Animation
 {
 private:
 
