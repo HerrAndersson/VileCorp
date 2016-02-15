@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Animation.cpp" />
+    <ClCompile Include="BlueprintNode.cpp" />
     <ClCompile Include="DirectXHandler.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="FontWrapper.cpp" />
@@ -37,6 +38,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h" />
+    <ClInclude Include="BlueprintNode.h" />
     <ClInclude Include="CCollectionLoader.h" />
     <ClInclude Include="CFontEnum.h" />
     <ClInclude Include="DirectXHandler.h" />

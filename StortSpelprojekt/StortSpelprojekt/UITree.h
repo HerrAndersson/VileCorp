@@ -1,5 +1,6 @@
 #pragma once
 #include "Node.h"
+#include "BlueprintNode.h"
 #include "AssetManager.h"
 #include "Settings/settings.h"
 #include "rapidjson/reader.h"
@@ -32,8 +33,7 @@ namespace GUI
 		void Resize(System::Settings* settings);
 		void Resize(Node* current);
 
-		int CreateTilesetObject(Tileset::Object* object, Node* list, int index);
-
+		int CreateTilesetObject(Tileset::Object* object, Node* list, int index, int type, int subtype);
 		bool IsButtonColliding(const std::string& id, int x, int y);
 		bool IsButtonColliding(Node* current, int x, int y);
 		Node* GetNode(const std::string& id);

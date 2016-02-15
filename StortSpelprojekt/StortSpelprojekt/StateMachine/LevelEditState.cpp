@@ -15,22 +15,22 @@ LevelEditState::LevelEditState(System::Controls* controls, ObjectHandler* object
 
 	std::map<Type, std::string> typeLists =
 	{
-		{	   FLOOR, "floorlist"		},
-		{	    WALL, "walllist"		},
-		{	    LOOT, "objectivelist"	},
-		{	   SPAWN, "entrylist"		},
-		{	    TRAP, "traplist"		},
-		{	  CAMERA, "traplist"		},
-		{	   GUARD, "unitlist"		},
-		{	   ENEMY, "unitlist"		},
-		{  FURNITURE, "decorationlist"	}
+		{ FLOOR, "floorlist" },
+		{ WALL, "walllist" },
+		{ LOOT, "objectivelist" },
+		{ SPAWN, "entrylist" },
+		{ TRAP, "traplist" },
+		{ CAMERA, "traplist" },
+		{ GUARD, "unitlist" },
+		{ ENEMY, "unitlist" },
+		{ FURNITURE, "decorationlist" }
 	};
 	for (unsigned i = 0; i < NR_OF_TYPES; i++)
 	{
 		int index = 0;
 		for (unsigned o = 0; o < _tileset->_objects[i].size(); o++)
 		{
-			index += _uiTree.CreateTilesetObject(&_tileset->_objects[i][o], _uiTree.GetNode(typeLists[(Type)i]), o);
+			index += _uiTree.CreateTilesetObject(&_tileset->_objects[i][o], _uiTree.GetNode(typeLists[(Type)i]), index, i, o);
 		}
 	}
 
@@ -38,6 +38,7 @@ LevelEditState::LevelEditState(System::Controls* controls, ObjectHandler* object
 	{
 		_buttonPositions[i] = _objectTabs->at(i)->GetLocalPosition();
 	}
+	_uiTree.GetRootNode()->SetPosition(_uiTree.GetRootNode()->GetFinalPosition());
 }
 
 LevelEditState::~LevelEditState()

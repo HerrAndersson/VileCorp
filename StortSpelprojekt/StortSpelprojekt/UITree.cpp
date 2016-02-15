@@ -62,7 +62,7 @@ namespace GUI
 		current->UpdateFont();
 	}
 
-	int UITree::CreateTilesetObject(Tileset::Object* object, Node* list, int index)
+	int UITree::CreateTilesetObject(Tileset::Object* object, Node* list, int index, int type, int subtype)
 	{
 		int createdThumbnails = 0;
 		if (list == nullptr)
@@ -71,8 +71,9 @@ namespace GUI
 		}
 		for (unsigned i = 0; i < object->_thumbnails.size(); i++)
 		{
-			Node* newNode = new Node(&_info);
+			BlueprintNode* newNode = new BlueprintNode(&_info, type, subtype, i);
 			int row = (index + createdThumbnails) % 28 / 4, column = (index + createdThumbnails) % 28 % 4, page = (index + createdThumbnails) / 28;
+
 			newNode->SetId(object->_name);
 			newNode->SetPosition(XMFLOAT2(-0.125 + (0.09 * column), 0.42 - (0.13 * row)));
 			newNode->SetScale(XMFLOAT2(0.04, 0.060));
