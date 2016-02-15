@@ -20,15 +20,17 @@ struct LevelLoad
 struct PlayerInfo
 {
 	std::string _name = "Jonas";
-	int _gold = 100;
+	int _gold = 1000;
 	int _level = 0;
+	bool _firstTime = true;
 	
 	template<class A>
 	void serialize(A& a)
 	{
 		a((CEREAL_NVP(_name)),
 		(CEREAL_NVP(_gold)),
-		(CEREAL_NVP(_level)));
+		(CEREAL_NVP(_level)),
+		(CEREAL_NVP(_firstTime)));
 	}
 };
 
@@ -81,8 +83,9 @@ struct SettingInfo
 struct GameObjectBaseInfo
 {
 	std::string _name = "proto";
-	unsigned _renderObject;
+	unsigned int _renderObject;
 	std::string _textureName;
+	virtual ~GameObjectBaseInfo(){}
 };
 
 struct GameObjectFloorInfo : GameObjectBaseInfo
@@ -93,6 +96,8 @@ struct GameObjectFloorInfo : GameObjectBaseInfo
 		a(CEREAL_NVP(_name)),
 		a(CEREAL_NVP(_textureName));
 	}
+	virtual ~GameObjectFloorInfo()
+	{}
 };
 
 struct GameObjectWallInfo : GameObjectBaseInfo
@@ -103,6 +108,7 @@ struct GameObjectWallInfo : GameObjectBaseInfo
 		a(CEREAL_NVP(_name)),
 		a(CEREAL_NVP(_textureName));
 	}
+
 };
 
 struct GameObjectLootInfo : GameObjectBaseInfo
@@ -125,6 +131,26 @@ struct GameObjectLootInfo : GameObjectBaseInfo
 };
 
 struct GameObjectSpawnInfo : GameObjectBaseInfo
+{
+
+	template<class A>
+	void serialize(A& a)
+	{
+		a(CEREAL_NVP(_name));
+	}
+};
+
+struct GameObjectCameraInfo : GameObjectBaseInfo
+{
+
+	template<class A>
+	void serialize(A& a)
+	{
+		a(CEREAL_NVP(_name));
+	}
+};
+
+struct GameObjectFurnitureInfo : GameObjectBaseInfo
 {
 
 	template<class A>
@@ -207,8 +233,10 @@ struct GameObjectInfo
 		_objects[LOOT] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectLootInfo*>;
 		_objects[SPAWN] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectSpawnInfo*>;
 		_objects[TRAP] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectTrapInfo*>;
+		_objects[CAMERA] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectCameraInfo*>;
 		_objects[GUARD] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectGuardInfo*>;
 		_objects[ENEMY] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectEnemyInfo*>;
+		_objects[FURNITURE] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectFurnitureInfo*>;
 	}
 	~GameObjectInfo()
 	{
@@ -216,7 +244,7 @@ struct GameObjectInfo
 		{
 			for (GameObjectBaseInfo* obj : *_objects[i])
 			{
-				delete (GameObjectEnemyInfo*)obj;
+				delete obj;
 			}
 			delete _objects[i];
 		}
@@ -237,6 +265,14 @@ struct GameObjectInfo
 			_objects[WALL]->push_back((GameObjectBaseInfo*)new GameObjectWallInfo());
 		}
 		return (GameObjectWallInfo*)_objects[WALL]->at(i);
+	}
+	GameObjectFurnitureInfo* Furnitures(unsigned i)
+	{
+		if (_objects[FURNITURE]->size() < i + 1)
+		{
+			_objects[FURNITURE]->push_back((GameObjectBaseInfo*)new GameObjectFurnitureInfo());
+		}
+		return (GameObjectFurnitureInfo*)_objects[FURNITURE]->at(i);
 	}
 	GameObjectLootInfo* Loot(unsigned i)
 	{
@@ -261,6 +297,14 @@ struct GameObjectInfo
 			_objects[TRAP]->push_back((GameObjectBaseInfo*)new GameObjectTrapInfo());
 		}
 		return (GameObjectTrapInfo*)_objects[TRAP]->at(i);
+	}
+	GameObjectCameraInfo* Cameras(unsigned i)
+	{
+		if (_objects[CAMERA]->size() < i + 1)
+		{
+			_objects[CAMERA]->push_back((GameObjectBaseInfo*)new GameObjectCameraInfo());
+		}
+		return (GameObjectCameraInfo*)_objects[CAMERA]->at(i);
 	}
 	GameObjectGuardInfo* Guards(unsigned i)
 	{

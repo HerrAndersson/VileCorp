@@ -44,10 +44,14 @@ namespace Renderer
 		ID3D11Buffer*					_matrixBufferPerObject;
 		ID3D11Buffer*					_matrixBufferPerFrame;
 
+		void CreateResources(ID3D11Device* device, int dimensions);
+
 	public:
 
 		ShadowMap(ID3D11Device* device, int dimensions);
 		virtual ~ShadowMap();
+
+		void Resize(ID3D11Device* device, int dimensions);
 
 		ID3D11ShaderResourceView* GetShadowSRV();
 		int GetSize();

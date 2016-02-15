@@ -25,4 +25,5 @@ public:
 	bool isSpawning();
 	void Disable();
 	void Enable();
+	int GetUnitsToSpawn()const;
 };

@@ -5,7 +5,7 @@
 #include <DirectXMath.h>
 #include <map>
 
-enum Type { FLOOR, WALL, LOOT, SPAWN, TRAP, GUARD, ENEMY, NR_OF_TYPES/*Has to be last*/ };
+enum Type { FLOOR, WALL, LOOT, SPAWN, TRAP, CAMERA, GUARD, ENEMY, FURNITURE, NR_OF_TYPES/*Has to be last*/ };
 
 struct Bone
 {
@@ -15,27 +15,33 @@ struct Bone
 
 struct Frame
 {
-	DirectX::XMFLOAT3 _translation;
-	DirectX::XMFLOAT4 _rotation;
-	DirectX::XMFLOAT3 _scale;
+	DirectX::XMVECTOR _translation;
+	DirectX::XMVECTOR _rotation;
+	DirectX::XMVECTOR _scale;
 };
 
 struct BoneFrames
 {
+	int _frameCount;
+	std::vector<float> _frameTime;
 	std::vector<Frame> _frames;
 };
 
 struct Action
 {
-	std::vector<float> _frameTime;
 	std::vector<BoneFrames> _bones;
 };
 
 struct Skeleton
 {
 	std::string _name;
-	std::vector<Bone> _skeleton;
+	std::vector<int> _parents;
+	DirectX::XMMATRIX* _bindposes;
 	std::vector<Action> _actions;
+	~Skeleton()
+	{
+		_aligned_free(_bindposes);
+	}
 };
 
 struct WeightedVertex

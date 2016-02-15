@@ -33,6 +33,7 @@
     <ClCompile Include="ObjectHandler.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="QuadTree.cpp" />
+    <ClCompile Include="SecurityCamera.cpp" />
     <ClCompile Include="SpawnPoint.cpp" />
     <ClCompile Include="StateMachine\BaseState.cpp" />
     <ClCompile Include="StateMachine\BaseEdit.cpp" />
@@ -41,6 +42,7 @@
     <ClCompile Include="StateMachine\LevelSelectState.cpp" />
     <ClCompile Include="StateMachine\MenuState.cpp" />
     <ClCompile Include="StateMachine\OptionsState.cpp" />
+    <ClCompile Include="StateMachine\PauseState.cpp" />
     <ClCompile Include="StateMachine\PlacementState.cpp" />
     <ClCompile Include="StateMachine\PlayState.cpp" />
     <ClCompile Include="StateMachine\SplashState.cpp" />
@@ -49,6 +51,7 @@
     <ClCompile Include="Trap.cpp" />
     <ClCompile Include="UITree.cpp" />
     <ClCompile Include="Unit.cpp" />
+    <ClCompile Include="VisionCone.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h" />
@@ -61,6 +64,7 @@
     <ClInclude Include="GameObjectDataLoader.h" />
     <ClInclude Include="LightCulling.h" />
     <ClInclude Include="QuadTree.h" />
+    <ClInclude Include="SecurityCamera.h" />
     <ClInclude Include="SpawnPoint.h" />
     <ClInclude Include="Grid.h" />
     <ClInclude Include="Guard.h" />
@@ -74,6 +78,7 @@
     <ClInclude Include="StateMachine\LevelSelectState.h" />
     <ClInclude Include="StateMachine\MenuState.h" />
     <ClInclude Include="StateMachine\OptionsState.h" />
+    <ClInclude Include="StateMachine\PauseState.h" />
     <ClInclude Include="StateMachine\PlacementState.h" />
     <ClInclude Include="StateMachine\PlayState.h" />
     <ClInclude Include="StateMachine\SplashState.h" />
@@ -84,6 +89,7 @@
     <ClInclude Include="Trap.h" />
     <ClInclude Include="UITree.h" />
     <ClInclude Include="Unit.h" />
+    <ClInclude Include="VisionCone.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AI\AI.vcxproj">
@@ -186,6 +192,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../System/yse/dll;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PreBuildEvent>
       <Command>
@@ -239,6 +246,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../System/yse/dll;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PreBuildEvent>
       <Command>

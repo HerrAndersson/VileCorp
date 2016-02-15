@@ -1,13 +1,15 @@
 #include "MenuState.h"
 
-MenuState::MenuState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::Settings* settings)
-	: BaseState (controls, objectHandler, camera, pickingDevice, filename, "MENU", assetManager, fontWrapper, settings)
+MenuState::MenuState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::Settings* settings, System::SoundModule* soundModule)
+	: BaseState (controls, objectHandler, camera, pickingDevice, filename, "MENU", assetManager, fontWrapper, settings, soundModule)
 {
 	_controls = controls;
 	_objectHandler = objectHandler;
 	
 	_camera = camera;
 	_pickingDevice = pickingDevice;
+
+	_soundModule->AddSound("Assets/Sounds/page.wav",1.0f, 1.0f, true, false);
 }
 
 MenuState::~MenuState()
@@ -26,19 +28,19 @@ void MenuState::Update(float deltaTime)
 		System::MouseCoord coord = _controls->GetMouseCoord();
 		if (_uiTree.IsButtonColliding("playbutton", coord._pos.x, coord._pos.y))
 		{
-			ChangeState(State::PLACEMENTSTATE);
+			_soundModule->Stop("Assets/Sounds/theme.wav");
+			_soundModule->Play("Assets/Sounds/page.wav");
+
+			ChangeState(State::LEVELSELECTSTATE);
 		}
 		if (_uiTree.IsButtonColliding("optionsbutton", coord._pos.x, coord._pos.y))
 		{
+			_soundModule->Play("Assets/Sounds/page.wav");
 			ChangeState(State::OPTIONSSTATE);
 		}
 		if (_uiTree.IsButtonColliding("leveleditbutton", coord._pos.x, coord._pos.y))
 		{
 			ChangeState(State::LEVELEDITSTATE);
-		}
-		if (_uiTree.IsButtonColliding("levelselectbutton", coord._pos.x, coord._pos.y))
-		{
-			ChangeState(State::LEVELSELECTSTATE);
 		}
 		if (_uiTree.IsButtonColliding("exitbutton", coord._pos.x, coord._pos.y))
 		{
@@ -47,16 +49,16 @@ void MenuState::Update(float deltaTime)
 	}
 	if (_controls->IsFunctionKeyDown("MENU:MENU"))
 	{
-		PostQuitMessage(0);
+		ChangeState(State::EXITSTATE);
 	}
 }
 
 void MenuState::OnStateEnter()
 {
-	
+	_objectHandler->UnloadLevel();
 }
 
 void MenuState::OnStateExit()
 {
-
+	
 }

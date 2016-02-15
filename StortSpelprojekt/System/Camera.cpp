@@ -73,11 +73,11 @@ namespace System
 		Update();
 	}
 
-	void Camera::Move(const DirectX::XMFLOAT3& offset)
+	void Camera::Move(const DirectX::XMFLOAT3& offset, double deltaTime)
 	{
-		_position.x += offset.x;
-		_position.y += offset.y;
-		_position.z += offset.z;
+		_position.x += offset.x * deltaTime / 10;
+		_position.y += offset.y * deltaTime / 10;
+		_position.z += offset.z * deltaTime / 10;
 		Update();
 	}
 
@@ -89,6 +89,14 @@ namespace System
 	void Camera::SetRotation(const DirectX::XMFLOAT3& rotation)
 	{
 		_rotation = rotation;
+		Update();
+	}
+
+	void Camera::Rotate(const DirectX::XMFLOAT3& offset)
+	{
+		_rotation.x += offset.x;
+		_rotation.y += offset.y;
+		_rotation.z += offset.z;
 		Update();
 	}
 

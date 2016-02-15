@@ -17,7 +17,7 @@ private:
 	std::vector<std::vector<GameObject*>>* _objectsInLight;
 
 	//LightCulling
-	std::vector<Vec2>* TransformSpotlight(Renderer::Spotlight* spotlight);
+	void TransformSpotlight(Renderer::Spotlight* spotlight, std::vector<Vec2>* triangle);
 
 	//FrustumCulling
 	//Ray CalculateFrustumEdge(float x, float y, System::Camera* camera);

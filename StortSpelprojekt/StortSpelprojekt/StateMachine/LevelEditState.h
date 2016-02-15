@@ -6,7 +6,7 @@
 class LevelEditState : public BaseState
 {
 private:
-	BaseEdit _baseEdit;
+	BaseEdit* _baseEdit;
 
 	struct LevelHeader
 	{
@@ -45,7 +45,7 @@ private:
 	
 
 public:
-	LevelEditState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::Settings* settings);
+	LevelEditState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::Settings* settings, System::SoundModule* soundModule);
 	virtual ~LevelEditState();
 
 	void Update(float deltaTime);
@@ -55,6 +55,5 @@ public:
 	void HandleInput();
 	void HandleButtons();
 
-	void InitNewLevel();
 	void ExportLevel();
 };

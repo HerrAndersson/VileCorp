@@ -501,12 +501,15 @@ namespace Renderer
 	{
 		float color[] = { red, green, blue, alpha };
 
-		_deviceContext->ClearRenderTargetView(_backBufferRTV, color);
+		//No need to clear all targets if the scene fills the whole screen. Then it will just be overwritten by the draw calls, and there will be no trailing effect 
+		//_deviceContext->ClearRenderTargetView(_backBufferRTV, color);
+		//for (int i = 0; i < BUFFER_COUNT; i++)
+		//{
+		//	_deviceContext->ClearRenderTargetView(_deferredRTVArray[i], color);
+		//}
 
-		for (int i = 0; i < BUFFER_COUNT; i++)
-		{
-			_deviceContext->ClearRenderTargetView(_deferredRTVArray[i], color);
-		}
+		// TODO: replace with something else
+		_deviceContext->ClearRenderTargetView(_deferredRTVArray[2], color);
 
 		_deviceContext->ClearDepthStencilView(_backBufferDSV, D3D11_CLEAR_DEPTH, 1.0f, 0);
 	}
