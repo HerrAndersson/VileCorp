@@ -72,6 +72,8 @@ public:
 	bool IsArchitectureOnTile(AI::Vec2D pos)const;
 	bool IsWallOnTile(int x, int z)const;
 	bool IsWallOnTile(AI::Vec2D pos)const;
+	bool IsFurnitureOnTile(int x, int z)const;
+	bool IsFurnitureOnTile(AI::Vec2D pos)const;
 	bool IsFloorOnTile(int x, int z)const;
 	bool IsFloorOnTile(AI::Vec2D pos)const;
 	int UnitsOnTile(int x, int z)const;

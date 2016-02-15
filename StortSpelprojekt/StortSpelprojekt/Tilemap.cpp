@@ -335,6 +335,16 @@ bool Tilemap::IsWallOnTile(AI::Vec2D pos) const
 	return IsWallOnTile(pos._x, pos._y);
 }
 
+bool Tilemap::IsFurnitureOnTile(int x, int z) const
+{
+	return IsValid(x, z) && _map[x][z]._objectsOnTile[3] != nullptr;
+}
+
+bool Tilemap::IsFurnitureOnTile(AI::Vec2D pos) const
+{
+	return IsFurnitureOnTile(pos._x, pos._y);
+}
+
 bool Tilemap::IsFloorOnTile(int x, int z) const
 {
 	return IsArchitectureOnTile(x, z) && _map[x][z]._objectsOnTile[0]->GetType() == FLOOR;

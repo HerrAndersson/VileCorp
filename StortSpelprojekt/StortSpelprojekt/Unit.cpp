@@ -231,7 +231,7 @@ void Unit::CheckAllTiles()
 		for (int j = 0; j < _tileMap->GetHeight(); j++)
 		{
 			//Handle walls
-			if (_tileMap->IsWallOnTile(AI::Vec2D(i, j)))
+			if (_tileMap->IsWallOnTile(AI::Vec2D(i, j)) || _tileMap->IsFurnitureOnTile(AI::Vec2D(i, j)))
 			{
 				_aStar->SetTileCost({ i, j }, -1);
 			}
