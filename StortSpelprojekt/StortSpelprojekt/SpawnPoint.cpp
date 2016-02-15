@@ -66,3 +66,8 @@ void SpawnPoint::Enable()
 {
 	_enabled = true;
 }
+
+int SpawnPoint::GetUnitsToSpawn() const
+{
+	return _unitsToSpawn;
+}

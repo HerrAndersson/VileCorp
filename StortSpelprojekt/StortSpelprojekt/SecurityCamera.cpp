@@ -18,9 +18,9 @@ void SecurityCamera::Rotate()
 		}
 		CalculateMatrix();
 	}
-	_visionCone->ColorVisibleTiles({0,0,0});
+	//_visionCone->ColorVisibleTiles({0,0,0});
 	_visionCone->FindVisibleTiles(_tilePosition, _direction);
-	_visionCone->ColorVisibleTiles({0,0,3});
+	//_visionCone->ColorVisibleTiles({0,0,3});
 	CheckVisibleTiles();
 }
 
@@ -63,7 +63,7 @@ void SecurityCamera::SetDirection(AI::Vec2D direction)
 
 void SecurityCamera::CheckVisibleTiles()
 {
-	_visionCone->ColorVisibleTiles({0,0,3});
+//	_visionCone->ColorVisibleTiles({0,0,3});
 	AI::Vec2D tile = {0,0};
 	for (size_t i = 0; i < _visionCone->GetNrOfVisibleTiles(); i++)
 	{

@@ -82,7 +82,7 @@ void Enemy::EvaluateTile(GameObject* obj)
 		//Head to the objective
 		if (obj->GetPickUpState() == ONTILE && 
 			tempPriority > 0 &&
-			obj->GetTilePosition() != _tilePosition && 
+ 			obj->GetTilePosition() != _tilePosition && 
 			(_pathLength <= 0 || tempPriority * GetApproxDistance(obj->GetTilePosition()) < _goalPriority * GetApproxDistance(GetGoal())))
 		{
 			_goalPriority = tempPriority;
@@ -91,6 +91,8 @@ void Enemy::EvaluateTile(GameObject* obj)
 		//Head for the exit, all objectives are taken
 		else if (_heldObject == nullptr && _pathLength <= 0 && !_isFleeing)
 		{
+			//Lowest possible priority, temporary solution that will be solved with the state machine, Aron and Victor
+			_goalPriority = _MAX_INT_DIG;
 			SetGoal(obj);
 		}
 	}
@@ -98,23 +100,25 @@ void Enemy::EvaluateTile(GameObject* obj)
 
 void Enemy::act(GameObject* obj)
 {
-	switch (obj->GetType())
+	if (obj != nullptr)
 	{
-	case LOOT:
-		if (_heldObject == nullptr)
+		switch (obj->GetType())
 		{
-			obj->SetPickUpState(PICKINGUP);
-			_heldObject = obj;
-			obj->SetVisibility(_visible);
-		}
-		break;
-	case SPAWN:
-		if (_heldObject != nullptr)
-		{
-			TakeDamage(10);						//TODO: Right now despawn is done by killing the unit. This should be changed to reflect that it's escaping --Victor
-		}
-		break;
-	case TRAP:
+		case LOOT:
+			if (_heldObject == nullptr)
+			{
+				obj->SetPickUpState(PICKINGUP);
+				_heldObject = obj;
+				obj->SetVisibility(_visible);
+			}
+			break;
+		case SPAWN:
+			if (_heldObject != nullptr)
+			{
+				TakeDamage(10);						//TODO: Right now despawn is done by killing the unit. This should be changed to reflect that it's escaping --Victor
+			}
+			break;
+		case TRAP:
 		{
 			if (static_cast<Trap*>(obj)->IsTrapActive())
 			{
@@ -134,16 +138,17 @@ void Enemy::act(GameObject* obj)
 			}
 		}
 		break;
-	case GUARD:
-		if (static_cast<Unit*>(obj)->GetHealth() > 0)
-		{
-			static_cast<Unit*>(obj)->TakeDamage(10);
+		case GUARD:
+			if (static_cast<Unit*>(obj)->GetHealth() > 0)
+			{
+				static_cast<Unit*>(obj)->TakeDamage(10);
+			}
+			break;
+		case ENEMY:
+			break;
+		default:
+			break;
 		}
-		break;
-	case ENEMY:
-		break;
-	default:
-		break;
 	}
 }
 
@@ -186,7 +191,7 @@ bool Enemy::SpotTrap(Trap * trap)
 			trap->SetVisibleToEnemies(true);
 		}
 	}
-	trap->SetColorOffset({ 3, 0, 3 });
+	//trap->SetColorOffset({ 3, 0, 3 });
 	return trap->IsVisibleToEnemies();
 }
 
@@ -199,7 +204,6 @@ void Enemy::DisarmTrap(Trap * trap)
 		if (disarmRoll + _disarmSkill - trap->GetDisarmDifficulty() >= 50)
 		{
 			trap->SetTrapActive(false);
-			trap->SetColorOffset({ 4,4,0 });
 		}
 		else
 		{

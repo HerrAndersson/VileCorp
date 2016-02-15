@@ -111,6 +111,9 @@ bool ObjectHandler::Add(Type type, int index, const XMFLOAT3& position, const XM
 	case GUARD:
 		object = MakeGuard(_gameObjectInfo->Guards(index), position, rotation);
 		break;
+	case FURNITURE:
+		object = MakeFurniture(_gameObjectInfo->Furnitures(index), position, rotation);
+		break;
 	default:	
 		break;
 	}
@@ -147,7 +150,7 @@ bool ObjectHandler::Add(Type type, int index, const XMFLOAT3& position, const XM
 			for (int i = 0; i < trap->GetTileSize() && addedObject; i++)
 			{
 				_tilemap->AddObjectToTile(arr[i], object);
-				_tilemap->GetObjectOnTile(arr[i], FLOOR)->AddColorOffset({2,0,0});
+			//	_tilemap->GetObjectOnTile(arr[i], FLOOR)->AddColorOffset({2,0,0});
 			}
 		}
 
@@ -648,6 +651,16 @@ void ObjectHandler::DisableSpawnPoints()
 	}
 }
 
+int ObjectHandler::GetRemainingToSpawn() const
+{
+	int result = 0;
+	for (GameObject* g : _gameObjects[3])
+	{
+		result += static_cast<SpawnPoint*>(g)->GetUnitsToSpawn();
+	}
+	return result;
+}
+
 void ObjectHandler::Update(float deltaTime)
 {
 	//Update all objects' gamelogic
@@ -774,7 +787,11 @@ void ObjectHandler::Update(float deltaTime)
 			//}
 		}
 	}
+	UpdateLights();
+}
 
+void ObjectHandler::UpdateLights()
+{
 	for (pair<GameObject*, Renderer::Spotlight*> spot : _spotlights)
 	{
 		if (spot.second->IsActive() && spot.first->IsActive())
@@ -858,6 +875,19 @@ Architecture * ObjectHandler::MakeWall(GameObjectWallInfo * data, const XMFLOAT3
 	return obj;
 }
 
+Architecture * ObjectHandler::MakeFurniture(GameObjectFurnitureInfo * data, const XMFLOAT3& position, const XMFLOAT3& rotation)
+{
+	Architecture* obj = new Architecture(
+		_idCount,
+		position,
+		rotation,
+		AI::Vec2D((int)position.x, (int)position.z),
+		FURNITURE,
+		_assetManager->GetRenderObject(13));
+
+	return obj;
+}
+
 Architecture * ObjectHandler::MakeLoot(GameObjectLootInfo * data, const XMFLOAT3& position, const XMFLOAT3& rotation)
 {
 	Architecture* obj = new Architecture(
@@ -881,7 +911,7 @@ SpawnPoint * ObjectHandler::MakeSpawn(GameObjectSpawnInfo * data, const XMFLOAT3
 		rotation,
 		AI::Vec2D((int)position.x, (int)position.z),
 		SPAWN,
-		_assetManager->GetRenderObject(data->_renderObject),
+		_assetManager->GetRenderObject(4),
 		180, 2);
 
 	// read more data

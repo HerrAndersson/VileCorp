@@ -40,7 +40,7 @@ private:
 	bool _isPlace;
 	bool _modeLock;
 
-	void HandleInput();
+	void HandleInput(double deltaTime);
 	
 	bool CheckValidity(AI::Vec2D tile, Type type);
 	void SetValidity(Marker* m, Type type);
@@ -57,6 +57,8 @@ public:
 	~BaseEdit();
 
 	GameObject* GetSelectedObject();
+	bool DeleteSelectedObject();
+
 	bool Add(Type type, const std::string& name);
 	bool Delete(Type type);
 	bool TypeOn(Type type);

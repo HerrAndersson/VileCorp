@@ -20,12 +20,14 @@ private:
 	GUI::UITree*			_uiTree;
 	AssetManager*			_assetManager;
 	ID3D11ShaderResourceView* _guardTexture;
+	bool					_gameDone;
 
-	void HandleInput();
+	void HandleInput(float deltaTime);
 public:
 	GameLogic(ObjectHandler* objectHandler, System::Camera* camera, System::Controls* controls, PickingDevice* pickingDevice, GUI::UITree* uiTree, AssetManager* assetManager);
 	~GameLogic();
 	void Update(float deltaTime);
+	bool IsGameDone()const;
 };
 
 

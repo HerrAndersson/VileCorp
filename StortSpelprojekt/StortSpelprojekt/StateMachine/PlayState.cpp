@@ -24,14 +24,23 @@ void PlayState::Update(float deltaTime)
 	{
 		ChangeState(State::PAUSESTATE);
 	}
+	if (_gameLogic->IsGameDone() && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
+	{
+		ChangeState(State::MENUSTATE);
+	}
+	if (_controls->IsFunctionKeyDown("MOUSE:SELECT") && !_uiTree.GetNode("Tutorial")->GetHidden())
+	{
+		_uiTree.GetNode("Tutorial")->SetHidden(true);
+		_objectHandler->EnableSpawnPoints();
+	}
 
 	_gameLogic->Update(deltaTime);
 }
 
 void PlayState::OnStateEnter()
 {
+	_uiTree.GetNode("Tutorial")->SetHidden(false);
 	_gameLogic = new GameLogic(_objectHandler, _camera, _controls, _pickingDevice, &_uiTree, _assetManager);
-	_objectHandler->EnableSpawnPoints();
 }
 
 void PlayState::OnStateExit()

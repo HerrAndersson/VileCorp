@@ -88,10 +88,10 @@ void Guard::act(GameObject* obj)
 				else if (_trapInteractionTime == 0)
 				{
 					static_cast<Trap*>(obj)->SetTrapActive(true);
-					obj->SetColorOffset({0,0,0});
+				//	obj->SetColorOffset({0,0,0});
+					ClearObjective();
 				}
 			}
-			ClearObjective();
 			break;
 		case ENEMY:											//The guard hits the enemy
 			static_cast<Unit*>(obj)->TakeDamage(1);
@@ -123,14 +123,17 @@ void Guard::act(GameObject* obj)
 
 void Guard::SetPatrolPoint(AI::Vec2D patrolPoint)
 {
-	if (_patrolRoute.empty())
+	if (patrolPoint != _tilePosition)
 	{
-		_patrolRoute.push_back(_tilePosition);
-		_currentPatrolGoal = 1;
+		if (_patrolRoute.empty())
+		{
+			_patrolRoute.push_back(_tilePosition);
+			_currentPatrolGoal = 1;
 
+		}
+		_patrolRoute.push_back(patrolPoint);
+		SetGoal(_patrolRoute[_currentPatrolGoal % _patrolRoute.size()]);
 	}
-	_patrolRoute.push_back(patrolPoint);
-	SetGoal(_patrolRoute[_currentPatrolGoal % _patrolRoute.size()]);
 }
 
 void Guard::RemovePatrol()
