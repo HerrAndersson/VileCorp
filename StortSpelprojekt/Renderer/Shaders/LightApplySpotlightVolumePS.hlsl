@@ -54,22 +54,27 @@ float3 ReconstructWorldFromCamDepth(float2 uv)
 	return float3(worldPos.xyz / worldPos.w);
 }
 
+//Checks if a given position is inside the cone of the spotlight
+bool IsPositionWithinCone(float3 conePos, float3 coneDirection, float3 position, float coneFov, float maxDistance)
+{
+	float3 differenceVector = position - conePos;
+	float l = length(differenceVector);
+	differenceVector *= (1 / l);
+
+	if (l > maxDistance)
+	{
+		return false;
+	}
+
+	return (dot(coneDirection,differenceVector) >= cos(coneFov/2));
+}
+
 float4 main(VS_OUT input) : SV_TARGET
 {
 	float lightAngleDiv2 = lightAngle / 2;
 	float2 uv = float2((input.pos.x) / screenWidth, (input.pos.y) / screenHeight);
 
 	float4 normal = normalize(float4(normalTex.Sample(samplerWrap, uv).xyz, 0.0f));
-
-	//Save this for debugging //Jonas
-	//if (uv.x < 0.75f && uv.y < 0.75f && uv.x > 0.25f && uv.y > 0.25f)
-	//{
-	//	return pow(camDepthMap.Sample(samplerWrap, uv).r,10);
-	//}
-	//if (uv.x > 0.8f && uv.y < 0.2f)
-	//{
-	//	return pow(lightDepthMap.Sample(samplerWrap, uv*5.0f).r,10);
-	//}
 
 	float3 worldPos = ReconstructWorldFromCamDepth(uv);
 	float3 pixToLight = lightPosition - worldPos;
@@ -81,9 +86,9 @@ float4 main(VS_OUT input) : SV_TARGET
 
 	float3 nLightDir = normalize(lightDirection);
 	float pixToLightAngle = acos(dot(nLightDir, -pixToLight));
-	
-	//Inside of the volume
-	if (howMuchLight > 0.0f && l < lightRange && pixToLightAngle <= lightAngleDiv2)
+
+	//Inside the cone
+	if (howMuchLight > 0.0f && IsPositionWithinCone(lightPosition, lightDirection, worldPos, lightAngle, lightRange))
 	{
 		//Sample and add shadows for the shadow map.
 		float4 lightSpacePos = float4(worldPos, 1.0f);

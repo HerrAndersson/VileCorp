@@ -246,21 +246,21 @@ namespace Renderer
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
 		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
 
-		XMMATRIX world = XMMatrixTranslation(position.x, position.y, position.z);
-		XMMATRIX worldMatrixC = XMMatrixTranspose(world);
-
 		result = deviceContext->Map(_matrixBufferParticles, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 		if (FAILED(result))
 		{
 			throw std::runtime_error("RenderModule::SetDataPerObject: Failed to Map _matrixBufferPerObject");
 		}
 
+		XMMATRIX world = XMMatrixTranslation(position.x, position.y, position.z);
+
 		MatrixBufferPerParticleEmitter* dataPtr = static_cast<MatrixBufferPerParticleEmitter*>(mappedResource.pData);
-		dataPtr->_world = worldMatrixC;
-		dataPtr->_camView = *camView;
-		dataPtr->_camProjection = *camProjection;
+		dataPtr->_world = XMMatrixTranspose(world);
+		dataPtr->_camView = XMMatrixTranspose(*camView);
+		dataPtr->_camProjection = XMMatrixTranspose(*camProjection);
 		dataPtr->_camPosition = camPos;
 		dataPtr->_color = color;
+		dataPtr->pad = 0;
 		dataPtr->_ambientLight = AMBIENT_LIGHT;
 		deviceContext->Unmap(_matrixBufferParticles, 0);
 

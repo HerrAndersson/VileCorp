@@ -75,9 +75,9 @@ namespace System
 
 	void Camera::Move(const DirectX::XMFLOAT3& offset, double deltaTime)
 	{
-		_position.x += offset.x * deltaTime / 10;
-		_position.y += offset.y * deltaTime / 10;
-		_position.z += offset.z * deltaTime / 10;
+		_position.x += offset.x * deltaTime / 10.0f;
+		_position.y += offset.y * deltaTime / 10.0f;
+		_position.z += offset.z * deltaTime / 10.0f;
 		Update();
 	}
 

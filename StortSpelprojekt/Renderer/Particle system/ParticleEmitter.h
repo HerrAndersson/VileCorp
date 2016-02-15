@@ -45,7 +45,6 @@ namespace Renderer
 
 		void Update(double deltaTime);
 
-		std::vector<Particle>* GetParticles();
 		ID3D11Buffer* GetParticleBuffer();
 
 		DirectX::XMFLOAT3 GetPosition() const;

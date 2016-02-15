@@ -31,7 +31,8 @@ namespace Renderer
 
 		for (int i = 0; i < particleCount; i++)
 		{
-			Particle particle(position, XMFLOAT3(0, 1, 0), color);
+			//TODO: Set small offsets on particle position
+			Particle particle(XMFLOAT3(0, 0, 0), XMFLOAT3(0, 1, 0), color);
 			_particles.push_back(particle);
 		}
 
@@ -40,10 +41,10 @@ namespace Renderer
 
 	ParticleEmitter::~ParticleEmitter()
 	{
-		_particles.clear();
 		SAFE_RELEASE(_particlePointsBuffer);
 		_device = nullptr;
 		_deviceContext = nullptr;
+		_particles.clear();
 	}
 
 	//Used for initializing the vertex buffer that is holding all the positions of the particles
@@ -117,7 +118,8 @@ namespace Renderer
 		
 		for (int i = 0; i < particleCount; i++)
 		{
-			Particle particle(position, XMFLOAT3(0, 1, 0), color);
+			//TODO: Set small offsets on position?
+			Particle particle(XMFLOAT3(0, 0, 0), XMFLOAT3(0, 1, 0), color);
 			_particles.push_back(particle);
 		}
 
@@ -132,11 +134,11 @@ namespace Renderer
 		}
 		else
 		{
-			for (Particle& i : _particles)
+			for (Particle& p : _particles)
 			{
-				if (i.IsActive())
+				if (p.IsActive())
 				{
-					i.Update(deltaTime, _type);
+					p.Update(deltaTime, _type);
 				}
 			}
 		}
@@ -149,11 +151,6 @@ namespace Renderer
 	ID3D11Buffer* ParticleEmitter::GetParticleBuffer()
 	{
 		return _particlePointsBuffer;
-	}
-
-	std::vector<Particle>* ParticleEmitter::GetParticles()
-	{
-		return &_particles;
 	}
 
 	XMFLOAT3 ParticleEmitter::GetPosition() const

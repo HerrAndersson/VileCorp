@@ -19,6 +19,9 @@ MenuState::~MenuState()
 
 void MenuState::Update(float deltaTime)
 {
+
+	//ChangeState(State::PLACEMENTSTATE);
+
 	if (_controls->IsFunctionKeyDown("DEBUG:RELOAD_GUI"))
 	{
 		_uiTree.ReloadTree("../../../../StortSpelprojekt/Assets/gui.json", "MENU");

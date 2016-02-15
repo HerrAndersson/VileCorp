@@ -1,4 +1,5 @@
 #include "ParticleHandler.h"
+#include <../stdafx.h>
 
 namespace Renderer
 {
@@ -7,23 +8,30 @@ namespace Renderer
 	{
 		_device = device;
 		_deviceContext = deviceContext;
-		_emitterCount = 5;
-		_particleEmitters.reserve(_emitterCount);
+		_emitterCount = 0;
+
+		_particleEmitters.reserve(5);
 		for (int i = 0; i < _emitterCount; i++)
 		{
-			_particleEmitters.push_back(ParticleEmitter(device, deviceContext));
+			_particleEmitters.push_back(new ParticleEmitter(device, deviceContext));
 		}
 
-		_queue.reserve(_emitterCount);
+		_queue.reserve(5);
 
 		_requestQueue = new ParticleRequestQueue(&_queue);
 	}
 
 	ParticleHandler::~ParticleHandler()
 	{
-		delete _requestQueue;
+		SAFE_DELETE(_requestQueue);
 		_queue.clear();
+
+		for (ParticleEmitter* p : _particleEmitters)
+		{
+			SAFE_DELETE(p);
+		}
 		_particleEmitters.clear();
+
 		_device = nullptr;
 		_deviceContext = nullptr;
 	}
@@ -31,11 +39,11 @@ namespace Renderer
 	void ParticleHandler::Update(double deltaTime)
 	{
 		//Update the active emitters and particles
-		for (ParticleEmitter& p : _particleEmitters)
+		for (ParticleEmitter* p : _particleEmitters)
 		{
-			if (p.IsActive())
+			if (p->IsActive())
 			{
-				p.Update(deltaTime);
+				p->Update(deltaTime);
 			}
 		}
 
@@ -54,11 +62,11 @@ namespace Renderer
 	{
 		bool found = false;
 
-		for (ParticleEmitter& p : _particleEmitters)
+		for (ParticleEmitter* p : _particleEmitters)
 		{
-			if (!p.IsActive())
+			if (!p->IsActive())
 			{
-				p.Reset(type, position, color, particleCount, timeLimit, isActive);
+				p->Reset(type, position, color, particleCount, timeLimit, isActive);
 				found = true;
 				break;
 			}
@@ -66,13 +74,9 @@ namespace Renderer
 
 		if (!found)
 		{
-			ParticleEmitter particleEmitter(_device, _deviceContext,type, position, color, particleCount, timeLimit, isActive);
+			ParticleEmitter* particleEmitter = new ParticleEmitter(_device, _deviceContext,type, position, color, particleCount, timeLimit, isActive);
 			_particleEmitters.push_back(particleEmitter);
-
-			if (_emitterCount > (signed)_particleEmitters.capacity())
-			{
-				_emitterCount++;
-			}
+			_emitterCount++;
 		}
 	}
 
@@ -94,7 +98,7 @@ namespace Renderer
 			throw std::runtime_error("ParticleHandler::GetEmitter(int index): Invalid index");
 		}
 
-		ParticleEmitter* emitter = &_particleEmitters.at(index);
+		ParticleEmitter* emitter = _particleEmitters.at(index);
 		if (!emitter->IsActive())
 		{
 			emitter = nullptr;

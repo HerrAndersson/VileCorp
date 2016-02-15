@@ -21,7 +21,7 @@ namespace Renderer
 
 		std::vector<ParticleRequestMessage> _queue;
 		ParticleRequestQueue* _requestQueue;
-		std::vector<ParticleEmitter> _particleEmitters;
+		std::vector<ParticleEmitter*> _particleEmitters;
 
 		int _emitterCount;
 

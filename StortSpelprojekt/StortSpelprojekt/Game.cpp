@@ -88,10 +88,10 @@ bool Game::Update(double deltaTime)
 
 	if (_controls->IsFunctionKeyDown("DEBUG:REQUEST_PARTICLE"))
 	{
-		XMFLOAT3 pos = XMFLOAT3(rand() % 20 + 1, 0.0f, rand() % 20 + 1);
+		XMFLOAT3 pos = XMFLOAT3(16, 1.0f, 4);
 		XMFLOAT4 col = XMFLOAT4((rand() % 10) / 10.0f, (rand() % 10) / 10.0f, (rand() % 10) / 10.0f, 1.0f);
 
-		ParticleRequestMessage msg = ParticleRequestMessage(ParticleType::SPLASH, pos, col, 10000.0f, 50, true);
+		ParticleRequestMessage msg = ParticleRequestMessage(ParticleType::SPLASH, pos, col, 1000.0f, 50, true);
 		_particleHandler->GetParticleRequestQueue()->Insert(msg);
 	}
 	int witefoijesdjgsoieg = 34874685;
@@ -100,7 +100,7 @@ bool Game::Update(double deltaTime)
 
 
 
-	if (_SM->GetState() == PLAYSTATE)
+/*
 	{
 		_enemies = _objectHandler->GetAllByType(ENEMY);
 		_loot = _objectHandler->GetAllByType(LOOT);
@@ -122,6 +122,7 @@ bool Game::Update(double deltaTime)
 			}
 		}
 	}
+	*/
 	return run;
 }
 
@@ -132,7 +133,6 @@ void Game::Render()
 
 	/*///////////////////////////////////////////////////////  Geometry pass  ////////////////////////////////////////////////////////////
 	Render the objects to the diffuse and normal resource views. Camera depth is also generated here.									*/
-
 	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::GEO_PASS);
 
 	std::vector<std::vector<GameObject*>>* gameObjects = _objectHandler->GetGameObjects();
@@ -168,7 +168,6 @@ void Game::Render()
 					{
 						_renderModule->Render(i.at(j)->GetMatrix(), vertexBufferSize, i.at(j)->GetColorOffset());
 					}
-					
 				}
 			}
 		}
@@ -176,22 +175,7 @@ void Game::Render()
 
 	/*--------------------------------------------------  Render skinned objects  -----------------------------------------------------*/
 	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::ANIM_STAGE);
-	if (gameObjects->size() > 0)
-	{
-		if (gameObjects->at(GUARD).size() > 0)
-		{
-			RenderObject* renderObject = gameObjects->at(GUARD).at(0)->GetRenderObject();
-
-			_renderModule->SetDataPerObjectType(renderObject);
-			int vertexBufferSize = renderObject->_mesh._vertexBufferSize;
-
-			for (GameObject* a : gameObjects->at(GUARD))
-			{
-				// temporary uncommenting
-				//_renderModule->RenderAnimation(a->GetMatrix(), vertexBufferSize, a->GetAnimation()->GetFloats(), a->GetColorOffset());
-			}
-		}
-	}
+	
 	// Now every gameobject can be animated
 	for (auto i : *gameObjects)
 	{
@@ -223,20 +207,18 @@ void Game::Render()
 					{
 						_renderModule->RenderAnimation(i.at(j)->GetMatrix(), vertexBufferSize, i.at(j)->GetAnimation()->GetFloats(), i.at(j)->GetColorOffset());
 					}
-
 				}
 			}
 		}
 	}
 
 	/*------------------------------------------------  Render billboarded objects  ---------------------------------------------------*/
-
 	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::BILLBOARDING_STAGE);
 
 	int count = _particleHandler->GetEmitterCount();
 	for (int i = 0; i < count; i++)
 	{
-	    Renderer::ParticleEmitter* emitter = _particleHandler->GetEmitter(i);
+		Renderer::ParticleEmitter* emitter = _particleHandler->GetEmitter(i);
 
 		if (emitter)
 		{
@@ -245,7 +227,7 @@ void Game::Render()
 			if (vertexBuffer)
 			{
 				XMFLOAT4 color(0.1f, 0.6f, 0.25f, 1.0f);
-				XMFLOAT3 pos(11, 1, 11);
+				XMFLOAT3 pos(12, 1, 2);
 				_renderModule->SetDataPerParticleEmitter(pos, color, _camera->GetViewMatrix(), _camera->GetProjectionMatrix(), _camera->GetPosition());
 				_renderModule->RenderParticles(vertexBuffer, emitter->GetBufferSize(), emitter->GetParticleCount());
 
@@ -257,9 +239,9 @@ void Game::Render()
 	/*-------------------------------------------------------  Render grid  -----------------------------------------------------------*/
 	if (_SM->GetState() == LEVELEDITSTATE)
 	{
-		Grid* gr = _objectHandler->GetBuildingGrid();
-
 		_renderModule->SetShaderStage(Renderer::RenderModule::GRID_STAGE);
+
+		Grid* gr = _objectHandler->GetBuildingGrid();
 		_renderModule->SetDataPerLineList(gr->GetLineBuffer(), gr->GetVertexSize());
 
 		std::vector<DirectX::XMMATRIX>* gridMatrices = gr->GetGridMatrices();
@@ -323,7 +305,6 @@ void Game::Render()
 	}
 
 	/*-----------------------------------------------------------  FXAA  -----------------------------------------------------------------*/
-
 	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::AA_STAGE);
 	_renderModule->RenderScreenQuad();
 

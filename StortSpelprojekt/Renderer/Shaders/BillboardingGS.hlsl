@@ -27,7 +27,7 @@ struct GS_OUT
 void main(point GS_IN input[1], inout TriangleStream<GS_OUT> OutputStream)
 {
 	GS_OUT output = (GS_OUT)0;
-	float scale = 10.0f;
+	float scale = 0.1f;
 
 	//TODO: Replace all world*view*projection with a single mul using this matrix /Jonas
 	matrix wvp = mul(mul(worldMatrix, camViewMatrix), camProjectionMatrix);

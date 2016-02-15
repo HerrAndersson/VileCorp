@@ -173,7 +173,6 @@ namespace Renderer
 		SAFE_RELEASE(_hudPassPS);
 		SAFE_RELEASE(_lightApplyPointlightVolumePS);
 		SAFE_RELEASE(_billboardingPS);
-
 		SAFE_RELEASE(_billboardingGS);
 
 		SAFE_RELEASE(_samplerWRAP);

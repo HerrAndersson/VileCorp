@@ -28,10 +28,11 @@ PS_OUT main(GS_OUT input)
 
 	//TODO: Randomize which texture to sample from
 	//float4 color = float4(textures[0].Sample(samplerWrap, input.tex).xyz, 1.0f);
+	//output.diffuse = input.color;
 
-	output.diffuse = input.color;
+	output.diffuse = float4(0.8f, 0.2f, 0.1f, 1);
 	output.normal = float4(input.normal, 1.0f);
-	output.backbuffercopy = float4(output.diffuse.xyz * input.ambientLight, 0.0f);
+	output.backbuffercopy = float4(output.diffuse.xyz * input.ambientLight, 1.0f);
 
 	return output;
 }

@@ -37,10 +37,10 @@ namespace Renderer
 		{
 			case SPLASH:
 			{
-				float p = deltaTime / 50.0f;
-				_position.x += p;
-				_position.y++;
-				_position.z += p;
+				_position.y += (rand() % 100) / 100.0f;
+				_position.z += ((rand() % 5) / 10.0f) - 0.25f;
+				_position.x += ((rand() % 5) / 10.0f) - 0.25f;
+
 				break;
 			}
 			case SMOKE:
