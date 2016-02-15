@@ -123,14 +123,17 @@ void Guard::act(GameObject* obj)
 
 void Guard::SetPatrolPoint(AI::Vec2D patrolPoint)
 {
-	if (_patrolRoute.empty())
+	if (patrolPoint != _tilePosition)
 	{
-		_patrolRoute.push_back(_tilePosition);
-		_currentPatrolGoal = 1;
+		if (_patrolRoute.empty())
+		{
+			_patrolRoute.push_back(_tilePosition);
+			_currentPatrolGoal = 1;
 
+		}
+		_patrolRoute.push_back(patrolPoint);
+		SetGoal(_patrolRoute[_currentPatrolGoal % _patrolRoute.size()]);
 	}
-	_patrolRoute.push_back(patrolPoint);
-	SetGoal(_patrolRoute[_currentPatrolGoal % _patrolRoute.size()]);
 }
 
 void Guard::RemovePatrol()
