@@ -55,4 +55,23 @@ namespace AI
 
 	const float SQRT2 = 1.41421356f;								//used for diagonals. Placing a constant means no root-calculations.
 	const Vec2D NEIGHBOUR_OFFSETS[8] = { { -1, 0 },{ 1, 0 },{ 0, -1 },{ 0, 1 },{ -1, -1 },{ 1, -1 },{ -1, 1 },{ 1, 1 } };	//Straight moves in 0-3, diagonal in 4-7
+	const Vec2D CLOCKWISE_ROTATION[8] = {{-1, 0},{-1, 1},{0, 1},{1, 1},{1, 0},{1, -1},{0, -1},{-1, -1}};
+
+	static Vec2D GetNextDirection(Vec2D originalDirection, bool clockwise)
+	{
+		int counter = 8;
+		while (originalDirection != CLOCKWISE_ROTATION[counter - 8] && counter < 16)
+		{
+			counter++;
+		}
+		if (clockwise)
+		{
+			counter++;
+		}
+		else
+		{
+			counter--;
+		}
+		return CLOCKWISE_ROTATION[counter % 8];
+	}
 }

@@ -44,7 +44,7 @@ namespace System
 		void Resize(System::Settings* settings);
 
 		void SetPosition(const DirectX::XMFLOAT3& position);
-		void Move(const DirectX::XMFLOAT3& offset);
+		void Move(const DirectX::XMFLOAT3& offset, double deltaTime);
 		void SetRotation(const DirectX::XMFLOAT3& rotation);
 		void Rotate(const DirectX::XMFLOAT3& offset);
 

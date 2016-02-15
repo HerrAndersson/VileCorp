@@ -32,11 +32,13 @@ Game::Game(HINSTANCE hInstance, int nCmdShow):
 
 	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager, &_data);
 	_pickingDevice = new PickingDevice(_camera, settings);
-	_SM = new StateMachine(_controls, _objectHandler, _camera, _pickingDevice, "Assets/gui.json", _assetManager, _fontWrapper, settings, &_settingsReader, nullptr);
+	_SM = new StateMachine(_controls, _objectHandler, _camera, _pickingDevice, "Assets/gui.json", _assetManager, _fontWrapper, settings, &_settingsReader, &_soundModule);
 
 	_SM->Update(_timer.GetFrameTime());
 
 	_enemiesHasSpawned = false;
+	_soundModule.AddSound("Assets/Sounds/theme.wav", 0.15f, 1.0f, true, true);
+	_soundModule.Play("Assets/Sounds/theme.wav");
 }
 
 Game::~Game()
@@ -63,7 +65,11 @@ void Game::ResizeResources(System::Settings* settings)
 
 bool Game::Update(double deltaTime)
 {
-	//_soundModule.Update();
+	if (_SM->GetState() == PLACEMENTSTATE)
+	{
+		_objectHandler->UpdateLights();
+	}
+	_soundModule.Update();
 
 	bool run = true;
 
@@ -94,28 +100,28 @@ bool Game::Update(double deltaTime)
 
 
 
-	/*
-	_enemies = _objectHandler->GetAllByType(ENEMY);
-	_loot = _objectHandler->GetAllByType(LOOT);
-
-	if (_enemies.size() > 0)
+	if (_SM->GetState() == PLAYSTATE)
 	{
-		_enemiesHasSpawned = true;
-	}
+		_enemies = _objectHandler->GetAllByType(ENEMY);
+		_loot = _objectHandler->GetAllByType(LOOT);
 
-	if (_enemies.size() == 0 && _enemiesHasSpawned == true)
-	{
-		if (_loot.size() >= 1)
+		if (_enemies.size() > 0)
 		{
-			//TODO: Add something to notify the player that they've beat the level
+			_enemiesHasSpawned = true;
 		}
-		else
+
+		if (_enemies.size() == 0 && _enemiesHasSpawned == true)
 		{
-			//TODO: Add something to notify the player that they've SUCK and they can replay the level
+			if (_loot.size() >= 1)
+			{
+				//TODO: Add something to notify the player that they've beat the level
+			}
+			else
+			{
+				//TODO: Add something to notify the player that they've SUCK and they can replay the level
+			}
 		}
 	}
-	*/
-
 	return run;
 }
 
@@ -145,12 +151,22 @@ void Game::Render()
 			{
 				_renderModule->SetDataPerObjectType(renderObject);
 				int vertexBufferSize = renderObject->_mesh._vertexBufferSize;
-
-				for (GameObject* g : i)
+				if (i.at(0)->IsVisible())
 				{
-					if (g->IsVisible())
+					_renderModule->Render(i.at(0)->GetMatrix(), vertexBufferSize, i.at(0)->GetColorOffset());
+				}
+
+				for (int j = 1; j < i.size(); j++)
+				{
+					if (i.at(j)->GetSubType() != i.at(j - 1)->GetSubType())
 					{
-						_renderModule->Render(g->GetMatrix(), vertexBufferSize, g->GetColorOffset());
+						renderObject = i.at(j)->GetRenderObject();
+						_renderModule->SetDataPerObjectType(renderObject);
+						vertexBufferSize = renderObject->_mesh._vertexBufferSize;
+					}
+					if (i.at(j)->IsVisible())
+					{
+						_renderModule->Render(i.at(j)->GetMatrix(), vertexBufferSize, i.at(j)->GetColorOffset());
 					}
 					
 				}
@@ -172,7 +188,43 @@ void Game::Render()
 			for (GameObject* a : gameObjects->at(GUARD))
 			{
 				// temporary uncommenting
-				//_renderModule->RenderAnimation(a->GetMatrix(), vertexBufferSize, a->GetAnimation()->GetTransforms(), a->GetColorOffset());
+				//_renderModule->RenderAnimation(a->GetMatrix(), vertexBufferSize, a->GetAnimation()->GetFloats(), a->GetColorOffset());
+			}
+		}
+	}
+	// Now every gameobject can be animated
+	for (auto i : *gameObjects)
+	{
+		if (i.size() > 0)
+		{
+			RenderObject* renderObject = i.at(0)->GetRenderObject();
+			if (!renderObject->_isSkinned)
+			{
+				continue;
+			}
+			else
+			{
+				_renderModule->SetDataPerObjectType(renderObject);
+				int vertexBufferSize = renderObject->_mesh._vertexBufferSize;
+				if (i.at(0)->IsVisible())
+				{
+					_renderModule->RenderAnimation(i.at(0)->GetMatrix(), vertexBufferSize, i.at(0)->GetAnimation()->GetFloats(), i.at(0)->GetColorOffset());
+				}
+
+				for (int j = 1; j < i.size(); j++)
+				{
+					if (i.at(j)->GetSubType() != i.at(j - 1)->GetSubType())
+					{
+						renderObject = i.at(j)->GetRenderObject();
+						_renderModule->SetDataPerObjectType(renderObject);
+						vertexBufferSize = renderObject->_mesh._vertexBufferSize;
+					}
+					if (i.at(j)->IsVisible())
+					{
+						_renderModule->RenderAnimation(i.at(j)->GetMatrix(), vertexBufferSize, i.at(j)->GetAnimation()->GetFloats(), i.at(j)->GetColorOffset());
+					}
+
+				}
 			}
 		}
 	}
@@ -218,7 +270,7 @@ void Game::Render()
 	}
 	
 	////////////////////////////////////////////////////////////  Light pass  //////////////////////////////////////////////////////////////
-	if (_SM->GetState() == PLAYSTATE)
+	if (_SM->GetState() == PLAYSTATE || _SM->GetState() == PLACEMENTSTATE)
 	{
 		//----------------------------------------------------------  Spotlights  -------------------------------------------------------------
 		//Generate the shadow map for each spotlight, then apply the lighting/shadowing to the render target with additive blending.           

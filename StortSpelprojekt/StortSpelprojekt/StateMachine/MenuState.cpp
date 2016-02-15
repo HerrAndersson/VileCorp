@@ -9,7 +9,7 @@ MenuState::MenuState(System::Controls* controls, ObjectHandler* objectHandler, S
 	_camera = camera;
 	_pickingDevice = pickingDevice;
 
-	//_soundModule->AddSound("Assets/Sounds/yay.wav",0.5f, 1.2f, true, false);
+	_soundModule->AddSound("Assets/Sounds/page.wav",1.0f, 1.0f, true, false);
 }
 
 MenuState::~MenuState()
@@ -28,21 +28,19 @@ void MenuState::Update(float deltaTime)
 		System::MouseCoord coord = _controls->GetMouseCoord();
 		if (_uiTree.IsButtonColliding("playbutton", coord._pos.x, coord._pos.y))
 		{
-			//_soundModule->Play("Assets/Sounds/yay.wav");
+			_soundModule->Stop("Assets/Sounds/theme.wav");
+			_soundModule->Play("Assets/Sounds/page.wav");
 
-			ChangeState(State::PLACEMENTSTATE);
+			ChangeState(State::LEVELSELECTSTATE);
 		}
 		if (_uiTree.IsButtonColliding("optionsbutton", coord._pos.x, coord._pos.y))
 		{
+			_soundModule->Play("Assets/Sounds/page.wav");
 			ChangeState(State::OPTIONSSTATE);
 		}
 		if (_uiTree.IsButtonColliding("leveleditbutton", coord._pos.x, coord._pos.y))
 		{
 			ChangeState(State::LEVELEDITSTATE);
-		}
-		if (_uiTree.IsButtonColliding("levelselectbutton", coord._pos.x, coord._pos.y))
-		{
-			ChangeState(State::LEVELSELECTSTATE);
 		}
 		if (_uiTree.IsButtonColliding("exitbutton", coord._pos.x, coord._pos.y))
 		{
@@ -51,16 +49,16 @@ void MenuState::Update(float deltaTime)
 	}
 	if (_controls->IsFunctionKeyDown("MENU:MENU"))
 	{
-		PostQuitMessage(0);
+		ChangeState(State::EXITSTATE);
 	}
 }
 
 void MenuState::OnStateEnter()
 {
-	
+	_objectHandler->UnloadLevel();
 }
 
 void MenuState::OnStateExit()
 {
-
+	
 }

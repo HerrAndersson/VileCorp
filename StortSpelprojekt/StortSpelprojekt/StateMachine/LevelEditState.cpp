@@ -8,35 +8,41 @@ LevelEditState::LevelEditState(System::Controls* controls, ObjectHandler* object
 
 	_camera = camera;
 	_pickingDevice = pickingDevice;
+	_baseEdit = nullptr;
 }
 
 LevelEditState::~LevelEditState()
-{}
+{
+	delete _baseEdit;
+}
 
 void LevelEditState::Update(float deltaTime)
 {
 	if (_controls->IsFunctionKeyDown("MAP_EDIT:PLACEMENTFLAG"))
 	{
-		_baseEdit.ChangePlaceState();
+		_baseEdit->ChangePlaceState();
 	}
-	_baseEdit.Update(deltaTime);
+	_baseEdit->Update(deltaTime);
 	HandleInput();
 	HandleButtons();
 
 
-	_baseEdit.DragAndDrop();
-	_baseEdit.DragAndPlace(_toPlace._type, _toPlace._name);
+	_baseEdit->DragAndDrop();
+	_baseEdit->DragAndPlace(_toPlace._type, _toPlace._name);
 }
 
 void LevelEditState::OnStateEnter()
 {
-	_baseEdit.Initialize(_objectHandler, _controls, _pickingDevice, _camera);
+	//TODO: Move this function to LevelSelection when that state is created. /Alex
+	_objectHandler->LoadLevel(3);
 	_objectHandler->DisableSpawnPoints();
-	_uiTree.GetNode("TrapLeaf")->SetHidden(true);
-	_uiTree.GetNode("UnitLeaf")->SetHidden(true);
-	_uiTree.GetNode("DecLeaf")->SetHidden(true);
+	//_uiTree.GetNode("TrapLeaf")->SetHidden(true);
+	//_uiTree.GetNode("UnitLeaf")->SetHidden(true);
+	//_uiTree.GetNode("DecLeaf")->SetHidden(true);
 
 	_objectHandler->EnlargeTilemap(50);
+
+	_baseEdit = new BaseEdit(_objectHandler, _controls, _pickingDevice, _camera);
 
 	XMFLOAT3 campos;
 	campos.x = _objectHandler->GetTileMap()->GetWidth() / 2;
@@ -49,6 +55,10 @@ void LevelEditState::OnStateEnter()
 void LevelEditState::OnStateExit()
 {
 	_objectHandler->MinimizeTileMap();
+	//TODO: Remove this function to LevelSelection when that state is created. /Alex
+	_objectHandler->UnloadLevel();
+	delete _baseEdit;
+	_baseEdit = nullptr;
 }
 
 void LevelEditState::HandleInput()
@@ -56,7 +66,7 @@ void LevelEditState::HandleInput()
 	//Press C to init new level
 	if (_controls->IsFunctionKeyDown("MAP_EDIT:NEWLEVEL"))
 	{
-		InitNewLevel();
+		_objectHandler->UnloadLevel();
 	}
 
 	if (_controls->IsFunctionKeyDown("MENU:MENU"))
@@ -68,75 +78,70 @@ void LevelEditState::HandleInput()
 void LevelEditState::HandleButtons()
 {
 	System::MouseCoord coord = _controls->GetMouseCoord();
-	if (_uiTree.IsButtonColliding("Traps", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
-	{
-		_uiTree.GetNode("TrapLeaf")->SetHidden(false);
-		_uiTree.GetNode("UnitLeaf")->SetHidden(true);
-		_uiTree.GetNode("DecLeaf")->SetHidden(true);
+	//if (_uiTree.IsButtonColliding("Traps", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
+	//{
+	//	_uiTree.GetNode("TrapLeaf")->SetHidden(false);
+	//	_uiTree.GetNode("UnitLeaf")->SetHidden(true);
+	//	_uiTree.GetNode("DecLeaf")->SetHidden(true);
 
-		_trapButtonClick = true;
-		_unitButtonClick = false;
-		_decButtonClick = false;
+	//	_trapButtonClick = true;
+	//	_unitButtonClick = false;
+	//	_decButtonClick = false;
 
-		// Temp, should be replaced with blueprint
-		_toPlace._type = TRAP;
-		_toPlace._name = "trap_proto";
+	//	// Temp, should be replaced with blueprint
+	//	_toPlace._type = TRAP;
+	//	_toPlace._name = "trap_proto";
 
-		if (_baseEdit.IsSelection() && !_baseEdit.IsPlace())
-		{
-			_baseEdit.DragActivate(_toPlace._type, _toPlace._name);
-		}
-	}
+	//	if (_baseEdit->IsSelection() && !_baseEdit->IsPlace())
+	//	{
+	//		_baseEdit->DragActivate(_toPlace._type, _toPlace._name);
+	//	}
+	//}
 
-	if (_uiTree.IsButtonColliding("Units", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
-	{
-		_uiTree.GetNode("UnitLeaf")->SetHidden(false);
-		_uiTree.GetNode("TrapLeaf")->SetHidden(true);
-		_uiTree.GetNode("DecLeaf")->SetHidden(true);
+	//if (_uiTree.IsButtonColliding("Units", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
+	//{
+	//	_uiTree.GetNode("UnitLeaf")->SetHidden(false);
+	//	_uiTree.GetNode("TrapLeaf")->SetHidden(true);
+	//	_uiTree.GetNode("DecLeaf")->SetHidden(true);
 
-		_trapButtonClick = false;
-		_unitButtonClick = true;
-		_decButtonClick = false;
+	//	_trapButtonClick = false;
+	//	_unitButtonClick = true;
+	//	_decButtonClick = false;
 
-		// Temp, should be replaced with blueprint
-		_toPlace._type = GUARD;
-		_toPlace._name = "guard_proto";
+	//	// Temp, should be replaced with blueprint
+	//	_toPlace._type = GUARD;
+	//	_toPlace._name = "guard_proto";
 
-		if (_baseEdit.IsSelection())
-		{
-			_baseEdit.DragActivate(_toPlace._type, _toPlace._name);
-		}
-	}
+	//	if (_baseEdit->IsSelection())
+	//	{
+	//		_baseEdit->DragActivate(_toPlace._type, _toPlace._name);
+	//	}
+	//}
 
 
-	if (_uiTree.IsButtonColliding("Decorations", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
-	{
-		_uiTree.GetNode("DecLeaf")->SetHidden(false);
-		_uiTree.GetNode("TrapLeaf")->SetHidden(true);
-		_uiTree.GetNode("UnitLeaf")->SetHidden(true);
+	//if (_uiTree.IsButtonColliding("Decorations", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
+	//{
+	//	_uiTree.GetNode("DecLeaf")->SetHidden(false);
+	//	_uiTree.GetNode("TrapLeaf")->SetHidden(true);
+	//	_uiTree.GetNode("UnitLeaf")->SetHidden(true);
 
-		_trapButtonClick = false;
-		_unitButtonClick = true;
-		_decButtonClick = false;
+	//	_trapButtonClick = false;
+	//	_unitButtonClick = true;
+	//	_decButtonClick = false;
 
-		// Not really implemented
-	}
+	//	// Not really implemented
+	//}
 
-	if (_controls->IsFunctionKeyDown("MOUSE:SELECT") && _trapButtonClick == false && _unitButtonClick == false && _decButtonClick == false)
-	{
-		_uiTree.GetNode("DecLeaf")->SetHidden(true);
-		_uiTree.GetNode("TrapLeaf")->SetHidden(true);
-		_uiTree.GetNode("UnitLeaf")->SetHidden(true);
-	}
+	//if (_controls->IsFunctionKeyDown("MOUSE:SELECT") && _trapButtonClick == false && _unitButtonClick == false && _decButtonClick == false)
+	//{
+	//	_uiTree.GetNode("DecLeaf")->SetHidden(true);
+	//	_uiTree.GetNode("TrapLeaf")->SetHidden(true);
+	//	_uiTree.GetNode("UnitLeaf")->SetHidden(true);
+	//}
 
-	_trapButtonClick = false;
-	_unitButtonClick = false;
-	_decButtonClick = false;
-}
-
-void LevelEditState::InitNewLevel()
-{
-	_objectHandler->Release();
+	//_trapButtonClick = false;
+	//_unitButtonClick = false;
+	//_decButtonClick = false;
 }
 
 void LevelEditState::ExportLevel()

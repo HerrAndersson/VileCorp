@@ -16,3 +16,8 @@ void Architecture::Update(float deltaTime)
 
 void Architecture::Release()
 {}
+
+bool Architecture::InRange(AI::Vec2D pos) const
+{
+	return pos == _tilePosition;
+}

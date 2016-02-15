@@ -42,7 +42,7 @@ private:
 	SettingInfo					_gameSettings;
 	System::SettingsReader		_settingsReader;
 	GameObjectInfo				_data;
-	//System::SoundModule			_soundModule;
+	System::SoundModule			_soundModule;
 
 	bool						_hasFocus;
 	bool						_enemiesHasSpawned;

@@ -5,71 +5,46 @@ PlayState::PlayState(System::Controls* controls, ObjectHandler* objectHandler, S
 {
 	_controls = controls;
 	_objectHandler = objectHandler;
-	
 	_camera = camera;
 	_pickingDevice = pickingDevice;
-	_gamePaused = false;
+	_assetManager = assetManager;
+
+	_gameLogic = nullptr;
 }
 
 PlayState::~PlayState()
-{}
+{
+	delete _gameLogic;
+	_gameLogic = nullptr;
+}
 
 void PlayState::Update(float deltaTime)
 {
-	HandleInput();
-
-	IngameMenu();
-	if (!_gamePaused)
+	if (_controls->IsFunctionKeyDown("MENU:MENU"))
 	{
-		_gameLogic.Update(deltaTime);
+		ChangeState(State::PAUSESTATE);
 	}
+	if (_gameLogic->IsGameDone() && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
+	{
+		ChangeState(State::MENUSTATE);
+	}
+	if (_controls->IsFunctionKeyDown("MOUSE:SELECT") && !_uiTree.GetNode("Tutorial")->GetHidden())
+	{
+		_uiTree.GetNode("Tutorial")->SetHidden(true);
+		_objectHandler->EnableSpawnPoints();
+	}
+
+	_gameLogic->Update(deltaTime);
 }
 
 void PlayState::OnStateEnter()
 {
-	_gameLogic.Initialize(_objectHandler, _camera, _controls, _pickingDevice);
-	_uiTree.GetNode("root")->SetHidden(true);
-	_objectHandler->EnableSpawnPoints();
+	_uiTree.GetNode("Tutorial")->SetHidden(false);
+	_gameLogic = new GameLogic(_objectHandler, _camera, _controls, _pickingDevice, &_uiTree, _assetManager);
 }
 
 void PlayState::OnStateExit()
 {
-	_gamePaused = false;
-}
-
-void PlayState::HandleInput()
-{
-	
-}
-
-void PlayState::IngameMenu()
-{
-	if (_controls->IsFunctionKeyDown("MENU:MENU"))
-	{
-		_uiTree.GetNode("root")->SetHidden(false);
-		_gamePaused = true;
-	}
-	
-	if (_gamePaused)
-	{
-		if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
-		{
-			System::MouseCoord coord = _controls->GetMouseCoord();
-			if (_uiTree.IsButtonColliding("resume", coord._pos.x, coord._pos.y))
-			{
-				_uiTree.GetNode("root")->SetHidden(true);
-				_gamePaused = false;
-			}
-		
-			if (_uiTree.IsButtonColliding("mainmenu", coord._pos.x, coord._pos.y) || _controls->IsFunctionKeyDown("MENU:MENU"))
-			{
-				ChangeState(State::MENUSTATE);
-			}
-		
-			if (_uiTree.IsButtonColliding("quit", coord._pos.x, coord._pos.y))
-			{
-				ChangeState(State::EXITSTATE);
-			}
-		}
-	}
+	delete _gameLogic;
+	_gameLogic = nullptr;
 }

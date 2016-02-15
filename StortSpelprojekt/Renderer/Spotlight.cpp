@@ -143,16 +143,25 @@ namespace Renderer
 		Update();
 	}
 
-	void Spotlight::SetPositionAndRotation(DirectX::XMFLOAT4X4 &mfloat)
+	void Spotlight::SetPositionAndRotation(DirectX::XMMATRIX &matrix)
 	{
-		XMMATRIX matrix = XMLoadFloat4x4(&mfloat);
 		XMVECTOR pos, rot, scale;
 		XMMatrixDecompose(&scale, &rot, &pos, matrix);
 
-		XMStoreFloat3(&_position, pos);
-		XMStoreFloat3(&_rotation, rot);
+		//Prepare vectors for Matrix initialization
+		XMFLOAT3 dir = DirectX::XMFLOAT3(0, 0, 1);
+		XMMATRIX rotationMatrix = XMMatrixRotationQuaternion(rot);
 
-		Update();
+		XMVECTOR vPos = pos;
+		XMVECTOR vDir = XMVector3TransformCoord(DirectX::XMLoadFloat3(&dir), rotationMatrix);
+		XMVECTOR vUp = XMVector3TransformCoord(DirectX::XMLoadFloat3(&_up), rotationMatrix);
+
+		XMStoreFloat3(&dir, vDir);
+		XMStoreFloat3(&_up, vUp);
+		_direction = dir;
+
+		_viewMatrix = DirectX::XMMatrixLookAtLH(vPos, vPos + vDir, vUp);
+		_worldMatrix = rotationMatrix * XMMatrixTranslation(_position.x, _position.y, _position.z);
 	}
 
 	XMFLOAT3 Spotlight::GetPosition()const

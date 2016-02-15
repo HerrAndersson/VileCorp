@@ -6,6 +6,8 @@
 #include "Player.h"
 #include "JsonStructs.h"
 #include "..\System\JsonParser.h"
+#include "UITree.h"
+#include "AssetManager.h"
 
 class GameLogic
 {
@@ -15,14 +17,17 @@ private:
 	System::Controls*		_controls;
 	PickingDevice*			_pickingDevice;
 	Player*					_player;
-	LevelLoad				_levelLoad;
+	GUI::UITree*			_uiTree;
+	AssetManager*			_assetManager;
+	ID3D11ShaderResourceView* _guardTexture;
+	bool					_gameDone;
 
-	void HandleInput();
+	void HandleInput(float deltaTime);
 public:
-	GameLogic();
+	GameLogic(ObjectHandler* objectHandler, System::Camera* camera, System::Controls* controls, PickingDevice* pickingDevice, GUI::UITree* uiTree, AssetManager* assetManager);
 	~GameLogic();
-	void Initialize(ObjectHandler* objectHandler, System::Camera* camera, System::Controls* controls, PickingDevice* pickingDevice);
 	void Update(float deltaTime);
+	bool IsGameDone()const;
 };
 
 

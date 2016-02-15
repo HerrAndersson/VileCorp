@@ -4,11 +4,15 @@
 #include "yse\yse.hpp"
 #include <map>
 #include <string>
+#include <vector>
 
 #pragma comment(lib, "libyse32.lib")
 
 /*
-Is using a sorted array of sounds to quickly find a desired sound to play.
+Sound device has to be conected to computer when program starts, 
+else SoundModule is muted to avoid crashes.
+
+Using a map of sounds to quickly find a desired sound to play.
 */
 
 namespace System
