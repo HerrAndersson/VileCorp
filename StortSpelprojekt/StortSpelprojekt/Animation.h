@@ -31,10 +31,7 @@ public:
 	void Update(float time);
 	void SetActionAsCycle(int action);
 	void PlayAction(int action);
-	std::vector<DirectX::XMFLOAT4X4>* GetTransforms()
-	{
-		return &finalTransforms;
-	}
+	std::vector<DirectX::XMFLOAT4X4>* GetTransforms();
 
 	//Overloading these guarantees 16B alignment of XMMATRIX
 	void* operator new(size_t i);

@@ -75,6 +75,11 @@ void Animation::Update(float time)
 	}
 }
 
+std::vector<DirectX::XMFLOAT4X4>* Animation::GetTransforms()
+{
+	return &finalTransforms;
+}
+
 void Animation::SetActionAsCycle(int action)
 {
 	_animTime = 0.0f;
