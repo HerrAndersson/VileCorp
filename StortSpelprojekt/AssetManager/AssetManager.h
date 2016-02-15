@@ -100,6 +100,14 @@ struct TilesetHandler
 		{
 			_cur = &_tileset->_objects[ENEMY];
 		}
+		else if (!strcmp("cameras", str))
+		{
+			_cur = &_tileset->_objects[CAMERA];
+		}
+		else if (!strcmp("furnitures", str))
+		{
+			_cur = &_tileset->_objects[FURNITURE];
+		}
 		return true;
 	}
 	bool EndObject(rapidjson::SizeType memberCount) { return true; }
@@ -129,7 +137,7 @@ struct LevelHeader
 
 struct SkeletonHeader
 {
-	unsigned int _version, _framerate, _actionCount, _boneCount;
+	unsigned int _version, _framerate, _boneCount, _actionCount;
 };
 
 struct GameObjectData

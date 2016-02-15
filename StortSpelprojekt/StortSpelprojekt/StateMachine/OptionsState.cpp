@@ -9,10 +9,10 @@ OptionsState::OptionsState(System::Controls* controls, ObjectHandler* objectHand
 	_objectHandler = objectHandler;
 
 	//Resolution options
-	_resolution[0] = { L"1920x1080", 1920, 1080 };
-	_resolution[1] = { L"1600x900", 1600, 900 };
-	_resolution[2] = { L"1366x768", 1366, 768 };
-	_resolution[3] = { L"1280x720", 1280, 720 };
+	_resolution[0] = { L"1280x720", 1280, 720 };
+	_resolution[1] = { L"1366x768", 1366, 768 };
+	_resolution[2] = { L"1600x900", 1600, 900 };
+	_resolution[3] = { L"1920x1080", 1920, 1080 };
 	_resolutionOption = 0;
 
 	//Window options
@@ -83,6 +83,7 @@ void OptionsState::Update(float deltaTime)
 	}
 	if (_controls->IsFunctionKeyDown("MENU:MENU"))
 	{
+		_soundModule->Play("Assets/Sounds/page.wav");
 		ChangeState(State::MENUSTATE);
 	}
 	if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
@@ -137,6 +138,7 @@ void OptionsState::Update(float deltaTime)
 		}
 		if (_uiTree.IsButtonColliding("cancel", coord._pos.x, coord._pos.y))
 		{
+			_soundModule->Play("Assets/Sounds/page.wav");
 			ChangeState(State::MENUSTATE);
 		}
 	}

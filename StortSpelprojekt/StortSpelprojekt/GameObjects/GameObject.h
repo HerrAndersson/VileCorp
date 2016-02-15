@@ -2,7 +2,7 @@
 #include <DirectXMath.h>
 #include "RenderUtils.h"
 #include "AIUtil.h"
-#include "../Animation.h"
+#include "Animation.h"
 
 /*
 GameObject class
@@ -26,6 +26,7 @@ protected:
 	DirectX::XMFLOAT3 _colorOffset;
 	AI::Vec2D _tilePosition;
 	Type _type;
+	unsigned int _subType;
 	bool _visible;
 	bool _active;
 	RenderObject* _renderObject;
@@ -64,11 +65,13 @@ public:
 	AI::Vec2D GetTilePosition()const;
 	virtual void SetTilePosition(AI::Vec2D pos);
 	Type GetType() const;
+	unsigned int GetSubType() const;
 
 	bool IsVisible() const;
 	bool IsActive() const;
 	void SetActive(bool active);
 	void SetVisibility(bool visible);
+	virtual bool InRange(AI::Vec2D pos)const;
 
 	RenderObject* GetRenderObject() const;
 	Animation* GetAnimation() const;

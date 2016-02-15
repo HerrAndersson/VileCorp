@@ -45,7 +45,7 @@ namespace Renderer
 		void SetPosition(const DirectX::XMFLOAT3& position);
 		void SetRotation(const DirectX::XMFLOAT3& rotation);
 		void SetPositionAndRotation(const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& rotation);
-		void SetPositionAndRotation(DirectX::XMFLOAT4X4& matrix);
+		void SetPositionAndRotation(DirectX::XMMATRIX &matrix);
 
 		void SetIntensity(float intensity);
 		void SetRange(float range);

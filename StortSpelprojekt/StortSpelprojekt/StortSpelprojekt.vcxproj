@@ -19,7 +19,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Animation.cpp" />
     <ClCompile Include="BaseEdit.cpp" />
     <ClCompile Include="Controls.cpp" />
     <ClCompile Include="Game.cpp" />
@@ -32,7 +31,6 @@
     <ClCompile Include="GameObjects\SpawnPoint.cpp" />
     <ClCompile Include="GameObjects\Trap.cpp" />
     <ClCompile Include="GameObjects\Unit.cpp" />
-    <ClCompile Include="Grid.cpp" />
     <ClCompile Include="LightCulling.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ObjectHandler.cpp" />
@@ -54,7 +52,6 @@
     <ClCompile Include="VisionCone.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Animation.h" />
     <ClInclude Include="BaseEdit.h" />
     <ClInclude Include="Controls.h" />
     <ClInclude Include="Game.h" />
@@ -70,7 +67,6 @@
     <ClInclude Include="GameObjects\Unit.h" />
     <ClInclude Include="LightCulling.h" />
     <ClInclude Include="QuadTree.h" />
-    <ClInclude Include="Grid.h" />
     <ClInclude Include="ObjectHandler.h" />
     <ClInclude Include="JsonStructs.h" />
     <ClInclude Include="Player.h" />

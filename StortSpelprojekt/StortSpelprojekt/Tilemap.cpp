@@ -81,6 +81,8 @@ bool Tilemap::AddObjectToTile(AI::Vec2D pos, GameObject * obj)
 		case TRAP:
 		case LOOT:
 		case SPAWN:
+		case CAMERA:
+		case FURNITURE:
 			arrayPos = 3;
 			break;
 		default:
@@ -126,6 +128,8 @@ bool Tilemap::RemoveObjectFromTile(AI::Vec2D pos, GameObject * obj)
 		case TRAP:
 		case LOOT:
 		case SPAWN:
+		case CAMERA:
+		case FURNITURE:
 			arrayPos = 3;
 			break;
 		default:
@@ -221,6 +225,8 @@ GameObject * Tilemap::GetObjectOnTile(AI::Vec2D pos, Type type) const
 		case LOOT:
 		case SPAWN:
 		case TRAP:
+		case CAMERA:
+		case FURNITURE:
 			result = _map[pos._x][pos._y]._objectsOnTile[3];
 			break;
 		default:
@@ -275,6 +281,8 @@ bool Tilemap::IsPlaceable(int x, int z, Type type) const
 			case LOOT:
 			case SPAWN:
 			case TRAP:
+			case CAMERA:
+			case FURNITURE:
 				result = _map[x][z]._objectsOnTile[3];
 				break;
 			default:
@@ -292,7 +300,7 @@ bool Tilemap::IsPlaceable(int x, int z, Type type) const
 
 bool Tilemap::IsPlaceable(AI::Vec2D pos, Type type) const
 {
-	return false;
+	return IsPlaceable(pos._x, pos._y, type);
 }
 /*
 To place an object, the tile should be empty besides a floor

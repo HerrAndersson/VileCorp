@@ -22,6 +22,7 @@ void BaseState::ChangeState(State newState)
 {
 	_oldState = _newStateRequest;
 	_newStateRequest = newState;
+	ResetMouse();
 }
 
 State BaseState::GetNewStateRequest()const
@@ -42,4 +43,14 @@ GUI::UITree* BaseState::GetUITree()
 void BaseState::Resize(System::Settings* settings)
 {
 	_uiTree.Resize(settings);
+}
+
+void BaseState::ResetMouse()
+{
+	if (_camera->GetMode() != System::LOCKED_CAM)
+	{
+		_controls->ToggleCursorLock();
+		_camera->SetMode(System::LOCKED_CAM);
+		_camera->SetRotation(DirectX::XMFLOAT3(70, 0, 0));
+	}
 }

@@ -10,10 +10,10 @@ struct VS_OUT
 };
 
 Texture2D tex : register(t0);
-SamplerState ObjSamplerState : register(s0);
+SamplerState samplerClamp : register(s1);
 
 float4 main(VS_OUT input) : SV_TARGET
 {
-	float4 sampledTexture = tex.Sample(ObjSamplerState, input.uv);
+	float4 sampledTexture = tex.Sample(samplerClamp, input.uv);
 	return float4(sampledTexture.xyz + input.colorOffset.xyz, sampledTexture.a * input.colorOffset.a);;
 }

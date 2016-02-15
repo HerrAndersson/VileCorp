@@ -20,15 +20,17 @@ struct LevelLoad
 struct PlayerInfo
 {
 	std::string _name = "Jonas";
-	int _gold = 100;
+	int _gold = 1000;
 	int _level = 0;
+	bool _firstTime = true;
 	
 	template<class A>
 	void serialize(A& a)
 	{
 		a((CEREAL_NVP(_name)),
 		(CEREAL_NVP(_gold)),
-		(CEREAL_NVP(_level)));
+		(CEREAL_NVP(_level)),
+		(CEREAL_NVP(_firstTime)));
 	}
 };
 
@@ -264,6 +266,14 @@ struct GameObjectInfo
 		}
 		return (GameObjectWallInfo*)_objects[WALL]->at(i);
 	}
+	GameObjectFurnitureInfo* Furnitures(unsigned i)
+	{
+		if (_objects[FURNITURE]->size() < i + 1)
+		{
+			_objects[FURNITURE]->push_back((GameObjectBaseInfo*)new GameObjectFurnitureInfo());
+		}
+		return (GameObjectFurnitureInfo*)_objects[FURNITURE]->at(i);
+	}
 	GameObjectLootInfo* Loot(unsigned i)
 	{
 		if (_objects[LOOT]->size() < i + 1)
@@ -287,6 +297,14 @@ struct GameObjectInfo
 			_objects[TRAP]->push_back((GameObjectBaseInfo*)new GameObjectTrapInfo());
 		}
 		return (GameObjectTrapInfo*)_objects[TRAP]->at(i);
+	}
+	GameObjectCameraInfo* Cameras(unsigned i)
+	{
+		if (_objects[CAMERA]->size() < i + 1)
+		{
+			_objects[CAMERA]->push_back((GameObjectBaseInfo*)new GameObjectCameraInfo());
+		}
+		return (GameObjectCameraInfo*)_objects[CAMERA]->at(i);
 	}
 	GameObjectGuardInfo* Guards(unsigned i)
 	{

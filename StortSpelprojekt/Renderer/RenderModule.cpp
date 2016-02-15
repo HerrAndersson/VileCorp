@@ -453,6 +453,15 @@ namespace Renderer
 			_shaderHandler->SetHUDPassShaders(_d3d->GetDeviceContext());
 			break;
 		}
+		case BILLBOARDING_STAGE:
+		{
+			//Since this is part of the geometry pass, there is no need to set render targets etc.
+			_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::ENABLE);
+			_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::BACK);
+			deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST); //TODO: use triangle strip instead, if the geometry shader supports this
+			_shaderHandler->SetBillboardingStageShaders(_d3d->GetDeviceContext());
+			break;
+		}
 		default:
 		{
 			throw std::runtime_error("RenderModule::SetShaderStage: Invalid shader stage");
@@ -598,6 +607,24 @@ namespace Renderer
 		UINT32 offset = 0;
 
 		deviceContext->IASetVertexBuffers(0, 1, &volume, &vtxs, &offset);
+
+		deviceContext->Draw(vertexCount, 0);
+	}
+
+	void RenderModule::RenderParticles(ID3D11Buffer* particlePointsBuffer, int vertexBufferSize, int vertexCount, const XMFLOAT3& position, const XMFLOAT3& color, ID3D11ShaderResourceView** textures, int textureCount)
+	{
+		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
+
+		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+
+		XMMATRIX world = XMMatrixTranslation(position.x, position.y, position.z);
+		SetDataPerObject(&world, color);
+		SetDataPerMesh(particlePointsBuffer, vertexBufferSize);
+
+		if (textures)
+		{
+			deviceContext->PSSetShaderResources(0, textureCount, textures);
+		}
 
 		deviceContext->Draw(vertexCount, 0);
 	}

@@ -14,12 +14,12 @@
 
   ],
   "spawns": [
-    "entry-24.bin"
+    "WindowDouble-27.bin"
 
   ],
   "traps": [
-    "trap-24.bin",
-    "trap-24.bin",
+    "Anvil-27.bin",
+    "Anvil-27.bin",
     "TeslaTrap-26.bin"
 
   ],
@@ -34,6 +34,14 @@
   ],
   "enemies": [
     "enemy-24.bin"
+
+  ],
+  "cameras": [
+    "SecurityCamera-27.bin"
+
+  ],
+  "furnitures": [
+    "Cupboard-27.bin"
 
   ]
 }

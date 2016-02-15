@@ -2,7 +2,7 @@
 #include <DirectXMath.h>
 #include "InputDevice.h"
 
-GameLogic::GameLogic(ObjectHandler* objectHandler, System::Camera* camera, System::Controls* controls, PickingDevice* pickingDevice)
+GameLogic::GameLogic(ObjectHandler* objectHandler, System::Camera* camera, System::Controls* controls, PickingDevice* pickingDevice, GUI::UITree* uiTree, AssetManager* assetManager)
 {
 	_objectHandler = objectHandler;
 	_camera = camera;
@@ -11,6 +11,12 @@ GameLogic::GameLogic(ObjectHandler* objectHandler, System::Camera* camera, Syste
 
 	_player = new Player(objectHandler);
 	_objectHandler->InitPathfinding();
+	_uiTree = uiTree;
+	_assetManager = assetManager;
+	_guardTexture = _assetManager->GetTexture("../Menues/PlacementStateGUI/units/Guardbutton1.png");
+	_uiTree->GetNode("winscreen")->SetHidden(true);
+	_uiTree->GetNode("losescreen")->SetHidden(true);
+	_gameDone = false;
 }
 
 GameLogic::~GameLogic()
@@ -21,17 +27,37 @@ GameLogic::~GameLogic()
 
 void GameLogic::Update(float deltaTime)
 {
-	HandleInput();
+	HandleInput(deltaTime);
 	_objectHandler->Update(deltaTime);
+
+	if (_objectHandler->GetRemainingToSpawn() <= 0)
+	{
+		if (_objectHandler->GetAllByType(LOOT).size() <= 0)				//You lost
+		{
+			_uiTree->GetNode("losescreen")->SetHidden(false);
+			_gameDone = true;
+		}
+		else if (_objectHandler->GetAllByType(ENEMY).size() <= 0)		//You won
+		{
+			_uiTree->GetNode("winscreen")->SetHidden(false);
+			_gameDone = true;
+		}
+	}
+	_uiTree->GetNode("objectivetext")->SetText(L"Defeat the intruders! \n" + std::to_wstring(_objectHandler->GetAllByType(ENEMY).size()) + L" enemies still remain.");
 }
 
-void GameLogic::HandleInput()
+bool GameLogic::IsGameDone() const
+{
+	return _gameDone;
+}
+
+void GameLogic::HandleInput(float deltaTime)
 {
 	//Selecting a Unit and moving selected units
 	if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
-		vector<GameObject*> pickedUnits = _pickingDevice->PickObjects(_controls->GetMouseCoord()._pos, _objectHandler->GetAllByType(GUARD));
 
+		vector<GameObject*> pickedUnits = _pickingDevice->PickObjects(_controls->GetMouseCoord()._pos, _objectHandler->GetAllByType(GUARD));
 
 		if (pickedUnits.empty())
 		{
@@ -43,12 +69,12 @@ void GameLogic::HandleInput()
 		else
 		{
 			vector<Unit*> units = _player->GetSelectedUnits();
+
 			for (unsigned int i = 0; i < units.size(); i++)
 			{
 				units[i]->SetColorOffset(DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f));
 			}
 			_player->DeselectUnits();
-
 
 			Unit* unit = (Unit*)pickedUnits[0];
 			_player->SelectUnit(unit);
@@ -56,6 +82,8 @@ void GameLogic::HandleInput()
 			unit->SetColorOffset(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));
 		}
 	}
+	
+
 	//Deselect Units
 	if (_controls->IsFunctionKeyDown("MOUSE:DESELECT"))
 	{
@@ -97,6 +125,43 @@ void GameLogic::HandleInput()
 		}
 	}
 
+	//Show selected units on the GUI
+	if (_player->AreUnitsSelected())
+	{
+		vector<Unit*> units = _player->GetSelectedUnits();
+		int nrOfUnits = _player->GetNumberOfSelectedUnits();
+		int healthSum = 0;
+
+		_uiTree->GetNode("unitinfocontainer")->SetHidden(false);
+
+		//TODO: Actually check if the units are guards //Mattias
+		_uiTree->GetNode("unitinfotext")->SetText(L"Guard");
+		_uiTree->GetNode("unitpicture")->SetTexture(_guardTexture);
+
+		//Calculate health sum
+		for (auto& i : units)
+		{
+			healthSum += i->GetHealth();
+		}
+		//TODO: Health is always 1? //Mattias
+		_uiTree->GetNode("unithealth")->SetText(std::to_wstring(healthSum * 100) + L"%");
+
+		//Show the number of units selected
+		if (nrOfUnits > 1)
+		{
+			_uiTree->GetNode("unitnumber")->SetHidden(false);
+			_uiTree->GetNode("unitnumber")->SetText(L"x " + std::to_wstring(nrOfUnits));
+		}
+		else
+		{
+			_uiTree->GetNode("unitnumber")->SetHidden(true);
+		}
+	}
+	else
+	{
+		_uiTree->GetNode("unitinfocontainer")->SetHidden(true);
+	}
+
 	/*
 	Toggle free camera mode
 	*/
@@ -123,12 +188,12 @@ void GameLogic::HandleInput()
 		if (_controls->IsFunctionKeyDown("CAMERA:ZOOM_CAMERA_IN") &&
 			_camera->GetPosition().y > 4.0f)
 		{
-			_camera->Move(XMFLOAT3(0.0f, -1.0f, 0.0f));
+			_camera->Move(XMFLOAT3(0.0f, -1.0f, 0.0f), deltaTime);
 		}
 		else if (_controls->IsFunctionKeyDown("CAMERA:ZOOM_CAMERA_OUT") &&
 			_camera->GetPosition().y < 12.0f)
 		{
-			_camera->Move(XMFLOAT3(0.0f, 1.0f, 0.0f));
+			_camera->Move(XMFLOAT3(0.0f, 1.0f, 0.0f), deltaTime);
 		}
 	}
 
@@ -224,7 +289,7 @@ void GameLogic::HandleInput()
 
 	if (isMoving)
 	{
-		_camera->Move(XMFLOAT3((forward.x + right.x) * v, (forward.y + right.y) * v, (forward.z + right.z) * v));
+		_camera->Move(XMFLOAT3((forward.x + right.x) * v, (forward.y + right.y) * v, (forward.z + right.z) * v), deltaTime);
 	}
 	
 }

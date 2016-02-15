@@ -4,6 +4,7 @@
 #include "GameObject.h"
 #include "Unit.h"
 #include "Trap.h"
+#include "SecurityCamera.h"
 #include "Architecture.h"
 #include "SpawnPoint.h"
 #include "Enemy.h"
@@ -61,21 +62,24 @@ private:
 
 	Architecture*	MakeFloor(GameObjectFloorInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation);
 	Architecture*	MakeWall(GameObjectWallInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation);
+	Architecture*	MakeFurniture(GameObjectFurnitureInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation);
 	Architecture*	MakeLoot(GameObjectLootInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation);
 	SpawnPoint*		MakeSpawn(GameObjectSpawnInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation);
 	Trap*			MakeTrap(GameObjectTrapInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation, const int subIndex = 0);
+	SecurityCamera*	MakeSecurityCamera(GameObjectCameraInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation);
 	Guard*			MakeGuard(GameObjectGuardInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation);
 	Enemy*			MakeEnemy(GameObjectEnemyInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation);
 
 	void ReleaseGameObjects();
 
 public:
+
 	ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data);
 	~ObjectHandler();
 
 	//Add a gameobject
-	bool Add(Type type, int index, const XMFLOAT3& position, const XMFLOAT3& rotation, const int subIndex = 0);
-	bool Add(Type type, const std::string& name, const XMFLOAT3& position, const XMFLOAT3& rotation, const int subIndex = 0);
+	bool Add(Type type, int index, const XMFLOAT3& position, const XMFLOAT3& rotation, const int subIndex = 0, const bool blueprint = false);
+	bool Add(Type type, const std::string& name, const XMFLOAT3& position, const XMFLOAT3& rotation, const int subIndex = 0, const bool blueprint = false);
 	
 	bool Remove(int ID);
 	bool Remove(Type type, int ID);
@@ -111,8 +115,10 @@ public:
 	void InitPathfinding();
 	void EnableSpawnPoints();
 	void DisableSpawnPoints();
+	int GetRemainingToSpawn()const;
 
 	//Update gamelogic of all objects
 	void Update(float deltaTime);
+	void UpdateLights();
 };
 
