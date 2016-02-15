@@ -5,7 +5,7 @@
 #include <random>
 
 Game::Game(HINSTANCE hInstance, int nCmdShow):
-	_settingsReader("Assets/settings.xml")
+	_settingsReader("Assets/settings.xml", "Assets/profile.xml")
 {
 	srand(time(NULL));
 	System::Settings* settings = _settingsReader.GetSettings();
