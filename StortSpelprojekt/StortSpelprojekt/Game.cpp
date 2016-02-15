@@ -86,17 +86,16 @@ bool Game::Update(double deltaTime)
 
 
 
-	if (_controls->IsFunctionKeyDown("DEBUG:REQUEST_PARTICLE"))
-	{
+	//if (_controls->IsFunctionKeyDown("DEBUG:REQUEST_PARTICLE"))
+	//{
 		XMFLOAT3 pos = XMFLOAT3(16, 1.0f, 4);
 		XMFLOAT4 col = XMFLOAT4((rand() % 10) / 10.0f, (rand() % 10) / 10.0f, (rand() % 10) / 10.0f, 1.0f);
 
-		ParticleRequestMessage msg = ParticleRequestMessage(ParticleType::SPLASH, pos, col, 1000.0f, 50, true);
+		ParticleRequestMessage msg = ParticleRequestMessage(ParticleType::SPLASH, pos, col, 400.0f, 50, true);
 		_particleHandler->GetParticleRequestQueue()->Insert(msg);
-	}
-	int witefoijesdjgsoieg = 34874685;
+	//}
+
 	_particleHandler->Update(deltaTime);
-	int ewersdgfsdgsdssdg = 435634;
 
 
 

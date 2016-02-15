@@ -32,7 +32,7 @@ namespace Renderer
 		for (int i = 0; i < particleCount; i++)
 		{
 			//TODO: Set small offsets on particle position
-			Particle particle(XMFLOAT3(0, 0, 0), XMFLOAT3(0, 1, 0), color);
+			Particle particle(XMFLOAT3(-20 / 100.0f + (rand() % 20) / 100.0f, 0, -20/100.0f + (rand() % 20) / 100.0f), XMFLOAT3(0, 1, 0), color);
 			_particles.push_back(particle);
 		}
 

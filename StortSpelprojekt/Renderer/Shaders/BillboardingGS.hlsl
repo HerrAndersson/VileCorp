@@ -23,82 +23,69 @@ struct GS_OUT
 	float3 ambientLight : AMBIENT;
 };
 
-[maxvertexcount(6)] //TODO: Use triangle strip instead of triangle list /Jonas
+[maxvertexcount(4)]
 void main(point GS_IN input[1], inout TriangleStream<GS_OUT> OutputStream)
 {
 	GS_OUT output = (GS_OUT)0;
 	float scale = 0.1f;
-
-	//TODO: Replace all world*view*projection with a single mul using this matrix /Jonas
-	matrix wvp = mul(mul(worldMatrix, camViewMatrix), camProjectionMatrix);
-
-	float4 up = float4(0, 1, 0, 0) * scale;
 	float4 particlepos = mul(input[0].position, worldMatrix);
-	float4 right = float4(normalize(cross(campos - particlepos.xyz, up.xyz)).xyz, 0) * scale;
-	float4 temp;
 
-	float3 normal = normalize(cross(up.xyz, right.xyz));
+	float3 particleToCam = campos - particlepos.xyz;
+
+	float3 normal = normalize(particleToCam);
+	float4 up = float4(0, 0, 1, 0) * scale;
+	float4 right = float4(normalize(cross(particleToCam, up.xyz)).xyz, 0) * scale;
+	up = float4(normalize(cross(particleToCam, right.xyz)).xyz, 0) * scale;
+
+	//2------4
+	//|		 |
+	//|      |
+	//1------3
 
 	//First triangle
-	temp = input[0].position + up - right;
-	output.position = mul(temp, worldMatrix);
-	output.position = mul(output.position, camViewMatrix);
-	output.position = mul(output.position, camProjectionMatrix);
-	output.tex = float2(0, 0);
-	output.normal = normal;
-	output.color = color;
-	output.ambientLight = ambientLight;
-	OutputStream.Append(output);
 
-	temp = input[0].position + up + right;
-	output.position = mul(temp, worldMatrix);
-	output.position = mul(output.position, camViewMatrix);
-	output.position = mul(output.position, camProjectionMatrix);
-	output.tex = float2(1, 0);
-	output.normal = normal;
-	output.color = color;
-	output.ambientLight = ambientLight;
-	OutputStream.Append(output);
-
-	temp = input[0].position - up + right;
-	output.position = mul(temp, worldMatrix);
-	output.position = mul(output.position, camViewMatrix);
-	output.position = mul(output.position, camProjectionMatrix);
-	output.tex = float2(1, 1);
-	output.normal = normal;
-	output.color = color;
-	output.ambientLight = ambientLight;
-	OutputStream.Append(output);
-
-	//Second triangle
-	temp = input[0].position + up - right;
-	output.position = mul(temp, worldMatrix);
-	output.position = mul(output.position, camViewMatrix);
-	output.position = mul(output.position, camProjectionMatrix);
-	output.tex = float2(0, 0);
-	output.normal = normal;
-	output.color = color;
-	output.ambientLight = ambientLight;
-	OutputStream.Append(output);
-
-	temp = input[0].position - up - right;
-	output.position = mul(temp, worldMatrix);
+	//Corner 1
+	output.position = mul(input[0].position - up - right, worldMatrix);
 	output.position = mul(output.position, camViewMatrix);
 	output.position = mul(output.position, camProjectionMatrix);
 	output.tex = float2(0, 1);
 	output.normal = normal;
 	output.color = color;
 	output.ambientLight = ambientLight;
+
 	OutputStream.Append(output);
 
-	temp = input[0].position - up + right;
-	output.position = mul(temp, worldMatrix);
+	//Corner 2
+	output.position = mul(input[0].position + up - right, worldMatrix);
+	output.position = mul(output.position, camViewMatrix);
+	output.position = mul(output.position, camProjectionMatrix);
+	output.tex = float2(0, 0);
+	output.normal = normal;
+	output.color = color;
+	output.ambientLight = ambientLight;
+
+	OutputStream.Append(output);
+
+	//Corner 3
+	output.position = mul(input[0].position - up + right, worldMatrix);
 	output.position = mul(output.position, camViewMatrix);
 	output.position = mul(output.position, camProjectionMatrix);
 	output.tex = float2(1, 1);
 	output.normal = normal;
 	output.color = color;
 	output.ambientLight = ambientLight;
+
+	OutputStream.Append(output);
+
+	//Corner 4
+	output.position = mul(input[0].position + up + right, worldMatrix);
+	output.position = mul(output.position, camViewMatrix);
+	output.position = mul(output.position, camProjectionMatrix);
+	output.tex = float2(1, 0);
+	output.normal = normal;
+	output.color = color;
+	output.ambientLight = ambientLight;
+
 	OutputStream.Append(output);
 
 	OutputStream.RestartStrip();

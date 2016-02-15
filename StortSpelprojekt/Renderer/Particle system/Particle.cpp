@@ -38,8 +38,8 @@ namespace Renderer
 			case SPLASH:
 			{
 				_position.y += (rand() % 100) / 100.0f;
-				_position.z += ((rand() % 5) / 10.0f) - 0.25f;
-				_position.x += ((rand() % 5) / 10.0f) - 0.25f;
+				_position.z += ((rand() % 5) / 10.0f) - 2.5f / 10.0f;
+				_position.x += ((rand() % 5) / 10.0f) - 2.5f / 10.0f;
 
 				break;
 			}

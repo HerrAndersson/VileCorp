@@ -74,7 +74,7 @@ namespace Renderer
 
 		if (!found)
 		{
-			ParticleEmitter* particleEmitter = new ParticleEmitter(_device, _deviceContext,type, position, color, particleCount, timeLimit, isActive);
+			ParticleEmitter* particleEmitter = new ParticleEmitter(_device, _deviceContext, type, position, color, particleCount, timeLimit, isActive);
 			_particleEmitters.push_back(particleEmitter);
 			_emitterCount++;
 		}
