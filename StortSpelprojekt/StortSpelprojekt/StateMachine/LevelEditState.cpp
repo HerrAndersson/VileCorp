@@ -157,20 +157,16 @@ void LevelEditState::HandleButtons()
 			if (_currentList != nullptr && _currentList->GetChildren()->size())
 			{
 				buttonClicked = false;
-				std::vector<GUI::Node*>* currentPageRows = _currentList->GetChildren()->at(_currentPage)->GetChildren();
-				for (unsigned y = 0; y < currentPageRows->size() && !buttonClicked; y++)
+				std::vector<GUI::Node*>* currentPageButtons = _currentList->GetChildren()->at(_currentPage)->GetChildren();
+				for (unsigned y = 0; y < currentPageButtons->size(); y++)
 				{
-					std::vector<GUI::Node*>* currentPageRowButtons = currentPageRows->at(y)->GetChildren();
-
-					//Object buttons 
-					for (unsigned j = 0; j < currentPageRowButtons->size() && !buttonClicked; j++)
+					GUI::Node* currentButton = currentPageButtons->at(y);
+					if (_uiTree.IsButtonColliding(currentButton, coord._pos.x, coord._pos.y))
 					{
-						GUI::Node* currentButton = currentPageRowButtons->at(j);
-						if (_uiTree.IsButtonColliding(currentButton, coord._pos.x, coord._pos.y))
-						{
-							//TODO: Place objects when buttons clicked! - Jesper and Rikhard
-							buttonClicked = true;
-						}
+						_toPlace._name = currentButton->GetId();
+						_toPlace._type = (Type)_listId;
+
+						break;
 					}
 				}
 			}
