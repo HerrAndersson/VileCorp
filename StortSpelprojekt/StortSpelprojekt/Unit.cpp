@@ -419,7 +419,10 @@ void Unit::ClearObjective()
 
 void Unit::TakeDamage(int damage)
 {
-	_health -= damage;
+	if (_health > 0)
+	{
+		_health -= damage;
+	}
 }
 
 void Unit::SetVisibility(bool visible)

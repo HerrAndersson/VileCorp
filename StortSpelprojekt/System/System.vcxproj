@@ -107,7 +107,8 @@ robocopy "$(SolutionDir)Assets" "$(OutDir)Assets" *.json /E /Z /XA:H /W:1 /R:1 /
 if errorlevel 1 exit 0 else exit %errorlevel%</Command>
     </CustomBuildStep>
     <CustomBuildStep>
-      <Outputs>a</Outputs>
+      <Outputs>
+      </Outputs>
     </CustomBuildStep>
     <PostBuildEvent>
       <Command>xcopy /f /y "$(ProjectDir)yse\dll\*.*" "$(OutDir)"</Command>
@@ -133,7 +134,8 @@ robocopy "$(SolutionDir)Assets" "$(OutDir)Assets" *.json /E /Z /XA:H /W:1 /R:1 /
 if errorlevel 1 exit 0 else exit %errorlevel%</Command>
     </CustomBuildStep>
     <CustomBuildStep>
-      <Outputs>a</Outputs>
+      <Outputs>
+      </Outputs>
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -161,7 +163,8 @@ robocopy "$(SolutionDir)Assets" "$(OutDir)Assets" *.json /E /Z /XA:H /W:1 /R:1 /
 if errorlevel 1 exit 0 else exit %errorlevel%</Command>
     </CustomBuildStep>
     <CustomBuildStep>
-      <Outputs>a</Outputs>
+      <Outputs>
+      </Outputs>
     </CustomBuildStep>
     <PostBuildEvent>
       <Command>xcopy /f /y "$(ProjectDir)yse\dll\*.*" "$(OutDir)"</Command>
@@ -190,7 +193,8 @@ robocopy "$(SolutionDir)Assets" "$(OutDir)Assets" *.json /E /Z /XA:H /W:1 /R:1 /
 if errorlevel 1 exit 0 else exit %errorlevel%</Command>
     </CustomBuildStep>
     <CustomBuildStep>
-      <Outputs>a</Outputs>
+      <Outputs>
+      </Outputs>
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemGroup>
