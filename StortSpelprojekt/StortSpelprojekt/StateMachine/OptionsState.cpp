@@ -7,6 +7,7 @@ OptionsState::OptionsState(System::Controls* controls, ObjectHandler* objectHand
 {
 	_controls = controls;
 	_objectHandler = objectHandler;
+	_settingsReader = settingsReader;
 
 	//Resolution options
 	_resolution[0] = { L"1280x720", 1280, 720 };
@@ -27,21 +28,42 @@ OptionsState::OptionsState(System::Controls* controls, ObjectHandler* objectHand
 	_shadowmap[2] = { L"1024x1024", 1024, 1024 };
 	_shadowmap[3] = { L"2048x2048", 2048, 2048 };
 	_shadowmapOption = 0;
-	
+
 	//Antialiasing
 	_aa[0] = { L"On", 1, 0 };
 	_aa[1] = { L"Off", 0, 0 };
 	_aaOption = 0;
 
-	//TODO: Volume setting
+	//TODO: Volume setting //Mattias
 	_volumeOption = 100.0f;
-
-	_settingsReader = settingsReader;
 }
 
 OptionsState::~OptionsState()
 {
 
+}
+
+int OptionsState::ReadSetting(int setting, int setting2, Options* options, int max)
+{
+	int result = 0;
+	for (int i = 0; i < max; i++)
+	{
+		if (setting == options[i]._value && setting2 == options[i]._value2)
+		{
+			result = i;
+			break;
+		}
+	}
+	return result;
+}
+
+void OptionsState::UpdateText(const std::string& contentId, int optionValue, Options* options)
+{
+	GUI::Node* text = _uiTree.GetNode(contentId);
+	if (text)
+	{
+		text->SetText(options[optionValue]._text);
+	}
 }
 
 bool OptionsState::HandleOptionSwitch(const std::string& leftId, const std::string& rightId, const std::string& contentId, int& optionValue, Options* options, int optionsMax)
@@ -67,11 +89,7 @@ bool OptionsState::HandleOptionSwitch(const std::string& leftId, const std::stri
 	}
 	if (leftClicked || rightClicked)
 	{
-		GUI::Node* text = _uiTree.GetNode(contentId);
-		if (text)
-		{
-			text->SetText(options[optionValue]._text);
-		}
+		UpdateText(contentId, optionValue, options);
 	}
 	return leftClicked || rightClicked;
 }
@@ -140,6 +158,7 @@ void OptionsState::Update(float deltaTime)
 		if (_uiTree.IsButtonColliding("cancel", coord._pos.x, coord._pos.y))
 		{
 			_soundModule->Play("Assets/Sounds/page.wav");
+			_uiTree.GetNode("apply")->SetHidden(true);
 			ChangeState(State::MENUSTATE);
 		}
 	}
@@ -147,7 +166,19 @@ void OptionsState::Update(float deltaTime)
 
 void OptionsState::OnStateEnter()
 {
+	System::Settings* settings = _settingsReader->GetSettings();
 
+	_resolutionOption = ReadSetting(settings->_screenWidth, settings->_screenHeight, _resolution, RESOLUTION_MAX);
+	UpdateText("res_content", _resolutionOption, _resolution);
+
+	_windowOption = 0;
+	UpdateText("win_content", _windowOption, _window);
+
+	_shadowmapOption = ReadSetting(settings->_shadowMapSize, settings->_shadowMapSize, _shadowmap, SHADOWMAP_MAX);
+	UpdateText("shadow_content", _shadowmapOption, _shadowmap);
+
+	_aaOption = ReadSetting(settings->_antialiasing, 0, _aa, AA_MAX);
+	UpdateText("aa_content", _aaOption, _aa);
 }
 
 void OptionsState::OnStateExit()
