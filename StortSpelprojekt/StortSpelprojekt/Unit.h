@@ -75,8 +75,9 @@ public:
 	void UseTrap();
 	int GetVisionRadius()const;
 
-	enum Anim { IDLE, WALK, NR_OF_ANIM/*Has to be last*/ };
+	enum Anim { IDLE, WALK, FIXTRAP, FIGHT, PICKUPOBJECT, NR_OF_ANIM/*Has to be last*/ };
 	void Animate(Anim anim);
+	bool GetAnimisFinished();
 
 };
 

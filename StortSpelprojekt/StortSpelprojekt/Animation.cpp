@@ -15,6 +15,7 @@ Animation::Animation(Skeleton* skeleton, bool firstFrame)
 	_inactive = false;
 	_lastFrame = false;
 	_speed = 1.0f;
+	_isFinished = false;
 
 	if (firstFrame)
 	{
@@ -61,6 +62,7 @@ void Animation::Update(float time)
 				_frozen = true;
 			}
 			_currentAction = -1;
+			_isFinished = true;
 		}
 		else
 		{
@@ -122,12 +124,18 @@ void Animation::PlayAction(int action, float speed, bool freeze, bool lastFrame)
 	_frozen = false;
 	_animTime = 0.0f;
 	_currentAction = action;
+	_isFinished = false;
 	if (freeze)
 	{
 		_inactive = true;
 	}
 	_lastFrameRender = lastFrame;
 	_speed = speed;
+}
+
+bool Animation::GetisFinished()
+{
+	return _isFinished;
 }
 
 XMMATRIX Animation::Interpolate(unsigned boneID, int action)

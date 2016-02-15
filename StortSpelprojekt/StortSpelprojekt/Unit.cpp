@@ -8,11 +8,12 @@ void Unit::CalculatePath()
 		_pathLength = _aStar->GetPathLength();
 		for (int i = 0; i < _pathLength; i++)
 		{
-			if (_tileMap->IsFloorOnTile(_path[i]))
+			/*if (_tileMap->IsFloorOnTile(_path[i]))
 			{
 				_tileMap->GetObjectOnTile(_path[i], FLOOR)->SetColorOffset({0,4,0});
-			}
+			}*/
 		}
+
 		Animate(WALK);
 		_isMoving = true;
 		_direction = _path[--_pathLength] - _tilePosition;
@@ -318,9 +319,9 @@ void Unit::Move()
 	bool foundNextTile = false;
 	if (_isMoving)
 	{
-		_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,0});
+	//	_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,0});
 		_tilePosition += _direction;
-		_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,4,0});
+	//	_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,4,0});
 	}
 	if (_objective != nullptr && _objective->GetPickUpState() != ONTILE)			//Check that no one took your objective
 	{
@@ -394,10 +395,10 @@ void Unit::Update(float deltaTime)
 			}
 			CalculateMatrix();
 		}
-		if (_tileMap->IsFloorOnTile(_tilePosition))
+		/*if (_tileMap->IsFloorOnTile(_tilePosition))
 		{
 			_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,4});
-		}
+		}*/
 	}
 }
 
@@ -453,6 +454,11 @@ int Unit::GetVisionRadius() const
 	return _visionRadius;
 }
 
+bool Unit::GetAnimisFinished()
+{
+	return _animation->GetisFinished();
+}
+
 void Unit::Animate(Anim anim)
 {
 	if (_renderObject->_isSkinned)
@@ -462,10 +468,16 @@ void Unit::Animate(Anim anim)
 			switch (anim)
 			{
 			case IDLE:
-				_animation->SetActionAsCycle(0, 2.0f, false);
+				_animation->SetActionAsCycle(0, 1.0f, false);
 				break;
 			case WALK:
-				_animation->SetActionAsCycle(1, 3.0f, false);
+				_animation->SetActionAsCycle(1, 1.0f, false);
+				break;
+			case FIXTRAP:
+				_animation->SetActionAsCycle(2, 1.0f, false);
+				break;
+			case FIGHT:
+				_animation->SetActionAsCycle(2, 1.0f, false);
 				break;
 			default:
 				break;
@@ -476,10 +488,16 @@ void Unit::Animate(Anim anim)
 			switch (anim)
 			{
 			case IDLE:
-				_animation->SetActionAsCycle(0, 2.0f, false);
+				_animation->SetActionAsCycle(0, 1.0f, false);
 				break;
 			case WALK:
-				_animation->SetActionAsCycle(1, 3.0f, false);
+				_animation->SetActionAsCycle(1, 1.0f, false);
+				break;
+			case FIGHT:
+				_animation->SetActionAsCycle(1, 1.0f, false);
+				break;
+			case PICKUPOBJECT:
+				_animation->PlayAction(3, 1.0f, false, false);
 				break;
 			default:
 				break;

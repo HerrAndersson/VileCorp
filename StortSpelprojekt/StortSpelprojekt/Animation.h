@@ -30,6 +30,7 @@ private:
 	bool _inactive;
 	bool _lastFrameRender;
 	float _speed;
+	bool _isFinished;
 
 public:
 	Animation(Skeleton* skeleton, bool firstFrame = false);
@@ -52,4 +53,5 @@ public:
 	{
 		return _boneCount;
 	} 
+	bool GetisFinished();
 };

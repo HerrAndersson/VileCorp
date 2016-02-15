@@ -7,7 +7,7 @@ void Trap::CalculateCircleAOE(int radius)
 	int y = 0;
 	int D = 1 - x;   // Decision criterion divided by 2 evaluated at x=r, y=0
 	AI::Vec2D pos = {0,0};
-
+	_nrOfAOETiles = 0;
 	while (y <= x)
 	{
 		if (y != x)
@@ -359,6 +359,10 @@ void Trap::SetTrapActive(bool active)
 	{
 		SetColorOffset({0,0,0});
 	}
+	else
+	{
+		SetColorOffset({4,0,0});
+	}
 }
 
 void Trap::Activate()
@@ -375,11 +379,12 @@ void Trap::Activate()
 		}
 	}
 	Animate(ACTIVATE);
+	SetActive(false);
 }
 
 void Trap::Update(float deltaTime)
 {	
-	if (_animation != nullptr)
+	if (_animation != nullptr && !_active)
 	{
 		_animation->Update(deltaTime);
 	}
@@ -394,8 +399,6 @@ void Trap::Update(float deltaTime)
 	if (triggered && _isActive)
 	{
 		Activate();
-		_isActive = false;
-		SetColorOffset({4,0,0});
 	}
 }
 
@@ -420,37 +423,60 @@ void Trap::SetTilePosition(AI::Vec2D pos)
 {
 	GameObject::SetTilePosition(pos);
 
-	_nrOfAOETiles = 0;
-
+	//_nrOfAOETiles = 0;
 	int radius = 0;
 
 	switch (_trapType)
 	{
 	case SPIKE:
+	{
+		_nrOfAOETiles = 0;
 		_occupiedTiles[0] = _tilePosition;
 		_areaOfEffect[_nrOfAOETiles++] = _tilePosition;
 		break;
+	}
 	case TESLACOIL:
+	{
+		//_nrOfAOETiles = 0;
 		for (int i = 0; i < _tileSize; i++)
 		{
 			if (_tileMap->IsFloorOnTile(_occupiedTiles[i]))
 			{
-				_tileMap->GetObjectOnTile(_occupiedTiles[i], FLOOR)->SetColorOffset({ 0,0,0 });
+				_tileMap->GetObjectOnTile(_occupiedTiles[i], FLOOR)->SetColorOffset({0,0,0});
+			}
+		}
+		for (int i = 0; i < _nrOfAOETiles; i++)
+		{
+			if (_tileMap->IsFloorOnTile(_areaOfEffect[i]))
+			{
+				_tileMap->GetObjectOnTile(_areaOfEffect[i], FLOOR)->SetColorOffset({0,0,0});
+			}
+		}
+
+		CalculateCircleAOE(3);
+
+		for (int i = 0; i < _nrOfAOETiles; i++)
+		{
+			if (_tileMap->IsFloorOnTile(_areaOfEffect[i]))
+			{
+				_tileMap->GetObjectOnTile(_areaOfEffect[i], FLOOR)->SetColorOffset({3.0f,1.0f,0.0f});
 			}
 		}
 		for (int i = 0; i < _tileSize; i++)
 		{
-			AI::Vec2D offset = { i / 3 - 1, i % 3 - 1 };
+			AI::Vec2D offset = {i / 3 - 1, i % 3 - 1};
 			_occupiedTiles[i] = _tilePosition + offset;
 			if (_tileMap->IsFloorOnTile(_occupiedTiles[i]))
 			{
-				_tileMap->GetObjectOnTile(_occupiedTiles[i], FLOOR)->SetColorOffset({ 0,0,4 });
+				_tileMap->GetObjectOnTile(_occupiedTiles[i], FLOOR)->SetColorOffset({2.0f, 2.0f, 0.0f});
 			}
 		}
-		CalculateCircleAOE(3);
+	//	CalculateCircleAOE(3);
+	}
 		break;
 	case SHARK:			//Trigger area is currently the same as the trap's physical area. Might be awkward since the shark trap is larger than its AOE.
 	{
+		_nrOfAOETiles = 0;
 		AI::Vec2D offset = { _direction._y, _direction._x };
 		_nrOfAOETiles = 3;
 		_areaOfEffect[0] = pos;

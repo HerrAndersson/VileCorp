@@ -84,14 +84,15 @@ void Guard::act(GameObject* obj)
 				if (_trapInteractionTime < 0)
 				{
 					UseTrap();
+					Animate(FIXTRAP);
 				}
 				else if (_trapInteractionTime == 0)
 				{
 					static_cast<Trap*>(obj)->SetTrapActive(true);
-					obj->SetColorOffset({0,0,0});
+				//	obj->SetColorOffset({0,0,0});
+					ClearObjective();
 				}
 			}
-			ClearObjective();
 			break;
 		case ENEMY:											//The guard hits the enemy
 			static_cast<Unit*>(obj)->TakeDamage(1);
