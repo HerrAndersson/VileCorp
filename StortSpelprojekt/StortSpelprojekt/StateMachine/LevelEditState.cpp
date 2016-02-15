@@ -36,7 +36,7 @@ LevelEditState::LevelEditState(System::Controls* controls, ObjectHandler* object
 
 	for (unsigned i = 0; i < _objectTabs->size(); i++)
 	{
-		_buttonPositions[i] = _objectTabs->at(i)->GetPosition();
+		_buttonPositions[i] = _objectTabs->at(i)->GetLocalPosition();
 	}
 }
 

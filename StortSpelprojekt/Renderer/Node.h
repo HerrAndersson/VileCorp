@@ -31,7 +31,7 @@ namespace GUI
 	private:
 
 		DirectX::XMMATRIX _modelMatrix;
-		DirectX::XMFLOAT2 _position;
+		DirectX::XMFLOAT2 _position, _positionFinal;
 		DirectX::XMFLOAT2 _scale;
 		DirectX::XMFLOAT4 _colorOffset;
 
@@ -56,8 +56,9 @@ namespace GUI
 
 	public:
 
-		Node(NodeInfo* info, DirectX::XMFLOAT2 position = DirectX::XMFLOAT2(0.0f, 0.0f),
-			DirectX::XMFLOAT2 scale = DirectX::XMFLOAT2(1.0f, 1.0f), 
+		Node(NodeInfo* info,
+			DirectX::XMFLOAT2 position = DirectX::XMFLOAT2(0.0f, 0.0f),
+			DirectX::XMFLOAT2 scale = DirectX::XMFLOAT2(1.0f, 1.0f),
 			DirectX::XMFLOAT4 colorOffset = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f),
 			ID3D11ShaderResourceView* texture = nullptr,
 			const std::string& id = "parent",
@@ -69,6 +70,7 @@ namespace GUI
 		virtual ~Node();
 
 		void SetPosition(DirectX::XMFLOAT2 position);
+		void SetParentPosition(DirectX::XMFLOAT2 position);
 		void SetScale(DirectX::XMFLOAT2 scale);
 		void SetId(const std::string& id);
 		void SetText(const std::wstring& text);
@@ -82,7 +84,8 @@ namespace GUI
 
 		DirectX::XMFLOAT4 GetColorOffset() const;
 		float GetAlpha() const;
-		DirectX::XMFLOAT2 GetPosition() const;
+		DirectX::XMFLOAT2 GetFinalPosition() const;
+		DirectX::XMFLOAT2 GetLocalPosition() const;
 		DirectX::XMFLOAT2 GetScale() const;
 		std::string GetId() const;
 		std::wstring& GetText();
