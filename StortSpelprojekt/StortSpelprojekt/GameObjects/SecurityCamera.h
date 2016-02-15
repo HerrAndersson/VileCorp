@@ -1,9 +1,9 @@
 #pragma once
 #include "GameObject.h"
 #include "Enemy.h"
-#include "Tilemap.h"
+#include "../Tilemap.h"
 #include "AStar.h"
-#include "VisionCone.h"
+#include "../VisionCone.h"
 class SecurityCamera : public GameObject
 {
 private:

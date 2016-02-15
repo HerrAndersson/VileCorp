@@ -4,7 +4,7 @@
 #include <ShlObj.h>
 
 #include "../ObjectHandler.h"
-#include "../Grid.h"
+#include "Grid.h"
 #include "AStar.h"
 #include "../Controls.h"
 #include "../PickingDevice.h"
