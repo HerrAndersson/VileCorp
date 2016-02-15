@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <cereal>
 	<value0>
-		<_screenWidth>1280</_screenWidth>
-		<_screenHeight>720</_screenHeight>
-		<_windowWidth>1280</_windowWidth>
-		<_windowHeight>720</_windowHeight>
+		<_screenWidth>1920</_screenWidth>
+		<_screenHeight>1080</_screenHeight>
+		<_windowWidth>1920</_windowWidth>
+		<_windowHeight>1080</_windowHeight>
 		<_shadowMapSize>256</_shadowMapSize>
-		<_fullscreen>false</_fullscreen>
 		<_borderless>false</_borderless>
 		<_showMouseCursor>true</_showMouseCursor>
 		<_nearClip>0.1</_nearClip>

@@ -8,7 +8,6 @@ namespace System
 		_windowWidth = 1920;
 		_windowHeight = 1080;
 		_shadowMapSize = 256;
-		_fullscreen = false;
 		_borderless = false;
 		_showMouseCursor = true;
 		_nearClip = 0.1f;

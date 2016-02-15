@@ -57,11 +57,11 @@ Game::~Game()
 
 void Game::ResizeResources(System::Settings* settings)
 {
-	//RenderModule måste uppdatera sin swapchain innan window sätter sin resize. /Alex
+	//RenderModule must update it's swapchain before window resizes /Alex
+	_renderModule->ResizeResources(settings);
 	_window->ResizeWindow(settings);
 	_camera->Resize(settings);
 	_SM->Resize(settings);
-	_renderModule->ResizeResources(_window->GetHWND(), settings);
 }
 
 bool Game::Update(double deltaTime)

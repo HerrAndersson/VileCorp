@@ -14,7 +14,6 @@ namespace System
 		unsigned int _windowWidth;
 		unsigned int _windowHeight;
 		unsigned int _shadowMapSize;
-		bool _fullscreen;
 		bool _borderless;
 		bool _showMouseCursor;
 		float _nearClip;
@@ -34,7 +33,6 @@ namespace System
 				CEREAL_NVP(_windowWidth),
 				CEREAL_NVP(_windowHeight),
 				CEREAL_NVP(_shadowMapSize),
-				CEREAL_NVP(_fullscreen),
 				CEREAL_NVP(_borderless),
 				CEREAL_NVP(_showMouseCursor),
 				CEREAL_NVP(_nearClip),

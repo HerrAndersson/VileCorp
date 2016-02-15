@@ -116,9 +116,9 @@ namespace Renderer
 		}
 	}
 
-	void RenderModule::ResizeResources(HWND hwnd, System::Settings* settings)
+	void RenderModule::ResizeResources(System::Settings* settings)
 	{
-		_d3d->ResizeResources(hwnd, settings);
+		_d3d->ResizeResources(settings);
 		_settings = settings;
 
 		_shadowMap->Resize(_d3d->GetDevice(), settings->_shadowMapSize);
