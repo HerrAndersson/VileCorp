@@ -40,7 +40,7 @@ private:
 	bool _isPlace;
 	bool _modeLock;
 
-	void HandleInput();
+	void HandleInput(double deltaTime);
 	
 	bool CheckValidity(AI::Vec2D tile, Type type);
 	void SetValidity(Marker* m, Type type);

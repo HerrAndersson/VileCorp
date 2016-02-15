@@ -79,10 +79,10 @@ void PlacementState::OnStateEnter()
 	campos.z = _objectHandler->GetTileMap()->GetHeight() / 2 - 10;
 	_camera->SetPosition(campos);
 
-	if (_playerProfile[0]._firstTime != true)
-	{
-		_uiTree.GetNode("Tutorial")->SetHidden(true);
-	}
+	//if (_playerProfile[0]._firstTime != true)
+	//{
+	_uiTree.GetNode("Tutorial")->SetHidden(false);
+	//}
 }
 
 void PlacementState::OnStateExit()

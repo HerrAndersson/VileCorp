@@ -37,6 +37,8 @@ Game::Game(HINSTANCE hInstance, int nCmdShow):
 	_SM->Update(_timer.GetFrameTime());
 
 	_enemiesHasSpawned = false;
+	_soundModule.AddSound("Assets/Sounds/theme.wav", 0.15f, 1.0f, true, true);
+	_soundModule.Play("Assets/Sounds/theme.wav");
 }
 
 Game::~Game()
@@ -186,7 +188,7 @@ void Game::Render()
 			for (GameObject* a : gameObjects->at(GUARD))
 			{
 				// temporary uncommenting
-				_renderModule->RenderAnimation(a->GetMatrix(), vertexBufferSize, a->GetAnimation()->GetFloats(), a->GetColorOffset());
+				//_renderModule->RenderAnimation(a->GetMatrix(), vertexBufferSize, a->GetAnimation()->GetFloats(), a->GetColorOffset());
 			}
 		}
 	}

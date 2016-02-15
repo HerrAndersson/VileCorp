@@ -147,7 +147,7 @@ bool ObjectHandler::Add(Type type, int index, const XMFLOAT3& position, const XM
 			for (int i = 0; i < trap->GetTileSize() && addedObject; i++)
 			{
 				_tilemap->AddObjectToTile(arr[i], object);
-				_tilemap->GetObjectOnTile(arr[i], FLOOR)->AddColorOffset({2,0,0});
+			//	_tilemap->GetObjectOnTile(arr[i], FLOOR)->AddColorOffset({2,0,0});
 			}
 		}
 

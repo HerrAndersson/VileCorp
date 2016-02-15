@@ -8,10 +8,10 @@ void Unit::CalculatePath()
 		_pathLength = _aStar->GetPathLength();
 		for (int i = 0; i < _pathLength; i++)
 		{
-			if (_tileMap->IsFloorOnTile(_path[i]))
+			/*if (_tileMap->IsFloorOnTile(_path[i]))
 			{
 				_tileMap->GetObjectOnTile(_path[i], FLOOR)->SetColorOffset({0,4,0});
-			}
+			}*/
 		}
 		_isMoving = true;
 		_direction = _path[--_pathLength] - _tilePosition;
@@ -317,9 +317,9 @@ void Unit::Move()
 	bool foundNextTile = false;
 	if (_isMoving)
 	{
-		_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,0});
+	//	_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,0});
 		_tilePosition += _direction;
-		_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,4,0});
+	//	_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,4,0});
 	}
 	if (_objective != nullptr && _objective->GetPickUpState() != ONTILE)			//Check that no one took your objective
 	{
@@ -392,10 +392,10 @@ void Unit::Update(float deltaTime)
 			}
 			CalculateMatrix();
 		}
-		if (_tileMap->IsFloorOnTile(_tilePosition))
+		/*if (_tileMap->IsFloorOnTile(_tilePosition))
 		{
 			_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,4});
-		}
+		}*/
 	}
 }
 

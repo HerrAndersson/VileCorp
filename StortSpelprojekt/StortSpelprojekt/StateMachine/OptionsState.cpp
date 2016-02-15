@@ -83,6 +83,7 @@ void OptionsState::Update(float deltaTime)
 	}
 	if (_controls->IsFunctionKeyDown("MENU:MENU"))
 	{
+		_soundModule->Play("Assets/Sounds/page.wav");
 		ChangeState(State::MENUSTATE);
 	}
 	if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
@@ -137,6 +138,7 @@ void OptionsState::Update(float deltaTime)
 		}
 		if (_uiTree.IsButtonColliding("cancel", coord._pos.x, coord._pos.y))
 		{
+			_soundModule->Play("Assets/Sounds/page.wav");
 			ChangeState(State::MENUSTATE);
 		}
 	}
