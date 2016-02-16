@@ -65,7 +65,6 @@ void VisionCone::ScanOctant(int depth, int octant, double &startSlope, double en
 		break;
 	case 4:
 		rowByRow = false;
-		startSlopeOffset = -1;
 		prevTileVec = AI::Vec2D(0, -1);
 		endCornerVec = AI::Vec2D(-1, -1);
 		startCornerVec = AI::Vec2D(1, -1);
@@ -80,10 +79,9 @@ void VisionCone::ScanOctant(int depth, int octant, double &startSlope, double en
 		break;
 	case 5:
 		leftToRight = -1;
-		startSlopeOffset = -1;
-		prevTileVec = AI::Vec2D(-1, 0);
-		endCornerVec = AI::Vec2D(1, -1);
-		startCornerVec = AI::Vec2D(-1, -1);
+		prevTileVec = AI::Vec2D(1, 0);
+		endCornerVec = AI::Vec2D(1, 1);
+		startCornerVec = AI::Vec2D(1, -1);
 
 		y = unitPosY - depth;
 		if (y < 0)
@@ -97,7 +95,7 @@ void VisionCone::ScanOctant(int depth, int octant, double &startSlope, double en
 		endSlopeCompOffset = -1;
 		startSlopeOffset = -1;
 		prevTileVec = AI::Vec2D(-1, 0);
-		endCornerVec = AI::Vec2D(1, -1);
+		endCornerVec = AI::Vec2D(-1, 1);
 		startCornerVec = AI::Vec2D(-1, -1);
 
 		y = unitPosY - depth;
@@ -154,7 +152,7 @@ void VisionCone::ScanOctant(int depth, int octant, double &startSlope, double en
 				if (_tileMap->IsValid({x, y}) && !_tileMap->IsWallOnTile({x + prevTileVec._x, y + prevTileVec._y}))
 				{
 					//Recurse and adjust depth with new end slope
-					ScanOctant(depth + 1, octant, startSlope, (endSlopeCompOffset)* GetSlope(x + (endCornerVec._x * 0.5), y + (endCornerVec._y * 0.5), unitPosX, unitPosY, (!rowByRow)), pos, dir);
+					ScanOctant(depth + 1, octant, startSlope, (endSlopeCompOffset) * GetSlope(x + (endCornerVec._x * 0.5), y + (endCornerVec._y * 0.5), unitPosX, unitPosY, (!rowByRow)), pos, dir);
 				}
 			}
 			else
@@ -280,7 +278,7 @@ void VisionCone::ColorVisibleTiles(DirectX::XMFLOAT3 color)
 		GameObject* floor = _tileMap->GetObjectOnTile(_visibleTiles[i], FLOOR);
 		if (floor != nullptr)
 		{
-	//		floor->SetColorOffset(color);
+			//floor->SetColorOffset(color);
 		}
 	}
 }

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BaseState.h"
-#include "BaseEdit.h"
+#include "../BaseEdit.h"
 #include "../JsonStructs.h"
 #include "jsonparser.h"
 #include "Assetmanager.h"

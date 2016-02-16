@@ -53,67 +53,46 @@ bool GameLogic::IsGameDone() const
 
 void GameLogic::HandleInput(float deltaTime)
 {
-	//Selecting a Unit and moving selected units
+	//Boxselect Units
 	if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
-
-		vector<GameObject*> pickedUnits = _pickingDevice->PickObjects(_controls->GetMouseCoord()._pos, _objectHandler->GetAllByType(GUARD));
-
-		if (pickedUnits.empty())
-		{
-			if (_player->AreUnitsSelected())
-			{
-				_player->MoveUnits(_pickingDevice->PickTile(_controls->GetMouseCoord()._pos));
-			}
-		}
-		else
-		{
-			vector<Unit*> units = _player->GetSelectedUnits();
-
-			for (unsigned int i = 0; i < units.size(); i++)
-			{
-				units[i]->SetColorOffset(DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f));
-			}
-			_player->DeselectUnits();
-
-			Unit* unit = (Unit*)pickedUnits[0];
-			_player->SelectUnit(unit);
-
-			unit->SetColorOffset(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));
-		}
+		_pickingDevice->SetFirstBoxPoint(_controls->GetMouseCoord()._pos);
 	}
 	
+	if (_controls->IsFunctionKeyUp("MOUSE:SELECT"))
+	{
+		//deselect everything first.
+		vector<Unit*> units = _player->GetSelectedUnits();
 
-	//Deselect Units
+		for (unsigned int i = 0; i < units.size(); i++)
+		{
+			units[i]->SetColorOffset(DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f));
+		}
+		_player->DeselectUnits();
+
+		//Check if we picked anything
+		vector<GameObject*> pickedUnits = _pickingDevice->BoxPickObjects(_controls->GetMouseCoord()._pos, _objectHandler->GetAllByType(GUARD));
+		//vector<GameObject*> pickedUnits = _pickingDevice->PickObjects(_controls->GetMouseCoord()._pos, _objectHandler->GetAllByType(GUARD));
+
+		//if units selected
+		if (pickedUnits.size() > 0)
+		{
+			//select
+			for (unsigned int i = 0; i < pickedUnits.size(); i++)
+			{
+				_player->SelectUnit((Unit*)pickedUnits[i]);
+				pickedUnits[i]->SetColorOffset(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));
+			}
+		}
+	}
+
+	//Move units
 	if (_controls->IsFunctionKeyDown("MOUSE:DESELECT"))
 	{
 		if (_player->AreUnitsSelected())
 		{
-			vector<Unit*> units = _player->GetSelectedUnits();
-			for (unsigned int i = 0; i < units.size(); i++)
-			{
-				units[i]->SetColorOffset(DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f));
-			}
-			_player->DeselectUnits();
+			_player->MoveUnits(_pickingDevice->PickTile(_controls->GetMouseCoord()._pos));
 		}
-	}
-	
-	//Boxselect Units
-	if(_controls->IsFunctionKeyDown("MOUSE:BOX_SELECT"))
-	{
-		_pickingDevice->SetFirstBoxPoint(_controls->GetMouseCoord()._pos);
-	}
-
-	if (_controls->IsFunctionKeyUp("MOUSE:BOX_SELECT"))
-	{
-		vector<GameObject*> pickedUnits = _pickingDevice->BoxPickObjects(_controls->GetMouseCoord()._pos, _objectHandler->GetAllByType(GUARD));
-
-		for (unsigned int i = 0; i < pickedUnits.size(); i++)
-		{
-			_player->SelectUnit((Unit*)pickedUnits[i]);
-			pickedUnits[i]->SetColorOffset(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));
-		}
-
 	}
 
 	//Set Guard Patrol Route if a Guard is Selected
@@ -183,17 +162,26 @@ void GameLogic::HandleInput(float deltaTime)
 	/*
 	Camera scroll
 	*/
+	const float ZOOM_MAX = 12.0f;
+	const float ZOOM_MIN = 4.0f;
+	float velocity = deltaTime / 20.0f;
+
 	if (_camera->GetMode() == System::LOCKED_CAM)
 	{
 		if (_controls->IsFunctionKeyDown("CAMERA:ZOOM_CAMERA_IN") &&
-			_camera->GetPosition().y > 4.0f)
+			(_camera->GetPosition().y - velocity) > ZOOM_MIN)
 		{
-			_camera->Move(XMFLOAT3(0.0f, -1.0f, 0.0f), deltaTime);
+			_camera->Move(_camera->GetForwardVector(), velocity);
 		}
 		else if (_controls->IsFunctionKeyDown("CAMERA:ZOOM_CAMERA_OUT") &&
-			_camera->GetPosition().y < 12.0f)
+			(_camera->GetPosition().y + velocity) < ZOOM_MAX)
 		{
-			_camera->Move(XMFLOAT3(0.0f, 1.0f, 0.0f), deltaTime);
+			XMFLOAT3 negForward = XMFLOAT3(
+				_camera->GetForwardVector().x * -1,
+				_camera->GetForwardVector().y * -1,
+				_camera->GetForwardVector().z * -1);
+
+			_camera->Move( negForward, velocity);
 		}
 	}
 
@@ -289,7 +277,7 @@ void GameLogic::HandleInput(float deltaTime)
 
 	if (isMoving)
 	{
-		_camera->Move(XMFLOAT3((forward.x + right.x) * v, (forward.y + right.y) * v, (forward.z + right.z) * v), deltaTime);
+		_camera->Move(XMFLOAT3((forward.x + right.x) * v, (forward.y + right.y) * v, (forward.z + right.z) * v), deltaTime / 10);
 	}
 	
 }

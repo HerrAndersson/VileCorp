@@ -1,5 +1,5 @@
-#ifndef RAPIDJSON_RAPIDJSON_H_
-#define RAPIDJSON_RAPIDJSON_H_
+#ifndef CEREAL_RAPIDJSON_RAPIDJSON_H_
+#define CEREAL_RAPIDJSON_RAPIDJSON_H_
 
 // Copyright (c) 2011-2012 Milo Yip (miloyip@gmail.com)
 // Version 0.11
@@ -23,8 +23,8 @@ typedef unsigned __int64 uint64_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 // RAPIDJSON_ENDIAN
-#define RAPIDJSON_LITTLEENDIAN	0	//!< Little endian machine
-#define RAPIDJSON_BIGENDIAN		1	//!< Big endian machine
+#define CEREAL_RAPIDJSON_LITTLEENDIAN	0	//!< Little endian machine
+#define CEREAL_RAPIDJSON_BIGENDIAN		1	//!< Big endian machine
 
 //! Endianness of the machine.
 /*!	GCC provided macro for detecting endianness of the target machine. But other
@@ -60,7 +60,7 @@ typedef unsigned __int64 uint64_t;
 // RAPIDJSON_NO_SIZETYPEDEFINE
 
 #ifndef RAPIDJSON_NO_SIZETYPEDEFINE
-namespace rapidjson {
+namespace cereal {
 //! Use 32-bit array/string indices even for 64-bit platform, instead of using size_t.
 /*! User may override the SizeType by defining RAPIDJSON_NO_SIZETYPEDEFINE.
 */
@@ -83,11 +83,11 @@ typedef unsigned SizeType;
 ///////////////////////////////////////////////////////////////////////////////
 // Helpers
 
-#define RAPIDJSON_MULTILINEMACRO_BEGIN do {  
-#define RAPIDJSON_MULTILINEMACRO_END \
+#define CEREAL_RAPIDJSON_MULTILINEMACRO_BEGIN do {  
+#define CEREAL_RAPIDJSON_MULTILINEMACRO_END \
 } while((void)0, 0)
 
-namespace rapidjson {
+namespace cereal {
 
 ///////////////////////////////////////////////////////////////////////////////
 // Allocator
