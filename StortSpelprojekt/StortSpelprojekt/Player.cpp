@@ -73,6 +73,7 @@ void Player::MoveUnits(AI::Vec2D movePoint)
 			{
 				((Guard*)unit)->RemovePatrol();
 			}
+			unit->ClearObjective();
 			unit->SetGoalTilePosition(movePoint);
  		//	unit->SetGoal(movePoint);
 		//	unit->Wait(-1);

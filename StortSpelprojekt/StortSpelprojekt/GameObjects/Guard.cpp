@@ -66,9 +66,12 @@ void Guard::EvaluateTile(GameObject * obj)
 		if (tempPriority > 0 && obj->GetTilePosition() != _tilePosition && (_pathLength <= 0 || tempPriority * GetApproxDistance(obj->GetTilePosition()) < _goalPriority * GetApproxDistance(GetGoalTilePosition())))			//TODO Either optimize properly or check path properly --Victor
 		{
 			_goalPriority = tempPriority;
-		//	SetGoal(obj);
+			ClearObjective();
+			_objective = obj;
 			_goalTilePosition = obj->GetTilePosition();
-			_moveState = MoveState::FINDING_PATH;
+			//_moveState = MoveState::FINDING_PATH;
+			SetGoal(obj);
+			
 		}
 	}
 }
@@ -76,7 +79,7 @@ void Guard::EvaluateTile(GameObject * obj)
 void Guard::act(GameObject* obj)
 {
 	AI::Vec2D dist = obj->GetTilePosition() - _tilePosition;
-	if (obj != nullptr && abs(dist._x) < 2 && abs(dist._y) < 2)
+	if (obj != nullptr && obj->InRange(_tilePosition))
 	{
 		switch (obj->GetType())
 		{
@@ -110,9 +113,10 @@ void Guard::act(GameObject* obj)
 			if (_tilePosition == _patrolRoute[_currentPatrolGoal % _patrolRoute.size()])
 			{
 				_currentPatrolGoal++;
-				//SetGoal(_patrolRoute[_currentPatrolGoal % _patrolRoute.size()]);
+				ClearObjective();
 				_goalTilePosition = _patrolRoute[_currentPatrolGoal % _patrolRoute.size()];
-				_moveState = MoveState::FINDING_PATH;
+			//	_moveState = MoveState::FINDING_PATH;
+				SetGoal(_goalTilePosition);
 			}
 		}
 		else
@@ -130,6 +134,7 @@ void Guard::act(GameObject* obj)
 	{
 		_moveState = MoveState::IDLE;
 		_nextTile = _tilePosition;
+		ClearObjective();
 	}
 }
 
@@ -145,7 +150,9 @@ void Guard::SetPatrolPoint(AI::Vec2D patrolPoint)
 		}
 		_patrolRoute.push_back(patrolPoint);
 		_goalTilePosition = _patrolRoute[_currentPatrolGoal % _patrolRoute.size()];
-		_moveState = MoveState::FINDING_PATH;
+		//_moveState = MoveState::FINDING_PATH;
+		SetGoal(_goalTilePosition);
+		ClearObjective();
 	}
 }
 
@@ -184,7 +191,14 @@ void Guard::Update(float deltaTime)
 		Wait();
 		break;
 	case MoveState::FINDING_PATH:
-		SetGoal(_goalTilePosition); //Switch state at the end
+		if (_objective != nullptr)
+		{
+			SetGoal(_objective);
+		}
+		else
+		{
+			SetGoal(_goalTilePosition); //Switch state at the end
+		}
 		break;
 	case MoveState::MOVING:
 		if (_direction._x == 0 || _direction._y == 0)		//Right angle movement
@@ -203,6 +217,16 @@ void Guard::Update(float deltaTime)
 			_moveState = MoveState::SWITCHING_NODE;
 			_isSwitchingTile = true;
 		}
+		//else if (abs(_position.x - _nextTile._x) < TILE_EPSILON * 0.5f)
+		//{
+		//	_direction._x = 0;
+		//	Rotate();
+		//}
+		//else if (abs(_position.z - _nextTile._y) < TILE_EPSILON * 0.5f)
+		//{
+		//	_direction._y = 0;
+		//	Rotate();
+		//}
 		break;
 	case MoveState::SWITCHING_NODE:
 		SetNextTile();
@@ -219,33 +243,28 @@ void Guard::SetNextTile() {
 	
 
 	//_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,0});
-	//_tilePosition = _nextTile;																			//Note: Tileposition is now updated at the start of movement, whereas before it was updated at the end.
+	_tilePosition = _nextTile;																			//Note: Tileposition is now updated at the start of movement, whereas before it was updated at the end.
 	//_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,4,0});
-	//if (_pathLength > 0)			//TODO: Avoid tile if it's already occupied --Victor
-	//{
-	//	_nextTile = _path[--_pathLength];
-	//	_direction = _nextTile - _tilePosition;
-	//	Rotate();
+	if (_objective != nullptr)
+	{
+		if (_objective->InRange(_tilePosition))
+		{
+			_moveState = MoveState::AT_OBJECTIVE;
+		}
+		else if (_pathLength > 0 /*&& !_tileMap->IsGuardOnTile(_path[_pathLength - 1])*/)
+		{
+			_nextTile = _path[--_pathLength];
+			_direction = _nextTile - _tilePosition;
+			Rotate();
+			_moveState = MoveState::MOVING;
+		}
+		// TODO: else find unblocked path to goal --Victor
 
-	//	_moveState = MoveState::MOVING;
-	//}
-	//else
-	//{
-	//	_moveState = MoveState::AT_OBJECTIVE;
-	//}
-	if (_objective->InRange(_tilePosition))
-	{
-		_moveState = MoveState::AT_OBJECTIVE;
+		_isSwitchingTile = false;
+		CheckVisibleTiles();
 	}
-	else if(!_tileMap->IsGuardOnTile(_path[_pathLength - 1]))
+	else
 	{
-		_nextTile = _path[--_pathLength];
-		_direction = _nextTile - _tilePosition;
-		Rotate();
-		_moveState = MoveState::MOVING;
-	} 
-	// TODO: else find unblocked path to goal --Victor
-	
-	_isSwitchingTile = false;
-	CheckVisibleTiles();
+		_moveState = MoveState::IDLE;
+	}
 }

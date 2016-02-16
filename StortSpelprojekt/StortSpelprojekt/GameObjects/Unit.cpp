@@ -23,15 +23,11 @@ void Unit::CalculatePath()
 		{
 			_moveState = MoveState::MOVING;
 		}
-
-		//_direction = _path[--_pathLength] - _tilePosition;
-		//Rotate();
 		//_aStar->printMap();
 	}
 	else
 	{
-		_path = nullptr;
-		_pathLength = 0;
+		ClearObjective();
 		_moveState = MoveState::IDLE;
 		_nextTile = _tilePosition;
 		//	_aStar->printMap();
@@ -187,8 +183,10 @@ AI::Vec2D Unit::GetGoalTilePosition()
 
 void Unit::SetGoalTilePosition(AI::Vec2D goal)
 {
+	ClearObjective();
 	_goalTilePosition = goal;
-	_moveState = MoveState::FINDING_PATH;
+	//_moveState = MoveState::FINDING_PATH;
+	SetGoal(goal);
 }
 
 AI::Vec2D Unit::GetDirection()
@@ -318,7 +316,8 @@ void Unit::SetGoal(GameObject * objective)
 	_objective = objective;
 	if (_objective->InRange(_tilePosition))
 	{
-		act(_objective);
+		//act(_objective);
+		_moveState = MoveState::AT_OBJECTIVE;
 	}
 	else
 	{
