@@ -28,8 +28,8 @@ private:
 	int _listId;
 	int _moveCheck;
 	bool _pageCheck;
-	bool _isPressed[3];
-	XMFLOAT2 _buttonPositions[10];
+	bool _isPressed[4];
+	XMFLOAT2 _buttonPositions[11];
 	GUI::Node* _currentList = nullptr;
 	int _currentPage = 0;
 	std::vector<GUI::Node*>* _objectTabs;

@@ -79,6 +79,9 @@ void LevelEditState::OnStateEnter()
 	_uiTree.GetNode("MapList")->SetHidden(true);
 	_uiTree.GetNode("StoryList")->SetHidden(true);
 	_uiTree.GetNode("ControlsList")->SetHidden(true);
+	_uiTree.GetNode("MapSurviveSelected")->SetHidden(true);
+	_uiTree.GetNode("ThiefControlList")->SetHidden(true);
+	_uiTree.GetNode("NoPlacementButton")->SetHidden(true);
 	_uiTree.GetNode("listbuttons")->SetHidden(true);
 
 	_objectHandler->EnlargeTilemap(50);
@@ -170,6 +173,10 @@ void LevelEditState::HandleButtons()
 					_pageCheck = true;
 				}
 			}
+			else if (_uiTree.IsButtonColliding("NoPlacementButton", coord._pos.x, coord._pos.y))
+			{
+				//TODO Paint No Placement Zones! Julia and Enbom
+			}
 
 			//Need to go through "" json group to get to object buttons
 			if (_currentList != nullptr && _currentList->GetChildren()->size())
@@ -190,7 +197,6 @@ void LevelEditState::HandleButtons()
 				}
 			}
 		}
-
 		//Map data
 		if (_uiTree.IsButtonColliding("MapButton", coord._pos.x, coord._pos.y))
 		{
@@ -219,9 +225,8 @@ void LevelEditState::HandleButtons()
 				_isPressed[0] = false;
 			}
 		}
-
 		//Story data
-		if (_uiTree.IsButtonColliding("StoryButton", coord._pos.x, coord._pos.y))
+		else if (_uiTree.IsButtonColliding("StoryButton", coord._pos.x, coord._pos.y))
 		{
 			if (!_isPressed[1])
 			{
@@ -249,17 +254,16 @@ void LevelEditState::HandleButtons()
 				_isPressed[1] = false;
 			}
 		}
-
 		//Control data
-		if (_uiTree.IsButtonColliding("ControlsButton", coord._pos.x, coord._pos.y))
+		else if (_uiTree.IsButtonColliding("ControlsButton", coord._pos.x, coord._pos.y))
 		{
 			if (!_isPressed[2])
 			{
 				//Move Button
 				GUI::Node* node = _uiTree.GetNode("ControlsButton");
 				XMFLOAT2 move = _buttonPositions[9];
-				move.x = move.x + 1.200f;
-				move.y = move.y + 0.78f;
+				move.x -= 0.275f;
+				move.y -= 1.075f;
 
 				//Show List
 				_uiTree.GetNode("ControlsList")->SetHidden(false);
@@ -279,6 +283,94 @@ void LevelEditState::HandleButtons()
 				_isPressed[2] = false;
 			}
 		}
+		else if (_uiTree.IsButtonColliding("ThiefButton", coord._pos.x, coord._pos.y))
+		{
+			if (!_isPressed[3])
+			{
+				//Move Button
+				GUI::Node* node = _uiTree.GetNode("ThiefButton");
+				XMFLOAT2 move = _buttonPositions[10];
+				move.x += 0.453f;
+
+				//Show List
+				_uiTree.GetNode("ThiefControlList")->SetHidden(false);
+
+				node->SetPosition(move);
+				_isPressed[3] = true;
+			}
+			else
+			{
+				//Move gui
+				GUI::Node* node = _uiTree.GetNode("ThiefButton");
+				node->SetPosition(_buttonPositions[10]);
+
+				//Show List
+				_uiTree.GetNode("ThiefControlList")->SetHidden(true);
+
+				_isPressed[3] = false;
+			}
+		}
+		else if (_isPressed[0] == true)
+		{
+			if (_uiTree.IsButtonColliding("GridOff", coord._pos.x, coord._pos.y))
+			{
+				//Move Button
+				GUI::Node* node = _uiTree.GetNode("GridOff");
+				XMFLOAT2 gridOffPosition = node->GetLocalPosition();
+
+				GUI::Node* node2 = _uiTree.GetNode("GridOn");
+				XMFLOAT2 gridOnPosition = node2->GetLocalPosition();
+
+				node2->SetPosition(gridOffPosition);
+				node->SetPosition(gridOnPosition);
+
+				if (gridOnPosition.x > gridOffPosition.x)
+				{
+					//TODO: Activate Grid Julia och Enbom
+				}
+				else
+				{
+					//TODO: Deactive Grid Julia och Enbom
+				}
+			}
+			if (_uiTree.IsButtonColliding("ObjectiveOff", coord._pos.x, coord._pos.y))
+			{
+				//Move Button
+				GUI::Node* node = _uiTree.GetNode("ObjectiveOff");
+				XMFLOAT2 objectiveOffPosition = node->GetLocalPosition();
+
+				GUI::Node* node2 = _uiTree.GetNode("ObjectiveOn");
+				XMFLOAT2 objectiveOnPosition = node2->GetLocalPosition();
+
+				node2->SetPosition(objectiveOffPosition);
+				node->SetPosition(objectiveOnPosition);
+
+				if (objectiveOnPosition.y > objectiveOffPosition.y)
+				{
+					//Survival
+					_uiTree.GetNode("MapSurviveSelected")->SetHidden(false);
+					//TODO: Function for mission Julia and Enbom
+				}
+				else
+				{
+					//Kill
+					_uiTree.GetNode("MapSurviveSelected")->SetHidden(true);
+					//TODO: Function for mission Julia and Enbom
+				}
+			}
+		}
+		else if (_uiTree.IsButtonColliding("ExportMap", coord._pos.x, coord._pos.y))
+		{
+			//TODO: ExportMap GUI stuff and functions Julia and Enbom
+		}
+		else if (_uiTree.IsButtonColliding("ImportMap", coord._pos.x, coord._pos.y))
+		{
+			//TODO: ImportMap GUI stuff and functions Julia and Enbom
+		}
+		else if (_uiTree.IsButtonColliding("NewMap", coord._pos.x, coord._pos.y))
+		{
+			//TODO: NewMap GUI stuff and functions Julia and Enbom
+		}
 	}
 
 	if (_listId == -1)
@@ -288,6 +380,7 @@ void LevelEditState::HandleButtons()
 		_currentPage = 0;
 		_uiTree.GetNode("wholelist")->SetHidden(true);
 		_uiTree.GetNode("listbuttons")->SetHidden(true);
+		_uiTree.GetNode("NoPlacementButton")->SetHidden(true);
 		for (unsigned i = 0; i < _uiTree.GetNode("wholelist")->GetChildren()->size(); i++)
 		{
 			//Move gui
@@ -335,6 +428,7 @@ void LevelEditState::HandleButtons()
 					}
 					_currentList->GetChildren()->at(_currentPage)->SetHidden(false);
 				}
+				_uiTree.GetNode("NoPlacementButton")->SetHidden(false);
 			}
 		}
 		_moveCheck = -2;
