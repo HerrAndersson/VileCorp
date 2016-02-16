@@ -665,7 +665,7 @@ void ObjectHandler::Update(float deltaTime)
 					}
 				}
 
-				if (static_cast<SpawnPoint*>(g)->isSpawning() && (_gameObjects[LOOT].size() > 0))
+				if (static_cast<SpawnPoint*>(g)->isSpawning() && (_gameObjects[LOOT].size() > 0) && !allLootIsCarried)
 				{
 					if (Add(ENEMY, "enemy_proto", g->GetPosition(), g->GetRotation()))
 					{
