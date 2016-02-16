@@ -15,8 +15,6 @@ AssetManager::AssetManager(ID3D11Device* device)
 	_meshFormatVersion[26] = &AssetManager::ScanModel26;
 	_meshFormatVersion[27] = &AssetManager::ScanModel27;
 
-
-
 	GetFilenamesInDirectory((char*)LEVEL_FOLDER_PATH.c_str(), ".lvl", *_levelFileNames);
 }
 
@@ -52,45 +50,6 @@ AssetManager::~AssetManager()
 	delete _meshes;
 	delete _levelFileNames;
 	delete _skeletons;
-}
-
-//Do not call, call _objectHandler->ActivateTileset() - Fredrik
-Tileset* AssetManager::LoadTileset(string name)
-{
-	std::map<std::string, Type> stringTypes =
-	{
-		{ "FLOOR", FLOOR },
-		{ "WALL", WALL },
-		{ "LOOT", LOOT },
-		{ "SPAWN", SPAWN },
-		{ "TRAP", TRAP },
-		{ "CAMERA", CAMERA },
-		{ "GUARD", GUARD },
-		{ "ENEMY", ENEMY },
-		{ "FURNITURE", FURNITURE }
-	};
-	_infile->open(name);
-	cereal::JSONInputArchive tilesetIn(*_infile);
-	TilesetData newTilesetData;
-	tilesetIn(newTilesetData);
-	_infile->close();
-	_tileset._objects.resize(NR_OF_TYPES);
-	for (TilesetData::Object object : newTilesetData._objects)
-	{
-		int type = (int)stringTypes[object._type];
-		Tileset::Object newObject;
-		newObject._mesh = object._mesh;
-		newObject._name = object._name;
-		newObject._textures = object._textures;
-		newObject._thumbnails = object._thumbnails;
-		if (object._subType >= (int)_tileset._objects[type].size())
-		{
-			_tileset._objects[type].resize(object._subType + 1);
-		}
-		_tileset._objects[type][object._subType] = newObject;
-	}
-
-	return &_tileset;
 }
 
 //Unloads all Assets waiting to be unloaded

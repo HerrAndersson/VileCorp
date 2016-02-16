@@ -5,7 +5,6 @@ LevelEditState::LevelEditState(System::Controls* controls, ObjectHandler* object
 {
 	_controls = controls;
 	_objectHandler = objectHandler;
-	_tileset = assetManager->LoadTileset("Assets/Tilesets/default.json");
 	_camera = camera;
 	_pickingDevice = pickingDevice;
 	_listId = -1;
@@ -28,11 +27,15 @@ LevelEditState::LevelEditState(System::Controls* controls, ObjectHandler* object
 	for (unsigned i = 0; i < NR_OF_TYPES; i++)
 	{
 		int index = 0;
-		for (unsigned o = 0; o < _tileset->_objects[i].size(); o++)
+		for (Blueprint blueprint : *_objectHandler->GetBlueprints())
 		{
-			index += _uiTree.CreateTilesetObject(&_tileset->_objects[i][o], _uiTree.GetNode(typeLists[(Type)i]), index, i, o);
+			if (blueprint._type == i)
+			{
+				index += _uiTree.CreateTilesetObject(&blueprint, _uiTree.GetNode(typeLists[(Type)blueprint._type]), index);
+			}
 		}
 	}
+	
 
 	for (unsigned i = 0; i < _objectTabs->size(); i++)
 	{

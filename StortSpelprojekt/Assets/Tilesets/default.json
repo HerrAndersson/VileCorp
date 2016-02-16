@@ -1,12 +1,14 @@
 {
     "default": {
-        "_name": "default",
-        "_objects": [
+      "_name": "default",
+      "_levelformatversion": 12,
+       "_blueprints": [
 			{
 				"_mesh": "floor-24.bin",
 				"_name": "Floor",
 				"_type": "FLOOR",
 				"_subType": 0,
+				"_tooltip": "SampleText",
 				"_textures": [
 					"Floor.png",
 					"Floor2.png",
@@ -95,6 +97,7 @@
 				"_name": "Wall",
 				"_type": "WALL",
 				"_subType": 0,
+				"_tooltip": "SampleText",
 				"_textures": [
 					"wall.png",
 					"wall2.png",
@@ -111,6 +114,7 @@
 				"_name": "Diamond",
 				"_type": "LOOT",
 				"_subType": 0,
+				"_tooltip": "SampleText",
 				"_textures": [
 					"diamond.png",
 					"diamond2.png",
@@ -127,6 +131,7 @@
         "_name": "Entry",
         "_type": "SPAWN",
         "_subType": 0,
+				"_tooltip": "SampleText",
         "_textures": [
           "Entry window.png"
         ],
@@ -139,6 +144,7 @@
 				"_name": "Spiketrap",
 				"_type": "TRAP",
 				"_subType": 0,
+				"_tooltip": "SampleText",
 				"_textures": [
 					"spiketrap.png"
 				],
@@ -151,6 +157,7 @@
 				"_name": "Teslatrap",
 				"_type": "TRAP",
 				"_subType": 1,
+				"_tooltip": "SampleText",
 				"_textures": [
 					"Tesla.png"
 				],
@@ -163,6 +170,7 @@
 				"_name": "Guard",
 				"_type": "GUARD",
 				"_subType": 0,
+				"_tooltip": "SampleText",
 				"_textures": [
 					"textureblue.png",
 					"textureblue2.png",
@@ -179,6 +187,7 @@
 				"_name": "Enemy",
 				"_type": "ENEMY",
 				"_subType": 0,
+				"_tooltip": "SampleText",
 				"_textures": [
 					"Enemy.png"
 				],
