@@ -49,11 +49,14 @@ private:
 
 	//Resizing window, directx resources, camera
 	void ResizeResources(System::Settings* settings);
+
 	bool Update(double deltaTime);
 	void Render();
 
 	std::vector<GameObject*> _enemies;
 	std::vector<GameObject*> _loot;
+
+	ParticleTextures LoadParticlesTextureData();
 
 public:
 

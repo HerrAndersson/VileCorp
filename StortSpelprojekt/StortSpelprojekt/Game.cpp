@@ -2,7 +2,6 @@
 #include <stdexcept>
 #include <DirectXMath.h>
 #include <sstream>
-#include <random>
 
 Game::Game(HINSTANCE hInstance, int nCmdShow):
 	_settingsReader("Assets/settings.xml")
@@ -16,11 +15,6 @@ Game::Game(HINSTANCE hInstance, int nCmdShow):
 	_timer = System::Timer();
 
 	_renderModule = new Renderer::RenderModule(_window->GetHWND(), settings);
-
-
-	ParticleTextures particleTextures;
-	//_assetManager->GetTexture()
-	_particleHandler = new Renderer::ParticleHandler(_renderModule->GetDevice(), _renderModule->GetDeviceContext(), particleTextures);
 	
 	_assetManager = new AssetManager(_renderModule->GetDevice());
 	_controls = new System::Controls(_window->GetHWND());
@@ -43,6 +37,8 @@ Game::Game(HINSTANCE hInstance, int nCmdShow):
 	_enemiesHasSpawned = false;
 	_soundModule.AddSound("Assets/Sounds/theme.wav", 0.15f, 1.0f, true, true);
 	_soundModule.Play("Assets/Sounds/theme.wav");
+
+	_particleHandler = new Renderer::ParticleHandler(_renderModule->GetDevice(), _renderModule->GetDeviceContext(), LoadParticlesTextureData());
 }
 
 Game::~Game()
@@ -65,6 +61,20 @@ void Game::ResizeResources(System::Settings* settings)
 	_camera->Resize(settings);
 	_SM->Resize(settings);
 	_renderModule->ResizeResources(_window->GetHWND(), settings);
+}
+
+ParticleTextures Game::LoadParticlesTextureData()
+{
+	ParticleTextures particleTextures;
+
+	particleTextures._bloodTextures[0] = _assetManager->GetTexture("diamond7.png");
+	particleTextures._bloodTextures[1] = _assetManager->GetTexture("diamond2.png");
+	particleTextures._bloodTextures[2] = _assetManager->GetTexture("diamond5.png");
+	particleTextures._bloodTextures[3] = _assetManager->GetTexture("diamond6.png");
+
+	//particleTextures._waterTextures = 
+
+	return particleTextures;
 }
 
 bool Game::Update(double deltaTime)
@@ -95,7 +105,7 @@ bool Game::Update(double deltaTime)
 		XMFLOAT3 pos = XMFLOAT3(16, 1.0f, 4);
 		XMFLOAT4 col = XMFLOAT4((rand() % 10) / 10.0f, (rand() % 10) / 10.0f, (rand() % 10) / 10.0f, 1.0f);
 
-		ParticleRequestMessage msg = ParticleRequestMessage(ParticleType::SPLASH, ParticleSubType::BLOOD, pos, col, 1000.0f, 50, true);
+		ParticleRequestMessage msg = ParticleRequestMessage(ParticleType::SPLASH, ParticleSubType::BLOOD, pos, col, 1000.0f, 15, true);
 		_particleHandler->GetParticleRequestQueue()->Insert(msg);
 	}
 
