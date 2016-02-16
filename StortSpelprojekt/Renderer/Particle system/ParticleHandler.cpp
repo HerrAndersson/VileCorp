@@ -51,13 +51,13 @@ namespace Renderer
 		{
 			for (ParticleRequestMessage& p : _queue)
 			{
-				ActivateEmitter(p._type, p._subType, p._position, p._color, p._particleCount, p._timeLimit, p._isActive);
+				ActivateEmitter(p._type, p._subType, p._position, p._direction, p._particleCount, p._timeLimit, p._isActive);
 			}
 			_queue.clear();
 		}
 	}
 
-	void ParticleHandler::ActivateEmitter(ParticleType type, ParticleSubType subType, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT4& color, int particleCount, float timeLimit, bool isActive)
+	void ParticleHandler::ActivateEmitter(ParticleType type, ParticleSubType subType, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& direction, int particleCount, float timeLimit, bool isActive)
 	{
 		bool found = false;
 
@@ -65,7 +65,7 @@ namespace Renderer
 		{
 			if (!p->IsActive())
 			{
-				p->Reset(type, subType, position, color, particleCount, timeLimit, isActive);
+				p->Reset(type, subType, position, direction, particleCount, timeLimit, isActive);
 				found = true;
 				break;
 			}
@@ -73,7 +73,7 @@ namespace Renderer
 
 		if (!found)
 		{
-			ParticleEmitter* particleEmitter = new ParticleEmitter(_device, _deviceContext, type, subType, position, color, particleCount, timeLimit, isActive);
+			ParticleEmitter* particleEmitter = new ParticleEmitter(_device, _deviceContext, type, subType, position, direction, particleCount, timeLimit, isActive);
 			_particleEmitters.push_back(particleEmitter);
 			_emitterCount++;
 		}

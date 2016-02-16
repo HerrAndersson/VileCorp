@@ -38,22 +38,25 @@ namespace Renderer
 
 		bool _isActive;
 		float _timeLeft;
+		int _particleCount;
 
 		ID3D11Device* _device;
 		ID3D11DeviceContext* _deviceContext;
+
 		ID3D11Buffer* _particlePointsBuffer;
 		int _vertexSize;
 
 		void CreateVertexBuffer();
 		void UpdateVertexBuffer();
+		void CreateParticles(int count, const DirectX::XMFLOAT3& baseDirection, const DirectX::XMFLOAT3& targetPosition);
 
 	public:
 
 		ParticleEmitter(ID3D11Device* device, ID3D11DeviceContext* deviceContext);
-		ParticleEmitter(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const ParticleType& type, const ParticleSubType& subType, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT4 color, int particleCount, float timeLimit, bool isActive);
+		ParticleEmitter(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const ParticleType& type, const ParticleSubType& subType, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& direction, int particleCount, float timeLimit, bool isActive, const DirectX::XMFLOAT3& target = DirectX::XMFLOAT3(0, 0, 0));
 		virtual ~ParticleEmitter();
 
-		void Reset(const ParticleType& type, const ParticleSubType& subType, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT4 color, int particleCount, float timeLimit, bool isActive);
+		void Reset(const ParticleType& type, const ParticleSubType& subType, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& direction, int particleCount, float timeLimit, bool isActive, const DirectX::XMFLOAT3& target = DirectX::XMFLOAT3(0, 0, 0));
 
 		void Update(double deltaTime);
 
@@ -66,9 +69,6 @@ namespace Renderer
 		int GetVertexSize() const;
 
 		void SetPosition(const DirectX::XMFLOAT3 position);
-		void SetType(const ParticleType& type);
-		void SetSubType(const ParticleSubType& subType);
-		void SetParticleCount(const int& particleCount);
 
 		bool HasTimeLeft() const;
 

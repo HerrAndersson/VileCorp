@@ -13,7 +13,8 @@ struct ParticleRequestMessage
 	ParticleType _type = SPLASH;
 	ParticleSubType _subType = BLOOD;
 	DirectX::XMFLOAT3 _position = DirectX::XMFLOAT3(0, 0, 0);
-	DirectX::XMFLOAT4 _color = DirectX::XMFLOAT4(0, 0, 0, 0);
+	DirectX::XMFLOAT3 _direction = DirectX::XMFLOAT3(0, 1, 0);
+	DirectX::XMFLOAT3 _target = DirectX::XMFLOAT3(0, 0, 0); //Used for Electricity
 	float _timeLimit = 0; //Milliseconds
 	int _particleCount = 0;
 	bool _isActive = false;
@@ -22,15 +23,16 @@ struct ParticleRequestMessage
 	{
 	}
 
-	ParticleRequestMessage(ParticleType type, ParticleSubType subType, DirectX::XMFLOAT3 position, DirectX::XMFLOAT4 color, float timeLimit, int particleCount, bool isActive)
+	ParticleRequestMessage(ParticleType type, ParticleSubType subType, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& direction, float timeLimit, int particleCount, bool isActive, const DirectX::XMFLOAT3& target = DirectX::XMFLOAT3(0, 0, 0))
 	{
 		_type = type;
 		_subType = _subType;
 		_position = position;
-		_color = color;
+		_direction = direction;
 		_timeLimit = timeLimit;
 		_particleCount = particleCount;
 		_isActive = isActive;
+		_target = target;
 	}
 };
 

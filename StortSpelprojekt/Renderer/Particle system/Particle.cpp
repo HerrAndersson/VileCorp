@@ -8,71 +8,25 @@ namespace Renderer
 	{
 		_position = XMFLOAT3(0.0f, 0.0f, 0.0f);
 		_direction = XMFLOAT3(0.0f, 1.0f, 0.0f);
-		_color = XMFLOAT4(0.0f, 0.5f, 0.5f, 1.0f);
 		_isActive = false;
 	}
 
-	Particle::Particle(const XMFLOAT3& position, const XMFLOAT3& direction, const XMFLOAT4& color)
+	Particle::Particle(const XMFLOAT3& position, const XMFLOAT3& target, const XMFLOAT3& direction)
 	{
 		_position = position;
 		_direction = direction;
-		_color = color;
+		_target = target;
 	}
 
 	Particle::~Particle()
 	{
 	}
 
-	void Particle::Reset(const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& direction, const DirectX::XMFLOAT4& color)
+	void Particle::Reset(const XMFLOAT3& position, const XMFLOAT3& target, const XMFLOAT3& direction)
 	{
 		_position = position;
 		_direction = direction;
-		_color = color;
-	}
-
-	void Particle::Update(double deltaTime, const ParticleType& type)
-	{
-		//TODO: Update postions according to the type and how it moves
-		switch (type)
-		{
-			case SPLASH:
-			{
-				_position.y += (rand() % 100) / 1000.0f;
-				_position.z += ((rand() % 5) / 10.0f) - 2.5f / 10.0f;
-				_position.x += ((rand() % 5) / 10.0f) - 2.5f / 10.0f;
-
-				break;
-			}
-			case SMOKE:
-			{
-
-				_position.y += (rand() % 100) / 1000.0f;
-				_position.z += ((rand() % 5) / 10.0f) - 2.5f / 10.0f;
-				_position.x += ((rand() % 5) / 10.0f) - 2.5f / 10.0f;
-
-				if (_position.y > 5)
-				{
-					_position.y = 0;
-				}
-
-				break;
-			}
-			case ELECTRICITY:
-			{
-
-				break;
-			}
-			case FIRE:
-			{
-
-				break;
-			}
-			default:
-			{
-				throw std::runtime_error("Particle::Update: Invalid particle type");
-				break;
-			}
-		}
+		_target = target;
 	}
 
 	XMFLOAT3 Particle::GetPosition() const
@@ -85,9 +39,9 @@ namespace Renderer
 		return _direction;
 	}
 
-	XMFLOAT4 Particle::GetColor() const
+	DirectX::XMFLOAT3 Particle::GetTargetPosition() const
 	{
-		return _color;
+		return _target;
 	}
 
 	void Particle::SetPosition(const XMFLOAT3& position)
@@ -100,9 +54,9 @@ namespace Renderer
 		_direction = direction;
 	}
 
-	void Particle::SetColor(const XMFLOAT4& color)
+	void Particle::SetTargetPosition(const DirectX::XMFLOAT3& target)
 	{
-		_color = color;
+		_target = target;
 	}
 
 	bool Particle::IsActive() const

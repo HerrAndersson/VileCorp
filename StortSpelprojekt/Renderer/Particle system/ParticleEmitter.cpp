@@ -15,11 +15,12 @@ namespace Renderer
 		_position = XMFLOAT3(0, 0, 0);
 		_timeLeft = 0;
 		_particlePointsBuffer = nullptr;
-		_particles.reserve(20);
+		_particles.clear();
 		_vertexSize = 0;
+		_particleCount = 0;
 	}
 
-	ParticleEmitter::ParticleEmitter(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const ParticleType& type, const ParticleSubType& subType, const XMFLOAT3& position, const XMFLOAT4 color, int particleCount, float timeLimit, bool isActive)
+	ParticleEmitter::ParticleEmitter(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const ParticleType& type, const ParticleSubType& subType, const XMFLOAT3& position, const XMFLOAT3& direction, int particleCount, float timeLimit, bool isActive, const XMFLOAT3& target)
 	{
 		_type = type;
 		_subType = subType;
@@ -28,16 +29,10 @@ namespace Renderer
 		_isActive = isActive;
 		_device = device;
 		_deviceContext = deviceContext;
+		_particleCount = particleCount;
+		_particles.clear();
 
-		_particles.reserve(particleCount);
-
-		for (int i = 0; i < particleCount; i++)
-		{
-			//TODO: Set small offsets on particle position
-			Particle particle(XMFLOAT3(-20 / 100.0f + (rand() % 20) / 100.0f, 0, -20/100.0f + (rand() % 20) / 100.0f), XMFLOAT3(0, 1, 0), color);
-			particle.Activate();
-			_particles.push_back(particle);
-		}
+		CreateParticles(particleCount, direction, target);
 
 		CreateVertexBuffer();
 	}
@@ -48,6 +43,51 @@ namespace Renderer
 		_device = nullptr;
 		_deviceContext = nullptr;
 		_particles.clear();
+	}
+
+	void ParticleEmitter::Reset(const ParticleType& type, const ParticleSubType& subType, const XMFLOAT3& position, const XMFLOAT3& direction, int particleCount, float timeLimit, bool isActive, const XMFLOAT3& target)
+	{
+		_type = type;
+		_subType = subType;
+		_position = position;
+		_timeLeft = timeLimit;
+		_isActive = isActive;
+		_particleCount = particleCount;
+
+		CreateParticles(particleCount, direction, target);
+		CreateVertexBuffer();
+	}
+
+	void ParticleEmitter::CreateParticles(int count, const XMFLOAT3& baseDirection, const XMFLOAT3& targetPosition)
+	{
+		int diff = count - (signed)_particles.size();
+
+		//The vector of particles needs to be created/recreated/enlarged
+		if (diff > 0)
+		{
+			_particles.clear();
+			for (int i = 0; i < diff; i++)
+			{
+				//TODO: Set offset on the direction and position /Jonas
+				XMFLOAT3 dir = baseDirection;
+
+				Particle particle(XMFLOAT3(-20 / 100.0f + (rand() % 20) / 100.0f, 0, -20 / 100.0f + (rand() % 20) / 100.0f), dir);
+				particle.Activate();
+				_particles.push_back(particle);
+			}
+		}
+		//The vector is big enough to reuse
+		else
+		{
+			for (int i = 0; i < count; i++)
+			{
+				//TODO: Set offset on the direction and position /Jonas
+				XMFLOAT3 dir = baseDirection;
+
+				_particles.at(i).Reset(XMFLOAT3(-20 / 100.0f + (rand() % 20) / 100.0f, 0, -20 / 100.0f + (rand() % 20) / 100.0f), dir);
+				_particles.at(i).Activate();
+			}
+		}
 	}
 
 	//Used for initializing the vertex buffer that is holding all the positions of the particles
@@ -110,26 +150,6 @@ namespace Renderer
 		_deviceContext->Unmap(_particlePointsBuffer, 0);
 	}
 
-	void ParticleEmitter::Reset(const ParticleType& type, const ParticleSubType& subType, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT4 color, int particleCount, float timeLimit, bool isActive)
-	{
-		_type = type;
-		_subType = subType;
-		_position = position;
-		_timeLeft = timeLimit;
-		_isActive = isActive;
-
-		_particles.clear();
-		
-		for (int i = 0; i < particleCount; i++)
-		{
-			//TODO: Set small offsets on position?
-			Particle particle(XMFLOAT3(0, 0, 0), XMFLOAT3(0, 1, 0), color);
-			_particles.push_back(particle);
-		}
-
-		CreateVertexBuffer();
-	}
-
 	void ParticleEmitter::Update(double deltaTime)
 	{
 		if (_timeLeft <= 0)
@@ -142,7 +162,56 @@ namespace Renderer
 			{
 				if (p.IsActive())
 				{
-					p.Update(deltaTime, _type);
+					float velocity = 0;
+					XMFLOAT3 position = p.GetPosition();
+					XMFLOAT3 direction = p.GetDirection();
+					switch (_type)
+					{
+						case SPLASH:
+						{
+							velocity = 1.0f;
+							position.y += direction.y*velocity;
+							position.x += direction.x*velocity;
+							position.z += direction.z*velocity;
+
+							p.SetPosition(position);
+
+							break;
+						}
+						case SMOKE:
+						{
+							//TODO: Move in smoke pattern
+							velocity = 0.25f;
+
+							_position.y += (rand() % 100) / 100.0f;
+							_position.z += ((rand() % 5) / 50.0f) - 2.5f / 10.0f;
+							_position.x += ((rand() % 5) / 50.0f) - 2.5f / 10.0f;
+
+							if (_position.y > 5)
+							{
+								_position.y = 0;
+							}
+
+							break;
+						}
+						case ELECTRICITY:
+						{
+							//TODO: generate a bolt of pixels towards target
+							//http://gamedevelopment.tutsplus.com/tutorials/how-to-generate-shockingly-good-2d-lightning-effects--gamedev-2681
+							break;
+						}
+						case FIRE:
+						{
+							velocity = 0.5f;
+							//TODO: move particles in fire pattern. Upwards?
+							break;
+						}
+						default:
+						{
+							throw std::runtime_error("Particle::Update: Invalid particle type");
+							break;
+						}
+					}
 				}
 			}
 		}
@@ -174,7 +243,7 @@ namespace Renderer
 
 	int ParticleEmitter::GetParticleCount() const
 	{
-		return _particles.size();
+		return _particleCount;
 	}
 
 	int ParticleEmitter::GetVertexSize() const
@@ -182,34 +251,9 @@ namespace Renderer
 		return _vertexSize;
 	}
 
-	void ParticleEmitter::SetPosition(const DirectX::XMFLOAT3 position)
+	void ParticleEmitter::SetPosition(const XMFLOAT3 position)
 	{
 		_position = position;
-	}
-	void ParticleEmitter::SetType(const ParticleType& type)
-	{
-		_type = type;
-	}
-
-	void ParticleEmitter::SetSubType(const ParticleSubType& subType)
-	{
-		_subType = subType;
-	}
-
-	void ParticleEmitter::SetParticleCount(const int& particleCount)
-	{
-		int diff = particleCount - (signed)_particles.size();
-		if (diff > 0)
-		{
-			_particles.resize(particleCount);
-			for (int i = 0; i < diff; i++)
-			{
-				Particle particle(_position);
-				_particles.push_back(particle);
-			}
-		}
-
-		CreateVertexBuffer();
 	}
 
 	bool ParticleEmitter::HasTimeLeft() const
@@ -230,6 +274,11 @@ namespace Renderer
 	void ParticleEmitter::Deactivate()
 	{
 		_isActive = false;
+
+		for (Particle& p :_particles)
+		{
+			p.Deactivate();
+		}
 	}
 
 }

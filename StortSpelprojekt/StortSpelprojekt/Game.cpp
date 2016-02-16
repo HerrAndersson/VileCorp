@@ -74,6 +74,8 @@ ParticleTextures Game::LoadParticlesTextureData()
 
 	//particleTextures._waterTextures = 
 
+
+
 	return particleTextures;
 }
 
@@ -103,9 +105,9 @@ bool Game::Update(double deltaTime)
 	if (_controls->IsFunctionKeyDown("DEBUG:REQUEST_PARTICLE"))
 	{
 		XMFLOAT3 pos = XMFLOAT3(16, 1.0f, 4);
-		XMFLOAT4 col = XMFLOAT4((rand() % 10) / 10.0f, (rand() % 10) / 10.0f, (rand() % 10) / 10.0f, 1.0f);
+		XMFLOAT3 dir = XMFLOAT3(0, 1, 0);
 
-		ParticleRequestMessage msg = ParticleRequestMessage(ParticleType::SPLASH, ParticleSubType::BLOOD, pos, col, 1000.0f, 15, true);
+		ParticleRequestMessage msg = ParticleRequestMessage(ParticleType::SPLASH, ParticleSubType::BLOOD, pos, dir, 1000.0f, 15, true);
 		_particleHandler->GetParticleRequestQueue()->Insert(msg);
 	}
 
