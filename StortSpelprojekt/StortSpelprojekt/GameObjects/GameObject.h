@@ -1,6 +1,7 @@
   #pragma once
 #include <DirectXMath.h>
 #include "RenderUtils.h"
+#include "CommonUtils.h"
 #include "AIUtil.h"
 #include "Animation.h"
 

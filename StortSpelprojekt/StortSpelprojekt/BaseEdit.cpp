@@ -482,17 +482,26 @@ void BaseEdit::HandleInput(double deltaTime)
 	/*
 	Camera scroll
 	*/
+	const float ZOOM_MAX = 12.0f;
+	const float ZOOM_MIN = 4.0f;
+	float velocity = deltaTime / 20.0f;
+
 	if (_camera->GetMode() == System::LOCKED_CAM)
 	{
 		if (_controls->IsFunctionKeyDown("CAMERA:ZOOM_CAMERA_IN") &&
-			_camera->GetPosition().y > 4.0f)
+			(_camera->GetPosition().y - velocity) > ZOOM_MIN)
 		{
-			_camera->Move(XMFLOAT3(0.0f, -1.0f, 0.0f), deltaTime);
+			_camera->Move(_camera->GetForwardVector(), velocity);
 		}
 		else if (_controls->IsFunctionKeyDown("CAMERA:ZOOM_CAMERA_OUT") &&
-			_camera->GetPosition().y < 12.0f)
+			(_camera->GetPosition().y + velocity) < ZOOM_MAX)
 		{
-			_camera->Move(XMFLOAT3(0.0f, 1.0f, 0.0f), deltaTime);
+			XMFLOAT3 negForward = XMFLOAT3(
+				_camera->GetForwardVector().x * -1,
+				_camera->GetForwardVector().y * -1,
+				_camera->GetForwardVector().z * -1);
+
+			_camera->Move(negForward, velocity);
 		}
 	}
 
@@ -588,7 +597,7 @@ void BaseEdit::HandleInput(double deltaTime)
 
 	if (isMoving)
 	{
-		_camera->Move(XMFLOAT3((forward.x + right.x) * v,(forward.y + right.y) * v, (forward.z + right.z) * v), deltaTime);
+		_camera->Move(XMFLOAT3((forward.x + right.x) * v,(forward.y + right.y) * v, (forward.z + right.z) * v), deltaTime / 10);
 	}
 }
 
