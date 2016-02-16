@@ -1,5 +1,6 @@
 #pragma once
 #include "Node.h"
+#include "CommonUtils.h"
 
 namespace GUI
 {
@@ -8,12 +9,12 @@ namespace GUI
 		friend class UITree;
 
 	private:
-		int _type, _subtype, _textureId;
+		int _textureId;
+		Blueprint* _blueprint;
 
 	public:
 		BlueprintNode(Node::NodeInfo* info,
-			int type = 0,
-			int subtype = 0,
+			Blueprint* blueprint,
 			int textureId = 0,
 			DirectX::XMFLOAT2 position = DirectX::XMFLOAT2(0.0f, 0.0f),
 			DirectX::XMFLOAT2 scale = DirectX::XMFLOAT2(1.0f, 1.0f),
@@ -26,8 +27,7 @@ namespace GUI
 			bool centered = false,
 			bool hidden = false);
 		~BlueprintNode();
-		int GetType() const;
-		int GetSubType() const;
+		Blueprint* GetBlueprint() const;
 		int GetTextureId() const;
 	};
 }

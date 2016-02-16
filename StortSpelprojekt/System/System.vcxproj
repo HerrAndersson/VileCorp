@@ -212,6 +212,7 @@ if errorlevel 1 exit 0 else exit %errorlevel%</Command>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="CommonUtils.h" />
     <ClInclude Include="JsonParser.h" />
     <ClInclude Include="InputDevice.h" />
     <ClInclude Include="SettingsReader.h" />

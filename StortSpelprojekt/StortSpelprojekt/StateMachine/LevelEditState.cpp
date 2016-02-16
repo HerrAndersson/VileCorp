@@ -169,6 +169,7 @@ void LevelEditState::HandleButtons()
 					{
 						_toPlace._name = currentButton->GetId();
 						_toPlace._type = (Type)_listId;
+						Blueprint* currentBlueprint = static_cast<GUI::BlueprintNode*>(currentButton)->GetBlueprint();
 
 						break;
 					}
