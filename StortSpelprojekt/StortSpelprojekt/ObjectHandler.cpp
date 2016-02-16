@@ -589,6 +589,8 @@ void ObjectHandler::Update(float deltaTime)
 							if (_gameObjects[SPAWN][k]->InRange(unit->GetTilePosition()))
 							{
 								lootRemoved = Remove(heldObject);
+								((SpawnPoint*)_gameObjects[SPAWN][k])->AddUnitsToSpawn(1);
+								((SpawnPoint*)_gameObjects[SPAWN][k])->Enable();
 							}
 						}
 
@@ -645,13 +647,25 @@ void ObjectHandler::Update(float deltaTime)
 							unit->InRange(_gameObjects[SPAWN][k]->GetTilePosition()))
 						{
 							unit->TakeDamage(10);
+							((SpawnPoint*)_gameObjects[SPAWN][k])->AddUnitsToSpawn(1);
+							((SpawnPoint*)_gameObjects[SPAWN][k])->Enable();
 						}
 					}
 				}
 			}
 			else if (g->GetType() == SPAWN)															//Manage enemy spawning
 			{
-				if (static_cast<SpawnPoint*>(g)->isSpawning())
+				bool allLootIsCarried = true;
+				//Check if all loot is carried
+				for (uint l = 0; l < _gameObjects[LOOT].size() && allLootIsCarried; l++)
+				{
+					if (_gameObjects[LOOT][l]->GetPickUpState() == ONTILE || _gameObjects[LOOT][l]->GetPickUpState() == DROPPING)
+					{
+						allLootIsCarried = false;
+					}
+				}
+
+				if (static_cast<SpawnPoint*>(g)->isSpawning() && (_gameObjects[LOOT].size() > 0))
 				{
 					if (Add(ENEMY, "enemy_proto", g->GetPosition(), g->GetRotation()))
 					{
