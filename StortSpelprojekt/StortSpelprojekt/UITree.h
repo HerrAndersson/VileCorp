@@ -2,6 +2,7 @@
 #include "Node.h"
 #include "BlueprintNode.h"
 #include "AssetManager.h"
+#include "ObjectHandler.h"
 #include "Settings/settings.h"
 #include "rapidjson/reader.h"
 #include "rapidjson/document.h"
@@ -33,7 +34,7 @@ namespace GUI
 		void Resize(System::Settings* settings);
 		void Resize(Node* current);
 
-		int CreateTilesetObject(Tileset::Object* object, Node* list, int index, int type, int subtype);
+		int CreateTilesetObject(Blueprint* object, Node* list, int index);
 		bool IsButtonColliding(const std::string& id, int x, int y);
 		bool IsButtonColliding(Node* current, int x, int y);
 		Node* GetNode(const std::string& id);

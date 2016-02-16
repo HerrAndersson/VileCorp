@@ -40,18 +40,58 @@ struct RenderList
 	vector<XMMATRIX> _modelMatrices;
 };
 
+struct Blueprint
+{
+	string _name, _tooltip, _mesh;
+	int _type, _subType;
+	vector<string> _textures, _thumbnails;
+};
+
+struct BlueprintData
+{
+	string _name, _tooltip, _mesh, _type;
+	int _subType;
+	vector<string> _textures, _thumbnails;
+	template<class Archive>
+	void serialize(Archive & archive)
+	{
+		archive(CEREAL_NVP(_mesh),
+			CEREAL_NVP(_name),
+			CEREAL_NVP(_type),
+			CEREAL_NVP(_subType),
+			CEREAL_NVP(_tooltip),
+			CEREAL_NVP(_textures),
+			CEREAL_NVP(_thumbnails));
+	}
+};
+
+struct BlueprintList
+{
+	string _name;
+	int _levelformatversion;
+	vector<BlueprintData> _blueprints;
+	template<class Archive>
+	void serialize(Archive & archive)
+	{
+		archive(CEREAL_NVP(_name),
+			CEREAL_NVP(_levelformatversion),
+			CEREAL_NVP(_blueprints));
+	}
+};
+
 class ObjectHandler
 {
 private:
 
 	vector<vector<GameObject*>> _gameObjects;
+	vector<Blueprint> _blueprints;
 	GameObjectInfo* _gameObjectInfo;
-	Tileset* _activeTileset;
 	Tilemap* _tilemap;
 	Grid* _buildingGrid;
 
 	int _idCount = 0;
 	int _objectCount = 0;
+	string _levelfolder;
 
 	AssetManager* _assetManager;
 	ID3D11Device* _device;
@@ -100,7 +140,7 @@ public:
 	map<GameObject*, Renderer::Pointlight*>* GetPointlights();
 	vector<vector<GameObject*>>* GetObjectsInLight(Renderer::Spotlight* spotlight);
 
-	GameObjectInfo* GetBlueprints();
+	vector<Blueprint>* GetBlueprints();
 
 	int GetObjectCount() const;
 
@@ -121,5 +161,9 @@ public:
 	//Update gamelogic of all objects
 	void Update(float deltaTime);
 	void UpdateLights();
+
+	Blueprint* GetBlueprintByName(string name);
+	Blueprint* GetBlueprintByType(int type, int subType = 0);
+	void LoadTileset(string name);
 };
 

@@ -31,8 +31,6 @@ private:
 	int _currentPage = 0;
 	std::vector<GUI::Node*>* _objectTabs;
 
-	Tileset* _tileset;
-
 	bool _floorChosen = false;
 	bool _wallChosen = false;
 

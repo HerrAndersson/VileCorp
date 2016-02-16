@@ -21,19 +21,6 @@ using namespace DirectX;
 //Disable warning about std::Map dll-interface -> typedef std::map<int, AssetManager::_scanFunc> _scanFuncMap;
 #pragma warning( disable: 4251 )
 
-struct Tileset
-{
-	struct Object
-	{
-		string _name;
-		string _mesh;
-		vector<string> _textures;
-		vector<string> _thumbnails;
-	};
-	string _name;
-	vector<vector<Object>> _objects;
-};
-
 struct MeshHeader24
 {
 	int _nameLength, _numberOfVertices, _subMeshID, _numberPointLights, _numberSpotLights;
@@ -90,30 +77,6 @@ static bool GetFilenamesInDirectory(char* folder, char* extension, vector<string
 class ASSET_MANAGER_EXPORT AssetManager
 {
 private:
-	struct TilesetData
-	{
-		struct Object
-		{
-			string _name;
-			string _type;
-			int _subType;
-			string _mesh;
-			vector<string> _textures;
-			vector<string> _thumbnails;
-			template<class Archive>
-			void serialize(Archive & archive)
-			{
-				archive(CEREAL_NVP(_name), CEREAL_NVP(_type), CEREAL_NVP(_subType), CEREAL_NVP(_mesh), CEREAL_NVP(_textures), CEREAL_NVP(_thumbnails));
-			}
-		};
-		string _name;
-		vector<Object> _objects;
-		template<class Archive>
-		void serialize(Archive & archive)
-		{
-			archive(CEREAL_NVP(_name), CEREAL_NVP(_objects));
-		}
-	};
 
 	typedef Mesh* (AssetManager::*_scanFunc)();
 	typedef std::map<int, AssetManager::_scanFunc> _scanFuncMap;
@@ -122,7 +85,6 @@ private:
 	int _animationFormatVersion = 10;
 	ifstream* _infile;
 	ID3D11Device* _device;
-	Tileset _tileset;
 	vector<string>* _levelFileNames;
 	vector<Skeleton*>* _skeletons;
 
@@ -149,6 +111,5 @@ public:
 	RenderObject* GetRenderObject(int index);
 	RenderObject* GetRenderObject(string meshName, string textureName);
 	LevelFormat* ParseLevel(int index);
-	Tileset* LoadTileset(string name);
 	Texture* GetTexture(string name);
 };

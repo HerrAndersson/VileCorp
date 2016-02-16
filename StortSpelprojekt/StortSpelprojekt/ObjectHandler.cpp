@@ -12,7 +12,7 @@ ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, G
 	_lightCulling = nullptr;
 	_gameObjects.resize(NR_OF_TYPES);
 
-	_activeTileset = _assetManager->LoadTileset("Assets/Tilesets/default.json");
+	LoadTileset("Assets/Tilesets/default.json");
 }
 
 ObjectHandler::~ObjectHandler()
@@ -215,7 +215,7 @@ bool ObjectHandler::Add(XMFLOAT3 position, XMFLOAT3 rotation, Type type, int sub
 	GameObject* object = nullptr;
 	RenderObject* renderObject = nullptr;
 
-	_assetManager->GetRenderObject(_activeTileset->_objects[type][subType]._mesh, textureReference);
+	_assetManager->GetRenderObject(GetBlueprintByType(type, subType)->_mesh, textureReference);
 
 
 	if (renderObject != nullptr)
@@ -466,9 +466,9 @@ vector<vector<GameObject*>>* ObjectHandler::GetGameObjects()
 	return &_gameObjects;
 }
 
-GameObjectInfo * ObjectHandler::GetBlueprints()
+vector<Blueprint>* ObjectHandler::GetBlueprints()
 {
-	return _gameObjectInfo;
+	return &_blueprints;
 }
 
 int ObjectHandler::GetObjectCount() const
@@ -814,6 +814,68 @@ void ObjectHandler::UpdateLights()
 			}
 		}
 	}
+}
+
+Blueprint* ObjectHandler::GetBlueprintByName(string name)
+{
+	for (Blueprint blueprint : _blueprints)
+	{
+		if (blueprint._name == name)
+		{
+			return &blueprint;
+		}
+	}
+	return nullptr;
+}
+
+Blueprint* ObjectHandler::GetBlueprintByType(int type, int subType)
+{
+	for (Blueprint blueprint : _blueprints)
+	{
+		if (blueprint._type == type && blueprint._subType == subType)
+		{
+			return &blueprint;
+		}
+	}
+	return nullptr;
+}
+
+void ObjectHandler::LoadTileset(string name)
+{
+	std::map<std::string, Type> stringTypes =
+	{
+		{ "FLOOR", FLOOR },
+		{ "WALL", WALL },
+		{ "LOOT", LOOT },
+		{ "SPAWN", SPAWN },
+		{ "TRAP", TRAP },
+		{ "CAMERA", CAMERA },
+		{ "GUARD", GUARD },
+		{ "ENEMY", ENEMY },
+		{ "FURNITURE", FURNITURE }
+	};
+	ifstream infile;
+	infile.open(name);
+	cereal::JSONInputArchive tilesetIn(infile);
+	BlueprintList newTilesetData;
+	tilesetIn(newTilesetData);
+	infile.close();
+
+	_levelfolder = "Assets/Levels/format" + to_string(newTilesetData._levelformatversion) + "/";
+
+	for (BlueprintData indata : newTilesetData._blueprints)
+	{
+		Blueprint blueprint;
+		blueprint._mesh = indata._mesh;
+		blueprint._name = indata._name;
+		blueprint._subType = indata._subType;
+		blueprint._type = stringTypes[indata._type];
+		blueprint._textures = indata._textures;
+		blueprint._thumbnails = indata._thumbnails;
+		blueprint._tooltip = indata._tooltip;
+		_blueprints.push_back(blueprint);
+	}
+	return;
 }
 
 map<GameObject*, Renderer::Spotlight*>* ObjectHandler::GetSpotlights()
