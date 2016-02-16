@@ -643,15 +643,32 @@
 			},
 			"ControlsButton":
 			{
-				"position": [-0.98, -0.15],
-				"scale": [0.035, 0.07],
-				"texture": "../Menues/LevelEdit/GUI/LEVELEDIT1.png",
+				"position": [0.71, 0.95],
+				"scale": [0.05, 0.05],
+				"texture": "../Menues/LevelEdit/GUI/LEVELEDIT4.png",
 				
 				"ControlButtonText":
 				{
-					"position" : [0.984, -0.975],
-					"scale": [1.0, 1.0],
-					"text": "Contr-",
+					"position" : [0.0, -0.025],
+					"scale": [0.05, 0.05],
+					"centered": true,
+					"text": "Help!",
+					"color": "FF000000",
+					"fontsize" : 18.0
+				}
+			},
+			"ThiefButton":
+			{
+				"position": [-0.98, -0.74],
+				"scale": [0.035, 0.07],
+				"texture": "../Menues/LevelEdit/GUI/LEVELEDIT1.png",
+				
+				"ThiefButtonText":
+				{
+					"position" : [0.0, -0.025],
+					"scale": [0.05, 0.05],
+					"centered": true,
+					"text": "Thief",
 					"color": "FF000000",
 					"fontsize" : 18.0
 				}
@@ -878,7 +895,7 @@
 		},
 		"ControlsList":
 		{
-			"position": [0.0, 0.2],
+			"position": [0.565, 0.45],
 			"scale": [0.2, 0.54],
 			"texture": "../Menues/LevelEdit/GUI/leveledit3-settings popup.png",
 			
@@ -893,102 +910,112 @@
 		},
 		"ThiefControlList":
 		{
-			"position": [0.0, 0.3],
-			"scale": [0.18, 0.44],
-			"texture": "../Menues/Pause Menu/pause1-nocup.png",
+			"position": [-0.8, -0.8],
+			"scale": [0.25, 0.25],
+			"texture": "../Menues/LevelEdit/GUI/ObjectProp.png",
 			
-			"ThiefTitle":
+			"":
 			{
-				"position" : [0.925, -0.6],
-				"scale": [1.0, 1.0],
-				"text": "Thief Settings",
-				"color": "FF000000",
-				"fontsize" : 24.0
-			},
-			"ThiefInformation":
-			{
-				"position" : [0.865, -0.65],
-				"scale": [1.0, 1.0],
-				"text": "Thief Type   Number of Units   Time",
-				"color": "FF000000",
-				"fontsize" : 18.0
-			},
-			"thiefType":
-			{
-				"position" : [0.865, -0.72],
-				"scale": [1.0, 1.0],
-				"text": "Burglar:\n\nDemolition Man:",
-				"color": "FF000000",
-				"fontsize" : 18.0
-			},
-			"BurglarInfo":
-			{
-				"BurglarUnitBox":
+			"position": [0.0, -0.19],
+			
+				"ThiefTitle":
 				{
-					"position": [0.03, 0.26],
-					"scale": [0.025, 0.04],
-					"texture": "../Menues/LevelEdit/GUI/button.png",
-					
-					"tileNumberX":
-					{
-						"position": [0.0, 0.0],
-						"scale": [0.02, 0.02],
-						"centered": true,
-						"text": "0",
-						"color": "FF000000",
-						"fontsize" : 18.0
-					}
+					"position" : [0.925, -0.58],
+					"scale": [1.0, 1.0],
+					"text": "Thief Settings",
+					"color": "FF000000",
+					"fontsize" : 24.0
 				},
-				"BurglarTimeBox":
+				"":
 				{
-					"position": [0.115, 0.26],
-					"scale": [0.025, 0.04],
-					"texture": "../Menues/LevelEdit/GUI/button.png",
+					"position": [-0.04, 0.0],
 					
-					"tileNumberX":
+					"ThiefInformation":
 					{
-						"position": [0.0, 0.0],
-						"scale": [0.02, 0.02],
-						"centered": true,
-						"text": "0",
+						"position" : [0.865, -0.65],
+						"scale": [1.0, 1.0],
+						"text": "Thief Type       Unit Amount       Time Frequency",
 						"color": "FF000000",
 						"fontsize" : 18.0
-					}
-				}
-			},
-			"DemolitionInfo":
-			{
-				"position": [0.0, -0.085],
-				"DemolitionUnitBox":
-				{
-					"position": [0.03, 0.26],
-					"scale": [0.025, 0.04],
-					"texture": "../Menues/LevelEdit/GUI/button.png",
-					
-					"tileNumberX":
+					},
+					"thiefType":
 					{
-						"position": [0.0, 0.0],
-						"scale": [0.02, 0.02],
-						"centered": true,
-						"text": "0",
+						"position" : [0.865, -0.72],
+						"scale": [1.0, 1.0],
+						"text": "Burglar:\n\nDemolisher:",
 						"color": "FF000000",
 						"fontsize" : 18.0
-					}
-				},
-				"DemolitionTimeBox":
-				{
-					"position": [0.115, 0.26],
-					"scale": [0.025, 0.04],
-					"texture": "../Menues/LevelEdit/GUI/button.png",
-					
-					"tileNumberX":
+					},
+					"BurglarInfo":
 					{
-						"position": [0.0, 0.0],
-						"scale": [0.02, 0.02],
-						"centered": true,
-						"text": "0",
-						"color": "FF000000",
-						"fontsize" : 18.0
+						"BurglarUnitBox":
+						{
+							"position": [0.023, 0.26],
+							"scale": [0.025, 0.04],
+							"texture": "../Menues/LevelEdit/GUI/button.png",
+							
+							"BurglarUnitAmount":
+							{
+								"position": [0.0, 0.0],
+								"scale": [0.02, 0.02],
+								"centered": true,
+								"text": "0",
+								"color": "FF000000",
+								"fontsize" : 18.0
+							}
+						},
+						"BurglarTimeBox":
+						{
+							"position": [0.16, 0.26],
+							"scale": [0.025, 0.04],
+							"texture": "../Menues/LevelEdit/GUI/button.png",
+							
+							"BurglarFreq":
+							{
+								"position": [0.0, 0.0],
+								"scale": [0.02, 0.02],
+								"centered": true,
+								"text": "0",
+								"color": "FF000000",
+								"fontsize" : 18.0
+							}
+						}
+					},
+					"DemolitionInfo":
+					{
+						"position": [0.0, -0.085],
+						"DemolitionUnitBox":
+						{
+							"position": [0.023, 0.26],
+							"scale": [0.025, 0.04],
+							"texture": "../Menues/LevelEdit/GUI/button.png",
+							
+							"DemolitionUnitAmount":
+							{
+								"position": [0.0, 0.0],
+								"scale": [0.02, 0.02],
+								"centered": true,
+								"text": "0",
+								"color": "FF000000",
+								"fontsize" : 18.0
+							}
+						},
+						"DemolitionTimeBox":
+						{
+							"position": [0.16, 0.26],
+							"scale": [0.025, 0.04],
+							"texture": "../Menues/LevelEdit/GUI/button.png",
+							
+							"DemolitionFreq":
+							{
+								"position": [0.0, 0.0],
+								"scale": [0.02, 0.02],
+								"centered": true,
+								"text": "0",
+								"color": "FF000000",
+								"fontsize" : 18.0
+							}
+						}
 					}
 				}
 			}
@@ -1160,7 +1187,13 @@
         "scale": [ 0.02, 0.02 ],
         "texture": "../Menues/LevelEdit/GUI/placement4-button2.png"
       }
-    }
+    },
+	"NoPlacementButton":
+	{
+		"position": [-0.925, -0.01],
+		"scale": [0.03, 0.0525],
+		"texture": "../Menues/LevelEdit/GUI/button2.png"
+	}
 	},
 	"LEVELSELECT" :
 	{
