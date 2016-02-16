@@ -14,7 +14,8 @@ Animation::Animation(Skeleton* skeleton, bool firstFrame)
 	_currentCycle = 0;
 	_inactive = false;
 	_lastFrame = false;
-	_speed = 1.0f;
+	_actionSpeed = 1.0f;
+	_cycleSpeed = 1.0f;
 	_isFinished = false;
 
 	if (firstFrame)
@@ -60,7 +61,14 @@ void Animation::Update(float time)
 	{
 		return;
 	}
-	_animTime += (time / 1000) * _speed;
+	if (_currentAction != -1)
+	{
+		_animTime += (time / 1000) * _actionSpeed;
+	}
+	else
+	{
+		_animTime += (time / 1000) * _cycleSpeed;
+	}
 	_isFinished = false;
 	if (_currentAction != -1)
 	{
@@ -121,7 +129,7 @@ void Animation::SetActionAsCycle(int action, float speed, bool reset)
 		_animTime = 0.0f;
 	}
 	_currentCycle = action;
-	_speed = speed;
+	_cycleSpeed = speed;
 }
 
 void Animation::Freeze(bool freeze)
@@ -129,9 +137,16 @@ void Animation::Freeze(bool freeze)
 	_frozen = freeze;
 }
 
-void Animation::SetSpeed(float speed)
+void Animation::SetSpeed(float speed, bool cycle)
 {
-	_speed = speed;
+	if (cycle)
+	{
+		_cycleSpeed = speed;
+	}
+	else
+	{
+		_actionSpeed = speed;
+	}
 }
 
 void Animation::PlayAction(int action, float speed, bool freeze, bool lastFrame)
@@ -145,7 +160,7 @@ void Animation::PlayAction(int action, float speed, bool freeze, bool lastFrame)
 		_inactive = true;
 	}
 	_lastFrameRender = lastFrame;
-	_speed = speed;
+	_actionSpeed = speed;
 }
 
 bool Animation::GetisFinished()

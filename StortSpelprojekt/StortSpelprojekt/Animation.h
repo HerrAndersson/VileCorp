@@ -29,7 +29,8 @@ private:
 	int _currentCycle, _currentAction;
 	bool _inactive;
 	bool _lastFrameRender;
-	float _speed;
+	float _cycleSpeed;
+	float _actionSpeed;
 	bool _isFinished;
 	std::vector<float> _length;
 
@@ -40,7 +41,7 @@ public:
 	void Update(float time);
 	void SetActionAsCycle(int action, float speed, bool reset);
 	void Freeze(bool freeze);
-	void SetSpeed(float speed);
+	void SetSpeed(float speed, bool cycle);
 	void PlayAction(int action, float speed, bool freeze, bool lastFrame);
 	XMMATRIX* GetTransforms()
 	{
