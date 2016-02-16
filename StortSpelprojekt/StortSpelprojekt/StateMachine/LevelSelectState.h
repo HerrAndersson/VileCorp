@@ -4,6 +4,7 @@ class LevelSelectState :
 	public BaseState
 {
 private:
+	std::vector<std::string> _levelHeaderFilenames;
 	int _levelSelection;
 	int _levelSelectionMin;
 	int _levelSelectionMax;

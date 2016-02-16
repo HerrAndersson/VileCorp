@@ -63,7 +63,7 @@ void LevelSelectState::Update(float deltaTime)
 
 void LevelSelectState::OnStateEnter()
 {
-
+	GetFilenamesInDirectory(LEVEL_FOLDER_PATH, ".json", _levelHeaderFilenames);
 }
 
 void LevelSelectState::OnStateExit()

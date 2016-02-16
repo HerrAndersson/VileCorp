@@ -51,6 +51,11 @@ struct SkeletonHeader
 	unsigned int _version, _framerate, _boneCount, _actionCount;
 };
 
+static bool GetFilenamesInDirectory(const std::string folder, char* extension, vector<string> &listToFill)
+{
+	return GetFilenamesInDirectory(folder.c_str(), extension, listToFill);
+}
+
 static bool GetFilenamesInDirectory(char* folder, char* extension, vector<string> &listToFill)
 {
 	bool result = false;

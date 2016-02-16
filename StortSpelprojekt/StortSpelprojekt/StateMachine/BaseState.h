@@ -18,6 +18,7 @@ private:
 protected:
 	System::Controls*		_controls;
 	ObjectHandler*			_objectHandler;
+	AssetManager*			_assetManager;
 	GUI::UITree				_uiTree;
 	System::Camera*			_camera;
 	PickingDevice*			_pickingDevice;
