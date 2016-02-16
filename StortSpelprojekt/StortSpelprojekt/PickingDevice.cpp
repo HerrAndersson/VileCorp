@@ -87,9 +87,9 @@ AI::Vec2D PickingDevice::PickTile(POINT mousePoint)
 		pickedPoint = Intersection(ray, pickPlane);
 	}
 
-	// OBS OFFSET!!! (temporary fix)
 	return AI::Vec2D((int)(pickedPoint._x + 0.5f), (int)(pickedPoint._z + 0.5f));
 }
+
 
 XMFLOAT3 PickingDevice::PickPoint(POINT mousePoint)
 {
@@ -114,7 +114,10 @@ vector<GameObject*> PickingDevice::PickObjects(POINT mousePoint, vector<GameObje
 	for (unsigned int i = 0; i < pickableObjects.size(); i++)
 	{
 		//Sphere pickObject = Sphere(Vec3(pickableObjects[i]->GetPosition()), 2.0f);
-		Box pickObject = Box(1.0f, 3.0f, 1.0f, Vec3(pickableObjects[i]->GetPosition()));
+		//Box pickObject = Box(0.3f, 1.0f, 0.3f, Vec3(pickableObjects[i]->GetPosition())+Vec3(0.2f,0.3f,0.2f));
+		AI::Vec2D tilePos = pickableObjects[i]->GetTilePosition();
+		Box pickObject = Box(1.0f, 1.0f, 1.0f, Vec3(tilePos._x + 0.5f, 1.0f, tilePos._y + 0.5f));
+
 
 		if (Collision(ray, pickObject))
 		{
@@ -137,10 +140,11 @@ vector<GameObject*> PickingDevice::BoxPickObjects(POINT mousePoint, vector<GameO
 {
 	vector<GameObject*> pickedObjects;
 
-	Ray rays[4] = { CalculatePickRay(_firstBoxPoint.x, _firstBoxPoint.y),
+	Ray rays[4] = { 
+		CalculatePickRay(_firstBoxPoint.x, _firstBoxPoint.y),
 		CalculatePickRay(mousePoint.x, _firstBoxPoint.y),
-		CalculatePickRay(_firstBoxPoint.x, mousePoint.y),
-		CalculatePickRay(mousePoint.x, mousePoint.y) };
+		CalculatePickRay(mousePoint.x, mousePoint.y),
+		CalculatePickRay(_firstBoxPoint.x, mousePoint.y) };
 
 	Vec3 points[4];
 	Plane pickPlane = Plane(Vec3(), Vec3(0.0f, 1.0f, 0.0f), 0.0f);
@@ -165,8 +169,9 @@ vector<GameObject*> PickingDevice::BoxPickObjects(POINT mousePoint, vector<GameO
 		std::vector<Vec2> box = CreatePickBox(points);
 		for (unsigned int i = 0; i < pickableObjects.size(); i++)
 		{
-			Vec3 pos = Vec3(pickableObjects[i]->GetPosition());
-			point.push_back(Vec2(pos._x, pos._z));
+			//Vec3 pos = Vec3(pickableObjects[i]->GetPosition());
+			AI::Vec2D pos = pickableObjects[i]->GetTilePosition();
+			point.push_back(Vec2(pos._x, pos._y));
 			if (Collision(&point, &box))
 			{
 				pickedObjects.push_back(pickableObjects[i]);
