@@ -21,28 +21,30 @@ ObjectHandler::~ObjectHandler()
 	SAFE_DELETE(_buildingGrid);
 }
 
-bool ObjectHandler::LoadLevel(int lvlIndex)
+bool ObjectHandler::LoadLevel(std::string levelBinaryFilePath)
 {
 	bool result = false;
-	LevelFormat* levelData = _assetManager->ParseLevel(lvlIndex);
-	if (levelData != nullptr)
+	LevelBinary levelData;
+	HRESULT success = _assetManager->ParseLevelBinary(&levelData, levelBinaryFilePath);
+
+	if (success == S_OK)
 	{
 		result = true;
 		delete _tilemap;
-		_tilemap = new Tilemap(AI::Vec2D(levelData->_tileMapWidth, levelData->_tileMapHeight));
+		_tilemap = new Tilemap(AI::Vec2D(levelData._tileMapSizeX, levelData._tileMapSizeZ));
 
-		for (int i = 0; i < levelData->_gameObjectData.size() && result; i++)
+		for (int i = 0; i < levelData._gameObjectData.size() && result; i++)
 		{
 			float rotation;
-			if (levelData->_gameObjectData[i][2] == 3)
+			if (levelData._gameObjectData[i][2] == 3)
 			{
 				rotation = 0;
 			}
-			else if (levelData->_gameObjectData[i][2] == 0)
+			else if (levelData._gameObjectData[i][2] == 0)
 			{
 				rotation = DirectX::XM_PIDIV2;
 			}
-			else if (levelData->_gameObjectData[i][2] == 1)
+			else if (levelData._gameObjectData[i][2] == 1)
 			{
 				rotation = DirectX::XM_PI;
 			}

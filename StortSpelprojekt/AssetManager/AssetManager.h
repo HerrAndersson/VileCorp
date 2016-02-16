@@ -11,9 +11,6 @@
 #include "RenderUtils.h"
 #include "LevelFormat.h"
 #include "cereal\cereal.hpp"
-#include "cereal\archives\json.hpp"
-#include "cereal\types\vector.hpp"
-#include "cereal\types\string.hpp"
 
 using namespace std;
 using namespace DirectX;
@@ -131,8 +128,6 @@ private:
 	vector<Texture*>* _textures;
 	vector<Mesh*>* _meshes;
 
-	LevelFormat _currentLevelData;
-
 	bool LoadModel(string name, Mesh* mesh);
 	void Flush();
 	Mesh* ScanModel24();
@@ -148,7 +143,8 @@ public:
 	~AssetManager();
 	RenderObject* GetRenderObject(int index);
 	RenderObject* GetRenderObject(string meshName, string textureName);
-	LevelFormat* ParseLevel(int index);
+	HRESULT ParseLevelHeader(LevelHeader* outputLevelHead, std::string levelHeaderFilePath);
+	HRESULT ParseLevelBinary(LevelBinary* outputLevelBin, std::string levelBinaryFilePath);
 	Tileset* LoadTileset(string name);
 	Texture* GetTexture(string name);
 };
