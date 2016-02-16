@@ -308,16 +308,15 @@ void Game::Render()
 
 				_renderModule->RenderLightVolume(spot.second->GetVolumeBuffer(), spot.second->GetWorldMatrix(), spot.second->GetVertexCount(), spot.second->GetVertexSize());
 			}
+		}
+		/*---------------------------------------------------------  Pointlights  ------------------------------------------------------------*/
+		_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::LIGHT_APPLICATION_POINTLIGHT);
 
-			/*---------------------------------------------------------  Pointlights  ------------------------------------------------------------*/
-			_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::LIGHT_APPLICATION_POINTLIGHT);
-
-			map<GameObject*, Renderer::Pointlight*>* pointlights = _objectHandler->GetPointlights();
-			for (pair<GameObject*, Renderer::Pointlight*> pointlight : *pointlights)
-			{
-				_renderModule->SetLightDataPerPointlight(pointlight.second);
-				_renderModule->RenderLightVolume(pointlight.second->GetVolumeBuffer(), pointlight.second->GetWorldMatrix(), pointlight.second->GetVertexCount(), pointlight.second->GetVertexSize());
-			}
+		map<GameObject*, Renderer::Pointlight*>* pointlights = _objectHandler->GetPointlights();
+		for (pair<GameObject*, Renderer::Pointlight*> pointlight : *pointlights)
+		{
+			_renderModule->SetLightDataPerPointlight(pointlight.second);
+			_renderModule->RenderLightVolume(pointlight.second->GetVolumeBuffer(), pointlight.second->GetWorldMatrix(), pointlight.second->GetVertexCount(), pointlight.second->GetVertexSize());
 		}
 	}
 
