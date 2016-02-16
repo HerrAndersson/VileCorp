@@ -17,6 +17,7 @@ public:
 	void EvaluateTile(GameObject* obj);
 	void act(GameObject* obj);
 	void SetPatrolPoint(AI::Vec2D patrolPoint);
+	std::vector<AI::Vec2D> GetPatrolRoute();
 	void RemovePatrol();
 	void Release();
 

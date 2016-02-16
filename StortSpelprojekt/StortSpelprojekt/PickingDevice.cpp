@@ -2,6 +2,7 @@
 
 PickingDevice::PickingDevice(System::Camera* camera, System::Settings* settings)
 {
+	_pickPlane = Plane(Vec3(), Vec3(0.0f, 1.0f, 0.0f), 0.0f);
 	_camera = camera;
 	_settings = settings;
 	_firstBoxPoint = POINT();
@@ -75,37 +76,7 @@ vector<GameObject*> PickingDevice::SortByDistance(vector<GameObject*> pickedObje
 
 	return sortedObjects;
 }
-
-AI::Vec2D PickingDevice::PickTile(POINT mousePoint)
-{
-	Plane pickPlane = Plane(Vec3(), Vec3(0.0f, 1.0f, 0.0f), 0.0f);
-	Vec3 pickedPoint;
-
-	Ray ray = CalculatePickRay(mousePoint.x, mousePoint.y);
-	if (Collision(ray, pickPlane))
-	{
-		pickedPoint = Intersection(ray, pickPlane);
-	}
-
-	return AI::Vec2D((int)(pickedPoint._x + 0.5f), (int)(pickedPoint._z + 0.5f));
-}
-
-
-XMFLOAT3 PickingDevice::PickPoint(POINT mousePoint)
-{
-	Plane pickPlane = Plane(Vec3(), Vec3(0.0f, 1.0f, 0.0f), 0.0f);
-	Vec3 pickedPoint;
-
-	Ray ray = CalculatePickRay(mousePoint.x, mousePoint.y);
-	if (Collision(ray, pickPlane))
-	{
-		pickedPoint = Intersection(ray, pickPlane);
-	}
-
-	return pickedPoint.convertToXMFLOAT();
-}
-
-vector<GameObject*> PickingDevice::PickObjects(POINT mousePoint, vector<GameObject*> pickableObjects)
+vector<GameObject*> PickingDevice::SinglePickObjects(POINT mousePoint, vector<GameObject*> pickableObjects)
 {
 	vector<GameObject*> pickedObjects;
 
@@ -135,60 +106,93 @@ vector<GameObject*> PickingDevice::PickObjects(POINT mousePoint, vector<GameObje
 
 	return SortByDistance(pickedObjects);
 }
-
 vector<GameObject*> PickingDevice::BoxPickObjects(POINT mousePoint, vector<GameObject*> pickableObjects)
 {
 	vector<GameObject*> pickedObjects;
 
-	if ((_firstBoxPoint.x == mousePoint.x) && (_firstBoxPoint.y == mousePoint.y))
+
+	Ray rays[4] = { CalculatePickRay(_firstBoxPoint.x, _firstBoxPoint.y),
+		CalculatePickRay(mousePoint.x, _firstBoxPoint.y),
+		CalculatePickRay(mousePoint.x, mousePoint.y),
+		CalculatePickRay(_firstBoxPoint.x, mousePoint.y)
+		};
+
+	Vec3 points[4];
+
+	bool legitForReal = true;
+
+	for (int i = 0; i < 4; i++)
 	{
-		pickedObjects = PickObjects(mousePoint, pickableObjects);
-	}
-	else
-	{
-		Ray rays[4] = { CalculatePickRay(_firstBoxPoint.x, _firstBoxPoint.y),
-			CalculatePickRay(mousePoint.x, _firstBoxPoint.y),
-			CalculatePickRay(_firstBoxPoint.x, mousePoint.y),
-			CalculatePickRay(mousePoint.x, mousePoint.y) };
-
-		Vec3 points[4];
-		Plane pickPlane = Plane(Vec3(), Vec3(0.0f, 1.0f, 0.0f), 0.0f);
-
-		bool legitForReal = true;
-
-		for (int i = 0; i < 4; i++)
+		if (Collision(rays[i], _pickPlane))
 		{
-			if (Collision(rays[i], pickPlane))
-			{
-				points[i] = Intersection(rays[i], pickPlane);
-			}
-			else
-			{
-				legitForReal = false;
-			}
+			points[i] = Intersection(rays[i], _pickPlane);
 		}
-
-		if (legitForReal)
+		else
 		{
-			std::vector<Vec2> point;
-			std::vector<Vec2> box = CreatePickBox(points);
-			for (unsigned int i = 0; i < pickableObjects.size(); i++)
+			legitForReal = false;
+		}
+	}
+
+	if (legitForReal)
+	{
+		std::vector<Vec2> point;
+		std::vector<Vec2> box = CreatePickBox(points);
+		for (unsigned int i = 0; i < pickableObjects.size(); i++)
+		{
+			Vec3 pos = Vec3(pickableObjects[i]->GetPosition());
+			point.push_back(Vec2(pos._x, pos._z));
+			if (Collision(&point, &box))
 			{
-				Vec3 pos = Vec3(pickableObjects[i]->GetPosition());
-				point.push_back(Vec2(pos._x, pos._z));
-			point.push_back(Vec2(pos._x, pos._y));
-				if (Collision(&point, &box))
-				{
-					pickedObjects.push_back(pickableObjects[i]);
-				}
-				point.clear();
+				pickedObjects.push_back(pickableObjects[i]);
 			}
+			point.clear();
 		}
 	}
 
 	return pickedObjects;
 }
 
+
+AI::Vec2D PickingDevice::PickTile(POINT mousePoint)
+{
+	Vec3 pickedPoint;
+
+	Ray ray = CalculatePickRay(mousePoint.x, mousePoint.y);
+	if (Collision(ray, _pickPlane))
+	{
+		pickedPoint = Intersection(ray, _pickPlane);
+	}
+
+	return AI::Vec2D((int)(pickedPoint._x + 0.5f), (int)(pickedPoint._z + 0.5f));
+}
+XMFLOAT3 PickingDevice::PickPoint(POINT mousePoint)
+{
+	Plane pickPlane = Plane(Vec3(), Vec3(0.0f, 1.0f, 0.0f), 0.0f);
+	Vec3 pickedPoint;
+
+	Ray ray = CalculatePickRay(mousePoint.x, mousePoint.y);
+	if (Collision(ray, pickPlane))
+	{
+		pickedPoint = Intersection(ray, pickPlane);
+	}
+
+	return pickedPoint.convertToXMFLOAT();
+}
+vector<GameObject*> PickingDevice::PickObjects(POINT mousePoint, vector<GameObject*> pickableObjects)
+{
+	vector<GameObject*> pickedObjects;
+
+	if ((_firstBoxPoint.x == mousePoint.x) && (_firstBoxPoint.y == mousePoint.y))
+	{
+		pickedObjects = SinglePickObjects(mousePoint, pickableObjects);
+	}
+	else
+	{
+		pickedObjects = BoxPickObjects(mousePoint, pickableObjects);
+	}
+
+	return pickedObjects;
+}
 vector<GameObject*> PickingDevice::PickTilemap(POINT mousePoint, Tilemap* tilemap)
 {
 	return tilemap->GetAllObjectsOnTile(PickTile(mousePoint));
