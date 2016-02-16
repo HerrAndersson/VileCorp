@@ -16,7 +16,7 @@ namespace Renderer
 		_timeLeft = 0;
 		_particlePointsBuffer = nullptr;
 		_particles.reserve(20);
-		_bufferSize = 0;
+		_vertexSize = 0;
 	}
 
 	ParticleEmitter::ParticleEmitter(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const ParticleType& type, const ParticleSubType& subType, const XMFLOAT3& position, const XMFLOAT4 color, int particleCount, float timeLimit, bool isActive)
@@ -66,13 +66,13 @@ namespace Renderer
 			points.push_back(v);
 		}
 
-		_bufferSize = sizeof(ParticleVertex) * particleCount;
+		_vertexSize = sizeof(ParticleVertex);
 
 		D3D11_BUFFER_DESC bufferDesc;
 		ZeroMemory(&bufferDesc, sizeof(bufferDesc));
 		bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 		bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-		bufferDesc.ByteWidth = _bufferSize;
+		bufferDesc.ByteWidth = _vertexSize * particleCount;;
 		bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
 		D3D11_SUBRESOURCE_DATA data;
@@ -177,9 +177,9 @@ namespace Renderer
 		return _particles.size();
 	}
 
-	int ParticleEmitter::GetBufferSize() const
+	int ParticleEmitter::GetVertexSize() const
 	{
-		return _bufferSize;
+		return _vertexSize;
 	}
 
 	void ParticleEmitter::SetPosition(const DirectX::XMFLOAT3 position)

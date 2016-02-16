@@ -191,7 +191,7 @@ namespace Renderer
 		void RenderLineList(DirectX::XMMATRIX* world, int nrOfPoints, const DirectX::XMFLOAT3& colorOffset = DirectX::XMFLOAT3(0,0,0));
 		void RenderShadowMap(DirectX::XMMATRIX* world, int vertexBufferSize);
 		void RenderScreenQuad();
-		void RenderParticles(ID3D11Buffer* particlePointsBuffer, int vertexBufferSize, int vertexCount);
+		void RenderParticles(ID3D11Buffer* particlePointsBuffer, int vertexCount, int vertexSize);
 		void RenderLightVolume(ID3D11Buffer* volume, DirectX::XMMATRIX* world, int vertexCount, int vertexSize);
 		void EndScene();
 

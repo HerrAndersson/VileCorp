@@ -235,7 +235,7 @@ void Game::Render()
 				ID3D11ShaderResourceView** textures = _particleHandler->GetTextures(textureCount, emitter->GetSubType());
 				_renderModule->SetDataPerParticleEmitter(emitter->GetPosition(), color, _camera->GetViewMatrix(), _camera->GetProjectionMatrix(), _camera->GetPosition(), textures, textureCount);
 				
-				_renderModule->RenderParticles(vertexBuffer, emitter->GetBufferSize(), emitter->GetParticleCount());
+				_renderModule->RenderParticles(vertexBuffer, emitter->GetParticleCount(), emitter->GetVertexSize());
 			}
 		}
 	}

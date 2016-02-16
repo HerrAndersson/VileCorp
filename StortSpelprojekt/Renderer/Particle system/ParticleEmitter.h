@@ -42,7 +42,7 @@ namespace Renderer
 		ID3D11Device* _device;
 		ID3D11DeviceContext* _deviceContext;
 		ID3D11Buffer* _particlePointsBuffer;
-		int _bufferSize;
+		int _vertexSize;
 
 		void CreateVertexBuffer();
 		void UpdateVertexBuffer();
@@ -63,7 +63,7 @@ namespace Renderer
 		ParticleType GetType() const;
 		ParticleSubType GetSubType() const;
 		int GetParticleCount() const;
-		int GetBufferSize() const;
+		int GetVertexSize() const;
 
 		void SetPosition(const DirectX::XMFLOAT3 position);
 		void SetType(const ParticleType& type);

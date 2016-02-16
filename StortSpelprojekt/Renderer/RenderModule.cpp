@@ -653,12 +653,12 @@ namespace Renderer
 		deviceContext->Draw(vertexCount, 0);
 	}
 
-	void RenderModule::RenderParticles(ID3D11Buffer* particlePointsBuffer, int vertexBufferSize, int vertexCount)
+	void RenderModule::RenderParticles(ID3D11Buffer* particlePointsBuffer, int vertexCount, int vertexSize)
 	{
 		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
 
 		UINT32 offset = 0;
-		UINT32 vs = vertexBufferSize;
+		UINT32 vs = vertexSize;
 		deviceContext->IASetVertexBuffers(0, 1, &particlePointsBuffer, &vs, &offset);
 
 		deviceContext->Draw(vertexCount, 0);
