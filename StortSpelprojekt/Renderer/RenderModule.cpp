@@ -13,7 +13,7 @@ namespace Renderer
 		InitializeScreenQuadBuffer();
 		InitializeConstantBuffers();
 
-		_shadowMap = new ShadowMap(_d3d->GetDevice(), SHADOWMAP_DIMENSIONS);
+		_shadowMap = new ShadowMap(_d3d->GetDevice(), settings->_shadowMapHeight);
 	}
 
 	RenderModule::~RenderModule()
@@ -120,6 +120,8 @@ namespace Renderer
 	{
 		_d3d->ResizeResources(hwnd, settings);
 		_settings = settings;
+
+		_shadowMap->Resize(_d3d->GetDevice(), settings->_shadowMapHeight);
 	}
 
 	void RenderModule::SetDataPerFrame(DirectX::XMMATRIX* view, DirectX::XMMATRIX* projection)
@@ -307,7 +309,7 @@ namespace Renderer
 		dataPtr->_intensity = spotlight->GetIntensity();
 		dataPtr->_color = spotlight->GetColor();
 		dataPtr->_range = spotlight->GetRange();
-		dataPtr->_shadowMapDimensions = SHADOWMAP_DIMENSIONS;
+		dataPtr->_shadowMapDimensions = _shadowMap->GetSize();
 
 		deviceContext->Unmap(_matrixBufferLightPassPerSpotlight, 0);
 
@@ -406,8 +408,8 @@ namespace Renderer
 			_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::DISABLE);
 			_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::FRONT);
 
-			_shadowMap->SetShadowGenerationStage(deviceContext);
 			_shaderHandler->SetShadowGenerationShaders(deviceContext);
+			_shadowMap->SetShadowGenerationStage(deviceContext);
 
 			break;
 		}
@@ -427,14 +429,12 @@ namespace Renderer
 		case LIGHT_APPLICATION_POINTLIGHT:
 		{
 			_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::ENABLE);
-			_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::BACK);
+			_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::FRONT);
 
 			//TODO: Should activate the pointlight shaders!
 			int nrOfSRVs = _d3d->SetLightStage();
 
 			_shaderHandler->SetPointlightApplicationShaders(deviceContext);
-			ID3D11ShaderResourceView* shadowMapSRV = _shadowMap->GetShadowSRV();
-			_d3d->GetDeviceContext()->PSSetShaderResources(nrOfSRVs, 1, &shadowMapSRV);
 
 			break;
 		}
@@ -451,6 +451,15 @@ namespace Renderer
 			deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 			_d3d->SetHUDStage();
 			_shaderHandler->SetHUDPassShaders(_d3d->GetDeviceContext());
+			break;
+		}
+		case BILLBOARDING_STAGE:
+		{
+			//Since this is part of the geometry pass, there is no need to set render targets etc.
+			_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::ENABLE);
+			_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::BACK);
+			deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST); //TODO: use triangle strip instead, if the geometry shader supports this
+			_shaderHandler->SetBillboardingStageShaders(_d3d->GetDeviceContext());
 			break;
 		}
 		default:
@@ -598,6 +607,24 @@ namespace Renderer
 		UINT32 offset = 0;
 
 		deviceContext->IASetVertexBuffers(0, 1, &volume, &vtxs, &offset);
+
+		deviceContext->Draw(vertexCount, 0);
+	}
+
+	void RenderModule::RenderParticles(ID3D11Buffer* particlePointsBuffer, int vertexBufferSize, int vertexCount, const XMFLOAT3& position, const XMFLOAT3& color, ID3D11ShaderResourceView** textures, int textureCount)
+	{
+		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
+
+		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+
+		XMMATRIX world = XMMatrixTranslation(position.x, position.y, position.z);
+		SetDataPerObject(&world, color);
+		SetDataPerMesh(particlePointsBuffer, vertexBufferSize);
+
+		if (textures)
+		{
+			deviceContext->PSSetShaderResources(0, textureCount, textures);
+		}
 
 		deviceContext->Draw(vertexCount, 0);
 	}

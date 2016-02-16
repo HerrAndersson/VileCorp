@@ -55,7 +55,6 @@ template<typename T>
 void Heap<T>::operator=(const Heap<T>& comp)
 {
 	delete[] _tree;
-		_tree = nullptr;
 
 	_capacity = comp._capacity;
 	_nrOfElements = comp._nrOfElements;

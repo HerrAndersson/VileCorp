@@ -1,6 +1,6 @@
 // Generic*Stream code from https://code.google.com/p/rapidjson/issues/detail?id=20
-#ifndef RAPIDJSON_GENERICSTREAM_H_
-#define RAPIDJSON_GENERICSTREAM_H_
+#ifndef CEREAL_RAPIDJSON_GENERICSTREAM_H_
+#define CEREAL_RAPIDJSON_GENERICSTREAM_H_
 
 #include "rapidjson.h"
 #include <iostream>
@@ -12,7 +12,7 @@
   #pragma warning(disable: 4100) // unreferenced formal parameter
 #endif
 
-namespace rapidjson {
+namespace cereal {
 
   //! Wrapper of std::istream for input.
   class GenericReadStream {

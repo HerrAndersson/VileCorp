@@ -19,63 +19,64 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Animation.cpp" />
-    <ClCompile Include="Architecture.cpp" />
-    <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="BaseEdit.cpp" />
     <ClCompile Include="Controls.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameLogic.cpp" />
-    <ClCompile Include="GameObject.cpp" />
-    <ClCompile Include="Guard.cpp" />
-    <ClCompile Include="Grid.cpp" />
+    <ClCompile Include="GameObjects\Architecture.cpp" />
+    <ClCompile Include="GameObjects\Enemy.cpp" />
+    <ClCompile Include="GameObjects\GameObject.cpp" />
+    <ClCompile Include="GameObjects\Guard.cpp" />
+    <ClCompile Include="GameObjects\SecurityCamera.cpp" />
+    <ClCompile Include="GameObjects\SpawnPoint.cpp" />
+    <ClCompile Include="GameObjects\Trap.cpp" />
+    <ClCompile Include="GameObjects\Unit.cpp" />
     <ClCompile Include="LightCulling.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ObjectHandler.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="QuadTree.cpp" />
-    <ClCompile Include="SecurityCamera.cpp" />
-    <ClCompile Include="SpawnPoint.cpp" />
     <ClCompile Include="StateMachine\BaseState.cpp" />
-    <ClCompile Include="StateMachine\BaseEdit.cpp" />
     <ClCompile Include="StateMachine\LevelEditState.cpp" />
     <ClCompile Include="PickingDevice.cpp" />
     <ClCompile Include="StateMachine\LevelSelectState.cpp" />
     <ClCompile Include="StateMachine\MenuState.cpp" />
     <ClCompile Include="StateMachine\OptionsState.cpp" />
+    <ClCompile Include="StateMachine\PauseState.cpp" />
     <ClCompile Include="StateMachine\PlacementState.cpp" />
     <ClCompile Include="StateMachine\PlayState.cpp" />
     <ClCompile Include="StateMachine\SplashState.cpp" />
     <ClCompile Include="StateMachine\StateMachine.cpp" />
     <ClCompile Include="Tilemap.cpp" />
-    <ClCompile Include="Trap.cpp" />
     <ClCompile Include="UITree.cpp" />
-    <ClCompile Include="Unit.cpp" />
     <ClCompile Include="VisionCone.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Animation.h" />
-    <ClInclude Include="Architecture.h" />
-    <ClInclude Include="Enemy.h" />
+    <ClInclude Include="BaseEdit.h" />
     <ClInclude Include="Controls.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameLogic.h" />
-    <ClInclude Include="GameObject.h" />
+    <ClInclude Include="GameObjectDataLoader.h" />
+    <ClInclude Include="GameObjects\Architecture.h" />
+    <ClInclude Include="GameObjects\Enemy.h" />
+    <ClInclude Include="GameObjects\GameObject.h" />
+    <ClInclude Include="GameObjects\Guard.h" />
+    <ClInclude Include="GameObjects\SecurityCamera.h" />
+    <ClInclude Include="GameObjects\SpawnPoint.h" />
+    <ClInclude Include="GameObjects\Trap.h" />
+    <ClInclude Include="GameObjects\Unit.h" />
     <ClInclude Include="LightCulling.h" />
     <ClInclude Include="QuadTree.h" />
-    <ClInclude Include="SecurityCamera.h" />
-    <ClInclude Include="SpawnPoint.h" />
-    <ClInclude Include="Grid.h" />
-    <ClInclude Include="Guard.h" />
     <ClInclude Include="ObjectHandler.h" />
     <ClInclude Include="JsonStructs.h" />
     <ClInclude Include="Player.h" />
-    <ClInclude Include="StateMachine\BaseState.h" />
     <ClInclude Include="PickingDevice.h" />
-    <ClInclude Include="StateMachine\BaseEdit.h" />
+    <ClInclude Include="StateMachine\BaseState.h" />
     <ClInclude Include="StateMachine\LevelEditState.h" />
     <ClInclude Include="StateMachine\LevelSelectState.h" />
     <ClInclude Include="StateMachine\MenuState.h" />
     <ClInclude Include="StateMachine\OptionsState.h" />
+    <ClInclude Include="StateMachine\PauseState.h" />
     <ClInclude Include="StateMachine\PlacementState.h" />
     <ClInclude Include="StateMachine\PlayState.h" />
     <ClInclude Include="StateMachine\SplashState.h" />
@@ -83,9 +84,7 @@
     <ClInclude Include="StateMachine\States.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Tilemap.h" />
-    <ClInclude Include="Trap.h" />
     <ClInclude Include="UITree.h" />
-    <ClInclude Include="Unit.h" />
     <ClInclude Include="VisionCone.h" />
   </ItemGroup>
   <ItemGroup>
@@ -183,12 +182,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../include;../System;../Renderer;../AI;../AssetManager;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../include;../System;../Renderer;../AI;../AssetManager;GameObjects;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../include/yse/dll;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PreBuildEvent>
       <Command>
@@ -234,7 +234,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../include;../System;../Renderer;../AI;../AssetManager;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../include;../System;../Renderer;../AI;../AssetManager;GameObjects;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -242,6 +242,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../include/yse/dll;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PreBuildEvent>
       <Command>

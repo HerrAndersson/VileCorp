@@ -36,6 +36,7 @@ namespace Renderer
 		VertexShaderData*		_gridPassVS;
 		VertexShaderData*		_hudPassVS;
 		VertexShaderData*		_lightApplyLightVolumeVS;
+		VertexShaderData*		_billboardingVS;
 
 		//Pixel shaders
 		ID3D11PixelShader*		_geoPassPS;
@@ -44,6 +45,10 @@ namespace Renderer
 		ID3D11PixelShader*		_lightApplyPointlightVolumePS;
 		ID3D11PixelShader*		_hudPassPS;
 		ID3D11PixelShader*		_fxaaPassPS;
+		ID3D11PixelShader*		_billboardingPS;
+
+		//Geometry shaders
+		ID3D11GeometryShader*   _billboardingGS;
 
 		//Samplers
 		ID3D11SamplerState*		_samplerWRAP;
@@ -72,6 +77,7 @@ namespace Renderer
 		void SetPointlightApplicationShaders(ID3D11DeviceContext* deviceContext);
 		void SetHUDPassShaders(ID3D11DeviceContext* deviceContext);
 		void SetFXAAPassShaders(ID3D11DeviceContext* deviceContext);
+		void SetBillboardingStageShaders(ID3D11DeviceContext* deviceContext);
 	};
 }
 
