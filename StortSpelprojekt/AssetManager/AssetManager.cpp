@@ -52,22 +52,6 @@ AssetManager::~AssetManager()
 	delete _skeletons;
 }
 
-LevelFormat* AssetManager::ParseLevel(int index)
-{
-	try
-	{
-		_currentLevelData = LevelFormat();
-		std::ifstream in(_levelFileNames->at(index).c_str());
-		cereal::BinaryInputArchive archive(in);
-		archive(_currentLevelData);
-	}
-	catch (...)
-	{
-		return nullptr;
-	}
-	return &_currentLevelData;
-}
-
 //Unloads all Assets waiting to be unloaded
 void AssetManager::Flush()
 {
@@ -456,6 +440,38 @@ RenderObject* AssetManager::GetRenderObject(string meshName, string textureName)
 	renderObject->_mesh = GetModel(meshName);
 	renderObject->_diffuseTexture = GetTexture(textureName);
 	return renderObject;
+}
+
+HRESULT AssetManager::ParseLevelHeader(LevelHeader* outputLevelHead, std::string levelHeaderFilePath)
+{
+	try
+	{
+		std::ifstream in(levelHeaderFilePath);
+		cereal::JSONInputArchive archive(in);
+		archive(*outputLevelHead);
+		in.close();
+	}
+	catch (...)
+	{
+		return E_FAIL;
+	}
+	return S_OK;
+}
+
+HRESULT AssetManager::ParseLevelBinary(LevelBinary* outputLevelBin, std::string levelBinaryFilePath)
+{
+	try
+	{
+		std::ifstream in(levelBinaryFilePath);
+		cereal::BinaryInputArchive archive(in);
+		archive(*outputLevelBin);
+		in.close();
+	}
+	catch (...)
+	{
+		return E_FAIL;
+	}
+	return S_OK;
 }
 
 Texture* AssetManager::GetTexture(string name)

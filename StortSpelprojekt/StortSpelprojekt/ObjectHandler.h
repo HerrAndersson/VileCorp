@@ -150,7 +150,7 @@ public:
 	void EnlargeTilemap(int offset);
 	Grid* GetBuildingGrid();
 
-	bool LoadLevel(int lvlIndex);
+	bool LoadLevel(std::string levelBinaryFilePath);
 	void UnloadLevel();
 
 	void InitPathfinding();
