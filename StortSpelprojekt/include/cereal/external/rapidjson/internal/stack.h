@@ -1,7 +1,7 @@
-#ifndef RAPIDJSON_INTERNAL_STACK_H_
-#define RAPIDJSON_INTERNAL_STACK_H_
+#ifndef CEREAL_RAPIDJSON_INTERNAL_STACK_H_
+#define CEREAL_RAPIDJSON_INTERNAL_STACK_H_
 
-namespace rapidjson {
+namespace cereal {
 namespace internal {
 
 ///////////////////////////////////////////////////////////////////////////////

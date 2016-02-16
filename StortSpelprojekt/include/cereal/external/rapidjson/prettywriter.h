@@ -1,9 +1,9 @@
-#ifndef RAPIDJSON_PRETTYWRITER_H_
-#define RAPIDJSON_PRETTYWRITER_H_
+#ifndef CEREAL_RAPIDJSON_PRETTYWRITER_H_
+#define CEREAL_RAPIDJSON_PRETTYWRITER_H_
 
 #include "writer.h"
 
-namespace rapidjson {
+namespace cereal {
 
 //! Writer with indentation and spacing.
 /*!

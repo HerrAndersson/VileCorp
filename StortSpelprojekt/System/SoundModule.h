@@ -1,10 +1,12 @@
 #pragma once
 #define SYSTEM_EXPORT __declspec(dllexport)
 
+
 #include "yse\yse.hpp"
 #include <map>
 #include <string>
 #include <vector>
+#include <mmdeviceapi.h>
 
 #pragma comment(lib, "libyse32.lib")
 

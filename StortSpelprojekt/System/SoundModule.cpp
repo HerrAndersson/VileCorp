@@ -6,13 +6,18 @@ namespace System
 	{
 		_allSounds = new std::map<std::string, YSE::sound*>;
 
-		int nrDevices = YSE::System().getNumDevices();
+		UINT nrOfDevices = 0;
+		IMMDeviceEnumerator *pEnumerator = nullptr;
+		IMMDeviceCollection *pEndpoints = nullptr;
+		CoInitialize(NULL);
+		CoCreateInstance(__uuidof(MMDeviceEnumerator), NULL, CLSCTX_ALL, __uuidof(IMMDeviceEnumerator), (void**)&pEnumerator);
+		pEnumerator->EnumAudioEndpoints(eRender, DEVICE_STATE_ACTIVE, &pEndpoints);
+		pEndpoints->GetCount(&nrOfDevices);
 
-		if (nrDevices > 0)
+		if (nrOfDevices > 0)
 		{
 			YSE::System().init();
 		}
-
 	}
 
 	SoundModule::~SoundModule()
@@ -69,15 +74,15 @@ namespace System
 		/*
 		Updates the position of the listener to keep it synced with camera position
 		*/
-		YSE::Listener().setPosition(YSE::Vec(0.0f, 0.0f, 0.0f));
-		YSE::System().update();
+		/*YSE::Listener().setPosition(YSE::Vec(0.0f, 0.0f, 0.0f));
+		YSE::System().update();*/
 	}
 
 	bool SoundModule::Play(std::string pathName)
 	{
 		bool answer = false;
 
-		if (_allSounds->find(pathName) != _allSounds->end())
+		/*if (_allSounds->find(pathName) != _allSounds->end())
 		{
 			(*_allSounds)[pathName]->play();
 			answer = true;
@@ -85,7 +90,7 @@ namespace System
 		else
 		{
 			throw std::runtime_error("Could not play audio: " + pathName);
-		}
+		}*/
 
 		return answer;
 	}
@@ -94,11 +99,11 @@ namespace System
 	{
 		bool answer = false;
 
-		if (_allSounds->find(pathName) != _allSounds->end())
-		{
-			(*_allSounds)[pathName]->stop();
-			answer = true;
-		}
+		//if (_allSounds->find(pathName) != _allSounds->end())
+		//{
+		//	(*_allSounds)[pathName]->stop();
+		//	answer = true;
+		//}
 
 		return answer;
 	}
