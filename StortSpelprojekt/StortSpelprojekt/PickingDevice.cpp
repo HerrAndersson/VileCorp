@@ -140,43 +140,49 @@ vector<GameObject*> PickingDevice::BoxPickObjects(POINT mousePoint, vector<GameO
 {
 	vector<GameObject*> pickedObjects;
 
-	Ray rays[4] = { 
-		CalculatePickRay(_firstBoxPoint.x, _firstBoxPoint.y),
-		CalculatePickRay(mousePoint.x, _firstBoxPoint.y),
-		CalculatePickRay(mousePoint.x, mousePoint.y),
-		CalculatePickRay(_firstBoxPoint.x, mousePoint.y) };
-
-	Vec3 points[4];
-	Plane pickPlane = Plane(Vec3(), Vec3(0.0f, 1.0f, 0.0f), 0.0f);
-
-	bool legitForReal = true;
-
-	for (int i = 0; i < 4; i++)
+	if ((_firstBoxPoint.x == mousePoint.x) && (_firstBoxPoint.y == mousePoint.y))
 	{
-		if (Collision(rays[i], pickPlane))
-		{
-			points[i] = Intersection(rays[i], pickPlane);
-		}
-		else
-		{
-			legitForReal = false;
-		}
+		pickedObjects = PickObjects(mousePoint, pickableObjects);
 	}
-
-	if (legitForReal)
+	else
 	{
-		std::vector<Vec2> point;
-		std::vector<Vec2> box = CreatePickBox(points);
-		for (unsigned int i = 0; i < pickableObjects.size(); i++)
+		Ray rays[4] = { CalculatePickRay(_firstBoxPoint.x, _firstBoxPoint.y),
+			CalculatePickRay(mousePoint.x, _firstBoxPoint.y),
+			CalculatePickRay(_firstBoxPoint.x, mousePoint.y),
+			CalculatePickRay(mousePoint.x, mousePoint.y) };
+
+		Vec3 points[4];
+		Plane pickPlane = Plane(Vec3(), Vec3(0.0f, 1.0f, 0.0f), 0.0f);
+
+		bool legitForReal = true;
+
+		for (int i = 0; i < 4; i++)
 		{
-			//Vec3 pos = Vec3(pickableObjects[i]->GetPosition());
-			AI::Vec2D pos = pickableObjects[i]->GetTilePosition();
-			point.push_back(Vec2(pos._x, pos._y));
-			if (Collision(&point, &box))
+			if (Collision(rays[i], pickPlane))
 			{
-				pickedObjects.push_back(pickableObjects[i]);
+				points[i] = Intersection(rays[i], pickPlane);
 			}
-			point.clear();
+			else
+			{
+				legitForReal = false;
+			}
+		}
+
+		if (legitForReal)
+		{
+			std::vector<Vec2> point;
+			std::vector<Vec2> box = CreatePickBox(points);
+			for (unsigned int i = 0; i < pickableObjects.size(); i++)
+			{
+				Vec3 pos = Vec3(pickableObjects[i]->GetPosition());
+				point.push_back(Vec2(pos._x, pos._z));
+			point.push_back(Vec2(pos._x, pos._y));
+				if (Collision(&point, &box))
+				{
+					pickedObjects.push_back(pickableObjects[i]);
+				}
+				point.clear();
+			}
 		}
 	}
 
