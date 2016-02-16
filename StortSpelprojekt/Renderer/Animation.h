@@ -4,6 +4,7 @@
 #include <vector>
 #include <DirectXMath.h>
 #include "RenderUtils.h"
+#include "CommonUtils.h"
 
 using namespace DirectX;
 
