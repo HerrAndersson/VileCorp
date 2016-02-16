@@ -17,6 +17,7 @@
 #include "Pointlight.h"
 #include "Grid.h"
 #include "LightCulling.h"
+#include "Blueprints.h"
 
 /*
 ObjectHandler
@@ -40,51 +41,12 @@ struct RenderList
 	vector<XMMATRIX> _modelMatrices;
 };
 
-struct Blueprint
-{
-	string _name, _tooltip, _mesh;
-	int _type, _subType;
-	vector<string> _textures, _thumbnails;
-};
-
-struct BlueprintData
-{
-	string _name, _tooltip, _mesh, _type;
-	int _subType;
-	vector<string> _textures, _thumbnails;
-	template<class Archive>
-	void serialize(Archive & archive)
-	{
-		archive(CEREAL_NVP(_mesh),
-			CEREAL_NVP(_name),
-			CEREAL_NVP(_type),
-			CEREAL_NVP(_subType),
-			CEREAL_NVP(_tooltip),
-			CEREAL_NVP(_textures),
-			CEREAL_NVP(_thumbnails));
-	}
-};
-
-struct BlueprintList
-{
-	string _name;
-	int _levelformatversion;
-	vector<BlueprintData> _blueprints;
-	template<class Archive>
-	void serialize(Archive & archive)
-	{
-		archive(CEREAL_NVP(_name),
-			CEREAL_NVP(_levelformatversion),
-			CEREAL_NVP(_blueprints));
-	}
-};
-
 class ObjectHandler
 {
 private:
 
 	vector<vector<GameObject*>> _gameObjects;
-	vector<Blueprint> _blueprints;
+	Blueprints _blueprints;
 	GameObjectInfo* _gameObjectInfo;
 	Tilemap* _tilemap;
 	Grid* _buildingGrid;
@@ -140,8 +102,6 @@ public:
 	map<GameObject*, Renderer::Pointlight*>* GetPointlights();
 	vector<vector<GameObject*>>* GetObjectsInLight(Renderer::Spotlight* spotlight);
 
-	vector<Blueprint>* GetBlueprints();
-
 	int GetObjectCount() const;
 
 	Tilemap* GetTileMap() const;
@@ -162,8 +122,8 @@ public:
 	void Update(float deltaTime);
 	void UpdateLights();
 
+	vector<Blueprint>* GetBlueprints();
 	Blueprint* GetBlueprintByName(string name);
 	Blueprint* GetBlueprintByType(int type, int subType = 0);
-	void LoadTileset(string name);
 };
 
