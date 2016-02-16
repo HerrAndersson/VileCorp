@@ -19,6 +19,8 @@ namespace Renderer
 		ID3D11Device* _device;
 		ID3D11DeviceContext* _deviceContext;
 
+		ParticleTextures _textures;
+
 		std::vector<ParticleRequestMessage> _queue;
 		ParticleRequestQueue* _requestQueue;
 		std::vector<ParticleEmitter*> _particleEmitters;
@@ -27,15 +29,16 @@ namespace Renderer
 
 	public:
 
-		ParticleHandler(ID3D11Device* device, ID3D11DeviceContext* deviceContext);
+		ParticleHandler(ID3D11Device* device, ID3D11DeviceContext* deviceContext, ParticleTextures textures);
 		virtual ~ParticleHandler();
 
 		void Update(double deltaTime);
 
-		void ActivateEmitter(ParticleType type, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT4& color, int particleCount, float timeLimit, bool isActive);
+		void ActivateEmitter(ParticleType type, ParticleSubType subType, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT4& color, int particleCount, float timeLimit, bool isActive);
 
 		int GetEmitterCount() const;
 		ParticleEmitter* GetEmitter(int index);
+		ID3D11ShaderResourceView** GetTextures(int& count, const ParticleSubType& subType);
 
 		ParticleRequestQueue* GetParticleRequestQueue();
 

@@ -48,6 +48,12 @@ Before rendering to shadow map:
 ~ Set vertex buffer before the Draw/DrawIndexed call
 ~ Set topology
 
+Billboarding:
+~ When rendering billboarded objects, make sure that the TEXTURE_COUNT and the hard-coded length of the texture array in BillboardingPS match.
+  A "dynamic" amount of textures can be used, as long as the number is lower than the hard-coded number in BillboardingPS, 
+  and the actual number is sent to the shader so it know which ones to sample from.
+~ The billboarded objects should use textures with alpha channel to determine what parts of the texture to render. Alpha-blending has to be activated before this can be used.
+
 */
 
 namespace Renderer
@@ -166,7 +172,8 @@ namespace Renderer
 		void SetDataPerFrame(DirectX::XMMATRIX* view, DirectX::XMMATRIX* projection);
 		void SetDataPerObjectType(RenderObject* renderObject);
 		void SetDataPerLineList(ID3D11Buffer* lineList, int vertexSize);
-		void SetDataPerParticleEmitter(const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT4& color, DirectX::XMMATRIX* camView, DirectX::XMMATRIX* camProjection, const DirectX::XMFLOAT3& camPos);
+		void SetDataPerParticleEmitter(const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT4& color, DirectX::XMMATRIX* camView, DirectX::XMMATRIX* camProjection, 
+									   const DirectX::XMFLOAT3& camPos, ID3D11ShaderResourceView** textures = nullptr, int textureCount = 0);
 
 		void SetShadowMapDataPerObjectType(RenderObject* renderObject);
 		void SetShadowMapDataPerSpotlight(DirectX::XMMATRIX* lightView, DirectX::XMMATRIX* lightProjection);
@@ -184,7 +191,7 @@ namespace Renderer
 		void RenderLineList(DirectX::XMMATRIX* world, int nrOfPoints, const DirectX::XMFLOAT3& colorOffset = DirectX::XMFLOAT3(0,0,0));
 		void RenderShadowMap(DirectX::XMMATRIX* world, int vertexBufferSize);
 		void RenderScreenQuad();
-		void RenderParticles(ID3D11Buffer* particlePointsBuffer, int vertexBufferSize, int vertexCount, ID3D11ShaderResourceView** textures = nullptr, int textureCount = 0);
+		void RenderParticles(ID3D11Buffer* particlePointsBuffer, int vertexBufferSize, int vertexCount);
 		void RenderLightVolume(ID3D11Buffer* volume, DirectX::XMMATRIX* world, int vertexCount, int vertexSize);
 		void EndScene();
 

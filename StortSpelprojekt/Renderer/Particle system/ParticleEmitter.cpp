@@ -11,6 +11,7 @@ namespace Renderer
 		_deviceContext = deviceContext;
 		_isActive = false;
 		_type = SPLASH;
+		_subType = BLOOD;
 		_position = XMFLOAT3(0, 0, 0);
 		_timeLeft = 0;
 		_particlePointsBuffer = nullptr;
@@ -18,9 +19,10 @@ namespace Renderer
 		_bufferSize = 0;
 	}
 
-	ParticleEmitter::ParticleEmitter(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const ParticleType& type, const XMFLOAT3& position, const XMFLOAT4 color, int particleCount, float timeLimit, bool isActive)
+	ParticleEmitter::ParticleEmitter(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const ParticleType& type, const ParticleSubType& subType, const XMFLOAT3& position, const XMFLOAT4 color, int particleCount, float timeLimit, bool isActive)
 	{
 		_type = type;
+		_subType = subType;
 		_position = position;
 		_timeLeft = timeLimit;
 		_isActive = isActive;
@@ -33,6 +35,7 @@ namespace Renderer
 		{
 			//TODO: Set small offsets on particle position
 			Particle particle(XMFLOAT3(-20 / 100.0f + (rand() % 20) / 100.0f, 0, -20/100.0f + (rand() % 20) / 100.0f), XMFLOAT3(0, 1, 0), color);
+			particle.Activate();
 			_particles.push_back(particle);
 		}
 
@@ -107,9 +110,10 @@ namespace Renderer
 		_deviceContext->Unmap(_particlePointsBuffer, 0);
 	}
 
-	void ParticleEmitter::Reset(const ParticleType& type, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT4 color, int particleCount, float timeLimit, bool isActive)
+	void ParticleEmitter::Reset(const ParticleType& type, const ParticleSubType& subType, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT4 color, int particleCount, float timeLimit, bool isActive)
 	{
 		_type = type;
+		_subType = subType;
 		_position = position;
 		_timeLeft = timeLimit;
 		_isActive = isActive;
@@ -163,6 +167,11 @@ namespace Renderer
 		return _type;
 	}
 
+	ParticleSubType ParticleEmitter::GetSubType() const
+	{
+		return _subType;
+	}
+
 	int ParticleEmitter::GetParticleCount() const
 	{
 		return _particles.size();
@@ -180,6 +189,11 @@ namespace Renderer
 	void ParticleEmitter::SetType(const ParticleType& type)
 	{
 		_type = type;
+	}
+
+	void ParticleEmitter::SetSubType(const ParticleSubType& subType)
+	{
+		_subType = subType;
 	}
 
 	void ParticleEmitter::SetParticleCount(const int& particleCount)

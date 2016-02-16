@@ -16,7 +16,11 @@ Game::Game(HINSTANCE hInstance, int nCmdShow):
 	_timer = System::Timer();
 
 	_renderModule = new Renderer::RenderModule(_window->GetHWND(), settings);
-	_particleHandler = new Renderer::ParticleHandler(_renderModule->GetDevice(), _renderModule->GetDeviceContext());
+
+
+	ParticleTextures particleTextures;
+	//_assetManager->GetTexture()
+	_particleHandler = new Renderer::ParticleHandler(_renderModule->GetDevice(), _renderModule->GetDeviceContext(), particleTextures);
 	
 	_assetManager = new AssetManager(_renderModule->GetDevice());
 	_controls = new System::Controls(_window->GetHWND());
@@ -86,14 +90,14 @@ bool Game::Update(double deltaTime)
 
 
 
-	//if (_controls->IsFunctionKeyDown("DEBUG:REQUEST_PARTICLE"))
-	//{
+	if (_controls->IsFunctionKeyDown("DEBUG:REQUEST_PARTICLE"))
+	{
 		XMFLOAT3 pos = XMFLOAT3(16, 1.0f, 4);
 		XMFLOAT4 col = XMFLOAT4((rand() % 10) / 10.0f, (rand() % 10) / 10.0f, (rand() % 10) / 10.0f, 1.0f);
 
-		ParticleRequestMessage msg = ParticleRequestMessage(ParticleType::SPLASH, pos, col, 400.0f, 50, true);
+		ParticleRequestMessage msg = ParticleRequestMessage(ParticleType::SPLASH, ParticleSubType::BLOOD, pos, col, 1000.0f, 50, true);
 		_particleHandler->GetParticleRequestQueue()->Insert(msg);
-	//}
+	}
 
 	_particleHandler->Update(deltaTime);
 
@@ -225,12 +229,13 @@ void Game::Render()
 
 			if (vertexBuffer)
 			{
-				XMFLOAT4 color(0.1f, 0.6f, 0.25f, 1.0f);
-				XMFLOAT3 pos(12, 1, 2);
-				_renderModule->SetDataPerParticleEmitter(pos, color, _camera->GetViewMatrix(), _camera->GetProjectionMatrix(), _camera->GetPosition());
-				_renderModule->RenderParticles(vertexBuffer, emitter->GetBufferSize(), emitter->GetParticleCount());
+				XMFLOAT4 color(0.9f, 0.6f, 0.25f, 1.0f);
 
-				//_renderModule->RenderParticles(vertexBuffer, emitter->GetBufferSize(), emitter->GetParticleCount(), emitter->GetPosition(), color, emitter->GetTextures(), emitter->GetTextureCount());
+				int textureCount = 0;
+				ID3D11ShaderResourceView** textures = _particleHandler->GetTextures(textureCount, emitter->GetSubType());
+				_renderModule->SetDataPerParticleEmitter(emitter->GetPosition(), color, _camera->GetViewMatrix(), _camera->GetProjectionMatrix(), _camera->GetPosition(), textures, textureCount);
+				
+				_renderModule->RenderParticles(vertexBuffer, emitter->GetBufferSize(), emitter->GetParticleCount());
 			}
 		}
 	}

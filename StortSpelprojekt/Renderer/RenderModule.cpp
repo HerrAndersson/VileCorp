@@ -240,7 +240,8 @@ namespace Renderer
 		deviceContext->VSSetConstantBuffers(1, 1, &_matrixBufferPerObject);
 	}
 
-	void RenderModule::SetDataPerParticleEmitter(const XMFLOAT3& position, const DirectX::XMFLOAT4& color, XMMATRIX* camView, XMMATRIX* camProjection, const XMFLOAT3& camPos)
+	void RenderModule::SetDataPerParticleEmitter(const XMFLOAT3& position, const DirectX::XMFLOAT4& color, XMMATRIX* camView, XMMATRIX* camProjection,
+												 const XMFLOAT3& camPos, ID3D11ShaderResourceView** textures, int textureCount)
 	{
 		HRESULT result;
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -265,6 +266,12 @@ namespace Renderer
 		deviceContext->Unmap(_matrixBufferParticles, 0);
 
 		deviceContext->GSSetConstantBuffers(6, 1, &_matrixBufferParticles);
+
+		if (textures)
+		{
+			deviceContext->PSSetShaderResources(0, textureCount, textures);
+		}
+
 	}
 
 	void RenderModule::SetDataPerMesh(ID3D11Buffer* vertexBuffer, int vertexSize)
@@ -646,18 +653,13 @@ namespace Renderer
 		deviceContext->Draw(vertexCount, 0);
 	}
 
-	void RenderModule::RenderParticles(ID3D11Buffer* particlePointsBuffer, int vertexBufferSize, int vertexCount, ID3D11ShaderResourceView** textures, int textureCount)
+	void RenderModule::RenderParticles(ID3D11Buffer* particlePointsBuffer, int vertexBufferSize, int vertexCount)
 	{
 		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
 
 		UINT32 offset = 0;
 		UINT32 vs = vertexBufferSize;
 		deviceContext->IASetVertexBuffers(0, 1, &particlePointsBuffer, &vs, &offset);
-
-		if (textures)
-		{
-			deviceContext->PSSetShaderResources(0, textureCount, textures);
-		}
 
 		deviceContext->Draw(vertexCount, 0);
 	}
