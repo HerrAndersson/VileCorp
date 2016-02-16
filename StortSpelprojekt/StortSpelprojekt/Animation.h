@@ -31,6 +31,7 @@ private:
 	bool _lastFrameRender;
 	float _speed;
 	bool _isFinished;
+	std::vector<float> _length;
 
 public:
 	Animation(Skeleton* skeleton, bool firstFrame = false);
@@ -54,4 +55,5 @@ public:
 		return _boneCount;
 	} 
 	bool GetisFinished();
+	float GetLength(int animation);
 };

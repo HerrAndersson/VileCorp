@@ -14,7 +14,10 @@ void Unit::CalculatePath()
 			}*/
 		}
 
-		Animate(WALK);
+		if (_stop == false)
+		{
+			Animate(WALKANIM);
+		}
 		_isMoving = true;
 		_direction = _path[--_pathLength] - _tilePosition;
 		Rotate();
@@ -136,6 +139,7 @@ Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	_pathLength = 0;
 	_path = nullptr;
 	_isMoving = false;
+	_stop = false;
 	_direction = {0, 1};
 	Rotate();
 	if (_renderObject->_isSkinned)
@@ -319,9 +323,9 @@ void Unit::Move()
 	bool foundNextTile = false;
 	if (_isMoving)
 	{
-	//	_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,0});
+		//	_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,0});
 		_tilePosition += _direction;
-	//	_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,4,0});
+		//	_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,4,0});
 	}
 	if (_objective != nullptr && _objective->GetPickUpState() != ONTILE)			//Check that no one took your objective
 	{
@@ -342,7 +346,7 @@ void Unit::Move()
 	}
 	if (!_isFleeing && (!foundNextTile || (_objective != nullptr && _objective->InRange(_tilePosition))))
 	{
-		Animate(IDLE);
+		Animate(IDLEANIM);
 		_isMoving = false;
 		if (_objective != nullptr && _objective->InRange(_tilePosition))
 		{
@@ -361,12 +365,16 @@ void Unit::Update(float deltaTime)
 	if (_animation != nullptr)
 	{
 		_animation->Update(deltaTime);
+		if (_animation->GetisFinished())
+		{
+			_stop = false;
+		}
 	}
 	if (_trapInteractionTime >= 0)
 	{
 		UseTrap();
 	}
-	else
+	else if(_stop == false)
 	{
 		if (_waiting > 0)
 		{
@@ -470,17 +478,17 @@ void Unit::Animate(Anim anim)
 		{
 			switch (anim)
 			{
-			case IDLE:
+			case IDLEANIM:
 				_animation->SetActionAsCycle(0, 1.0f, false);
 				break;
-			case WALK:
+			case WALKANIM:
 				_animation->SetActionAsCycle(1, 1.0f, false);
 				break;
-			case FIXTRAP:
+			case FIXTRAPANIM:
 				_animation->SetActionAsCycle(2, 1.0f, false);
 				break;
-			case FIGHT:
-				_animation->SetActionAsCycle(2, 1.0f, false);
+			case FIGHTANIM:
+				_animation->PlayAction(4, 3.5f, false, false);
 				break;
 			default:
 				break;
@@ -490,16 +498,16 @@ void Unit::Animate(Anim anim)
 		{
 			switch (anim)
 			{
-			case IDLE:
+			case IDLEANIM:
 				_animation->SetActionAsCycle(0, 1.0f, false);
 				break;
-			case WALK:
+			case WALKANIM:
 				_animation->SetActionAsCycle(1, 1.0f, false);
 				break;
-			case FIGHT:
-				_animation->SetActionAsCycle(1, 1.0f, false);
+			case FIGHTANIM:
+				_animation->PlayAction(1, 1.0f, false, false);
 				break;
-			case PICKUPOBJECT:
+			case PICKUPOBJECTANIM:
 				_animation->PlayAction(3, 1.0f, false, false);
 				break;
 			default:

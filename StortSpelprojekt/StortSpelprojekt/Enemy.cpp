@@ -9,7 +9,7 @@ Enemy::Enemy()
 Enemy::Enemy(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject * renderObject, const Tilemap * tileMap)
 	: Unit(ID, position, rotation, tilePosition, type, renderObject, tileMap)
 {
-	SetVisibility(false);
+	SetVisibility(true);
 	_visibilityTimer = TIME_TO_HIDE;
 
 	_detectionSkill = 50;
@@ -108,7 +108,7 @@ void Enemy::act(GameObject* obj)
 			if (_heldObject == nullptr)
 			{
 				obj->SetPickUpState(PICKINGUP);
-				Animate(PICKUPOBJECT);
+				Animate(PICKUPOBJECTANIM);
 				_heldObject = obj;
 				obj->SetVisibility(_visible);
 			}
@@ -143,7 +143,8 @@ void Enemy::act(GameObject* obj)
 			if (static_cast<Unit*>(obj)->GetHealth() > 0)
 			{
 				static_cast<Unit*>(obj)->TakeDamage(10);
-				Animate(FIGHT);
+				_stop = true;
+				Animate(FIGHTANIM);
 			}
 			break;
 		case ENEMY:
@@ -163,7 +164,7 @@ void Enemy::Update(float deltaTime)
 	_visibilityTimer--;
 	if (_visibilityTimer <= 0)
 	{
-		_visible = false;
+		_visible = true;
 		_visibilityTimer = TIME_TO_HIDE;
 		if (_heldObject != nullptr)
 		{

@@ -31,6 +31,20 @@ Animation::Animation(Skeleton* skeleton, bool firstFrame)
 			XMStoreFloat4x4(&finalFloats[i], XMMatrixIdentity());
 		}
 	}
+	for (int i = 0; i < _skeleton->_actions.size(); i++)
+	{
+		_length.push_back(float());
+		for (int j = 0; j < _boneCount; j++)
+		{
+			for (int k = 0; k < _skeleton->_actions[i]._bones[j]._frameTime.size(); k++)
+			{
+				if (_skeleton->_actions[i]._bones[j]._frameTime[k] > _length[i])
+				{
+					_length[i] = _skeleton->_actions[i]._bones[j]._frameTime[k];
+				}
+			}
+		}
+	}
 }
 
 Animation::~Animation()
@@ -47,6 +61,7 @@ void Animation::Update(float time)
 		return;
 	}
 	_animTime += (time / 1000) * _speed;
+	_isFinished = false;
 	if (_currentAction != -1)
 	{
 		if (_skeleton->_actions[_currentAction]._bones[0]._frameTime.back() < _animTime)
@@ -136,6 +151,11 @@ void Animation::PlayAction(int action, float speed, bool freeze, bool lastFrame)
 bool Animation::GetisFinished()
 {
 	return _isFinished;
+}
+
+float Animation::GetLength(int animation)
+{
+	return _length[animation];
 }
 
 XMMATRIX Animation::Interpolate(unsigned boneID, int action)

@@ -22,8 +22,7 @@ private:
 	int _waiting;					//Temporarily counting frame. Should use a timer eventually
 
 	int _health;
-	bool _isMoving;
-	
+	bool _isMoving;	
 
 	//void ScanOctant(int depth, int octant, double &startSlope, double endSlope);
 	//double GetSlope(double x1, double y1, double x2, double y2, bool invert);
@@ -46,6 +45,7 @@ protected:
 
 	int GetApproxDistance(AI::Vec2D target)const;
 	void Flee();
+	bool _stop;
 
 public:
 	Unit();
@@ -75,7 +75,7 @@ public:
 	void UseTrap();
 	int GetVisionRadius()const;
 
-	enum Anim { IDLE, WALK, FIXTRAP, FIGHT, PICKUPOBJECT, NR_OF_ANIM/*Has to be last*/ };
+	enum Anim { IDLEANIM, WALKANIM, FIXTRAPANIM, FIGHTANIM, PICKUPOBJECTANIM, NR_OF_ANIM/*Has to be last*/ };
 	void Animate(Anim anim);
 	bool GetAnimisFinished();
 
