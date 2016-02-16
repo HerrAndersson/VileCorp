@@ -17,7 +17,6 @@ using namespace DirectX;
 class PickingDevice
 {
 private:
-
 	System::Camera* _camera;
 	System::Settings* _settings;
 
@@ -26,12 +25,13 @@ private:
 	vector<GameObject*> SortByDistance(vector<GameObject*> pickedObjects);
 
 public:
-
 	PickingDevice(System::Camera* camera, System::Settings* settings);
 	~PickingDevice();
 	POINT _firstBoxPoint;
 	//This function only works if the level is aligned worldspace, must check x&y>=0 && <height&width /Markus
 	AI::Vec2D PickTile(POINT mousePoint);
+	//This function is to determine the direction of your click compared to the center of the tile you clicked on.
+	AI::Vec2D PickDirection(POINT mousePoint, Tilemap* tilemap);
 
 	XMFLOAT3 PickPoint(POINT mousePoint);
 	vector<GameObject*> PickObjects(POINT mousePoint, vector<GameObject*> pickableObjects);

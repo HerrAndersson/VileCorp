@@ -76,6 +76,8 @@ vector<GameObject*> PickingDevice::SortByDistance(vector<GameObject*> pickedObje
 	return sortedObjects;
 }
 
+
+
 AI::Vec2D PickingDevice::PickTile(POINT mousePoint)
 {
 	Plane pickPlane = Plane(Vec3(), Vec3(0.0f, 1.0f, 0.0f), 0.0f);
@@ -89,6 +91,92 @@ AI::Vec2D PickingDevice::PickTile(POINT mousePoint)
 
 	// OBS OFFSET!!! (temporary fix)
 	return AI::Vec2D((int)(pickedPoint._x + 0.5f), (int)(pickedPoint._z + 0.5f));
+}
+
+AI::Vec2D PickingDevice::PickDirection(POINT mousePoint, Tilemap* tilemap)
+{
+	AI::Vec2D returnValue = AI::Vec2D(0,0);
+	//Get picked tile
+	AI::Vec2D pickedTile = PickTile(mousePoint);
+	//Get all objects on that tile. Dont care of the type, so just take the first.
+	vector<GameObject*> object = tilemap->GetAllObjectsOnTile(pickedTile);
+	//Actually click something
+	if (object.size() > 0)
+	{
+		
+		//Get tile actual position as origin
+		DirectX::XMFLOAT3 origin = object.at(0)->GetPosition();
+		Vec2 v2origin = Vec2(origin.x, origin.z);
+		//compare it to ray point as point
+		DirectX::XMFLOAT3 point = PickPoint(mousePoint);
+		Vec2 v2Point = Vec2(point.x - origin.x, point.z - origin.z);
+		
+		//We want to create 4 vectors that represent the directions we are taking
+		Vec2 vectors[4];
+		//left side
+		vectors[0] = Vec2(-1, 1);
+		vectors[1] = Vec2(-1, 0);
+		vectors[2] = Vec2(-1, -1);
+		//bottom center
+		vectors[3] = Vec2(0, -1);
+
+		Vec2 nearestPoint[4];
+		float tempLength;
+		float nearestLength = FLT_MAX;
+		int nearestVector;
+		float x, y;
+		
+		
+		for (int i = 0; i < 4; i++)
+		{
+			nearestPoint[i] = FindClosestPointOnVector(v2Point, vectors[i]);
+			x = (nearestPoint[i]._x - v2Point._x);
+			y = (nearestPoint[i]._y - v2Point._y);
+			tempLength = sqrt(x*x + y*y);
+			if (tempLength < nearestLength)
+			{
+				nearestLength = tempLength;
+				nearestVector = i;
+			}
+		}
+
+		//if horizontal/vertical lines
+		if ((nearestPoint[nearestVector]._x < 0 && nearestPoint[nearestVector]._y == 0))
+		{
+			returnValue = AI::Vec2D(-1, 0);
+		}
+		else if ((nearestPoint[nearestVector]._x > 0 && nearestPoint[nearestVector]._y == 0))
+		{
+			returnValue = AI::Vec2D(1, 0);
+		}
+		else if ((nearestPoint[nearestVector]._x == 0 && nearestPoint[nearestVector]._y < 0))
+		{
+			returnValue = AI::Vec2D(0, -1);
+		}
+		else if ((nearestPoint[nearestVector]._x == 0 && nearestPoint[nearestVector]._y > 0))
+		{
+			returnValue = AI::Vec2D(0, 1);
+		}
+		//if diagonal lines
+		else if ((nearestPoint[nearestVector]._x < 0 && nearestPoint[nearestVector]._y < 0))
+		{
+			returnValue = AI::Vec2D(-1, -1);
+		}
+		else if ((nearestPoint[nearestVector]._x > 0 && nearestPoint[nearestVector]._y > 0))
+		{
+			returnValue = AI::Vec2D(1, 1);
+		}
+		else if ((nearestPoint[nearestVector]._x > 0 && nearestPoint[nearestVector]._y < 0))
+		{
+			returnValue = AI::Vec2D(1, -1);
+		}
+		else if ((nearestPoint[nearestVector]._x < 0 && nearestPoint[nearestVector]._y > 0))
+		{
+			returnValue = AI::Vec2D(-1, 1);
+		}
+	}
+
+	return returnValue;
 }
 
 XMFLOAT3 PickingDevice::PickPoint(POINT mousePoint)
