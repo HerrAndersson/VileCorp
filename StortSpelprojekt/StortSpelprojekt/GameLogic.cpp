@@ -53,67 +53,46 @@ bool GameLogic::IsGameDone() const
 
 void GameLogic::HandleInput(float deltaTime)
 {
-	//Selecting a Unit and moving selected units
+	//Boxselect Units
 	if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
-
-		vector<GameObject*> pickedUnits = _pickingDevice->PickObjects(_controls->GetMouseCoord()._pos, _objectHandler->GetAllByType(GUARD));
-
-		if (pickedUnits.empty())
-		{
-			if (_player->AreUnitsSelected())
-			{
-				_player->MoveUnits(_pickingDevice->PickTile(_controls->GetMouseCoord()._pos));
-			}
-		}
-		else
-		{
-			vector<Unit*> units = _player->GetSelectedUnits();
-
-			for (unsigned int i = 0; i < units.size(); i++)
-			{
-				units[i]->SetColorOffset(DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f));
-			}
-			_player->DeselectUnits();
-
-			Unit* unit = (Unit*)pickedUnits[0];
-			_player->SelectUnit(unit);
-
-			unit->SetColorOffset(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));
-		}
+		_pickingDevice->SetFirstBoxPoint(_controls->GetMouseCoord()._pos);
 	}
 	
+	if (_controls->IsFunctionKeyUp("MOUSE:SELECT"))
+	{
+		//deselect everything first.
+		vector<Unit*> units = _player->GetSelectedUnits();
 
-	//Deselect Units
+		for (unsigned int i = 0; i < units.size(); i++)
+		{
+			units[i]->SetColorOffset(DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f));
+		}
+		_player->DeselectUnits();
+
+		//Check if we picked anything
+		vector<GameObject*> pickedUnits = _pickingDevice->BoxPickObjects(_controls->GetMouseCoord()._pos, _objectHandler->GetAllByType(GUARD));
+		//vector<GameObject*> pickedUnits = _pickingDevice->PickObjects(_controls->GetMouseCoord()._pos, _objectHandler->GetAllByType(GUARD));
+
+		//if units selected
+		if (pickedUnits.size() > 0)
+		{
+			//select
+			for (unsigned int i = 0; i < pickedUnits.size(); i++)
+			{
+				_player->SelectUnit((Unit*)pickedUnits[i]);
+				pickedUnits[i]->SetColorOffset(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));
+			}
+		}
+	}
+
+	//Move units
 	if (_controls->IsFunctionKeyDown("MOUSE:DESELECT"))
 	{
 		if (_player->AreUnitsSelected())
 		{
-			vector<Unit*> units = _player->GetSelectedUnits();
-			for (unsigned int i = 0; i < units.size(); i++)
-			{
-				units[i]->SetColorOffset(DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f));
-			}
-			_player->DeselectUnits();
+			_player->MoveUnits(_pickingDevice->PickTile(_controls->GetMouseCoord()._pos));
 		}
-	}
-	
-	//Boxselect Units
-	if(_controls->IsFunctionKeyDown("MOUSE:BOX_SELECT"))
-	{
-		_pickingDevice->SetFirstBoxPoint(_controls->GetMouseCoord()._pos);
-	}
-
-	if (_controls->IsFunctionKeyUp("MOUSE:BOX_SELECT"))
-	{
-		vector<GameObject*> pickedUnits = _pickingDevice->BoxPickObjects(_controls->GetMouseCoord()._pos, _objectHandler->GetAllByType(GUARD));
-
-		for (unsigned int i = 0; i < pickedUnits.size(); i++)
-		{
-			_player->SelectUnit((Unit*)pickedUnits[i]);
-			pickedUnits[i]->SetColorOffset(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));
-		}
-
 	}
 
 	//Set Guard Patrol Route if a Guard is Selected
