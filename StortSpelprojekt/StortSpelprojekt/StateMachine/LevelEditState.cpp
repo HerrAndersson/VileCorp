@@ -8,7 +8,9 @@ LevelEditState::LevelEditState(System::Controls* controls, ObjectHandler* object
 	_camera = camera;
 	_pickingDevice = pickingDevice;
 	_listId = -1;
+	_moveCheck = -1;
 	_baseEdit = nullptr;
+	_pageCheck = false;
 
 	_objectTabs = _uiTree.GetNode("Buttons")->GetChildren();
 
@@ -41,6 +43,11 @@ LevelEditState::LevelEditState(System::Controls* controls, ObjectHandler* object
 	{
 		_buttonPositions[i] = _objectTabs->at(i)->GetLocalPosition();
 	}
+	for (unsigned i = 0; i < _uiTree.GetNode("Otherbuttons")->GetChildren()->size(); i++)
+	{
+		_buttonPositions[i + _objectTabs->size()] = _uiTree.GetNode("Otherbuttons")->GetChildren()->at(i)->GetLocalPosition();
+		_isPressed[i] = false;
+	}
 	_uiTree.GetRootNode()->SetPosition(_uiTree.GetRootNode()->GetFinalPosition());
 }
 
@@ -68,6 +75,9 @@ void LevelEditState::OnStateEnter()
 {
 	_objectHandler->DisableSpawnPoints();
 	_uiTree.GetNode("wholelist")->SetHidden(true);
+	_uiTree.GetNode("MapList")->SetHidden(true);
+	_uiTree.GetNode("StoryList")->SetHidden(true);
+	_uiTree.GetNode("ControlsList")->SetHidden(true);
 	_uiTree.GetNode("listbuttons")->SetHidden(true);
 
 	_objectHandler->EnlargeTilemap(50);
@@ -136,6 +146,7 @@ void LevelEditState::HandleButtons()
 					_listId = i;
 					_currentPage = 0;
 				}
+				_moveCheck = i;
 				buttonClicked = true;
 			}
 		}
@@ -147,6 +158,7 @@ void LevelEditState::HandleButtons()
 				if ((int)_currentList->GetChildren()->size() - 1 > _currentPage)
 				{
 					_currentPage++;
+					_pageCheck = true;
 				}
 			}
 			else if (_uiTree.IsButtonColliding("left", coord._pos.x, coord._pos.y))
@@ -154,6 +166,7 @@ void LevelEditState::HandleButtons()
 				if (_currentPage > 0)
 				{
 					_currentPage--;
+					_pageCheck = true;
 				}
 			}
 
@@ -175,6 +188,95 @@ void LevelEditState::HandleButtons()
 				}
 			}
 		}
+
+		//Map data
+		if (_uiTree.IsButtonColliding("MapButton", coord._pos.x, coord._pos.y))
+		{
+			if (!_isPressed[0])
+			{
+				//Move gui
+				GUI::Node* node = _uiTree.GetNode("MapButton");
+				XMFLOAT2 move = _buttonPositions[7];
+				move.x = move.x - 0.29f;
+
+				//Show List
+				_uiTree.GetNode("MapList")->SetHidden(false);
+
+				node->SetPosition(move);
+				_isPressed[0] = true;
+			}
+			else
+			{
+				//Move gui
+				GUI::Node* node = _uiTree.GetNode("MapButton");
+				node->SetPosition(_buttonPositions[7]);
+
+				//Show List
+				_uiTree.GetNode("MapList")->SetHidden(true);
+
+				_isPressed[0] = false;
+			}
+		}
+
+		//Story data
+		if (_uiTree.IsButtonColliding("StoryButton", coord._pos.x, coord._pos.y))
+		{
+			if (!_isPressed[1])
+			{
+				//Move Button
+				GUI::Node* node = _uiTree.GetNode("StoryButton");
+				XMFLOAT2 move = _buttonPositions[8];
+				move.x = move.x - 0.404f;
+
+				node->SetPosition(move);
+
+				//Show List
+				_uiTree.GetNode("StoryList")->SetHidden(false);
+
+				_isPressed[1] = true;
+			}
+			else
+			{
+				//Move Button
+				GUI::Node* node = _uiTree.GetNode("StoryButton");
+				node->SetPosition(_buttonPositions[8]);
+
+				//Hide List
+				_uiTree.GetNode("StoryList")->SetHidden(true);
+
+				_isPressed[1] = false;
+			}
+		}
+
+		//Control data
+		if (_uiTree.IsButtonColliding("ControlsButton", coord._pos.x, coord._pos.y))
+		{
+			if (!_isPressed[2])
+			{
+				//Move Button
+				GUI::Node* node = _uiTree.GetNode("ControlsButton");
+				XMFLOAT2 move = _buttonPositions[9];
+				move.x = move.x + 1.200f;
+				move.y = move.y + 0.78f;
+
+				//Show List
+				_uiTree.GetNode("ControlsList")->SetHidden(false);
+
+				node->SetPosition(move);
+				_isPressed[2] = true;
+			}
+			else
+			{
+				//Move gui
+				GUI::Node* node = _uiTree.GetNode("ControlsButton");
+				node->SetPosition(_buttonPositions[9]);
+
+				//Show List
+				_uiTree.GetNode("ControlsList")->SetHidden(true);
+
+				_isPressed[2] = false;
+			}
+		}
 	}
 
 	if (_listId == -1)
@@ -190,8 +292,9 @@ void LevelEditState::HandleButtons()
 			GUI::Node* node = _objectTabs->at(i);
 			node->SetPosition(_buttonPositions[i]);
 		}
+		_listId = -2;
 	}
-	else
+	else if (_listId >= 0 && _moveCheck != -2)
 	{
 		//Show Gui
 		_uiTree.GetNode("wholelist")->SetHidden(false);
@@ -232,6 +335,19 @@ void LevelEditState::HandleButtons()
 				}
 			}
 		}
+		_moveCheck = -2;
+	}
+	else if (_pageCheck == true)
+	{
+		for (unsigned j = 0; j < _currentList->GetChildren()->size(); j++)
+		{
+			if (j != _currentPage)
+			{
+				_currentList->GetChildren()->at(j)->SetHidden(true);
+			}
+			_currentList->GetChildren()->at(_currentPage)->SetHidden(false);
+		}
+		_pageCheck = false;
 	}
 }
 
