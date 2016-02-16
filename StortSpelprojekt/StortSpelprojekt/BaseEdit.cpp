@@ -17,8 +17,8 @@ BaseEdit::BaseEdit(ObjectHandler* objectHandler, System::Controls* controls, Pic
 	_pickingDevice = pickingDevice;
 	_camera = camera;
 
-	// Don´t let both be true
 	_isSelectionMode = true;
+	_isDragAndDropMode = false;
 	_isDragAndPlaceMode = false;
 
 	_isPlace = false;
@@ -31,7 +31,7 @@ BaseEdit::BaseEdit(ObjectHandler* objectHandler, System::Controls* controls, Pic
 
 BaseEdit::~BaseEdit()
 {
-	ReleaseBlueprints();
+	ReleaseMarkers();
 }
 
 // Other functions
@@ -142,7 +142,7 @@ void BaseEdit::SetValidity(Marker* m, Type type)
 		p.z = pickedTile._y;
 
 		// Check validity of placement
-		m->_placeable = CheckValidity(/*m->_g,*/ pickedTile, type);
+		m->_placeable = CheckValidity(pickedTile, type);
 
 		// Move marker grafically
 		m->_g->SetPosition(p);
@@ -164,8 +164,8 @@ void BaseEdit::SetValidity(Marker* m, Type type)
 
 void BaseEdit::MarkerMoveEvent(Type type)
 {
-	if (_marker._g != nullptr && _marker._g->GetType() == type && 
-		(_controls->IsFunctionKeyDown("MOUSE:DRAG") ||(_isDragAndPlaceMode && _modeLock)))
+	if (_marker._g != nullptr && _marker._g->GetType() == type/* && 
+		(_controls->IsFunctionKeyDown("MOUSE:DRAG") ||(_isDragAndPlaceMode && _modeLock))*/)
 	{
 		SetValidity(&_marker, type);
 	}
@@ -187,25 +187,27 @@ void BaseEdit::DragAndDropEvent(Type type)
 
 			// Remove logically from old tile
 			_tileMap->RemoveObjectFromTile(_marker._g);
+
+			_isDragAndDropMode = true;
 		}
 	}
 }
 
-void BaseEdit::CreateBlueprints(Type type, const std::string & objectName)
+void BaseEdit::CreateMarkers(Type type, const std::string & objectName)
 {
 	_modeLock = true;
 
 	// Create ghost/blueprint for _baseMarker
-	DragActivate(type, objectName);
+	CreateMarker(type, objectName);
 	_baseMarker = _marker;
 	SetValidity(&_baseMarker, _baseMarker._g->GetType());
 	_baseMarker._origPos = _baseMarker._g->GetTilePosition();
 
 	// Create ghost/blueprint for _marker
-	DragActivate(type, objectName);
+	CreateMarker(type, objectName);
 }
 
-void BaseEdit::ReleaseBlueprints()
+void BaseEdit::ReleaseMarkers()
 {
 	// Delete ghosts/blueprints
 	_objectHandler->Remove(_marker._g);
@@ -222,36 +224,78 @@ void BaseEdit::DragAndDrop(Type type)
 
 		MarkerMoveEvent(type);
 
-		if (_controls->IsFunctionKeyUp("MOUSE:SELECT") && _marker._g != nullptr)
+
+		if (_marker._g != nullptr)
 		{
-			_modeLock = false;
-			_marker._g->SetColorOffset(XMFLOAT3(0.0f, 0.0f, 0.0f));
-			XMFLOAT3 p = XMFLOAT3(_marker._g->GetPosition());
-
-			if (!_marker._placeable)
+			if (_isDragAndDropMode)
 			{
-				//Redirect position to old pos
-				p.x = _marker._origPos._x;
-				p.z = _marker._origPos._y;
-				_marker._g->SetPosition(p);
-			}
-			// Bind position logically
-			_tileMap->AddObjectToTile(p.x, p.z, _marker._g);
+				if (_controls->IsFunctionKeyUp("MOUSE:SELECT") && type == _marker._g->GetType())
+				{
+					_modeLock = false;
+					_marker._g->SetColorOffset(XMFLOAT3(0.0f, 0.0f, 0.0f));
+					XMFLOAT3 p = XMFLOAT3(_marker._g->GetPosition());
 
-			if (_marker._g != nullptr && _isPlace)
+					if (!_marker._placeable)
+					{
+						//Redirect position to old pos
+						p.x = _marker._origPos._x;
+						p.z = _marker._origPos._y;
+						_marker._g->SetPosition(p);
+					}
+					// Bind position logically
+					_tileMap->AddObjectToTile(p.x, p.z, _marker._g);
+
+					if (_marker._g != nullptr && _isPlace)
+					{
+						if (!_marker._g->IsVisible())
+						{
+							_objectHandler->Remove(_marker._g);
+						}
+						if (_marker._created == false && _marker._placeable == false)
+						{
+							_objectHandler->Remove(_marker._g);
+						}
+					}
+
+					_marker.Reset();
+					_isPlace = false;
+					_isDragAndDropMode = false;
+				}
+			}
+			else
 			{
-				if (!_marker._g->IsVisible())
+				if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
 				{
-					_objectHandler->Remove(_marker._g);
-				}
-				if (_marker._created == false && _marker._placeable == false)
-				{
-					_objectHandler->Remove(_marker._g);
+					_modeLock = false;
+					_marker._g->SetColorOffset(XMFLOAT3(0.0f, 0.0f, 0.0f));
+					XMFLOAT3 p = XMFLOAT3(_marker._g->GetPosition());
+
+					if (!_marker._placeable)
+					{
+						//Redirect position to old pos
+						p.x = _marker._origPos._x;
+						p.z = _marker._origPos._y;
+						_marker._g->SetPosition(p);
+					}
+					// Bind position logically
+					_tileMap->AddObjectToTile(p.x, p.z, _marker._g);
+
+					if (_marker._g != nullptr && _isPlace)
+					{
+						if (!_marker._g->IsVisible())
+						{
+							_objectHandler->Remove(_marker._g);
+						}
+						if (_marker._created == false && _marker._placeable == false)
+						{
+							_objectHandler->Remove(_marker._g);
+						}
+					}
+
+					_marker.Reset();
+					_isPlace = false;
 				}
 			}
-
-			_marker.Reset();
-			_isPlace = false;
 		}
 	}
 }
@@ -286,14 +330,14 @@ void BaseEdit::DragAndPlace(Type type, const std::string& objectName)
 		{
 			if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
 			{
-				CreateBlueprints(type, objectName);
+				CreateMarkers(type, objectName);
 				_isPlace = true;
 			}
 
 			// Not really diselect but activates remove mode (temp)
 			if (_controls->IsFunctionKeyDown("MOUSE:DESELECT"))
 			{
-				CreateBlueprints(type, objectName);
+				CreateMarkers(type, objectName);
 				_isPlace = false;
 			}
 		}
@@ -328,7 +372,7 @@ void BaseEdit::DragAndPlace(Type type, const std::string& objectName)
 				maxY = _baseMarker._origPos._y;
 			}
 
-			ReleaseBlueprints();
+			ReleaseMarkers();
 
 			// Check if extreme poins is outside Tilemap
 			if (minX < 0) minX == 0;
@@ -376,7 +420,7 @@ void BaseEdit::DragAndPlace(Type type, const std::string& objectName)
 	}
 }
 
-void BaseEdit::DragActivate(Type type, const std::string& objectName, int subType)
+void BaseEdit::CreateMarker(Type type, const std::string& objectName, int subType)
 {
 	AI::Vec2D pickedTile = _pickingDevice->PickTile(_controls->GetMouseCoord()._pos);
 	XMFLOAT3 pos = XMFLOAT3(pickedTile._x, 0, pickedTile._y);
@@ -394,12 +438,14 @@ void BaseEdit::ChangePlaceState()
 		if (_isSelectionMode)
 		{
 			_isSelectionMode = false;
+			_isDragAndDropMode = false;
 			_isDragAndPlaceMode = true;
 			_isPlace = false;
 		}
 		else
 		{
 			_isSelectionMode = true;
+			_isDragAndDropMode = false;
 			_isDragAndPlaceMode = false;
 			_isPlace = false;
 		}

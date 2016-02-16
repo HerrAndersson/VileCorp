@@ -36,6 +36,7 @@ private:
 
 	// FLAGS
 	bool _isSelectionMode;
+	bool _isDragAndDropMode;
 	bool _isDragAndPlaceMode;
 	bool _isPlace;
 	bool _modeLock;
@@ -44,13 +45,13 @@ private:
 	
 	bool CheckValidity(AI::Vec2D tile, Type type);
 	void SetValidity(Marker* m, Type type);
+
 	void MarkerMoveEvent(Type type);
 	void DragAndDropEvent(Type type);
 
-	void CreateBlueprints(Type type, const std::string& objectName);
-
-
-	void ReleaseBlueprints();
+	// Used for Drag&Place
+	void CreateMarkers(Type type, const std::string& objectName);
+	void ReleaseMarkers();
 
 public:
 	BaseEdit(ObjectHandler* objectHandler, System::Controls* controls, PickingDevice* pickingDevice, System::Camera* camera);
@@ -63,11 +64,11 @@ public:
 	bool Delete(Type type);
 	bool TypeOn(Type type);
 
-	void DragAndDrop(Type type);
-	void DragAndDrop();
+	void DragAndDrop(Type type); // TODO: Change to general selection mode
+	void DragAndDrop(); // TODO: Change to general selection mode
 	void DragAndPlace(Type type, const std::string& objectName);
-	void DragActivate(Type type, const std::string& objectName, int subType = 0);
-
+	
+	void CreateMarker(Type type, const std::string& objectName, int subType = 0);
 
 	void ChangePlaceState();
 	bool IsSelection() const;
