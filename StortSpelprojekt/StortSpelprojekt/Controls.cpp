@@ -112,6 +112,11 @@ namespace System
 		_inputDevice->HandleRawInput(lparam);
 	}
 
+	void Controls::HandleTextInput(WPARAM wparam, LPARAM lparam)
+	{
+		_inputDevice->HandleTextInput(wparam, lparam);
+	}
+
 	void Controls::ResetInputBuffers()
 	{
 		_inputDevice->ResetInputBuffers();
@@ -341,5 +346,10 @@ namespace System
 	MouseCoord Controls::GetMouseCoord()
 	{
 		return _inputDevice->GetMouseCoord();
+	}
+
+	InputDevice* Controls::GetInputDevice() const
+	{
+		return _inputDevice;
 	}
 }
