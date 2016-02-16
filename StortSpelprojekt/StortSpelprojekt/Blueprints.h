@@ -7,13 +7,7 @@
 #include <cereal/types/string.hpp>
 #include <cereal/types/vector.hpp>
 #include "RenderUtils.h"
-
-struct Blueprint
-{
-	std::string _name, _tooltip, _mesh;
-	int _type, _subType;
-	std::vector<std::string> _textures, _thumbnails;
-};
+#include "CommonUtils.h"
 
 class Blueprints
 {

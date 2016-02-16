@@ -71,7 +71,7 @@ namespace GUI
 		}
 		for (unsigned i = 0; i < object->_thumbnails.size(); i++)
 		{
-			BlueprintNode* newNode = new BlueprintNode(&_info, object->_type, object->_subType, i);
+			BlueprintNode* newNode = new BlueprintNode(&_info, object, i);
 			int row = (index + createdThumbnails) % 28 / 4, column = (index + createdThumbnails) % 28 % 4, page = (index + createdThumbnails) / 28;
 
 			newNode->SetId(object->_name);

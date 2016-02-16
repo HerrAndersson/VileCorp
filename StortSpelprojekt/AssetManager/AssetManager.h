@@ -10,6 +10,7 @@
 #include "WICTextureLoader.h"
 #include "RenderUtils.h"
 #include "LevelFormat.h"
+#include "CommonUtils.h"
 #include "cereal\cereal.hpp"
 
 using namespace std;
