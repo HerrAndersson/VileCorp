@@ -513,8 +513,8 @@ void ObjectHandler::InitPathfinding()
 	for (GameObject* i : _gameObjects[GUARD])
 	{
 		Unit* unit = dynamic_cast<Unit*>(i);
-		//unit->CheckAllTiles();
-		unit->Move();
+		unit->CheckAllTiles();
+	//	unit->Move();
 	}
 }
 
@@ -573,83 +573,6 @@ void ObjectHandler::Update(float deltaTime)
 					_tilemap->RemoveObjectFromTile(guard->GetTilePosition(), guard);			//TODO: update correctly
 					_tilemap->AddObjectToTile(guard->GetTilePosition() + guard->GetDirection(), guard);
 				}
-
-					//if (heldObject != nullptr)
-					//{
-					//	bool lootRemoved = false;
-
-			//	if (unit->GetHealth() <= 0)
-			//	{
-			//		if (heldObject != nullptr)
-			//		{
-			//			bool lootRemoved = false;
-
-					//	for (uint k = 0; k < _gameObjects[SPAWN].size() && !lootRemoved; k++)
-					//	{
-					//		//If the enemy is at the despawn point with an objective, remove the objective and the enemy, Aron
-					//		if (_gameObjects[SPAWN][k]->InRange(unit->GetTilePosition()))
-					//		{
-					//			lootRemoved = Remove(heldObject);
-					//		}
-					//	}
-
-					//	if (!lootRemoved)
-					//	{
-					//		heldObject->SetPickUpState(DROPPING);
-					//		heldObject->SetPosition(XMFLOAT3(heldObject->GetPosition().x, 0.0f, heldObject->GetPosition().z));
-					//	}
-					//}
-
-
-					//If all the objectives are looted and the enemy is at a (de)spawn point, despawn them.
-					//bool allLootIsCarried = true;
-					//for (uint k = 0; k < _gameObjects[SPAWN].size(); k++)
-					//{
-					//	for (uint l = 0; l < _gameObjects[LOOT].size() && allLootIsCarried; l++)
-					//	{
-					//		if (_gameObjects[LOOT][l]->GetPickUpState() == ONTILE || _gameObjects[LOOT][l]->GetPickUpState() == DROPPING)
-					//		{
-					//			allLootIsCarried = false;
-					//		}
-					//	}
-
-					//	if (unit->GetType() != GUARD &&
-					//		(_gameObjects[LOOT].size() == 0 || allLootIsCarried) &&
-					//		(int)unit->GetTilePosition()._x == (int)_gameObjects[SPAWN][k]->GetTilePosition()._x &&
-					//		(int)unit->GetTilePosition()._y == (int)_gameObjects[SPAWN][k]->GetTilePosition()._y)
-					//	{
-					//		unit->TakeDamage(10);
-					//	}
-					//}
-				//}
-		//	}
-
-			//if (g->GetType() == ENEMY)									//Handle unit movement
-			//{
-			//	Unit* unit = static_cast<Unit*>(g);
-					//If all the objectives are looted and the enemy is at a (de)spawn point, despawn them.
-		//		bool allLootIsCarried = true;
-		//		for (uint k = 0; k < _gameObjects[SPAWN].size(); k++)
-		//		{
-		//			for (uint l = 0; l < _gameObjects[LOOT].size() && allLootIsCarried; l++)
-		//			{
-		//				if (_gameObjects[LOOT][l]->GetPickUpState() == ONTILE || _gameObjects[LOOT][l]->GetPickUpState() == DROPPING)
-		//				{
-		//					allLootIsCarried = false;
-		//				}
-		//			}
-		//			if (unit->GetType() != GUARD &&
-		//				(_gameObjects[LOOT].size() == 0 || allLootIsCarried) &&
-		//				unit->InRange(_gameObjects[SPAWN][k]->GetTilePosition()))
-		//			{
-		//				unit->TakeDamage(10);
-		//			}
-		//		//	GameObject* heldObjec
-		//	//	if (heldObject != nullptr)
-		////		{
-		////			heldObject->SetPosition(DirectX::XMFLOAT3(unit->GetPosition().x, unit->GetPosition().y + 2, unit->GetPosition().z));
-		//	//	}
-		//		}
 			}
 			else if (g->GetType() == SPAWN)															//Manage enemy spawning
 			{

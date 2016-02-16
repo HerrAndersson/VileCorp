@@ -183,10 +183,13 @@ AI::Vec2D Unit::GetGoalTilePosition()
 
 void Unit::SetGoalTilePosition(AI::Vec2D goal)
 {
-	ClearObjective();
-	_goalTilePosition = goal;
-	//_moveState = MoveState::FINDING_PATH;
-	SetGoal(goal);
+	if (_moveState != MoveState::FINDING_PATH)
+	{
+		ClearObjective();
+		_goalTilePosition = goal;
+		_moveState = MoveState::FINDING_PATH;
+		//SetGoal(goal);
+	}
 }
 
 AI::Vec2D Unit::GetDirection()
@@ -299,13 +302,17 @@ Moves the goal and finds the path to the new goal
 */
 void Unit::SetGoal(AI::Vec2D goal)
 {
-	if (_tileMap->IsFloorOnTile(goal))
+	if (_tileMap->IsTrapOnTile(goal))
+	{
+		SetGoal(_tileMap->GetObjectOnTile(goal, TRAP));
+	}
+ 	else if (_tileMap->IsFloorOnTile(goal))
 	{
 		SetGoal(_tileMap->GetObjectOnTile(goal, FLOOR));
 	}
-	else if (_tileMap->IsTrapOnTile(goal))
+	else
 	{
-		SetGoal(_tileMap->GetObjectOnTile(goal, TRAP));
+		_moveState = MoveState::IDLE;
 	}
 }
 
@@ -345,89 +352,89 @@ Name should be changed to make it clear that this is tile movement
 */
 void Unit::Move()
 {
-	bool foundNextTile = false;
-	if (_isMoving)
-	{
-	//	_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,0});
-		_tilePosition += _direction;
-	//	_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,4,0});
-	}
-	if (_objective != nullptr && _objective->GetPickUpState() != ONTILE)			//Check that no one took your objective
-	{
-		_objective = nullptr;
-		_pathLength = 0;														//reseting _pathLength to indicate that a new path needs to be found
-	}
+	//bool foundNextTile = false;
+	//if (_isMoving)
+	//{
+	////	_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,0});
+	//	_tilePosition += _direction;
+	////	_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,4,0});
+	//}
+	//if (_objective != nullptr && _objective->GetPickUpState() != ONTILE)			//Check that no one took your objective
+	//{
+	//	_objective = nullptr;
+	//	_pathLength = 0;														//reseting _pathLength to indicate that a new path needs to be found
+	//}
 
-	if (_isFleeing)
-	{
-		Flee();
-	}
-	else if (_pathLength > 0)
-	{
-		_isMoving = true;
-		foundNextTile = true;
-		AI::Vec2D nextTile = _path[--_pathLength];
-		_direction = nextTile - _tilePosition;
-	}
-	if (!_isFleeing && (!foundNextTile || (_objective != nullptr && _objective->InRange(_tilePosition))))
-	{
-		_isMoving = false;
-		if (_objective != nullptr && _objective->InRange(_tilePosition))
-		{
-			act(_objective);
-		}
-		//_direction = {0,0};
-		CheckAllTiles();
-		//Wait(10);
-	}
-	Rotate();
-	CheckVisibleTiles();
+	//if (_isFleeing)
+	//{
+	//	Flee();
+	//}
+	//else if (_pathLength > 0)
+	//{
+	//	_isMoving = true;
+	//	foundNextTile = true;
+	//	AI::Vec2D nextTile = _path[--_pathLength];
+	//	_direction = nextTile - _tilePosition;
+	//}
+	//if (!_isFleeing && (!foundNextTile || (_objective != nullptr && _objective->InRange(_tilePosition))))
+	//{
+	//	_isMoving = false;
+	//	if (_objective != nullptr && _objective->InRange(_tilePosition))
+	//	{
+	//		act(_objective);
+	//	}
+	//	//_direction = {0,0};
+	//	CheckAllTiles();
+	//	//Wait(10);
+	//}
+	//Rotate();
+	//CheckVisibleTiles();
 }
 
 void Unit::Update(float deltaTime)
 {
-	if (_animation != nullptr)
-	{
-		_animation->Update(deltaTime);
-	}
-	if (_trapInteractionTime >= 0)
-	{
-		UseTrap();
-	}
-	else
-	{
-		if (_waiting > 0)
-		{
-			_waiting--;
-		}
-		else if (_waiting == 0 && !_isMoving)
-		{
-			_waiting--;
-			Move();
-		}
-		if (_isMoving)
-		{
-			if (_direction._x == 0 || _direction._y == 0)		//Right angle movement
-			{
-				_position.x += MOVE_SPEED * _direction._x;
-				_position.z += MOVE_SPEED * _direction._y;
-			}
-			else if (_direction._x == 0 && _direction._y == 0)
-			{
-				CheckVisibleTiles();
-			}
-			else												//Diagonal movement
-			{
-				_position.x += AI::SQRT2 * 0.5f * MOVE_SPEED * _direction._x;
-				_position.z += AI::SQRT2 * 0.5f *MOVE_SPEED * _direction._y;
-			}
-			CalculateMatrix();
-		}
-		/*if (_tileMap->IsFloorOnTile(_tilePosition))
-		{
-			_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,4});
-		}*/
-	}
+	//if (_animation != nullptr)
+	//{
+	//	_animation->Update(deltaTime);
+	//}
+	//if (_trapInteractionTime >= 0)
+	//{
+	//	UseTrap();
+	//}
+	//else
+	//{
+	//	if (_waiting > 0)
+	//	{
+	//		_waiting--;
+	//	}
+	//	else if (_waiting == 0 && !_isMoving)
+	//	{
+	//		_waiting--;
+	//		Move();
+	//	}
+	//	if (_isMoving)
+	//	{
+	//		if (_direction._x == 0 || _direction._y == 0)		//Right angle movement
+	//		{
+	//			_position.x += MOVE_SPEED * _direction._x;
+	//			_position.z += MOVE_SPEED * _direction._y;
+	//		}
+	//		else if (_direction._x == 0 && _direction._y == 0)
+	//		{
+	//			CheckVisibleTiles();
+	//		}
+	//		else												//Diagonal movement
+	//		{
+	//			_position.x += AI::SQRT2 * 0.5f * MOVE_SPEED * _direction._x;
+	//			_position.z += AI::SQRT2 * 0.5f *MOVE_SPEED * _direction._y;
+	//		}
+	//		CalculateMatrix();
+	//	}
+	//	/*if (_tileMap->IsFloorOnTile(_tilePosition))
+	//	{
+	//		_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,4});
+	//	}*/
+	//}
 }
 
 void Unit::Release()

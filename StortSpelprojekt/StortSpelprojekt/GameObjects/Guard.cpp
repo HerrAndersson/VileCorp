@@ -69,8 +69,8 @@ void Guard::EvaluateTile(GameObject * obj)
 			ClearObjective();
 			_objective = obj;
 			_goalTilePosition = obj->GetTilePosition();
-			//_moveState = MoveState::FINDING_PATH;
-			SetGoal(obj);
+			_moveState = MoveState::FINDING_PATH;
+			//SetGoal(obj);
 			
 		}
 	}
@@ -115,8 +115,8 @@ void Guard::act(GameObject* obj)
 				_currentPatrolGoal++;
 				ClearObjective();
 				_goalTilePosition = _patrolRoute[_currentPatrolGoal % _patrolRoute.size()];
-			//	_moveState = MoveState::FINDING_PATH;
-				SetGoal(_goalTilePosition);
+				_moveState = MoveState::FINDING_PATH;
+				//SetGoal(_goalTilePosition);
 			}
 		}
 		else
@@ -149,10 +149,11 @@ void Guard::SetPatrolPoint(AI::Vec2D patrolPoint)
 
 		}
 		_patrolRoute.push_back(patrolPoint);
-		_goalTilePosition = _patrolRoute[_currentPatrolGoal % _patrolRoute.size()];
-		//_moveState = MoveState::FINDING_PATH;
-		SetGoal(_goalTilePosition);
 		ClearObjective();
+		_goalTilePosition = _patrolRoute[_currentPatrolGoal % _patrolRoute.size()];
+		_moveState = MoveState::FINDING_PATH;
+		//SetGoal(_goalTilePosition);
+		
 	}
 }
 
@@ -216,6 +217,8 @@ void Guard::Update(float deltaTime)
 		{
 			_moveState = MoveState::SWITCHING_NODE;
 			_isSwitchingTile = true;
+			_position.x = _nextTile._x;
+			_position.z = _nextTile._y;
 		}
 		//else if (abs(_position.x - _nextTile._x) < TILE_EPSILON * 0.5f)
 		//{
@@ -243,7 +246,7 @@ void Guard::SetNextTile() {
 	
 
 	//_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,0});
-	_tilePosition = _nextTile;																			//Note: Tileposition is now updated at the start of movement, whereas before it was updated at the end.
+	_tilePosition = _nextTile;	
 	//_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,4,0});
 	if (_objective != nullptr)
 	{
@@ -258,7 +261,11 @@ void Guard::SetNextTile() {
 			Rotate();
 			_moveState = MoveState::MOVING;
 		}
-		// TODO: else find unblocked path to goal --Victor
+		else			// TODO: else find unblocked path to goal --Victor
+		{
+			_moveState = MoveState::IDLE;
+		}
+		
 
 		_isSwitchingTile = false;
 		CheckVisibleTiles();
