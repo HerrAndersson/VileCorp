@@ -4,8 +4,7 @@
 #include <vector>
 #include <DirectXMath.h>
 #include <map>
-
-enum Type { FLOOR, WALL, LOOT, SPAWN, TRAP, CAMERA, GUARD, ENEMY, FURNITURE, NR_OF_TYPES/*Has to be last*/ };
+#include "CommonUtils.h"
 
 struct Bone
 {
