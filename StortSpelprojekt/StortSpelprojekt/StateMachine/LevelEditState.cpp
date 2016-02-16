@@ -29,11 +29,12 @@ LevelEditState::LevelEditState(System::Controls* controls, ObjectHandler* object
 	for (unsigned i = 0; i < NR_OF_TYPES; i++)
 	{
 		int index = 0;
-		for (Blueprint blueprint : *_objectHandler->GetBlueprints())
+		vector<Blueprint>* blueprints = _objectHandler->GetBlueprints();
+		for (unsigned b = 0; b < blueprints->size();b++)
 		{
-			if (blueprint._type == i)
+			if (blueprints->at(b)._type == i)
 			{
-				index += _uiTree.CreateTilesetObject(&blueprint, _uiTree.GetNode(typeLists[(Type)blueprint._type]), index);
+				index += _uiTree.CreateTilesetObject(&blueprints->at(b), _uiTree.GetNode(typeLists[(Type)blueprints->at(b)._type]), index);
 			}
 		}
 	}
@@ -68,7 +69,7 @@ void LevelEditState::Update(float deltaTime)
 
 
 	_baseEdit->DragAndDrop();
-	_baseEdit->DragAndPlace(_toPlace._type, _toPlace._name);
+	_baseEdit->DragAndPlace(_toPlace._blueprint, _toPlace._textureId);
 }
 
 void LevelEditState::OnStateEnter()
@@ -180,10 +181,10 @@ void LevelEditState::HandleButtons()
 					GUI::Node* currentButton = currentPageButtons->at(y);
 					if (_uiTree.IsButtonColliding(currentButton, coord._pos.x, coord._pos.y))
 					{
-						_toPlace._name = currentButton->GetId();
-						_toPlace._type = (Type)_listId;
-						Blueprint* currentBlueprint = static_cast<GUI::BlueprintNode*>(currentButton)->GetBlueprint();
-
+						GUI::BlueprintNode* currentBlueprintButton = static_cast<GUI::BlueprintNode*>(currentButton);
+						_toPlace._blueprint = currentBlueprintButton->GetBlueprint();
+						_toPlace._textureId = currentBlueprintButton->GetTextureId();
+						_baseEdit->CreateMarker(_toPlace._blueprint, _toPlace._textureId);
 						break;
 					}
 				}

@@ -37,16 +37,10 @@ private:
 	bool _floorChosen = false;
 	bool _wallChosen = false;
 
-	// Temp, should be replaced with blueprint
 	struct ToPlace
 	{
-		ToPlace()
-		{
-			_type = TRAP;
-			_name = "trap_proto";
-		}
-		Type _type;
-		std::string _name;
+		Blueprint* _blueprint;
+		int _textureId;
 	} _toPlace;
 	
 	int GetVectorIndexOfString(std::vector<std::string>* vec ,std::string str);

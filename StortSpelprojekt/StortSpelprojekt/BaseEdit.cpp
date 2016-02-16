@@ -48,10 +48,10 @@ bool BaseEdit::DeleteSelectedObject()
 	return removed;
 }
 
-bool BaseEdit::Add(Type type, const std::string& name)
-{
-	return _objectHandler->Add(type, name, _marker._g->GetPosition(), XMFLOAT3(0.0f, 0.0f, 0.0f));
-}
+//bool BaseEdit::Add(Type type, const std::string& name)
+//{
+//	return _objectHandler->Add(type, name, _marker._g->GetPosition(), XMFLOAT3(0.0f, 0.0f, 0.0f));
+//}
 
 bool BaseEdit::Delete(Type type)
 {
@@ -193,18 +193,18 @@ void BaseEdit::DragAndDropEvent(Type type)
 	}
 }
 
-void BaseEdit::CreateMarkers(Type type, const std::string & objectName)
+void BaseEdit::CreateMarkers(Blueprint* blueprint, int textureId)
 {
 	_modeLock = true;
 
 	// Create ghost/blueprint for _baseMarker
-	CreateMarker(type, objectName);
+	CreateMarker(blueprint, textureId);
 	_baseMarker = _marker;
 	SetValidity(&_baseMarker, _baseMarker._g->GetType());
 	_baseMarker._origPos = _baseMarker._g->GetTilePosition();
 
 	// Create ghost/blueprint for _marker
-	CreateMarker(type, objectName);
+	CreateMarker(blueprint, textureId);
 }
 
 void BaseEdit::ReleaseMarkers()
@@ -322,7 +322,7 @@ void BaseEdit::DragAndDrop()
 	}
 }
 
-void BaseEdit::DragAndPlace(Type type, const std::string& objectName)
+void BaseEdit::DragAndPlace(Blueprint* blueprint, int textureId)
 {
 	if (_isDragAndPlaceMode)
 	{
@@ -330,14 +330,14 @@ void BaseEdit::DragAndPlace(Type type, const std::string& objectName)
 		{
 			if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
 			{
-				CreateMarkers(type, objectName);
+				CreateMarkers(blueprint, textureId);
 				_isPlace = true;
 			}
 
 			// Not really diselect but activates remove mode (temp)
 			if (_controls->IsFunctionKeyDown("MOUSE:DESELECT"))
 			{
-				CreateMarkers(type, objectName);
+				CreateMarkers(blueprint, textureId);
 				_isPlace = false;
 			}
 		}
@@ -374,7 +374,7 @@ void BaseEdit::DragAndPlace(Type type, const std::string& objectName)
 
 			ReleaseMarkers();
 
-			// Check if extreme poins is outside Tilemap
+			// Check if extreme points is outside Tilemap
 			if (minX < 0) minX == 0;
 			if (minY < 0) minY == 0;
 			if (maxX >= _tileMap->GetWidth()) maxX >= _tileMap->GetWidth() - 1;
@@ -383,6 +383,7 @@ void BaseEdit::DragAndPlace(Type type, const std::string& objectName)
 
 			// Check tiles
 			GameObject* objectOnTile;
+			Type type = (Type)blueprint->_type;
 			if (_isPlace) // Place
 			{
 				for (int x = minX; x <= maxX; x++)
@@ -394,7 +395,7 @@ void BaseEdit::DragAndPlace(Type type, const std::string& objectName)
 						if (CheckValidity(AI::Vec2D(x, y), type))
 						{
 							// Add to valid place
-							_objectHandler->Add(type, objectName, XMFLOAT3(x, 0, y), XMFLOAT3(0.0f, 0.0f, 0.0f), SHARK);
+							_objectHandler->Add(blueprint, textureId, XMFLOAT3(x, 0, y), XMFLOAT3(0.0f, 0.0f, 0.0f), true);
 						}
 					}
 				}
@@ -420,13 +421,13 @@ void BaseEdit::DragAndPlace(Type type, const std::string& objectName)
 	}
 }
 
-void BaseEdit::CreateMarker(Type type, const std::string& objectName, int subType)
+void BaseEdit::CreateMarker(Blueprint* blueprint, int textureId)
 {
 	AI::Vec2D pickedTile = _pickingDevice->PickTile(_controls->GetMouseCoord()._pos);
 	XMFLOAT3 pos = XMFLOAT3(pickedTile._x, 0, pickedTile._y);
 
-	_objectHandler->Add(type, objectName, pos, XMFLOAT3(0.0f, 0.0f, 0.0f), subType, true);
-	_marker._g = _objectHandler->GetGameObjects()->at(type).back();
+	_objectHandler->Add(blueprint, textureId, pos, XMFLOAT3(0.0f, 0.0f, 0.0f), false);
+	_marker._g = _objectHandler->GetGameObjects()->at(blueprint->_type).back();
 	_marker._created = false;
 	_isPlace = true;
 }

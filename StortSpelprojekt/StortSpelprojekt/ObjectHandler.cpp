@@ -81,44 +81,42 @@ void ObjectHandler::UnloadLevel()
 	SAFE_DELETE(_lightCulling);
 }
 
-bool ObjectHandler::Add(Type type, int index, const XMFLOAT3& position, const XMFLOAT3& rotation, const int subIndex, const bool blueprint)
+bool ObjectHandler::Add(Blueprint* blueprint, int textureId, const XMFLOAT3& position, const XMFLOAT3& rotation, const bool placeOnTilemap)
 {
 	GameObject* object = nullptr;
+	Type type = (Type)blueprint->_type;
+	RenderObject* renderObject = _assetManager->GetRenderObject(blueprint->_mesh, blueprint->_textures[textureId]);
+
+	AI::Vec2D tilepos(position.x, position.z);
 
 	switch (type)
 	{
-	case FLOOR:
-		object = MakeFloor(_gameObjectInfo->Floors(index), position, rotation);
-		break;
 	case WALL:
-		object = MakeWall(_gameObjectInfo->Walls(index), position, rotation);
-		break;
+	case FLOOR:
+	case FURNITURE:
 	case LOOT:
-		object = MakeLoot(_gameObjectInfo->Loot(index), position, rotation);
+		object = new Architecture(_idCount, position, rotation, tilepos, type, renderObject);
 		break;
 	case SPAWN:
-		object = MakeSpawn(_gameObjectInfo->Spawns(index), position, rotation);
+		object = new SpawnPoint(_idCount, position, rotation, tilepos, type, renderObject, 66, 6);
 		break;
 	case TRAP:
-		object = MakeTrap(_gameObjectInfo->Traps(index), position, rotation, subIndex);
+		object = new Trap(_idCount, position, rotation, tilepos, type, renderObject, _tilemap, blueprint->_subType);
 		break;
 	case CAMERA:
-		object = MakeSecurityCamera(_gameObjectInfo->Cameras(index), position, rotation);
+		object = new SecurityCamera(_idCount, position, rotation, tilepos, type, renderObject, _tilemap);
 		break;
 	case ENEMY:
-		object = MakeEnemy(_gameObjectInfo->Enemies(index), position, rotation);
+		object = new Enemy(_idCount, position, rotation, tilepos, type, renderObject, _tilemap);
 		break;
 	case GUARD:
-		object = MakeGuard(_gameObjectInfo->Guards(index), position, rotation);
+		object = new Guard(_idCount, position, rotation, tilepos, type, renderObject, _tilemap);
 		break;
-	case FURNITURE:
-		object = MakeFurniture(_gameObjectInfo->Furnitures(index), position, rotation);
-		break;
-	default:	
+	default:
 		break;
 	}
 
-	if (!blueprint)
+	if (placeOnTilemap)
 	{
 		if (!_tilemap->AddObjectToTile((int)position.x, (int)position.z, object))
 		{
@@ -133,7 +131,7 @@ bool ObjectHandler::Add(Type type, int index, const XMFLOAT3& position, const XM
 	{
 		addedObject = true;
 	}
-	if (type == TRAP && addedObject && !blueprint)
+	if (type == TRAP && addedObject && !placeOnTilemap)
 	{
 		Trap* trap = static_cast<Trap*>(object);
 		int i = 0;
@@ -193,131 +191,6 @@ bool ObjectHandler::Add(Type type, int index, const XMFLOAT3& position, const XM
 		//}
 		_objectCount++;
 		return true;
-	}
-
-	return false;
-}
-
-bool ObjectHandler::Add(Type type, const std::string& name, const XMFLOAT3& position = XMFLOAT3(0.0f, 0.0f, 0.0f), const XMFLOAT3& rotation = XMFLOAT3(0.0f, 0.0f, 0.0f), const int subIndex, const bool blueprint)
-{
-	for (unsigned int i = 0; i < _gameObjectInfo->_objects[type]->size(); i++)
-	{
-		if (_gameObjectInfo->_objects[type]->at(i)->_name == name)
-		{
-			return Add(type, i, position, rotation, subIndex, blueprint);
-		}
-	}
-	return false;
-}
-
-bool ObjectHandler::Add(XMFLOAT3 position, XMFLOAT3 rotation, Type type, int subType, string textureReference)
-{
-	GameObject* object = nullptr;
-	RenderObject* renderObject = nullptr;
-
-	_assetManager->GetRenderObject(GetBlueprintByType(type, subType)->_mesh, textureReference);
-
-
-	if (renderObject != nullptr)
-	{
-		switch (type)
-		{
-		case FLOOR:
-		case WALL:
-		case LOOT:
-			object = new Architecture(
-				_idCount,
-				position,
-				rotation,
-				AI::Vec2D((int)position.x, (int)position.z),
-				type,
-				renderObject);
-			break;
-		case SPAWN:
-			object = new SpawnPoint(
-				_idCount,
-				position,
-				rotation,
-				AI::Vec2D((int)position.x, (int)position.z),
-				type,
-				renderObject,
-				180, 2);
-			break;
-		case ENEMY:
-			object = new Enemy(
-				_idCount,
-				position,
-				rotation,
-				AI::Vec2D((int)position.x, (int)position.z),
-				type,
-				renderObject,
-				_tilemap);
-			break;
-		case GUARD:
-			object = new Guard(
-				_idCount,
-				position,
-				rotation,
-				AI::Vec2D((int)position.x, (int)position.z),
-				type,
-				renderObject,
-				_tilemap);
-			break;
-		case TRAP:
-			object = new Trap(
-				_idCount,
-				position,
-				rotation,
-				AI::Vec2D((int)position.x, (int)position.z),
-				type,
-				renderObject,
-				_tilemap,
-				TrapType(subType),
-				{ 1,0 },
-				0);
-			break;
-		default:
-			break;
-		}
-
-		bool addedObject = _tilemap->AddObjectToTile((int)position.x, (int)position.z, object);
-
-		//Temporary check for traps. Could be more general if other objects are allowed to take up multiple tiles
-		if (object != nullptr && addedObject)
-		{
-			if (type == TRAP)
-			{
-				Trap* trap = static_cast<Trap*>(object);
-				int i = 0;
-				addedObject = true;
-				AI::Vec2D* arr = trap->GetTiles();
-				for (int i = 0; i < trap->GetTileSize() && addedObject; i++)
-				{
-					if (!_tilemap->CanPlaceObject(arr[i]))
-					{
-						addedObject = false;
-					}
-				}
-				if (addedObject)
-				{
-					for (int i = 0; i < trap->GetTileSize() && addedObject; i++)
-					{
-						_tilemap->AddObjectToTile(arr[i], object);
-						_tilemap->GetObjectOnTile(arr[i], FLOOR)->AddColorOffset({ 2,0,0 });
-					}
-				}
-			}
-
-			_idCount++;
-			_gameObjects[type].push_back(object);
-			if (object->GetRenderObject()->_mesh->_spotLights.size())
-			{
-				//TODO: Add settings variables to this function below! Alex
-				_spotlights[object] = new Renderer::Spotlight(_device, object->GetRenderObject()->_mesh->_spotLights[0], 0.1f, 1000.0f);
-			}
-			_objectCount++;
-			return true;
-		}
 	}
 	return false;
 }
@@ -765,7 +638,7 @@ void ObjectHandler::Update(float deltaTime)
 			{
 				if (static_cast<SpawnPoint*>(g)->isSpawning())
 				{
-					if (Add(ENEMY, "enemy_proto", g->GetPosition(), g->GetRotation()))
+					if (Add(_blueprints.GetBlueprintByType(ENEMY,0), 0, g->GetPosition(), g->GetRotation())) //TODO blueprints of spawned enemies should be kept in spawnpoints - Fredrik
 					{
 						((Unit*)_gameObjects[ENEMY].back())->Move();
 					}
@@ -854,144 +727,4 @@ void ObjectHandler::ReleaseGameObjects()
 	}
 	_idCount = 0;
 	_objectCount = 0;
-}
-
-
-/*Make object*/
-
-Architecture * ObjectHandler::MakeFloor(GameObjectFloorInfo * data, const XMFLOAT3& position, const XMFLOAT3& rotation)
-{
-	Architecture* obj = new Architecture(
-		_idCount,
-		position,
-		rotation,
-		AI::Vec2D((int)position.x, (int)position.z),
-		FLOOR,
-		_assetManager->GetRenderObject(data->_renderObject));
-
-	return obj;
-}
-
-Architecture * ObjectHandler::MakeWall(GameObjectWallInfo * data, const XMFLOAT3& position, const XMFLOAT3& rotation)
-{
-	Architecture* obj = new Architecture(
-		_idCount,
-		position,
-		rotation,
-		AI::Vec2D((int)position.x, (int)position.z),
-		WALL,
-		_assetManager->GetRenderObject(data->_renderObject));
-
-	return obj;
-}
-
-Architecture * ObjectHandler::MakeFurniture(GameObjectFurnitureInfo * data, const XMFLOAT3& position, const XMFLOAT3& rotation)
-{
-	Architecture* obj = new Architecture(
-		_idCount,
-		position,
-		rotation,
-		AI::Vec2D((int)position.x, (int)position.z),
-		FURNITURE,
-		_assetManager->GetRenderObject(13));
-
-	return obj;
-}
-
-Architecture * ObjectHandler::MakeLoot(GameObjectLootInfo * data, const XMFLOAT3& position, const XMFLOAT3& rotation)
-{
-	Architecture* obj = new Architecture(
-		_idCount,
-		position,
-		rotation,
-		AI::Vec2D((int)position.x, (int)position.z),
-		LOOT,
-		_assetManager->GetRenderObject(data->_renderObject));
-
-	// read more data
-
-	return obj;
-}
-
-SpawnPoint * ObjectHandler::MakeSpawn(GameObjectSpawnInfo * data, const XMFLOAT3& position, const XMFLOAT3& rotation)
-{
-	SpawnPoint* obj = new SpawnPoint(
-		_idCount,
-		position,
-		rotation,
-		AI::Vec2D((int)position.x, (int)position.z),
-		SPAWN,
-		_assetManager->GetRenderObject(4),
-		180, 2);
-
-	// read more data
-
-	return obj;
-}
-
-Trap * ObjectHandler::MakeTrap(GameObjectTrapInfo * data, const XMFLOAT3& position, const XMFLOAT3& rotation, const int subIndex)
-{
-	Trap* obj = new Trap(
-		_idCount,
-		position,
-		rotation,
-		AI::Vec2D((int)position.x, (int)position.z),
-		TRAP,
-		_assetManager->GetRenderObject(data->_renderObject),
-		_tilemap,
-		subIndex,
-		{ 1,0 },
-		data->_cost);
-
-	// Read more data
-
-	return obj;
-}
-
-SecurityCamera*	ObjectHandler::MakeSecurityCamera(GameObjectCameraInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation)
-{
-	SecurityCamera* obj = new SecurityCamera(
-		_idCount,
-		position,
-		rotation,
-		AI::Vec2D((int)position.x, (int)position.z),
-		CAMERA,
-		_assetManager->GetRenderObject(data->_renderObject),
-		_tilemap);
-
-	// Read more data
-
-	return obj;
-}
-
-Guard * ObjectHandler::MakeGuard(GameObjectGuardInfo * data, const XMFLOAT3& position, const XMFLOAT3& rotation)
-{
-	Guard* obj = new Guard(
-		_idCount,
-		position,
-		rotation,
-		AI::Vec2D((int)position.x, (int)position.z),
-		GUARD,
-		_assetManager->GetRenderObject(data->_renderObject),
-		_tilemap);
-
-	// read more data
-
-	return obj;
-}
-
-Enemy * ObjectHandler::MakeEnemy(GameObjectEnemyInfo * data, const XMFLOAT3& position, const XMFLOAT3& rotation)
-{
-	Enemy* obj = new Enemy(
-		_idCount,
-		position,
-		rotation,
-		AI::Vec2D((int)position.x, (int)position.z),
-		ENEMY,
-		_assetManager->GetRenderObject(data->_renderObject),
-		_tilemap);
-
-	// read more data
-
-	return obj;
 }

@@ -50,7 +50,7 @@ private:
 	void DragAndDropEvent(Type type);
 
 	// Used for Drag&Place
-	void CreateMarkers(Type type, const std::string& objectName);
+	void CreateMarkers(Blueprint* blueprint, int textureId);
 	void ReleaseMarkers();
 
 public:
@@ -60,15 +60,15 @@ public:
 	GameObject* GetSelectedObject();
 	bool DeleteSelectedObject();
 
-	bool Add(Type type, const std::string& name);
+//	bool Add(Type type, const std::string& name);
 	bool Delete(Type type);
 	bool TypeOn(Type type);
 
 	void DragAndDrop(Type type); // TODO: Change to general selection mode
 	void DragAndDrop(); // TODO: Change to general selection mode
-	void DragAndPlace(Type type, const std::string& objectName);
+	void DragAndPlace(Blueprint* blueprint, int textureId);
 	
-	void CreateMarker(Type type, const std::string& objectName, int subType = 0);
+	void CreateMarker(Blueprint* blueprint, int textureId);
 
 	void ChangePlaceState();
 	bool IsSelection() const;
