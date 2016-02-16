@@ -58,6 +58,13 @@ void ObjectHandler::UnloadLevel()
 		spot.first = nullptr;
 	}
 	_spotlights.clear();
+	for (pair<GameObject*, Renderer::Pointlight*> point : _pointligths)
+	{
+		SAFE_DELETE(point.second);
+		point.second = nullptr;
+		point.first = nullptr;
+	}
+	_pointligths.clear();
 
 	ReleaseGameObjects();
 	SAFE_DELETE(_tilemap);
