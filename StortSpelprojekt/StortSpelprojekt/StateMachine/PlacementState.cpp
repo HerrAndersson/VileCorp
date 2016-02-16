@@ -201,7 +201,7 @@ void PlacementState::HandleButtons()
 
 		if (_playerProfile[_currentPlayer]._gold >= _toPlace._goldCost)
 		{
-			_baseEdit->DragActivate(_toPlace._type, _toPlace._name, _toPlace._subType);
+			_baseEdit->CreateMarker(_toPlace._type, _toPlace._name, _toPlace._subType);
 			_playerProfile[_currentPlayer]._gold -= _toPlace._goldCost;
 			_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_playerProfile[_currentPlayer]._gold));
 			_toPlace._blueprintID = _baseEdit->GetSelectedObject()->GetID();
@@ -211,14 +211,6 @@ void PlacementState::HandleButtons()
 			_toPlace._goldCost = -1;
 		}
 	}
-
-//	System::saveJSON(&_playerProfile[_currentPlayer], _playerProfilesPath[_currentPlayer], "Player Profile");
-
-	//if (_uiTree.IsButtonColliding("Camera", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
-	//{
-	//	
-	//}
-
 }
 
 
