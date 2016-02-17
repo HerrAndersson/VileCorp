@@ -2,10 +2,12 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <map>
 #include <cereal\archives\binary.hpp>
 #include <cereal\archives\json.hpp>
 #include <cereal\types\vector.hpp>
 #include <cereal\types\string.hpp>
+#include <cereal\types\map.hpp>
 
 enum GameModes { KILL_THEM_ALL, SURVIVAL };
 
@@ -38,6 +40,7 @@ struct LevelBinary
 	int _tileMapSizeZ = 0;
 	std::vector<std::vector<int>> _gameObjectData = std::vector<std::vector<int>>();
 	std::vector<std::vector<int>> _enemyWavesData = std::vector<std::vector<int>>();
+	std::map<int, int> _enemySpawnMap = std::map<int, int>();
 
 	template<class A>
 	void serialize(A& a)
@@ -46,7 +49,8 @@ struct LevelBinary
 			CEREAL_NVP(_tileMapSizeX),
 			CEREAL_NVP(_tileMapSizeZ),
 			CEREAL_NVP(_gameObjectData),
-			CEREAL_NVP(_enemyWavesData)
+			CEREAL_NVP(_enemyWavesData),
+			CEREAL_NVP(_enemySpawnMap)
 			);
 	}
 };

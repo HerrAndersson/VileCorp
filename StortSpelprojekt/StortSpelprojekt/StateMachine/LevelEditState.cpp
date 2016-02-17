@@ -464,7 +464,9 @@ void LevelEditState::HandleButtons()
 
 void LevelEditState::ExportLevel()
 {
-	////Level Header:
+	_currentLevelFileName = "test";
+
+	////Fill Level Header:
 
 	//Getting Story Information
 	_levelHeader._storyTitle = WStringToString(_uiTree.GetNode("StoryTitleText")->GetText());
@@ -489,19 +491,19 @@ void LevelEditState::ExportLevel()
 	}
 
 	//Get Level Binary file name
-	_levelHeader._levelBinaryFilename = _currentLevelFileName;
+	_levelHeader._levelBinaryFilename = _currentLevelFileName + ".bin";
 
-	////Level Binary:
+	////Fill Level Binary:
 	LevelBinary levelBinary;
 
-	//Tilemap
+	//Tilemap size
 	Tilemap* tileMap = _objectHandler->GetTileMap();
 	levelBinary._tileMapSizeX = tileMap->GetWidth();
 	levelBinary._tileMapSizeZ = tileMap->GetHeight();
 
+	//Game objects
 	std::vector<std::vector<GameObject*>>* gameObjects = _objectHandler->GetGameObjects();
 	levelBinary._gameObjectData.resize(_objectHandler->GetObjectCount());
-
 	int gameObjectIndex = 0;
 	for (uint i = 0; i < gameObjects->size(); i++)
 	{
@@ -509,204 +511,78 @@ void LevelEditState::ExportLevel()
 		{
 			std::vector<int>* formattedGameObject = &levelBinary._gameObjectData[gameObjectIndex];
 			formattedGameObject->resize(6);
-			
-			int type, subType, modelReference, textureReference, posX, posY, rot;
 
-			type = gameObject->GetType();
-			subType = gameObject->GetSubType();
+			//Type
+			int type = formattedGameObject->at(0) = gameObject->GetType();
 
+			//Sub type 
+			int subType = formattedGameObject->at(1) = gameObject->GetSubType();
+
+			//Texture ID
 			Blueprint* blueprint = _objectHandler->GetBlueprintByType(type, subType);
-			
-			std::string test = gameObject->GetRenderObject()->_diffuseTexture->_name;
+			std::string textureName = gameObject->GetRenderObject()->_diffuseTexture->_name;
+			formattedGameObject->at(2) = 0;
+			bool foundTexture = false;
+			for (int i = 0; !foundTexture && i < blueprint->_textures.size(); i++)
+			{
+				if (blueprint->_textures[i] == textureName)
+				{
+					formattedGameObject->at(2) = i;
+					foundTexture = true;
+				}
+			}
+
+			//Position
+			AI::Vec2D position = gameObject->GetTilePosition();
+			formattedGameObject->at(3) = static_cast<int>(position._x);
+			formattedGameObject->at(4) = static_cast<int>(position._y);
+
+			//Rotation
+			DirectX::XMFLOAT3 rotation = gameObject->GetRotation();
+			double angleInRadians = std::atan2(rotation.z, rotation.x);
+			int angleInDegrees = static_cast<int>((angleInRadians / DirectX::XM_PI) * 180.0);
+			formattedGameObject->at(5) = angleInDegrees;
+
 			gameObjectIndex++;
 		}
 	}
 
-//	std::string levelName = "exportedLevel.lvl";
-//
-//	LevelFormat exportedLevel;
-//	
-//	Tilemap* tileMap = _objectHandler->GetTileMap();
-//	exportedLevel._tileMapWidth = tileMap->GetWidth();
-//	exportedLevel._tileMapHeight = tileMap->GetHeight();
-//
-//	std::vector<std::vector<GameObject*>>* gameObjects = _objectHandler->GetGameObjects();
-//	exportedLevel._gameObjectData.resize(_objectHandler->GetObjectCount());
-//
-//	float topLeftCenterAngle = DirectX::XM_PIDIV4;
-//	float topRightCenterAngle = DirectX::XM_PI - DirectX::XM_PIDIV4;
-//	float bottomRightCenterAngle = DirectX::XM_PI + DirectX::XM_PIDIV4;
-//	float bottomLeftCenterAngle = DirectX::XM_2PI - DirectX::XM_PIDIV4;
-//
-//	int gameObjectIndex = 0;
-//	for (uint i = 0; i < gameObjects->size(); i++)
-//	{
-//		for (GameObject* g : gameObjects->at(i))
-//		{
-//			exportedLevel._gameObjectData[gameObjectIndex].resize(7);
-//
-//			//position
-//			AI::Vec2D position = g->GetTilePosition();
-//			exportedLevel._gameObjectData[gameObjectIndex][0] = static_cast<int>(position._x);
-//			exportedLevel._gameObjectData[gameObjectIndex][1] = static_cast<int>(position._y);
-//
-//			//rotation
-//			float rotation = g->GetRotation().y;
-//			if (rotation >= topLeftCenterAngle && rotation < topRightCenterAngle)
-//			{
-//				exportedLevel._gameObjectData[gameObjectIndex][2] = 0;
-//			}
-//			else if (rotation >= topRightCenterAngle && rotation < bottomLeftCenterAngle)
-//			{
-//				exportedLevel._gameObjectData[gameObjectIndex][2] = 1;
-//			}
-//			else if (rotation >= bottomLeftCenterAngle && rotation < bottomRightCenterAngle)
-//			{
-//				exportedLevel._gameObjectData[gameObjectIndex][2] = 2;
-//			}
-//			else
-//			{
-//				exportedLevel._gameObjectData[gameObjectIndex][2] = 3;
-//			}
-//
-//			//type
-//			int type = g->GetType();
-//			exportedLevel._gameObjectData[gameObjectIndex][3] = type;
-//
-//			//subtype
-//			if (type == Type::TRAP)
-//			{
-//				exportedLevel._gameObjectData[gameObjectIndex][4] = static_cast<Trap*>(g)->GetTrapType();
-//			}
-//			else
-//			{
-//				exportedLevel._gameObjectData[gameObjectIndex][4] = 0;
-//			}
-//
-//			//model
-//			RenderObject* renderObject = g->GetRenderObject();
-//			std::string modelName = renderObject->_mesh->_name;
-//			exportedLevel._gameObjectData[gameObjectIndex][5] = GetVectorIndexOfString(&exportedLevel._modelReferences, modelName);
-//
-//			//texture
-//			std::string textureName = renderObject->_diffuseTexture->_name.c_str();
-//			exportedLevel._gameObjectData[gameObjectIndex][6] = GetVectorIndexOfString(&exportedLevel._textureReferences, textureName);
-//
-//			gameObjectIndex++;
-//		}
-//	}
-//
-//	std::string levelPath;
-//
-//#ifdef _DEBUG
-//	char userPath[MAX_PATH];
-//	SHGetFolderPathA(NULL, CSIDL_PROFILE, NULL, 0, userPath);
-//	
-//	levelPath = userPath;
-//	levelPath += "\\Google Drive\\Stort spelprojekt\\Assets\\Levels\\";
-//#else
-//	levelPath = LEVEL_FOLDER_PATH + "/";
-//#endif
-//	levelPath += levelName;
-//	
-//	std::ofstream out(levelPath);
-//	cereal::BinaryOutputArchive archive(out);
-//	//cereal::XMLOutputArchive archive(out);
-//	archive(exportedLevel);
+	//TODO: Fill _enemyWavesData
+	//TODO: Fill _enemySpawnMap
+
+	////Write the files
+
+	//Construct a suitable path for the level
+	std::string levelPath;
+#ifdef _DEBUG
+	char userPath[MAX_PATH];
+	SHGetFolderPathA(NULL, CSIDL_PROFILE, NULL, 0, userPath);
+
+	levelPath = userPath;
+	levelPath += "\\Google Drive\\Stort spelprojekt\\" + LEVEL_FOLDER_PATH;
+#else
+	levelPath = LEVEL_FOLDER_PATH;
+#endif
+	CreateDirectory(levelPath.c_str(), NULL);
+
+	//Make the individual file paths
+	std::string headerPath, binaryPath;
+	headerPath = binaryPath = levelPath + _currentLevelFileName;
+	headerPath += ".json";
+	binaryPath += ".bin";
+
+	std::ofstream outStream;
+
+	//Write the header
+	outStream.open(headerPath);
+	cereal::JSONOutputArchive jsonOut(outStream);
+	jsonOut.setNextName(_currentLevelFileName.c_str());
+	jsonOut(_levelHeader);
+	outStream.close();
+
+	//Write the binary
+	outStream.open(binaryPath);
+	cereal::BinaryOutputArchive binOut(outStream);
+	binOut(levelBinary);
+	outStream.close();
 }
-
-int LevelEditState::GetVectorIndexOfString(std::vector<std::string>* vec, std::string str)
-{
-	int referenceIndex = 0;
-	bool foundReference = false;
-	for (unsigned referenceIndex = 0; referenceIndex < vec->size() && !foundReference; referenceIndex++)
-	{
-		if (vec->at(referenceIndex) == str)
-		{
-			foundReference = true;
-		}
-	}
-	if (!foundReference)
-	{
-		vec->push_back(str);
-		referenceIndex = vec->size() - 1;
-	}
-	return referenceIndex;
-}
-
-//void LevelEditState::ExportLevel()
-//{
-//	LevelHeader levelHead;
-//	levelHead._version = 26;
-//	Tilemap* tileMap = _objectHandler->GetTileMap();
-//	levelHead._levelSizeY = tileMap->GetHeight();
-//	levelHead._levelSizeX = tileMap->GetWidth();
-//	levelHead._nrOfGameObjects = _objectHandler->GetObjectCount();
-//
-//	//Iterating through all game objects and saving only the relevant data for exporting.
-//	std::vector<MapData> mapData;
-//	mapData.reserve(levelHead._nrOfGameObjects);
-//	std::vector<std::vector<GameObject*>>* gameObjects = _objectHandler->GetGameObjects();
-//
-//	for (uint i = 0; i < gameObjects->size(); i++)
-//	{
-//		for (GameObject* g : gameObjects->at(i))
-//		{
-//			MapData mapD;
-//
-//			mapD._tileType = g->GetType();
-//			mapD._posX = g->GetPosition().x;
-//			mapD._posZ = g->GetPosition().z;
-//			mapD._rotY = g->GetRotation().y;
-//
-//			mapData.push_back(mapD);
-//		}
-//	}
-//
-
-// UNDERNEATH: Important pathfinding function
-
-//	char userPath[MAX_PATH];
-//	SHGetFolderPathA(NULL, CSIDL_PROFILE, NULL, 0, userPath);
-//
-//	string outputPath, copyPath;
-//	string levelName = "exportedLevel.lvl";
-//
-//	//Setting the output folder depending on if running debug or release mode.
-//
-//	outputPath = ("/Assets/Levels/");
-//
-//	outputPath += levelName;
-//	copyPath += levelName;
-//
-//	ofstream outputFile;
-//
-//	outputFile.open(outputPath, ios::out | ios::binary);
-//
-//	outputFile.write((const char*)&levelHead, sizeof(levelHead));
-//
-//	for (auto md : mapData)
-//	{
-//		outputFile.write((const char*)&md, sizeof(mapData));
-//	}
-//
-//	outputFile.close();
-//
-//	char buf[BUFSIZ];
-//	size_t size;
-//	FILE* source;
-//	FILE* dest;
-//	fopen_s(&source, outputPath.c_str(), "rb");
-//	fopen_s(&dest, copyPath.c_str(), "wb");
-//
-//	while (size = fread(buf, 1, BUFSIZ, source))
-//	{
-//		fwrite(buf, 1, size, dest);
-//	}
-//
-//	//fclose(source);
-//	//fclose(dest);
-//
-//	mapData.clear();
-//
-//}
