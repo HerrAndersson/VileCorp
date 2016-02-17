@@ -4,35 +4,6 @@
 
 namespace System
 {
-	/*
-	Text input using InputDevice
-	
-	Enter text input mode by calling SetIsTextInputMode. This method accepts a wstring for inital text,
-	and boolean flags for breaking out of text edit mode: pressing escape, carriage return or tab.
-	When in text edit mode, the normal input is blocked, except for the mouse buttons.
-	to break out of text input mode manually, call ResetTextInputMode.
-	Keep in mind the text input string is cleard by breaking out of text edit mode.
-
-	Example:
-
-		System::InputDevice* id = _controls->GetInputDevice();
-		if (id->GetIsTextInputMode())
-		{
-			_uiTree.GetNode("text")->SetText(id->GetCurrentText());
-		}
-		if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
-		{
-			System::MouseCoord coord = _controls->GetMouseCoord();
-			if (_uiTree.IsButtonColliding("text", coord._pos.x, coord._pos.y))
-			{
-				id->SetIsTextInputMode(_uiTree.GetNode("text")->GetText(), false, true);
-			}
-			else
-			{
-				id->ResetTextInputMode();
-			}
-		}
-	*/
 	InputDevice::InputDevice(HWND hwnd)
 	{
 		_hwnd = hwnd;
@@ -370,6 +341,11 @@ namespace System
 	MouseCoord InputDevice::GetMouseCoord()const
 	{
 		return _mouseCoord;
+	}
+
+	void InputDevice::SetCurrentText(std::wstring text)
+	{
+		_currentText = text;
 	}
 
 	std::wstring InputDevice::GetCurrentText() const

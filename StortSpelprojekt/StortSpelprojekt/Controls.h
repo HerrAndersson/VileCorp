@@ -57,7 +57,11 @@ namespace System
 		bool CursorLocked();
 		MouseCoord GetMouseCoord();
 
-		InputDevice* GetInputDevice() const;
+		void SetCurrentText(std::wstring text);
+		std::wstring GetCurrentText() const;
+		void SetIsTextInputMode(std::wstring currentText, bool breakOnEsc = false, bool breakOnCarriageReturn = false, bool breakOnTab = false);
+		void ResetTextInputMode();
+		bool GetIsTextInputMode() const;
 	};
 
 }
