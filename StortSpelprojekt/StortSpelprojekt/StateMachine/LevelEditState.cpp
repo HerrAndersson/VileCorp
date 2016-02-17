@@ -66,11 +66,6 @@ void LevelEditState::Update(float deltaTime)
 	_baseEdit->Update(deltaTime);
 	HandleInput();
 	HandleButtons();
-
-	if (_toPlace._blueprint != nullptr)
-	{
-		_baseEdit->DragAndPlace(_toPlace._blueprint, _toPlace._textureId);
-	}
 }
 
 void LevelEditState::OnStateEnter()
@@ -193,15 +188,8 @@ void LevelEditState::HandleButtons()
 						_toPlace._blueprint = currentBlueprintButton->GetBlueprint();
 						_toPlace._textureId = currentBlueprintButton->GetTextureId();
 
-						// Temporary fix
-						if (_baseEdit->IsSelection())
-						{
-							_baseEdit->CreateMarker(_toPlace._blueprint, _toPlace._textureId);
-						}
-						else
-						{
-							_baseEdit->DragAndPlace(_toPlace._blueprint, _toPlace._textureId);
-						}
+
+						_baseEdit->HandleBlueprint(&_toPlace);
 						break;
 					}
 				}

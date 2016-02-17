@@ -178,7 +178,7 @@ void PlacementState::HandleButtons()
 
 		if (_playerProfile[_currentPlayer]._gold >= _toPlace._goldCost)
 		{
-			_baseEdit->CreateMarker(_toPlace._blueprint, 666);
+			//_baseEdit->HandleBlueprint(&_toPlace);
 			_playerProfile[_currentPlayer]._gold -= _toPlace._goldCost;
 			_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_playerProfile[_currentPlayer]._gold));
 			_toPlace._markerID = _baseEdit->GetMarkedObject()->GetID();

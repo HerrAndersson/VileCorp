@@ -27,6 +27,7 @@ BaseEdit::BaseEdit(ObjectHandler* objectHandler, System::Controls* controls, Pic
 	_isPlace = false;
 	_modeLock = false;
 
+	_sB = nullptr;
 	_marker._g = nullptr;
 	_baseMarker._g = nullptr;
 	_tileMap = _objectHandler->GetTileMap();
@@ -41,18 +42,18 @@ BaseEdit::~BaseEdit()
 
 // Marker functions
 
-void BaseEdit::CreateMarkers(Blueprint* blueprint, int textureId)
+void BaseEdit::CreateMarkers()
 {
 	_modeLock = true;
 
 	// Create ghost/blueprint for _baseMarker
-	CreateMarker(blueprint, textureId);
+	CreateMarker();
 	MarkerMoveEvent();
 	_baseMarker = _marker;
 	_baseMarker._origPos = _baseMarker._g->GetTilePosition();
 
 	// Create ghost/blueprint for _marker
-	CreateMarker(blueprint, textureId);
+	CreateMarker();
 }
 
 void BaseEdit::ReleaseMarkers()
@@ -64,13 +65,13 @@ void BaseEdit::ReleaseMarkers()
 	_baseMarker._g = nullptr;
 }
 
-void BaseEdit::CreateMarker(Blueprint* blueprint, int textureId)
+void BaseEdit::CreateMarker()
 {
 	AI::Vec2D pickedTile = _pickingDevice->PickTile(_controls->GetMouseCoord()._pos);
 	XMFLOAT3 pos = XMFLOAT3(pickedTile._x, 0, pickedTile._y);
 
-	_objectHandler->Add(blueprint, textureId, pos, XMFLOAT3(0.0f, 0.0f, 0.0f), false);
-	_marker._g = _objectHandler->GetGameObjects()->at(blueprint->_type).back();
+	_objectHandler->Add(_sB->_blueprint, _sB->_textureId, pos, XMFLOAT3(0.0f, 0.0f, 0.0f), false);
+	_marker._g = _objectHandler->GetGameObjects()->at(_sB->_blueprint->_type).back();
 	_marker._created = false;
 	_isPlace = true;
 }
@@ -223,6 +224,11 @@ void BaseEdit::HandleMouseInput()
 		{
 			DropEvent();
 		}
+	}
+
+	if (_sB != nullptr)
+	{
+		DragAndPlace(_sB);
 	}
 }
 
@@ -487,7 +493,7 @@ bool BaseEdit::CheckValidity(AI::Vec2D tile, Type type)
 	return valid;
 }
 
-void BaseEdit::DragAndPlace(Blueprint* blueprint, int textureId)
+void BaseEdit::DragAndPlace(SpecificBlueprint* sB)
 {
 	if (_isDragAndPlaceMode)
 	{
@@ -495,14 +501,14 @@ void BaseEdit::DragAndPlace(Blueprint* blueprint, int textureId)
 		{
 			if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
 			{
-				CreateMarkers(blueprint, textureId);
+				CreateMarkers();
 				_isPlace = true;
 			}
 
 			// Not really diselect but activates remove mode (temp)
 			if (_controls->IsFunctionKeyDown("MOUSE:DESELECT"))
 			{
-				CreateMarkers(blueprint, textureId);
+				CreateMarkers();
 				_isPlace = false;
 			}
 		}
@@ -554,12 +560,12 @@ void BaseEdit::DragAndPlace(Blueprint* blueprint, int textureId)
 				{
 					for (int y = minY; y <= maxY; y++)
 					{
-						objectOnTile = _tileMap->GetObjectOnTile(x, y, blueprint->_type);
+						objectOnTile = _tileMap->GetObjectOnTile(x, y, _sB->_blueprint->_type);
 
-						if (CheckValidity(AI::Vec2D(x, y), blueprint->_type))
+						if (CheckValidity(AI::Vec2D(x, y), _sB->_blueprint->_type))
 						{
 							// Add to valid place
-							_objectHandler->Add(blueprint, textureId, XMFLOAT3(x, 0, y), XMFLOAT3(0.0f, 0.0f, 0.0f), true);
+							_objectHandler->Add(_sB->_blueprint, _sB->_textureId, XMFLOAT3(x, 0, y), XMFLOAT3(0.0f, 0.0f, 0.0f), true);
 						}
 					}
 				}
@@ -571,9 +577,9 @@ void BaseEdit::DragAndPlace(Blueprint* blueprint, int textureId)
 					for (int y = minY; y <= maxY; y++)
 					{
 						// TRAP/LOOT/SPAWN OBS!
-						objectOnTile = _tileMap->GetObjectOnTile(x, y, blueprint->_type);
+						objectOnTile = _tileMap->GetObjectOnTile(x, y, _sB->_blueprint->_type);
 
-						if (objectOnTile != nullptr && blueprint->_type == objectOnTile->GetType())
+						if (objectOnTile != nullptr && _sB->_blueprint->_type == objectOnTile->GetType())
 						{
 							// Remove
 							_objectHandler->Remove(objectOnTile);
@@ -582,6 +588,19 @@ void BaseEdit::DragAndPlace(Blueprint* blueprint, int textureId)
 				}
 			}
 		}
+	}
+}
+
+void BaseEdit::HandleBlueprint(SpecificBlueprint* sB)
+{
+	_sB = sB;
+	if (_isSelectionMode)
+	{
+		CreateMarker();
+	}
+	else
+	{
+
 	}
 }
 

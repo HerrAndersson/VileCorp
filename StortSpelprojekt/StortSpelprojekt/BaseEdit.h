@@ -10,6 +10,17 @@
 #include "../PickingDevice.h"
 #include "../System/Camera.h"
 
+struct SpecificBlueprint
+{
+	SpecificBlueprint()
+	{
+		_blueprint = nullptr;
+		_textureId = -1;
+	}
+	Blueprint* _blueprint;
+	int _textureId;
+};
+
 class BaseEdit
 {
 private:
@@ -18,6 +29,8 @@ private:
 	Tilemap*				_tileMap;
 	ObjectHandler*			_objectHandler;
 	PickingDevice*			_pickingDevice;
+
+	SpecificBlueprint* _sB;
 
 	struct Marker
 	{
@@ -46,6 +59,9 @@ private:
 	void DragEvent(Type type);
 	void DropEvent();
 
+	// Should be reworked 
+	void DragAndPlace(SpecificBlueprint* sB);
+
 	void HandleMouseInput();
 	void HandleKeyInput(double deltaTime);
 
@@ -56,19 +72,19 @@ private:
 
 	bool CheckValidity(AI::Vec2D tile, Type type);
 	// Used for Drag&Place
-	void CreateMarkers(Blueprint* blueprint, int textureId);
+	void CreateMarker();
+	void CreateMarkers();
 	void ReleaseMarkers();
 
 public:
+
 	BaseEdit(ObjectHandler* objectHandler, System::Controls* controls, PickingDevice* pickingDevice, System::Camera* camera, bool extendedMode);
 	~BaseEdit();
 
-	void CreateMarker(Blueprint* blueprint, int textureId);
 	GameObject* GetMarkedObject();
 	bool DeleteMarkedObject();
 
-	// Should be reworked 
-	void DragAndPlace(Blueprint* blueprint, int textureId);
+	void HandleBlueprint(SpecificBlueprint* sB);
 
 	void ChangePlaceState();
 	bool IsSelection() const;
