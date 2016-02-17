@@ -9,7 +9,7 @@ Enemy::Enemy()
 Enemy::Enemy(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject * renderObject, const Tilemap * tileMap)
 	: Unit(ID, position, rotation, tilePosition, type, renderObject, tileMap)
 {
-	SetVisibility(true);
+	SetVisibility(false);
 	_visibilityTimer = TIME_TO_HIDE;
 
 	_detectionSkill = 50;
@@ -164,7 +164,7 @@ void Enemy::Update(float deltaTime)
 	_visibilityTimer--;
 	if (_visibilityTimer <= 0)
 	{
-		_visible = true;
+		_visible = false;
 		_visibilityTimer = TIME_TO_HIDE;
 		if (_heldObject != nullptr)
 		{

@@ -374,7 +374,7 @@ void Unit::Update(float deltaTime)
 	{
 		UseTrap();
 	}
-	else if(_stop == false)
+	else
 	{
 		if (_waiting > 0)
 		{
