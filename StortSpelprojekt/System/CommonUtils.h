@@ -20,3 +20,9 @@ struct Blueprint
 	int _subType;
 	std::vector<std::string> _textures, _thumbnails;
 };
+
+inline std::string WStringToString(std::wstring ws)
+{
+	std::string s(ws.begin(), ws.end());
+	return s;
+}

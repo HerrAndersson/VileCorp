@@ -67,7 +67,6 @@ void LevelEditState::Update(float deltaTime)
 	HandleInput();
 	HandleButtons();
 
-
 	_baseEdit->DragAndDrop();
 	_baseEdit->DragAndPlace(_toPlace._blueprint, _toPlace._textureId);
 }
@@ -84,6 +83,10 @@ void LevelEditState::OnStateEnter()
 	_uiTree.GetNode("NoPlacementButton")->SetHidden(true);
 	_uiTree.GetNode("NewMapConfirmation")->SetHidden(true);
 	_uiTree.GetNode("listbuttons")->SetHidden(true);
+
+	_levelHeader = LevelHeader();
+	_currentLevelFileName = "";
+	_isNewLevel = true;
 
 	_objectHandler->EnlargeTilemap(50);
 
@@ -122,6 +125,11 @@ void LevelEditState::HandleInput()
 	if (_controls->IsFunctionKeyDown("DEBUG:EXPORT_LEVEL"))
 	{
 		ExportLevel();
+	}
+
+	if (_controls->IsFunctionKeyDown("DEBUG:RELOAD_GUI"))
+	{
+		_uiTree.ReloadTree("../../../../StortSpelprojekt/Assets/gui.json", "LEVELEDIT");
 	}
 }
 
@@ -337,7 +345,7 @@ void LevelEditState::HandleButtons()
 			//Move Button
 			GUI::Node* node = _uiTree.GetNode("ObjectiveOff");
 			XMFLOAT2 objectiveOffPosition = node->GetLocalPosition();
-
+			
 			GUI::Node* node2 = _uiTree.GetNode("ObjectiveOn");
 			XMFLOAT2 objectiveOnPosition = node2->GetLocalPosition();
 
@@ -348,13 +356,13 @@ void LevelEditState::HandleButtons()
 			{
 				//Survival
 				_uiTree.GetNode("MapSurviveSelected")->SetHidden(false);
-				//TODO: Function for mission Julia and Enbom
+				_levelHeader._gameMode = GameModes::SURVIVAL;
 			}
 			else
 			{
 				//Kill
 				_uiTree.GetNode("MapSurviveSelected")->SetHidden(true);
-				//TODO: Function for mission Julia and Enbom
+				_levelHeader._gameMode = GameModes::KILL_THEM_ALL;
 			}
 		}
 		else if (_uiTree.IsButtonColliding("ExportMap", coord._pos.x, coord._pos.y))
@@ -377,7 +385,6 @@ void LevelEditState::HandleButtons()
 		else if (_uiTree.IsButtonColliding("NewNo", coord._pos.x, coord._pos.y) && _uiTree.GetNode("NewMapConfirmation")->GetHidden() != true)
 		{
 			_uiTree.GetNode("NewMapConfirmation")->SetHidden(true);
-			//TODO: NewMap GUI stuff and functions (Cancel new Map) Julia and Enbom
 		}
 	}
 
@@ -457,6 +464,64 @@ void LevelEditState::HandleButtons()
 
 void LevelEditState::ExportLevel()
 {
+	////Level Header:
+
+	//Getting Story Information
+	_levelHeader._storyTitle = WStringToString(_uiTree.GetNode("StoryTitleText")->GetText());
+	_levelHeader._storyBody = WStringToString(_uiTree.GetNode("StoryText")->GetText());
+
+	//Get Budget Information
+	std::wstringstream wss = std::wstringstream();
+	wss << _uiTree.GetNode("BudgetBoxText")->GetText();
+	wss >> _levelHeader._budget;
+
+	//Survival time 
+	if (_levelHeader._gameMode == GameModes::SURVIVAL)
+	{
+		int survivalMinutes = 0;
+		int survivalSeconds = 0;
+		wss << _uiTree.GetNode("MinuteText")->GetText();
+		wss >> survivalMinutes;
+		wss << _uiTree.GetNode("SecondBox")->GetText();
+		wss >> survivalSeconds;
+
+		_levelHeader._surviveForSeconds = (survivalMinutes * 60) + survivalSeconds;
+	}
+
+	//Get Level Binary file name
+	_levelHeader._levelBinaryFilename = _currentLevelFileName;
+
+	////Level Binary:
+	LevelBinary levelBinary;
+
+	//Tilemap
+	Tilemap* tileMap = _objectHandler->GetTileMap();
+	levelBinary._tileMapSizeX = tileMap->GetWidth();
+	levelBinary._tileMapSizeZ = tileMap->GetHeight();
+
+	std::vector<std::vector<GameObject*>>* gameObjects = _objectHandler->GetGameObjects();
+	levelBinary._gameObjectData.resize(_objectHandler->GetObjectCount());
+
+	int gameObjectIndex = 0;
+	for (uint i = 0; i < gameObjects->size(); i++)
+	{
+		for (GameObject* gameObject : gameObjects->at(i))
+		{
+			std::vector<int>* formattedGameObject = &levelBinary._gameObjectData[gameObjectIndex];
+			formattedGameObject->resize(6);
+			
+			int type, subType, modelReference, textureReference, posX, posY, rot;
+
+			type = gameObject->GetType();
+			subType = gameObject->GetSubType();
+
+			Blueprint* blueprint = _objectHandler->GetBlueprintByType(type, subType);
+			
+			std::string test = gameObject->GetRenderObject()->_diffuseTexture->_name;
+			gameObjectIndex++;
+		}
+	}
+
 //	std::string levelName = "exportedLevel.lvl";
 //
 //	LevelFormat exportedLevel;

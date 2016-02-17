@@ -7,6 +7,8 @@
 #include <cereal\types\vector.hpp>
 #include <cereal\types\string.hpp>
 
+enum GameModes { KILL_THEM_ALL, SURVIVAL };
+
 struct LevelHeader
 {
 	std::string _storyTitle = "";
@@ -23,9 +25,9 @@ struct LevelHeader
 			CEREAL_NVP(_storyTitle),
 			CEREAL_NVP(_storyBody),
 			CEREAL_NVP(_budget),
-			CEREAL_NVP(_storyBody),
 			CEREAL_NVP(_gameMode),
 			CEREAL_NVP(_surviveForSeconds),
+			CEREAL_NVP(_levelBinaryFilename)
 			);
 	}
 };

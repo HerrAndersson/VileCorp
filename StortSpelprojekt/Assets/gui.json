@@ -569,10 +569,11 @@
 				"scale": [0.09, 0.026],
 				"texture": "../Menues/LevelEdit/GUI/leveledit4-newloadsave-button.png",
 			
+			
 				"ExportText":
 				{
-					"position" : [0.935, -0.978],
-					"scale": [1.0, 1.0],
+					"position" : [0.034, -0.078],
+					"scale": [0.1, 0.1],
 					"text": "Save/Export Map",
 					"color": "FF000000",
 					"fontsize" : 18.0
@@ -586,8 +587,8 @@
 			
 				"ImportText":
 				{
-					"position" : [0.933, -0.978],
-					"scale": [1.0, 1.0],
+					"position" : [0.034, -0.078],
+					"scale": [0.1, 0.1],
 					"text": "Load/Import Map",
 					"color": "FF000000",
 					"fontsize" : 18.0
@@ -601,8 +602,8 @@
 			
 				"NewText":
 				{
-					"position" : [0.964, -0.978],
-					"scale": [1.0, 1.0],
+					"position" : [0.06, -0.078],
+					"scale": [0.1, 0.1],
 					"text": "New Map",
 					"color": "FF000000",
 					"fontsize" : 18.0
@@ -826,9 +827,9 @@
 				
 					"MapObjectiveText":
 					{
-						"position" : [0.882, -0.989],
-						"scale": [1.0, 1.0],
-						"text": "Objectives:              Kill them all\n\n                                  Survive",
+						"position" : [0.0, -0.05],
+						"scale": [0.12, 0.06],
+						"text": "Objectives:              Kill them all\n\n                                  Survival",
 						"color": "FF000000",
 						"fontsize" : 18.0
 					},
@@ -848,8 +849,8 @@
 					{
 						"MapSurviveText":
 						{
-							"position" : [0.882, -1.16],
-							"scale": [1.0, 1.0],
+							"position" : [-0.015, -0.18],
+							"scale": [0.1, 0.02],
 							"text": "Minutes:              Seconds:",
 							"color": "FF000000",
 							"fontsize" : 18.0
@@ -860,7 +861,7 @@
 							"scale": [0.025, 0.04],
 							"texture": "../Menues/LevelEdit/GUI/button.png",
 							
-							"tileNumberX":
+							"MinuteText":
 							{
 								"position": [0.0, 0.0],
 								"scale": [0.02, 0.02],
@@ -876,7 +877,7 @@
 							"scale": [0.025, 0.04],
 							"texture": "../Menues/LevelEdit/GUI/button.png",
 							
-							"tileNumberX":
+							"SecondText":
 							{
 								"position": [0.0, 0.0],
 								"scale": [0.02, 0.02],
