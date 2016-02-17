@@ -4,18 +4,19 @@
 namespace Renderer
 {
 
-	ParticleHandler::ParticleHandler(ID3D11Device* device, ID3D11DeviceContext* deviceContext, ParticleTextures textures)
+	ParticleHandler::ParticleHandler(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const ParticleTextures& textures, const ParticleModifierOffsets& modifiers)
 	{
 		_device = device;
 		_deviceContext = deviceContext;
 		_emitterCount = 0;
 		_textures = textures;
+		_modifiers = modifiers;
 
 		_queue.reserve(5);
 		_particleEmitters.reserve(5);
 		for (int i = 0; i < _emitterCount; i++)
 		{
-			_particleEmitters.push_back(new ParticleEmitter(device, deviceContext));
+			_particleEmitters.push_back(new ParticleEmitter(device, deviceContext, &_modifiers));
 		}
 
 		_requestQueue = new ParticleRequestQueue(&_queue);
@@ -73,7 +74,7 @@ namespace Renderer
 
 		if (!found)
 		{
-			ParticleEmitter* particleEmitter = new ParticleEmitter(_device, _deviceContext, type, subType, position, direction, particleCount, timeLimit, isActive);
+			ParticleEmitter* particleEmitter = new ParticleEmitter(_device, _deviceContext, type, subType, position, direction, particleCount, timeLimit, isActive, &_modifiers);
 			_particleEmitters.push_back(particleEmitter);
 			_emitterCount++;
 		}
@@ -96,19 +97,19 @@ namespace Renderer
 
 		switch (subType)
 		{
-			case ParticleSubType::BLOOD:
+			case ParticleSubType::BLOOD_SUBTYPE:
 			{
 				count = PARTICLE_TEXTURE_COUNT;
 				textures = _textures._bloodTextures;
 				break;
 			}
-			case ParticleSubType::WATER:
+			case ParticleSubType::WATER_SUBTYPE:
 			{
 				count = PARTICLE_TEXTURE_COUNT;
 				textures = _textures._waterTextures;
 				break;
 			}
-			case ParticleSubType::SPARK:
+			case ParticleSubType::SPARK_SUBTYPE:
 			{
 				count = PARTICLE_TEXTURE_COUNT;
 				textures = _textures._sparkTextures;

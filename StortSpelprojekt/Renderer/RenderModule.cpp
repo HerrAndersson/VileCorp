@@ -440,12 +440,12 @@ namespace Renderer
 			_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::BACK);
 			_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::DISABLE);
 			_d3d->SetAntiAliasingState();
+
 			_shaderHandler->SetFXAAPassShaders(deviceContext);
 			break;
 		}
 		case SHADOW_GENERATION:
 		{
-			//Topology has to be set here because GRID_STAGE, which is the previous stage, will change to LINELIST
 			deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 			_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::DISABLE);
 			_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::FRONT);
@@ -457,6 +457,7 @@ namespace Renderer
 		}
 		case LIGHT_APPLICATION_SPOTLIGHT:
 		{
+			deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 			_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::FRONT);
 			_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::ENABLE);
 
@@ -470,10 +471,10 @@ namespace Renderer
 		}
 		case LIGHT_APPLICATION_POINTLIGHT:
 		{
+			deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 			_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::ENABLE);
 			_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::FRONT);
 
-			//TODO: Should activate the pointlight shaders!
 			int nrOfSRVs = _d3d->SetLightStage();
 
 			_shaderHandler->SetPointlightApplicationShaders(deviceContext);
@@ -491,17 +492,21 @@ namespace Renderer
 			_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::ENABLE);
 			_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::BACK);
 			deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
 			_d3d->SetHUDStage();
 			_shaderHandler->SetHUDPassShaders(_d3d->GetDeviceContext());
+
 			break;
 		}
 		case BILLBOARDING_STAGE:
 		{
 			//Since this is part of the geometry pass, there is no need to set render targets etc.
-			_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::DISABLE);
+			_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::ENABLE);
 			_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::NONE);
 			deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+
 			_shaderHandler->SetBillboardingStageShaders(_d3d->GetDeviceContext());
+
 			break;
 		}
 		default:

@@ -1,17 +1,22 @@
 #pragma once
 #include <DirectXMath.h>
 #include <d3d11.h>
+#include <vector>
+#include <string>
+#include <cereal\archives\json.hpp>
+#include <cereal\types\string.hpp>
+#include <cereal\types\vector.hpp>
 
 //Determines how it moves
 enum ParticleType { SPLASH, SMOKE, ELECTRICITY, FIRE };
 
 //Determines how it looks
-enum ParticleSubType {BLOOD, WATER, SPARK, SMOKE_SUBTYPE, FIRE_SUBTYPE}; 
+enum ParticleSubType { BLOOD_SUBTYPE, WATER_SUBTYPE, SPARK_SUBTYPE, SMOKE_SUBTYPE, FIRE_SUBTYPE }; 
 
 struct ParticleRequestMessage
 {
 	ParticleType _type = SPLASH;
-	ParticleSubType _subType = BLOOD;
+	ParticleSubType _subType = BLOOD_SUBTYPE;
 	DirectX::XMFLOAT3 _position = DirectX::XMFLOAT3(0, 0, 0);
 	DirectX::XMFLOAT3 _direction = DirectX::XMFLOAT3(0, 1, 0);
 	DirectX::XMFLOAT3 _target = DirectX::XMFLOAT3(0, 0, 0); //Used for Electricity
@@ -26,7 +31,7 @@ struct ParticleRequestMessage
 	ParticleRequestMessage(ParticleType type, ParticleSubType subType, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& direction, float timeLimit, int particleCount, bool isActive, const DirectX::XMFLOAT3& target = DirectX::XMFLOAT3(0, 0, 0))
 	{
 		_type = type;
-		_subType = _subType;
+		_subType = subType;
 		_position = position;
 		_direction = direction;
 		_timeLimit = timeLimit;
@@ -58,5 +63,56 @@ struct ParticleTextures
 			_sparkTextures[i] = nullptr;
 			_fireTextures[i] = nullptr;
 		}
+	}
+};
+
+/* Holds offsets in position and direction for the different types.
+
+_splashPositionOffset holds the +- offset of the x-position of the particles of type Splash. 
+Example: If the emitter-position is at (2, 1, 3), the particle position.x can be in the range of 1.85 - 2.15, etc 
+
+The base direction can be rotated by the direction offset values, randomized in the range [0,offsetValue]. 
+For example, if the base direction is (0, 1, 0), and the offset is pi/4 (45 degrees), the final direction might be (0, 0.5f, 0.5f)
+*/
+struct ParticleModifierOffsets
+{
+	float _splashPositionOffset = 0.15f;
+	float _smokePositionOffset = 0.25f;
+	float _firePositionOffset = 0.35f;
+
+	float _splashDirectionOffset = DirectX::XM_PI / 6.0f; //30 degrees
+	float _smokeDirectionOffset = DirectX::XM_PI / 12.0f; //15 degrees
+	float _fireDirectionOffset = DirectX::XM_PI / 18.0f;  //10 degrees
+
+	//TODO: Read these values aswell
+	DirectX::XMFLOAT2 _splashSpeedRange = DirectX::XMFLOAT2(0.75f, 1.0f);
+	DirectX::XMFLOAT2 _smokeSpeedRange = DirectX::XMFLOAT2(0.2f, 0.5f);
+	DirectX::XMFLOAT2 _fireSpeedRange = DirectX::XMFLOAT2(0.5f, 0.7f);
+};
+
+struct ParticleSystemData
+{
+	float _splashPositionOffset = 0.15f;
+	float _smokePositionOffset = 0.25f;
+	float _firePositionOffset = 0.35f;
+
+	float _splashDirectionOffset = DirectX::XM_PI / 6.0f;
+	float _smokeDirectionOffset = DirectX::XM_PI / 12.0f;
+	float _fireDirectionOffset = DirectX::XM_PI / 18.0f;
+
+	std::vector<std::vector<std::string>> _subtypeTexturePaths;
+
+	template<class A>
+	void serialize(A& a)
+	{
+		a(
+			(CEREAL_NVP(_splashPositionOffset)),
+			(CEREAL_NVP(_smokePositionOffset)),
+			(CEREAL_NVP(_firePositionOffset)),
+			(CEREAL_NVP(_splashDirectionOffset)),
+			(CEREAL_NVP(_smokeDirectionOffset)),
+			(CEREAL_NVP(_fireDirectionOffset)),
+			(CEREAL_NVP(_subtypeTexturePaths))
+		);
 	}
 };

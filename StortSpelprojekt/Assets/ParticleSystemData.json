@@ -1,0 +1,42 @@
+{
+  "data": {
+    "_splashPositionOffset": 0.15000000596046448,
+    "_smokePositionOffset": 0.25,
+    "_firePositionOffset": 0.34999999403953552,
+    "_splashDirectionOffset": 0.52359879016876221,
+    "_smokeDirectionOffset": 0.2617993950843811,
+    "_fireDirectionOffset": 0.1745329350233078,
+    "_subtypeTexturePaths": [
+      [
+        "Particles/blood1.png",
+        "Particles/blood2.png",
+        "Particles/blood3.png",
+        "Particles/blood4.png"
+      ],
+      [
+        "Particles/flash1.png",
+        "Particles/flash2.png",
+        "Particles/flash3.png",
+        "Particles/flash4.png"
+      ],
+      [
+        "Particles/blood1.png",
+        "Particles/blood2.png",
+        "Particles/blood3.png",
+        "Particles/blood4.png"
+      ],
+      [
+        "Particles/smoke1.png",
+        "Particles/smoke2.png",
+        "Particles/smoke3.png",
+        "Particles/smoke4.png"
+      ],
+      [
+        "Particles/fire1.png",
+        "Particles/fire2.png",
+        "Particles/fire1.png",
+        "Particles/fire2.png"
+      ]
+    ]
+  }
+}

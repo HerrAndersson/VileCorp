@@ -31,24 +31,29 @@ PS_OUT main(GS_OUT input)
 
 	if (texNum < 1)
 	{
-		color = float4(textures[0].Sample(samplerWrap, input.tex).xyz, 1.0f);
+		color = textures[0].Sample(samplerWrap, input.tex);
 	}
 	else if (texNum < 2)
 	{
-		color = float4(textures[1].Sample(samplerWrap, input.tex).xyz, 1.0f);
+		color = textures[1].Sample(samplerWrap, input.tex);
 	}
 	else if (texNum < 3)
 	{
-		color = float4(textures[2].Sample(samplerWrap, input.tex).xyz, 1.0f);
+		color = textures[2].Sample(samplerWrap, input.tex);
 	}
 	else if (texNum < 4)
 	{
-		color = float4(textures[3].Sample(samplerWrap, input.tex).xyz, 1.0f);
+		color = textures[3].Sample(samplerWrap, input.tex);
+	}
+
+	if (color.a < 1.0f)
+	{
+		discard;
 	}
 
 	output.diffuse = color;
 	output.normal = float4(input.normal, 1.0f);
-	output.backbuffercopy = float4(output.diffuse.xyz * input.ambientLight, 1.0f);
+	output.backbuffercopy = color;
 
 	return output;
 }

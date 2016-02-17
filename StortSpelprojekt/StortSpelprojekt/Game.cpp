@@ -38,7 +38,11 @@ Game::Game(HINSTANCE hInstance, int nCmdShow):
 	_soundModule.AddSound("Assets/Sounds/theme.wav", 0.15f, 1.0f, true, true);
 	_soundModule.Play("Assets/Sounds/theme.wav");
 
-	_particleHandler = new Renderer::ParticleHandler(_renderModule->GetDevice(), _renderModule->GetDeviceContext(), LoadParticlesTextureData());
+	ParticleTextures particleTextures;
+	ParticleModifierOffsets modifiers;
+	LoadParticleSystemData(particleTextures, modifiers);
+
+	_particleHandler = new Renderer::ParticleHandler(_renderModule->GetDevice(), _renderModule->GetDeviceContext(), particleTextures, modifiers);
 }
 
 Game::~Game()
@@ -63,20 +67,53 @@ void Game::ResizeResources(System::Settings* settings)
 	_renderModule->ResizeResources(_window->GetHWND(), settings);
 }
 
-ParticleTextures Game::LoadParticlesTextureData()
+void Game::LoadParticleSystemData(ParticleTextures& particleTextures, ParticleModifierOffsets& modifiers)
 {
-	ParticleTextures particleTextures;
+	ParticleSystemData data;
+	try
+	{
+		ifstream in("Assets/ParticleSystemData.json");
+		cereal::JSONInputArchive inArchive(in);
+		inArchive(data);
+		in.close();
+	}
+	catch (...)
+	{
+		throw std::runtime_error("Game::LoadParticleSystemData: Failed to load file");
+	}
 
-	particleTextures._bloodTextures[0] = _assetManager->GetTexture("diamond7.png");
-	particleTextures._bloodTextures[1] = _assetManager->GetTexture("diamond2.png");
-	particleTextures._bloodTextures[2] = _assetManager->GetTexture("diamond5.png");
-	particleTextures._bloodTextures[3] = _assetManager->GetTexture("diamond6.png");
+	for (unsigned int i = 0; i < data._subtypeTexturePaths.at(ParticleSubType::BLOOD_SUBTYPE).size(); i++)
+	{
+		particleTextures._bloodTextures[i] = _assetManager->GetTexture(data._subtypeTexturePaths.at(ParticleSubType::BLOOD_SUBTYPE).at(i));
+	}
 
-	//particleTextures._waterTextures = 
+	for (unsigned int i = 0; i < data._subtypeTexturePaths.at(ParticleSubType::WATER_SUBTYPE).size(); i++)
+	{
+		particleTextures._waterTextures[i] = _assetManager->GetTexture(data._subtypeTexturePaths.at(ParticleSubType::WATER_SUBTYPE).at(i));
+	}
 
+	for (unsigned int i = 0; i < data._subtypeTexturePaths.at(ParticleSubType::SPARK_SUBTYPE).size(); i++)
+	{
+		particleTextures._sparkTextures[i] = _assetManager->GetTexture(data._subtypeTexturePaths.at(ParticleSubType::SPARK_SUBTYPE).at(i));
+	}
 
+	for (unsigned int i = 0; i < data._subtypeTexturePaths.at(ParticleSubType::SMOKE_SUBTYPE).size(); i++)
+	{
+		particleTextures._smokeTextures[i] = _assetManager->GetTexture(data._subtypeTexturePaths.at(ParticleSubType::SMOKE_SUBTYPE).at(i));
+	}
 
-	return particleTextures;
+	for (unsigned int i = 0; i < data._subtypeTexturePaths.at(ParticleSubType::FIRE_SUBTYPE).size(); i++)
+	{
+		particleTextures._fireTextures[i] = _assetManager->GetTexture(data._subtypeTexturePaths.at(ParticleSubType::FIRE_SUBTYPE).at(i));
+	}
+
+	modifiers._splashPositionOffset = data._splashPositionOffset;
+	modifiers._smokePositionOffset = data._smokePositionOffset;
+	modifiers._firePositionOffset = data._firePositionOffset;
+
+	modifiers._splashDirectionOffset = data._splashDirectionOffset;
+	modifiers._smokeDirectionOffset = data._smokeDirectionOffset;
+	modifiers._fireDirectionOffset = data._fireDirectionOffset;
 }
 
 bool Game::Update(double deltaTime)
@@ -104,40 +141,56 @@ bool Game::Update(double deltaTime)
 
 	if (_controls->IsFunctionKeyDown("DEBUG:REQUEST_PARTICLE"))
 	{
-		XMFLOAT3 pos = XMFLOAT3(16, 1.0f, 4);
+		XMFLOAT3 pos = XMFLOAT3(12, 1.0f, 2);
 		XMFLOAT3 dir = XMFLOAT3(0, 1, 0);
 
-		ParticleRequestMessage msg = ParticleRequestMessage(ParticleType::SPLASH, ParticleSubType::BLOOD, pos, dir, 1000.0f, 15, true);
+		ParticleRequestMessage msg = ParticleRequestMessage(ParticleType::SPLASH, ParticleSubType::BLOOD_SUBTYPE, pos, dir, 1000.0f, 5, true);
 		_particleHandler->GetParticleRequestQueue()->Insert(msg);
+
+		pos = XMFLOAT3(11, 1.0f, 2);
+		dir = XMFLOAT3(0, 1, 0);
+		msg = ParticleRequestMessage(ParticleType::SMOKE, ParticleSubType::SMOKE_SUBTYPE, pos, dir, 15000.0f, 5, true);
+		_particleHandler->GetParticleRequestQueue()->Insert(msg);
+
+		pos = XMFLOAT3(10, 1.0f, 2);
+		dir = XMFLOAT3(0, 1, 0);
+		msg = ParticleRequestMessage(ParticleType::FIRE, ParticleSubType::FIRE_SUBTYPE, pos, dir, 1000.0f, 5, true);
+		_particleHandler->GetParticleRequestQueue()->Insert(msg);
+
+		pos = XMFLOAT3(9, 1.0f, 2);
+		dir = XMFLOAT3(0, 1, 0);
+		msg = ParticleRequestMessage(ParticleType::ELECTRICITY, ParticleSubType::WATER_SUBTYPE, pos, dir, 1000.0f, 1, true, XMFLOAT3(6.0f, 1.0f, 2.0f));
+		_particleHandler->GetParticleRequestQueue()->Insert(msg);
+
 	}
 
 	_particleHandler->Update(deltaTime);
 
 
 
-/*
-	{
-		_enemies = _objectHandler->GetAllByType(ENEMY);
-		_loot = _objectHandler->GetAllByType(LOOT);
-
-		if (_enemies.size() > 0)
+	/*
 		{
-			_enemiesHasSpawned = true;
-		}
+			_enemies = _objectHandler->GetAllByType(ENEMY);
+			_loot = _objectHandler->GetAllByType(LOOT);
 
-		if (_enemies.size() == 0 && _enemiesHasSpawned == true)
-		{
-			if (_loot.size() >= 1)
+			if (_enemies.size() > 0)
 			{
-				//TODO: Add something to notify the player that they've beat the level
+				_enemiesHasSpawned = true;
 			}
-			else
+
+			if (_enemies.size() == 0 && _enemiesHasSpawned == true)
 			{
-				//TODO: Add something to notify the player that they've SUCK and they can replay the level
+				if (_loot.size() >= 1)
+				{
+					//TODO: Add something to notify the player that they've beat the level
+				}
+				else
+				{
+					//TODO: Add something to notify the player that they've SUCK and they can replay the level
+				}
 			}
 		}
-	}
-	*/
+		*/
 	return run;
 }
 

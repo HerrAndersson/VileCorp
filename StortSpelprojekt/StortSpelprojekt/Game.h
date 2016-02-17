@@ -56,7 +56,7 @@ private:
 	std::vector<GameObject*> _enemies;
 	std::vector<GameObject*> _loot;
 
-	ParticleTextures LoadParticlesTextureData();
+	void LoadParticleSystemData(ParticleTextures& particleTextures, ParticleModifierOffsets& modifiers);
 
 public:
 

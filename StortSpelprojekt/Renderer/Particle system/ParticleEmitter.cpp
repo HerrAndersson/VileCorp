@@ -5,22 +5,23 @@ using namespace DirectX;
 namespace Renderer
 {
 
-	ParticleEmitter::ParticleEmitter(ID3D11Device* device, ID3D11DeviceContext* deviceContext)
+	ParticleEmitter::ParticleEmitter(ID3D11Device* device, ID3D11DeviceContext* deviceContext, ParticleModifierOffsets* modifers)
 	{
 		_device = device;
 		_deviceContext = deviceContext;
 		_isActive = false;
 		_type = SPLASH;
-		_subType = BLOOD;
+		_subType = BLOOD_SUBTYPE;
 		_position = XMFLOAT3(0, 0, 0);
 		_timeLeft = 0;
 		_particlePointsBuffer = nullptr;
 		_particles.clear();
 		_vertexSize = 0;
 		_particleCount = 0;
+		_modifiers = modifers;
 	}
 
-	ParticleEmitter::ParticleEmitter(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const ParticleType& type, const ParticleSubType& subType, const XMFLOAT3& position, const XMFLOAT3& direction, int particleCount, float timeLimit, bool isActive, const XMFLOAT3& target)
+	ParticleEmitter::ParticleEmitter(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const ParticleType& type, const ParticleSubType& subType, const XMFLOAT3& position, const XMFLOAT3& direction, int particleCount, float timeLimit, bool isActive, ParticleModifierOffsets* modifers, const XMFLOAT3& target)
 	{
 		_type = type;
 		_subType = subType;
@@ -31,6 +32,7 @@ namespace Renderer
 		_deviceContext = deviceContext;
 		_particleCount = particleCount;
 		_particles.clear();
+		_modifiers = modifers;
 
 		CreateParticles(particleCount, direction, target);
 
@@ -69,6 +71,8 @@ namespace Renderer
 			for (int i = 0; i < diff; i++)
 			{
 				//TODO: Set offset on the direction and position /Jonas
+
+				//_modifiers->_fireDirectionOffset;
 				XMFLOAT3 dir = baseDirection;
 
 				Particle particle(XMFLOAT3(-20 / 100.0f + (rand() % 20) / 100.0f, 0, -20 / 100.0f + (rand() % 20) / 100.0f), dir);
@@ -138,6 +142,8 @@ namespace Renderer
 			points.push_back(v);
 		}
 
+
+
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
 		ZeroMemory(&mappedResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
 		HRESULT hr = _deviceContext->Map(_particlePointsBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
@@ -165,14 +171,16 @@ namespace Renderer
 					float velocity = 0;
 					XMFLOAT3 position = p.GetPosition();
 					XMFLOAT3 direction = p.GetDirection();
+					float deltatimeSeconds = deltaTime / 1000.0f;
+
 					switch (_type)
 					{
 						case SPLASH:
 						{
 							velocity = 1.0f;
-							position.y += direction.y*velocity;
-							position.x += direction.x*velocity;
-							position.z += direction.z*velocity;
+							position.y += direction.y * velocity * deltatimeSeconds;
+							position.x += direction.x * velocity * deltatimeSeconds;
+							position.z += direction.z * velocity * deltatimeSeconds;
 
 							p.SetPosition(position);
 
@@ -181,16 +189,18 @@ namespace Renderer
 						case SMOKE:
 						{
 							//TODO: Move in smoke pattern
-							velocity = 0.25f;
+							velocity = 0.825f;
 
-							_position.y += (rand() % 100) / 100.0f;
-							_position.z += ((rand() % 5) / 50.0f) - 2.5f / 10.0f;
-							_position.x += ((rand() % 5) / 50.0f) - 2.5f / 10.0f;
+							position.y += direction.y * velocity * deltatimeSeconds;
+							position.x += direction.x * velocity * deltatimeSeconds;
+							position.z += direction.z * velocity * deltatimeSeconds;
 
-							if (_position.y > 5)
+							if (position.y > 3)
 							{
-								_position.y = 0;
+								position.y = 0;
 							}
+
+							p.SetPosition(position);
 
 							break;
 						}
@@ -198,11 +208,21 @@ namespace Renderer
 						{
 							//TODO: generate a bolt of pixels towards target
 							//http://gamedevelopment.tutsplus.com/tutorials/how-to-generate-shockingly-good-2d-lightning-effects--gamedev-2681
+
+							position.y += direction.y * velocity * deltatimeSeconds;
+							position.x += direction.x * velocity * deltatimeSeconds;
+							position.z += direction.z * velocity * deltatimeSeconds;
+
 							break;
 						}
 						case FIRE:
 						{
 							velocity = 0.5f;
+
+							position.y += direction.y * velocity * deltatimeSeconds;
+							position.x += direction.x * velocity * deltatimeSeconds;
+							position.z += direction.z * velocity * deltatimeSeconds;
+
 							//TODO: move particles in fire pattern. Upwards?
 							break;
 						}
