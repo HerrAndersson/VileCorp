@@ -82,6 +82,7 @@ void LevelEditState::OnStateEnter()
 	_uiTree.GetNode("MapSurviveSelected")->SetHidden(true);
 	_uiTree.GetNode("ThiefControlList")->SetHidden(true);
 	_uiTree.GetNode("NoPlacementButton")->SetHidden(true);
+	_uiTree.GetNode("NewMapConfirmation")->SetHidden(true);
 	_uiTree.GetNode("listbuttons")->SetHidden(true);
 
 	_objectHandler->EnlargeTilemap(50);
@@ -310,53 +311,50 @@ void LevelEditState::HandleButtons()
 				_isPressed[3] = false;
 			}
 		}
-		else if (_isPressed[0] == true)
+		else if (_uiTree.IsButtonColliding("GridOff", coord._pos.x, coord._pos.y) && _isPressed[0] == true)
 		{
-			if (_uiTree.IsButtonColliding("GridOff", coord._pos.x, coord._pos.y))
+			//Move Button
+			GUI::Node* node = _uiTree.GetNode("GridOff");
+			XMFLOAT2 gridOffPosition = node->GetLocalPosition();
+
+			GUI::Node* node2 = _uiTree.GetNode("GridOn");
+			XMFLOAT2 gridOnPosition = node2->GetLocalPosition();
+
+			node2->SetPosition(gridOffPosition);
+			node->SetPosition(gridOnPosition);
+
+			if (gridOnPosition.x > gridOffPosition.x)
 			{
-				//Move Button
-				GUI::Node* node = _uiTree.GetNode("GridOff");
-				XMFLOAT2 gridOffPosition = node->GetLocalPosition();
-
-				GUI::Node* node2 = _uiTree.GetNode("GridOn");
-				XMFLOAT2 gridOnPosition = node2->GetLocalPosition();
-
-				node2->SetPosition(gridOffPosition);
-				node->SetPosition(gridOnPosition);
-
-				if (gridOnPosition.x > gridOffPosition.x)
-				{
-					//TODO: Activate Grid Julia och Enbom
-				}
-				else
-				{
-					//TODO: Deactive Grid Julia och Enbom
-				}
+				//TODO: Activate Grid Julia och Enbom
 			}
-			if (_uiTree.IsButtonColliding("ObjectiveOff", coord._pos.x, coord._pos.y))
+			else
 			{
-				//Move Button
-				GUI::Node* node = _uiTree.GetNode("ObjectiveOff");
-				XMFLOAT2 objectiveOffPosition = node->GetLocalPosition();
+				//TODO: Deactive Grid Julia och Enbom
+			}
+		}
+		else if (_uiTree.IsButtonColliding("ObjectiveOff", coord._pos.x, coord._pos.y) && _isPressed[0] == true)
+		{
+			//Move Button
+			GUI::Node* node = _uiTree.GetNode("ObjectiveOff");
+			XMFLOAT2 objectiveOffPosition = node->GetLocalPosition();
 
-				GUI::Node* node2 = _uiTree.GetNode("ObjectiveOn");
-				XMFLOAT2 objectiveOnPosition = node2->GetLocalPosition();
+			GUI::Node* node2 = _uiTree.GetNode("ObjectiveOn");
+			XMFLOAT2 objectiveOnPosition = node2->GetLocalPosition();
 
-				node2->SetPosition(objectiveOffPosition);
-				node->SetPosition(objectiveOnPosition);
+			node2->SetPosition(objectiveOffPosition);
+			node->SetPosition(objectiveOnPosition);
 
-				if (objectiveOnPosition.y > objectiveOffPosition.y)
-				{
-					//Survival
-					_uiTree.GetNode("MapSurviveSelected")->SetHidden(false);
-					//TODO: Function for mission Julia and Enbom
-				}
-				else
-				{
-					//Kill
-					_uiTree.GetNode("MapSurviveSelected")->SetHidden(true);
-					//TODO: Function for mission Julia and Enbom
-				}
+			if (objectiveOnPosition.y > objectiveOffPosition.y)
+			{
+				//Survival
+				_uiTree.GetNode("MapSurviveSelected")->SetHidden(false);
+				//TODO: Function for mission Julia and Enbom
+			}
+			else
+			{
+				//Kill
+				_uiTree.GetNode("MapSurviveSelected")->SetHidden(true);
+				//TODO: Function for mission Julia and Enbom
 			}
 		}
 		else if (_uiTree.IsButtonColliding("ExportMap", coord._pos.x, coord._pos.y))
@@ -369,7 +367,17 @@ void LevelEditState::HandleButtons()
 		}
 		else if (_uiTree.IsButtonColliding("NewMap", coord._pos.x, coord._pos.y))
 		{
-			//TODO: NewMap GUI stuff and functions Julia and Enbom
+			//Is only supposed to bring up the confirmation button
+			_uiTree.GetNode("NewMapConfirmation")->SetHidden(false);
+		}
+		else if (_uiTree.IsButtonColliding("NewYes", coord._pos.x, coord._pos.y) && _uiTree.GetNode("NewMapConfirmation")->GetHidden() != true)
+		{
+			//TODO: NewMap GUI stuff and functions (Make new Map) Julia and Enbom
+		}
+		else if (_uiTree.IsButtonColliding("NewNo", coord._pos.x, coord._pos.y) && _uiTree.GetNode("NewMapConfirmation")->GetHidden() != true)
+		{
+			_uiTree.GetNode("NewMapConfirmation")->SetHidden(true);
+			//TODO: NewMap GUI stuff and functions (Cancel new Map) Julia and Enbom
 		}
 	}
 
