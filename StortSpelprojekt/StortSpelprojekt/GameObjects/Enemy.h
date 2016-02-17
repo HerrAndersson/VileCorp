@@ -11,13 +11,15 @@ private:
 	int _visibilityTimer;			//becomes hidden if staying out of sight long enough
 	int _detectionSkill;			//Chance to detect traps
 	int _disarmSkill;				//Chance to deactivate traps without getting caught by them.
+	Unit* _pursuer;
+	void Flee();
 public:
 	Enemy();
 	Enemy(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject* renderObject, const Tilemap* tileMap);
 	virtual ~Enemy();
 	void EvaluateTile(Type objective, AI::Vec2D tile);
 	void EvaluateTile(GameObject* obj);
-	void act(GameObject* obj);
+	void Act(GameObject* obj);
 	void Release();
 	void Update(float deltaTime);
 	void ResetVisibilityTimer();
