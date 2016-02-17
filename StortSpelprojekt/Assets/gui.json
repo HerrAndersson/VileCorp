@@ -607,6 +607,42 @@
 					"color": "FF000000",
 					"fontsize" : 18.0
 				}
+			},
+			"NewMapConfirmation":
+			{
+				"position": [-0.94, -0.7],	
+				"scale": [0.2, 0.13],
+				"texture": "../Menues/Pause Menu/pause-button.png",
+				
+				"NewConText":
+				{
+					"position" : [0.01, -0.05],
+					"scale": [0.2, 0.13],
+					"centered": true,
+					"text": "Close your current map without saving?",
+					"color": "FF000000",
+					"fontsize" : 19.0
+				},
+				"NewYes":
+				{
+					"position" : [-0.1, -0.05],
+					"scale": [0.07, 0.026],
+					"texture": "../Menues/LevelEdit/GUI/leveledit4-newloadsave-button.png",
+					"centered": true,
+					"text": "Yes",
+					"color": "FF000000",
+					"fontsize" : 18.0
+				},
+				"NewNo":
+				{
+					"position": [0.1, -0.05],	
+					"scale": [0.07, 0.026],
+					"texture": "../Menues/LevelEdit/GUI/leveledit4-newloadsave-button.png",
+					"centered": true,
+					"text": "No",
+					"color": "FF000000",
+					"fontsize" : 18.0
+				}
 			}
 		},
 		"Otherbuttons":
@@ -705,7 +741,7 @@
 				"position" : [-0.025, 0.0],
 					"GridMapX":
 					{
-						"position": [0.01, 0.1925],
+						"position": [0.006, 0.1925],
 						"scale": [0.025, 0.04],
 						"texture": "../Menues/LevelEdit/GUI/button.png",
 						
@@ -721,7 +757,7 @@
 					},
 					"GridMapY":
 					{
-						"position": [0.08, 0.1925],
+						"position": [0.076, 0.1925],
 						"scale": [0.025, 0.04],
 						"texture": "../Menues/LevelEdit/GUI/button.png",
 						
@@ -910,48 +946,74 @@
 		},
 		"ThiefControlList":
 		{
-			"position": [-0.8, -0.8],
-			"scale": [0.25, 0.25],
-			"texture": "../Menues/LevelEdit/GUI/ObjectProp.png",
+			"position": [-0.8, -0.6],
+			"scale": [0.25, 0.45],
+			"texture": "../Menues/LevelEdit/GUI/thief-popup.png",
 			
 			"":
 			{
-			"position": [0.0, -0.19],
+			"position": [0.0, -0.01],
 			
 				"ThiefTitle":
 				{
-					"position" : [0.925, -0.58],
+					"position" : [0.92, -0.58],
 					"scale": [1.0, 1.0],
-					"text": "Thief Settings",
+					"text": "Spawn Settings",
 					"color": "FF000000",
 					"fontsize" : 24.0
 				},
-				"":
+				"ThiefDynamic":
 				{
-					"position": [-0.04, 0.0],
+					"position": [-0.04, 0.02],
 					
-					"ThiefInformation":
+					"ThiefText":
 					{
-						"position" : [0.865, -0.65],
-						"scale": [1.0, 1.0],
-						"text": "Thief Type       Unit Amount       Time Frequency",
-						"color": "FF000000",
-						"fontsize" : 18.0
-					},
-					"thiefType":
-					{
-						"position" : [0.865, -0.72],
-						"scale": [1.0, 1.0],
-						"text": "Burglar:\n\nDemolisher:",
-						"color": "FF000000",
-						"fontsize" : 18.0
-					},
-					"BurglarInfo":
-					{
-						"BurglarUnitBox":
+						"ThiefInformation":
 						{
-							"position": [0.023, 0.26],
-							"scale": [0.025, 0.04],
+							"position" : [1.0, -0.65],
+							"scale": [1.0, 1.0],
+							"text": "Wave 1",
+							"color": "FF000000",
+							"fontsize" : 20.0
+						},
+						"ThiefTitleTypes":
+						{
+							"position" : [0.865, -0.7],
+							"scale": [1.0, 1.0],
+							"text": "Unit Types\n\n\n\n\nUnit Amount:\n\nStarting Time:\n\nFrequency:",
+							"color": "FF000000",
+							"fontsize" : 20.0
+						},
+						"ThiefTypes":
+						{
+							"position" : [0.93, -0.77],
+							"scale": [1.0, 1.0],
+							"text": "Burglar\n\nDemolisher",
+							"color": "FF000000",
+							"fontsize" : 18.0
+						}
+					},
+					"ThiefBox":
+					{
+						"UnitTypeBox":
+						{
+							"BurglarBox":
+							{
+								"position": [-0.1, 0.21],
+								"scale": [0.021, 0.036],
+								"texture": "../Menues/LevelEdit/GUI/buttonOn.png"
+							},
+							"DemolisherBox":
+							{
+								"position": [-0.1, 0.1275],
+								"scale": [0.021, 0.036],
+								"texture": "../Menues/LevelEdit/GUI/buttonOff.png"
+							}
+						},
+						"ThiefAmountBox":
+						{
+							"position": [0.025, 0.05],
+							"scale": [0.021, 0.036],
 							"texture": "../Menues/LevelEdit/GUI/button.png",
 							
 							"BurglarUnitAmount":
@@ -964,10 +1026,26 @@
 								"fontsize" : 18.0
 							}
 						},
-						"BurglarTimeBox":
+						"ThiefStartBox":
 						{
-							"position": [0.16, 0.26],
-							"scale": [0.025, 0.04],
+							"position": [0.025, -0.04],
+							"scale": [0.021, 0.036],
+							"texture": "../Menues/LevelEdit/GUI/button.png",
+							
+							"BurglarUnitAmount":
+							{
+								"position": [0.0, 0.0],
+								"scale": [0.02, 0.02],
+								"centered": true,
+								"text": "0",
+								"color": "FF000000",
+								"fontsize" : 18.0
+							}
+						},
+						"ThiefFreqBox":
+						{
+							"position": [0.025, -0.13],
+							"scale": [0.021, 0.036],
 							"texture": "../Menues/LevelEdit/GUI/button.png",
 							
 							"BurglarFreq":
@@ -979,41 +1057,35 @@
 								"color": "FF000000",
 								"fontsize" : 18.0
 							}
-						}
-					},
-					"DemolitionInfo":
-					{
-						"position": [0.0, -0.085],
-						"DemolitionUnitBox":
+						},
+						"ThiefWaveBox":
 						{
-							"position": [0.023, 0.26],
-							"scale": [0.025, 0.04],
-							"texture": "../Menues/LevelEdit/GUI/button.png",
-							
-							"DemolitionUnitAmount":
+							"WaveAdd":
 							{
-								"position": [0.0, 0.0],
-								"scale": [0.02, 0.02],
-								"centered": true,
-								"text": "0",
-								"color": "FF000000",
-								"fontsize" : 18.0
+								"position": [-0.095, -0.25],
+								"scale": [0.038, 0.065],
+								"texture": "../Menues/LevelEdit/GUI/buttonwave.png"
+							},
+							"WaveDelete":
+							{
+								"position": [0.005, -0.25],
+								"scale": [0.038, 0.065],
+								"texture": "../Menues/LevelEdit/GUI/buttonwavedel.png"
 							}
 						},
-						"DemolitionTimeBox":
+						"ThiefChangePage":
 						{
-							"position": [0.16, 0.26],
-							"scale": [0.025, 0.04],
-							"texture": "../Menues/LevelEdit/GUI/button.png",
-							
-							"DemolitionFreq":
+							"WaveLeft":
 							{
-								"position": [0.0, 0.0],
-								"scale": [0.02, 0.02],
-								"centered": true,
-								"text": "0",
-								"color": "FF000000",
-								"fontsize" : 18.0
+								"position": [0.16, -0.29],
+								"scale": [ 0.02, 0.02 ],
+								"texture": "../Menues/LevelEdit/GUI/placement4-button1.png"
+							},
+							"WaveRight":
+							{
+								"position": [0.21, -0.29],
+								"scale": [ 0.02, 0.02 ],
+								"texture": "../Menues/LevelEdit/GUI/placement4-button2.png"
 							}
 						}
 					}
