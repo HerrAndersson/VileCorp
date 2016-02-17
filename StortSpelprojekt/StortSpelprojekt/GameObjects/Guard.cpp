@@ -46,10 +46,9 @@ void Guard::EvaluateTile(GameObject * obj)
 		tempPriority;
 		if (tempPriority > 0 && obj->GetTilePosition() != _tilePosition && (_pathLength <= 0 || tempPriority * GetApproxDistance(obj->GetTilePosition()) < _goalPriority * GetApproxDistance(GetGoalTilePosition())))			//TODO Either optimize properly or check path properly --Victor
 		{
+			SetGoalTilePosition(obj->GetTilePosition());
 			_goalPriority = tempPriority;
 			_objective = obj;
-			SetGoalTilePosition(obj->GetTilePosition());
-			//SetGoal(obj);
 		}
 	}
 }

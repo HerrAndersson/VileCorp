@@ -49,47 +49,6 @@ int Unit::GetApproxDistance(AI::Vec2D target) const
 	return (int)_aStar->GetHeuristicDistance(_tilePosition, target);
 }
 
-
-/*
-	Decides the best direction to run away from a foe.
-*/
-//void Unit::Flee()
-//{
-//	if (_pursuer == nullptr || !_visible)		//TODO Add other conditions to stop fleeing --Victor
-//	{
-//		CheckAllTiles();
-//	//	Wait(20);
-//	}
-//	else
-//	{
-//		AI::Vec2D offset = _tilePosition - _pursuer->GetTilePosition();
-//		AI::Vec2D bestDir = {0,0};
-//		float bestDist = 0;
-//		float tempDist = 0;
-//		for (int i = 0; i < 8; i++)
-//		{
-//		//	AI::Vec2D tempDist = offset + AI::NEIGHBOUR_OFFSETS[i];
-//
-//			if (i < 4)						//weighting to normalize diagonal and straight directions
-//			{
-//				tempDist = pow(offset._x + AI::SQRT2 * AI::NEIGHBOUR_OFFSETS[i]._x, 2) + pow(offset._y + AI::SQRT2 * AI::NEIGHBOUR_OFFSETS[i]._y, 2);
-//			}
-//			else
-//			{
-//				tempDist = pow(offset._x + AI::NEIGHBOUR_OFFSETS[i]._x, 2) + pow(offset._y + AI::NEIGHBOUR_OFFSETS[i]._y, 2);
-//			}
-//
-//			if (_tileMap->IsFloorOnTile(_tilePosition + AI::NEIGHBOUR_OFFSETS[i]) && !_tileMap->IsEnemyOnTile(_tilePosition + AI::NEIGHBOUR_OFFSETS[i]) && tempDist > bestDist)
-//			{
-//				bestDist = tempDist;
-//				bestDir = AI::NEIGHBOUR_OFFSETS[i];
-//			}
-//		}
-//		_direction = bestDir;
-//		Rotate();
-//	}
-//}
-
 Unit::Unit()
 	: GameObject()
 {
@@ -141,12 +100,9 @@ Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 
 Unit::~Unit()
 {
-	//delete[] _visibleTiles;
 	delete _aStar;
 	_aStar = nullptr;
 	delete _visionCone;
-	//delete _heldObject;
-	//_heldObject = nullptr;
 	if (_animation != nullptr)
 	{
 		delete _animation;
@@ -165,13 +121,9 @@ AI::Vec2D Unit::GetGoalTilePosition()
 
 void Unit::SetGoalTilePosition(AI::Vec2D goal)
 {
-	if (_moveState != MoveState::FINDING_PATH)
-	{
-		ClearObjective();
-		_goalTilePosition = goal;
-		_moveState = MoveState::FINDING_PATH;
-		//SetGoal(goal);
-	}
+	ClearObjective();
+	_goalTilePosition = goal;
+	_moveState = MoveState::FINDING_PATH;
 }
 
 AI::Vec2D Unit::GetDirection()
@@ -200,7 +152,6 @@ Unit::MoveState Unit::GetMoveState() const
 	return _moveState;
 }
 
-
 bool Unit::IsSwitchingTile() const
 {
 	return _isSwitchingTile;
@@ -219,15 +170,10 @@ void Unit::CheckVisibleTiles()
 	AI::Vec2D* visibleTiles = _visionCone->GetVisibleTiles();
 	for (int i = 0; i < _visionCone->GetNrOfVisibleTiles(); i++)
 	{
-		//if (_tileMap->IsWallOnTile(_visibleTiles[i]._x, _visibleTiles[i]._y))
-		//{
-		//	_aStar->SetTileCost(_visibleTiles[i], -1);
-		//}
 		if (_tileMap->IsTrapOnTile(visibleTiles[i]._x, visibleTiles[i]._y))											//TODO: Traps shouldn't be automatically visible --Victor
 		{
 			EvaluateTile(_tileMap->GetObjectOnTile(visibleTiles[i], TRAP));
 		}
-
 		if (_type != ENEMY && _tileMap->IsEnemyOnTile(visibleTiles[i]))
 		{
 			EvaluateTile(_tileMap->GetObjectOnTile(visibleTiles[i], ENEMY));
@@ -249,21 +195,6 @@ void Unit::CheckAllTiles()
 	{
 		for (int j = 0; j < _tileMap->GetHeight(); j++)
 		{
-			//Handle walls
-			if (_tileMap->IsWallOnTile(AI::Vec2D(i, j)))
-			{
-				_aStar->SetTileCost({ i, j }, -1);
-			}
-			else
-			{
-				_aStar->SetTileCost({ i, j }, 1);
-			}
-		}
-	}
-	for (int i = 0; i < _tileMap->GetWidth(); i++)
-	{
-		for (int j = 0; j < _tileMap->GetHeight(); j++)
-		{
 			//Handle objectives
 			if (_tileMap->IsObjectiveOnTile(AI::Vec2D(i, j)))
 			{
@@ -277,6 +208,25 @@ void Unit::CheckAllTiles()
 		}
 	}
 	//_aStar->printMap();
+}
+
+void Unit::InitializePathFinding()
+{
+	for (int i = 0; i < _tileMap->GetWidth(); i++)
+	{
+		for (int j = 0; j < _tileMap->GetHeight(); j++)
+		{
+			//Handle walls
+			if (_tileMap->IsWallOnTile(AI::Vec2D(i, j)))
+			{
+				_aStar->SetTileCost({i, j}, -1);
+			}
+			else
+			{
+				_aStar->SetTileCost({i, j}, 1);
+			}
+		}
+	}
 }
 
 /*
@@ -303,19 +253,10 @@ void Unit::SetGoal(GameObject * objective)
 
 	_goalTilePosition = objective->GetTilePosition();
 	_objective = objective;
-	//if (_objective->InRange(_tilePosition))
-	//{
-	//	//Act(_objective);
-	//	_moveState = MoveState::AT_OBJECTIVE;
-	//}
-	//else
-	//{
 	_aStar->CleanMap();
 	_aStar->SetStartPosition(_nextTile);
 	_aStar->SetGoalPosition(_goalTilePosition);
 	CalculatePath();
-
-	//}
 }
 
 void Unit::Update(float deltaTime)
@@ -428,8 +369,8 @@ void Unit::UseCountdown(int frames)
 
 	if (_interactionTime < 0)
 	{
-		_interactionTime = frames;
 		//Start
+		_interactionTime = frames;
 	}
 	else if (_interactionTime > 0)
 	{
@@ -447,6 +388,3 @@ int Unit::GetVisionRadius() const
 {
 	return _visionRadius;
 }
-
-
-

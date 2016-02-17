@@ -500,20 +500,20 @@ Grid * ObjectHandler::GetBuildingGrid()
 }
 
 
-//TODO: only use init part of CheckAllTiles() --Victor
+
 void ObjectHandler::InitPathfinding()
 {
 	for (GameObject* i : _gameObjects[ENEMY])
 	{
 		Unit* unit = dynamic_cast<Unit*>(i);
-		unit->CheckAllTiles();
+		unit->InitializePathFinding();
 	//	unit->Move();
 	}
 
 	for (GameObject* i : _gameObjects[GUARD])
 	{
 		Unit* unit = dynamic_cast<Unit*>(i);
-		unit->CheckAllTiles();
+		unit->InitializePathFinding();
 	//	unit->Move();
 	}
 }
@@ -610,11 +610,11 @@ void ObjectHandler::Update(float deltaTime)
 			}
 			else if (g->GetType() == SPAWN)															//Manage enemy spawning
 			{
-				if (static_cast<SpawnPoint*>(g)->isSpawning())
+				if (static_cast<SpawnPoint*>(g)->isSpawning() && _tilemap->GetNrOfLoot() > 0)
 				{
 					if (Add(ENEMY, "enemy_proto", g->GetPosition(), g->GetRotation()))
 					{
-						((Unit*)_gameObjects[ENEMY].back())->CheckAllTiles();
+						((Unit*)_gameObjects[ENEMY].back())->InitializePathFinding();
 					}
 				}
 			}

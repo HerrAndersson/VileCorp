@@ -89,7 +89,7 @@ void Enemy::EvaluateTile(GameObject* obj)
 			}
 			break;
 		case SPAWN:
-			if (_heldObject != nullptr)
+			if (_heldObject != nullptr || _tileMap->GetNrOfLoot() <= 0)
 			{
 				tempPriority = 2;
 			}
@@ -112,7 +112,7 @@ void Enemy::EvaluateTile(GameObject* obj)
 					ClearObjective();
 					_moveState = MoveState::FLEEING;
 				}
-				else if (GetApproxDistance(obj->GetTilePosition()) < 3 && !_visible)
+				else if (!_visible)
 				{
 					tempPriority = 2;			//TODO Make actual calculations based on attack skill etc --Victor
 				}
@@ -129,18 +129,18 @@ void Enemy::EvaluateTile(GameObject* obj)
  			obj->GetTilePosition() != _tilePosition && 
 			(_objective == nullptr || tempPriority * GetApproxDistance(obj->GetTilePosition()) < _goalPriority * GetApproxDistance(GetGoalTilePosition())))
 		{
-			_goalPriority = tempPriority;
-			_objective = obj;
 			SetGoalTilePosition(obj->GetTilePosition());
+			_objective = obj;
+			_goalPriority = tempPriority;
 		}
 		//Head for the exit, all objectives are taken
-		else if (_heldObject == nullptr && _objective == nullptr /*&& !_isFleeing*/)
-		{
-			//Lowest possible priority, temporary solution that will be solved with the state machine, Aron and Victor
-			_goalPriority = INT_MAX;
-			_objective = obj;
-			SetGoalTilePosition(obj->GetTilePosition());
-		}
+		//else if (_heldObject == nullptr && _objective == nullptr /*&& !_isFleeing*/)
+		//{
+		//	//Lowest possible priority, temporary solution that will be solved with the state machine, Aron and Victor
+		//	SetGoalTilePosition(obj->GetTilePosition());
+		//	_objective = obj;
+		//	_goalPriority = INT_MAX;
+		//}
 	}
 }
 

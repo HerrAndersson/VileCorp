@@ -59,6 +59,7 @@ public:
 
 	void CheckVisibleTiles();
 	void CheckAllTiles();
+	void InitializePathFinding();
 	virtual void EvaluateTile(Type objective, AI::Vec2D tile) = 0;
 	virtual void EvaluateTile(GameObject* obj) = 0;
 
