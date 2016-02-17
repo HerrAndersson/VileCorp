@@ -11,7 +11,6 @@ Enemy::Enemy(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 ro
 {
 	SetVisibility(false);
 	_visibilityTimer = TIME_TO_HIDE;
-
 	_detectionSkill = 50;
 	_disarmSkill = 50;
 }
@@ -62,7 +61,7 @@ void Enemy::EvaluateTile(GameObject* obj)
 			{
 				if (!SafeToAttack(static_cast<Unit*>(obj)->GetDirection()) && (obj != _objective || _visible))
 				{
-					_isFleeing = true;
+					//_isFleeing = true;
 					_pursuer = obj;
 					ClearObjective();
 					Flee();
@@ -89,7 +88,7 @@ void Enemy::EvaluateTile(GameObject* obj)
 			SetGoal(obj);
 		}
 		//Head for the exit, all objectives are taken
-		else if (_heldObject == nullptr && _pathLength <= 0 && !_isFleeing)
+		else if (_heldObject == nullptr && _pathLength <= 0 /*&& !_isFleeing*/)
 		{
 			//Lowest possible priority, temporary solution that will be solved with the state machine, Aron and Victor
 			_goalPriority = _MAX_INT_DIG;
@@ -98,7 +97,7 @@ void Enemy::EvaluateTile(GameObject* obj)
 	}
 }
 
-void Enemy::act(GameObject* obj)
+void Enemy::Act(GameObject* obj)
 {
 	if (obj != nullptr)
 	{
@@ -158,6 +157,26 @@ void Enemy::Release()
 void Enemy::Update(float deltaTime)
 {
 	Unit::Update(deltaTime);
+
+	switch (_moveState)
+	{
+	case MoveState::IDLE:
+		CheckAllTiles();
+		break;
+	case MoveState::FINDING_PATH:
+		break;
+	case MoveState::MOVING:
+		break;
+	case MoveState::SWITCHING_NODE:
+		break;
+	case MoveState::AT_OBJECTIVE:
+		break;
+	case MoveState::FLEEING:
+		break;
+	default:
+		break;
+	}
+
 	_visibilityTimer--;
 	if (_visibilityTimer <= 0)
 	{

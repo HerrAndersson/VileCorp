@@ -9,7 +9,7 @@ class Unit : public GameObject
 public:
 	const float MOVE_SPEED = 0.025f;				//Movement per frame
 
-	enum MoveState {IDLE, FINDING_PATH, MOVING, SWITCHING_NODE, AT_OBJECTIVE};
+	enum MoveState {IDLE, FINDING_PATH, MOVING, SWITCHING_NODE, AT_OBJECTIVE, FLEEING};
 protected:
 	AI::Vec2D _direction;
 	AI::Vec2D _nextTile;
@@ -28,13 +28,10 @@ protected:
 	int _waiting;
 
 	int _health;
-	bool _isMoving;						//TODO: Remove once move states are fully implemented --Victor
 	bool _isSwitchingTile;
-	
 
 	int _trapInteractionTime;
 	GameObject* _heldObject;
-	bool _isFleeing;
 	GameObject* _pursuer;
 
 	MoveState _moveState;
@@ -65,11 +62,10 @@ public:
 	void CheckAllTiles();
 	virtual void EvaluateTile(Type objective, AI::Vec2D tile) = 0;
 	virtual void EvaluateTile(GameObject* obj) = 0;
-	virtual void Move();						//TODO Kill with fire --Victor
 
 	virtual void Update(float deltaTime);
 	virtual void Release();
-	virtual void act(GameObject* obj) = 0;									//context specific action on the unit's objective
+	virtual void Act(GameObject* obj) = 0;									//context specific action on the unit's objective
 	virtual void Wait();
 	void ClearObjective();
 	void TakeDamage(int damage);
@@ -78,6 +74,9 @@ public:
 	int GetVisionRadius()const;
 
 	void SetTilePosition(AI::Vec2D pos);
+
+	void Moving();
+	void SwitchingNode();
 
 };
 

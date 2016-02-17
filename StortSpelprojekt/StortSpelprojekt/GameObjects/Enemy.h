@@ -17,7 +17,7 @@ public:
 	virtual ~Enemy();
 	void EvaluateTile(Type objective, AI::Vec2D tile);
 	void EvaluateTile(GameObject* obj);
-	void act(GameObject* obj);
+	void Act(GameObject* obj);
 	void Release();
 	void Update(float deltaTime);
 	void ResetVisibilityTimer();

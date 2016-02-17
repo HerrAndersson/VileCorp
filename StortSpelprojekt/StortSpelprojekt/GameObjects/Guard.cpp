@@ -20,25 +20,6 @@ Guard::~Guard()
 void Guard::EvaluateTile(Type objective, AI::Vec2D tile)
 {
 	EvaluateTile(_tileMap->GetObjectOnTile(tile, objective));
-	/*int tempPriority = 0;
-	switch (objective)
-	{ 
-	case LOOT:
-	case GUARD:					
-	case TRAP:
-		break;
-	case ENEMY:
-		tempPriority = 10;
-		break;
-	default:
-		break;
-	}
-	tempPriority;
-	if (tempPriority > 0 && tile != _tilePosition && (_pathLength <= 0 || tempPriority * GetApproxDistance(tile) < _goalPriority * GetApproxDistance(GetGoal())))
-	{
-		_goalPriority = tempPriority;
-		SetGoal(tile);
-	}*/
 }
 
 void Guard::EvaluateTile(GameObject * obj)
@@ -66,75 +47,10 @@ void Guard::EvaluateTile(GameObject * obj)
 		if (tempPriority > 0 && obj->GetTilePosition() != _tilePosition && (_pathLength <= 0 || tempPriority * GetApproxDistance(obj->GetTilePosition()) < _goalPriority * GetApproxDistance(GetGoalTilePosition())))			//TODO Either optimize properly or check path properly --Victor
 		{
 			_goalPriority = tempPriority;
-			ClearObjective();
 			_objective = obj;
-			_goalTilePosition = obj->GetTilePosition();
-			_moveState = MoveState::FINDING_PATH;
+			SetGoalTilePosition(obj->GetTilePosition());
 			//SetGoal(obj);
-			
 		}
-	}
-}
-
-void Guard::act(GameObject* obj)
-{
-	AI::Vec2D dist = obj->GetTilePosition() - _tilePosition;
-	if (obj != nullptr && obj->InRange(_tilePosition))
-	{
-		switch (obj->GetType())
-		{
-		case LOOT:
-		case GUARD:
-		case TRAP:
-			if (!static_cast<Trap*>(obj)->IsTrapActive())
-			{
-				if (_trapInteractionTime < 0)
-				{
-					UseTrap();
-				}
-				else if (_trapInteractionTime == 0)
-				{
-					static_cast<Trap*>(obj)->SetTrapActive(true);
-				//	obj->SetColorOffset({0,0,0});
-					ClearObjective();
-				}
-			}
-			break;
-		case ENEMY:											//The guard hits the enemy
-			static_cast<Unit*>(obj)->TakeDamage(1);
-			if (static_cast<Unit*>(obj)->GetHealth() < 0)
-			{
-				ClearObjective();
-			}
-			break;
-	case FLOOR:
-		if (!_patrolRoute.empty())
-		{
-			if (_tilePosition == _patrolRoute[_currentPatrolGoal % _patrolRoute.size()])
-			{
-				_currentPatrolGoal++;
-				ClearObjective();
-				_goalTilePosition = _patrolRoute[_currentPatrolGoal % _patrolRoute.size()];
-				_moveState = MoveState::FINDING_PATH;
-				//SetGoal(_goalTilePosition);
-			}
-		}
-		else
-		{
-			_moveState = MoveState::IDLE;
-			ClearObjective();
-		}
-
-		break;
-		default:
-			break;
-		}
-	}
-	else
-	{
-		_moveState = MoveState::IDLE;
-		_nextTile = _tilePosition;
-		ClearObjective();
 	}
 }
 
@@ -202,76 +118,133 @@ void Guard::Update(float deltaTime)
 		}
 		break;
 	case MoveState::MOVING:
-		if (_direction._x == 0 || _direction._y == 0)		//Right angle movement
-		{
-			_position.x += MOVE_SPEED * _direction._x;
-			_position.z += MOVE_SPEED * _direction._y;
-		}
-		else												//Diagonal movement
-		{
-			_position.x += AI::SQRT2 * 0.5f * MOVE_SPEED * _direction._x;
-			_position.z += AI::SQRT2 * 0.5f *MOVE_SPEED * _direction._y;
-		}
-		CalculateMatrix();
-		if (IsCenteredOnTile(_nextTile))
-		{
-			_moveState = MoveState::SWITCHING_NODE;
-			_isSwitchingTile = true;
-			_position.x = _nextTile._x;
-			_position.z = _nextTile._y;
-		}
-		//else if (abs(_position.x - _nextTile._x) < TILE_EPSILON * 0.5f)
-		//{
-		//	_direction._x = 0;
-		//	Rotate();
-		//}
-		//else if (abs(_position.z - _nextTile._y) < TILE_EPSILON * 0.5f)
-		//{
-		//	_direction._y = 0;
-		//	Rotate();
-		//}
+		Moving();
 		break;
 	case MoveState::SWITCHING_NODE:
-		SetNextTile();
+		SwitchingNode();
 		break;
 	case MoveState::AT_OBJECTIVE:
-		act(_objective);
+		Act(_objective);
 		break;
 	default:
 		break;
 	}
 }
 
-void Guard::SetNextTile() {
-	
+//void Guard::Moving()
+//{
+//	if (IsCenteredOnTile(_nextTile))
+//	{
+//		_moveState = MoveState::SWITCHING_NODE;
+//		_isSwitchingTile = true;
+//		_position.x = _nextTile._x;
+//		_position.z = _nextTile._y;
+//	}
+//	else
+//	{
+//		if (_direction._x == 0 || _direction._y == 0)		//Right angle movement
+//		{
+//			_position.x += MOVE_SPEED * _direction._x;
+//			_position.z += MOVE_SPEED * _direction._y;
+//		}
+//		else												//Diagonal movement
+//		{
+//			_position.x += AI::SQRT2 * 0.5f * MOVE_SPEED * _direction._x;
+//			_position.z += AI::SQRT2 * 0.5f *MOVE_SPEED * _direction._y;
+//		}
+//		CalculateMatrix();
+//	}
+//}
 
-	//_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,0});
-	_tilePosition = _nextTile;	
-	//_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,4,0});
-	if (_objective != nullptr)
+//void Guard::SetNextTile()
+//{
+//	//_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,0});
+//	_tilePosition = _nextTile;
+//	//_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,4,0});
+//	if (_objective != nullptr)
+//	{
+//		if (_objective->InRange(_tilePosition))
+//		{
+//			_moveState = MoveState::AT_OBJECTIVE;
+//		}
+//		else if (_pathLength > 0 /*&& !_tileMap->IsGuardOnTile(_path[_pathLength - 1])*/)
+//		{
+//			_nextTile = _path[--_pathLength];
+//			_direction = _nextTile - _tilePosition;
+//			Rotate();
+//			_moveState = MoveState::MOVING;
+//		}
+//		else			// TODO: else find unblocked path to goal --Victor
+//		{
+//			ClearObjective();
+//			_moveState = MoveState::IDLE;
+//		}
+//		_isSwitchingTile = false;
+//		CheckVisibleTiles();
+//	}
+//	else
+//	{
+//		_moveState = MoveState::IDLE;
+//	}
+//}
+
+void Guard::Act(GameObject* obj)
+{
+	//AI::Vec2D dist = obj->GetTilePosition() - _tilePosition;
+	if (obj != nullptr && obj->InRange(_tilePosition))
 	{
-		if (_objective->InRange(_tilePosition))
+		switch (obj->GetType())
 		{
-			_moveState = MoveState::AT_OBJECTIVE;
-		}
-		else if (_pathLength > 0 /*&& !_tileMap->IsGuardOnTile(_path[_pathLength - 1])*/)
-		{
-			_nextTile = _path[--_pathLength];
-			_direction = _nextTile - _tilePosition;
-			Rotate();
-			_moveState = MoveState::MOVING;
-		}
-		else			// TODO: else find unblocked path to goal --Victor
-		{
-			_moveState = MoveState::IDLE;
-		}
-		
+		case LOOT:
+		case GUARD:
+			break;
+		case TRAP:
+			if (!static_cast<Trap*>(obj)->IsTrapActive())
+			{
+				if (_trapInteractionTime != 0)
+				{
+					UseTrap();
+				}
+				else
+				{
+					static_cast<Trap*>(obj)->SetTrapActive(true);
+					//	obj->SetColorOffset({0,0,0});
+					ClearObjective();
+				}
+			}
+			break;
+		case ENEMY:											//The guard hits the enemy
+			static_cast<Unit*>(obj)->TakeDamage(1);
+			if (static_cast<Unit*>(obj)->GetHealth() < 0)
+			{
+				ClearObjective();
+			}
+			break;
+		case FLOOR:
+			if (!_patrolRoute.empty())
+			{
+				if (_tilePosition == _patrolRoute[_currentPatrolGoal % _patrolRoute.size()])
+				{
+					_currentPatrolGoal++;
+					SetGoalTilePosition(_patrolRoute[_currentPatrolGoal % _patrolRoute.size()]);
+				}
+			}
+			else
+			{
+				ClearObjective();
+			}
 
-		_isSwitchingTile = false;
-		CheckVisibleTiles();
+			break;
+		default:
+			break;
+		}
 	}
 	else
 	{
-		_moveState = MoveState::IDLE;
+		ClearObjective();
+	}
+	if (_objective == nullptr)
+	{
+		_moveState = MoveState::MOVING;
 	}
 }

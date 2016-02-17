@@ -500,14 +500,14 @@ Grid * ObjectHandler::GetBuildingGrid()
 }
 
 
-
+//TODO: only use init part of CheckAllTiles() --Victor
 void ObjectHandler::InitPathfinding()
 {
 	for (GameObject* i : _gameObjects[ENEMY])
 	{
 		Unit* unit = dynamic_cast<Unit*>(i);
-		//unit->CheckAllTiles();
-		unit->Move();
+		unit->CheckAllTiles();
+	//	unit->Move();
 	}
 
 	for (GameObject* i : _gameObjects[GUARD])
@@ -580,7 +580,7 @@ void ObjectHandler::Update(float deltaTime)
 				{
 					if (Add(ENEMY, "enemy_proto", g->GetPosition(), g->GetRotation()))
 					{
-						((Unit*)_gameObjects[ENEMY].back())->Move();
+						((Unit*)_gameObjects[ENEMY].back())->CheckAllTiles();
 					}
 				}
 			}
