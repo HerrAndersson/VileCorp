@@ -42,6 +42,35 @@ namespace System
 		}
 		//Mattias
 	*/
+	/*
+	Text input
+
+	Enter text input mode by calling SetIsTextInputMode. This method accepts a wstring for inital text,
+	and boolean flags for breaking out of text edit mode: pressing escape, carriage return or tab.
+	When in text edit mode, the normal input is blocked, except for the mouse buttons.
+	to break out of text input mode manually, call ResetTextInputMode.
+	Keep in mind the text input string is cleard by breaking out of text edit mode.
+
+	Example:
+
+	if (_controls->GetIsTextInputMode())
+	{
+		_uiTree.GetNode("text")->SetText(_controls->GetCurrentText());
+	}
+	if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
+	{
+		System::MouseCoord coord = _controls->GetMouseCoord();
+		if (_uiTree.IsButtonColliding("text", coord._pos.x, coord._pos.y))
+		{
+			_controls->SetIsTextInputMode(_uiTree.GetNode("text")->GetText(), false, true);
+		}
+		else
+		{
+			_controls->ResetTextInputMode();
+		}
+	}
+	//Mattias
+	*/
 	Controls::Controls(HWND hwnd)
 	{
 		_keymap = new std::map<std::string, Key>();
@@ -110,6 +139,11 @@ namespace System
 	void Controls::HandleRawInput(LPARAM lparam)
 	{
 		_inputDevice->HandleRawInput(lparam);
+	}
+
+	void Controls::HandleTextInput(WPARAM wparam, LPARAM lparam)
+	{
+		_inputDevice->HandleTextInput(wparam, lparam);
 	}
 
 	void Controls::ResetInputBuffers()
@@ -342,4 +376,30 @@ namespace System
 	{
 		return _inputDevice->GetMouseCoord();
 	}
+
+	void Controls::SetCurrentText(std::wstring text)
+	{
+		_inputDevice->SetCurrentText(text);
+	}
+
+	std::wstring Controls::GetCurrentText() const
+	{
+		return _inputDevice->GetCurrentText();
+	}
+
+	void Controls::SetIsTextInputMode(std::wstring currentText, bool breakOnEsc, bool breakOnCarriageReturn, bool breakOnTab)
+	{
+		_inputDevice->SetIsTextInputMode(currentText, breakOnEsc, breakOnCarriageReturn, breakOnTab);
+	}
+
+	void Controls::ResetTextInputMode()
+	{
+		_inputDevice->ResetTextInputMode();
+	}
+
+	bool Controls::GetIsTextInputMode() const
+	{
+		return _inputDevice->GetIsTextInputMode();
+	}
+
 }

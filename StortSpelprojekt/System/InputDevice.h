@@ -34,6 +34,15 @@ namespace System
 
 		HWND _hwnd;
 
+		//Text input variables
+		std::wstring _currentText;
+		bool _isTextInputMode;
+		bool _breakOnEsc;
+		bool _breakOnCarriageReturn;
+		bool _breakOnTab;
+	private:
+		bool IsMouseKey(int key);
+
 	public:
 		InputDevice(HWND hwnd);
 		~InputDevice();
@@ -46,6 +55,7 @@ namespace System
 		bool CursorLocked();
 
 		void HandleRawInput(LPARAM lparam);
+		void HandleTextInput(WPARAM wparam, LPARAM lparam);
 		void RegisterDevice(HWND hwnd);
 		
 		bool IsDown(int key);
@@ -53,6 +63,12 @@ namespace System
 		bool IsPressed(int key);
 		bool IsReleased(int key);
 		MouseCoord GetMouseCoord()const;
+
+		void SetCurrentText(std::wstring text);
+		std::wstring GetCurrentText() const;
+		void SetIsTextInputMode(std::wstring currentText, bool breakOnEsc = false, bool breakOnCarriageReturn = false, bool breakOnTab = false);
+		void ResetTextInputMode();
+		bool GetIsTextInputMode() const;
 	};
 
 	namespace Input

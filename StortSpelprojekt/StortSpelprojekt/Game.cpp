@@ -403,6 +403,11 @@ LRESULT CALLBACK Game::WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM l
 		PostQuitMessage(0);
 		return 0;
 	}
+	case WM_CHAR:
+	{
+		_gameHandle->_controls->HandleTextInput(wparam, lparam);
+		break;
+	}
 	case WM_INPUT:
 	{
 		_gameHandle->_controls->HandleRawInput(lparam);
