@@ -203,10 +203,9 @@ Trap::Trap()
 }
 
 Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject * renderObject, 
-		  const Tilemap* tileMap, int trapType, AI::Vec2D direction, int cost)
+		  const Tilemap* tileMap, int trapType, AI::Vec2D direction)
 	: GameObject(ID, position, rotation, tilePosition, type, renderObject)
 {
-	_cost = cost;
 	_direction = direction;
 	_trapType = (TrapType)trapType;
 	//_trapType = SHARK;
@@ -217,9 +216,9 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	_occupiedTiles = nullptr;
 	_subType = trapType;
 
-	if (_renderObject->_isSkinned)
+	if (_renderObject->_mesh->_isSkinned)
 	{
-		_animation = new Animation(_renderObject->_skeleton);
+		_animation = new Animation(_renderObject->_mesh->_skeleton);
 		_animation->Freeze(false);
 		_animation->SetActionAsCycle(0, true);
 	}
@@ -299,10 +298,18 @@ int Trap::GetTileSize() const
 	return _tileSize;
 }
 
+int Trap::GetTrapType() const
+{
+	return _trapType;
+}
+
+
 int Trap::GetDetectionDifficulty() const
 {
 	return _detectDifficulty;
 }
+
+
 
 int Trap::GetDisarmDifficulty() const
 {

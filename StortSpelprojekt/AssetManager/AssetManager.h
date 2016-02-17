@@ -9,111 +9,15 @@
 #include <fstream>
 #include "WICTextureLoader.h"
 #include "RenderUtils.h"
-#include "rapidjson\reader.h"
+#include "LevelFormat.h"
+#include "CommonUtils.h"
+#include "cereal\cereal.hpp"
 
 using namespace std;
 using namespace DirectX;
 
 //Disable warning about std::Map dll-interface -> typedef std::map<int, AssetManager::_scanFunc> _scanFuncMap;
 #pragma warning( disable: 4251 )
-
-struct Tileset
-{
-	Tileset()
-	{
-		for (int i = 0; i < NR_OF_TYPES; i++)
-		{
-			vector<string> type;
-			_objects.push_back(type);
-		}
-	}
-	string _name;
-	vector<vector<string>> _objects;
-};
-
-struct TilesetHandler
-{
-	vector<Tileset>* _tilesets;
-	Tileset* _tileset;
-	vector<string>* _cur;
-	bool _nameNext = false;
-
-	bool Null() { return true; }
-	bool Bool(bool b) { return true; }
-	bool Int(int i) { return true; }
-	bool Uint(unsigned u) { return true; }
-	bool Int64(int64_t i) { return true; }
-	bool Uint64(uint64_t u) { return true; }
-	bool Double(double d) { return true; }
-	bool String(const char* str, rapidjson::SizeType length, bool copy)
-	{
-		if (_nameNext)
-		{
-			_tileset->_name = str;
-			_nameNext = false;
-			_cur = &_tileset->_objects[FLOOR];
-		}
-		else
-		{
-			_cur->push_back(str);
-		}
-		return true;
-	}
-	bool StartObject()
-	{
-		Tileset newTileset;
-		_tilesets->push_back(newTileset);
-		_tileset = &_tilesets->back();
-		return true;
-	}
-	bool Key(const char* str, rapidjson::SizeType length, bool copy)
-	{
-		if (!strcmp("name", str))
-		{
-			_nameNext = true;
-		}
-		else if (!strcmp("floors", str))
-		{
-			_cur = &_tileset->_objects[FLOOR];
-		}
-		else if (!strcmp("walls", str))
-		{
-			_cur = &_tileset->_objects[WALL];
-		}
-		else if (!strcmp("loot", str))
-		{
-			_cur = &_tileset->_objects[LOOT];
-		}
-		else if (!strcmp("spawns", str))
-		{
-			_cur = &_tileset->_objects[SPAWN];
-		}
-		else if (!strcmp("traps", str))
-		{
-			_cur = &_tileset->_objects[TRAP];
-		}
-		else if (!strcmp("guards", str))
-		{
-			_cur = &_tileset->_objects[GUARD];
-		}
-		else if (!strcmp("enemies", str))
-		{
-			_cur = &_tileset->_objects[ENEMY];
-		}
-		else if (!strcmp("cameras", str))
-		{
-			_cur = &_tileset->_objects[CAMERA];
-		}
-		else if (!strcmp("furnitures", str))
-		{
-			_cur = &_tileset->_objects[FURNITURE];
-		}
-		return true;
-	}
-	bool EndObject(rapidjson::SizeType memberCount) { return true; }
-	bool StartArray() { return true; }
-	bool EndArray(rapidjson::SizeType elementCount) { return true; }
-};
 
 struct MeshHeader24
 {
@@ -130,21 +34,9 @@ struct MatHeader
 	int _diffuseNameLength, _specularNameLength;
 };
 
-struct LevelHeader
-{
-	int _version, _tileGridSizeX, _tileGridSizeY, _nrOfGameObjects;
-};
-
 struct SkeletonHeader
 {
 	unsigned int _version, _framerate, _boneCount, _actionCount;
-};
-
-struct GameObjectData
-{
-	int _posX, _posZ;
-	float _rotY;
-	int _tileType;
 };
 
 static bool GetFilenamesInDirectory(char* folder, char* extension, vector<string> &listToFill)
@@ -152,6 +44,7 @@ static bool GetFilenamesInDirectory(char* folder, char* extension, vector<string
 	bool result = false;
 	if (folder != nullptr && extension != nullptr)
 	{
+		ofstream testout;
 		string search_path = folder;
 		search_path.append("*");
 		search_path.append(extension);
@@ -183,52 +76,37 @@ class ASSET_MANAGER_EXPORT AssetManager
 {
 private:
 
-	typedef RenderObject* (AssetManager::*_scanFunc)();
+	typedef Mesh* (AssetManager::*_scanFunc)();
 	typedef std::map<int, AssetManager::_scanFunc> _scanFuncMap;
 
 	_scanFuncMap _meshFormatVersion;
 	int _animationFormatVersion = 10;
 	ifstream* _infile;
 	ID3D11Device* _device;
-	Tileset* _activeTileset;
-
-	vector<string>* _modelFiles;
 	vector<string>* _levelFileNames;
-	vector<Tileset>* _tilesets;
 	vector<Skeleton*>* _skeletons;
 
 	vector<RenderObject*>* _renderObjects;
-	vector<RenderObject*>* _renderObjectsToFlush;
 
 	vector<Texture*>* _textures;
-	vector<Texture*>* _texturesToFlush;
+	vector<Mesh*>* _meshes;
 
-	bool LoadModel(const string& file_path, RenderObject* renderObject);
-	Skeleton* LoadSkeleton(const string& filename);
+	bool LoadModel(string name, Mesh* mesh);
 	void Flush();
-
-	RenderObject* ScanModel24();
-	RenderObject* ScanModel26();
-	RenderObject* ScanModel27();
-	RenderObject* ScanModel(const string& file_path);
-	Texture* ScanTexture(const string& filename);
-
+	Mesh* ScanModel24();
+	Mesh* ScanModel26();
+	Mesh* ScanModel27();
+	Mesh* ScanModel(string name);
+	Texture* ScanTexture(string name);
+	Mesh* GetModel(string name);
+	Skeleton* LoadSkeleton(string name);
 	ID3D11Buffer* CreateVertexBuffer(vector<WeightedVertex> *weightedVertices, vector<Vertex> *vertices, int skeleton);
-
-	bool SetupRenderObjectList(Tileset* tileset);
-	void SetupTilesets();
-
 public:
-
 	AssetManager(ID3D11Device* device);
 	~AssetManager();
-
 	RenderObject* GetRenderObject(int index);
-	uint GetRenderObjectByType(Type type, uint index);
-	ID3D11ShaderResourceView* GetTexture(const string& filename);
-
-	void UnloadModel(int index, bool force);
-	bool ParseLevel(int index, vector<GameObjectData> &gameObjects, int &dimX, int &dimY);
-
-	bool ActivateTileset(const string& name);
+	RenderObject* GetRenderObject(string meshName, string textureName);
+	HRESULT ParseLevelHeader(LevelHeader* outputLevelHead, std::string levelHeaderFilePath);
+	HRESULT ParseLevelBinary(LevelBinary* outputLevelBin, std::string levelBinaryFilePath);
+	Texture* GetTexture(string name);
 };

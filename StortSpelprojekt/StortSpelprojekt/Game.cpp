@@ -5,7 +5,7 @@
 #include <random>
 
 Game::Game(HINSTANCE hInstance, int nCmdShow):
-	_settingsReader("Assets/settings.xml")
+	_settingsReader("Assets/settings.xml", "Assets/profile.xml")
 {
 	srand(time(NULL));
 	System::Settings* settings = _settingsReader.GetSettings();
@@ -30,7 +30,7 @@ Game::Game(HINSTANCE hInstance, int nCmdShow):
 	gameObjectDataLoader.WriteSampleGameObjects();
 	gameObjectDataLoader.LoadGameObjectInfo(&_data);
 
-	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager, &_data);
+	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager, &_data, settings);
 	_pickingDevice = new PickingDevice(_camera, settings);
 	_SM = new StateMachine(_controls, _objectHandler, _camera, _pickingDevice, "Assets/gui.json", _assetManager, _fontWrapper, settings, &_settingsReader, &_soundModule);
 
@@ -57,10 +57,11 @@ Game::~Game()
 
 void Game::ResizeResources(System::Settings* settings)
 {
+	//RenderModule must update it's swapchain before window resizes /Alex
+	_renderModule->ResizeResources(settings);
 	_window->ResizeWindow(settings);
 	_camera->Resize(settings);
 	_SM->Resize(settings);
-	_renderModule->ResizeResources(_window->GetHWND(), settings);
 }
 
 bool Game::Update(double deltaTime)
@@ -143,14 +144,14 @@ void Game::Render()
 		if (i.size() > 0)
 		{
 			RenderObject* renderObject = i.at(0)->GetRenderObject();
-			if (renderObject->_isSkinned)
+			if (renderObject->_mesh->_isSkinned)
 			{
 				continue;
 			}
 			else
 			{
 				_renderModule->SetDataPerObjectType(renderObject);
-				int vertexBufferSize = renderObject->_mesh._vertexBufferSize;
+				int vertexBufferSize = renderObject->_mesh->_vertexBufferSize;
 				if (i.at(0)->IsVisible())
 				{
 					_renderModule->Render(i.at(0)->GetMatrix(), vertexBufferSize, i.at(0)->GetColorOffset());
@@ -162,7 +163,7 @@ void Game::Render()
 					{
 						renderObject = i.at(j)->GetRenderObject();
 						_renderModule->SetDataPerObjectType(renderObject);
-						vertexBufferSize = renderObject->_mesh._vertexBufferSize;
+						vertexBufferSize = renderObject->_mesh->_vertexBufferSize;
 					}
 					if (i.at(j)->IsVisible())
 					{
@@ -183,7 +184,7 @@ void Game::Render()
 			RenderObject* renderObject = gameObjects->at(GUARD).at(0)->GetRenderObject();
 
 			_renderModule->SetDataPerObjectType(renderObject);
-			int vertexBufferSize = renderObject->_mesh._vertexBufferSize;
+			int vertexBufferSize = renderObject->_mesh->_vertexBufferSize;
 
 			for (GameObject* a : gameObjects->at(GUARD))
 			{
@@ -198,14 +199,14 @@ void Game::Render()
 		if (i.size() > 0)
 		{
 			RenderObject* renderObject = i.at(0)->GetRenderObject();
-			if (!renderObject->_isSkinned)
+			if (!renderObject->_mesh->_isSkinned)
 			{
 				continue;
 			}
 			else
 			{
 				_renderModule->SetDataPerObjectType(renderObject);
-				int vertexBufferSize = renderObject->_mesh._vertexBufferSize;
+				int vertexBufferSize = renderObject->_mesh->_vertexBufferSize;
 				if (i.at(0)->IsVisible())
 				{
 					_renderModule->RenderAnimation(i.at(0)->GetMatrix(), vertexBufferSize, i.at(0)->GetAnimation()->GetFloats(), i.at(0)->GetColorOffset());
@@ -217,7 +218,7 @@ void Game::Render()
 					{
 						renderObject = i.at(j)->GetRenderObject();
 						_renderModule->SetDataPerObjectType(renderObject);
-						vertexBufferSize = renderObject->_mesh._vertexBufferSize;
+						int vertexBufferSize = renderObject->_mesh->_vertexBufferSize;
 					}
 					if (i.at(j)->IsVisible())
 					{
@@ -291,7 +292,7 @@ void Game::Render()
 					{
 						RenderObject* renderObject = j.at(0)->GetRenderObject();
 						_renderModule->SetShadowMapDataPerObjectType(renderObject);
-						int vertexBufferSize = renderObject->_mesh._vertexBufferSize;
+						int vertexBufferSize = renderObject->_mesh->_vertexBufferSize;
 
 						for (GameObject* g : j)
 						{
@@ -401,6 +402,11 @@ LRESULT CALLBACK Game::WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM l
 	{
 		PostQuitMessage(0);
 		return 0;
+	}
+	case WM_CHAR:
+	{
+		_gameHandle->_controls->HandleTextInput(wparam, lparam);
+		break;
 	}
 	case WM_INPUT:
 	{

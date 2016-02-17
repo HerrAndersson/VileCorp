@@ -13,7 +13,7 @@ namespace Renderer
 		InitializeScreenQuadBuffer();
 		InitializeConstantBuffers();
 
-		_shadowMap = new ShadowMap(_d3d->GetDevice(), settings->_shadowMapHeight);
+		_shadowMap = new ShadowMap(_d3d->GetDevice(), settings->_shadowMapSize);
 	}
 
 	RenderModule::~RenderModule()
@@ -116,12 +116,12 @@ namespace Renderer
 		}
 	}
 
-	void RenderModule::ResizeResources(HWND hwnd, System::Settings* settings)
+	void RenderModule::ResizeResources(System::Settings* settings)
 	{
-		_d3d->ResizeResources(hwnd, settings);
+		_d3d->ResizeResources(settings);
 		_settings = settings;
 
-		_shadowMap->Resize(_d3d->GetDevice(), settings->_shadowMapHeight);
+		_shadowMap->Resize(_d3d->GetDevice(), settings->_shadowMapSize);
 	}
 
 	void RenderModule::SetDataPerFrame(DirectX::XMMATRIX* view, DirectX::XMMATRIX* projection)
@@ -199,12 +199,12 @@ namespace Renderer
 
 		UINT32 vertexSize = sizeof(Vertex);
 
-		if (renderObject->_isSkinned)
+		if (renderObject->_mesh->_isSkinned)
 		{
 			vertexSize = sizeof(WeightedVertex);
 		}
 
-		SetDataPerMesh(renderObject->_mesh._vertexBuffer, vertexSize);
+		SetDataPerMesh(renderObject->_mesh->_vertexBuffer, vertexSize);
 
 		deviceContext->PSSetShaderResources(0, 1, &diffuseData);
 		deviceContext->PSSetShaderResources(1, 1, &specularData);
@@ -262,12 +262,12 @@ namespace Renderer
 		UINT32 offset = 0;
 		UINT32 vertexSize = sizeof(Vertex);
 
-		if (renderObject->_isSkinned)
+		if (renderObject->_mesh->_isSkinned)
 		{
 			vertexSize = sizeof(WeightedVertex);
 		}
 
-		SetDataPerMesh(renderObject->_mesh._vertexBuffer, vertexSize);
+		SetDataPerMesh(renderObject->_mesh->_vertexBuffer, vertexSize);
 	}
 
 	void RenderModule::RenderShadowMap(DirectX::XMMATRIX* world, int vertexBufferSize)

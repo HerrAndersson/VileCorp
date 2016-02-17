@@ -1,8 +1,7 @@
 {
   "MOUSE": {
 	"SELECT": ["leftmouse"],
-  "DESELECT": [ "rightmouse" ],
-  "BOX_SELECT": [ "leftmouse", "shift" ],
+	"DESELECT": [ "rightmouse" ],
 	"DRAG": ["leftmouse", "repeat"]
   },
   "MENU": {
@@ -25,10 +24,6 @@
     "MOVE_MARKER_DOWN": [ "downarrow" ],
     "ROTATE_MARKER_COUNTERCLOCK": [ "R" ],
     "ROTATE_MARKER_CLOCK": [ "T" ],
-	"SCALE_MARKER_XPOSITIVE": [ "N" ],
-	"SCALE_MARKER_XNEGATIVE": [ "M" ],
-	"SCALE_MARKER_YPOSITIVE": [ "J" ],
-	"SCALE_MARKER_YNEGATIVE": [ "K" ],
     "UNDO": [ "Z", "ctrl" ],
     "REDO": [ "Y", "ctrl" ],
     "SAVE": [ "S", "ctrl" ],
@@ -38,8 +33,7 @@
     "NEWLEVEL": [ "C" ]
   },
   "PLAY": {
-    "BOX_SELECT": [ "leftmouse", "shift" ],
-    "SET_PATROL": [ "leftmouse", "ctrl" ],
+    "SET_PATROL": [ "rightmouse", "shift" ],
     "CONTROL_GROUP0": [ "0", "ctrl" ],
     "CONTROL_GROUP1": [ "1", "ctrl" ],
     "CONTROL_GROUP2": [ "2", "ctrl" ],
@@ -57,6 +51,7 @@
 		"UNLIMITED_MONEY": ["1", "ctrl", "alt"],
 		"INSTANT_WIN": ["2", "ctrl", "alt"],
 		"NO_FOG": ["3", "ctrl", "alt"],
-		"RELOAD_GUI" : ["G"]
+		"RELOAD_GUI" : ["G"],
+		"EXPORT_LEVEL" : ["P"]
 	}
 }

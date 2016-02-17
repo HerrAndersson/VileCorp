@@ -2,8 +2,8 @@
 
 
 
-LevelSelectState::LevelSelectState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::Settings* settings, System::SoundModule* soundModule) :
-	BaseState(controls, objectHandler, camera, pickingDevice, filename, "LEVELSELECT", assetManager, fontWrapper, settings, soundModule)
+LevelSelectState::LevelSelectState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule) :
+	BaseState(controls, objectHandler, camera, pickingDevice, filename, "LEVELSELECT", assetManager, fontWrapper, settingsReader, soundModule)
 {
 	_levelSelection = 7;
 	_levelSelectionMin = 7;
@@ -35,7 +35,7 @@ void LevelSelectState::Update(float deltaTime)
 		if (_uiTree.IsButtonColliding("playbutton", coord._pos.x, coord._pos.y))
 		{
 			_soundModule->Play("Assets/Sounds/page.wav");
-			_objectHandler->LoadLevel(_levelSelection);
+			//_objectHandler->LoadLevel(_levelSelection);
 			ChangeState(State::PLACEMENTSTATE);
 		}
 		if (_uiTree.IsButtonColliding("prevlevel", coord._pos.x, coord._pos.y))
@@ -63,7 +63,7 @@ void LevelSelectState::Update(float deltaTime)
 
 void LevelSelectState::OnStateEnter()
 {
-
+	GetFilenamesInDirectory((char*)LEVEL_FOLDER_PATH.c_str(), ".json", _levelHeaderFilenames);
 }
 
 void LevelSelectState::OnStateExit()

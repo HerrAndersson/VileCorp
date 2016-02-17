@@ -42,12 +42,7 @@ struct Vec2
 
 	float Length()
 	{
-		XMVECTOR vector = XMVector4Length(XMVectorSet(_x, _y, 1.0f, 1.0f));
-
-		XMFLOAT4 float4;
-		XMStoreFloat4(&float4, vector);
-
-		return float4.x;
+		return sqrt(_x*_x+_y*_y);
 	}
 	Vec2 operator+(const Vec2& rhs)
 	{
@@ -128,12 +123,7 @@ struct Vec3
 
 	float Length()
 	{
-		XMVECTOR vector = XMVector4Length(XMVectorSet(_x, _y, _z, 1.0f));
-
-		XMFLOAT4 float4;
-		XMStoreFloat4(&float4, vector);
-
-		return float4.x;
+		return sqrt(_x*_x + _y*_y + _z * _z);
 	}
 	Vec3 operator+(const Vec3& rhs)
 	{
@@ -216,12 +206,7 @@ struct Vec4
 
 	float Length()
 	{
-		XMVECTOR vector = XMVector4Length(XMVectorSet(_x, _y, _z, _w));
-
-		XMFLOAT4 float4;
-		XMStoreFloat4(&float4, vector);
-
-		return float4.x;
+		return sqrt(_x*_x + _y*_y + _z* _z + _w * _w);
 	}
 	Vec4 operator+(const Vec4& rhs)
 	{

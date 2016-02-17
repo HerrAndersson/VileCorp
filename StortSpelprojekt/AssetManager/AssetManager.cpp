@@ -5,22 +5,17 @@ AssetManager::AssetManager(ID3D11Device* device)
 {
 	_device = device;
 	_infile = new ifstream;
-	_modelFiles = new vector<string>;
 	_renderObjects = new vector<RenderObject*>;
-	_renderObjectsToFlush = new vector<RenderObject*>;
+	_meshes = new vector<Mesh*>;
 	_textures = new vector<Texture*>;
-	_texturesToFlush = new vector<Texture*>;
 	_levelFileNames = new vector<string>;
-	_tilesets = new vector<Tileset>;
 	_skeletons = new vector<Skeleton*>;
 
 	_meshFormatVersion[24] = &AssetManager::ScanModel24;
 	_meshFormatVersion[26] = &AssetManager::ScanModel26;
 	_meshFormatVersion[27] = &AssetManager::ScanModel27;
 
-	SetupTilesets();
-
-	GetFilenamesInDirectory("Assets/Levels/", ".lvl", *_levelFileNames);
+	GetFilenamesInDirectory((char*)LEVEL_FOLDER_PATH.c_str(), ".lvl", *_levelFileNames);
 }
 
 AssetManager::~AssetManager()
@@ -33,6 +28,14 @@ AssetManager::~AssetManager()
 		}
 		delete texture;
 	}
+	for (Mesh* mesh : *_meshes)
+	{
+		if (mesh->_meshLoaded)
+		{
+			mesh->_vertexBuffer->Release();
+		}
+		delete mesh;
+	}
 	for (uint i = 0; i < _renderObjects->size(); i++)
 	{
 		delete _renderObjects->at(i);
@@ -42,197 +45,34 @@ AssetManager::~AssetManager()
 		delete _skeletons->at(i);
 	}
 	delete _infile;
-	delete _modelFiles;
 	delete _renderObjects;
-	delete _renderObjectsToFlush;
 	delete _textures;
-	delete _texturesToFlush;
+	delete _meshes;
 	delete _levelFileNames;
-	delete _tilesets;
 	delete _skeletons;
-}
-
-//Looks through the Models folder and creates an empty RenderObject for each entry
-bool AssetManager::SetupRenderObjectList(Tileset* tileset)
-{
-	_modelFiles->clear();
-	for (int i = 0; i < NR_OF_TYPES; i++)
-	{
-		for (string str : tileset->_objects[i])
-		{
-			_modelFiles->push_back(str);
-			RenderObject* renderObject = ScanModel(str);
-			if (renderObject == nullptr)
-			{
-				return false;
-			}
-			renderObject->_type = (Type)i;
-			_renderObjects->push_back(renderObject);
-		}
-	}
-
-	_activeTileset = tileset;
-	return true;
-}
-
-void AssetManager::SetupTilesets()
-{
-	vector<string> tilesetFileNames;
-
-	GetFilenamesInDirectory("Assets/Tilesets/", ".json", tilesetFileNames);
-
-	TilesetHandler handler;
-	handler._tilesets = _tilesets;
-	string buffer;
-	rapidjson::Reader reader;
-	for (string set : tilesetFileNames)
-	{
-		_infile->open(set, ios::in | ios::ate);
-		int size = _infile->tellg();
-		_infile->seekg(0);
-
-		buffer.resize(size);
-		_infile->read((char*)buffer.data(), size);
-		_infile->close();
-
-		rapidjson::StringStream ss(&buffer[0]);
-		reader.Parse(ss, handler);
-	}
-	SetupRenderObjectList(&_tilesets->at(0));
-}
-
-//Do not call, call _objectHandler->ActivateTileset() - Fredrik
-bool AssetManager::ActivateTileset(const string& name)
-{
-	if (!strcmp(name.c_str(), _activeTileset->_name.c_str()))
-	{
-		return true; //Specified tileset is already the current tileset
-	}
-
-	for (Texture* texture : *_textures)
-	{
-		if (texture->_loaded)
-		{
-			texture->_data->Release();
-		}
-		delete texture;
-	}
-	for (uint i = 0; i < _renderObjects->size(); i++)
-	{
-		delete _renderObjects->at(i);
-	}
-	for (uint i = 0; i < _skeletons->size(); i++)
-	{
-		delete _skeletons->at(i);
-	}
-	_textures->clear();
-	_renderObjects->clear();
-	_skeletons->clear();
-
-	for (Tileset set : *_tilesets)
-	{
-		if (!strcmp(name.c_str(), set._name.c_str()))
-		{
-			//Tileset was found
-			return SetupRenderObjectList(&set);
-			//If false one or more .bins in tileset was invalid
-		}
-	}
-	return false;
-}
-
-//Marks a model for unloading if running out of memory. Set force to true to unload now
-void AssetManager::UnloadModel(int index, bool force)
-{
-	RenderObject* renderObject = _renderObjects->at(index);
-	if (!renderObject->_meshLoaded)
-	{
-		return;
-	}
-	if (force)
-	{
-		renderObject->_mesh._vertexBuffer->Release();
-		renderObject->_toUnload = false;
-		renderObject->_meshLoaded = false;
-		if (renderObject->_diffuseTexture != nullptr)
-		{
-			if (renderObject->_diffuseTexture->DecrementUsers())
-			{
-				_texturesToFlush->push_back(renderObject->_diffuseTexture);
-			}
-		}
-		if (renderObject->_specularTexture != nullptr)
-		{
-			if (renderObject->_specularTexture->DecrementUsers())
-			{
-				_texturesToFlush->push_back(renderObject->_specularTexture);
-			}
-		}
-	}
-	else
-	{
-		_renderObjectsToFlush->push_back(renderObject);
-		renderObject->_toUnload = true;
-	}
-}
-
-bool AssetManager::ParseLevel(int index, vector<GameObjectData> &gameObjects, int &dimX, int &dimY)
-{
-	LevelHeader lvlHead;
-
-	_infile->open(_levelFileNames->at(index).c_str(), ifstream::binary);
-	if (!_infile->is_open())
-	{
-		return false;
-	}
-
-	_infile->read((char*)&lvlHead, sizeof(LevelHeader));
-	dimX = lvlHead._tileGridSizeX;
-	dimY = lvlHead._tileGridSizeY;
-
-	gameObjects.resize(lvlHead._nrOfGameObjects);
-	_infile->read((char*)gameObjects.data(), sizeof(GameObjectData) * lvlHead._nrOfGameObjects);
-
-	_infile->close();
-	return true;
 }
 
 //Unloads all Assets waiting to be unloaded
 void AssetManager::Flush()
 {
-	for (RenderObject* renderObject : *_renderObjectsToFlush)
+	for (Mesh* mesh : *_meshes)
 	{
-		if (renderObject->_toUnload)
+		if (!mesh->_activeUsers)
 		{
-			renderObject->_mesh._vertexBuffer->Release();
-			renderObject->_toUnload = false;
-			renderObject->_meshLoaded = false;
-			if (renderObject->_diffuseTexture != nullptr)
-			{
-				if (renderObject->_diffuseTexture->DecrementUsers())
-				{
-					_texturesToFlush->push_back(renderObject->_diffuseTexture);
-				}
-			}
-			if (renderObject->_specularTexture != nullptr)
-			{
-				if (renderObject->_specularTexture->DecrementUsers())
-				{
-					_texturesToFlush->push_back(renderObject->_specularTexture);
-				}
-			}
+			mesh->_vertexBuffer->Release();
+			mesh->_meshLoaded = false;
 		}
 	}
-	_renderObjectsToFlush->clear();
+	_meshes->clear();
 
-	for (Texture* texture : *_texturesToFlush)
+	for (Texture* texture : *_textures)
 	{
 		if (!texture->_activeUsers)
 		{
 			texture->_data->Release();
 		}
 	}
-	_texturesToFlush->clear();
+	_textures->clear();
 }
 
 HRESULT Texture::LoadTexture(ID3D11Device* device)
@@ -240,11 +80,13 @@ HRESULT Texture::LoadTexture(ID3D11Device* device)
 	HRESULT res = S_OK;
 	if (!_loaded)
 	{
-		res = DirectX::CreateWICTextureFromFile(device, _filename.c_str(), nullptr, &_data, 0);
+		wstring _filePath = TEXTURE_FOLDER_PATH_W;
+		_filePath.append(_name.begin(), _name.end());
+		res = DirectX::CreateWICTextureFromFile(device, _filePath.c_str(), nullptr, &_data, 0);
 
 		if (_data == nullptr)
 		{
- 			string filenameString(_filename.begin(),_filename.end());
+ 			string filenameString(_filePath.begin(), _filePath.end());
 			throw std::runtime_error("Texture " + filenameString + " not found");
 		}
 		_loaded = true;
@@ -259,13 +101,18 @@ bool Texture::DecrementUsers()
 	return (!_activeUsers);
 }
 
-//Loads a model to the GPU
-bool AssetManager::LoadModel(const string& fileName, RenderObject* renderObject) 
+bool Mesh::DecrementUsers()
 {
+	_activeUsers--;
+	return (!_activeUsers);
+}
 
-	string file_path = "Assets/Models/";
+//Loads a model to the GPU
+bool AssetManager::LoadModel(string name, Mesh* mesh) {
 
-	file_path.append(fileName);
+	string file_path = MODEL_FOLDER_PATH;
+
+	file_path.append(name);
 	_infile->open(file_path.c_str(), ifstream::binary);
 
 	if (!_infile->is_open())
@@ -276,66 +123,39 @@ bool AssetManager::LoadModel(const string& fileName, RenderObject* renderObject)
 	vector<Vertex> vertices;
 	vector<WeightedVertex> weightedVertices;
 
-	_infile->seekg(renderObject->_mesh._toMesh);
-	if(renderObject->_isSkinned)
+	_infile->seekg(mesh->_toMesh);
+	if(mesh->_isSkinned)
 	{
-		weightedVertices.resize(renderObject->_mesh._vertexBufferSize);
-		_infile->read((char*)weightedVertices.data(), renderObject->_mesh._vertexBufferSize*sizeof(WeightedVertex));
+		weightedVertices.resize(mesh->_vertexBufferSize);
+		_infile->read((char*)weightedVertices.data(), mesh->_vertexBufferSize*sizeof(WeightedVertex));
 	}
 	else
 	{
-		vertices.resize(renderObject->_mesh._vertexBufferSize);
-		_infile->read((char*)vertices.data(), renderObject->_mesh._vertexBufferSize*sizeof(Vertex));
+		vertices.resize(mesh->_vertexBufferSize);
+		_infile->read((char*)vertices.data(), mesh->_vertexBufferSize*sizeof(Vertex));
 	}
-	renderObject->_mesh._vertexBuffer = CreateVertexBuffer(&weightedVertices, &vertices, renderObject->_isSkinned);
-
-	if (renderObject->_diffuseTexture != nullptr)
-	{
-		if (renderObject->_diffuseTexture->LoadTexture(_device) == E_OUTOFMEMORY)
-		{
-			Flush();
-			renderObject->_diffuseTexture->LoadTexture(_device);//TODO handle if still out of memory - Fredrik
-		}
-	}
-	if (renderObject->_specularTexture != nullptr)
-	{
-		if (renderObject->_specularTexture->LoadTexture(_device) == E_OUTOFMEMORY)
-		{
-			Flush();
-			renderObject->_specularTexture->LoadTexture(_device);//TODO handle if still out of memory - Fredrik
-		}
-	}
+	mesh->_vertexBuffer = CreateVertexBuffer(&weightedVertices, &vertices, mesh->_isSkinned);
 
 	_infile->close();
-	renderObject->_meshLoaded = true;
+	mesh->_meshLoaded = true;
 	return true;
 }
 
-Texture* AssetManager::ScanTexture(const string& filename)
+Texture* AssetManager::ScanTexture(string name)
 {
-	for (Texture* texture : *_textures)
-	{
-		string str = string(texture->_filename.begin(), texture->_filename.end());
-		if (!strcmp(str.data(), filename.data()))
-		{
-			return texture;
-		}
-	}
 	Texture* texture = new Texture;
-	texture->_filename = wstring(filename.begin(), filename.end());
-
-	texture->_filename.insert(0, L"Assets/Textures/");
-
+	texture->_name = name;
 	_textures->push_back(texture);
 	return texture;
 }
 
 //Creates a RenderObject for the specified model without loading it
-RenderObject* AssetManager::ScanModel(const string& fileName)
+Mesh* AssetManager::ScanModel(string name)
 {
-	string file_path = "Assets/Models/";
 
-	file_path.append(fileName);
+	string file_path = MODEL_FOLDER_PATH;
+
+	file_path.append(name);
 	_infile->open(file_path.c_str(), ifstream::binary);
 
 	if (!_infile->is_open())
@@ -350,10 +170,12 @@ RenderObject* AssetManager::ScanModel(const string& fileName)
 	{
 		throw std::runtime_error("Failed to load " + file_path + ":\nIncorrect fileversion");
 	}
-	RenderObject* renderObject = (this->*(_meshFormatVersion[version]))();
+	Mesh* mesh = (this->*(_meshFormatVersion[version]))();
 
-	renderObject->_name = fileName;
+	mesh->_name = name;
 
+	_infile->close();
+/*
 	MatHeader matHeader;
 	_infile->read((char*)&matHeader, sizeof(MatHeader));
 	_infile->read((char*)&renderObject->_diffuse, 16);
@@ -374,34 +196,34 @@ RenderObject* AssetManager::ScanModel(const string& fileName)
 		renderObject->_specularTexture = ScanTexture(specFile);
 	}
 
-	_infile->close();
 
 	if (renderObject->_isSkinned)
 	{
 		renderObject->_skeleton = LoadSkeleton(renderObject->_skeletonName);
 	}
+*/
+	mesh->_meshLoaded = false;
 
-	renderObject->_meshLoaded = false;
-
-	return renderObject;
+	return mesh;
 }
 
-RenderObject* AssetManager::ScanModel27()
+Mesh* AssetManager::ScanModel27()
 {
-	RenderObject* renderObject = new RenderObject;
+	Mesh* mesh = new Mesh;
 	int skeletonStringLength;
 	_infile->read((char*)&skeletonStringLength, 4);
-	renderObject->_skeletonName.resize(skeletonStringLength);
-	_infile->read((char*)renderObject->_skeletonName.data(), skeletonStringLength);
+	string skeletonName;
+	skeletonName.resize(skeletonStringLength);
+	_infile->read((char*)skeletonName.data(), skeletonStringLength);
 
-	renderObject->_isSkinned = strcmp(renderObject->_skeletonName.data(), "Unrigged") != 0;
+	mesh->_isSkinned = strcmp(skeletonName.data(), "Unrigged") != 0;
 
-	_infile->read((char*)&renderObject->_mesh._toMesh, 4);
+	_infile->read((char*)&mesh->_toMesh, 4);
 
 	MeshHeader26 meshHeader;
 	_infile->read((char*)&meshHeader, sizeof(MeshHeader26));
 
-	if (renderObject->_isSkinned)
+	if (mesh->_isSkinned)
 	{
 		_infile->seekg(meshHeader._numberOfVertices * sizeof(WeightedVertex), ios::cur);
 	}
@@ -410,32 +232,33 @@ RenderObject* AssetManager::ScanModel27()
 		_infile->seekg(meshHeader._numberOfVertices * sizeof(Vertex), ios::cur);
 	}
 
-	renderObject->_mesh._pointLights.resize(meshHeader._numberPointLights);
-	_infile->read((char*)renderObject->_mesh._pointLights.data(), sizeof(PointlightData) * meshHeader._numberPointLights);
+	mesh->_pointLights.resize(meshHeader._numberPointLights);
+	_infile->read((char*)mesh->_pointLights.data(), sizeof(PointlightData) * meshHeader._numberPointLights);
 
-	renderObject->_mesh._spotLights.resize(meshHeader._numberSpotLights);
-	_infile->read((char*)renderObject->_mesh._spotLights.data(), sizeof(SpotlightData) * meshHeader._numberSpotLights);
+	mesh->_spotLights.resize(meshHeader._numberSpotLights);
+	_infile->read((char*)mesh->_spotLights.data(), sizeof(SpotlightData) * meshHeader._numberSpotLights);
 
-	renderObject->_mesh._vertexBufferSize = meshHeader._numberOfVertices;
-	return renderObject;
+	mesh->_vertexBufferSize = meshHeader._numberOfVertices;
+	return mesh;
 }
 
-RenderObject* AssetManager::ScanModel26()
+Mesh* AssetManager::ScanModel26()
 {
-	RenderObject* renderObject = new RenderObject;
+	Mesh* mesh = new Mesh;
 	int skeletonStringLength;
 	_infile->read((char*)&skeletonStringLength, 4);
-	renderObject->_skeletonName.resize(skeletonStringLength);
-	_infile->read((char*)renderObject->_skeletonName.data(), skeletonStringLength);
+	string skeletonName;
+	skeletonName.resize(skeletonStringLength);
+	_infile->read((char*)skeletonName.data(), skeletonStringLength);
 
-	renderObject->_isSkinned = strcmp(renderObject->_skeletonName.data(), "Unrigged") != 0;
+	mesh->_isSkinned = strcmp(skeletonName.data(), "Unrigged") != 0;
 
-	_infile->read((char*)&renderObject->_mesh._toMesh, 4);
+	_infile->read((char*)&mesh->_toMesh, 4);
 
 	MeshHeader26 meshHeader;
 	_infile->read((char*)&meshHeader, sizeof(MeshHeader26));
 
-	if (renderObject->_isSkinned)
+	if (mesh->_isSkinned)
 	{
 		_infile->seekg(meshHeader._numberOfVertices*sizeof(WeightedVertex), ios::cur);
 	}
@@ -444,46 +267,45 @@ RenderObject* AssetManager::ScanModel26()
 		_infile->seekg(meshHeader._numberOfVertices*sizeof(Vertex), ios::cur);
 	}
 
-	renderObject->_mesh._pointLights.resize(meshHeader._numberPointLights);
+	mesh->_pointLights.resize(meshHeader._numberPointLights);
 	for (int i = 0; i < meshHeader._numberPointLights; i++)
 	{
-		PointlightData pld = renderObject->_mesh._pointLights[i];
-		_infile->read((char*)&pld._bone, 1);
-		_infile->read((char*)&pld._pos, 12);
-		_infile->read((char*)&pld._col, 12);
-		_infile->read((char*)&pld._intensity, 4);
-		pld._range = 100;
+		_infile->read((char*)&mesh->_pointLights[i]._bone, 1);
+		_infile->read((char*)&mesh->_pointLights[i]._pos, 12);
+		_infile->read((char*)&mesh->_pointLights[i]._col, 12);
+		_infile->read((char*)&mesh->_pointLights[i]._intensity, 4);
+		mesh->_pointLights[i]._range = 100;
 	}
 
-	renderObject->_mesh._spotLights.resize(meshHeader._numberSpotLights);
+	mesh->_spotLights.resize(meshHeader._numberSpotLights);
 	for (int i = 0; i < meshHeader._numberSpotLights; i++)
 	{
-		SpotlightData sld = renderObject->_mesh._spotLights[i];
-		_infile->read((char*)&sld._bone, 1);
-		_infile->read((char*)&sld._pos, 12);
-		_infile->read((char*)&sld._color, 12);
-		_infile->read((char*)&sld._intensity, 4);
-		_infile->read((char*)&sld._angle, 4);
-		_infile->read((char*)&sld._direction, 12);
-		sld._range = 100;
+		_infile->read((char*)&mesh->_spotLights[i]._bone, 1);
+		_infile->read((char*)&mesh->_spotLights[i]._pos, 12);
+		_infile->read((char*)&mesh->_spotLights[i]._color, 12);
+		_infile->read((char*)&mesh->_spotLights[i]._intensity, 4);
+		_infile->read((char*)&mesh->_spotLights[i]._angle, 4);
+		_infile->read((char*)&mesh->_spotLights[i]._direction, 12);
+		mesh->_spotLights[i]._range = 100;
 	}
-	renderObject->_mesh._vertexBufferSize = meshHeader._numberOfVertices;
-	return renderObject;
+	mesh->_vertexBufferSize = meshHeader._numberOfVertices;
+	return mesh;
 }
 
-RenderObject* AssetManager::ScanModel24()
+Mesh* AssetManager::ScanModel24()
 {
-	RenderObject* renderObject = new RenderObject;
+	Mesh* mesh = new Mesh;
 	int meshes;
 	_infile->read((char*)&meshes, 4);
 	meshes++;
 	int skeletonStringLength;
 	_infile->read((char*)&skeletonStringLength, 4);
-	renderObject->_skeletonName.resize(skeletonStringLength);
-	_infile->read((char*)renderObject->_skeletonName.data(), skeletonStringLength);
+	string skeletonName;
+	skeletonName.resize(skeletonStringLength);
+	_infile->read((char*)skeletonName.data(), skeletonStringLength);
 
-	renderObject->_isSkinned = strcmp(renderObject->_skeletonName.data(), "Unrigged") != 0;
-	_infile->read((char*)&renderObject->_mesh._toMesh, 4);
+	mesh->_isSkinned = skeletonName.data() == "Unrigged";
+	_infile->read((char*)&mesh->_toMesh, 4);
 
 	for (int i = 0; i < meshes; i++)
 	{
@@ -493,7 +315,7 @@ RenderObject* AssetManager::ScanModel24()
 			_infile->read((char*)&meshHeader, sizeof(MeshHeader24));
 
 			_infile->seekg(meshHeader._nameLength, ios::cur);
-			if (renderObject->_isSkinned)
+			if (mesh->_isSkinned)
 			{
 				_infile->seekg(meshHeader._numberOfVertices*sizeof(WeightedVertex), ios::cur);
 			}
@@ -502,30 +324,28 @@ RenderObject* AssetManager::ScanModel24()
 				_infile->seekg(meshHeader._numberOfVertices*sizeof(Vertex), ios::cur);
 			}
 
-			renderObject->_mesh._pointLights.resize(meshHeader._numberPointLights);
+			mesh->_pointLights.resize(meshHeader._numberPointLights);
 			for (int i = 0; i < meshHeader._numberPointLights; i++)
 			{
-				PointlightData pld = renderObject->_mesh._pointLights[i];
-				_infile->read((char*)&pld._pos, 12);
-				_infile->read((char*)&pld._col, 12);
-				_infile->read((char*)&pld._intensity, 4);
-				pld._bone = 0;
-				pld._range = 100;
+				_infile->read((char*)&mesh->_pointLights[i]._pos, 12);
+				_infile->read((char*)&mesh->_pointLights[i]._col, 12);
+				_infile->read((char*)&mesh->_pointLights[i]._intensity, 4);
+				mesh->_pointLights[i]._bone = 0;
+				mesh->_pointLights[i]._range = 100;
 			}
 
-			renderObject->_mesh._spotLights.resize(meshHeader._numberSpotLights);
+			mesh->_spotLights.resize(meshHeader._numberSpotLights);
 			for (int i = 0; i < meshHeader._numberSpotLights; i++)
 			{
-				SpotlightData sld = renderObject->_mesh._spotLights[i];
-				_infile->read((char*)&sld._pos, 12);
-				_infile->read((char*)&sld._color, 12);
-				_infile->read((char*)&sld._intensity, 4);
-				_infile->read((char*)&sld._angle, 4);
-				_infile->read((char*)&sld._direction, 12);
-				sld._bone = 0;
-				sld._range = 100;
+				_infile->read((char*)&mesh->_spotLights[i]._pos, 12);
+				_infile->read((char*)&mesh->_spotLights[i]._color, 12);
+				_infile->read((char*)&mesh->_spotLights[i]._intensity, 4);
+				_infile->read((char*)&mesh->_spotLights[i]._angle, 4);
+				_infile->read((char*)&mesh->_spotLights[i]._direction, 12);
+				mesh->_spotLights[i]._bone = 0;
+				mesh->_spotLights[i]._range = 100;
 			}
-			renderObject->_mesh._vertexBufferSize = meshHeader._numberOfVertices;
+			mesh->_vertexBufferSize = meshHeader._numberOfVertices;
 		}
 		else
 		{
@@ -533,7 +353,7 @@ RenderObject* AssetManager::ScanModel24()
 			_infile->read((char*)&meshHeader, sizeof(MeshHeader24));
 
 			_infile->seekg(meshHeader._nameLength, ios::cur);
-			if (renderObject->_isSkinned)
+			if (mesh->_isSkinned)
 			{
 				_infile->seekg(meshHeader._numberOfVertices*sizeof(WeightedVertex), ios::cur);
 			}
@@ -553,7 +373,7 @@ RenderObject* AssetManager::ScanModel24()
 			}
 		}
 	}
-	return renderObject;
+	return mesh;
 }
 
 ID3D11Buffer* AssetManager::CreateVertexBuffer(vector<WeightedVertex> *weightedVertices, vector<Vertex> *vertices, int skeleton)
@@ -594,61 +414,110 @@ ID3D11Buffer* AssetManager::CreateVertexBuffer(vector<WeightedVertex> *weightedV
 RenderObject* AssetManager::GetRenderObject(int index)
 {
 	RenderObject* renderObject = nullptr;
-	if (index >= 0 && (unsigned int)index < _renderObjects->size())
+	if (index >= 0 && index < (int)_renderObjects->size())
 	{
 		renderObject = _renderObjects->at(index);
-		if (!renderObject->_meshLoaded)
+		if (!renderObject->_mesh->_meshLoaded)
 		{
-			LoadModel(_modelFiles->at(index), renderObject);
+			LoadModel(renderObject->_mesh->_name, renderObject->_mesh);
 		}
-		else if (renderObject->_toUnload)
-		{
-			renderObject->_toUnload = false;
-		}
+		renderObject->_mesh->_activeUsers++;
 	}
 	return renderObject;
 }
 
-uint AssetManager::GetRenderObjectByType(Type type, uint index)
+RenderObject* AssetManager::GetRenderObject(string meshName, string textureName)
 {
-	uint i = 0;
-	uint returnIndex = 0;
 	for (RenderObject* renderObject : *_renderObjects)
 	{
-		if (renderObject->_type == type)
+		if (meshName == renderObject->_mesh->_name &&
+			textureName == renderObject->_diffuseTexture->_name)
 		{
-			if (i == index)
-			{
-				return returnIndex;
-			}
-			i++;
+			return renderObject;
 		}
-		returnIndex++;
 	}
-	return 0;
+	RenderObject* renderObject = new RenderObject;
+	renderObject->_mesh = GetModel(meshName);
+	renderObject->_diffuseTexture = GetTexture(textureName);
+	return renderObject;
 }
 
-ID3D11ShaderResourceView* AssetManager::GetTexture(const string& filename)
+HRESULT AssetManager::ParseLevelHeader(LevelHeader* outputLevelHead, std::string levelHeaderFilePath)
 {
-	Texture* texture = ScanTexture(filename);
-	texture->LoadTexture(_device);
-	return texture->_data;
+	try
+	{
+		std::ifstream in(levelHeaderFilePath);
+		cereal::JSONInputArchive archive(in);
+		archive(*outputLevelHead);
+		in.close();
+	}
+	catch (...)
+	{
+		return E_FAIL;
+	}
+	return S_OK;
 }
 
-Skeleton* AssetManager::LoadSkeleton(const string& filename)
+HRESULT AssetManager::ParseLevelBinary(LevelBinary* outputLevelBin, std::string levelBinaryFilePath)
+{
+	try
+	{
+		std::ifstream in(levelBinaryFilePath);
+		cereal::BinaryInputArchive archive(in);
+		archive(*outputLevelBin);
+		in.close();
+	}
+	catch (...)
+	{
+		return E_FAIL;
+	}
+	return S_OK;
+}
+
+Texture* AssetManager::GetTexture(string name)
+{
+	for (Texture* texture : *_textures)
+	{
+		if (texture->_name == name)
+		{
+			texture->_activeUsers++;
+			return texture;
+		}
+	}
+	Texture* texture = ScanTexture(name);
+	texture->LoadTexture(_device);
+	return texture;
+}
+
+Mesh* AssetManager::GetModel(string name)
+{
+	for (Mesh* mesh : *_meshes)
+	{
+		if (mesh->_name == name)
+		{
+			mesh->_activeUsers++;
+			return mesh;
+		}
+	}
+	Mesh* mesh = ScanModel(name);
+	LoadModel(name, mesh);
+	return mesh;
+}
+
+Skeleton* AssetManager::LoadSkeleton(string name)
 {
 
 	for (Skeleton* skeleton : *_skeletons)
 	{
-		if (skeleton->_name.c_str() == filename.data())
+		if (strcmp(skeleton->_name.c_str(), name.data()))
 		{
 			return skeleton;
 		}
 	}
 
-	string file_path = "Assets/Animations/";
+	string file_path = ANIMATION_FOLDER_PATH;
 
-	file_path.append(filename);
+	file_path.append(name);
 	_infile->open(file_path.c_str(), ifstream::binary);
 
 	if (!_infile->is_open())
@@ -658,7 +527,7 @@ Skeleton* AssetManager::LoadSkeleton(const string& filename)
 
 	Skeleton* skeleton = new Skeleton;
 	_skeletons->push_back(skeleton);
-	skeleton->_name = filename;
+
 	SkeletonHeader header;
 	_infile->read((char*)&header, sizeof(SkeletonHeader));
 	if (header._version != _animationFormatVersion)

@@ -557,7 +557,7 @@
 		
   },
   "LEVELEDIT" : {
-  "ImportExport" :
+		"ImportExport" :
 		{
 			"position": [0.925, 0.885],	
 			"scale": [0.16, 0.117],
@@ -609,34 +609,84 @@
 				}
 			}
 		},
-		"MapButton":
+		"Otherbuttons":
 		{
-				"position": [0.965, -0.465],	
+			"MapButton":
+			{
+					"position": [0.965, -0.465],	
+					"scale": [0.035, 0.07],
+					"texture": "../Menues/LevelEdit/GUI/leveledit3.png",
+					
+					"MapButtonText":
+					{
+						"position" : [0.982, -0.975],
+						"scale": [1.0, 1.0],
+						"text": "Map",
+						"color": "FF000000",
+						"fontsize" : 18.0
+					}
+			},
+			"StoryButton":
+			{
+				"position": [0.965, 0.67],	
 				"scale": [0.035, 0.07],
 				"texture": "../Menues/LevelEdit/GUI/leveledit3.png",
 				
-				"MapButtonText":
+				"StoryButtonText":
 				{
 					"position" : [0.982, -0.975],
 					"scale": [1.0, 1.0],
-					"text": "Map",
+					"text": "Story",
 					"color": "FF000000",
 					"fontsize" : 18.0
 				}
+			},
+			"ControlsButton":
+			{
+				"position": [0.71, 0.95],
+				"scale": [0.05, 0.05],
+				"texture": "../Menues/LevelEdit/GUI/LEVELEDIT4.png",
+				
+				"ControlButtonText":
+				{
+					"position" : [0.0, -0.025],
+					"scale": [0.05, 0.05],
+					"centered": true,
+					"text": "Help!",
+					"color": "FF000000",
+					"fontsize" : 18.0
+				}
+			},
+			"ThiefButton":
+			{
+				"position": [-0.98, -0.74],
+				"scale": [0.035, 0.07],
+				"texture": "../Menues/LevelEdit/GUI/LEVELEDIT1.png",
+				
+				"ThiefButtonText":
+				{
+					"position" : [0.0, -0.025],
+					"scale": [0.05, 0.05],
+					"centered": true,
+					"text": "Thief",
+					"color": "FF000000",
+					"fontsize" : 18.0
+				}
+			}
 		},
 		"MapList":
 		{
-			"position": [0.85, -0.625],
-			"scale": [0.15, 0.315],
-			"texture": "../Menues/LevelEdit/GUI/leveledit4-newloadsave.png",
-			
+		"position": [0.85, -0.625],
+		"scale": [0.15, 0.315],
+		"texture": "../Menues/LevelEdit/GUI/leveledit4-newloadsave.png",
+		
 			"":
 			{
-				"position": [0.0, -0.03],
+				"position": [0.0, 0.01],
 				
 				"MapListTitle":
 				{
-					"position" : [0.942, -0.695],
+					"position" : [0.942, -0.715],
 					"scale": [1.0, 1.0],
 					"text": "Map Settings",
 					"color": "FF000000",
@@ -646,40 +696,44 @@
 				{
 					"position" : [0.882, -0.785],
 					"scale": [1.0, 1.0],
-					"text": "Tilemap size:              X              Y",
+					"text": "Grid size:              X              Y",
 					"color": "FF000000",
 					"fontsize" : 18.0
 				},
-				"TileMapX":
+				"":
 				{
-					"position": [0.01, 0.1925],
-					"scale": [0.025, 0.04],
-					"texture": "../Menues/LevelEdit/GUI/button.png",
-					
-					"tileNumberX":
+				"position" : [-0.025, 0.0],
+					"GridMapX":
 					{
-						"position": [0.0, 0.0],
-						"scale": [0.02, 0.02],
-						"centered": true,
-						"text": "0",
-						"color": "FF000000",
-						"fontsize" : 18.0
-					}
-				},
-				"TileMapY":
-				{
-					"position": [0.08, 0.1925],
-					"scale": [0.025, 0.04],
-					"texture": "../Menues/LevelEdit/GUI/button.png",
-					
-					"tileNumberY":
+						"position": [0.01, 0.1925],
+						"scale": [0.025, 0.04],
+						"texture": "../Menues/LevelEdit/GUI/button.png",
+						
+						"tileNumberX":
+						{
+							"position": [0.0, 0.0],
+							"scale": [0.02, 0.02],
+							"centered": true,
+							"text": "0",
+							"color": "FF000000",
+							"fontsize" : 18.0
+						}
+					},
+					"GridMapY":
 					{
-						"position": [0.0, 0.0],
-						"scale": [0.02, 0.02],
-						"centered": true,
-						"text": "0",
-						"color": "FF000000",
-						"fontsize" : 18.0
+						"position": [0.08, 0.1925],
+						"scale": [0.025, 0.04],
+						"texture": "../Menues/LevelEdit/GUI/button.png",
+						
+						"tileNumberY":
+						{
+							"position": [0.0, 0.0],
+							"scale": [0.02, 0.02],
+							"centered": true,
+							"text": "0",
+							"color": "FF000000",
+							"fontsize" : 18.0
+						}
 					}
 				},
 				"":
@@ -705,11 +759,34 @@
 						"position": [0.032, 0.0925],
 						"scale": [0.025, 0.04],
 						"texture": "../Menues/PlayState GUI/button.png"
+					},
+					"BudgetText":
+					{
+						"position" : [0.882, -0.975],
+						"scale": [1.0, 1.0],
+						"text": "Budget: ",
+						"color": "FF000000",
+						"fontsize" : 18.0
+					},
+					"BudgetBox":
+					{
+						"position": [0.02, 0.0045],
+						"scale": [0.075, 0.03],
+						"texture": "../Menues/LevelEdit/GUI/leveledit4-newloadsave-button2.png",
+						
+						"BudgetBoxText":
+						{
+							"position": [0.0, 0.001],
+							"scale": [0.07, 0.02],
+							"text": "500",
+							"color": "FF000000",
+							"fontsize" : 18.0
+						}
 					}
 				},
 				"":
 				{
-				"position" : [0.0, 0.02],
+				"position" : [0.0, -0.06],
 				
 					"MapObjectiveText":
 					{
@@ -731,62 +808,50 @@
 						"scale": [0.025, 0.04],
 						"texture": "../Menues/PlayState GUI/button.png"
 					},
-					"MapSurviveText":
+					"MapSurviveSelected":
 					{
-						"position" : [0.882, -1.16],
-						"scale": [1.0, 1.0],
-						"text": "Minutes:              Seconds:",
-						"color": "FF000000",
-						"fontsize" : 18.0
-					},
-					"MinuteBox":
-					{
-						"position": [-0.02, -0.1825],
-						"scale": [0.025, 0.04],
-						"texture": "../Menues/LevelEdit/GUI/button.png",
-						
-						"tileNumberX":
+						"MapSurviveText":
 						{
-							"position": [0.0, 0.0],
-							"scale": [0.02, 0.02],
-							"centered": true,
-							"text": "0",
+							"position" : [0.882, -1.16],
+							"scale": [1.0, 1.0],
+							"text": "Minutes:              Seconds:",
 							"color": "FF000000",
 							"fontsize" : 18.0
-						}
-					},
-					"SecondBox":
-					{
-						"position": [0.105, -0.1825],
-						"scale": [0.025, 0.04],
-						"texture": "../Menues/LevelEdit/GUI/button.png",
-						
-						"tileNumberX":
+						},
+						"MinuteBox":
 						{
-							"position": [0.0, 0.0],
-							"scale": [0.02, 0.02],
-							"centered": true,
-							"text": "0",
-							"color": "FF000000",
-							"fontsize" : 18.0
+							"position": [-0.02, -0.1825],
+							"scale": [0.025, 0.04],
+							"texture": "../Menues/LevelEdit/GUI/button.png",
+							
+							"tileNumberX":
+							{
+								"position": [0.0, 0.0],
+								"scale": [0.02, 0.02],
+								"centered": true,
+								"text": "0",
+								"color": "FF000000",
+								"fontsize" : 18.0
+							}
+						},
+						"SecondBox":
+						{
+							"position": [0.105, -0.1825],
+							"scale": [0.025, 0.04],
+							"texture": "../Menues/LevelEdit/GUI/button.png",
+							
+							"tileNumberX":
+							{
+								"position": [0.0, 0.0],
+								"scale": [0.02, 0.02],
+								"centered": true,
+								"text": "0",
+								"color": "FF000000",
+								"fontsize" : 18.0
+							}
 						}
 					}
 				}
-			}
-		},
-		"StoryButton":
-		{
-			"position": [0.965, 0.67],	
-			"scale": [0.035, 0.07],
-			"texture": "../Menues/LevelEdit/GUI/leveledit3.png",
-			
-			"StoryButtonText":
-			{
-				"position" : [0.982, -0.975],
-				"scale": [1.0, 1.0],
-				"text": "Story",
-				"color": "FF000000",
-				"fontsize" : 18.0
 			}
 		},
 		"StoryList":
@@ -794,56 +859,43 @@
 			"position": [0.79, 0.23],
 			"scale": [0.2, 0.54],
 			"texture": "../Menues/LevelEdit/GUI/leveledit3-settings popup2.png",
-			
-			"StoryPapper":
+			"":
 			{
-				"position": [-0.0067, -0.069],
-				"scale": [0.185, 0.455],
-				"texture": "../Menues/LevelEdit/GUI/write.png",
-				
-				"StoryText":
+				"StoryPaper":
 				{
-					"position": [0.0, 0.0],
-					"scale": [0.18, 0.45],
-					"text": "Write great and awesome stories here! :D",
-					"color": "FF000000",
-					"fontsize" : 18.0
-				}
-			},
-			"StoryTitle":
-			{
-				"position": [-0.0069, 0.44],
-				"scale": [0.185, 0.044],
-				"texture": "../Menues/LevelEdit/GUI/title.png",
-				
-				"StoryTitleText":
+					"position": [-0.0067, -0.069],
+					"scale": [0.185, 0.455],
+					"texture": "../Menues/LevelEdit/GUI/write.png",
+					
+					"StoryText":
+					{
+						"position": [0.0, 0.0],
+						"scale": [0.18, 0.45],
+						"text": "Write great and awesome stories here! :D",
+						"color": "FF000000",
+						"fontsize" : 18.0
+					}
+				},
+				"StoryTitle":
 				{
-					"position": [0.0, 0.0],
-					"scale": [0.18, 0.025],
-					"text": "Write great and awesome titles here! :D",
-					"color": "FF000000",
-					"fontsize" : 20.0
+					"position": [-0.0069, 0.44],
+					"scale": [0.185, 0.044],
+					"texture": "../Menues/LevelEdit/GUI/title.png",
+					
+					"StoryTitleText":
+					{
+						"position": [0.0, 0.0],
+						"scale": [0.18, 0.025],
+						"text": "Write great and awesome titles here! :D",
+						"color": "FF000000",
+						"fontsize" : 20.0
+					}
 				}
-			}
-		},
-		"ControlsButton":
-		{
-			"position": [-0.98, -0.15],
-			"scale": [0.035, 0.07],
-			"texture": "../Menues/LevelEdit/GUI/LEVELEDIT1.png",
-			
-			"ControlButtonText":
-			{
-				"position" : [0.984, -0.975],
-				"scale": [1.0, 1.0],
-				"text": "Contr-",
-				"color": "FF000000",
-				"fontsize" : 18.0
 			}
 		},
 		"ControlsList":
 		{
-			"position": [0.0, 0.2],
+			"position": [0.565, 0.45],
 			"scale": [0.2, 0.54],
 			"texture": "../Menues/LevelEdit/GUI/leveledit3-settings popup.png",
 			
@@ -858,108 +910,118 @@
 		},
 		"ThiefControlList":
 		{
-			"position": [0.0, 0.3],
-			"scale": [0.18, 0.44],
-			"texture": "../Menues/Pause Menu/pause1-nocup.png",
+			"position": [-0.8, -0.8],
+			"scale": [0.25, 0.25],
+			"texture": "../Menues/LevelEdit/GUI/ObjectProp.png",
 			
-			"ThiefTitle":
+			"":
 			{
-				"position" : [0.925, -0.6],
-				"scale": [1.0, 1.0],
-				"text": "Thief Settings",
-				"color": "FF000000",
-				"fontsize" : 24.0
-			},
-			"ThiefInformation":
-			{
-				"position" : [0.865, -0.65],
-				"scale": [1.0, 1.0],
-				"text": "Thief Type   Number of Units   Time",
-				"color": "FF000000",
-				"fontsize" : 18.0
-			},
-			"thiefType":
-			{
-				"position" : [0.865, -0.72],
-				"scale": [1.0, 1.0],
-				"text": "Burglar:\n\nDemolition Man:",
-				"color": "FF000000",
-				"fontsize" : 18.0
-			},
-			"BurglarInfo":
-			{
-				"BurglarUnitBox":
+			"position": [0.0, -0.19],
+			
+				"ThiefTitle":
 				{
-					"position": [0.03, 0.26],
-					"scale": [0.025, 0.04],
-					"texture": "../Menues/LevelEdit/GUI/button.png",
-					
-					"tileNumberX":
-					{
-						"position": [0.0, 0.0],
-						"scale": [0.02, 0.02],
-						"centered": true,
-						"text": "0",
-						"color": "FF000000",
-						"fontsize" : 18.0
-					}
+					"position" : [0.925, -0.58],
+					"scale": [1.0, 1.0],
+					"text": "Thief Settings",
+					"color": "FF000000",
+					"fontsize" : 24.0
 				},
-				"BurglarTimeBox":
+				"":
 				{
-					"position": [0.115, 0.26],
-					"scale": [0.025, 0.04],
-					"texture": "../Menues/LevelEdit/GUI/button.png",
+					"position": [-0.04, 0.0],
 					
-					"tileNumberX":
+					"ThiefInformation":
 					{
-						"position": [0.0, 0.0],
-						"scale": [0.02, 0.02],
-						"centered": true,
-						"text": "0",
+						"position" : [0.865, -0.65],
+						"scale": [1.0, 1.0],
+						"text": "Thief Type       Unit Amount       Time Frequency",
 						"color": "FF000000",
 						"fontsize" : 18.0
-					}
-				}
-			},
-			"DemolitionInfo":
-			{
-				"position": [0.0, -0.085],
-				"DemolitionUnitBox":
-				{
-					"position": [0.03, 0.26],
-					"scale": [0.025, 0.04],
-					"texture": "../Menues/LevelEdit/GUI/button.png",
-					
-					"tileNumberX":
+					},
+					"thiefType":
 					{
-						"position": [0.0, 0.0],
-						"scale": [0.02, 0.02],
-						"centered": true,
-						"text": "0",
+						"position" : [0.865, -0.72],
+						"scale": [1.0, 1.0],
+						"text": "Burglar:\n\nDemolisher:",
 						"color": "FF000000",
 						"fontsize" : 18.0
-					}
-				},
-				"DemolitionTimeBox":
-				{
-					"position": [0.115, 0.26],
-					"scale": [0.025, 0.04],
-					"texture": "../Menues/LevelEdit/GUI/button.png",
-					
-					"tileNumberX":
+					},
+					"BurglarInfo":
 					{
-						"position": [0.0, 0.0],
-						"scale": [0.02, 0.02],
-						"centered": true,
-						"text": "0",
-						"color": "FF000000",
-						"fontsize" : 18.0
+						"BurglarUnitBox":
+						{
+							"position": [0.023, 0.26],
+							"scale": [0.025, 0.04],
+							"texture": "../Menues/LevelEdit/GUI/button.png",
+							
+							"BurglarUnitAmount":
+							{
+								"position": [0.0, 0.0],
+								"scale": [0.02, 0.02],
+								"centered": true,
+								"text": "0",
+								"color": "FF000000",
+								"fontsize" : 18.0
+							}
+						},
+						"BurglarTimeBox":
+						{
+							"position": [0.16, 0.26],
+							"scale": [0.025, 0.04],
+							"texture": "../Menues/LevelEdit/GUI/button.png",
+							
+							"BurglarFreq":
+							{
+								"position": [0.0, 0.0],
+								"scale": [0.02, 0.02],
+								"centered": true,
+								"text": "0",
+								"color": "FF000000",
+								"fontsize" : 18.0
+							}
+						}
+					},
+					"DemolitionInfo":
+					{
+						"position": [0.0, -0.085],
+						"DemolitionUnitBox":
+						{
+							"position": [0.023, 0.26],
+							"scale": [0.025, 0.04],
+							"texture": "../Menues/LevelEdit/GUI/button.png",
+							
+							"DemolitionUnitAmount":
+							{
+								"position": [0.0, 0.0],
+								"scale": [0.02, 0.02],
+								"centered": true,
+								"text": "0",
+								"color": "FF000000",
+								"fontsize" : 18.0
+							}
+						},
+						"DemolitionTimeBox":
+						{
+							"position": [0.16, 0.26],
+							"scale": [0.025, 0.04],
+							"texture": "../Menues/LevelEdit/GUI/button.png",
+							
+							"DemolitionFreq":
+							{
+								"position": [0.0, 0.0],
+								"scale": [0.02, 0.02],
+								"centered": true,
+								"text": "0",
+								"color": "FF000000",
+								"fontsize" : 18.0
+							}
+						}
 					}
 				}
 			}
 		},
-   "Buttons":
-	  {
+		"Buttons":
+		{
 			"Floors" :
 			{
 				"position": [-0.98, 0.9],	
@@ -1073,559 +1135,65 @@
 			{
 				"position": [-0.8, 0.46],
 				"scale": [0.2, 0.54],
-				"texture": "../Menues/leveledit-page.png",
-					
-				"floorpage0":
-				{
-					"":
-					{
-						"floor1" :
-						{
-							"position": [-0.125, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Floors/floor1.png"
-						},
-						"floor2" :
-						{
-							"position": [-0.035, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Floors/floor2.png"
-						},
-						"floor3" :
-						{
-							"position": [0.055, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Floors/floor3.png"
-						},
-						"floor4" :
-						{
-							"position": [0.145, 0.42],
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Floors/floor4.png"
-						}
-					},
-					"":
-					{
-						"position": [0.0, -0.13],
-						"floor5" :
-						{
-							"position": [-0.125, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Floors/floor5.png"
-						},
-						"floor6" :
-						{
-							"position": [-0.035, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Floors/floor6.png"
-						},
-						"floor7" :
-						{
-							"position": [0.055, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Floors/floor7.png"
-						},
-						"floor8" :
-						{
-							"position": [0.145, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Floors/floor8.png"
-						}
-					},
-					"":
-					{
-						"position": [0.0, -0.26],
-						"floor9" :
-						{
-							"position": [-0.125, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Floors/floor9.png"
-						},
-						"floor10" :
-						{
-							"position": [-0.035, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Floors/floor10.png"
-						},
-						"floor11" :
-						{
-							"position": [0.055, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Floors/floor11.png"
-						},
-						"floor12" :
-						{
-							"position": [0.145, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Floors/floor12.png"
-						}
-					},
-					"":
-					{
-						"position": [0.0, -0.39],
-						"floor13" :
-						{
-							"position": [-0.125, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Floors/floor13.png"
-						},
-						"floor14" :
-						{
-							"position": [-0.035, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Floors/floor14.png"
-						},
-						"floor15" :
-						{
-							"position": [0.055, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Floors/floor15.png"
-						},
-						"floor16" :
-						{
-							"position": [0.145, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Floors/floor16.png"
-						}
-					},
-					"":
-					{
-						"position": [0.0, -0.52],
-						"floor17" :
-						{
-							"position": [-0.125, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Floors/floor17.png"
-						},
-						"floor18" :
-						{
-							"position": [-0.035, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Floors/floor18.png"
-						},
-						"floor19" :
-						{
-							"position": [0.055, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Floors/floor19.png"
-						},
-						"floor20" :
-						{
-							"position": [0.145, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Floors/floor20.png"
-						}
-					},
-					"":
-					{
-						"position": [0.0, -0.65],
-						"floor21" :
-						{
-							"position": [-0.125, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Floors/floor21.png"
-						},
-						"floor22" :
-						{
-							"position": [-0.035, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Floors/floor22.png"
-						},
-						"floor23" :
-						{
-							"position": [0.055, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Floors/floor23.png"
-						},
-						"floor24" :
-						{
-							"position": [0.145, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Floors/floor24.png"
-						}
-					},
-					"":
-					{
-					"position": [0.0, -0.78],
-						"floor25" :
-						{
-							"position": [-0.125, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Floors/floor25.png"
-						},
-						"floor26" :
-						{
-							"position": [-0.035, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Floors/floor26.png"
-						},
-						"floor27" :
-						{
-							"position": [0.055, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Floors/floor27.png"
-						},
-						"floor28" :
-						{
-							"position": [0.145, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Floors/floor28.png"
-						}
-					}
-				},
-				"floorpage1":
-				{
-					"":
-					{
-						"floor29" :
-						{
-							"position": [-0.125, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Floors/floor29.png"
-						},
-						"floor30" :
-						{
-							"position": [-0.035, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Floors/floor30.png"
-						},
-						"floor31" :
-						{
-							"position": [0.055, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Floors/floor31.png"
-						},
-						"floor32" :
-						{
-							"position": [0.145, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Floors/floor32.png"
-						}
-					},
-					"":
-					{
-						"position": [0.0, -0.13],
-						"floor33" :
-						{
-							"position": [-0.125, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Floors/floor33.png"
-						},
-						"floor34" :
-						{
-							"position": [-0.035, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Floors/floor34.png"
-						},
-						"floor35" :
-						{
-							"position": [0.055, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Floors/floor35.png"
-						}
-					}
-				}
+				"texture": "../Menues/leveledit-page.png"
 			},
 			"walllist":
 			{
 				"position": [-0.8, 0.46],
 				"scale": [0.2, 0.54],
-				"texture": "../Menues/leveledit-page.png",
-					
-				"wallpage0":
-				{
-					"":
-					{
-						"wall1" :
-						{
-							"position": [-0.125, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Walls/wall1.png"
-						},
-						"wall2" :
-						{
-							"position": [-0.035, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Walls/wall2.png"
-						},
-						"wall3" :
-						{
-							"position": [0.055, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Walls/wall3.png"
-						},
-						"wall4" :
-						{
-							"position": [0.145, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Walls/wall4.png"
-						}
-					},
-					"":
-					{
-						"position": [0.0, -0.13],
-						"wall5" :
-						{
-							"position": [-0.125, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Walls/wall5.png"
-						},
-						"wall6" :
-						{
-							"position": [-0.035, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Walls/wall6.png"
-						}
-					}
-				}
+				"texture": "../Menues/leveledit-page.png"
 			},
 			"objectivelist":
 			{
 				"position": [-0.8, 0.46],
 				"scale": [0.2, 0.54],
-				"texture": "../Menues/leveledit-page.png",
-					
-				"objectivepage0":
-				{
-					"":
-					{
-						"objective1" :
-						{
-							"position": [-0.125, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Loot/diamond1.png"
-						},
-						"objective2" :
-						{
-							"position": [-0.035, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Loot/diamond2.png"
-						},
-						"objective3" :
-						{
-							"position": [0.055, 0.42],	
-							"scale": [0.04, 0.060],
-
-							"texture": "../Menues/LevelEdit/Loot/diamond3.png"
-						},
-						"objective4" :
-						{
-							"position": [0.145, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Loot/diamond4.png"
-						}
-					},
-					"":
-					{
-						"position": [0.0, -0.13],
-						"objective5" :
-						{
-							"position": [-0.125, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Loot/diamond5.png"
-						},
-						"objective6" :
-						{
-							"position": [-0.035, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Loot/diamond6.png"
-						},
-						"objective7" :
-						{
-							"position": [0.055, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Loot/diamond7.png"
-						},
-						"objective8" :
-						{
-							"position": [0.145, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Loot/diamond8.png"
-						}
-					},
-										"":
-					{
-						"position": [0.0, -0.26],
-						"objective9" :
-						{
-							"position": [-0.125, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Loot/diamond9.png"
-						}
-					}
-				}
+				"texture": "../Menues/leveledit-page.png"
 			},
 			"entrylist":
 			{
 				"position": [-0.8, 0.46],
 				"scale": [0.2, 0.54],
-				"texture": "../Menues/leveledit-page.png",
-					
-				"entrypage0":
-				{
-					"":
-					{
-						"entry1" :
-						{
-							"position": [-0.125, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Entry/entry1.png"
-						},
-						"entry2" :
-						{
-							"position": [-0.035, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Entry/entry1.png"
-						},
-						"entry3" :
-						{
-							"position": [0.055, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Entry/entry1.png"
-						},
-						"entry4" :
-						{
-							"position": [0.145, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Entry/entry1.png"
-						}
-					}
-				}
+				"texture": "../Menues/leveledit-page.png"
 			},
 			"unitlist":
 			{
 				"position": [-0.8, 0.46],
 				"scale": [0.2, 0.54],
-				"texture": "../Menues/leveledit-page.png",
-					
-				"unitpage0":
-				{
-					"":
-					{
-						"unit1" :
-						{
-							"position": [-0.125, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Units/texturebrown.png"
-						},
-						"unit2" :
-						{
-							"position": [-0.035, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Units/engineer2.png"
-						},
-						"unit3" :
-						{
-							"position": [0.055, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Units/cameraFin.png"
-						},
-						"unit4" :
-						{
-							"position": [0.145, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Units/Enemy.png"
-						}
-					}
-				}
+				"texture": "../Menues/leveledit-page.png"
 			},
 			"traplist":
 			{
 				"position": [-0.8, 0.46],
 				"scale": [0.2, 0.54],
-				"texture": "../Menues/leveledit-page.png",
-					
-				"trappage0":
-				{
-					"":
-					{
-						"trap1" :
-						{
-							"position": [-0.125, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Traps/spiketrap.png"
-						},
-						"trap2" :
-						{
-							"position": [-0.035, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Traps/Tesla.png"
-						},
-						"trap3" :
-						{
-							"position": [0.055, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Traps/SharkTrap.png"
-						}
-					}
-				}
+				"texture": "../Menues/leveledit-page.png"
 			},
 			"decorationlist":
 			{
 				"position": [-0.8, 0.46],
 				"scale": [0.2, 0.54],
-				"texture": "../Menues/leveledit-page.png",
-					
-				"decorationpage0":
-				{
-					"":
-					{
-						"decoration1" :
-						{
-							"position": [-0.125, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Decorations/flatcounter.png"
-						},
-						"decoration2" :
-						{
-							"position": [-0.035, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Decorations/pillowpedestal.png"
-						},
-						"decoration3" :
-						{
-							"position": [0.055, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Decorations/roundcounter.png"
-						},
-						"decoration4" :
-						{
-							"position": [0.145, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Decorations/roundcounter.png"
-						}
-					},
-					"":
-					{
-						"position": [0.0, -0.13],
-						"decoration5" :
-						{
-							"position": [-0.125, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Decorations/roundcounter.png"
-						},
-						"decoration6" :
-						{
-							"position": [-0.035, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Decorations/roundcounter.png"
-						},
-						"decoration7" :
-						{
-							"position": [0.055, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Decorations/roundcounter.png"
-						},
-						"decoration8" :
-						{
-							"position": [0.145, 0.42],	
-							"scale": [0.04, 0.060],
-							"texture": "../Menues/LevelEdit/Decorations/roundcounter.png"
-						}
-					}
-				}
+				"texture": "../Menues/leveledit-page.png"
 			}
-		}
+		},
+    "listbuttons": {
+      "position": [ -0.82, 0.485 ],
+      "scale": [ 0.16, 0.432 ],
+      "left": {
+        "position": [ 0.126, -0.5 ],
+        "scale": [ 0.02, 0.02 ],
+        "texture": "../Menues/LevelEdit/GUI/placement4-button1.png"
+      },
+      "right": {
+        "position": [ 0.174, -0.5 ],
+        "scale": [ 0.02, 0.02 ],
+        "texture": "../Menues/LevelEdit/GUI/placement4-button2.png"
+      }
+    },
+	"NoPlacementButton":
+	{
+		"position": [-0.925, -0.01],
+		"scale": [0.03, 0.0525],
+		"texture": "../Menues/LevelEdit/GUI/button2.png"
+	}
 	},
 	"LEVELSELECT" :
 	{

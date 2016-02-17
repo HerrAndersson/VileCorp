@@ -1,5 +1,4 @@
 #include "Node.h"
-
 namespace GUI
 {
 	Node::Node(NodeInfo* info, DirectX::XMFLOAT2 position, DirectX::XMFLOAT2 scale, DirectX::XMFLOAT4 colorOffset, ID3D11ShaderResourceView* texture,
@@ -7,6 +6,7 @@ namespace GUI
 	{
 		_info = info;
 		_position = position;
+		_positionFinal = position;
 		_scale = scale;
 		_id = id;
 		_text = text;
@@ -16,7 +16,6 @@ namespace GUI
 		_colorOffset = colorOffset;
 		_centered = centered;
 		_hidden = hidden;
-
 		UpdateMatrix();
 		UpdateFont();
 	}
@@ -73,7 +72,24 @@ namespace GUI
 
 	void Node::SetPosition(DirectX::XMFLOAT2 position)
 	{
+		_positionFinal.x += position.x - _position.x;
+		_positionFinal.y += position.y - _position.y;
 		_position = position;
+		for (Node* child : _children)
+		{
+			child->SetParentPosition(_positionFinal);
+		}
+		UpdateMatrix();
+	}
+
+	void Node::SetParentPosition(DirectX::XMFLOAT2 parentPosition)
+	{
+		_positionFinal.x = parentPosition.x + _position.x;
+		_positionFinal.y = parentPosition.y + _position.y;
+		for (Node* child : _children)
+		{
+			child->SetParentPosition(_positionFinal);
+		}
 		UpdateMatrix();
 	}
 
@@ -138,7 +154,11 @@ namespace GUI
 		_hidden = hidden;
 	}
 
-	DirectX::XMFLOAT2 Node::GetPosition() const
+	DirectX::XMFLOAT2 Node::GetFinalPosition() const
+	{
+		return _positionFinal;
+	}
+	DirectX::XMFLOAT2 Node::GetLocalPosition() const
 	{
 		return _position;
 	}
@@ -201,6 +221,7 @@ namespace GUI
 	{
 		return _mm_malloc(i, 16);
 	}
+
 	void Node::operator delete(void* p)
 	{
 		_mm_free(p);

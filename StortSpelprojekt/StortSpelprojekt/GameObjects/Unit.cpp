@@ -136,9 +136,9 @@ Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	_isMoving = false;
 	_direction = {0, 1};
 	Rotate();
-	if (_renderObject->_isSkinned)
+	if (_renderObject->_mesh->_isSkinned)
 	{
-		_animation = new Animation(_renderObject->_skeleton);
+		_animation = new Animation(_renderObject->_mesh->_skeleton);
 		_animation->Freeze(false);
 	}
 	_trapInteractionTime = -1;

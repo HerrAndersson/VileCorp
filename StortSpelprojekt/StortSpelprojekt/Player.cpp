@@ -76,9 +76,6 @@ void Player::MoveUnits(AI::Vec2D movePoint)
 			unit->SetGoal(movePoint);
 			unit->Wait(-1);
 		}
-
-
-
 	}
 }
 

@@ -29,7 +29,6 @@ BaseEdit::BaseEdit(ObjectHandler* objectHandler, System::Controls* controls, Pic
 
 	_marker._g = nullptr;
 	_baseMarker._g = nullptr;
-
 	_tileMap = _objectHandler->GetTileMap();
 }
 
@@ -42,18 +41,18 @@ BaseEdit::~BaseEdit()
 
 // Marker functions
 
-void BaseEdit::CreateMarkers(Type type, const std::string & objectName)
+void BaseEdit::CreateMarkers(Blueprint* blueprint, int textureId)
 {
 	_modeLock = true;
 
 	// Create ghost/blueprint for _baseMarker
-	CreateMarker(type, objectName);
+	CreateMarker(blueprint, textureId);
 	MarkerMoveEvent();
 	_baseMarker = _marker;
 	_baseMarker._origPos = _baseMarker._g->GetTilePosition();
 
 	// Create ghost/blueprint for _marker
-	CreateMarker(type, objectName);
+	CreateMarker(blueprint, textureId);
 }
 
 void BaseEdit::ReleaseMarkers()
@@ -65,13 +64,13 @@ void BaseEdit::ReleaseMarkers()
 	_baseMarker._g = nullptr;
 }
 
-void BaseEdit::CreateMarker(Type type, const std::string& objectName, int subType)
+void BaseEdit::CreateMarker(Blueprint* blueprint, int textureId)
 {
 	AI::Vec2D pickedTile = _pickingDevice->PickTile(_controls->GetMouseCoord()._pos);
 	XMFLOAT3 pos = XMFLOAT3(pickedTile._x, 0, pickedTile._y);
 
-	_objectHandler->Add(type, objectName, pos, XMFLOAT3(0.0f, 0.0f, 0.0f), subType, true);
-	_marker._g = _objectHandler->GetGameObjects()->at(type).back();
+	_objectHandler->Add(blueprint, textureId, pos, XMFLOAT3(0.0f, 0.0f, 0.0f), false);
+	_marker._g = _objectHandler->GetGameObjects()->at(blueprint->_type).back();
 	_marker._created = false;
 	_isPlace = true;
 }
@@ -184,32 +183,35 @@ void BaseEdit::DropEvent()
 
 void BaseEdit::HandleMouseInput()
 {
-	if (_extendedMode && _isSelectionMode)
+	if (_isSelectionMode)
 	{
-		if (_marker._g == nullptr)
+		if (_extendedMode)
 		{
-			// Drag in world
-			bool found = false;
-			for (int i = Type::NR_OF_TYPES - 1; i > -1 && !found; i--)
+			if (_marker._g == nullptr)
 			{
-				DragEvent((Type)i);
-				if (_marker._g != nullptr)
+				// Drag in world
+				bool found = false;
+				for (int i = Type::NR_OF_TYPES - 1; i > -1 && !found; i--)
 				{
-					found = true;
+					DragEvent((Type)i);
+					if (_marker._g != nullptr)
+					{
+						found = true;
+					}
 				}
+			}
+			else
+			{
+				// For buttons
+				DragEvent(_marker._g->GetType());
 			}
 		}
 		else
 		{
-			// For buttons
-			DragEvent(_marker._g->GetType());
+			DragEvent(TRAP);
+			DragEvent(GUARD);
+			DragEvent(CAMERA);
 		}
-	}
-	else
-	{
-		DragEvent(TRAP);
-		DragEvent(GUARD);
-		DragEvent(CAMERA);
 	}
 
 	if (_marker._g != nullptr)
@@ -262,6 +264,33 @@ void BaseEdit::HandleKeyInput(double deltaTime)
 	/*
 	Toggle free camera mode
 	*/
+	HandleCamMode();
+	
+	/*
+	Camera scroll
+	*/
+	HandleCamZoom(deltaTime);
+
+	/*
+	Camera rotation
+	*/
+	HandleCamRot();
+
+	/*
+	Camera move
+	*/
+	HandleCamMove(deltaTime);
+}
+
+
+
+// Camera handling
+
+void BaseEdit::HandleCamMode()
+{
+	/*
+	Toggle free camera mode
+	*/
 	if (_controls->IsFunctionKeyDown("DEBUG:ENABLE_FREECAM"))
 	{
 		if (_camera->GetMode() == System::LOCKED_CAM)
@@ -276,24 +305,39 @@ void BaseEdit::HandleKeyInput(double deltaTime)
 			_camera->SetRotation(DirectX::XMFLOAT3(70, 0, 0));
 		}
 	}
+}
 
+void BaseEdit::HandleCamZoom(float deltaTime)
+{
 	/*
 	Camera scroll
 	*/
+	const float ZOOM_MAX = 12.0f;
+	const float ZOOM_MIN = 4.0f;
+	float velocity = deltaTime / 20.0f;
+
 	if (_camera->GetMode() == System::LOCKED_CAM)
 	{
 		if (_controls->IsFunctionKeyDown("CAMERA:ZOOM_CAMERA_IN") &&
-			_camera->GetPosition().y > 4.0f)
+			(_camera->GetPosition().y - velocity) > ZOOM_MIN)
 		{
-			_camera->Move(XMFLOAT3(0.0f, -1.0f, 0.0f), deltaTime);
+			_camera->Move(_camera->GetForwardVector(), velocity);
 		}
 		else if (_controls->IsFunctionKeyDown("CAMERA:ZOOM_CAMERA_OUT") &&
-			_camera->GetPosition().y < 12.0f)
+			(_camera->GetPosition().y + velocity) < ZOOM_MAX)
 		{
-			_camera->Move(XMFLOAT3(0.0f, 1.0f, 0.0f), deltaTime);
+			XMFLOAT3 negForward = XMFLOAT3(
+				_camera->GetForwardVector().x * -1,
+				_camera->GetForwardVector().y * -1,
+				_camera->GetForwardVector().z * -1);
+
+			_camera->Move(negForward, velocity);
 		}
 	}
+}
 
+void BaseEdit::HandleCamRot()
+{
 	/*
 	Camera rotation
 	*/
@@ -329,7 +373,10 @@ void BaseEdit::HandleKeyInput(double deltaTime)
 
 		_camera->SetRotation(rotation);
 	}
+}
 
+void BaseEdit::HandleCamMove(float deltaTime)
+{
 	/*
 	Camera move
 	*/
@@ -386,7 +433,7 @@ void BaseEdit::HandleKeyInput(double deltaTime)
 
 	if (isMoving)
 	{
-		_camera->Move(XMFLOAT3((forward.x + right.x) * v, (forward.y + right.y) * v, (forward.z + right.z) * v), deltaTime);
+		_camera->Move(XMFLOAT3((forward.x + right.x) * v, (forward.y + right.y) * v, (forward.z + right.z) * v), deltaTime / 10);
 	}
 }
 
@@ -440,7 +487,7 @@ bool BaseEdit::CheckValidity(AI::Vec2D tile, Type type)
 	return valid;
 }
 
-void BaseEdit::DragAndPlace(Type type, const std::string& objectName)
+void BaseEdit::DragAndPlace(Blueprint* blueprint, int textureId)
 {
 	if (_isDragAndPlaceMode)
 	{
@@ -448,14 +495,14 @@ void BaseEdit::DragAndPlace(Type type, const std::string& objectName)
 		{
 			if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
 			{
-				CreateMarkers(type, objectName);
+				CreateMarkers(blueprint, textureId);
 				_isPlace = true;
 			}
 
 			// Not really diselect but activates remove mode (temp)
 			if (_controls->IsFunctionKeyDown("MOUSE:DESELECT"))
 			{
-				CreateMarkers(type, objectName);
+				CreateMarkers(blueprint, textureId);
 				_isPlace = false;
 			}
 		}
@@ -507,12 +554,12 @@ void BaseEdit::DragAndPlace(Type type, const std::string& objectName)
 				{
 					for (int y = minY; y <= maxY; y++)
 					{
-						objectOnTile = _tileMap->GetObjectOnTile(x, y, type);
+						objectOnTile = _tileMap->GetObjectOnTile(x, y, blueprint->_type);
 
-						if (CheckValidity(AI::Vec2D(x, y), type))
+						if (CheckValidity(AI::Vec2D(x, y), blueprint->_type))
 						{
 							// Add to valid place
-							_objectHandler->Add(type, objectName, XMFLOAT3(x, 0, y), XMFLOAT3(0.0f, 0.0f, 0.0f), SHARK);
+							_objectHandler->Add(blueprint, textureId, XMFLOAT3(x, 0, y), XMFLOAT3(0.0f, 0.0f, 0.0f), true);
 						}
 					}
 				}
@@ -524,9 +571,9 @@ void BaseEdit::DragAndPlace(Type type, const std::string& objectName)
 					for (int y = minY; y <= maxY; y++)
 					{
 						// TRAP/LOOT/SPAWN OBS!
-						objectOnTile = _tileMap->GetObjectOnTile(x, y, type);
+						objectOnTile = _tileMap->GetObjectOnTile(x, y, blueprint->_type);
 
-						if (objectOnTile != nullptr && type == objectOnTile->GetType())
+						if (objectOnTile != nullptr && blueprint->_type == objectOnTile->GetType())
 						{
 							// Remove
 							_objectHandler->Remove(objectOnTile);
@@ -545,15 +592,17 @@ void BaseEdit::ChangePlaceState()
 		if (_isSelectionMode)
 		{
 			_isSelectionMode = false;
-			_isDragAndDropMode = true;
-			_isDragAndPlaceMode = false;
+			_isDragAndPlaceMode = true;
+
+			_isDragAndDropMode = false;
 			_isPlace = false;
 		}
 		else
 		{
 			_isSelectionMode = true;
-			_isDragAndDropMode = false;
 			_isDragAndPlaceMode = false;
+
+			_isDragAndDropMode = false;
 			_isPlace = false;
 		}
 	}
