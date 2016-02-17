@@ -51,14 +51,62 @@ bool GameLogic::IsGameDone() const
 	return _gameDone;
 }
 
+/*
+Private functions
+*/
 void GameLogic::HandleInput(float deltaTime)
 {
-	//Boxselect Units
+	/*
+	Select units
+	*/
+	HandleUnitSelect();
+
+	/*
+	Show selected units on the GUI
+	*/
+	ShowSelectedInfo();
+
+	/*
+	Handle patrol
+	*/
+	HandlePatrol();
+
+	/*
+	Move units
+	*/
+	HandleUnitMove();
+
+	/*
+	Toggle free camera mode
+	*/
+	HandleCamMode();
+
+	/*
+	Camera scroll
+	*/
+	HandleCamZoom(deltaTime);
+
+	/*
+	Camera rotation
+	*/
+	HandleCamRot();
+
+	/*
+	Camera move
+	*/
+	HandleCamMove(deltaTime);
+}
+
+void GameLogic::HandleUnitSelect()
+{
+	/*
+	Select units
+	*/
 	if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
 		_pickingDevice->SetFirstBoxPoint(_controls->GetMouseCoord()._pos);
 	}
-	
+
 	if (_controls->IsFunctionKeyUp("MOUSE:SELECT"))
 	{
 		//deselect everything first.
@@ -79,7 +127,7 @@ void GameLogic::HandleInput(float deltaTime)
 
 		//Check if we picked anything
 		vector<GameObject*> pickedUnits = _pickingDevice->PickObjects(_controls->GetMouseCoord()._pos, _objectHandler->GetAllByType(GUARD));
-		
+
 		//if units selected
 		if (pickedUnits.size() > 0)
 		{
@@ -98,7 +146,43 @@ void GameLogic::HandleInput(float deltaTime)
 			}
 		}
 	}
+}
 
+void GameLogic::HandlePatrol()
+{
+	//Set Guard Patrol Route if a Guard is Selected
+	if (_controls->IsFunctionKeyDown("PLAY:SET_PATROL"))
+	{
+		if (_player->AreUnitsSelected())
+		{
+			AI::Vec2D tilePos = _pickingDevice->PickTile(_controls->GetMouseCoord()._pos);
+
+			if (_objectHandler->GetTileMap()->IsFloorOnTile(tilePos))
+			{
+				_player->PatrolUnits(tilePos);
+			}
+
+			for (auto u : _player->GetSelectedUnits())
+			{
+				if (u->GetType() == GUARD)
+				{
+					for (auto p : ((Guard*)u)->GetPatrolRoute())
+					{
+						GameObject* patrolFloor = _objectHandler->GetTileMap()->GetObjectOnTile(p, FLOOR);
+						if (patrolFloor != nullptr)
+						{
+
+							patrolFloor->SetColorOffset(XMFLOAT3(0.0f, 0.0f, 1.0f));
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+void GameLogic::HandleUnitMove()
+{
 	//Move units
 	if (_controls->IsFunctionKeyDown("MOUSE:DESELECT"))
 	{
@@ -142,41 +226,14 @@ void GameLogic::HandleInput(float deltaTime)
 				_player->MoveUnits(selectedTile);
 			}
 		}
-
-
 	}
+}
 
-	//Set Guard Patrol Route if a Guard is Selected
-	if (_controls->IsFunctionKeyDown("PLAY:SET_PATROL"))
-	{
-		if (_player->AreUnitsSelected())
-		{
-			AI::Vec2D tilePos = _pickingDevice->PickTile(_controls->GetMouseCoord()._pos);
-
-			if (_objectHandler->GetTileMap()->IsFloorOnTile(tilePos))
-			{
-				_player->PatrolUnits(tilePos);
-			}
-
-			for (auto u : _player->GetSelectedUnits())
-			{
-				if (u->GetType() == GUARD)
-				{
-					for (auto p : ((Guard*)u)->GetPatrolRoute())
-					{
-						GameObject* patrolFloor = _objectHandler->GetTileMap()->GetObjectOnTile(p, FLOOR);
-						if (patrolFloor != nullptr)
-						{
-							
-							patrolFloor->SetColorOffset(XMFLOAT3(0.0f, 0.0f, 1.0f));
-						}		
-					}
-				}
-			}
-		}
-	}
-
-	//Show selected units on the GUI
+void GameLogic::ShowSelectedInfo()
+{
+	/*
+	Show selected units on the GUI
+	*/
 	if (_player->AreUnitsSelected())
 	{
 		vector<Unit*> units = _player->GetSelectedUnits();
@@ -212,7 +269,10 @@ void GameLogic::HandleInput(float deltaTime)
 	{
 		_uiTree->GetNode("unitinfocontainer")->SetHidden(true);
 	}
+}
 
+void GameLogic::HandleCamMode()
+{
 	/*
 	Toggle free camera mode
 	*/
@@ -230,7 +290,10 @@ void GameLogic::HandleInput(float deltaTime)
 			_camera->SetRotation(DirectX::XMFLOAT3(70, 0, 0));
 		}
 	}
+}
 
+void GameLogic::HandleCamZoom(float deltaTime)
+{
 	/*
 	Camera scroll
 	*/
@@ -253,10 +316,13 @@ void GameLogic::HandleInput(float deltaTime)
 				_camera->GetForwardVector().y * -1,
 				_camera->GetForwardVector().z * -1);
 
-			_camera->Move( negForward, velocity);
+			_camera->Move(negForward, velocity);
 		}
 	}
+}
 
+void GameLogic::HandleCamRot()
+{
 	/*
 	Camera rotation
 	*/
@@ -292,7 +358,10 @@ void GameLogic::HandleInput(float deltaTime)
 
 		_camera->SetRotation(rotation);
 	}
+}
 
+void GameLogic::HandleCamMove(float deltaTime)
+{
 	/*
 	Camera move
 	*/
@@ -351,5 +420,4 @@ void GameLogic::HandleInput(float deltaTime)
 	{
 		_camera->Move(XMFLOAT3((forward.x + right.x) * v, (forward.y + right.y) * v, (forward.z + right.z) * v), deltaTime / 10);
 	}
-	
 }
