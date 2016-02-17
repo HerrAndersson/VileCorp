@@ -70,7 +70,7 @@ void PlacementState::OnStateEnter()
 	//TODO: Temporary solution for budget problem when changing back to placement state (Previously it kept spent budget and did not reset it)
 	_playerProfile[_currentPlayer]._gold = 700;
 	_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_playerProfile[_currentPlayer]._gold));
-	_baseEdit = new BaseEdit(_objectHandler, _controls, _pickingDevice, _camera);
+	_baseEdit = new BaseEdit(_objectHandler, _controls, _pickingDevice, _camera, false);
 	_objectHandler->DisableSpawnPoints();
 
 	XMFLOAT3 campos;
@@ -93,26 +93,22 @@ void PlacementState::OnStateExit()
 
 void PlacementState::HandleInput()
 {
-	_baseEdit->DragAndDrop(TRAP);
-	_baseEdit->DragAndDrop(GUARD);
-	_baseEdit->DragAndDrop(CAMERA);
-
 	if (_controls->IsFunctionKeyDown("MENU:MENU"))
 	{
 		ChangeState(PAUSESTATE);
 	}
 
-	if (_baseEdit->GetSelectedObject() != nullptr)
+	if (_baseEdit->GetMarkedObject() != nullptr)
 	{
-		_toPlace._type = _baseEdit->GetSelectedObject()->GetType();
-		_toPlace._subType =_baseEdit->GetSelectedObject()->GetSubType();
-		_toPlace._blueprintID = _baseEdit->GetSelectedObject()->GetID();
+		_toPlace._type = _baseEdit->GetMarkedObject()->GetType();
+		_toPlace._subType =_baseEdit->GetMarkedObject()->GetSubType();
+		_toPlace._blueprintID = _baseEdit->GetMarkedObject()->GetID();
 		EvaluateGoldCost();
 		if (_controls->IsFunctionKeyDown("MAP_EDIT:DELETE_UNIT"))
 		{
 			_playerProfile[_currentPlayer]._gold += _toPlace._goldCost;
 			_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_playerProfile[_currentPlayer]._gold));
-			_baseEdit->DeleteSelectedObject();
+			_baseEdit->DeleteMarkedObject();
 			_toPlace.ResetTemps();
 		}
 	}
@@ -204,7 +200,7 @@ void PlacementState::HandleButtons()
 			_baseEdit->CreateMarker(_toPlace._type, _toPlace._name, _toPlace._subType);
 			_playerProfile[_currentPlayer]._gold -= _toPlace._goldCost;
 			_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_playerProfile[_currentPlayer]._gold));
-			_toPlace._blueprintID = _baseEdit->GetSelectedObject()->GetID();
+			_toPlace._blueprintID = _baseEdit->GetMarkedObject()->GetID();
 		}
 		else
 		{

@@ -26,8 +26,6 @@ void LevelEditState::Update(float deltaTime)
 	HandleInput();
 	HandleButtons();
 
-
-	_baseEdit->DragAndDrop();
 	_baseEdit->DragAndPlace(_toPlace._type, _toPlace._name);
 }
 
@@ -42,7 +40,7 @@ void LevelEditState::OnStateEnter()
 
 	_objectHandler->EnlargeTilemap(50);
 
-	_baseEdit = new BaseEdit(_objectHandler, _controls, _pickingDevice, _camera);
+	_baseEdit = new BaseEdit(_objectHandler, _controls, _pickingDevice, _camera, true);
 
 	XMFLOAT3 campos;
 	campos.x = _objectHandler->GetTileMap()->GetWidth() / 2;

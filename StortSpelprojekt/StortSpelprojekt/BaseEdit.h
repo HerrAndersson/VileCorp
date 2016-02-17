@@ -35,41 +35,37 @@ private:
 	} _marker, _baseMarker;
 
 	// FLAGS
+	bool _extendedMode;
 	bool _isSelectionMode;
 	bool _isDragAndDropMode;
 	bool _isDragAndPlaceMode;
 	bool _isPlace;
 	bool _modeLock;
-
-	void HandleInput(double deltaTime);
 	
 	bool CheckValidity(AI::Vec2D tile, Type type);
-	void SetValidity(Marker* m, Type type);
 
-	void MarkerMoveEvent(Type type);
-	void DragAndDropEvent(Type type);
+	void MarkerMoveEvent();
+	void DragEvent(Type type);
+	void DropEvent();
+
+	void HandleMouseInput();
+	void HandleKeyInput(double deltaTime);
 
 	// Used for Drag&Place
 	void CreateMarkers(Type type, const std::string& objectName);
 	void ReleaseMarkers();
 
 public:
-	BaseEdit(ObjectHandler* objectHandler, System::Controls* controls, PickingDevice* pickingDevice, System::Camera* camera);
+	BaseEdit(ObjectHandler* objectHandler, System::Controls* controls, PickingDevice* pickingDevice, System::Camera* camera, bool extendedMode);
 	~BaseEdit();
 
-	GameObject* GetSelectedObject();
-	bool DeleteSelectedObject();
+	void CreateMarker(Type type, const std::string& objectName, int subType = 0);
+	GameObject* GetMarkedObject();
+	bool DeleteMarkedObject();
 
-	bool Add(Type type, const std::string& name);
-	bool Delete(Type type);
-	bool TypeOn(Type type);
-
-	void DragAndDrop(Type type); // TODO: Change to general selection mode
-	void DragAndDrop(); // TODO: Change to general selection mode
+	// Should be reworked 
 	void DragAndPlace(Type type, const std::string& objectName);
 	
-	void CreateMarker(Type type, const std::string& objectName, int subType = 0);
-
 	void ChangePlaceState();
 	bool IsSelection() const;
 	bool IsDragAndPlace() const;

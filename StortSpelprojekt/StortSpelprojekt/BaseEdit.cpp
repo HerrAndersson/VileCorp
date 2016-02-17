@@ -9,14 +9,17 @@ bool compareFloat3(XMFLOAT3 a, XMFLOAT3 b)
 	return (a.x == b.x && a.z == b.z);
 }
 
+
+
 // Instancing
-BaseEdit::BaseEdit(ObjectHandler* objectHandler, System::Controls* controls, PickingDevice* pickingDevice, System::Camera* camera)
+BaseEdit::BaseEdit(ObjectHandler* objectHandler, System::Controls* controls, PickingDevice* pickingDevice, System::Camera* camera, bool extendedMode)
 {
 	_objectHandler = objectHandler;
 	_controls = controls;
 	_pickingDevice = pickingDevice;
 	_camera = camera;
 
+	_extendedMode = extendedMode;
 	_isSelectionMode = true;
 	_isDragAndDropMode = false;
 	_isDragAndPlaceMode = false;
@@ -35,13 +38,50 @@ BaseEdit::~BaseEdit()
 	ReleaseMarkers();
 }
 
-// Other functions
-GameObject* BaseEdit::GetSelectedObject()
+
+
+// Marker functions
+
+void BaseEdit::CreateMarkers(Type type, const std::string & objectName)
+{
+	_modeLock = true;
+
+	// Create ghost/blueprint for _baseMarker
+	CreateMarker(type, objectName);
+	MarkerMoveEvent();
+	_baseMarker = _marker;
+	_baseMarker._origPos = _baseMarker._g->GetTilePosition();
+
+	// Create ghost/blueprint for _marker
+	CreateMarker(type, objectName);
+}
+
+void BaseEdit::ReleaseMarkers()
+{
+	// Delete ghosts/blueprints
+	_objectHandler->Remove(_marker._g);
+	_marker._g = nullptr;
+	_objectHandler->Remove(_baseMarker._g);
+	_baseMarker._g = nullptr;
+}
+
+void BaseEdit::CreateMarker(Type type, const std::string& objectName, int subType)
+{
+	AI::Vec2D pickedTile = _pickingDevice->PickTile(_controls->GetMouseCoord()._pos);
+	XMFLOAT3 pos = XMFLOAT3(pickedTile._x, 0, pickedTile._y);
+
+	_objectHandler->Add(type, objectName, pos, XMFLOAT3(0.0f, 0.0f, 0.0f), subType, true);
+	_marker._g = _objectHandler->GetGameObjects()->at(type).back();
+	_marker._created = false;
+	_isPlace = true;
+}
+
+GameObject* BaseEdit::GetMarkedObject()
 {
 	return _marker._g;
 }
 
-bool BaseEdit::DeleteSelectedObject()
+bool BaseEdit::DeleteMarkedObject()
 {
 	bool removed = _objectHandler->Remove(_marker._g);
 	_marker.Reset();
@@ -49,130 +89,45 @@ bool BaseEdit::DeleteSelectedObject()
 	return removed;
 }
 
-bool BaseEdit::Add(Type type, const std::string& name)
-{
-	return _objectHandler->Add(type, name, _marker._g->GetPosition(), XMFLOAT3(0.0f, 0.0f, 0.0f));
-}
 
-bool BaseEdit::Delete(Type type)
-{
-	vector<GameObject*>* vec = &_objectHandler->GetGameObjects()->at(type);
-	for (GameObject* g : *vec)
-	{
-		if (_marker._g != g && compareFloat3(_marker._g->GetPosition(), g->GetPosition()))
-		{
-			_objectHandler->Remove(g->GetType(), g->GetID());
-			return true;
-		}
-	}
 
-	return false;
-}
+// Key events
 
-bool BaseEdit::TypeOn(Type type)
-{
-	vector<GameObject*>* vec = &_objectHandler->GetGameObjects()->at(type);
-	for (GameObject* g : *vec)
-	{
-		if (_marker._g != g && compareFloat3(_marker._g->GetPosition(), g->GetPosition()))
-		{
-			return true;
-		}
-	}
-
-	return false;
-}
-
-bool BaseEdit::CheckValidity(AI::Vec2D tile, Type type)
-{
-	GameObject* objectOnTile = _tileMap->GetObjectOnTile(tile._x, tile._y, type);
-
-	bool valid = true;
-
-	if (objectOnTile == nullptr && _tileMap->IsPlaceable(tile, type))
-	{
-		if (type == WALL && !_tileMap->IsTileEmpty(tile))
-		{
-			valid = false;
-		}
-		else
-		{
-			if (type == GUARD || type == ENEMY)
-			{
-				if (_tileMap->UnitsOnTile(tile) || _tileMap->IsTrapOnTile(tile) || _tileMap->IsTypeOnTile(tile, CAMERA))
-				{
-					valid = false;
-				}
-			}
-			else if (type == TRAP)
-			{
-				if (_tileMap->UnitsOnTile(tile) || _tileMap->IsTypeOnTile(tile, CAMERA))
-				{
-					valid = false;
-				}
-			}
-			else if (type == CAMERA)
-			{
-				if (_tileMap->UnitsOnTile(tile) || _tileMap->IsTrapOnTile(tile))
-				{
-					valid = false;
-				}
-			}
-		}
-	}
-	else
-	{
-		// If outside tilemap
-		valid = false;
-	}
-
-	return valid;
-}
-
-void BaseEdit::SetValidity(Marker* m, Type type)
+void BaseEdit::MarkerMoveEvent()
 {
 	AI::Vec2D pickedTile = _pickingDevice->PickTile(_controls->GetMouseCoord()._pos);
 
-	if (_tileMap && m->_g->GetType() == type)
+	if (_tileMap)
 	{
-		GameObject* objectOnTile = _tileMap->GetObjectOnTile(pickedTile._x, pickedTile._y, type);
+		GameObject* objectOnTile = _tileMap->GetObjectOnTile(pickedTile._x, pickedTile._y, _marker._g->GetType());
 
 		// New position
-		XMFLOAT3 p = XMFLOAT3(m->_g->GetPosition());
+		XMFLOAT3 p = XMFLOAT3(_marker._g->GetPosition());
 		p.x = pickedTile._x;
 		p.z = pickedTile._y;
 
 		// Check validity of placement
-		m->_placeable = CheckValidity(pickedTile, type);
+		_marker._placeable = CheckValidity(pickedTile, _marker._g->GetType());
 
 		// Move marker grafically
-		m->_g->SetPosition(p);
+		_marker._g->SetPosition(p);
 
 		// Move marker logically but unconnected
-		m->_g->SetTilePosition(pickedTile);
+		_marker._g->SetTilePosition(pickedTile);
 
 		// Change color to represent placement validity
-		if (!m->_placeable)
+		if (!_marker._placeable)
 		{
-			m->_g->SetColorOffset(XMFLOAT3(1.0f, 0.0f, 0.0f));
+			_marker._g->SetColorOffset(XMFLOAT3(1.0f, 0.0f, 0.0f));
 		}
 		else
 		{
-			m->_g->SetColorOffset(XMFLOAT3(0.0f, 1.0f, 0.0f));
+			_marker._g->SetColorOffset(XMFLOAT3(0.0f, 1.0f, 0.0f));
 		}
 	}
 }
 
-void BaseEdit::MarkerMoveEvent(Type type)
-{
-	if (_marker._g != nullptr && _marker._g->GetType() == type/* && 
-		(_controls->IsFunctionKeyDown("MOUSE:DRAG") ||(_isDragAndPlaceMode && _modeLock))*/)
-	{
-		SetValidity(&_marker, type);
-	}
-}
-
-void BaseEdit::DragAndDropEvent(Type type)
+void BaseEdit::DragEvent(Type type)
 {
 	if (_controls->IsFunctionKeyDown("MOUSE:SELECT") && !_isPlace)
 	{
@@ -194,287 +149,83 @@ void BaseEdit::DragAndDropEvent(Type type)
 	}
 }
 
-void BaseEdit::CreateMarkers(Type type, const std::string & objectName)
+void BaseEdit::DropEvent()
 {
-	_modeLock = true;
+	_modeLock = false;
+	_marker._g->SetColorOffset(XMFLOAT3(0.0f, 0.0f, 0.0f));
+	XMFLOAT3 p = XMFLOAT3(_marker._g->GetPosition());
 
-	// Create ghost/blueprint for _baseMarker
-	CreateMarker(type, objectName);
-	_baseMarker = _marker;
-	SetValidity(&_baseMarker, _baseMarker._g->GetType());
-	_baseMarker._origPos = _baseMarker._g->GetTilePosition();
-
-	// Create ghost/blueprint for _marker
-	CreateMarker(type, objectName);
-}
-
-void BaseEdit::ReleaseMarkers()
-{
-	// Delete ghosts/blueprints
-	_objectHandler->Remove(_marker._g);
-	_marker._g = nullptr;
-	_objectHandler->Remove(_baseMarker._g);
-	_baseMarker._g = nullptr;
-}
-
-void BaseEdit::DragAndDrop(Type type)
-{
-	if (_isSelectionMode)
+	if (!_marker._placeable)
 	{
-		DragAndDropEvent(type);
+		//Redirect position to old pos
+		p.x = _marker._origPos._x;
+		p.z = _marker._origPos._y;
+		_marker._g->SetPosition(p);
+	}
+	// Bind position logically
+	_tileMap->AddObjectToTile(p.x, p.z, _marker._g);
 
-		MarkerMoveEvent(type);
-
-
-		if (_marker._g != nullptr)
+	if (_marker._g != nullptr && _isPlace)
+	{
+		if (!_marker._g->IsVisible())
 		{
-			if (_isDragAndDropMode)
+			_objectHandler->Remove(_marker._g);
+		}
+		if (_marker._created == false && _marker._placeable == false)
+		{
+			_objectHandler->Remove(_marker._g);
+		}
+	}
+
+	_marker.Reset();
+	_isPlace = false;
+	_isDragAndDropMode = false;
+}
+
+void BaseEdit::HandleMouseInput()
+{
+	if (_extendedMode && _isSelectionMode)
+	{
+		if (_marker._g == nullptr)
+		{
+			// Drag in world
+			bool found = false;
+			for (int i = Type::NR_OF_TYPES - 1; i > -1 && !found; i--)
 			{
-				if (_controls->IsFunctionKeyUp("MOUSE:SELECT") && type == _marker._g->GetType())
+				DragEvent((Type)i);
+				if (_marker._g != nullptr)
 				{
-					_modeLock = false;
-					_marker._g->SetColorOffset(XMFLOAT3(0.0f, 0.0f, 0.0f));
-					XMFLOAT3 p = XMFLOAT3(_marker._g->GetPosition());
-
-					if (!_marker._placeable)
-					{
-						//Redirect position to old pos
-						p.x = _marker._origPos._x;
-						p.z = _marker._origPos._y;
-						_marker._g->SetPosition(p);
-					}
-					// Bind position logically
-					_tileMap->AddObjectToTile(p.x, p.z, _marker._g);
-
-					if (_marker._g != nullptr && _isPlace)
-					{
-						if (!_marker._g->IsVisible())
-						{
-							_objectHandler->Remove(_marker._g);
-						}
-						if (_marker._created == false && _marker._placeable == false)
-						{
-							_objectHandler->Remove(_marker._g);
-						}
-					}
-
-					_marker.Reset();
-					_isPlace = false;
-					_isDragAndDropMode = false;
-				}
-			}
-			else
-			{
-				if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
-				{
-					_modeLock = false;
-					_marker._g->SetColorOffset(XMFLOAT3(0.0f, 0.0f, 0.0f));
-					XMFLOAT3 p = XMFLOAT3(_marker._g->GetPosition());
-
-					if (!_marker._placeable)
-					{
-						//Redirect position to old pos
-						p.x = _marker._origPos._x;
-						p.z = _marker._origPos._y;
-						_marker._g->SetPosition(p);
-					}
-					// Bind position logically
-					_tileMap->AddObjectToTile(p.x, p.z, _marker._g);
-
-					if (_marker._g != nullptr && _isPlace)
-					{
-						if (!_marker._g->IsVisible())
-						{
-							_objectHandler->Remove(_marker._g);
-						}
-						if (_marker._created == false && _marker._placeable == false)
-						{
-							_objectHandler->Remove(_marker._g);
-						}
-					}
-
-					_marker.Reset();
-					_isPlace = false;
+					found = true;
 				}
 			}
 		}
-	}
-}
-
-void BaseEdit::DragAndDrop()
-{
-	if (_marker._g == nullptr)
-	{
-		// Drag in world
-		bool found = false;
-		for (int i = Type::NR_OF_TYPES - 1; i > -1 && !found; i--)
+		else
 		{
-			DragAndDrop((Type)i);
-			if (_marker._g != nullptr)
-			{
-				found = true;
-			}
+			// For buttons
+			DragEvent(_marker._g->GetType());
 		}
 	}
 	else
 	{
-		// For buttons
-		DragAndDrop(_marker._g->GetType());
+		DragEvent(TRAP);
+		DragEvent(GUARD);
+		DragEvent(CAMERA);
 	}
-}
 
-void BaseEdit::DragAndPlace(Type type, const std::string& objectName)
-{
-	if (_isDragAndPlaceMode)
+	if (_marker._g != nullptr)
 	{
-		if (!_modeLock)
+		MarkerMoveEvent();
+
+		if ((_isDragAndDropMode && _controls->IsFunctionKeyUp("MOUSE:SELECT"))
+			|| (!_isDragAndDropMode && _controls->IsFunctionKeyDown("MOUSE:SELECT")))
 		{
-			if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
-			{
-				CreateMarkers(type, objectName);
-				_isPlace = true;
-			}
-
-			// Not really diselect but activates remove mode (temp)
-			if (_controls->IsFunctionKeyDown("MOUSE:DESELECT"))
-			{
-				CreateMarkers(type, objectName);
-				_isPlace = false;
-			}
-		}
-
-		if ((_controls->IsFunctionKeyUp("MOUSE:SELECT") && _isPlace) || (_controls->IsFunctionKeyUp("MOUSE:DESELECT") && !_isPlace))
-		{
-			_modeLock = false;
-
-			_marker._origPos = _marker._g->GetTilePosition();
-
-			// Identify min and max
-			int minX, maxX;
-			if (_baseMarker._origPos._x < _marker._origPos._x)
-			{
-				minX = _baseMarker._origPos._x;
-				maxX = _marker._origPos._x;
-			}
-			else
-			{
-				minX = _marker._origPos._x;
-				maxX = _baseMarker._origPos._x;
-			}
-			int minY, maxY;
-			if (_baseMarker._origPos._y < _marker._origPos._y)
-			{
-				minY = _baseMarker._origPos._y;
-				maxY = _marker._origPos._y;
-			}
-			else
-			{
-				minY = _marker._origPos._y;
-				maxY = _baseMarker._origPos._y;
-			}
-
-			ReleaseMarkers();
-
-			// Check if extreme poins is outside Tilemap
-			if (minX < 0) minX == 0;
-			if (minY < 0) minY == 0;
-			if (maxX >= _tileMap->GetWidth()) maxX >= _tileMap->GetWidth() - 1;
-			if (maxY >= _tileMap->GetHeight()) maxX >= _tileMap->GetHeight() - 1;
-
-
-			// Check tiles
-			GameObject* objectOnTile;
-			if (_isPlace) // Place
-			{
-				for (int x = minX; x <= maxX; x++)
-				{
-					for (int y = minY; y <= maxY; y++)
-					{
-						objectOnTile = _tileMap->GetObjectOnTile(x, y, type);
-
-						if (CheckValidity(AI::Vec2D(x, y), type))
-						{
-							// Add to valid place
-							_objectHandler->Add(type, objectName, XMFLOAT3(x, 0, y), XMFLOAT3(0.0f, 0.0f, 0.0f), SHARK);
-						}
-					}
-				}
-			}
-			else // Remove
-			{
-				for (int x = minX; x <= maxX; x++)
-				{
-					for (int y = minY; y <= maxY; y++)
-					{
-						// TRAP/LOOT/SPAWN OBS!
-						objectOnTile = _tileMap->GetObjectOnTile(x, y, type);
-
-						if (objectOnTile != nullptr && type == objectOnTile->GetType())
-						{
-							// Remove
-							_objectHandler->Remove(objectOnTile);
-						}
-					}
-				}
-			}
+			DropEvent();
 		}
 	}
 }
 
-void BaseEdit::CreateMarker(Type type, const std::string& objectName, int subType)
+void BaseEdit::HandleKeyInput(double deltaTime)
 {
-	AI::Vec2D pickedTile = _pickingDevice->PickTile(_controls->GetMouseCoord()._pos);
-	XMFLOAT3 pos = XMFLOAT3(pickedTile._x, 0, pickedTile._y);
-
-	_objectHandler->Add(type, objectName, pos, XMFLOAT3(0.0f, 0.0f, 0.0f), subType, true);
-	_marker._g = _objectHandler->GetGameObjects()->at(type).back();
-	_marker._created = false;
-	_isPlace = true;
-}
-
-void BaseEdit::ChangePlaceState()
-{
-	if (!_modeLock)
-	{
-		if (_isSelectionMode)
-		{
-			_isSelectionMode = false;
-			_isDragAndDropMode = false;
-			_isDragAndPlaceMode = true;
-			_isPlace = false;
-		}
-		else
-		{
-			_isSelectionMode = true;
-			_isDragAndDropMode = false;
-			_isDragAndPlaceMode = false;
-			_isPlace = false;
-		}
-	}
-}
-
-bool BaseEdit::IsSelection() const
-{
-	return _isSelectionMode;
-}
-
-bool BaseEdit::IsDragAndPlace() const
-{
-	return _isDragAndPlaceMode;
-}
-
-bool BaseEdit::IsPlace() const
-{
-	return _isPlace;
-}
-
-void BaseEdit::HandleInput(double deltaTime)
-{
-	if (_marker._g != nullptr && _isDragAndPlaceMode)
-	{
-		MarkerMoveEvent(_marker._g->GetType());
-	}
-
 	if (_marker._g != nullptr)
 	{
 		// Rotation
@@ -525,7 +276,7 @@ void BaseEdit::HandleInput(double deltaTime)
 			_camera->SetRotation(DirectX::XMFLOAT3(70, 0, 0));
 		}
 	}
-	
+
 	/*
 	Camera scroll
 	*/
@@ -635,11 +386,196 @@ void BaseEdit::HandleInput(double deltaTime)
 
 	if (isMoving)
 	{
-		_camera->Move(XMFLOAT3((forward.x + right.x) * v,(forward.y + right.y) * v, (forward.z + right.z) * v), deltaTime);
+		_camera->Move(XMFLOAT3((forward.x + right.x) * v, (forward.y + right.y) * v, (forward.z + right.z) * v), deltaTime);
 	}
+}
+
+
+
+// Other functions
+
+bool BaseEdit::CheckValidity(AI::Vec2D tile, Type type)
+{
+	GameObject* objectOnTile = _tileMap->GetObjectOnTile(tile._x, tile._y, type);
+
+	bool valid = true;
+
+	if (objectOnTile == nullptr && _tileMap->IsPlaceable(tile, type))
+	{
+		if (type == WALL && !_tileMap->IsTileEmpty(tile))
+		{
+			valid = false;
+		}
+		else
+		{
+			if (type == GUARD || type == ENEMY)
+			{
+				if (_tileMap->UnitsOnTile(tile) || _tileMap->IsTrapOnTile(tile) || _tileMap->IsTypeOnTile(tile, CAMERA))
+				{
+					valid = false;
+				}
+			}
+			else if (type == TRAP)
+			{
+				if (_tileMap->UnitsOnTile(tile) || _tileMap->IsTypeOnTile(tile, CAMERA))
+				{
+					valid = false;
+				}
+			}
+			else if (type == CAMERA)
+			{
+				if (_tileMap->UnitsOnTile(tile) || _tileMap->IsTrapOnTile(tile))
+				{
+					valid = false;
+				}
+			}
+		}
+	}
+	else
+	{
+		// If outside tilemap
+		valid = false;
+	}
+
+	return valid;
+}
+
+void BaseEdit::DragAndPlace(Type type, const std::string& objectName)
+{
+	if (_isDragAndPlaceMode)
+	{
+		if (!_modeLock)
+		{
+			if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
+			{
+				CreateMarkers(type, objectName);
+				_isPlace = true;
+			}
+
+			// Not really diselect but activates remove mode (temp)
+			if (_controls->IsFunctionKeyDown("MOUSE:DESELECT"))
+			{
+				CreateMarkers(type, objectName);
+				_isPlace = false;
+			}
+		}
+
+		if ((_controls->IsFunctionKeyUp("MOUSE:SELECT") && _isPlace) || (_controls->IsFunctionKeyUp("MOUSE:DESELECT") && !_isPlace))
+		{
+			_modeLock = false;
+
+			_marker._origPos = _marker._g->GetTilePosition();
+
+			// Identify min and max
+			int minX, maxX;
+			if (_baseMarker._origPos._x < _marker._origPos._x)
+			{
+				minX = _baseMarker._origPos._x;
+				maxX = _marker._origPos._x;
+			}
+			else
+			{
+				minX = _marker._origPos._x;
+				maxX = _baseMarker._origPos._x;
+			}
+			int minY, maxY;
+			if (_baseMarker._origPos._y < _marker._origPos._y)
+			{
+				minY = _baseMarker._origPos._y;
+				maxY = _marker._origPos._y;
+			}
+			else
+			{
+				minY = _marker._origPos._y;
+				maxY = _baseMarker._origPos._y;
+			}
+
+			ReleaseMarkers();
+
+			// Check if extreme poins is outside Tilemap
+			if (minX < 0) minX == 0;
+			if (minY < 0) minY == 0;
+			if (maxX >= _tileMap->GetWidth()) maxX >= _tileMap->GetWidth() - 1;
+			if (maxY >= _tileMap->GetHeight()) maxX >= _tileMap->GetHeight() - 1;
+
+
+			// Check tiles
+			GameObject* objectOnTile;
+			if (_isPlace) // Place
+			{
+				for (int x = minX; x <= maxX; x++)
+				{
+					for (int y = minY; y <= maxY; y++)
+					{
+						objectOnTile = _tileMap->GetObjectOnTile(x, y, type);
+
+						if (CheckValidity(AI::Vec2D(x, y), type))
+						{
+							// Add to valid place
+							_objectHandler->Add(type, objectName, XMFLOAT3(x, 0, y), XMFLOAT3(0.0f, 0.0f, 0.0f), SHARK);
+						}
+					}
+				}
+			}
+			else // Remove
+			{
+				for (int x = minX; x <= maxX; x++)
+				{
+					for (int y = minY; y <= maxY; y++)
+					{
+						// TRAP/LOOT/SPAWN OBS!
+						objectOnTile = _tileMap->GetObjectOnTile(x, y, type);
+
+						if (objectOnTile != nullptr && type == objectOnTile->GetType())
+						{
+							// Remove
+							_objectHandler->Remove(objectOnTile);
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+void BaseEdit::ChangePlaceState()
+{
+	if (!_modeLock)
+	{
+		if (_isSelectionMode)
+		{
+			_isSelectionMode = false;
+			_isDragAndDropMode = true;
+			_isDragAndPlaceMode = false;
+			_isPlace = false;
+		}
+		else
+		{
+			_isSelectionMode = true;
+			_isDragAndDropMode = false;
+			_isDragAndPlaceMode = false;
+			_isPlace = false;
+		}
+	}
+}
+
+bool BaseEdit::IsSelection() const
+{
+	return _isSelectionMode;
+}
+
+bool BaseEdit::IsDragAndPlace() const
+{
+	return _isDragAndPlaceMode;
+}
+
+bool BaseEdit::IsPlace() const
+{
+	return _isPlace;
 }
 
 void BaseEdit::Update(float deltaTime)
 {
-	HandleInput(deltaTime);
+	HandleMouseInput();
+	HandleKeyInput(deltaTime);
 }
