@@ -476,6 +476,13 @@ void Trap::SetTilePosition(AI::Vec2D pos)
 		break;
 	case SHARK:			//Trigger area is currently the same as the trap's physical area. Might be awkward since the shark trap is larger than its AOE.
 	{
+		for (int i = 0; i < _tileSize; i++)
+		{
+			if (_tileMap->IsFloorOnTile(_occupiedTiles[i]))
+			{
+				_tileMap->GetObjectOnTile(_occupiedTiles[i], FLOOR)->SetColorOffset({ 0,0,0 });
+			}
+		}
 		_nrOfAOETiles = 0;
 		AI::Vec2D offset = { _direction._y, _direction._x };
 		_nrOfAOETiles = 3;
@@ -490,6 +497,13 @@ void Trap::SetTilePosition(AI::Vec2D pos)
 			_occupiedTiles[3 * i + 1] = _tilePosition + dirOffset;
 			_occupiedTiles[3 * i + 2] = _tilePosition + dirOffset + offset;
 			dirOffset += _direction;
+		}
+		for (int i = 0; i < _tileSize; i++)
+		{
+			if (_tileMap->IsFloorOnTile(_occupiedTiles[i]))
+			{
+				_tileMap->GetObjectOnTile(_occupiedTiles[i], FLOOR)->SetColorOffset({ 2.0f, 2.0f, 0.0f });
+			}
 		}
 		break;
 	}

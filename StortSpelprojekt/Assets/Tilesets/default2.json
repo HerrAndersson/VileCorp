@@ -20,7 +20,8 @@
   "traps": [
     "AnvilAnimation-27.bin",
     "AnvilAnimation-27.bin",
-    "TeslaAnimation-27.bin"
+    "TeslaAnimation-27.bin",
+	"SharkTrap-27.bin"
 
   ],
   "triggers": [
@@ -28,8 +29,8 @@
 
   ],
   "guards": [
-    "ErikBaseman-27.bin",
-    "ErikBaseman-27.bin"
+    "Basewoman-27.bin",
+    "Basewoman-27.bin"
 
   ],
   "enemies": [

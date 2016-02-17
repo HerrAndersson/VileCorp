@@ -372,7 +372,7 @@ void Unit::Update(float deltaTime)
 	}
 	if (_trapInteractionTime >= 0)
 	{
-		UseTrap();
+		UseTrap(true);
 	}
 	else
 	{
@@ -442,7 +442,7 @@ void Unit::SetVisibility(bool visible)
 	}
 }
 
-void Unit::UseTrap()
+void Unit::UseTrap(bool use)
 {
 
 	if (_trapInteractionTime < 0)
@@ -455,7 +455,10 @@ void Unit::UseTrap()
 	}
 	else
 	{
-		act(_objective);
+		if (use == true)
+		{
+			act(_objective);
+		}
 		_trapInteractionTime--;
 	}
 }

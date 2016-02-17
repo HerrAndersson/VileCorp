@@ -72,7 +72,7 @@ public:
 	void ClearObjective();
 	void TakeDamage(int damage);
 	void SetVisibility(bool visible);
-	void UseTrap();
+	void UseTrap(bool use);
 	int GetVisionRadius()const;
 
 	enum Anim { IDLEANIM, WALKANIM, FIXTRAPANIM, FIGHTANIM, PICKUPOBJECTANIM, NR_OF_ANIM/*Has to be last*/ };

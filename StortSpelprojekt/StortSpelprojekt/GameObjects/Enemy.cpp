@@ -109,6 +109,7 @@ void Enemy::act(GameObject* obj)
 			{
 				obj->SetPickUpState(PICKINGUP);
 				Animate(PICKUPOBJECTANIM);
+				UseTrap(false);
 				_heldObject = obj;
 				obj->SetVisibility(_visible);
 			}
@@ -125,7 +126,7 @@ void Enemy::act(GameObject* obj)
 			{
 				if (_trapInteractionTime < 0)
 				{
-					UseTrap();
+					UseTrap(true);
 				}
 				else if (_trapInteractionTime == 0)
 				{
@@ -145,6 +146,7 @@ void Enemy::act(GameObject* obj)
 				static_cast<Unit*>(obj)->TakeDamage(10);
 				_stop = true;
 				Animate(FIGHTANIM);
+				UseTrap(false);
 			}
 			break;
 		case ENEMY:

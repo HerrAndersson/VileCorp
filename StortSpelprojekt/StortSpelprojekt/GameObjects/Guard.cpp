@@ -83,7 +83,7 @@ void Guard::act(GameObject* obj)
 			{
 				if (_trapInteractionTime < 0)
 				{
-					UseTrap();
+					UseTrap(true);
 					Animate(FIXTRAPANIM);
 				}
 				else if (_trapInteractionTime == 0)
