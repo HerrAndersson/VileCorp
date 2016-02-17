@@ -16,6 +16,7 @@ const std::string BLUEPRINTS_PATH = "Assets/blueprints.json";
 struct Blueprint
 {
 	std::string _name, _tooltip, _mesh;
-	int _type, _subType;
+	Type _type;
+	int _subType;
 	std::vector<std::string> _textures, _thumbnails;
 };

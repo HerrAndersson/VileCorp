@@ -22,15 +22,7 @@ namespace Renderer
 		swapChainDesc.OutputWindow = hwnd;
 		swapChainDesc.SampleDesc.Count = 1;
 		swapChainDesc.SampleDesc.Quality = 0;
-
-		if (settings->_fullscreen)
-		{
-			swapChainDesc.Windowed = false;
-		}
-		else
-		{
-			swapChainDesc.Windowed = true;
-		}
+		swapChainDesc.Windowed = true;
 
 		swapChainDesc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
 		swapChainDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
@@ -431,7 +423,7 @@ namespace Renderer
 		_deviceContext->RSSetState(_rasterizerStateBack);
 	}
 
-	void DirectXHandler::ResizeResources(HWND hwnd, System::Settings* settings)
+	void DirectXHandler::ResizeResources(System::Settings* settings)
 	{
 		if (_swapChain && settings->_screenHeight > 0 && settings->_screenWidth > 0)
 		{

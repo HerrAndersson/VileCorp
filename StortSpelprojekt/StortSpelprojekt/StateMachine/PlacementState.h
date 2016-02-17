@@ -23,27 +23,23 @@ private:
 	{
 		ToPlace()
 		{
-			_type = TRAP;
-			_subType = 0;
-			_name = "trap_proto";
+			_blueprint = nullptr;
 			ResetTemps();
 		}
 		void ResetTemps()
 		{
 			_goldCost = -1;
-			_blueprintID = 1;
+			_markerID = 1;
 		}
-		Type _type;
-		int _subType;
-		std::string _name;
+		Blueprint* _blueprint;
 		int _goldCost;
-		int _blueprintID;
+		int _markerID;
 	} _toPlace;
 
 	void EvaluateGoldCost();
 
 public:
-	PlacementState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::Settings* settings, System::SoundModule* soundModule);
+	PlacementState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule);
 	~PlacementState();
 
 	void Update(float deltaTime);

@@ -136,6 +136,11 @@ void Guard::SetPatrolPoint(AI::Vec2D patrolPoint)
 	}
 }
 
+std::vector<AI::Vec2D> Guard::GetPatrolRoute()
+{
+	return _patrolRoute;
+}
+
 void Guard::RemovePatrol()
 {
 	_patrolRoute.clear();

@@ -16,6 +16,7 @@
 #include "Spotlight.h"
 #include "Pointlight.h"
 #include "Grid.h"
+#include "Settings/Settings.h"
 #include "LightCulling.h"
 #include "Blueprints.h"
 
@@ -44,7 +45,7 @@ struct RenderList
 class ObjectHandler
 {
 private:
-
+	System::Settings* _settings;
 	vector<vector<GameObject*>> _gameObjects;
 	Blueprints _blueprints;
 	GameObjectInfo* _gameObjectInfo;
@@ -62,27 +63,15 @@ private:
 	map<GameObject*, Renderer::Pointlight*> _pointligths;
 	LightCulling* _lightCulling;
 
-	Architecture*	MakeFloor(GameObjectFloorInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation);
-	Architecture*	MakeWall(GameObjectWallInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation);
-	Architecture*	MakeFurniture(GameObjectFurnitureInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation);
-	Architecture*	MakeLoot(GameObjectLootInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation);
-	SpawnPoint*		MakeSpawn(GameObjectSpawnInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation);
-	Trap*			MakeTrap(GameObjectTrapInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation, const int subIndex = 0);
-	SecurityCamera*	MakeSecurityCamera(GameObjectCameraInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation);
-	Guard*			MakeGuard(GameObjectGuardInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation);
-	Enemy*			MakeEnemy(GameObjectEnemyInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation);
-
 	void ReleaseGameObjects();
 
 public:
-
-	ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data);
+	ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data, System::Settings* settings);
 	~ObjectHandler();
 
 	//Add a gameobject
 	bool Add(XMFLOAT3 position, XMFLOAT3 rotation, Type type, int subType, string textureReference);
-	bool Add(Type type, int index, const XMFLOAT3& position, const XMFLOAT3& rotation, const int subIndex = 0, const bool blueprint = false);
-	bool Add(Type type, const std::string& name, const XMFLOAT3& position, const XMFLOAT3& rotation, const int subIndex = 0, const bool blueprint = false);
+	bool Add(Blueprint* blueprint, int textureId, const XMFLOAT3& position, const XMFLOAT3& rotation, const bool placeOnTilemap = true);
 	
 	bool Remove(int ID);
 	bool Remove(Type type, int ID);
