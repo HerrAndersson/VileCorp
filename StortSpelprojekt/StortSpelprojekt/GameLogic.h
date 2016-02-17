@@ -23,6 +23,14 @@ private:
 	bool					_gameDone;
 
 	void HandleInput(float deltaTime);
+	void HandleUnitSelect();
+	void ShowSelectedInfo();
+	void HandlePatrol();
+	void HandleUnitMove();
+	void HandleCamMode();
+	void HandleCamZoom(float deltaTime);
+	void HandleCamRot();
+	void HandleCamMove(float deltaTime);
 public:
 	GameLogic(ObjectHandler* objectHandler, System::Camera* camera, System::Controls* controls, PickingDevice* pickingDevice, GUI::UITree* uiTree, AssetManager* assetManager);
 	~GameLogic();

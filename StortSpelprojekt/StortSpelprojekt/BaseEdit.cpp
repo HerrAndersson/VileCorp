@@ -511,6 +511,29 @@ void BaseEdit::HandleInput(double deltaTime)
 	/*
 	Toggle free camera mode
 	*/
+	HandleCamMode();
+	
+	/*
+	Camera scroll
+	*/
+	HandleCamZoom(deltaTime);
+
+	/*
+	Camera rotation
+	*/
+	HandleCamRot();
+
+	/*
+	Camera move
+	*/
+	HandleCamMove(deltaTime);
+}
+
+void BaseEdit::HandleCamMode()
+{
+	/*
+	Toggle free camera mode
+	*/
 	if (_controls->IsFunctionKeyDown("DEBUG:ENABLE_FREECAM"))
 	{
 		if (_camera->GetMode() == System::LOCKED_CAM)
@@ -525,7 +548,10 @@ void BaseEdit::HandleInput(double deltaTime)
 			_camera->SetRotation(DirectX::XMFLOAT3(70, 0, 0));
 		}
 	}
-	
+}
+
+void BaseEdit::HandleCamZoom(float deltaTime)
+{
 	/*
 	Camera scroll
 	*/
@@ -551,7 +577,10 @@ void BaseEdit::HandleInput(double deltaTime)
 			_camera->Move(negForward, velocity);
 		}
 	}
+}
 
+void BaseEdit::HandleCamRot()
+{
 	/*
 	Camera rotation
 	*/
@@ -587,7 +616,10 @@ void BaseEdit::HandleInput(double deltaTime)
 
 		_camera->SetRotation(rotation);
 	}
+}
 
+void BaseEdit::HandleCamMove(float deltaTime)
+{
 	/*
 	Camera move
 	*/
@@ -644,9 +676,10 @@ void BaseEdit::HandleInput(double deltaTime)
 
 	if (isMoving)
 	{
-		_camera->Move(XMFLOAT3((forward.x + right.x) * v,(forward.y + right.y) * v, (forward.z + right.z) * v), deltaTime / 10);
+		_camera->Move(XMFLOAT3((forward.x + right.x) * v, (forward.y + right.y) * v, (forward.z + right.z) * v), deltaTime / 10);
 	}
 }
+
 
 void BaseEdit::Update(float deltaTime)
 {
