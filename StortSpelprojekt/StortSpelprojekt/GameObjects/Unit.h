@@ -30,16 +30,15 @@ protected:
 	int _health;
 	bool _isSwitchingTile;
 
-	int _trapInteractionTime;
+	int _interactionTime;
 	GameObject* _heldObject;
-	GameObject* _pursuer;
 
 	MoveState _moveState;
 
 	void CalculatePath();
 	void Rotate();
 	int GetApproxDistance(AI::Vec2D target)const;
-	void Flee();
+	//void Flee();
 	void SetGoal(AI::Vec2D goal);
 	void SetGoal(GameObject* objective);
 public:
@@ -70,7 +69,7 @@ public:
 	void ClearObjective();
 	void TakeDamage(int damage);
 	void SetVisibility(bool visible);
-	void UseTrap();
+	void UseCountdown(int frames = 0);
 	int GetVisionRadius()const;
 
 	void SetTilePosition(AI::Vec2D pos);

@@ -201,9 +201,9 @@ void Guard::Act(GameObject* obj)
 		case TRAP:
 			if (!static_cast<Trap*>(obj)->IsTrapActive())
 			{
-				if (_trapInteractionTime != 0)
+				if (_interactionTime != 0)
 				{
-					UseTrap();
+					UseCountdown();
 				}
 				else
 				{

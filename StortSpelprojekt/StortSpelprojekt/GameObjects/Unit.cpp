@@ -53,42 +53,42 @@ int Unit::GetApproxDistance(AI::Vec2D target) const
 /*
 	Decides the best direction to run away from a foe.
 */
-void Unit::Flee()
-{
-	if (_pursuer == nullptr || !_visible)		//TODO Add other conditions to stop fleeing --Victor
-	{
-		CheckAllTiles();
-	//	Wait(20);
-	}
-	else
-	{
-		AI::Vec2D offset = _tilePosition - _pursuer->GetTilePosition();
-		AI::Vec2D bestDir = {0,0};
-		float bestDist = 0;
-		float tempDist = 0;
-		for (int i = 0; i < 8; i++)
-		{
-		//	AI::Vec2D tempDist = offset + AI::NEIGHBOUR_OFFSETS[i];
-
-			if (i < 4)						//weighting to normalize diagonal and straight directions
-			{
-				tempDist = pow(offset._x + AI::SQRT2 * AI::NEIGHBOUR_OFFSETS[i]._x, 2) + pow(offset._y + AI::SQRT2 * AI::NEIGHBOUR_OFFSETS[i]._y, 2);
-			}
-			else
-			{
-				tempDist = pow(offset._x + AI::NEIGHBOUR_OFFSETS[i]._x, 2) + pow(offset._y + AI::NEIGHBOUR_OFFSETS[i]._y, 2);
-			}
-
-			if (_tileMap->IsFloorOnTile(_tilePosition + AI::NEIGHBOUR_OFFSETS[i]) && !_tileMap->IsEnemyOnTile(_tilePosition + AI::NEIGHBOUR_OFFSETS[i]) && tempDist > bestDist)
-			{
-				bestDist = tempDist;
-				bestDir = AI::NEIGHBOUR_OFFSETS[i];
-			}
-		}
-		_direction = bestDir;
-		Rotate();
-	}
-}
+//void Unit::Flee()
+//{
+//	if (_pursuer == nullptr || !_visible)		//TODO Add other conditions to stop fleeing --Victor
+//	{
+//		CheckAllTiles();
+//	//	Wait(20);
+//	}
+//	else
+//	{
+//		AI::Vec2D offset = _tilePosition - _pursuer->GetTilePosition();
+//		AI::Vec2D bestDir = {0,0};
+//		float bestDist = 0;
+//		float tempDist = 0;
+//		for (int i = 0; i < 8; i++)
+//		{
+//		//	AI::Vec2D tempDist = offset + AI::NEIGHBOUR_OFFSETS[i];
+//
+//			if (i < 4)						//weighting to normalize diagonal and straight directions
+//			{
+//				tempDist = pow(offset._x + AI::SQRT2 * AI::NEIGHBOUR_OFFSETS[i]._x, 2) + pow(offset._y + AI::SQRT2 * AI::NEIGHBOUR_OFFSETS[i]._y, 2);
+//			}
+//			else
+//			{
+//				tempDist = pow(offset._x + AI::NEIGHBOUR_OFFSETS[i]._x, 2) + pow(offset._y + AI::NEIGHBOUR_OFFSETS[i]._y, 2);
+//			}
+//
+//			if (_tileMap->IsFloorOnTile(_tilePosition + AI::NEIGHBOUR_OFFSETS[i]) && !_tileMap->IsEnemyOnTile(_tilePosition + AI::NEIGHBOUR_OFFSETS[i]) && tempDist > bestDist)
+//			{
+//				bestDist = tempDist;
+//				bestDir = AI::NEIGHBOUR_OFFSETS[i];
+//			}
+//		}
+//		_direction = bestDir;
+//		Rotate();
+//	}
+//}
 
 Unit::Unit()
 	: GameObject()
@@ -106,7 +106,7 @@ Unit::Unit()
 	_path = nullptr;
 	_direction = {0, -1};
 	_nextTile = _tilePosition;
-	_trapInteractionTime = -1;
+	_interactionTime = -1;
 	_isSwitchingTile = false;
 	Rotate();
 }
@@ -136,7 +136,7 @@ Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 		_animation->Freeze(false);
 	}
 	_moveState = MoveState::IDLE;
-	_trapInteractionTime = -1;
+	_interactionTime = -1;
 }
 
 Unit::~Unit()
@@ -389,7 +389,7 @@ void Unit::SwitchingNode()
 	//_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,0});
 	_tilePosition = _nextTile;
 	//_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,4,0});
-	if (_objective != nullptr)
+	if (_objective != nullptr && _objective->GetPickUpState() == ONTILE)
 	{
 		if (_objective->InRange(_tilePosition))
 		{
@@ -412,6 +412,7 @@ void Unit::SwitchingNode()
 	}
 	else
 	{
+		ClearObjective();
 		_moveState = MoveState::IDLE;
 	}
 }
@@ -422,21 +423,23 @@ void Unit::SwitchingNode()
 	It gets set to 60 (temporary) when a disarm/repair attempt begins
 	It ticks down one per frame until 0 at which the action resumes.
 */
-void Unit::UseTrap()
+void Unit::UseCountdown(int frames)
 {
 
-	if (_trapInteractionTime < 0)
+	if (_interactionTime < 0)
 	{
-		_trapInteractionTime = 60;
+		_interactionTime = frames;
+		//Start
 	}
-	else if (_trapInteractionTime > 0)
+	else if (_interactionTime > 0)
 	{
-		_trapInteractionTime--;
+		_interactionTime--;
 	}
 	else
 	{
+		//Finish
 		Act(_objective);
-		_trapInteractionTime--;
+		_interactionTime--;
 	}
 }
 

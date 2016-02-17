@@ -565,13 +565,47 @@ void ObjectHandler::Update(float deltaTime)
 				g->SetPickUpState(ONTILE);
 			}
 
-			if (g->GetType() == GUARD)
+			if (g->GetType() == GUARD || g->GetType() == ENEMY)
 			{
-				Guard* guard = static_cast<Guard*>(g);
-				if (guard->IsSwitchingTile())
+				Unit* unit = static_cast<Unit*>(g);
+				GameObject* heldObject = unit->GetHeldObject();
+				if (heldObject != nullptr)
 				{
-					_tilemap->RemoveObjectFromTile(guard->GetTilePosition(), guard);			//TODO: update correctly
-					_tilemap->AddObjectToTile(guard->GetTilePosition() + guard->GetDirection(), guard);
+					heldObject->SetPosition(DirectX::XMFLOAT3(unit->GetPosition().x, unit->GetPosition().y + 2, unit->GetPosition().z));
+					heldObject->SetTilePosition(AI::Vec2D(heldObject->GetPosition().x, heldObject->GetPosition().z));
+				}
+
+				if (unit->GetHealth() <= 0)
+				{
+					if (heldObject != nullptr)
+					{
+						bool lootRemoved = false;
+
+						for (uint k = 0; k < _gameObjects[SPAWN].size() && !lootRemoved; k++)
+						{
+							//If the enemy is at the despawn point with an objective, remove the objective and the enemy, Aron
+							if (_gameObjects[SPAWN][k]->InRange(unit->GetTilePosition()))
+							{
+								lootRemoved = Remove(heldObject);
+								((SpawnPoint*)_gameObjects[SPAWN][k])->AddUnitsToSpawn(1);
+								((SpawnPoint*)_gameObjects[SPAWN][k])->Enable();
+							}
+						}
+
+						if (!lootRemoved)
+						{
+							heldObject->SetPickUpState(DROPPING);
+							heldObject->SetPosition(XMFLOAT3(heldObject->GetPosition().x, 0.0f, heldObject->GetPosition().z));
+						}
+					}
+					Remove(g);
+					g = nullptr;
+					j--;
+				}
+				if (unit->IsSwitchingTile())
+				{
+					_tilemap->RemoveObjectFromTile(unit->GetTilePosition(), g);			//TODO: update correctly
+					_tilemap->AddObjectToTile(unit->GetTilePosition() + unit->GetDirection(), g);
 				}
 			}
 			else if (g->GetType() == SPAWN)															//Manage enemy spawning
@@ -584,15 +618,6 @@ void ObjectHandler::Update(float deltaTime)
 					}
 				}
 			}
-			//else if (g->GetType() == TRAP)
-			//{
-			//	Unit* unit = static_cast<Unit*>(_tilemap->GetUnitOnTile(g->GetTilePosition()._x, g->GetTilePosition()._y));
-			//	//Enemy walks over trap
-			//	if (unit != nullptr)
-			//	{
-			//		static_cast<Trap*>(g)->Activate(unit);
-			//	}
-			//}
 		}
 	}
 	UpdateLights();
