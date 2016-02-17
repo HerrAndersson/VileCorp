@@ -102,6 +102,19 @@ void GameLogic::HandleInput(float deltaTime)
 	//Move units
 	if (_controls->IsFunctionKeyDown("MOUSE:DESELECT"))
 	{
+		//Remove colour from patrolroute
+		for (auto u : _player->GetSelectedUnits())
+		{
+			if (u->GetType() == GUARD)
+			{
+				for (auto p : ((Guard*)u)->GetPatrolRoute())
+				{
+					_objectHandler->GetTileMap()->GetObjectOnTile(p, FLOOR)->SetColorOffset(XMFLOAT3(0.0f, 0.0f, 0.0f));
+				}
+			}
+		}
+
+
 		int numUnits = _player->AreUnitsSelected();
 		AI::Vec2D selectedTile = _pickingDevice->PickTile(_controls->GetMouseCoord()._pos);
 		//if more than 1 unit. Dont rotate and move them to tile.
@@ -117,16 +130,7 @@ void GameLogic::HandleInput(float deltaTime)
 			if (selectedTile == units.at(0)->GetTilePosition())
 			{
 				//Check which direction he should be pointing
-			for (auto u : _player->GetSelectedUnits())
-			{
-				if (u->GetType() == GUARD)
-				{
-					for (auto p : ((Guard*)u)->GetPatrolRoute())
-					{
-						_objectHandler->GetTileMap()->GetObjectOnTile(p, FLOOR)->SetColorOffset(XMFLOAT3(0.0f, 0.0f, 0.0f));
-					}
-				}
-			}
+
 				AI::Vec2D direction = _pickingDevice->PickDirection(_controls->GetMouseCoord()._pos, _objectHandler->GetTileMap());
 
 				//Change direction
@@ -138,6 +142,8 @@ void GameLogic::HandleInput(float deltaTime)
 				_player->MoveUnits(selectedTile);
 			}
 		}
+
+
 	}
 
 	//Set Guard Patrol Route if a Guard is Selected

@@ -86,9 +86,8 @@ vector<GameObject*> PickingDevice::SinglePickObjects(POINT mousePoint, vector<Ga
 	for (unsigned int i = 0; i < pickableObjects.size(); i++)
 	{
 		//Sphere pickObject = Sphere(Vec3(pickableObjects[i]->GetPosition()), 2.0f);
-		//Box pickObject = Box(0.3f, 1.0f, 0.3f, Vec3(pickableObjects[i]->GetPosition())+Vec3(0.2f,0.3f,0.2f));
-		AI::Vec2D tilePos = pickableObjects[i]->GetTilePosition();
-		Box pickObject = Box(1.0f, 1.0f, 1.0f, Vec3(tilePos._x + 0.5f, 1.0f, tilePos._y + 0.5f));
+		Box pickObject = Box(0.8f, 1.8f, 0.8f, Vec3(pickableObjects[i]->GetPosition()) + Vec3(0.0f, 1.0f, 0.0f));
+
 
 
 		if (Collision(ray, pickObject))
