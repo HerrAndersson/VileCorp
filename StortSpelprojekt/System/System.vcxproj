@@ -104,13 +104,10 @@ robocopy "$(SolutionDir)Renderer\Shaders" "$(OutDir)Assets\Shaders" *.hlsl /MIR 
 
 robocopy "$(SolutionDir)Assets" "$(OutDir)Assets" *.json /E /Z /XA:H /W:1 /R:1 /V
 
-robocopy "$(SolutionDir)include\yse\dll" "$(OutDir)" /E /Z /XA:H /W:1 /R:1 /V
-
 if errorlevel 1 exit 0 else exit %errorlevel%</Command>
     </CustomBuildStep>
     <CustomBuildStep>
-      <Outputs>
-      </Outputs>
+      <Outputs>a</Outputs>
     </CustomBuildStep>
     <PostBuildEvent>
       <Command>
@@ -137,8 +134,7 @@ robocopy "$(SolutionDir)Assets" "$(OutDir)Assets" *.json /E /Z /XA:H /W:1 /R:1 /
 if errorlevel 1 exit 0 else exit %errorlevel%</Command>
     </CustomBuildStep>
     <CustomBuildStep>
-      <Outputs>
-      </Outputs>
+      <Outputs>a</Outputs>
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -163,13 +159,10 @@ robocopy "$(SolutionDir)Renderer\Shaders" "$(OutDir)Assets\Shaders" *.hlsl /MIR 
 
 robocopy "$(SolutionDir)Assets" "$(OutDir)Assets" *.json /E /Z /XA:H /W:1 /R:1 /V
 
-robocopy "$(SolutionDir)include\yse\dll" "$(OutDir)" /E /Z /XA:H /W:1 /R:1 /V
-
 if errorlevel 1 exit 0 else exit %errorlevel%</Command>
     </CustomBuildStep>
     <CustomBuildStep>
-      <Outputs>
-      </Outputs>
+      <Outputs>a</Outputs>
     </CustomBuildStep>
     <PostBuildEvent>
       <Command>
@@ -199,8 +192,7 @@ robocopy "$(SolutionDir)Assets" "$(OutDir)Assets" *.json /E /Z /XA:H /W:1 /R:1 /
 if errorlevel 1 exit 0 else exit %errorlevel%</Command>
     </CustomBuildStep>
     <CustomBuildStep>
-      <Outputs>
-      </Outputs>
+      <Outputs>a</Outputs>
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemGroup>
