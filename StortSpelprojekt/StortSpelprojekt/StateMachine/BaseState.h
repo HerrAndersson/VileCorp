@@ -7,6 +7,7 @@
 #include "../../System/Camera.h"
 #include "../PickingDevice.h"
 #include "../UITree.h"
+#include "../../System/SettingsReader.h"
 
 
 class BaseState
@@ -29,7 +30,7 @@ protected:
 	State GetOldState() const;
 
 public:
-	BaseState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, const std::string& statename, AssetManager* assetManager, FontWrapper* fontWrapper, System::Settings* settings, System::SoundModule* soundModule);
+	BaseState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, const std::string& statename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule);
 	virtual ~BaseState();
 
 	virtual void Update(float deltaTime) = 0;

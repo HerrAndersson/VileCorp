@@ -67,13 +67,19 @@ void GameLogic::HandleInput(float deltaTime)
 		for (unsigned int i = 0; i < units.size(); i++)
 		{
 			units[i]->SetColorOffset(DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f));
+			if (units[i]->GetType() == GUARD)
+			{
+				for (auto p : ((Guard*)units[i])->GetPatrolRoute())
+				{
+					_objectHandler->GetTileMap()->GetObjectOnTile(p, FLOOR)->SetColorOffset(XMFLOAT3(0.0f, 0.0f, 0.0f));
+				}
+			}
 		}
 		_player->DeselectUnits();
 
 		//Check if we picked anything
-		vector<GameObject*> pickedUnits = _pickingDevice->BoxPickObjects(_controls->GetMouseCoord()._pos, _objectHandler->GetAllByType(GUARD));
-		//vector<GameObject*> pickedUnits = _pickingDevice->PickObjects(_controls->GetMouseCoord()._pos, _objectHandler->GetAllByType(GUARD));
-
+		vector<GameObject*> pickedUnits = _pickingDevice->PickObjects(_controls->GetMouseCoord()._pos, _objectHandler->GetAllByType(GUARD));
+		
 		//if units selected
 		if (pickedUnits.size() > 0)
 		{
@@ -82,6 +88,13 @@ void GameLogic::HandleInput(float deltaTime)
 			{
 				_player->SelectUnit((Unit*)pickedUnits[i]);
 				pickedUnits[i]->SetColorOffset(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));
+				if (pickedUnits[i]->GetType() == GUARD)
+				{
+					for (auto p : ((Guard*)pickedUnits[i])->GetPatrolRoute())
+					{
+						_objectHandler->GetTileMap()->GetObjectOnTile(p, FLOOR)->SetColorOffset(XMFLOAT3(0.0f, 0.0f, 1.0f));
+					}
+				}
 			}
 		}
 	}
@@ -89,10 +102,48 @@ void GameLogic::HandleInput(float deltaTime)
 	//Move units
 	if (_controls->IsFunctionKeyDown("MOUSE:DESELECT"))
 	{
-		if (_player->AreUnitsSelected())
+		//Remove colour from patrolroute
+		for (auto u : _player->GetSelectedUnits())
 		{
-			_player->MoveUnits(_pickingDevice->PickTile(_controls->GetMouseCoord()._pos));
+			if (u->GetType() == GUARD)
+			{
+				for (auto p : ((Guard*)u)->GetPatrolRoute())
+				{
+					_objectHandler->GetTileMap()->GetObjectOnTile(p, FLOOR)->SetColorOffset(XMFLOAT3(0.0f, 0.0f, 0.0f));
+				}
+			}
 		}
+
+
+		int numUnits = _player->AreUnitsSelected();
+		AI::Vec2D selectedTile = _pickingDevice->PickTile(_controls->GetMouseCoord()._pos);
+		//if more than 1 unit. Dont rotate and move them to tile.
+		if (numUnits>1)
+		{
+			_player->MoveUnits(selectedTile);
+		}
+		//if one unit
+		if (numUnits == 1)
+		{
+			//if tile is the same as he is on
+			vector<Unit*> units = _player->GetSelectedUnits();
+			if (selectedTile == units.at(0)->GetTilePosition())
+			{
+				//Check which direction he should be pointing
+
+				AI::Vec2D direction = _pickingDevice->PickDirection(_controls->GetMouseCoord()._pos, _objectHandler->GetTileMap());
+
+				//Change direction
+				units.at(0)->SetDirection(direction);
+			}
+			//else move
+			else
+			{
+				_player->MoveUnits(selectedTile);
+			}
+		}
+
+
 	}
 
 	//Set Guard Patrol Route if a Guard is Selected
@@ -100,7 +151,28 @@ void GameLogic::HandleInput(float deltaTime)
 	{
 		if (_player->AreUnitsSelected())
 		{
-			_player->PatrolUnits(_pickingDevice->PickTile(_controls->GetMouseCoord()._pos));
+			AI::Vec2D tilePos = _pickingDevice->PickTile(_controls->GetMouseCoord()._pos);
+
+			if (_objectHandler->GetTileMap()->IsFloorOnTile(tilePos))
+			{
+				_player->PatrolUnits(tilePos);
+			}
+
+			for (auto u : _player->GetSelectedUnits())
+			{
+				if (u->GetType() == GUARD)
+				{
+					for (auto p : ((Guard*)u)->GetPatrolRoute())
+					{
+						GameObject* patrolFloor = _objectHandler->GetTileMap()->GetObjectOnTile(p, FLOOR);
+						if (patrolFloor != nullptr)
+						{
+							
+							patrolFloor->SetColorOffset(XMFLOAT3(0.0f, 0.0f, 1.0f));
+						}		
+					}
+				}
+			}
 		}
 	}
 

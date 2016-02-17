@@ -1,8 +1,9 @@
 #include "ObjectHandler.h"
 #include "stdafx.h"
 
-ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data)
+ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data, System::Settings* settings)
 {
+	_settings = settings;
 	_idCount = 0;
 	_assetManager = assetManager;
 	_tilemap = new Tilemap();
@@ -574,6 +575,8 @@ void ObjectHandler::Update(float deltaTime)
 							if (_gameObjects[SPAWN][k]->InRange(unit->GetTilePosition()))
 							{
 								lootRemoved = Remove(heldObject);
+								((SpawnPoint*)_gameObjects[SPAWN][k])->AddUnitsToSpawn(1);
+								((SpawnPoint*)_gameObjects[SPAWN][k])->Enable();
 							}
 						}
 
@@ -630,13 +633,25 @@ void ObjectHandler::Update(float deltaTime)
 							unit->InRange(_gameObjects[SPAWN][k]->GetTilePosition()))
 						{
 							unit->TakeDamage(10);
+							((SpawnPoint*)_gameObjects[SPAWN][k])->AddUnitsToSpawn(1);
+							((SpawnPoint*)_gameObjects[SPAWN][k])->Enable();
 						}
 					}
 				}
 			}
 			else if (g->GetType() == SPAWN)															//Manage enemy spawning
 			{
-				if (static_cast<SpawnPoint*>(g)->isSpawning())
+				bool allLootIsCarried = true;
+				//Check if all loot is carried
+				for (uint l = 0; l < _gameObjects[LOOT].size() && allLootIsCarried; l++)
+				{
+					if (_gameObjects[LOOT][l]->GetPickUpState() == ONTILE || _gameObjects[LOOT][l]->GetPickUpState() == DROPPING)
+					{
+						allLootIsCarried = false;
+					}
+				}
+
+				if (static_cast<SpawnPoint*>(g)->isSpawning() && (_gameObjects[LOOT].size() > 0) && !allLootIsCarried)
 				{
 					if (Add(_blueprints.GetBlueprintByType(ENEMY,0), 0, g->GetPosition(), g->GetRotation())) //TODO blueprints of spawned enemies should be kept in spawnpoints - Fredrik
 					{

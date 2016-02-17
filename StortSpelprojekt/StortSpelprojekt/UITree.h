@@ -3,7 +3,7 @@
 #include "BlueprintNode.h"
 #include "AssetManager.h"
 #include "ObjectHandler.h"
-#include "Settings/settings.h"
+#include "SettingsReader.h"
 #include "rapidjson/reader.h"
 #include "rapidjson/document.h"
 #include "rapidjson/writer.h"
@@ -27,7 +27,7 @@ namespace GUI
 		void Release(Node* node);
 		Node* FindNode(Node* current, const std::string& id);
 	public:
-		UITree(const std::string& filename, const std::string& statename, AssetManager* assetManager, FontWrapper* fontWrapper, System::Settings* settings);
+		UITree(const std::string& filename, const std::string& statename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader);
 		~UITree();
 
 		GUI::Node* GetRootNode() const;
