@@ -84,6 +84,7 @@ void Guard::act(GameObject* obj)
 				if (_trapInteractionTime < 0)
 				{
 					UseTrap();
+					Animate(FIXTRAPANIM);
 				}
 				else if (_trapInteractionTime == 0)
 				{
@@ -95,6 +96,8 @@ void Guard::act(GameObject* obj)
 			break;
 		case ENEMY:											//The guard hits the enemy
 			static_cast<Unit*>(obj)->TakeDamage(1);
+			_stop = true;
+			Animate(FIGHTANIM);
 			if (static_cast<Unit*>(obj)->GetHealth() < 0)
 			{
 				ClearObjective();

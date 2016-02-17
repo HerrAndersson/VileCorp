@@ -54,5 +54,8 @@ public:
 
 	// Overloaded function
 	void SetTilePosition(AI::Vec2D pos);
+
+	enum Anim { IDLE, ACTIVATE, NR_OF_ANIM/*Has to be last*/ };
+	void Animate(Anim anim);
 };
 

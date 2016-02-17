@@ -217,13 +217,6 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	_occupiedTiles = nullptr;
 	_subType = trapType;
 
-	if (_renderObject->_isSkinned)
-	{
-		_animation = new Animation(_renderObject->_skeleton);
-		_animation->Freeze(false);
-		_animation->SetActionAsCycle(0, true);
-	}
-
 	int radius = 0;
 	
 	switch (_trapType)
@@ -232,6 +225,11 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 		Initialize(3, 1, 1, 50, 50);
 		_occupiedTiles[0] = _tilePosition;
 		_areaOfEffect[_nrOfAOETiles++] = _tilePosition;
+		if (_renderObject->_isSkinned)
+		{
+			_animation = new Animation(_renderObject->_skeleton, true);
+			_animation->Freeze(true);
+		}
 		break;
 	case TESLACOIL:	
 		Initialize(2, 9, 37, 50, 50);
@@ -241,6 +239,11 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 			_occupiedTiles[i] = _tilePosition + offset;
 		}
 		CalculateCircleAOE(3);
+		if (_renderObject->_isSkinned)
+		{
+			_animation = new Animation(_renderObject->_skeleton);
+			_animation->Freeze(false);
+		}
 		break;
 	case SHARK:			//Trigger area is currently the same as the trap's physical area. Might be awkward since the shark trap is larger than its AOE.
 	{
@@ -258,6 +261,11 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 			_occupiedTiles[3 * i + 1] = _tilePosition + dirOffset;
 			_occupiedTiles[3 * i + 2] = _tilePosition + dirOffset + offset;
 			dirOffset += direction;
+		}
+		if (_renderObject->_isSkinned)
+		{
+			_animation = new Animation(_renderObject->_skeleton);
+			_animation->Freeze(false);
 		}
 		break;
 	}
@@ -370,9 +378,8 @@ void Trap::Activate()
 			static_cast<Unit*>(_tileMap->GetObjectOnTile(_areaOfEffect[i], GUARD))->TakeDamage(_damage);
 		}
 	}
-
+	Animate(ACTIVATE);
 	SetActive(false);
-	//_animation->PlayAction(0);
 }
 
 void Trap::Update(float deltaTime)
@@ -489,5 +496,40 @@ void Trap::SetTilePosition(AI::Vec2D pos)
 	default:
 		_areaOfEffect = nullptr;
 		break;
+	}
+}
+
+void Trap::Animate(Anim anim)
+{
+	if (_renderObject->_isSkinned)
+	{
+		if (_trapType == SPIKE)
+		{
+			switch (anim)
+			{
+			case IDLE:
+				_animation->SetActionAsCycle(0, 2.0f, false);
+				break;
+			case ACTIVATE:
+				_animation->PlayAction(0, 1.0f, true, true);
+				break;
+			default:
+				break;
+			}
+		}
+		else if (_trapType == TESLACOIL)
+		{
+			switch (anim)
+			{
+			case IDLE:
+				_animation->SetActionAsCycle(0, 2.0f, false);
+				break;
+			case ACTIVATE:
+				_animation->PlayAction(1, 1.0f, true, false);
+				break;
+			default:
+				break;
+			}
+		}
 	}
 }

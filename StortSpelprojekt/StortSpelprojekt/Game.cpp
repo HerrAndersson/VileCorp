@@ -177,22 +177,22 @@ void Game::Render()
 
 	/*--------------------------------------------------  Render skinned objects  -----------------------------------------------------*/
 	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::ANIM_STAGE);
-	if (gameObjects->size() > 0)
-	{
-		if (gameObjects->at(GUARD).size() > 0)
-		{
-			RenderObject* renderObject = gameObjects->at(GUARD).at(0)->GetRenderObject();
+	//if (gameObjects->size() > 0)
+	//{
+	//	if (gameObjects->at(GUARD).size() > 0)
+	//	{
+	//		RenderObject* renderObject = gameObjects->at(GUARD).at(0)->GetRenderObject();
 
-			_renderModule->SetDataPerObjectType(renderObject);
-			int vertexBufferSize = renderObject->_mesh._vertexBufferSize;
+	//		_renderModule->SetDataPerObjectType(renderObject);
+	//		int vertexBufferSize = renderObject->_mesh._vertexBufferSize;
 
-			for (GameObject* a : gameObjects->at(GUARD))
-			{
-				// temporary uncommenting
-				//_renderModule->RenderAnimation(a->GetMatrix(), vertexBufferSize, a->GetAnimation()->GetFloats(), a->GetColorOffset());
-			}
-		}
-	}
+	//		for (GameObject* a : gameObjects->at(GUARD))
+	//		{
+	//			// temporary uncommenting
+	//			_renderModule->RenderAnimation(a->GetMatrix(), vertexBufferSize, a->GetAnimation()->GetFloats(), a->GetColorOffset());
+	//		}
+	//	}
+	//}
 	// Now every gameobject can be animated
 	for (auto i : *gameObjects)
 	{
@@ -309,16 +309,15 @@ void Game::Render()
 
 				_renderModule->RenderLightVolume(spot.second->GetVolumeBuffer(), spot.second->GetWorldMatrix(), spot.second->GetVertexCount(), spot.second->GetVertexSize());
 			}
+		}
+		/*---------------------------------------------------------  Pointlights  ------------------------------------------------------------*/
+		_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::LIGHT_APPLICATION_POINTLIGHT);
 
-			/*---------------------------------------------------------  Pointlights  ------------------------------------------------------------*/
-			_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::LIGHT_APPLICATION_POINTLIGHT);
-
-			map<GameObject*, Renderer::Pointlight*>* pointlights = _objectHandler->GetPointlights();
-			for (pair<GameObject*, Renderer::Pointlight*> pointlight : *pointlights)
-			{
-				_renderModule->SetLightDataPerPointlight(pointlight.second);
-				_renderModule->RenderLightVolume(pointlight.second->GetVolumeBuffer(), pointlight.second->GetWorldMatrix(), pointlight.second->GetVertexCount(), pointlight.second->GetVertexSize());
-			}
+		map<GameObject*, Renderer::Pointlight*>* pointlights = _objectHandler->GetPointlights();
+		for (pair<GameObject*, Renderer::Pointlight*> pointlight : *pointlights)
+		{
+			_renderModule->SetLightDataPerPointlight(pointlight.second);
+			_renderModule->RenderLightVolume(pointlight.second->GetVolumeBuffer(), pointlight.second->GetWorldMatrix(), pointlight.second->GetVertexCount(), pointlight.second->GetVertexSize());
 		}
 	}
 

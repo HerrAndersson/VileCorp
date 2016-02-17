@@ -13,6 +13,11 @@ void Unit::CalculatePath()
 				_tileMap->GetObjectOnTile(_path[i], FLOOR)->SetColorOffset({0,4,0});
 			}*/
 		}
+
+		if (_stop == false)
+		{
+			Animate(WALKANIM);
+		}
 		_isMoving = true;
 		_direction = _path[--_pathLength] - _tilePosition;
 		Rotate();
@@ -134,11 +139,12 @@ Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	_pathLength = 0;
 	_path = nullptr;
 	_isMoving = false;
+	_stop = false;
 	_direction = {0, 1};
 	Rotate();
 	if (_renderObject->_isSkinned)
 	{
-		_animation = new Animation(_renderObject->_skeleton);
+		_animation = new Animation(_renderObject->_skeleton, true);
 		_animation->Freeze(false);
 	}
 	_trapInteractionTime = -1;
@@ -229,7 +235,7 @@ void Unit::CheckAllTiles()
 		for (int j = 0; j < _tileMap->GetHeight(); j++)
 		{
 			//Handle walls
-			if (_tileMap->IsWallOnTile(AI::Vec2D(i, j)))
+			if (_tileMap->IsWallOnTile(AI::Vec2D(i, j)) || _tileMap->IsFurnitureOnTile(AI::Vec2D(i, j)))
 			{
 				_aStar->SetTileCost({ i, j }, -1);
 			}
@@ -317,9 +323,9 @@ void Unit::Move()
 	bool foundNextTile = false;
 	if (_isMoving)
 	{
-	//	_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,0});
+		//	_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,0});
 		_tilePosition += _direction;
-	//	_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,4,0});
+		//	_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,4,0});
 	}
 	if (_objective != nullptr && _objective->GetPickUpState() != ONTILE)			//Check that no one took your objective
 	{
@@ -340,6 +346,7 @@ void Unit::Move()
 	}
 	if (!_isFleeing && (!foundNextTile || (_objective != nullptr && _objective->InRange(_tilePosition))))
 	{
+		Animate(IDLEANIM);
 		_isMoving = false;
 		if (_objective != nullptr && _objective->InRange(_tilePosition))
 		{
@@ -358,6 +365,10 @@ void Unit::Update(float deltaTime)
 	if (_animation != nullptr)
 	{
 		_animation->Update(deltaTime);
+		if (_animation->GetisFinished())
+		{
+			_stop = false;
+		}
 	}
 	if (_trapInteractionTime >= 0)
 	{
@@ -416,7 +427,10 @@ void Unit::ClearObjective()
 
 void Unit::TakeDamage(int damage)
 {
-	_health -= damage;
+	if (_health > 0)
+	{
+		_health -= damage;
+	}
 }
 
 void Unit::SetVisibility(bool visible)
@@ -451,5 +465,54 @@ int Unit::GetVisionRadius() const
 	return _visionRadius;
 }
 
+bool Unit::GetAnimisFinished()
+{
+	return _animation->GetisFinished();
+}
 
-
+void Unit::Animate(Anim anim)
+{
+	if (_renderObject->_isSkinned)
+	{
+		if (_renderObject->_type == GUARD)
+		{
+			switch (anim)
+			{
+			case IDLEANIM:
+				_animation->SetActionAsCycle(0, 1.0f, false);
+				break;
+			case WALKANIM:
+				_animation->SetActionAsCycle(1, 1.0f, false);
+				break;
+			case FIXTRAPANIM:
+				_animation->SetActionAsCycle(2, 1.0f, false);
+				break;
+			case FIGHTANIM:
+				_animation->PlayAction(4, 3.5f, false, false);
+				break;
+			default:
+				break;
+			}
+		}
+		if (_renderObject->_type == ENEMY)
+		{
+			switch (anim)
+			{
+			case IDLEANIM:
+				_animation->SetActionAsCycle(0, 1.0f, false);
+				break;
+			case WALKANIM:
+				_animation->SetActionAsCycle(1, 1.0f, false);
+				break;
+			case FIGHTANIM:
+				_animation->PlayAction(1, 1.0f, false, false);
+				break;
+			case PICKUPOBJECTANIM:
+				_animation->PlayAction(3, 1.0f, false, false);
+				break;
+			default:
+				break;
+			}
+		}
+	}
+}
