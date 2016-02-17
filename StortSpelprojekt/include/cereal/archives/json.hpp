@@ -89,8 +89,8 @@ namespace cereal
   {
     enum class NodeType { StartObject, InObject, StartArray, InArray };
 
-    typedef rapidjson::GenericWriteStream WriteStream;
-    typedef rapidjson::PrettyWriter<WriteStream> JSONWriter;
+    typedef GenericWriteStream WriteStream;
+    typedef PrettyWriter<WriteStream> JSONWriter;
 
     public:
       /*! @name Common Functionality
@@ -232,7 +232,7 @@ namespace cereal
       //! Saves a double to the current node
       void saveValue(double d)              { itsWriter.Double(d);                                                       }
       //! Saves a string to the current node
-      void saveValue(std::string const & s) { itsWriter.String(s.c_str(), static_cast<rapidjson::SizeType>( s.size() )); }
+      void saveValue(std::string const & s) { itsWriter.String(s.c_str(), static_cast<SizeType>( s.size() )); }
       //! Saves a const char * to the current node
       void saveValue(char const * s)        { itsWriter.String(s);                                                       }
 
@@ -391,11 +391,11 @@ namespace cereal
   class JSONInputArchive : public InputArchive<JSONInputArchive>, public traits::TextArchive
   {
     private:
-      typedef rapidjson::GenericReadStream ReadStream;
-      typedef rapidjson::GenericValue<rapidjson::UTF8<>> JSONValue;
+      typedef GenericReadStream ReadStream;
+      typedef GenericValue<UTF8<>> JSONValue;
       typedef JSONValue::ConstMemberIterator MemberIterator;
       typedef JSONValue::ConstValueIterator ValueIterator;
-      typedef rapidjson::Document::GenericValue GenericValue;
+      typedef Document::GenericValue GenericValue;
 
     public:
       /*! @name Common Functionality
@@ -601,7 +601,7 @@ namespace cereal
       }
 
       //! Loads a value from the current node - bool overload
-	  void loadValue(bool & val)		{ search(); val = itsIteratorStack.back().value().GetBool();  ++itsIteratorStack.back(); }
+      void loadValue(bool & val)        { search(); val = itsIteratorStack.back().value().GetBool();   ++itsIteratorStack.back(); }
       //! Loads a value from the current node - int64 overload
       void loadValue(int64_t & val)     { search(); val = itsIteratorStack.back().value().GetInt64();  ++itsIteratorStack.back(); }
       //! Loads a value from the current node - uint64 overload
@@ -688,7 +688,7 @@ namespace cereal
       const char * itsNextName;               //!< Next name set by NVP
       ReadStream itsReadStream;               //!< Rapidjson write stream
       std::vector<Iterator> itsIteratorStack; //!< 'Stack' of rapidJSON iterators
-      rapidjson::Document itsDocument;        //!< Rapidjson document
+      Document itsDocument;        //!< Rapidjson document
   };
 
   // ######################################################################

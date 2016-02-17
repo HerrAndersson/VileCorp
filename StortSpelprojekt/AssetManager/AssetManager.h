@@ -9,6 +9,7 @@
 #include <fstream>
 #include "WICTextureLoader.h"
 #include "RenderUtils.h"
+#include "CommonUtils.h"
 #include "rapidjson\reader.h"
 
 using namespace std;
