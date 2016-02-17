@@ -167,11 +167,31 @@ void OptionsState::Update(float deltaTime)
 void OptionsState::OnStateEnter()
 {
 	System::Settings* settings = _settingsReader->GetSettings();
+	unsigned int systemSizeX = GetSystemMetrics(SM_CXSCREEN);
+	unsigned int systemSizeY = GetSystemMetrics(SM_CYSCREEN);
 
 	_resolutionOption = ReadSetting(settings->_screenWidth, settings->_screenHeight, _resolution, RESOLUTION_MAX);
 	UpdateText("res_content", _resolutionOption, _resolution);
 
-	_windowOption = 0;
+	//Fullscreen
+	if (_resolution[_resolutionOption]._value == systemSizeX &&
+		_resolution[_resolutionOption]._value2 == systemSizeY &&
+		settings->_windowWidth == systemSizeX &&
+		settings->_windowHeight == systemSizeY &&
+		settings->_borderless)
+	{
+		_windowOption = 0;
+	}
+	//Borderless window
+	else if(settings->_borderless)
+	{
+		_windowOption = 1;
+	}
+	//Windowed
+	else
+	{
+		_windowOption = 2;
+	}
 	UpdateText("win_content", _windowOption, _window);
 
 	_shadowmapOption = ReadSetting(settings->_shadowMapSize, settings->_shadowMapSize, _shadowmap, SHADOWMAP_MAX);
