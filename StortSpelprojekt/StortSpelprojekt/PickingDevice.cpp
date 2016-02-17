@@ -20,10 +20,10 @@ Ray PickingDevice::CalculatePickRay(long x, long y)
 	XMStoreFloat4x4(&projMatrix, *_camera->GetProjectionMatrix());
 
 	//Translating mouseposition to viewSpace
-	float width = (float)_settings->_screenWidth;
+	float width = (float)_settings->_windowWidth;
 	float xPos = (float)x;
 
-	float height = (float)_settings->_screenHeight;
+	float height = (float)_settings->_windowHeight;
 	float yPos = (float)y;
 
 	mouseViewPos.x = (((2 * xPos) / width) - 1.0f) / projMatrix._11;

@@ -1,8 +1,9 @@
 #include "ObjectHandler.h"
 #include "stdafx.h"
 
-ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data)
+ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data, System::Settings* settings)
 {
+	_settings = settings;
 	_idCount = 0;
 	_assetManager = assetManager;
 	_tilemap = nullptr;

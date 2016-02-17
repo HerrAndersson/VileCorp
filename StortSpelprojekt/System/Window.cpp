@@ -7,13 +7,7 @@ namespace System
 		_hinstance = hinstance;
 		_settings = settings;
 
-		_style = 0;
-		_exStyle = 0;
-
 		InitializeWindow(wndProc);
-
-		_style = GetWindowLong(_hwnd, GWL_STYLE);
-		_exStyle = GetWindowLong(_hwnd, GWL_EXSTYLE);
 	}
 
 	Window::~Window()
@@ -24,11 +18,6 @@ namespace System
 	void Window::ShutdownWindow()
 	{
 		ShowCursor(true);
-
-		if (_settings->_fullscreen)
-		{
-			ChangeDisplaySettings(NULL, 0);
-		}
 
 		SetCursorPos(GetSystemMetrics(SM_CXSCREEN) / 2, GetSystemMetrics(SM_CYSCREEN) / 2);
 
@@ -43,9 +32,7 @@ namespace System
 	{
 		_windowHandle = this;
 
-		int posX, posY;
-
-		//Setup the windows class with default settings->
+		//Setup the windows class with default settings
 		WNDCLASSEX wc;
 		wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
 		wc.lpfnWndProc = wndProc;
@@ -62,49 +49,13 @@ namespace System
 
 		RegisterClassEx(&wc);
 
-		int screenWidth = GetSystemMetrics(SM_CXSCREEN);
-		int screenHeight = GetSystemMetrics(SM_CYSCREEN);
+		_defaultStyle = (WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX);
+		//_defaultStyle = GetWindowLong(_hwnd, GWL_STYLE);
+		_defaultExStyle = GetWindowLong(_hwnd, GWL_EXSTYLE);
 
-		//Setup the screen settings depending on whether it is running in full screen or in windowed mode.
-		if (_settings->_fullscreen)
-		{
-			_settings->_screenHeight = screenHeight;
-			_settings->_screenWidth = screenWidth;
+		_hwnd = CreateWindowEx(WS_EX_APPWINDOW, _applicationName, _applicationName, _defaultStyle, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL, _hinstance, NULL);
 
-			//If full screen set the screen to maximum size of the users desktop and 32bit.
-			DEVMODE dmScreenSettings;
-			memset(&dmScreenSettings, 0, sizeof(dmScreenSettings));
-			dmScreenSettings.dmSize = sizeof(dmScreenSettings);
-			dmScreenSettings.dmPelsWidth = (unsigned long)screenWidth;
-			dmScreenSettings.dmPelsHeight = (unsigned long)screenHeight;
-			dmScreenSettings.dmBitsPerPel = 32;
-			dmScreenSettings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
-
-			ChangeDisplaySettings(&dmScreenSettings, CDS_FULLSCREEN);
-
-			posX = 0;
-			posY = 0;
-		}
-		else //If windowed
-		{
-			//Place the window in the middle of the screen.
-			posX = (screenWidth - _settings->_screenWidth) / 2;
-			posY = (screenHeight - _settings->_screenHeight) / 2;
-		}
-
-		RECT rc = { 0, 0, _settings->_screenWidth, _settings->_screenHeight };
-		AdjustWindowRect(&rc, (WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX), FALSE);
-
-		_hwnd = CreateWindowEx(WS_EX_APPWINDOW, _applicationName, _applicationName,
-			(WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX) | CW_USEDEFAULT | CW_USEDEFAULT,
-			posX, posY, rc.right - rc.left, rc.bottom - rc.top, NULL, NULL, _hinstance, NULL);
-
-		ShowWindow(_hwnd, SW_SHOW);
-		SetForegroundWindow(_hwnd);
-		SetFocus(_hwnd);
-
-		SetCursorPos(screenWidth / 2, screenHeight / 2);
-		ShowCursor(_settings->_showMouseCursor);
+		ResizeWindow(_settings);
 	}
 
 	bool Window::Run()
@@ -135,56 +86,38 @@ namespace System
 	void Window::ResizeWindow(System::Settings* settings)
 	{
 		_settings = settings;
-		int screenWidth = GetSystemMetrics(SM_CXSCREEN);
-		int screenHeight = GetSystemMetrics(SM_CYSCREEN);
+		int systemWidth = GetSystemMetrics(SM_CXSCREEN);
+		int systemHeight = GetSystemMetrics(SM_CYSCREEN);
+		int windowWidth = _settings->_windowWidth;
+		int windowHeight = _settings->_windowHeight;
+		bool borderless = _settings->_borderless;
 
-		RECT rect = { 0, 0, _settings->_screenWidth, _settings->_screenHeight };
+		int windowPositionX = (systemWidth - windowWidth) / 2;
+		int windowPositionY = (systemHeight - windowHeight) / 2;
+		LONG style = _defaultStyle;
+		LONG exStyle = _defaultExStyle;
 
-		//Removes borders around window and sets the window style to borderless
-		if (_settings->_borderless || _settings->_fullscreen)
+		//If settings is fullscreen, set the window to cover the entire screen and be borderless
+		if (borderless)
 		{
-			LONG style = _style;
-			LONG exStyle = _exStyle;
-
-			style &= ~(WS_CAPTION | WS_THICKFRAME | WS_MINIMIZE | WS_MAXIMIZE | WS_SYSMENU);
-			SetWindowLong(_hwnd, GWL_STYLE, style);
-
-			exStyle &= ~(WS_EX_DLGMODALFRAME | WS_EX_CLIENTEDGE | WS_EX_STATICEDGE);
-			SetWindowLong(_hwnd, GWL_EXSTYLE, exStyle);
-
-			AdjustWindowRect(&rect, WS_POPUP, FALSE);
+			style = _defaultStyle & ~(WS_CAPTION | WS_MINIMIZE | WS_MAXIMIZE | WS_SYSMENU | WS_POPUP | WS_BORDER);
+			exStyle = _defaultExStyle & ~(WS_EX_DLGMODALFRAME | WS_EX_CLIENTEDGE | WS_EX_STATICEDGE);
 		}
-		else //Sets the default style of the window, windowed with borders 
+		else //This is a window with borders - adjust the window size acordingly
 		{
-			SetWindowLong(_hwnd, GWL_STYLE, _style);
-			SetWindowLong(_hwnd, GWL_EXSTYLE, _exStyle);
-
-			AdjustWindowRect(&rect, (WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX), FALSE);
+			RECT rect = { 0, 0, windowWidth, windowHeight };
+			AdjustWindowRect(&rect, style, FALSE);
+			windowWidth = rect.right - rect.left;
+			windowHeight = rect.bottom - rect.top;
 		}
+		
+		SetWindowLong(_hwnd, GWL_STYLE, style);
+		SetWindowLong(_hwnd, GWL_EXSTYLE, exStyle);
 
-		//Sets window size and position
-		int posX = 0;
-		int posY = 0;
-		if (!(_settings->_fullscreen))
-		{
-			posX = (screenWidth - _settings->_screenWidth) / 2;
-			posY = (screenHeight - _settings->_screenHeight) / 2;
-
-			SetWindowPos(_hwnd, NULL, posX, posY, rect.right - rect.left, rect.bottom - rect.top, SWP_FRAMECHANGED |SWP_NOOWNERZORDER | SWP_NOZORDER);
-		}
-		else
-		{
-			_settings->_screenWidth = GetSystemMetrics(SM_CXSCREEN);
-			_settings->_screenHeight = GetSystemMetrics(SM_CYSCREEN);
-			ChangeDisplaySettings(nullptr, CDS_FULLSCREEN);
-			SetWindowPos(_hwnd, NULL, posX, posY, _settings->_screenWidth, _settings->_screenHeight, SWP_FRAMECHANGED | SWP_SHOWWINDOW);
-		}
-
-		SetForegroundWindow(_hwnd);
+		SetWindowPos(_hwnd, HWND_TOP, windowPositionX, windowPositionY, windowWidth, windowHeight, SWP_FRAMECHANGED);
 		SetFocus(_hwnd);
-
-		SetCursorPos(screenWidth / 2, screenHeight / 2);
 		ShowCursor(_settings->_showMouseCursor);
+		ShowWindow(_hwnd, SW_SHOW);
 	}
 
 	HWND Window::GetHWND()

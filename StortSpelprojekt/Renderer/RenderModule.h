@@ -149,7 +149,7 @@ namespace Renderer
 		RenderModule(HWND hwnd, System::Settings* settings);
 		~RenderModule();
 
-		void ResizeResources(HWND hwnd, System::Settings* settings);
+		void ResizeResources(System::Settings* settings);
 
 		void SetDataPerFrame(DirectX::XMMATRIX* view, DirectX::XMMATRIX* projection);
 		void SetDataPerObjectType(RenderObject* renderObject);

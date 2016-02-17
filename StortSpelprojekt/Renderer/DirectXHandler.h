@@ -64,7 +64,7 @@ namespace Renderer
 		void SetCullingState(CullingState state);
 		void SetBlendState(BlendState state);
 
-		void ResizeResources(HWND hwnd, System::Settings* settings);
+		void ResizeResources(System::Settings* settings);
 
 		void BeginScene(float red, float green, float blue, float alpha);
 		void EndScene();
