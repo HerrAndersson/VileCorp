@@ -71,3 +71,8 @@ int SpawnPoint::GetUnitsToSpawn() const
 {
 	return _unitsToSpawn;
 }
+
+void SpawnPoint::AddUnitsToSpawn(int amount)
+{
+	_unitsToSpawn += amount;
+}

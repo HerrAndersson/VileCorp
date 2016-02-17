@@ -26,4 +26,5 @@ public:
 	void Disable();
 	void Enable();
 	int GetUnitsToSpawn()const;
+	void AddUnitsToSpawn(int amount);
 };

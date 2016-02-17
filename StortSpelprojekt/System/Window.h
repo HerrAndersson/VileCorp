@@ -15,12 +15,12 @@ namespace System
 		HINSTANCE		_hinstance;
 		HWND			_hwnd;
 		System::Settings*	_settings;
+		LONG _defaultStyle;
+		LONG _defaultExStyle;
 
 		void InitializeWindow(WNDPROC wndProc);
 		void ShutdownWindow();
 
-		LONG _style;
-		LONG _exStyle;
 
 	public:
 

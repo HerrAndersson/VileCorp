@@ -1,7 +1,7 @@
 #pragma once
 #include "Node.h"
 #include "AssetManager.h"
-#include "Settings/settings.h"
+#include "SettingsReader.h"
 
 #include "rapidjson\rapidjson.h"
 #include "rapidjson\document.h"
@@ -26,7 +26,7 @@ namespace GUI
 		bool IsButtonColliding(Node* current, const std::string& id, int x, int y, float px, float py, bool& found);
 		Node* FindNode(Node* current, const std::string& id);
 	public:
-		UITree(const std::string& filename, const std::string& statename, AssetManager* assetManager, FontWrapper* fontWrapper, System::Settings* settings);
+		UITree(const std::string& filename, const std::string& statename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader);
 		~UITree();
 
 		GUI::Node* GetRootNode() const;
