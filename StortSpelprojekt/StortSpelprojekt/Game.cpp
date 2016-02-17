@@ -43,8 +43,6 @@ Game::Game(HINSTANCE hInstance, int nCmdShow):
 
 Game::~Game()
 {
-	_settingsReader.ApplyProfileSettings();
-
 	SAFE_DELETE(_objectHandler);
 	SAFE_DELETE(_window);
 	SAFE_DELETE(_renderModule);

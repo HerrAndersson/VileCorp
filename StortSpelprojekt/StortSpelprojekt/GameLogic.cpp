@@ -43,6 +43,7 @@ void GameLogic::Update(float deltaTime)
 			_uiTree->GetNode("winscreen")->SetHidden(false);
 			_gameDone = true;
 			_settingsReader->GetProfile()->_level += 1;
+			_settingsReader->ApplyProfileSettings();
 		}
 	}
 	_uiTree->GetNode("objectivetext")->SetText(L"Defeat the intruders! \n" + std::to_wstring(_objectHandler->GetAllByType(ENEMY).size()) + L" enemies still remain.");
