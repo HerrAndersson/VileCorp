@@ -23,6 +23,7 @@ protected:
 	System::Camera*			_camera;
 	PickingDevice*			_pickingDevice;
 	System::SoundModule*	_soundModule;
+	System::SettingsReader* _settingsReader;
 	
 	void ChangeState(State newState);
 	void ResetMouse();

@@ -63,7 +63,8 @@ void LevelSelectState::Update(float deltaTime)
 
 void LevelSelectState::OnStateEnter()
 {
-
+	//TODO: This is hardcoded to nine due to the functionality in LevelSelectState constructor /Sebastian
+	_levelSelectionMax = min(_levelSelectionMin + _settingsReader->GetProfile()->_level, 9);
 }
 
 void LevelSelectState::OnStateExit()

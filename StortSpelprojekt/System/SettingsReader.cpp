@@ -48,4 +48,9 @@ namespace System
 	{
 		return &_profile;
 	}
+
+	void SettingsReader::ApplyProfileSettings()
+	{
+		SaveXML(*_profileFileName, _profile);
+	}
 }

@@ -2,12 +2,13 @@
 #include <DirectXMath.h>
 #include "InputDevice.h"
 
-GameLogic::GameLogic(ObjectHandler* objectHandler, System::Camera* camera, System::Controls* controls, PickingDevice* pickingDevice, GUI::UITree* uiTree, AssetManager* assetManager)
+GameLogic::GameLogic(ObjectHandler* objectHandler, System::Camera* camera, System::Controls* controls, PickingDevice* pickingDevice, GUI::UITree* uiTree, AssetManager* assetManager, System::SettingsReader* settingsReader)
 {
 	_objectHandler = objectHandler;
 	_camera = camera;
 	_controls = controls;
 	_pickingDevice = pickingDevice;
+	_settingsReader = settingsReader;
 
 	_player = new Player(objectHandler);
 	_objectHandler->InitPathfinding();
@@ -30,7 +31,7 @@ void GameLogic::Update(float deltaTime)
 	HandleInput(deltaTime);
 	_objectHandler->Update(deltaTime);
 
-	if (_objectHandler->GetRemainingToSpawn() <= 0)
+	if (_objectHandler->GetRemainingToSpawn() <= 0 && !_gameDone)
 	{
 		if (_objectHandler->GetAllByType(LOOT).size() <= 0)				//You lost
 		{
@@ -41,6 +42,7 @@ void GameLogic::Update(float deltaTime)
 		{
 			_uiTree->GetNode("winscreen")->SetHidden(false);
 			_gameDone = true;
+			_settingsReader->GetProfile()->_level += 1;
 		}
 	}
 	_uiTree->GetNode("objectivetext")->SetText(L"Defeat the intruders! \n" + std::to_wstring(_objectHandler->GetAllByType(ENEMY).size()) + L" enemies still remain.");

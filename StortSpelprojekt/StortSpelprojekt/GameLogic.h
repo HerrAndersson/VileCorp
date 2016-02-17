@@ -21,6 +21,7 @@ private:
 	AssetManager*			_assetManager;
 	ID3D11ShaderResourceView* _guardTexture;
 	bool					_gameDone;
+	System::SettingsReader* _settingsReader;
 
 	void HandleInput(float deltaTime);
 	void HandleUnitSelect();
@@ -32,7 +33,7 @@ private:
 	void HandleCamRot();
 	void HandleCamMove(float deltaTime);
 public:
-	GameLogic(ObjectHandler* objectHandler, System::Camera* camera, System::Controls* controls, PickingDevice* pickingDevice, GUI::UITree* uiTree, AssetManager* assetManager);
+	GameLogic(ObjectHandler* objectHandler, System::Camera* camera, System::Controls* controls, PickingDevice* pickingDevice, GUI::UITree* uiTree, AssetManager* assetManager, System::SettingsReader* settingsReader);
 	~GameLogic();
 	void Update(float deltaTime);
 	bool IsGameDone()const;
