@@ -318,6 +318,50 @@ void LevelEditState::HandleButtons()
 				_isPressed[3] = false;
 			}
 		}
+
+		else if (_uiTree.IsButtonColliding("DemolisherBox", coord._pos.x, coord._pos.y) && _isPressed[3] == true)
+		{
+			//Move Button icon
+			GUI::Node* node = _uiTree.GetNode("BurglarBox");
+			XMFLOAT2 unpickedPosition = node->GetLocalPosition();
+
+			GUI::Node* node2 = _uiTree.GetNode("DemolisherBox");
+			XMFLOAT2 pickedPosition = node2->GetLocalPosition();
+
+			node2->SetPosition(unpickedPosition);
+			node->SetPosition(pickedPosition);
+
+			if (pickedPosition.y > unpickedPosition.y)
+			{
+				//BURGLAR has been picked
+				//TODO: Save this setting for this wave
+			}
+			else
+			{
+				//DEMOLISHER has been picked
+				//TODO: Save this setting for this wave
+			}
+		}
+
+		else if (_uiTree.IsButtonColliding("WaveAdd", coord._pos.x, coord._pos.y) && _isPressed[3] == true)
+		{
+			//TODO: Add functionality to add new page/wave
+		}
+		else if (_uiTree.IsButtonColliding("WaveDelete", coord._pos.x, coord._pos.y) && _isPressed[3] == true)
+		{
+			//TODO: Add functionality to delete current page/wave
+		}
+
+		else if (_uiTree.IsButtonColliding("WaveLeft", coord._pos.x, coord._pos.y) && _isPressed[3] == true)
+		{
+			//TODO: Find which page we are on, check so that it's not the first, if it is NOT the first, then you can press.
+		}
+		else if (_uiTree.IsButtonColliding("WaveRight", coord._pos.x, coord._pos.y) && _isPressed[3] == true)
+		{
+			//TODO: Find page so that we are not on the last page, also so that we are able to switch to a new page
+		}
+
+
 		else if (_uiTree.IsButtonColliding("GridOff", coord._pos.x, coord._pos.y) && _isPressed[0] == true)
 		{
 			//Move Button
