@@ -23,6 +23,7 @@ namespace System
 	{
 	private:
 		std::map<std::string, YSE::sound*>* _allSounds;
+		const std::string soundExtension = ".ogg";
 
 	public:
 		/*Functions*/
