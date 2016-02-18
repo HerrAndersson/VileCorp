@@ -93,14 +93,24 @@ private:
 
 	bool LoadModel(string name, Mesh* mesh);
 	void Flush();
+<<<<<<< HEAD
 	Mesh* ScanModel24();
 	Mesh* ScanModel26();
 	Mesh* ScanModel27();
 	Mesh* ScanModel(string name);
-	RenderObject* ScanModel28();
 	Texture* ScanTexture(string name);
 	Mesh* GetModel(string name);
 	Skeleton* LoadSkeleton(string name);
+=======
+
+	RenderObject* ScanModel24();
+	RenderObject* ScanModel26();
+	RenderObject* ScanModel27();
+	RenderObject* ScanModel28();
+	RenderObject* ScanModel(const string& file_path);
+	Texture* ScanTexture(const string& filename);
+
+>>>>>>> origin/Developer
 	ID3D11Buffer* CreateVertexBuffer(vector<WeightedVertex> *weightedVertices, vector<Vertex> *vertices, int skeleton);
 public:
 	AssetManager(ID3D11Device* device);

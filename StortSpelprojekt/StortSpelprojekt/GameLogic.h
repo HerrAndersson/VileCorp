@@ -33,7 +33,7 @@ private:
 	void HandlePatrol();
 	void HandleUnitMove();
 	void HandleCamMode();
-	void HandleCamZoom(float deltaTime);
+	void HandleCamZoom();
 	void HandleCamRot();
 	void HandleCamMove(float deltaTime);
 public:

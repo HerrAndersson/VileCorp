@@ -36,7 +36,8 @@ void LevelSelectState::Update(float deltaTime)
 		System::MouseCoord coord = _controls->GetMouseCoord();
 		if (_uiTree.IsButtonColliding("playbutton", coord._pos.x, coord._pos.y))
 		{
-			_soundModule->Play("Assets/Sounds/page");
+<<<<<<< HEAD
+			_soundModule->Play("Assets/Sounds/page.wav");
 
 			std::string levelBinaryPath;
 			if (_isCampaignMode)
@@ -51,28 +52,46 @@ void LevelSelectState::Update(float deltaTime)
 
 			_objectHandler->SetCurrentLevelHeader(_selectedLevelHeader);
 			_objectHandler->LoadLevel(levelBinaryPath);
+=======
+			_soundModule->Play("Assets/Sounds/page");
+			_objectHandler->LoadLevel(_levelSelection);
+>>>>>>> origin/Developer
 			ChangeState(State::PLACEMENTSTATE);
 		}
 		if (_uiTree.IsButtonColliding("prevlevel", coord._pos.x, coord._pos.y))
 		{
-			_soundModule->Play("Assets/Sounds/page");
+			_soundModule->Play("Assets/Sounds/page.wav");
 			if (_isCampaignMode)
 			{
+<<<<<<< HEAD
 				_campaignSelection--;
 				LoadLevelHeader(_campaignSelection, &_selectedLevelHeader);
 				SelectedLevelHeaderToGUI();
+=======
+				_soundModule->Play("Assets/Sounds/page");
+				_uiTree.GetNode(std::to_string(_levelSelection))->SetHidden(true);
+				_levelSelection--;
+				_uiTree.GetNode(std::to_string(_levelSelection))->SetHidden(false);
+>>>>>>> origin/Developer
 			}
 
 			UpdateButtonsNextPreviousVisability();
 		}
 		if (_uiTree.IsButtonColliding("nextlevel", coord._pos.x, coord._pos.y))
 		{
-			_soundModule->Play("Assets/Sounds/page");
+			_soundModule->Play("Assets/Sounds/page.wav");
 			if (_isCampaignMode)
 			{
+<<<<<<< HEAD
 				_campaignSelection++;
 				LoadLevelHeader(_campaignSelection, &_selectedLevelHeader);
 				SelectedLevelHeaderToGUI();
+=======
+				_soundModule->Play("Assets/Sounds/page");
+				_uiTree.GetNode(std::to_string(_levelSelection))->SetHidden(true);
+				_levelSelection++;
+				_uiTree.GetNode(std::to_string(_levelSelection))->SetHidden(false);
+>>>>>>> origin/Developer
 			}
 
 			UpdateButtonsNextPreviousVisability();

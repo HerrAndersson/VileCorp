@@ -1,0 +1,96 @@
+{
+	"background": {
+		"position": [ 0.0, 0.0 ],
+		"scale": [ 1.0, 1.0 ],
+		"texture": "../Menues/Main Menu/startmenu1.png"
+    },
+    "files": {
+      "position": [ 0.665, 0.2 ],
+	  
+	  "":
+	  {
+		"backgroundFolders": {
+			"position": [ 0.055, 0.5 ],
+			"scale": [ 0.65, 0.5 ],
+			"texture": "../Menues/Main Menu/menu2back.png"
+		},
+		"backgroundFolders": {
+			"position": [ 0.03, 0.3 ],
+			"scale": [ 0.65, 0.5 ],
+			"texture": "../Menues/Main Menu/menu2back.png"
+		},
+		"backgroundFolders": {
+			"position": [ 0.005, 0.1 ],
+			"scale": [ 0.65, 0.5 ],
+			"texture": "../Menues/Main Menu/menu2back.png"
+		},
+		"backgroundFolders": {
+			"position": [ -0.02, -0.1 ],
+			"scale": [ 0.65, 0.5 ],
+			"texture": "../Menues/Main Menu/menu2back.png"
+		}
+	  },
+	  
+      "play": {
+        "position": [ -0.045, -0.3 ],
+        "scale": [ 0.65, 0.5 ],
+        "texture": "../Menues/Main Menu/menu2.png",
+
+        "playbutton": {
+          "position": [ -0.47, 0.40 ],
+          "scale": [ 0.14, 0.07 ],
+          "text": "Play",
+          "color": "FF000000",
+          "fontsize": 30.0,
+          "centered": true
+        }
+      },
+      "leveledit": {
+        "position": [ -0.07, -0.5 ],
+        "scale": [ 0.65, 0.5 ],
+        "texture": "../Menues/Main Menu/menu2.png",
+
+        "leveleditbutton": {
+          "position": [ -0.47, 0.40 ],
+          "scale": [ 0.14, 0.07 ],
+          "text": "Level editor",
+          "color": "FF000000",
+          "fontsize": 30.0,
+          "centered": true
+        }
+      },
+      "options": {
+        "position": [ -0.095, -0.7 ],
+        "scale": [ 0.65, 0.5 ],
+        "texture": "../Menues/Main Menu/menu2.png",
+
+        "optionsbutton": {
+          "position": [ -0.47, 0.41 ],
+          "scale": [ 0.14, 0.07 ],
+          "text": "Options",
+          "color": "FF000000",
+          "fontsize": 30.0,
+          "centered": true
+        }
+      },
+      "exit": {
+        "position": [ -0.12, -0.9 ],
+        "scale": [ 0.65, 0.5 ],
+        "texture": "../Menues/Main Menu/menu2.png",
+
+        "exitbutton": {
+          "position": [ -0.47, 0.4 ],
+          "scale": [ 0.14, 0.07 ],
+          "text": "Exit",
+          "color": "FF000000",
+          "fontsize": 30.0,
+          "centered": true
+        }
+      }
+    },
+    "foreground": {
+      "position": [ 0.4, -0.78 ],
+      "scale": [ 0.595, 0.215 ],
+      "texture": "../Menues/Main Menu/startmenu3.png"
+    }
+}

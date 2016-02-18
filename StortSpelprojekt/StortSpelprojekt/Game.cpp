@@ -33,8 +33,8 @@ Game::Game(HINSTANCE hInstance, int nCmdShow):
 	_SM->Update(_timer.GetFrameTime());
 
 	_enemiesHasSpawned = false;
-	_soundModule.AddSound("Assets/Sounds/theme.wav", 0.15f, 1.0f, true, true);
-	_soundModule.Play("Assets/Sounds/theme.wav");
+	_soundModule.AddSound("Assets/Sounds/theme", 0.15f, 1.0f, true, true);
+	_soundModule.Play("Assets/Sounds/theme");
 }
 
 Game::~Game()

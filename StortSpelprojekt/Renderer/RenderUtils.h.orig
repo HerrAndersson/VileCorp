@@ -83,13 +83,15 @@ struct Point
 struct Mesh
 {
 	ID3D11Buffer* _vertexBuffer;
+<<<<<<< HEAD
 	bool _meshLoaded;
-	Hitbox* _hitbox = nullptr;
 	bool _isSkinned = false;
 	bool DecrementUsers();
 	short _activeUsers = 0;
-	std::string _skeletonName;
 	Skeleton* _skeleton;
+=======
+	Hitbox* _hitbox = nullptr;
+>>>>>>> origin/Developer
 	int _vertexBufferSize, _toMesh;
 	std::string _name;
 	std::vector<PointlightData> _pointLights;
@@ -98,13 +100,15 @@ struct Mesh
 	{
 		_pointLights.clear();
 		_spotLights.clear();
+<<<<<<< HEAD
 		if (_meshLoaded && _vertexBuffer != nullptr)
 		{
 			_vertexBuffer->Release();
-		}
+=======
 		if (_hitbox != nullptr)
 		{
 			delete _hitbox;
+>>>>>>> origin/Developer
 		}
 	}
 };

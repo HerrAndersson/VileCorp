@@ -17,7 +17,7 @@ PlacementState::PlacementState(System::Controls* controls, ObjectHandler* object
 	_pickingDevice = pickingDevice;
 	_baseEdit = nullptr;
 
-	_uiTree.GetNode("BudgetValue")->SetText(StringToWstring("FIX ME!!!"));
+	_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_playerProfile[_currentPlayer]._gold));
 }
 
 void PlacementState::EvaluateGoldCost()
@@ -46,7 +46,29 @@ void PlacementState::EvaluateGoldCost()
 	}
 }
 
+<<<<<<< HEAD
+PlacementState::PlacementState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule)
+	: BaseState(controls, objectHandler, camera, pickingDevice, filename, "PLACEMENT", assetManager, fontWrapper, settingsReader, soundModule)
+{
+	_playerProfile.resize(1);
+	
+	
+	//load all player profiles
+	GetFilenamesInDirectory("Assets/PlayerProfiles/", ".json", _playerProfilesPath);
+	
+	//rezise vector that stores player profiles
+	_playerProfile.resize(_playerProfilesPath.size());
+	_controls = controls;
+	_objectHandler = objectHandler;
+	_camera = camera;
+	_pickingDevice = pickingDevice;
+	_baseEdit = nullptr;
+	
+	_uiTree.GetNode("BudgetValue")->SetText(StringToWstring("FIX ME!!!"));
+}
+=======
 
+>>>>>>> origin/Developer
 
 
 PlacementState::~PlacementState()
@@ -146,6 +168,7 @@ void PlacementState::HandleButtons()
 
 	if (_baseEdit->IsSelection() && !_baseEdit->IsPlace())
 	{
+
 		if (_uiTree.IsButtonColliding("AnvilTrap", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
 		{
 			_toPlace._blueprint = _objectHandler->GetBlueprintByType(TRAP, SPIKE);
@@ -156,16 +179,33 @@ void PlacementState::HandleButtons()
 			_toPlace._blueprint = _objectHandler->GetBlueprintByType(TRAP, TESLACOIL);
 			create = true;
 		}
-		if (_uiTree.IsButtonColliding("SharkTrap", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
+<<<<<<< HEAD
+		if (_uiTree.IsButtonColliding("Camera", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
+=======
+	}
+	if (_uiTree.IsButtonColliding("SharkTrap", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
+	{
+		_toPlace._type = TRAP;
+		_toPlace._name = "shark_trap";
+
+		if (_baseEdit->IsSelection() && !_baseEdit->IsPlace())
 		{
-			_toPlace._blueprint = _objectHandler->GetBlueprintByType(TRAP, SHARK);
+			_toPlace._subType = SHARK;
 			create = true;
 		}
-		if (_uiTree.IsButtonColliding("Camera", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
+	}
+	if (_uiTree.IsButtonColliding("Camera", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
+	{
+		_toPlace._type = CAMERA;
+		_toPlace._name = "camera_proto";
+
+		if (_baseEdit->IsSelection() && !_baseEdit->IsPlace())
+>>>>>>> origin/Developer
 		{
 			_toPlace._blueprint = _objectHandler->GetBlueprintByType(CAMERA, 0);
 			create = true;
 		}
+
 		if (_uiTree.IsButtonColliding("Guard", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
 		{
 			_toPlace._blueprint = _objectHandler->GetBlueprintByType(GUARD, SHARK);

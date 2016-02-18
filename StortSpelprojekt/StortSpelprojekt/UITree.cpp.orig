@@ -23,8 +23,24 @@ namespace GUI
 		Document d;
 		d.Parse(str.c_str());
 
-		_root = LoadGUITree("root", d.MemberBegin(), d.MemberEnd());
+<<<<<<< HEAD
+		bool found = false;
+		for (Value::ConstMemberIterator i = d.MemberBegin(); i != d.MemberEnd(); ++i)
+		{
+			if (i->name.IsString() && string(i->name.GetString()) == statename)
+			{
+				found = true;
+				_root = LoadGUITree("root", i->value.MemberBegin(), i->value.MemberEnd());
+			}
+		}
+		if (!found)
+		{
+			throw std::runtime_error("Could not find " + statename + " in " + filename);
+		}
 		_root->SetPosition(_root->GetFinalPosition());
+=======
+		_root = LoadGUITree("root", d.MemberBegin(), d.MemberEnd());
+>>>>>>> origin/Developer
 	}
 
 	UITree::~UITree()
