@@ -28,14 +28,6 @@ AssetManager::~AssetManager()
 		}
 		delete texture;
 	}
-	for (Mesh* mesh : *_meshes)
-	{
-		if (mesh->_meshLoaded)
-		{
-			mesh->_vertexBuffer->Release();
-		}
-		delete mesh;
-	}
 	for (uint i = 0; i < _renderObjects->size(); i++)
 	{
 		delete _renderObjects->at(i);
@@ -203,7 +195,7 @@ Mesh* AssetManager::ScanModel(string name)
 	}
 */
 	mesh->_meshLoaded = false;
-
+	_meshes->push_back(mesh);
 	return mesh;
 }
 
@@ -439,10 +431,11 @@ RenderObject* AssetManager::GetRenderObject(string meshName, string textureName)
 	RenderObject* renderObject = new RenderObject;
 	renderObject->_mesh = GetModel(meshName);
 	renderObject->_diffuseTexture = GetTexture(textureName);
+	_renderObjects->push_back(renderObject);
 	return renderObject;
 }
 
-HRESULT AssetManager::ParseLevelHeader(LevelHeader* outputLevelHead, std::string levelHeaderFilePath)
+HRESULT AssetManager::ParseLevelHeader(Level::LevelHeader* outputLevelHead, std::string levelHeaderFilePath)
 {
 	try
 	{
@@ -458,7 +451,7 @@ HRESULT AssetManager::ParseLevelHeader(LevelHeader* outputLevelHead, std::string
 	return S_OK;
 }
 
-HRESULT AssetManager::ParseLevelBinary(LevelBinary* outputLevelBin, std::string levelBinaryFilePath)
+HRESULT AssetManager::ParseLevelBinary(Level::LevelBinary* outputLevelBin, std::string levelBinaryFilePath)
 {
 	try
 	{
@@ -500,6 +493,7 @@ Mesh* AssetManager::GetModel(string name)
 		}
 	}
 	Mesh* mesh = ScanModel(name);
+	mesh->_activeUsers++;
 	LoadModel(name, mesh);
 	return mesh;
 }

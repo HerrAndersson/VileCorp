@@ -106,7 +106,7 @@ public:
 	~AssetManager();
 	RenderObject* GetRenderObject(int index);
 	RenderObject* GetRenderObject(string meshName, string textureName);
-	HRESULT ParseLevelHeader(LevelHeader* outputLevelHead, std::string levelHeaderFilePath);
-	HRESULT ParseLevelBinary(LevelBinary* outputLevelBin, std::string levelBinaryFilePath);
+	HRESULT ParseLevelHeader(Level::LevelHeader* outputLevelHead, std::string levelHeaderFilePath);
+	HRESULT ParseLevelBinary(Level::LevelBinary* outputLevelBin, std::string levelBinaryFilePath);
 	Texture* GetTexture(string name);
 };

@@ -27,3 +27,9 @@ inline std::string WStringToString(std::wstring ws)
 	std::string s(ws.begin(), ws.end());
 	return s;
 }
+
+inline std::wstring StringToWstring(std::string s)
+{
+	std::wstring ws(s.begin(), s.end());
+	return ws;
+}

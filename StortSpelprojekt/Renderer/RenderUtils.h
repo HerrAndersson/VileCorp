@@ -129,6 +129,9 @@ struct RenderObject
 		{
 			_specularTexture->DecrementUsers();
 		}
-		_mesh->DecrementUsers();
+		if (_mesh->DecrementUsers())
+		{
+			delete _mesh;
+		}
 	}
 };

@@ -148,7 +148,7 @@ namespace System
 
 	void Controls::ResetInputBuffers()
 	{
-		//_inputDevice->ResetInputBuffers();
+		_inputDevice->ResetInputBuffers();
 	}
 
 	void Controls::StringToKeyMap(const std::string& key, unsigned char &mainKey, unsigned char& keyModifiers)
