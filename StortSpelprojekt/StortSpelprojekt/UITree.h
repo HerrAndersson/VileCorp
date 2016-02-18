@@ -26,7 +26,7 @@ namespace GUI
 		bool IsButtonColliding(Node* current, const std::string& id, int x, int y, float px, float py, bool& found);
 		Node* FindNode(Node* current, const std::string& id);
 	public:
-		UITree(const std::string& filename, const std::string& statename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader);
+		UITree(const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader);
 		~UITree();
 
 		GUI::Node* GetRootNode() const;
