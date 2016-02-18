@@ -206,6 +206,7 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 		  const Tilemap* tileMap, int trapType, AI::Vec2D direction, int cost)
 	: GameObject(ID, position, rotation, tilePosition, type, renderObject)
 {
+	_isActive = true;
 	_cost = cost;
 	_direction = direction;
 	_trapType = (TrapType)trapType;
@@ -379,12 +380,12 @@ void Trap::Activate()
 		}
 	}
 	Animate(ACTIVATE);
-	SetActive(false);
+	SetTrapActive(false);
 }
 
 void Trap::Update(float deltaTime)
 {	
-	if (_animation != nullptr && !_active)
+	if (_animation != nullptr && !_isActive)
 	{
 		_animation->Update(deltaTime);
 	}
@@ -399,6 +400,14 @@ void Trap::Update(float deltaTime)
 	if (triggered && _isActive)
 	{
 		Activate();
+	}
+	if (_isActive)
+	{
+		SetColorOffset({0,3,0});
+	}
+	else
+	{
+		SetColorOffset({3,0,0});
 	}
 }
 

@@ -6,29 +6,19 @@ void Unit::CalculatePath()
 	{
 		_path = _aStar->GetPath();
 		_pathLength = _aStar->GetPathLength();
-		for (int i = 0; i < _pathLength; i++)
-		{
-			/*if (_tileMap->IsFloorOnTile(_path[i]))
-			{
-				_tileMap->GetObjectOnTile(_path[i], FLOOR)->SetColorOffset({0,4,0});
-			}*/
-		}
-
-		if (_stop == false)
-		{
-			Animate(WALKANIM);
-		}
-		_isMoving = true;
-		_direction = _path[--_pathLength] - _tilePosition;
-		Rotate();
-		//_aStar->printMap();
+		//for (int i = 0; i < _pathLength; i++)
+		//{
+		//	/*if (_tileMap->IsFloorOnTile(_path[i]))
+		//	{
+		//		_tileMap->GetObjectOnTile(_path[i], FLOOR)->SetColorOffset({0,4,0});
+		//	}*/
+		//}
 	}
 	else
 	{
-		_path = nullptr;
-		_pathLength = 0;
-		//	_aStar->printMap();
+		ClearObjective();
 	}
+	_moveState = MoveState::MOVING;
 }
 
 void Unit::Rotate()
@@ -49,9 +39,9 @@ void Unit::Rotate()
 		}
 		CalculateMatrix();
 	}
-	_visionCone->ColorVisibleTiles({0,0,0});
+	//_visionCone->ColorVisibleTiles({0,0,0});
 	_visionCone->FindVisibleTiles(_tilePosition, _direction);
-	_visionCone->ColorVisibleTiles({0,0,3});
+	//_visionCone->ColorVisibleTiles({0,0,3});
 }
 
 int Unit::GetApproxDistance(AI::Vec2D target) const
@@ -59,52 +49,9 @@ int Unit::GetApproxDistance(AI::Vec2D target) const
 	return (int)_aStar->GetHeuristicDistance(_tilePosition, target);
 }
 
-
-/*
-	Decides the best direction to run away from a foe.
-*/
-void Unit::Flee()
-{
-	if (_pursuer == nullptr || !_visible)		//TODO Add other conditions to stop fleeing --Victor
-	{
-		_isFleeing = false;
-		CheckAllTiles();
-		Wait(20);
-	}
-	else
-	{
-		AI::Vec2D offset = _tilePosition - _pursuer->GetTilePosition();
-		AI::Vec2D bestDir = {0,0};
-		float bestDist = 0;
-		float tempDist = 0;
-		for (int i = 0; i < 8; i++)
-		{
-		//	AI::Vec2D tempDist = offset + AI::NEIGHBOUR_OFFSETS[i];
-
-			if (i < 4)						//weighting to normalize diagonal and straight directions
-			{
-				tempDist = pow(offset._x + AI::SQRT2 * AI::NEIGHBOUR_OFFSETS[i]._x, 2) + pow(offset._y + AI::SQRT2 * AI::NEIGHBOUR_OFFSETS[i]._y, 2);
-			}
-			else
-			{
-				tempDist = pow(offset._x + AI::NEIGHBOUR_OFFSETS[i]._x, 2) + pow(offset._y + AI::NEIGHBOUR_OFFSETS[i]._y, 2);
-			}
-
-			if (_tileMap->IsFloorOnTile(_tilePosition + AI::NEIGHBOUR_OFFSETS[i]) && !_tileMap->IsEnemyOnTile(_tilePosition + AI::NEIGHBOUR_OFFSETS[i]) && tempDist > bestDist)
-			{
-				bestDist = tempDist;
-				bestDir = AI::NEIGHBOUR_OFFSETS[i];
-			}
-		}
-		_direction = bestDir;
-		Rotate();
-	}
-}
-
 Unit::Unit()
 	: GameObject()
 {
-	_isFleeing = false;
 	_goalPriority = -1;
 	_aStar = new AI::AStar();
 	_visionCone = nullptr;
@@ -116,16 +63,16 @@ Unit::Unit()
 	_health = 1;
 	_pathLength = 0;
 	_path = nullptr;
-	_isMoving = false;
 	_direction = {0, -1};
-	_trapInteractionTime = -1;
+	_nextTile = _tilePosition;
+	_interactionTime = -1;
+	_isSwitchingTile = false;
 	Rotate();
 }
 
 Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject* renderObject, const Tilemap* tileMap)
 	: GameObject(ID, position, rotation, tilePosition, type, renderObject)
 {
-	_isFleeing = false;
 	_goalPriority = -1;
 	_visionRadius = 6;
 	_goalTilePosition = _tilePosition;
@@ -138,26 +85,25 @@ Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	_health = 1;					//TODO: Update constructor parameters to include health  --Victor
 	_pathLength = 0;
 	_path = nullptr;
-	_isMoving = false;
 	_stop = false;
 	_direction = {0, 1};
+	_nextTile = _tilePosition;
+	_isSwitchingTile = false;
 	Rotate();
 	if (_renderObject->_isSkinned)
 	{
 		_animation = new Animation(_renderObject->_skeleton, true);
 		_animation->Freeze(false);
 	}
-	_trapInteractionTime = -1;
+	_moveState = MoveState::IDLE;
+	_interactionTime = -1;
 }
 
 Unit::~Unit()
 {
-	//delete[] _visibleTiles;
 	delete _aStar;
 	_aStar = nullptr;
 	delete _visionCone;
-	//delete _heldObject;
-	//_heldObject = nullptr;
 	if (_animation != nullptr)
 	{
 		delete _animation;
@@ -169,9 +115,16 @@ int Unit::GetPathLength() const
 	return _pathLength;
 }
 
-AI::Vec2D Unit::GetGoal()
+AI::Vec2D Unit::GetGoalTilePosition()
 {
 	return _goalTilePosition;
+}
+
+void Unit::SetGoalTilePosition(AI::Vec2D goal)
+{
+	ClearObjective();
+	_goalTilePosition = goal;
+	_moveState = MoveState::FINDING_PATH;
 }
 
 AI::Vec2D Unit::GetDirection()
@@ -195,6 +148,20 @@ GameObject * Unit::GetHeldObject() const
 	return _heldObject;
 }
 
+Unit::MoveState Unit::GetMoveState() const
+{
+	return _moveState;
+}
+
+bool Unit::IsSwitchingTile() const
+{
+	return _isSwitchingTile;
+}
+
+void Unit::SetSwitchingTile(const bool switchTile)
+{
+	_isSwitchingTile = switchTile;
+}
 
 /*
 Checks tiles that are visible to the unit
@@ -202,17 +169,13 @@ Checks tiles that are visible to the unit
 void Unit::CheckVisibleTiles()
 {
 	AI::Vec2D* visibleTiles = _visionCone->GetVisibleTiles();
+
 	for (int i = 0; i < _visionCone->GetNrOfVisibleTiles(); i++)
 	{
-		//if (_tileMap->IsWallOnTile(_visibleTiles[i]._x, _visibleTiles[i]._y))
-		//{
-		//	_aStar->SetTileCost(_visibleTiles[i], -1);
-		//}
 		if (_tileMap->IsTrapOnTile(visibleTiles[i]._x, visibleTiles[i]._y))											//TODO: Traps shouldn't be automatically visible --Victor
 		{
 			EvaluateTile(_tileMap->GetObjectOnTile(visibleTiles[i], TRAP));
 		}
-
 		if (_type != ENEMY && _tileMap->IsEnemyOnTile(visibleTiles[i]))
 		{
 			EvaluateTile(_tileMap->GetObjectOnTile(visibleTiles[i], ENEMY));
@@ -234,21 +197,6 @@ void Unit::CheckAllTiles()
 	{
 		for (int j = 0; j < _tileMap->GetHeight(); j++)
 		{
-			//Handle walls
-			if (_tileMap->IsWallOnTile(AI::Vec2D(i, j)) || _tileMap->IsFurnitureOnTile(AI::Vec2D(i, j)))
-			{
-				_aStar->SetTileCost({ i, j }, -1);
-			}
-			else
-			{
-				_aStar->SetTileCost({ i, j }, 1);
-			}
-		}
-	}
-	for (int i = 0; i < _tileMap->GetWidth(); i++)
-	{
-		for (int j = 0; j < _tileMap->GetHeight(); j++)
-		{
 			//Handle objectives
 			if (_tileMap->IsObjectiveOnTile(AI::Vec2D(i, j)))
 			{
@@ -264,158 +212,64 @@ void Unit::CheckAllTiles()
 	//_aStar->printMap();
 }
 
+void Unit::InitializePathFinding()
+{
+	for (int i = 0; i < _tileMap->GetWidth(); i++)
+	{
+		for (int j = 0; j < _tileMap->GetHeight(); j++)
+		{
+			//Handle walls
+			if (_tileMap->IsWallOnTile(AI::Vec2D(i, j)))
+			{
+				_aStar->SetTileCost({i, j}, -1);
+			}
+			else
+			{
+				_aStar->SetTileCost({i, j}, 1);
+			}
+		}
+	}
+}
+
 /*
 Moves the goal and finds the path to the new goal
 */
 void Unit::SetGoal(AI::Vec2D goal)
 {
- 	_goalTilePosition = goal;
 	if (_tileMap->IsTrapOnTile(goal))
 	{
-		_objective = _tileMap->GetObjectOnTile(goal, TRAP);
+		SetGoal(_tileMap->GetObjectOnTile(goal, TRAP));
+	}
+ 	else if (_tileMap->IsFloorOnTile(goal))
+	{
+		SetGoal(_tileMap->GetObjectOnTile(goal, FLOOR));
 	}
 	else
 	{
-		_objective = _tileMap->GetObjectOnTile(goal, FLOOR);		//Note: Make sure walled tiles aren't valid goals
-	}
-	//_objective->SetColorOffset({5,0,0});
-	if (_objective != nullptr)
-	{
-		if (_objective->InRange(_tilePosition))
-		{
-			act(_objective);
-		}
-		else
-		{
-			_aStar->CleanMap();
-			_aStar->SetStartPosition(_tilePosition);
-			_aStar->SetGoalPosition(goal);
-			CalculatePath();
-		}
+		_moveState = MoveState::MOVING;
 	}
 }
 
 void Unit::SetGoal(GameObject * objective)
 {
+
 	_goalTilePosition = objective->GetTilePosition();
 	_objective = objective;
-	if (_objective->InRange(_tilePosition))
-	{
-		act(_objective);
-	}
-	else
-	{
-		_aStar->CleanMap();
-		_aStar->SetStartPosition(_tilePosition);
-		_aStar->SetGoalPosition(_goalTilePosition);
-		CalculatePath();
-	}
-}
-
-/*
-Moves the unit to the tile it's aiming for and selects a new walking direction.
-This should NOT update every frame. It only updates when the unit reaches a new tile.
-
-Name should be changed to make it clear that this is tile movement
-*/
-void Unit::Move()
-{
-	bool foundNextTile = false;
-	if (_isMoving)
-	{
-		//	_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,0});
-		_tilePosition += _direction;
-		//	_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,4,0});
-	}
-	if (_objective != nullptr && _objective->GetPickUpState() != ONTILE)			//Check that no one took your objective
-	{
-		_objective = nullptr;
-		_pathLength = 0;														//reseting _pathLength to indicate that a new path needs to be found
-	}
-
-	if (_isFleeing)
-	{
-		Flee();
-	}
-	else if (_pathLength > 0)
-	{
-		_isMoving = true;
-		foundNextTile = true;
-		AI::Vec2D nextTile = _path[--_pathLength];
-		_direction = nextTile - _tilePosition;
-	}
-	if (!_isFleeing && (!foundNextTile || (_objective != nullptr && _objective->InRange(_tilePosition))))
-	{
-		Animate(IDLEANIM);
-		_isMoving = false;
-		if (_objective != nullptr && _objective->InRange(_tilePosition))
-		{
-			act(_objective);
-		}
-		//_direction = {0,0};
-		CheckAllTiles();
-		Wait(10);
-	}
-	Rotate();
-	CheckVisibleTiles();
+	_aStar->CleanMap();
+	_aStar->SetStartPosition(_nextTile);
+	_aStar->SetGoalPosition(_goalTilePosition);
+	CalculatePath();
 }
 
 void Unit::Update(float deltaTime)
 {
-	if (_animation != nullptr)
-	{
-		_animation->Update(deltaTime);
-		if (_animation->GetisFinished())
-		{
-			_stop = false;
-		}
-	}
-	if (_trapInteractionTime >= 0)
-	{
-		UseTrap();
-	}
-	else
-	{
-		if (_waiting > 0)
-		{
-			_waiting--;
-		}
-		else if (_waiting == 0 && !_isMoving)
-		{
-			_waiting--;
-			Move();
-		}
-		if (_isMoving)
-		{
-			if (_direction._x == 0 || _direction._y == 0)		//Right angle movement
-			{
-				_position.x += MOVE_SPEED * _direction._x;
-				_position.z += MOVE_SPEED * _direction._y;
-			}
-			else if (_direction._x == 0 && _direction._y == 0)
-			{
-				CheckVisibleTiles();
-			}
-			else												//Diagonal movement
-			{
-				_position.x += AI::SQRT2 * 0.5f * MOVE_SPEED * _direction._x;
-				_position.z += AI::SQRT2 * 0.5f *MOVE_SPEED * _direction._y;
-			}
-			CalculateMatrix();
-		}
-		/*if (_tileMap->IsFloorOnTile(_tilePosition))
-		{
-			_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,4});
-		}*/
-	}
 }
 
 void Unit::Release()
 {}
 
-void Unit::Wait(int frames)
+void Unit::Wait()
 {
-	_waiting = frames;
 }
 
 void Unit::ClearObjective()
@@ -427,10 +281,7 @@ void Unit::ClearObjective()
 
 void Unit::TakeDamage(int damage)
 {
-	if (_health > 0)
-	{
-		_health -= damage;
-	}
+	_health -= damage;
 }
 
 void Unit::SetVisibility(bool visible)
@@ -442,21 +293,105 @@ void Unit::SetVisibility(bool visible)
 	}
 }
 
-void Unit::UseTrap()
+void Unit::SetTilePosition(AI::Vec2D pos)
 {
-
-	if (_trapInteractionTime < 0)
+	GameObject::SetTilePosition(pos);
+	//_visionCone->ColorVisibleTiles({0,0,0});
+	_visionCone->FindVisibleTiles(_tilePosition, _direction);
+	//_visionCone->ColorVisibleTiles({0,0,3});
+	if (_moveState == MoveState::IDLE)
 	{
-		_trapInteractionTime = 60;
+		_nextTile = pos;
 	}
-	else if (_trapInteractionTime > 0)
+}
+
+void Unit::Moving()
+{
+	if (IsCenteredOnTile(_nextTile))
 	{
-		_trapInteractionTime--;
+		_moveState = MoveState::SWITCHING_NODE;
+		_isSwitchingTile = true;
+		_position.x = _nextTile._x;
+		_position.z = _nextTile._y;
 	}
 	else
 	{
-		act(_objective);
-		_trapInteractionTime--;
+		if (_direction._x == 0 || _direction._y == 0)		//Right angle movement
+		{
+			_position.x += MOVE_SPEED * _direction._x;
+			_position.z += MOVE_SPEED * _direction._y;
+		}
+		else												//Diagonal movement
+		{
+			_position.x += AI::SQRT2 * 0.5f * MOVE_SPEED * _direction._x;
+			_position.z += AI::SQRT2 * 0.5f *MOVE_SPEED * _direction._y;
+		}
+		CalculateMatrix();
+	}
+}
+
+void Unit::SwitchingNode()
+{
+	//if (_tileMap->IsFloorOnTile(_tilePosition))
+	//{
+	//	_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,0});
+	//}
+	_tilePosition = _nextTile;
+	//if (_tileMap->IsFloorOnTile(_tilePosition))
+	//{
+	//	_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,4});
+	//}
+	if (_objective != nullptr && _objective->GetPickUpState() == ONTILE)
+	{
+		if (_objective->InRange(_tilePosition))
+		{
+			_moveState = MoveState::AT_OBJECTIVE;
+		}
+		else if (_pathLength > 0 /*&& !_tileMap->IsGuardOnTile(_path[_pathLength - 1])*/)
+		{
+			_nextTile = _path[--_pathLength];
+			_direction = _nextTile - _tilePosition;
+			Rotate();
+			_moveState = MoveState::MOVING;
+		}
+		else			// TODO: else find unblocked path to goal --Victor
+		{
+			ClearObjective();
+			_moveState = MoveState::IDLE;
+		}
+		_isSwitchingTile = false;
+		CheckVisibleTiles();
+	}
+	else
+	{
+		ClearObjective();
+		_moveState = MoveState::IDLE;
+	}
+}
+
+
+/*
+	Time is set to -1 when not active
+	It gets set to 60 (temporary) when a disarm/repair attempt begins
+	It ticks down one per frame until 0 at which the action resumes.
+*/
+void Unit::UseCountdown(int frames)
+{
+
+	if (_interactionTime < 0)
+	{
+		//Start
+		_interactionTime = frames;
+	}
+	else if (_interactionTime > 0)
+	{
+		_interactionTime--;
+	}
+	else
+	{
+		//Finish
+		Act(_objective);
+		_interactionTime--;
 	}
 }
 
@@ -464,12 +399,10 @@ int Unit::GetVisionRadius() const
 {
 	return _visionRadius;
 }
-
 bool Unit::GetAnimisFinished()
 {
 	return _animation->GetisFinished();
 }
-
 void Unit::Animate(Anim anim)
 {
 	if (_renderObject->_isSkinned)

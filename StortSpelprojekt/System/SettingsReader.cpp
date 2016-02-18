@@ -22,6 +22,7 @@ namespace System
 	{
 		SaveXML(*_profileFileName, _profile);
 		delete _settingsFileName;
+		delete _profileFileName;
 	}
 
 	Settings* SettingsReader::GetSettings()

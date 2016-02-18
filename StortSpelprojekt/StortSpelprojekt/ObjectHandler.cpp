@@ -523,15 +523,13 @@ void ObjectHandler::InitPathfinding()
 	for (GameObject* i : _gameObjects[ENEMY])
 	{
 		Unit* unit = dynamic_cast<Unit*>(i);
-		//unit->CheckAllTiles();
-		unit->Move();
+		unit->InitializePathFinding();
 	}
 
 	for (GameObject* i : _gameObjects[GUARD])
 	{
-		Unit* unit = dynamic_cast<Unit*>(i);
-		//unit->CheckAllTiles();
-		unit->Move();
+		Unit* unit = dynamic_cast<Unit*>(i);		unit->InitializePathFinding();
+		unit->InitializePathFinding();
 	}
 }
 
@@ -564,7 +562,6 @@ int ObjectHandler::GetRemainingToSpawn() const
 void ObjectHandler::Update(float deltaTime)
 {
 	//Update all objects' gamelogic
-
 	for (int i = 0; i < NR_OF_TYPES; i++)
 	{
 		for (unsigned int j = 0; j < _gameObjects[i].size(); j++)
@@ -583,18 +580,17 @@ void ObjectHandler::Update(float deltaTime)
 				g->SetPickUpState(ONTILE);
 			}
 
-			if (g->GetType() == GUARD || g->GetType() == ENEMY)									//Handle unit movement
+			if (g->GetType() == GUARD || g->GetType() == ENEMY)
 			{
 				Unit* unit = static_cast<Unit*>(g);
 				GameObject* heldObject = unit->GetHeldObject();
-
 				if (heldObject != nullptr)
 				{
 					heldObject->SetPosition(DirectX::XMFLOAT3(unit->GetPosition().x, unit->GetPosition().y + 2, unit->GetPosition().z));
 					heldObject->SetTilePosition(AI::Vec2D(heldObject->GetPosition().x, heldObject->GetPosition().z));
 				}
 
-				if (unit->GetHealth() <= 0 && unit->GetAnimisFinished())
+				if (unit->GetHealth() <= 0)
 				{
 					if (heldObject != nullptr)
 					{
@@ -617,88 +613,26 @@ void ObjectHandler::Update(float deltaTime)
 							heldObject->SetPosition(XMFLOAT3(heldObject->GetPosition().x, 0.0f, heldObject->GetPosition().z));
 						}
 					}
-
 					Remove(g);
 					g = nullptr;
 					j--;
 				}
-				else
+				if (unit->IsSwitchingTile())
 				{
-					float xOffset = abs(g->GetPosition().x - g->GetTilePosition()._x);
-					float zOffset = abs(g->GetPosition().z - g->GetTilePosition()._y);
-					if (xOffset > 0.99f || zOffset > 0.99f)																		 //If unit is on a new tile	
-					{
-						_tilemap->RemoveObjectFromTile(g->GetTilePosition(), unit);
-						unit->Move();
-						_tilemap->AddObjectToTile(g->GetTilePosition(), unit);
-
-						/*if (_tilemap->IsTrapOnTile(g->GetTilePosition()._x, g->GetTilePosition()._y))
-						{
-							static_cast<Trap*>(_tilemap->GetObjectOnTile(g->GetTilePosition()._x, g->GetTilePosition()._y, TRAP))->Activate(unit);
-						}*/
-					}
-
-					if (unit->GetType() == GUARD && _tilemap->IsEnemyOnTile(g->GetTilePosition()))
-					{
-						unit->act(_tilemap->GetObjectOnTile(g->GetTilePosition(), ENEMY));
-					}
-					if (unit->GetType() == ENEMY)
-					{
-						//unit->SetVisibility(false);
-					}
-
-					//If all the objectives are looted and the enemy is at a (de)spawn point, despawn them.
-					bool allLootIsCarried = true;
-					for (uint k = 0; k < _gameObjects[SPAWN].size(); k++)
-					{
-						for (uint l = 0; l < _gameObjects[LOOT].size() && allLootIsCarried; l++)
-						{
-							if (_gameObjects[LOOT][l]->GetPickUpState() == ONTILE || _gameObjects[LOOT][l]->GetPickUpState() == DROPPING)
-							{
-								allLootIsCarried = false;
-							}
-						}
-
-						if (unit->GetType() != GUARD &&
-							(_gameObjects[LOOT].size() == 0 || allLootIsCarried) &&
-							unit->InRange(_gameObjects[SPAWN][k]->GetTilePosition()))
-						{
-							unit->TakeDamage(10);
-							((SpawnPoint*)_gameObjects[SPAWN][k])->AddUnitsToSpawn(1);
-							((SpawnPoint*)_gameObjects[SPAWN][k])->Enable();
-						}
-					}
+					_tilemap->RemoveObjectFromTile(unit->GetTilePosition(), g);			//TODO: update correctly
+					_tilemap->AddObjectToTile(unit->GetTilePosition() + unit->GetDirection(), g);
 				}
 			}
 			else if (g->GetType() == SPAWN)															//Manage enemy spawning
 			{
-				bool allLootIsCarried = true;
-				//Check if all loot is carried
-				for (uint l = 0; l < _gameObjects[LOOT].size() && allLootIsCarried; l++)
-				{
-					if (_gameObjects[LOOT][l]->GetPickUpState() == ONTILE || _gameObjects[LOOT][l]->GetPickUpState() == DROPPING)
-					{
-						allLootIsCarried = false;
-					}
-				}
-
-				if (static_cast<SpawnPoint*>(g)->isSpawning() && (_gameObjects[LOOT].size() > 0) && !allLootIsCarried)
+				if (static_cast<SpawnPoint*>(g)->isSpawning() && _tilemap->GetNrOfLoot() > 0)
 				{
 					if (Add(ENEMY, "enemy_proto", g->GetPosition(), g->GetRotation()))
 					{
-						((Unit*)_gameObjects[ENEMY].back())->Move();
+						((Unit*)_gameObjects[ENEMY].back())->InitializePathFinding();
 					}
 				}
 			}
-			//else if (g->GetType() == TRAP)
-			//{
-			//	Unit* unit = static_cast<Unit*>(_tilemap->GetUnitOnTile(g->GetTilePosition()._x, g->GetTilePosition()._y));
-			//	//Enemy walks over trap
-			//	if (unit != nullptr)
-			//	{
-			//		static_cast<Trap*>(g)->Activate(unit);
-			//	}
-			//}
 		}
 	}
 	UpdateLights();

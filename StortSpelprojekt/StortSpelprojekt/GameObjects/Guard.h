@@ -15,10 +15,16 @@ public:
 	virtual ~Guard();
 	void EvaluateTile(Type objective, AI::Vec2D tile);
 	void EvaluateTile(GameObject* obj);
-	void act(GameObject* obj);
 	void SetPatrolPoint(AI::Vec2D patrolPoint);
 	std::vector<AI::Vec2D> GetPatrolRoute();
 	void RemovePatrol();
+
+	void Wait();
 	void Release();
 
+	void Update(float deltaTime);
+	//void Moving();
+	//void SetNextTile();			//replacement for move'
+	void Act(GameObject* obj);
+	void SwitchingNode();
 };
