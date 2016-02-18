@@ -216,10 +216,10 @@ void GameLogic::HandleUnitMove()
 				//Change direction
 				units.at(0)->SetDirection(direction);
 			}
-		}
-		else
-		{
-			_player->MoveUnits(selectedTile);
+			else
+			{
+				_player->MoveUnits(selectedTile);
+			}
 		}
 	}
 }
