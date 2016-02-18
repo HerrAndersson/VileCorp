@@ -172,6 +172,10 @@ void Guard::Act(GameObject* obj)
 				{
 					_currentPatrolGoal++;
 					SetGoalTilePosition(_patrolRoute[_currentPatrolGoal % _patrolRoute.size()]);
+					if (_tileMap->IsFloorOnTile(_goalTilePosition))
+					{
+						_objective = _tileMap->GetObjectOnTile(_goalTilePosition, FLOOR);
+					}
 				}
 			}
 			else
