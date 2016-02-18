@@ -59,6 +59,32 @@ void LevelSelectState::Update(float deltaTime)
 				_uiTree.GetNode(std::to_string(_levelSelection))->SetHidden(false);
 			}
 		}
+		else if (_uiTree.IsButtonColliding("SkirmishTab", coord._pos.x, coord._pos.y) || _uiTree.IsButtonColliding("CampaignTab", coord._pos.x, coord._pos.y))
+		{
+			//Move Button icon
+			GUI::Node* node = _uiTree.GetNode("CampaignTab");
+			XMFLOAT2 unpickedTab = node->GetLocalPosition();
+
+			GUI::Node* node2 = _uiTree.GetNode("SkirmishTab");
+			XMFLOAT2 pickedTab = node2->GetLocalPosition();
+
+			node2->SetPosition(XMFLOAT2(unpickedTab.x,pickedTab.y));
+			node->SetPosition(XMFLOAT2(pickedTab.x, unpickedTab.y));
+
+			if (pickedTab.x > unpickedTab.x)
+			{
+				int help = 0;
+				//CAMPAIGN has been picked
+				//TODO: Save this setting for this wave
+			}
+			else
+			{
+				int help = 0;
+				//SKIRMISH has been picked
+				//TODO: Save this setting for this wave
+			}
+		}
+
 	}
 }
 

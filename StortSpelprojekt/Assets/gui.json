@@ -239,6 +239,12 @@
 		}
 	},	
 	"OPTIONS" : {
+		"backbg":
+		{
+			"position": [0.0, 0.0],
+			"scale": [1.0, 1.05],
+			"texture" : "../Menues/General/desk_bkg.png"
+		},
 		"bg" :
 		{
 			"position": [0.0, 0.0],
@@ -265,13 +271,13 @@
 				"res_left" :
 				{
 					"position": [-0.32, 0.0],
-					"scale": [0.08, 0.08],
+					"scale": [0.07, 0.07],
 					"texture" : "../Menues/settings/settings6-arrow2.png"
 				},
 				"res_right" :
 				{
 					"position": [0.32, 0.0],
-					"scale": [0.08, 0.08],
+					"scale": [0.07, 0.07],
 					"texture" : "../Menues/settings/settings6-arrow.png"
 				},
 				"":
@@ -297,13 +303,13 @@
 				"win_left" :
 				{
 					"position": [-0.32, 0.0],
-					"scale": [0.08, 0.08],
+					"scale": [0.07, 0.07],
 					"texture" : "../Menues/settings/settings6-arrow2.png"
 				},
 				"win_right" :
 				{
 					"position": [0.32, 0.0],
-					"scale": [0.08, 0.08],
+					"scale": [0.07, 0.07],
 					"texture" : "../Menues/settings/settings6-arrow.png"
 				},
 				"":
@@ -329,13 +335,13 @@
 				"shadow_left" :
 				{
 					"position": [-0.32, 0.0],
-					"scale": [0.08, 0.08],
+					"scale": [0.07, 0.07],
 					"texture" : "../Menues/settings/settings6-arrow2.png"
 				},
 				"shadow_right" :
 				{
 					"position": [0.32, 0.0],
-					"scale": [0.08, 0.08],
+					"scale": [0.07, 0.07],
 					"texture" : "../Menues/settings/settings6-arrow.png"
 				},
 				"":
@@ -361,13 +367,13 @@
 				"aa_left" :
 				{
 					"position": [-0.32, 0.0],
-					"scale": [0.08, 0.08],
+					"scale": [0.07, 0.07],
 					"texture" : "../Menues/settings/settings6-arrow2.png"
 				},
 				"aa_right" :
 				{
 					"position": [0.32, 0.0],
-					"scale": [0.08, 0.08],
+					"scale": [0.07, 0.07],
 					"texture" : "../Menues/settings/settings6-arrow.png"
 				},
 				"":
@@ -393,13 +399,13 @@
 				"sound_left" :
 				{
 					"position": [-0.32, 0.0],
-					"scale": [0.08, 0.08],
+					"scale": [0.07, 0.07],
 					"texture" : "../Menues/settings/settings6-arrow2.png"
 				},
 				"sound_right" :
 				{
 					"position": [0.32, 0.0],
-					"scale": [0.08, 0.08],
+					"scale": [0.07, 0.07],
 					"texture" : "../Menues/settings/settings6-arrow.png"
 				},
 				"":
@@ -421,8 +427,8 @@
 			"apply" :
 			{
 				"position": [-0.2, -1.1],
-				"scale": [0.1, 0.07],
-				"texture": "../Menues/PlayState GUI/button.png",
+				"scale": [0.1, 0.065],
+				"texture": "../Menues/Pause Menu/pause-button.png",
 				"hidden" : true,
 				"":
 				{
@@ -436,13 +442,13 @@
 			"cancel" :
 			{
 				"position": [0.2, -1.1],
-				"scale": [0.1, 0.07],
-				"texture": "../Menues/PlayState GUI/button.png",
+				"scale": [0.1, 0.065],
+				"texture": "../Menues/Pause Menu/pause-button.png",
 				"":
 				{
 					"position" : [0.0, -0.03],
 					"scale": [0.1, 0.07],
-					"text" : "Cancel",
+					"text" : "Return",
 					"centered" : true,
 					"color" : "FF000000"
 				}
@@ -582,8 +588,8 @@
 			
 				"ExportText":
 				{
-					"position" : [0.034, -0.078],
-					"scale": [0.1, 0.1],
+					"position" : [0.003, 0.002],
+					"scale": [0.07, 0.02],
 					"text": "Save/Export Map",
 					"color": "FF000000",
 					"fontsize" : 18.0
@@ -597,8 +603,8 @@
 			
 				"ImportText":
 				{
-					"position" : [0.034, -0.078],
-					"scale": [0.1, 0.1],
+					"position" : [0.003, 0.002],
+					"scale": [0.07, 0.02],
 					"text": "Load/Import Map",
 					"color": "FF000000",
 					"fontsize" : 18.0
@@ -612,8 +618,8 @@
 			
 				"NewText":
 				{
-					"position" : [0.06, -0.078],
-					"scale": [0.1, 0.1],
+					"position" : [0.003, 0.002],
+					"scale": [0.04, 0.02],
 					"text": "New Map",
 					"color": "FF000000",
 					"fontsize" : 18.0
@@ -627,8 +633,8 @@
 				
 				"NewConText":
 				{
-					"position" : [0.01, -0.05],
-					"scale": [0.2, 0.13],
+					"position" : [0.0, 0.040],
+					"scale": [0.18, 0.025],
 					"centered": true,
 					"text": "Close your current map without saving?",
 					"color": "FF000000",
@@ -636,7 +642,7 @@
 				},
 				"NewYes":
 				{
-					"position" : [-0.1, -0.05],
+					"position" : [-0.09, -0.05],
 					"scale": [0.07, 0.026],
 					"texture": "../Menues/LevelEdit/GUI/leveledit4-newloadsave-button.png",
 					"centered": true,
@@ -646,7 +652,7 @@
 				},
 				"NewNo":
 				{
-					"position": [0.1, -0.05],	
+					"position": [0.09, -0.05],	
 					"scale": [0.07, 0.026],
 					"texture": "../Menues/LevelEdit/GUI/leveledit4-newloadsave-button.png",
 					"centered": true,
@@ -666,8 +672,8 @@
 					
 					"MapButtonText":
 					{
-						"position" : [0.982, -0.975],
-						"scale": [1.0, 1.0],
+						"position" : [0.003, 0.002],
+						"scale": [0.02, 0.02],
 						"text": "Map",
 						"color": "FF000000",
 						"fontsize" : 18.0
@@ -681,8 +687,8 @@
 				
 				"StoryButtonText":
 				{
-					"position" : [0.982, -0.975],
-					"scale": [1.0, 1.0],
+					"position" : [0.0, 0.005],
+					"scale": [0.02, 0.02],
 					"text": "Story",
 					"color": "FF000000",
 					"fontsize" : 18.0
@@ -696,8 +702,8 @@
 				
 				"ControlButtonText":
 				{
-					"position" : [0.0, -0.025],
-					"scale": [0.05, 0.05],
+					"position" : [0.0, 0.005],
+					"scale": [0.025, 0.025],
 					"centered": true,
 					"text": "Help!",
 					"color": "FF000000",
@@ -706,18 +712,18 @@
 			},
 			"ThiefButton":
 			{
-				"position": [-0.98, -0.74],
-				"scale": [0.035, 0.07],
+				"position": [-0.97, -0.74],
+				"scale": [0.03, 0.07],
 				"texture": "../Menues/LevelEdit/GUI/LEVELEDIT1.png",
 				
 				"ThiefButtonText":
 				{
-					"position" : [0.0, -0.025],
-					"scale": [0.05, 0.05],
+					"position" : [-0.003, 0.0],
+					"scale": [0.025, 0.025],
 					"centered": true,
-					"text": "Thief",
+					"text": "Spawn",
 					"color": "FF000000",
-					"fontsize" : 18.0
+					"fontsize" : 16.0
 				}
 			}
 		},
@@ -733,16 +739,16 @@
 				
 				"MapListTitle":
 				{
-					"position" : [0.942, -0.715],
-					"scale": [1.0, 1.0],
+					"position" : [0.015, 0.255],
+					"scale": [0.07, 0.03],
 					"text": "Map Settings",
 					"color": "FF000000",
 					"fontsize" : 24.0
 				},
 				"MapTileText":
 				{
-					"position" : [0.882, -0.785],
-					"scale": [1.0, 1.0],
+					"position" : [0.0, 0.195],
+					"scale": [0.118, 0.02],
 					"text": "Grid size:              X              Y",
 					"color": "FF000000",
 					"fontsize" : 18.0
@@ -789,8 +795,8 @@
 				
 					"MapGridText":
 					{
-						"position" : [0.882, -0.887],
-						"scale": [1.0, 1.0],
+						"position" : [0.0, 0.095],
+						"scale": [0.118, 0.02],
 						"text": "Grid:              On              Off",
 						"color": "FF000000",
 						"fontsize" : 18.0
@@ -809,8 +815,8 @@
 					},
 					"BudgetText":
 					{
-						"position" : [0.882, -0.975],
-						"scale": [1.0, 1.0],
+						"position" : [-0.09, 0.005],
+						"scale": [0.035, 0.02],
 						"text": "Budget: ",
 						"color": "FF000000",
 						"fontsize" : 18.0
@@ -948,8 +954,8 @@
 			
 			"ControlsListText":
 			{
-			"position" : [0.882, -0.6],
-				"scale": [1.0, 1.0],
+			"position" : [0.007, 0.0],
+				"scale": [0.188, 0.45],
 				"text": "Controls shown here!",
 				"color": "FF000000",
 				"fontsize" : 18.0
@@ -967,8 +973,8 @@
 			
 				"ThiefTitle":
 				{
-					"position" : [0.92, -0.58],
-					"scale": [1.0, 1.0],
+					"position" : [0.0, 0.39],
+					"scale": [0.08, 0.03],
 					"text": "Spawn Settings",
 					"color": "FF000000",
 					"fontsize" : 24.0
@@ -981,24 +987,24 @@
 					{
 						"ThiefInformation":
 						{
-							"position" : [1.0, -0.65],
-							"scale": [1.0, 1.0],
+							"position" : [0.04, 0.33],
+							"scale": [0.035, 0.02],
 							"text": "Wave 1",
 							"color": "FF000000",
-							"fontsize" : 20.0
+							"fontsize" : 18.0
 						},
 						"ThiefTitleTypes":
 						{
-							"position" : [0.865, -0.7],
-							"scale": [1.0, 1.0],
+							"position" : [-0.06, 0.07],
+							"scale": [0.06, 0.23],
 							"text": "Unit Types\n\n\n\n\nUnit Amount:\n\nStarting Time:\n\nFrequency:",
 							"color": "FF000000",
 							"fontsize" : 20.0
 						},
 						"ThiefTypes":
 						{
-							"position" : [0.93, -0.77],
-							"scale": [1.0, 1.0],
+							"position" : [0.01, 0.17],
+							"scale": [0.05, 0.06],
 							"text": "Burglar\n\nDemolisher",
 							"color": "FF000000",
 							"fontsize" : 18.0
@@ -1010,20 +1016,20 @@
 						{
 							"BurglarBox":
 							{
-								"position": [-0.1, 0.21],
+								"position": [-0.075, 0.21],
 								"scale": [0.021, 0.036],
 								"texture": "../Menues/LevelEdit/GUI/buttonOn.png"
 							},
 							"DemolisherBox":
 							{
-								"position": [-0.1, 0.1275],
+								"position": [-0.075, 0.1275],
 								"scale": [0.021, 0.036],
 								"texture": "../Menues/LevelEdit/GUI/buttonOff.png"
 							}
 						},
 						"ThiefAmountBox":
 						{
-							"position": [0.025, 0.05],
+							"position": [0.035, 0.05],
 							"scale": [0.021, 0.036],
 							"texture": "../Menues/LevelEdit/GUI/button.png",
 							
@@ -1039,7 +1045,7 @@
 						},
 						"ThiefStartBox":
 						{
-							"position": [0.025, -0.04],
+							"position": [0.035, -0.04],
 							"scale": [0.021, 0.036],
 							"texture": "../Menues/LevelEdit/GUI/button.png",
 							
@@ -1055,7 +1061,7 @@
 						},
 						"ThiefFreqBox":
 						{
-							"position": [0.025, -0.13],
+							"position": [0.035, -0.13],
 							"scale": [0.021, 0.036],
 							"texture": "../Menues/LevelEdit/GUI/button.png",
 							
@@ -1073,13 +1079,13 @@
 						{
 							"WaveAdd":
 							{
-								"position": [-0.095, -0.25],
+								"position": [-0.07, -0.28],
 								"scale": [0.038, 0.065],
 								"texture": "../Menues/LevelEdit/GUI/buttonwave.png"
 							},
 							"WaveDelete":
 							{
-								"position": [0.005, -0.25],
+								"position": [0.015, -0.28],
 								"scale": [0.038, 0.065],
 								"texture": "../Menues/LevelEdit/GUI/buttonwavedel.png"
 							}
@@ -1088,14 +1094,14 @@
 						{
 							"WaveLeft":
 							{
-								"position": [0.16, -0.29],
-								"scale": [ 0.02, 0.02 ],
+								"position": [0.175, -0.32],
+								"scale": [ 0.017, 0.02 ],
 								"texture": "../Menues/LevelEdit/GUI/placement4-button1.png"
 							},
 							"WaveRight":
 							{
-								"position": [0.21, -0.29],
-								"scale": [ 0.02, 0.02 ],
+								"position": [0.215, -0.32],
+								"scale": [ 0.017, 0.02 ],
 								"texture": "../Menues/LevelEdit/GUI/placement4-button2.png"
 							}
 						}
@@ -1113,8 +1119,8 @@
 				
 				"FloorsText":
 				{
-					"position" : [0.984, -0.975],
-					"scale": [1.0, 1.0],
+					"position" : [0.003, 0.002],
+					"scale": [0.02, 0.02],
 					"text": "Floor",
 					"color": "FF000000",
 					"fontsize" : 18.0
@@ -1128,8 +1134,8 @@
 				
 				"WallsText":
 				{
-					"position" : [0.984, -0.975],
-					"scale": [1.0, 1.0],
+					"position" : [0.004, 0.002],
+					"scale": [0.02, 0.02],
 					"text": "Wall",
 					"color": "FF000000",
 					"fontsize" : 18.0
@@ -1143,8 +1149,8 @@
 				
 				"ObjectivesText":
 				{
-					"position" : [0.984, -0.975],
-					"scale": [1.0, 1.0],
+					"position" : [0.005, 0.002],
+					"scale": [0.02, 0.02],
 					"text": "Obj-",
 					"color": "FF000000",
 					"fontsize" : 18.0
@@ -1158,8 +1164,8 @@
 				
 				"EntriesText":
 				{
-					"position" : [0.984, -0.975],
-					"scale": [1.0, 1.0],
+					"position" : [0.003, 0.002],
+					"scale": [0.02, 0.02],
 					"text": "Entry",
 					"color": "FF000000",
 					"fontsize" : 18.0
@@ -1173,8 +1179,8 @@
 				
 				"UnitsText":
 				{
-					"position" : [0.984, -0.975],
-					"scale": [1.0, 1.0],
+					"position" : [0.005, 0.002],
+					"scale": [0.02, 0.02],
 					"text": "Unit",
 					"color": "FF000000",
 					"fontsize" : 18.0
@@ -1188,8 +1194,8 @@
 				
 				"TrapsText":
 				{
-					"position" : [0.984, -0.975],
-					"scale": [1.0, 1.0],
+					"position" : [0.004, 0.002],
+					"scale": [0.02, 0.02],
 					"text": "Trap",
 					"color": "FF000000",
 					"fontsize" : 18.0
@@ -1203,8 +1209,8 @@
 				
 				"DecorationsText":
 				{
-					"position" : [0.984, -0.975],
-					"scale": [1.0, 1.0],
+					"position" : [0.004, 0.002],
+					"scale": [0.02, 0.02],
 					"text": "Deco",
 					"color": "FF000000",
 					"fontsize" : 18.0
@@ -1261,13 +1267,13 @@
       "position": [ -0.82, 0.485 ],
       "scale": [ 0.16, 0.432 ],
       "left": {
-        "position": [ 0.126, -0.5 ],
-        "scale": [ 0.02, 0.02 ],
+        "position": [ 0.136, -0.5 ],
+		"scale": [ 0.017, 0.02 ],
         "texture": "../Menues/LevelEdit/GUI/placement4-button1.png"
       },
       "right": {
-        "position": [ 0.174, -0.5 ],
-        "scale": [ 0.02, 0.02 ],
+        "position": [ 0.177, -0.5 ],
+		"scale": [ 0.017, 0.02 ],
         "texture": "../Menues/LevelEdit/GUI/placement4-button2.png"
       }
     },
@@ -1280,11 +1286,17 @@
 	},
 	"LEVELSELECT" :
 	{
+		"backbg":
+		{
+			"position": [0.0, 0.0],
+			"scale": [1.0, 1.05],
+			"texture" : "../Menues/General/desk_bkg.png"
+		},
 		"bg" :
 		{
 			"position": [0.0, 0.0],
 			"scale": [1.0, 1.0],
-			"texture" : "../Menues/settings/settings1.png"
+			"texture" : "../Menues/Level Select/selectmenu1.png"
 		},
 		"title":
 		{
@@ -1295,10 +1307,49 @@
 			"color" : "FF000000",
 			"fontsize" : 60.0
 		},
+		"LevelSelectionTabs" :
+		{
+			"CampaignTab" :
+			{
+				"position": [0.5, 0.7],
+				"scale": [0.1, 0.065],
+				"texture": "../Menues/Level Select/selectmenu-note.png",
+				"" :
+				{
+					"position": [0.04, 0.0],
+					"scale": [0.03, 0.03],
+					"text" : "Campaign",
+					"centered": true,
+					"fontsize": 24,
+					"color" : "FF000000"
+				}
+			},
+			"SkirmishTab" :
+			{
+				"position": [0.46, 0.55],
+				"scale": [0.1, 0.065],
+				"texture": "../Menues/Level Select/selectmenu-note.png",
+				"" :
+				{
+					"position": [0.04, 0.0],
+					"scale": [0.03, 0.03],
+					"text" : "Skirmish",
+					"centered": true,
+					"fontsize": 24,
+					"color" : "FF000000"
+				}
+			}
+		},
+		"bgfront" :
+		{
+			"position": [0.0, 0.0],
+			"scale": [1.0, 1.0],
+			"texture" : "../Menues/Level Select/selectmenu2.png"
+		},
 		"playbutton" :
 		{
 			"position": [0.0, -0.7],
-			"scale": [0.12, 0.12],
+			"scale": [0.125, 0.1],
 			"texture": "../Menues/PlacementStateGUI/placementResources.png",
 			"" :
 			{
@@ -1310,17 +1361,16 @@
 				"color" : "FF000000"
 			}
 		},
-		
 		"nextlevel" :
 		{
-			"position": [0.3, -0.7],
-			"scale": [0.1, 0.1],
+			"position": [0.27, -0.7],
+			"scale": [0.08, 0.08],
 			"texture": "../Menues/settings/settings6-arrow.png"
 		},
 		"prevlevel" :
 		{
-			"position": [-0.3, -0.7],
-			"scale": [0.1, 0.1],
+			"position": [-0.27, -0.7],
+			"scale": [0.08, 0.08],
 			"texture": "../Menues/settings/settings6-arrow2.png"
 		},
 		"":
