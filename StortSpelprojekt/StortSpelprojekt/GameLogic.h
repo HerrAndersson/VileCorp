@@ -23,6 +23,10 @@ private:
 	bool					_gameDone;
 	System::SettingsReader* _settingsReader;
 
+	//TODO: add gamemodes /Rikhard
+	int _gameMode;
+	int _surviveForSeconds;
+
 	void HandleInput(float deltaTime);
 	void HandleUnitSelect();
 	void ShowSelectedInfo();

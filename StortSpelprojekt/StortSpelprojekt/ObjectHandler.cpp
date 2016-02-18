@@ -20,75 +20,6 @@ ObjectHandler::~ObjectHandler()
 	SAFE_DELETE(_buildingGrid);
 }
 
-bool ObjectHandler::LoadLevel(std::string levelBinaryFilePath)
-{
-	bool result = false;
-	LevelBinary levelData;
-	HRESULT success = _assetManager->ParseLevelBinary(&levelData, levelBinaryFilePath);
-
-	if (success == S_OK)
-	{
-		result = true;
-		delete _tilemap;
-		_tilemap = new Tilemap(AI::Vec2D(levelData._tileMapSizeX, levelData._tileMapSizeZ));
-
-		for (int i = 0; i < levelData._gameObjectData.size() && result; i++)
-		{
-			float rotation;
-			if (levelData._gameObjectData[i][2] == 3)
-			{
-				rotation = 0;
-			}
-			else if (levelData._gameObjectData[i][2] == 0)
-			{
-				rotation = DirectX::XM_PIDIV2;
-			}
-			else if (levelData._gameObjectData[i][2] == 1)
-			{
-				rotation = DirectX::XM_PI;
-			}
-			else
-			{
-				rotation = DirectX::XM_PI + DirectX::XM_PIDIV2;
-			}
-			//result = Add(DirectX::XMFLOAT3(
-			//	levelData->_gameObjectData[i][0], 0, levelData->_gameObjectData[i][1]),
-			//	DirectX::XMFLOAT3(0, rotation, 0),
-			//	Type(levelData->_gameObjectData[i][3]),
-			//	levelData->_gameObjectData[i][4],
-			//	levelData->_gameObjectData[i][5],
-			//	levelData->_gameObjectData[i][6]);
-		}
-	}
-	else
-	{
-		_tilemap = new Tilemap();
-	}
-	return result;
-}
-
-void ObjectHandler::UnloadLevel()
-{
-	for (pair<GameObject*, Renderer::Spotlight*> spot : _spotlights)
-	{
-		SAFE_DELETE(spot.second);
-		spot.second = nullptr;
-		spot.first = nullptr;
-	}
-	_spotlights.clear();
-	for (pair<GameObject*, Renderer::Pointlight*> point : _pointligths)
-	{
-		SAFE_DELETE(point.second);
-		point.second = nullptr;
-		point.first = nullptr;
-	}
-	_pointligths.clear();
-
-	ReleaseGameObjects();
-	SAFE_DELETE(_tilemap);
-	SAFE_DELETE(_lightCulling);
-}
-
 bool ObjectHandler::Add(Blueprint* blueprint, int textureId, const XMFLOAT3& position, const XMFLOAT3& rotation, const bool placeOnTilemap)
 {
 	GameObject* object = nullptr;
@@ -501,6 +432,72 @@ void ObjectHandler::EnlargeTilemap(int offset)
 Grid * ObjectHandler::GetBuildingGrid()
 {
 	return _buildingGrid;
+}
+
+Level::LevelHeader * ObjectHandler::GetCurrentLevelHeader()
+{
+	return &_currentLevelHeader;
+}
+
+void ObjectHandler::SetCurrentLevelHeader(Level::LevelHeader levelheader)
+{
+	_currentLevelHeader = levelheader;
+}
+
+bool ObjectHandler::LoadLevel(std::string levelBinaryFilePath)
+{
+	bool result = false;
+	Level::LevelBinary levelData;
+	HRESULT success = _assetManager->ParseLevelBinary(&levelData, levelBinaryFilePath);
+
+	if (success == S_OK)
+	{
+		result = true;
+		delete _tilemap;
+		_tilemap = new Tilemap(AI::Vec2D(levelData._tileMapSizeX, levelData._tileMapSizeZ));
+
+		for (int i = 0; i < levelData._gameObjectData.size() && result; i++)
+		{
+			std::vector<int>* formattedGameObject = &levelData._gameObjectData[i]; //Structure: { type, subType, textureID, posX, posZ, rot }
+			Blueprint* blueprint = GetBlueprintByType(formattedGameObject->at(0), formattedGameObject->at(1));
+
+			//Position
+			float posX = static_cast<float>(formattedGameObject->at(3));
+			float posZ = static_cast<float>(formattedGameObject->at(4));
+
+			//Rotation
+			float rotY = (formattedGameObject->at(5) * DirectX::XM_PI) / 180.0f;
+
+			Add(blueprint, formattedGameObject->at(2), DirectX::XMFLOAT3(posX, 0, posZ), DirectX::XMFLOAT3(0, rotY, 0), true);
+		}
+	}
+	else
+	{
+		_tilemap = new Tilemap();
+	}
+	return result;
+}
+
+void ObjectHandler::UnloadLevel()
+{
+	for (pair<GameObject*, Renderer::Spotlight*> spot : _spotlights)
+	{
+		SAFE_DELETE(spot.second);
+		spot.second = nullptr;
+		spot.first = nullptr;
+	}
+	_spotlights.clear();
+	for (pair<GameObject*, Renderer::Pointlight*> point : _pointligths)
+	{
+		SAFE_DELETE(point.second);
+		point.second = nullptr;
+		point.first = nullptr;
+	}
+	_pointligths.clear();
+
+	ReleaseGameObjects();
+	SAFE_DELETE(_tilemap);
+	SAFE_DELETE(_lightCulling);
 }
 
 void ObjectHandler::InitPathfinding()

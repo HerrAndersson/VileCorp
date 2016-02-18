@@ -9,7 +9,7 @@ class LevelEditState : public BaseState
 private:
 	BaseEdit* _baseEdit;
 
-	LevelHeader _levelHeader;
+	Level::LevelHeader _levelHeader;
 
 	std::string _currentLevelFileName;
 	bool _isNewLevel;

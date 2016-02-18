@@ -43,7 +43,7 @@ PlacementState::PlacementState(System::Controls* controls, ObjectHandler* object
 	_pickingDevice = pickingDevice;
 	_baseEdit = nullptr;
 	
-	_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_playerProfile[_currentPlayer]._gold));
+	_uiTree.GetNode("BudgetValue")->SetText(StringToWstring("FIX ME!!!"));
 }
 
 
@@ -67,9 +67,9 @@ void PlacementState::OnStateEnter()
 	{
 		System::loadJSON(&_playerProfile[i], _playerProfilesPath[i]);
 	}
-	//TODO: Temporary solution for budget problem when changing back to placement state (Previously it kept spent budget and did not reset it)
-	_playerProfile[_currentPlayer]._gold = 700;
-	_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_playerProfile[_currentPlayer]._gold));
+	_budget = _objectHandler->GetCurrentLevelHeader()->_budget;
+
+	_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_budget));
 	_baseEdit = new BaseEdit(_objectHandler, _controls, _pickingDevice, _camera, false);
 	_objectHandler->DisableSpawnPoints();
 
@@ -135,11 +135,7 @@ void PlacementState::HandleButtons()
 	{
 		//Hide how to screen when clicked
 		_uiTree.GetNode("Tutorial")->SetHidden(true);
-		_playerProfile[_currentPlayer]._firstTime = false;
-		System::saveJSON(&_playerProfile[_currentPlayer], _playerProfilesPath[_currentPlayer], "Player Profile");
 	}
-
-
 
 	if (_uiTree.IsButtonColliding("Play", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{

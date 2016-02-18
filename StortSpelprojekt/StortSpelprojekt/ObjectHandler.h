@@ -51,6 +51,7 @@ private:
 	GameObjectInfo* _gameObjectInfo;
 	Tilemap* _tilemap;
 	Grid* _buildingGrid;
+	Level::LevelHeader _currentLevelHeader;
 
 	int _idCount = 0;
 	int _objectCount = 0;
@@ -99,6 +100,8 @@ public:
 	void EnlargeTilemap(int offset);
 	Grid* GetBuildingGrid();
 
+	Level::LevelHeader* GetCurrentLevelHeader();
+	void SetCurrentLevelHeader(Level::LevelHeader levelheader);
 	bool LoadLevel(std::string levelBinaryFilePath);
 	void UnloadLevel();
 

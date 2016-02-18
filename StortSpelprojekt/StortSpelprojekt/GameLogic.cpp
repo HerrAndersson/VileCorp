@@ -18,6 +18,10 @@ GameLogic::GameLogic(ObjectHandler* objectHandler, System::Camera* camera, Syste
 	_uiTree->GetNode("winscreen")->SetHidden(true);
 	_uiTree->GetNode("losescreen")->SetHidden(true);
 	_gameDone = false;
+
+	Level::LevelHeader* currentLevelHeader = _objectHandler->GetCurrentLevelHeader();
+	_gameMode = currentLevelHeader->_gameMode;
+	_surviveForSeconds = currentLevelHeader->_surviveForSeconds;
 }
 
 GameLogic::~GameLogic()

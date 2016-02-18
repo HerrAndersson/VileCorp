@@ -81,7 +81,7 @@ void LevelEditState::OnStateEnter()
 	_uiTree.GetNode("NewMapConfirmation")->SetHidden(true);
 	_uiTree.GetNode("listbuttons")->SetHidden(true);
 
-	_levelHeader = LevelHeader();
+	_levelHeader = Level::LevelHeader();
 	_currentLevelFileName = "";
 	_isNewLevel = true;
 
@@ -355,13 +355,13 @@ void LevelEditState::HandleButtons()
 			{
 				//Survival
 				_uiTree.GetNode("MapSurviveSelected")->SetHidden(false);
-				_levelHeader._gameMode = GameModes::SURVIVAL;
+				_levelHeader._gameMode = Level::GameModes::SURVIVAL;
 			}
 			else
 			{
 				//Kill
 				_uiTree.GetNode("MapSurviveSelected")->SetHidden(true);
-				_levelHeader._gameMode = GameModes::KILL_THEM_ALL;
+				_levelHeader._gameMode = Level::GameModes::KILL_THEM_ALL;
 			}
 		}
 		else if (_uiTree.IsButtonColliding("ExportMap", coord._pos.x, coord._pos.y))
@@ -477,7 +477,7 @@ void LevelEditState::ExportLevel()
 	wss >> _levelHeader._budget;
 
 	//Survival time 
-	if (_levelHeader._gameMode == GameModes::SURVIVAL)
+	if (_levelHeader._gameMode == Level::GameModes::SURVIVAL)
 	{
 		int survivalMinutes = 0;
 		int survivalSeconds = 0;
@@ -493,7 +493,7 @@ void LevelEditState::ExportLevel()
 	_levelHeader._levelBinaryFilename = _currentLevelFileName + ".bin";
 
 	////Fill Level Binary:
-	LevelBinary levelBinary;
+	Level::LevelBinary levelBinary;
 
 	//Tilemap size
 	Tilemap* tileMap = _objectHandler->GetTileMap();
@@ -537,17 +537,16 @@ void LevelEditState::ExportLevel()
 			formattedGameObject->at(4) = static_cast<int>(position._y);
 
 			//Rotation
-			DirectX::XMFLOAT3 rotation = gameObject->GetRotation();
-			double angleInRadians = std::atan2(rotation.z, rotation.x);
-			int angleInDegrees = static_cast<int>((angleInRadians / DirectX::XM_PI) * 180.0);
-			formattedGameObject->at(5) = angleInDegrees;
+			float rotYRadians = gameObject->GetRotation().y;
+			int rotYDegrees = static_cast<int>((rotYRadians / DirectX::XM_PI) * 180.0);
+			formattedGameObject->at(5) = rotYDegrees;
 
 			gameObjectIndex++;
 		}
 	}
 
-	//TODO: Fill _enemyWavesData
-	//TODO: Fill _enemySpawnMap
+	//TODO: Fill _enemyWavesData /Rikhard
+	//TODO: Fill _enemySpawnMap /Rikhard
 
 	////Write the files
 
@@ -574,9 +573,10 @@ void LevelEditState::ExportLevel()
 
 	//Write the header
 	outStream.open(headerPath);
-	cereal::JSONOutputArchive jsonOut(outStream);
-	jsonOut.setNextName(_currentLevelFileName.c_str());
-	jsonOut(_levelHeader);
+	{
+		cereal::JSONOutputArchive jsonOut(outStream);
+		jsonOut(cereal::make_nvp(_currentLevelFileName.c_str(), _levelHeader));
+	}
 	outStream.close();
 
 	//Write the binary
