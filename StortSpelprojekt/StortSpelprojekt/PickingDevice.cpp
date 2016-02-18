@@ -20,10 +20,10 @@ Ray PickingDevice::CalculatePickRay(long x, long y)
 	XMStoreFloat4x4(&projMatrix, *_camera->GetProjectionMatrix());
 
 	//Translating mouseposition to viewSpace
-	float width = (float)_settings->_screenWidth;
+	float width = (float)_settings->_windowWidth;
 	float xPos = (float)x;
 
-	float height = (float)_settings->_screenHeight;
+	float height = (float)_settings->_windowHeight;
 	float yPos = (float)y;
 
 	mouseViewPos.x = (((2 * xPos) / width) - 1.0f) / projMatrix._11;
@@ -86,20 +86,19 @@ vector<GameObject*> PickingDevice::SinglePickObjects(POINT mousePoint, vector<Ga
 	for (unsigned int i = 0; i < pickableObjects.size(); i++)
 	{
 		//Sphere pickObject = Sphere(Vec3(pickableObjects[i]->GetPosition()), 2.0f);
-		//Box pickObject = Box(0.3f, 1.0f, 0.3f, Vec3(pickableObjects[i]->GetPosition())+Vec3(0.2f,0.3f,0.2f));
-		AI::Vec2D tilePos = pickableObjects[i]->GetTilePosition();
-		Box pickObject = Box(1.0f, 1.0f, 1.0f, Vec3(tilePos._x + 0.5f, 1.0f, tilePos._y + 0.5f));
+		Box pickObject;
 
+		Hitbox* hitbox = pickableObjects.at(i)->GetRenderObject()->_mesh._hitbox;
+		if (hitbox != nullptr)
+		{
+			pickObject = Box(hitbox->_depth, hitbox->_height, hitbox->_width, Vec3(pickableObjects[i]->GetPosition()) + Vec3(hitbox->_center[0], hitbox->_center[1], hitbox->_center[2]), pickableObjects[i]->GetRotation());
+		}
+		else
+		{
+			pickObject = Box(0.8f, 1.8f, 0.8f, Vec3(pickableObjects[i]->GetPosition()) + Vec3(0.0f, 1.0f, 0.0f));
+		}
 
 		if (Collision(ray, pickObject))
-		{
-			pickedObjects.push_back(pickableObjects[i]);
-		}
-	}
-
-	for (unsigned int i = 0; i < pickableObjects.size(); i++)
-	{
-		if (pickableObjects[i]->GetTilePosition() == PickTile(mousePoint))
 		{
 			pickedObjects.push_back(pickableObjects[i]);
 		}

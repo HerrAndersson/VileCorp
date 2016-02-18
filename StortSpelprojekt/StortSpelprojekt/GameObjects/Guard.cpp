@@ -46,10 +46,9 @@ void Guard::EvaluateTile(GameObject * obj)
 		tempPriority;
 		if (tempPriority > 0 && obj->GetTilePosition() != _tilePosition && (_pathLength <= 0 || tempPriority * GetApproxDistance(obj->GetTilePosition()) < _goalPriority * GetApproxDistance(GetGoalTilePosition())))			//TODO Either optimize properly or check path properly --Victor
 		{
+			SetGoalTilePosition(obj->GetTilePosition());
 			_goalPriority = tempPriority;
 			_objective = obj;
-			SetGoalTilePosition(obj->GetTilePosition());
-			//SetGoal(obj);
 		}
 	}
 }
@@ -212,7 +211,8 @@ void Guard::Act(GameObject* obj)
 			{
 				if (_interactionTime != 0)
 				{
-					UseCountdown();
+					UseCountdown(60);
+					Animate(FIXTRAPANIM);
 				}
 				else
 				{
@@ -223,10 +223,18 @@ void Guard::Act(GameObject* obj)
 			}
 			break;
 		case ENEMY:											//The guard hits the enemy
-			static_cast<Unit*>(obj)->TakeDamage(1);
-			if (static_cast<Unit*>(obj)->GetHealth() < 0)
+			if (_interactionTime != 0)
 			{
-				ClearObjective();
+				UseCountdown(60);
+				Animate(FIGHTANIM);
+			}
+			else
+			{
+				static_cast<Unit*>(obj)->TakeDamage(1);
+				if (static_cast<Unit*>(obj)->GetHealth() <= 0)
+				{
+					ClearObjective();
+				}
 			}
 			break;
 		case FLOOR:
@@ -255,5 +263,14 @@ void Guard::Act(GameObject* obj)
 	if (_objective == nullptr)
 	{
 		_moveState = MoveState::MOVING;
+	}
+}
+void Guard::SwitchingNode()
+{
+	Unit::SwitchingNode();
+	if (_tileMap->IsEnemyOnTile(_nextTile))
+	{
+		_objective = _tileMap->GetObjectOnTile(_nextTile, ENEMY);
+		_moveState = MoveState::AT_OBJECTIVE;
 	}
 }

@@ -3,8 +3,8 @@
 State BaseState::_newStateRequest;
 State BaseState::_oldState;
 
-BaseState::BaseState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, const std::string& statename, AssetManager* assetManager, FontWrapper* fontWrapper, System::Settings* settings, System::SoundModule* soundModule)
-	: _uiTree(filename, statename, assetManager, fontWrapper, settings)
+BaseState::BaseState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule)
+	: _uiTree(filename, assetManager, fontWrapper, settingsReader)
 {
 	_controls			= controls;
 	_objectHandler		= objectHandler;
@@ -13,6 +13,8 @@ BaseState::BaseState(System::Controls* controls, ObjectHandler* objectHandler, S
 	_newStateRequest	= SPLASHSTATE;
 	_oldState			= EXITSTATE;
 	_soundModule		= soundModule;
+	_settingsReader		= settingsReader;
+	_assetManager		= assetManager;
 }
 
 BaseState::~BaseState()

@@ -41,6 +41,10 @@ private:
 	bool _modeLock;
 
 	void HandleInput(double deltaTime);
+	void HandleCamMode();
+	void HandleCamZoom(float deltaTime);
+	void HandleCamRot();
+	void HandleCamMove(float deltaTime);
 	
 	bool CheckValidity(AI::Vec2D tile, Type type);
 	void SetValidity(Marker* m, Type type);

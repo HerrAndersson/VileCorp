@@ -47,6 +47,7 @@ namespace System
 		~Controls();
 		void Update();
 		void HandleRawInput(LPARAM lparam);
+		void HandleTextInput(WPARAM wparam, LPARAM lparam);
 		void ResetInputBuffers();
 		void SaveKeyBindings(int keyMap, const std::string& action, const std::string& newKey, const std::string& newKey2 = std::string(), const std::string& newKey3 = std::string(), const std::string& newKey4 = std::string());
 		bool IsFunctionKeyDown(const std::string& key);
@@ -55,6 +56,12 @@ namespace System
 
 		bool CursorLocked();
 		MouseCoord GetMouseCoord();
+
+		void SetCurrentText(std::wstring text);
+		std::wstring GetCurrentText() const;
+		void SetIsTextInputMode(std::wstring currentText, bool breakOnEsc = false, bool breakOnCarriageReturn = false, bool breakOnTab = false);
+		void ResetTextInputMode();
+		bool GetIsTextInputMode() const;
 	};
 
 }

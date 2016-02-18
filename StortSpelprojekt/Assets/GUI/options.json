@@ -1,0 +1,211 @@
+{
+	"bg" :
+	{
+		"position": [0.0, 0.0],
+		"scale": [1.0, 1.0],
+		"texture" : "../Menues/settings/settings1.png"
+	},
+	"title":
+	{
+		"position": [0.0, 0.0],
+		"scale" : [1.0, 0.8],
+		"text": "Options",
+		"centered" : true,
+		"color" : "FF000000",
+		"fontsize" : 60.0
+	},
+	"":
+	{
+		"position" : [0.0, 0.4],
+		
+		"" :
+		{
+			"position": [0.0, 0.0],
+			"scale": [1.0, 1.0],
+			"res_left" :
+			{
+				"position": [-0.32, 0.0],
+				"scale": [0.08, 0.08],
+				"texture" : "../Menues/settings/settings6-arrow2.png"
+			},
+			"res_right" :
+			{
+				"position": [0.32, 0.0],
+				"scale": [0.08, 0.08],
+				"texture" : "../Menues/settings/settings6-arrow.png"
+			},
+			"":
+			{
+				"scale": [0.25, 0.1],
+				"text" : "Resolution",
+				"centered" : true,
+				"color" : "FF000000"
+			},
+			"res_content":
+			{
+				"scale": [0.25, 0.0],
+				"text" : "1920x1080",
+				"centered" : true,
+				"color" : "FF888888",
+				"fontsize" : 25.0
+			}
+		},
+		"" :
+		{
+			"position": [0.0, -0.2],
+			"scale": [1.0, 1.0],
+			"win_left" :
+			{
+				"position": [-0.32, 0.0],
+				"scale": [0.08, 0.08],
+				"texture" : "../Menues/settings/settings6-arrow2.png"
+			},
+			"win_right" :
+			{
+				"position": [0.32, 0.0],
+				"scale": [0.08, 0.08],
+				"texture" : "../Menues/settings/settings6-arrow.png"
+			},
+			"":
+			{
+				"scale": [0.25, 0.1],
+				"text" : "Window mode",
+				"centered" : true,
+				"color" : "FF000000"
+			},
+			"win_content":
+			{
+				"scale": [0.25, 0.0],
+				"text" : "Fullscreen",
+				"centered" : true,
+				"color" : "FF888888",
+				"fontsize" : 25.0
+			}
+		},
+		"" :
+		{
+			"position": [0.0, -0.4],
+			"scale": [1.0, 1.0],
+			"shadow_left" :
+			{
+				"position": [-0.32, 0.0],
+				"scale": [0.08, 0.08],
+				"texture" : "../Menues/settings/settings6-arrow2.png"
+			},
+			"shadow_right" :
+			{
+				"position": [0.32, 0.0],
+				"scale": [0.08, 0.08],
+				"texture" : "../Menues/settings/settings6-arrow.png"
+			},
+			"":
+			{
+				"scale": [0.25, 0.1],
+				"text" : "Shadow map resolution",
+				"centered" : true,
+				"color" : "FF000000"
+			},
+			"shadow_content":
+			{
+				"scale": [0.25, 0.0],
+				"text" : "256x256",
+				"centered" : true,
+				"color" : "FF888888",
+				"fontsize" : 25.0
+			}
+		},
+		"" :
+		{
+			"position": [0.0, -0.6],
+			"scale": [1.0, 1.0],
+			"aa_left" :
+			{
+				"position": [-0.32, 0.0],
+				"scale": [0.08, 0.08],
+				"texture" : "../Menues/settings/settings6-arrow2.png"
+			},
+			"aa_right" :
+			{
+				"position": [0.32, 0.0],
+				"scale": [0.08, 0.08],
+				"texture" : "../Menues/settings/settings6-arrow.png"
+			},
+			"":
+			{
+				"scale": [0.25, 0.1],
+				"text" : "Antialiasing",
+				"centered" : true,
+				"color" : "FF000000"
+			},
+			"aa_content":
+			{
+				"scale": [0.25, 0.0],
+				"text" : "On",
+				"centered" : true,
+				"color" : "FF888888",
+				"fontsize" : 25.0
+			}
+		},
+		"" :
+		{
+			"position": [0.0, -0.8],
+			"scale": [1.0, 1.0],
+			"sound_left" :
+			{
+				"position": [-0.32, 0.0],
+				"scale": [0.08, 0.08],
+				"texture" : "../Menues/settings/settings6-arrow2.png"
+			},
+			"sound_right" :
+			{
+				"position": [0.32, 0.0],
+				"scale": [0.08, 0.08],
+				"texture" : "../Menues/settings/settings6-arrow.png"
+			},
+			"":
+			{
+				"scale": [0.25, 0.1],
+				"text" : "Sound volume",
+				"centered" : true,
+				"color" : "FF000000"
+			},
+			"sound_content":
+			{
+				"scale": [0.25, 0.0],
+				"text" : "100%",
+				"centered" : true,
+				"color" : "FF888888",
+				"fontsize" : 25.0
+			}
+		},
+		"apply" :
+		{
+			"position": [-0.2, -1.1],
+			"scale": [0.1, 0.07],
+			"texture": "../Menues/General/button.png",
+			"hidden" : true,
+			"":
+			{
+				"position" : [0.0, -0.03],
+				"scale": [0.1, 0.07],
+				"text" : "Apply",
+				"centered" : true,
+				"color" : "FF000000"
+			}
+		},
+		"cancel" :
+		{
+			"position": [0.2, -1.1],
+			"scale": [0.1, 0.07],
+			"texture": "../Menues/General/button.png",
+			"":
+			{
+				"position" : [0.0, -0.03],
+				"scale": [0.1, 0.07],
+				"text" : "Cancel",
+				"centered" : true,
+				"color" : "FF000000"
+			}
+		}
+	}
+  }

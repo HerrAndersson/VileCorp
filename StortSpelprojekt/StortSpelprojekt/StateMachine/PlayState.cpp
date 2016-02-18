@@ -1,14 +1,8 @@
 #include "PlayState.h"
 
-PlayState::PlayState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::Settings* settings, System::SoundModule* soundModule)
-	: BaseState(controls, objectHandler, camera, pickingDevice, filename, "PLAY", assetManager, fontWrapper, settings, soundModule)
+PlayState::PlayState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule)
+	: BaseState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settingsReader, soundModule)
 {
-	_controls = controls;
-	_objectHandler = objectHandler;
-	_camera = camera;
-	_pickingDevice = pickingDevice;
-	_assetManager = assetManager;
-
 	_gameLogic = nullptr;
 }
 
@@ -40,7 +34,7 @@ void PlayState::Update(float deltaTime)
 void PlayState::OnStateEnter()
 {
 	_uiTree.GetNode("Tutorial")->SetHidden(false);
-	_gameLogic = new GameLogic(_objectHandler, _camera, _controls, _pickingDevice, &_uiTree, _assetManager);
+	_gameLogic = new GameLogic(_objectHandler, _camera, _controls, _pickingDevice, &_uiTree, _assetManager, _settingsReader);
 }
 
 void PlayState::OnStateExit()

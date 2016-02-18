@@ -7,9 +7,8 @@ class PlayState : public BaseState
 {
 private:
 	GameLogic* _gameLogic;
-	AssetManager* _assetManager;
 public:
-	PlayState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::Settings* settings, System::SoundModule* soundModule);
+	PlayState(System::Controls * controls, ObjectHandler * objectHandler, System::Camera * camera, PickingDevice * pickingDevice, const std::string & filename, AssetManager * assetManager, FontWrapper * fontWrapper, System::SettingsReader * settingsReader, System::SoundModule * soundModule);
 	virtual ~PlayState();
 
 	void Update(float deltaTime);

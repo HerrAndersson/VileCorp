@@ -16,6 +16,7 @@
 #include "Spotlight.h"
 #include "Pointlight.h"
 #include "Grid.h"
+#include "Settings/Settings.h"
 #include "LightCulling.h"
 
 /*
@@ -43,7 +44,7 @@ struct RenderList
 class ObjectHandler
 {
 private:
-
+	System::Settings* _settings;
 	vector<vector<GameObject*>> _gameObjects;
 	GameObjectInfo* _gameObjectInfo;
 	void ActivateTileset(const string& name);
@@ -73,8 +74,7 @@ private:
 	void ReleaseGameObjects();
 
 public:
-
-	ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data);
+	ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data, System::Settings* settings);
 	~ObjectHandler();
 
 	//Add a gameobject

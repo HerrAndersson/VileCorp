@@ -1,4 +1,6 @@
-#include "InputDevice.h"
+﻿#include "InputDevice.h"
+
+#include <cwctype>
 
 namespace System
 {
@@ -17,20 +19,37 @@ namespace System
 		_mouseBuffer._pos.y = _mouseCoord._pos.y;
 		_mouseBuffer._deltaPos.x = 0;
 		_mouseBuffer._deltaPos.y = 0;
-		
+
 		_rawBufferSize = 256;
 		_rawBuffer = new BYTE[_rawBufferSize];
 		RegisterDevice(hwnd);
 
 		_lockedCursor = false;
+
+		_currentText = L"";
+		_isTextInputMode = false;
+		_breakOnEsc = false;
+		_breakOnCarriageReturn = false;
+		_breakOnTab = false;
 	}
 	InputDevice::~InputDevice()
 	{
 		delete[]_rawBuffer;
 	}
 
+	bool InputDevice::IsMouseKey(int key)
+	{
+		return (
+				key == Input::LeftMouse ||
+				key == Input::RightMouse ||
+				key == Input::Mouse3 ||
+				key == Input::Mouse4 ||
+				key == Input::Mouse5
+			);
+	}
+
 	/*
-	The bool in the update is for locking mouse, 
+	The bool in the update is for locking mouse,
 	needed only when using free cam
 	*/
 	void InputDevice::Update()
@@ -114,7 +133,7 @@ namespace System
 	void InputDevice::HandleRawInput(LPARAM lParam)
 	{
 		UINT rawBufferSize = 0;
-		
+
 		GetRawInputData((HRAWINPUT)lParam, RID_INPUT, NULL, &rawBufferSize, sizeof(RAWINPUTHEADER));
 
 		if (rawBufferSize > _rawBufferSize)
@@ -122,7 +141,7 @@ namespace System
 			delete[] _rawBuffer;
 			_rawBuffer = new BYTE[rawBufferSize];
 		}
-		
+
 		GetRawInputData((HRAWINPUT)lParam, RID_INPUT, _rawBuffer, &rawBufferSize, sizeof(RAWINPUTHEADER));
 
 
@@ -165,7 +184,7 @@ namespace System
 				else if (mouseDelta < 0)
 				{
 					_buffer[Input::ScrollWheelDown] = true;
-				}				
+				}
 				break;
 			}
 			case RI_MOUSE_BUTTON_3_DOWN:
@@ -221,9 +240,59 @@ namespace System
 				_buffer[raw->data.keyboard.VKey] = false;
 			}
 		}
-	
+
 		//clean up of buffer
 		DefRawInputProc((PRAWINPUT*)_rawBuffer, 1, sizeof(RAWINPUTHEADER));
+	}
+
+	void InputDevice::HandleTextInput(WPARAM wparam, LPARAM lparam)
+	{
+		if (_isTextInputMode)
+		{
+			switch (wparam)
+			{
+			case 0x08: //Process a backspace
+			{
+				if (_currentText.size() > 0)
+				{
+					_currentText.pop_back();
+				}
+				break;
+			}
+			case 0x1B: //Process an escape
+			{
+				if (_breakOnEsc)
+				{
+					ResetTextInputMode();
+				}
+				break;
+			}
+			case 0x09: //Process a tab
+			{
+				if (_breakOnTab)
+				{
+					ResetTextInputMode();
+				}
+				break;
+			}
+			case 0x0D: //Process a carriage return
+			{
+				if (_breakOnCarriageReturn)
+				{
+					ResetTextInputMode();
+				}
+				break;
+			}
+			default: //Process displayable characters
+			{
+				if (iswprint(wparam))
+				{
+					_currentText += wparam;
+				}
+				break;
+			}
+			}
+		}
 	}
 
 	void InputDevice::RegisterDevice(HWND hwnd)
@@ -233,7 +302,7 @@ namespace System
 
 		rid[0].dwFlags = 0;//RIDEV_CAPTUREMOUSE
 		rid[0].hwndTarget = hwnd;
-		rid[0].usUsage = 0x02 ; //0x02 == MOUSE
+		rid[0].usUsage = 0x02; //0x02 == MOUSE
 		rid[0].usUsagePage = 0x01;
 
 		rid[1].dwFlags = 0;
@@ -251,26 +320,56 @@ namespace System
 
 	bool InputDevice::IsDown(int key)
 	{
-		return _current[key];
+		return (IsMouseKey(key) || !_isTextInputMode) && _current[key];
 	}
 
 	bool InputDevice::IsUp(int key)
 	{
-		return !_current[key];
+		return (IsMouseKey(key) || !_isTextInputMode) && !_current[key];
 	}
 
 	bool InputDevice::IsPressed(int key)
 	{
-		return _current[key] && !_last[key];
+		return (IsMouseKey(key) || !_isTextInputMode) && _current[key] && !_last[key];
 	}
 
 	bool InputDevice::IsReleased(int key)
 	{
-		return !_current[key] && _last[key];
+		return (IsMouseKey(key) || !_isTextInputMode) && !_current[key] && _last[key];
 	}
 
 	MouseCoord InputDevice::GetMouseCoord()const
 	{
 		return _mouseCoord;
 	}
+
+	void InputDevice::SetCurrentText(std::wstring text)
+	{
+		_currentText = text;
+	}
+
+	std::wstring InputDevice::GetCurrentText() const
+	{
+		return _currentText;
+	}
+
+	void InputDevice::SetIsTextInputMode(std::wstring currentText, bool breakOnEsc, bool breakOnCarriageReturn, bool breakOnTab)
+	{
+		_isTextInputMode = true;
+		_currentText = currentText;
+		_breakOnEsc = breakOnEsc;
+		_breakOnCarriageReturn = breakOnCarriageReturn;
+		_breakOnTab = breakOnTab;
+	}
+	void InputDevice::ResetTextInputMode()
+	{
+		_isTextInputMode = false;
+		_currentText.clear();
+	}
+
+	bool InputDevice::GetIsTextInputMode() const
+	{
+		return _isTextInputMode;
+	}
+
 }

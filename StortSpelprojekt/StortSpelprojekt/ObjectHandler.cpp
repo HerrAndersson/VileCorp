@@ -1,8 +1,9 @@
 #include "ObjectHandler.h"
 #include "stdafx.h"
 
-ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data)
+ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data, System::Settings* settings)
 {
+	_settings = settings;
 	_idCount = 0;
 	_assetManager = assetManager;
 	_tilemap = nullptr;
@@ -516,21 +517,19 @@ Grid * ObjectHandler::GetBuildingGrid()
 }
 
 
-//TODO: only use init part of CheckAllTiles() --Victor
+
 void ObjectHandler::InitPathfinding()
 {
 	for (GameObject* i : _gameObjects[ENEMY])
 	{
 		Unit* unit = dynamic_cast<Unit*>(i);
-		unit->CheckAllTiles();
-	//	unit->Move();
+		unit->InitializePathFinding();
 	}
 
 	for (GameObject* i : _gameObjects[GUARD])
 	{
-		Unit* unit = dynamic_cast<Unit*>(i);
-		unit->CheckAllTiles();
-	//	unit->Move();
+		Unit* unit = dynamic_cast<Unit*>(i);		unit->InitializePathFinding();
+		unit->InitializePathFinding();
 	}
 }
 
@@ -591,7 +590,7 @@ void ObjectHandler::Update(float deltaTime)
 					heldObject->SetTilePosition(AI::Vec2D(heldObject->GetPosition().x, heldObject->GetPosition().z));
 				}
 
-				if (unit->GetHealth() <= 0 && unit->GetAnimisFinished())
+				if (unit->GetHealth() <= 0)
 				{
 					if (heldObject != nullptr)
 					{
@@ -626,11 +625,11 @@ void ObjectHandler::Update(float deltaTime)
 			}
 			else if (g->GetType() == SPAWN)															//Manage enemy spawning
 			{
-				if (static_cast<SpawnPoint*>(g)->isSpawning())
+				if (static_cast<SpawnPoint*>(g)->isSpawning() && _tilemap->GetNrOfLoot() > 0)
 				{
 					if (Add(ENEMY, "enemy_proto", g->GetPosition(), g->GetRotation()))
 					{
-						((Unit*)_gameObjects[ENEMY].back())->CheckAllTiles();
+						((Unit*)_gameObjects[ENEMY].back())->InitializePathFinding();
 					}
 				}
 			}

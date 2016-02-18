@@ -35,6 +35,7 @@ private:
 	int _height;
 	int _width;
 
+	int _nrOfLoot;			//Note: This is the amount of loot on the tilemap. Does not count held objects.
 	Tile** _map;
 
 
@@ -54,6 +55,7 @@ public:
 	int GetNrOfTiles() const;
 	int GetHeight() const;
 	int GetWidth() const;
+	int GetNrOfLoot()const;
 
 	GameObject* GetObjectOnTile(AI::Vec2D pos, Type type) const;
 	GameObject* GetObjectOnTile(int x, int z, Type type) const;

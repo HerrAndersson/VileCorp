@@ -38,7 +38,6 @@ protected:
 	void CalculatePath();
 	void Rotate();
 	int GetApproxDistance(AI::Vec2D target)const;
-	//void Flee();
 	void SetGoal(AI::Vec2D goal);
 	void SetGoal(GameObject* objective);
 public:
@@ -59,6 +58,7 @@ public:
 
 	void CheckVisibleTiles();
 	void CheckAllTiles();
+	void InitializePathFinding();
 	virtual void EvaluateTile(Type objective, AI::Vec2D tile) = 0;
 	virtual void EvaluateTile(GameObject* obj) = 0;
 
@@ -73,8 +73,8 @@ public:
 	int GetVisionRadius()const;
 
 	void SetTilePosition(AI::Vec2D pos);
-	void Moving();
-	void SwitchingNode();
+	virtual void Moving();
+	virtual void SwitchingNode();
 	
 	enum Anim { IDLEANIM, WALKANIM, FIXTRAPANIM, FIGHTANIM, PICKUPOBJECTANIM, NR_OF_ANIM/*Has to be last*/ };
 	void Animate(Anim anim);

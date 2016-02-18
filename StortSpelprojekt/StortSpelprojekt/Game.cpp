@@ -5,7 +5,7 @@
 #include <random>
 
 Game::Game(HINSTANCE hInstance, int nCmdShow):
-	_settingsReader("Assets/settings.xml")
+	_settingsReader("Assets/settings.xml", "Assets/profile.xml")
 {
 	srand(time(NULL));
 	System::Settings* settings = _settingsReader.GetSettings();
@@ -30,15 +30,15 @@ Game::Game(HINSTANCE hInstance, int nCmdShow):
 	gameObjectDataLoader.WriteSampleGameObjects();
 	gameObjectDataLoader.LoadGameObjectInfo(&_data);
 
-	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager, &_data);
+	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager, &_data, settings);
 	_pickingDevice = new PickingDevice(_camera, settings);
 	_SM = new StateMachine(_controls, _objectHandler, _camera, _pickingDevice, "Assets/gui.json", _assetManager, _fontWrapper, settings, &_settingsReader, &_soundModule);
 
 	_SM->Update(_timer.GetFrameTime());
 
 	_enemiesHasSpawned = false;
-	_soundModule.AddSound("Assets/Sounds/theme.wav", 0.15f, 1.0f, true, true);
-	_soundModule.Play("Assets/Sounds/theme.wav");
+	_soundModule.AddSound("Assets/Sounds/theme", 0.15f, 1.0f, true, true);
+	_soundModule.Play("Assets/Sounds/theme");
 }
 
 Game::~Game()
@@ -57,10 +57,11 @@ Game::~Game()
 
 void Game::ResizeResources(System::Settings* settings)
 {
+	//RenderModule must update it's swapchain before window resizes /Alex
+	_renderModule->ResizeResources(settings);
 	_window->ResizeWindow(settings);
 	_camera->Resize(settings);
 	_SM->Resize(settings);
-	_renderModule->ResizeResources(_window->GetHWND(), settings);
 }
 
 bool Game::Update(double deltaTime)
@@ -400,6 +401,11 @@ LRESULT CALLBACK Game::WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM l
 	{
 		PostQuitMessage(0);
 		return 0;
+	}
+	case WM_CHAR:
+	{
+		_gameHandle->_controls->HandleTextInput(wparam, lparam);
+		break;
 	}
 	case WM_INPUT:
 	{

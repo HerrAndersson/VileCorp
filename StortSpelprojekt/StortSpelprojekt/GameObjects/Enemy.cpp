@@ -5,6 +5,15 @@ Decides the best direction to run away from a foe.
 */
 void Enemy::Flee()
 {
+	//if (_tileMap->IsFloorOnTile(_tilePosition))
+	//{
+	//	_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,0});
+	//}
+	_tilePosition = _nextTile;
+	//if (_tileMap->IsFloorOnTile(_tilePosition))
+	//{
+	//	_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,4});
+	//}
 	if (_pursuer == nullptr)		//TODO Add other conditions to stop fleeing --Victor
 	{
 		_moveState = MoveState::IDLE;
@@ -12,9 +21,10 @@ void Enemy::Flee()
 	else
 	{
 		float distance = _aStar->GetHeuristicDistance(_tilePosition, _pursuer->GetTilePosition());
-		if (!_visible || distance > _pursuer->GetVisionRadius())
+		if (!_visible || distance > (float)_pursuer->GetVisionRadius())
 		{
 			_moveState = MoveState::IDLE;
+			_pursuer = nullptr;
 		}
 		else
 		{
@@ -32,7 +42,7 @@ void Enemy::Flee()
 				}
 				else
 				{
-					tempDist = pow(offset._x + AI::NEIGHBOUR_OFFSETS[i]._x, 2) + pow(offset._y + AI::NEIGHBOUR_OFFSETS[i]._y, 2);
+					tempDist = (float)pow(offset._x + AI::NEIGHBOUR_OFFSETS[i]._x, 2) + (float)pow(offset._y + AI::NEIGHBOUR_OFFSETS[i]._y, 2);
 				}
 
 				if (_tileMap->IsFloorOnTile(_tilePosition + AI::NEIGHBOUR_OFFSETS[i]) && !_tileMap->IsEnemyOnTile(_tilePosition + AI::NEIGHBOUR_OFFSETS[i]) && tempDist > bestDist)
@@ -42,7 +52,9 @@ void Enemy::Flee()
 				}
 			}
 			_direction = bestDir;
+			_nextTile = _tilePosition + _direction;
 			Rotate();
+			_moveState = MoveState::MOVING;
 		}
 	}
 }
@@ -60,6 +72,7 @@ Enemy::Enemy(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 ro
 	_visibilityTimer = TIME_TO_HIDE;
 	_detectionSkill = 50;
 	_disarmSkill = 50;
+	_pursuer = nullptr;
 }
 
 Enemy::~Enemy()
@@ -89,7 +102,7 @@ void Enemy::EvaluateTile(GameObject* obj)
 			}
 			break;
 		case SPAWN:
-			if (_heldObject != nullptr)
+			if (_heldObject != nullptr || _tileMap->GetNrOfLoot() <= 0)
 			{
 				tempPriority = 2;
 			}
@@ -106,15 +119,15 @@ void Enemy::EvaluateTile(GameObject* obj)
 		case GUARD:
 			if (static_cast<Unit*>(obj)->GetHealth() > 0)
 			{
-				if (!SafeToAttack(static_cast<Unit*>(obj)->GetDirection()) && (obj != _objective || _visible))
+				if (SafeToAttack(static_cast<Unit*>(obj)->GetDirection()))
+				{
+					tempPriority = 2;			//TODO Make actual calculations based on attack skill etc --Victor
+				}
+				else if (obj != _objective && _visible)
 				{
 					_pursuer = static_cast<Unit*>(obj);
 					ClearObjective();
-					_moveState = MoveState::FLEEING;
-				}
-				else if (GetApproxDistance(obj->GetTilePosition()) < 3 && !_visible)
-				{
-					tempPriority = 2;			//TODO Make actual calculations based on attack skill etc --Victor
+					_moveState = MoveState::MOVING;
 				}
 			}
 			break;
@@ -129,17 +142,9 @@ void Enemy::EvaluateTile(GameObject* obj)
  			obj->GetTilePosition() != _tilePosition && 
 			(_objective == nullptr || tempPriority * GetApproxDistance(obj->GetTilePosition()) < _goalPriority * GetApproxDistance(GetGoalTilePosition())))
 		{
+			SetGoalTilePosition(obj->GetTilePosition());
+			_objective = obj;
 			_goalPriority = tempPriority;
-			_objective = obj;
-			SetGoalTilePosition(obj->GetTilePosition());
-		}
-		//Head for the exit, all objectives are taken
-		else if (_heldObject == nullptr && _objective == nullptr /*&& !_isFleeing*/)
-		{
-			//Lowest possible priority, temporary solution that will be solved with the state machine, Aron and Victor
-			_goalPriority = INT_MAX;
-			_objective = obj;
-			SetGoalTilePosition(obj->GetTilePosition());
 		}
 	}
 }
@@ -169,11 +174,11 @@ void Enemy::Act(GameObject* obj)
 		{
 			if (static_cast<Trap*>(obj)->IsTrapActive())
 			{
-				if (_interactionTime < 0)
+				if (_interactionTime != 0)
 				{
-					UseCountdown();
+					UseCountdown(60);
 				}
-				else if (_interactionTime == 0)
+				else
 				{
 					DisarmTrap(static_cast<Trap*>(obj));
 					ClearObjective();
@@ -186,9 +191,9 @@ void Enemy::Act(GameObject* obj)
 		}
 		break;
 		case GUARD:
-			if (static_cast<Unit*>(obj)->GetHealth() > 0)
+			static_cast<Unit*>(obj)->TakeDamage(1);
+			if (static_cast<Unit*>(obj)->GetHealth() <= 0)
 			{
-				static_cast<Unit*>(obj)->TakeDamage(2);
 				ClearObjective();
 			}
 			break;
@@ -272,7 +277,7 @@ bool Enemy::SpotTrap(Trap * trap)
 {
 	if (!trap->IsVisibleToEnemies())
 	{
-		srand(time(NULL));
+		srand((int)time(NULL));
 		int detectRoll = rand() % 100;
 		if (detectRoll + _detectionSkill - trap->GetDetectionDifficulty() >= 50)
 		{
@@ -287,7 +292,7 @@ void Enemy::DisarmTrap(Trap * trap)
 {
 	if (trap->IsTrapActive())
 	{
-		srand(time(NULL));
+		srand((int)time(NULL));
 		int disarmRoll = rand()%100;
 		if (disarmRoll + _disarmSkill - trap->GetDisarmDifficulty() >= 50)
 		{
@@ -302,7 +307,7 @@ void Enemy::DisarmTrap(Trap * trap)
 
 bool Enemy::SafeToAttack(AI::Vec2D direction)
 {
-	srand(time(NULL));
+	srand((int)time(NULL));
 	int weight = 0;
 	if (direction == _direction)
 	{
@@ -313,12 +318,27 @@ bool Enemy::SafeToAttack(AI::Vec2D direction)
 		weight = std::abs(_direction._x + direction._x) + std::abs(_direction._y + direction._y) + 1;
 	}
 	
-	bool safeToAttack = true;
+	bool safeToAttack = false;
 
-	if ((rand()%20) * weight > 13)
+	if ((rand()%20) * weight > 17)
 	{
-		safeToAttack = false;
+		safeToAttack = true;
 	}
 
 	return safeToAttack;
+}
+
+void Enemy::Moving()
+{
+	if (_pursuer != nullptr && IsCenteredOnTile(_nextTile))
+	{
+		_moveState = MoveState::FLEEING;
+		_isSwitchingTile = true;
+		_position.x = _nextTile._x;
+		_position.z = _nextTile._y;
+	}
+	else
+	{
+		Unit::Moving();
+	}
 }

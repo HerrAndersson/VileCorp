@@ -2,11 +2,10 @@
 
 #include "../Game.h"
 
-OptionsState::OptionsState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::Settings* settings, System::SettingsReader* settingsReader, System::SoundModule* soundModule)
-	: BaseState (controls, objectHandler, camera, pickingDevice, filename, "OPTIONS", assetManager, fontWrapper, settings, soundModule)
+OptionsState::OptionsState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule)
+	: BaseState (controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settingsReader, soundModule)
 {
-	_controls = controls;
-	_objectHandler = objectHandler;
+	_settingsReader = settingsReader;
 
 	//Resolution options
 	_resolution[0] = { L"1280x720", 1280, 720 };
@@ -27,20 +26,42 @@ OptionsState::OptionsState(System::Controls* controls, ObjectHandler* objectHand
 	_shadowmap[2] = { L"1024x1024", 1024, 1024 };
 	_shadowmap[3] = { L"2048x2048", 2048, 2048 };
 	_shadowmapOption = 0;
-	
+
 	//Antialiasing
 	_aa[0] = { L"On", 1, 0 };
 	_aa[1] = { L"Off", 0, 0 };
 	_aaOption = 0;
 
+	//TODO: Volume setting //Mattias
 	_volumeOption = 100.0f;
-
-	_settingsReader = settingsReader;
 }
 
 OptionsState::~OptionsState()
 {
 
+}
+
+int OptionsState::ReadSetting(int setting, int setting2, Options* options, int max)
+{
+	int result = 0;
+	for (int i = 0; i < max; i++)
+	{
+		if (setting == options[i]._value && setting2 == options[i]._value2)
+		{
+			result = i;
+			break;
+		}
+	}
+	return result;
+}
+
+void OptionsState::UpdateText(const std::string& contentId, int optionValue, Options* options)
+{
+	GUI::Node* text = _uiTree.GetNode(contentId);
+	if (text)
+	{
+		text->SetText(options[optionValue]._text);
+	}
 }
 
 bool OptionsState::HandleOptionSwitch(const std::string& leftId, const std::string& rightId, const std::string& contentId, int& optionValue, Options* options, int optionsMax)
@@ -66,11 +87,7 @@ bool OptionsState::HandleOptionSwitch(const std::string& leftId, const std::stri
 	}
 	if (leftClicked || rightClicked)
 	{
-		GUI::Node* text = _uiTree.GetNode(contentId);
-		if (text)
-		{
-			text->SetText(options[optionValue]._text);
-		}
+		UpdateText(contentId, optionValue, options);
 	}
 	return leftClicked || rightClicked;
 }
@@ -83,7 +100,7 @@ void OptionsState::Update(float deltaTime)
 	}
 	if (_controls->IsFunctionKeyDown("MENU:MENU"))
 	{
-		_soundModule->Play("Assets/Sounds/page.wav");
+		_soundModule->Play("Assets/Sounds/page");
 		ChangeState(State::MENUSTATE);
 	}
 	if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
@@ -108,37 +125,38 @@ void OptionsState::Update(float deltaTime)
 			//Resolution
 			settings->_screenWidth = _resolution[_resolutionOption]._value;
 			settings->_screenHeight = _resolution[_resolutionOption]._value2;
+
+			//Window size
+			settings->_windowWidth = settings->_screenWidth;
+			settings->_windowHeight = settings->_screenHeight;
+
 			//Shadow map resolution
-			settings->_shadowMapWidth = _shadowmap[_shadowmapOption]._value;
-			settings->_shadowMapHeight = _shadowmap[_shadowmapOption]._value2;
+			settings->_shadowMapSize = _shadowmap[_shadowmapOption]._value;
 			//Window options
-			if (_window[_windowOption]._value == 1)
+			if (_window[_windowOption]._value == 1) //Fullscreen
 			{
-				settings->_fullscreen = true;
-				settings->_borderless = false;
-				settings->_showMouseCursor = true;
-			}
-			else if (_window[_windowOption]._value == 2)
-			{
-				settings->_fullscreen = false;
+				settings->_windowWidth = GetSystemMetrics(SM_CXSCREEN);
+				settings->_windowHeight = GetSystemMetrics(SM_CYSCREEN);
 				settings->_borderless = true;
-				settings->_showMouseCursor = true;
 			}
-			else if (_window[_windowOption]._value == 3)
+			else if (_window[_windowOption]._value == 2) //Borderless window
 			{
-				settings->_fullscreen = false;
-				settings->_borderless = false;
-				settings->_showMouseCursor = true;
+				settings->_borderless = true;
 			}
-			//TODO: Antialiasing option //Mattias
-			//TODO: Window size is separate from resolution //Mattias
+			else if (_window[_windowOption]._value == 3) //Windowed
+			{
+				settings->_borderless = false;
+			}
+			settings->_showMouseCursor = true;
+			settings->_antialiasing = _aa[_aaOption]._value;
 
 			_settingsReader->ApplySettings();
 			_uiTree.GetNode("apply")->SetHidden(true);
 		}
 		if (_uiTree.IsButtonColliding("cancel", coord._pos.x, coord._pos.y))
 		{
-			_soundModule->Play("Assets/Sounds/page.wav");
+			_soundModule->Play("Assets/Sounds/page");
+			_uiTree.GetNode("apply")->SetHidden(true);
 			ChangeState(State::MENUSTATE);
 		}
 	}
@@ -146,7 +164,39 @@ void OptionsState::Update(float deltaTime)
 
 void OptionsState::OnStateEnter()
 {
+	System::Settings* settings = _settingsReader->GetSettings();
+	unsigned int systemSizeX = GetSystemMetrics(SM_CXSCREEN);
+	unsigned int systemSizeY = GetSystemMetrics(SM_CYSCREEN);
 
+	_resolutionOption = ReadSetting(settings->_screenWidth, settings->_screenHeight, _resolution, RESOLUTION_MAX);
+	UpdateText("res_content", _resolutionOption, _resolution);
+
+	//Fullscreen
+	if (_resolution[_resolutionOption]._value == systemSizeX &&
+		_resolution[_resolutionOption]._value2 == systemSizeY &&
+		settings->_windowWidth == systemSizeX &&
+		settings->_windowHeight == systemSizeY &&
+		settings->_borderless)
+	{
+		_windowOption = 0;
+	}
+	//Borderless window
+	else if(settings->_borderless)
+	{
+		_windowOption = 1;
+	}
+	//Windowed
+	else
+	{
+		_windowOption = 2;
+	}
+	UpdateText("win_content", _windowOption, _window);
+
+	_shadowmapOption = ReadSetting(settings->_shadowMapSize, settings->_shadowMapSize, _shadowmap, SHADOWMAP_MAX);
+	UpdateText("shadow_content", _shadowmapOption, _shadowmap);
+
+	_aaOption = ReadSetting(settings->_antialiasing, 0, _aa, AA_MAX);
+	UpdateText("aa_content", _aaOption, _aa);
 }
 
 void OptionsState::OnStateExit()

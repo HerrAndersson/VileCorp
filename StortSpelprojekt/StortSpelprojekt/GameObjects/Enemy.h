@@ -26,4 +26,5 @@ public:
 	bool SpotTrap(Trap* trap);
 	void DisarmTrap(Trap* trap);
 	bool SafeToAttack(AI::Vec2D dir);
+	void Moving();
 };
