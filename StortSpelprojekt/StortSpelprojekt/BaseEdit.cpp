@@ -196,7 +196,7 @@ void BaseEdit::DropEvent()
 
 void BaseEdit::BoxEvent()
 {
-	if ((_controls->IsFunctionKeyUp("MOUSE:BOX_PLACE") && _isPlace) || (_controls->IsFunctionKeyUp("MOUSE:BOX_DELETE") && !_isPlace))
+	if ((_controls->IsFunctionKeyUp("MOUSE:SELECT") && _isPlace) || (_controls->IsFunctionKeyUp("MOUSE:DESELECT") && !_isPlace))
 	{
 		_modeLock = false;
 
