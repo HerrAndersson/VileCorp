@@ -6,7 +6,7 @@ using namespace DirectX;
 
 namespace GUI
 {
-	UITree::UITree(const std::string& filename, const std::string& statename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader) :
+	UITree::UITree(const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader) :
 		_info(fontWrapper,
 			settingsReader->GetSettings()->_screenWidth, settingsReader->GetSettings()->_screenHeight,
 			settingsReader->GetSettings()->_windowWidth, settingsReader->GetSettings()->_windowHeight)
@@ -23,19 +23,7 @@ namespace GUI
 		Document d;
 		d.Parse(str.c_str());
 
-		bool found = false;
-		for (Value::ConstMemberIterator i = d.MemberBegin(); i != d.MemberEnd(); ++i)
-		{
-			if (i->name.IsString() && string(i->name.GetString()) == statename)
-			{
-				found = true;
-				_root = LoadGUITree("root", i->value.MemberBegin(), i->value.MemberEnd());
-			}
-		}
-		if (!found)
-		{
-			throw std::runtime_error("Could not find " + statename + " in " + filename);
-		}
+		_root = LoadGUITree("root", d.MemberBegin(), d.MemberEnd());
 	}
 
 	UITree::~UITree()

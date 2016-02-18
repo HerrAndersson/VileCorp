@@ -1,0 +1,72 @@
+{
+	"pause" :
+	{
+		"position": [0.0, 0.0],
+		"scale": [1.0, 1.0],
+		"texture" : "../Menues/Pause Menu/pause-fade.png",
+		"pauseScreen":
+		{
+			"position": [0.025, 0.15],
+			"scale": [0.28, 0.6],
+			"texture" : "../Menues/Pause Menu/pause1.png",
+			
+			"paused":
+				{
+					"position" : [-0.038, 0.35],
+					"scale": [0.0, 0.0],
+					"text": "PAUSED",
+					"color": "FF000000",
+					"fontsize" : 72.0,
+					"centered" : true
+				},
+			"resume" :
+				{
+					"position": [-0.038, 0.05],
+					"scale": [0.15, 0.08],
+					"texture" : "../Menues/Pause Menu/pause-button.png",
+					
+					"resumeText":
+					{
+						"position" : [0.0, -0.963],
+						"scale": [1.0, 1.0],
+						"text": "Resume Game",
+						"color": "FF000000",
+						"centered" : true,
+						"fontsize" : 30.0
+					}
+				},
+			"mainmenu" :
+				{
+					"position": [-0.038, -0.15],
+					"scale": [0.15, 0.08],
+					"texture" : "../Menues/Pause Menu/pause-button.png",
+					
+					"menuText":
+					{
+						"position" : [0.0, -0.963],
+						"scale": [1.0, 1.0],
+						"text": "Main Menu",
+						"color": "FF000000",
+						"centered" : true,
+						"fontsize" : 30.0
+					}
+				},
+			"quit" :
+				{
+					"position": [-0.038, -0.35],
+					"scale": [0.15, 0.08],
+					"texture" : "../Menues/Pause Menu/pause-button.png",
+					
+					"quitText":
+					{
+						"position" : [0.0, -0.963],
+						"scale": [1.0, 1.0],
+						"text": "Quit Game",
+						"color": "FF000000",
+						"centered" : true,
+						"fontsize" : 30.0
+					}
+				}
+		}
+	}
+}
