@@ -2,7 +2,9 @@
   "MOUSE": {
 	"SELECT": ["leftmouse"],
 	"DESELECT": [ "rightmouse" ],
-	"DRAG": ["leftmouse", "repeat"]
+	"DRAG": ["leftmouse", "repeat"],
+	"BOX_PLACE": [ "leftmouse", "shift" ],
+	"BOX_DELETE": [ "rightmouse", "shift" ]
   },
   "MENU": {
 	"MENU": [ "escape" ]
@@ -28,8 +30,7 @@
     "REDO": [ "Y", "ctrl" ],
     "SAVE": [ "S", "ctrl" ],
     "DELETE_UNIT": [ "delete" ],
-	"REMOVE": ["rightmouse"],
-	"PLACEMENTFLAG": ["F"],    
+	"REMOVE": ["rightmouse"], 
     "NEWLEVEL": [ "C" ]
   },
   "PLAY": {
