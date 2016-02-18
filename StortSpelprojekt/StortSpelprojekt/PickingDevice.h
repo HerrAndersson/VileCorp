@@ -8,6 +8,7 @@
 #include "Tilemap.h"
 #include "VectorMath.h"
 #include "Shapes.h"
+#include "CommonUtils.h"
 
 #include "Settings/Settings.h"
 
