@@ -181,8 +181,16 @@ void BaseEdit::DropEvent()
 	}
 
 	_marker.Reset();
-	_isPlace = false;
-	_isDragAndDropMode = false;
+
+	if (_isDragAndDropMode)
+	{
+		_isPlace = false;
+		_isDragAndDropMode = false;
+	}
+	else
+	{
+		CreateMarker();
+	}
 }
 
 void BaseEdit::BoxEvent()
@@ -342,8 +350,15 @@ void BaseEdit::HandleMouseInput()
 	{
 		MarkerMoveEvent();
 
+
+		if (!_isDragAndDropMode && _controls->IsFunctionKeyUp("MOUSE:DESELECT") || _controls->IsFunctionKeyDown("MOUSE:DESELECT"))
+		{
+			ReleaseMarkers();
+			_isPlace = false;
+		}
+
 		if ((_isDragAndDropMode && _controls->IsFunctionKeyUp("MOUSE:SELECT"))
-			|| (!_isDragAndDropMode && _controls->IsFunctionKeyDown("MOUSE:SELECT")))
+			|| (!_isDragAndDropMode && _controls->IsFunctionKeyDown("MOUSE:DRAG")))
 		{
 			DropEvent();
 		}
@@ -619,7 +634,8 @@ void BaseEdit::HandleBlueprint(SpecificBlueprint* sB)
 	if (_isSelectionMode)
 	{
 		CreateMarker();
-		_modeLock = true;
+		_isPlace = false;
+		//_modeLock = true;
 	}
 	else
 	{
