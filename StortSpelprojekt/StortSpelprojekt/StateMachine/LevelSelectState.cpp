@@ -75,13 +75,13 @@ void LevelSelectState::Update(float deltaTime)
 			{
 				int help = 0;
 				//CAMPAIGN has been picked
-				//TODO: Save this setting for this wave
+				//TODO: Different functions for different modes
 			}
 			else
 			{
 				int help = 0;
 				//SKIRMISH has been picked
-				//TODO: Save this setting for this wave
+				//TODO: Different functions for different modes
 			}
 		}
 
