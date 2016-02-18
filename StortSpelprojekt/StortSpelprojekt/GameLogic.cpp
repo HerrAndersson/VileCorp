@@ -208,7 +208,7 @@ void GameLogic::HandleUnitMove()
 		if (units.size() == 1)
 		{
 			//if tile is the same as he is on
-			if (selectedTile == units.at(0)->GetTilePosition())
+			if (selectedTile == units.at(0)->GetTilePosition() && units.at(0)->GetMoveState() == Unit::MoveState::IDLE)
 			{
 				//Check which direction he should be pointing
 				AI::Vec2D direction = _pickingDevice->PickDirection(_controls->GetMouseCoord()._pos, _objectHandler->GetTileMap());

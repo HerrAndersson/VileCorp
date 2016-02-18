@@ -130,63 +130,6 @@ void Guard::Update(float deltaTime)
 	}
 }
 
-//void Guard::Moving()
-//{
-//	if (IsCenteredOnTile(_nextTile))
-//	{
-//		_moveState = MoveState::SWITCHING_NODE;
-//		_isSwitchingTile = true;
-//		_position.x = _nextTile._x;
-//		_position.z = _nextTile._y;
-//	}
-//	else
-//	{
-//		if (_direction._x == 0 || _direction._y == 0)		//Right angle movement
-//		{
-//			_position.x += MOVE_SPEED * _direction._x;
-//			_position.z += MOVE_SPEED * _direction._y;
-//		}
-//		else												//Diagonal movement
-//		{
-//			_position.x += AI::SQRT2 * 0.5f * MOVE_SPEED * _direction._x;
-//			_position.z += AI::SQRT2 * 0.5f *MOVE_SPEED * _direction._y;
-//		}
-//		CalculateMatrix();
-//	}
-//}
-
-//void Guard::SetNextTile()
-//{
-//	//_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,0});
-//	_tilePosition = _nextTile;
-//	//_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,4,0});
-//	if (_objective != nullptr)
-//	{
-//		if (_objective->InRange(_tilePosition))
-//		{
-//			_moveState = MoveState::AT_OBJECTIVE;
-//		}
-//		else if (_pathLength > 0 /*&& !_tileMap->IsGuardOnTile(_path[_pathLength - 1])*/)
-//		{
-//			_nextTile = _path[--_pathLength];
-//			_direction = _nextTile - _tilePosition;
-//			Rotate();
-//			_moveState = MoveState::MOVING;
-//		}
-//		else			// TODO: else find unblocked path to goal --Victor
-//		{
-//			ClearObjective();
-//			_moveState = MoveState::IDLE;
-//		}
-//		_isSwitchingTile = false;
-//		CheckVisibleTiles();
-//	}
-//	else
-//	{
-//		_moveState = MoveState::IDLE;
-//	}
-//}
-
 void Guard::Act(GameObject* obj)
 {
 	//AI::Vec2D dist = obj->GetTilePosition() - _tilePosition;
@@ -202,7 +145,7 @@ void Guard::Act(GameObject* obj)
 			{
 				if (_interactionTime != 0)
 				{
-					UseCountdown();
+					UseCountdown(60);
 					Animate(FIXTRAPANIM);
 				}
 				else

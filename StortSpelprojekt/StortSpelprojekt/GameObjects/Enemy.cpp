@@ -166,20 +166,17 @@ void Enemy::Act(GameObject* obj)
 			}
 			break;
 		case SPAWN:
-			/*if (_heldObject != nullptr)*/
-			{
-				TakeDamage(_health);						//TODO: Right now despawn is done by killing the unit. This should be changed to reflect that it's escaping --Victor
-			}
+			TakeDamage(_health);						//TODO: Right now despawn is done by killing the unit. This should be changed to reflect that it's escaping --Victor
 			break;
 		case TRAP:
 		{
 			if (static_cast<Trap*>(obj)->IsTrapActive())
 			{
-				if (_interactionTime < 0)
+				if (_interactionTime != 0)
 				{
-					UseCountdown();
+					UseCountdown(60);
 				}
-				else if (_interactionTime == 0)
+				else
 				{
 					DisarmTrap(static_cast<Trap*>(obj));
 					ClearObjective();
