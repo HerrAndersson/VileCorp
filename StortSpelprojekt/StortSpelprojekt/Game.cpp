@@ -316,8 +316,11 @@ void Game::Render()
 		map<GameObject*, Renderer::Pointlight*>* pointlights = _objectHandler->GetPointlights();
 		for (pair<GameObject*, Renderer::Pointlight*> pointlight : *pointlights)
 		{
-			_renderModule->SetLightDataPerPointlight(pointlight.second);
-			_renderModule->RenderLightVolume(pointlight.second->GetVolumeBuffer(), pointlight.second->GetWorldMatrix(), pointlight.second->GetVertexCount(), pointlight.second->GetVertexSize());
+			if (pointlight.second->IsActive() && pointlight.first->IsActive())
+			{
+				_renderModule->SetLightDataPerPointlight(pointlight.second);
+				_renderModule->RenderLightVolume(pointlight.second->GetVolumeBuffer(), pointlight.second->GetWorldMatrix(), pointlight.second->GetVertexCount(), pointlight.second->GetVertexSize());
+			}
 		}
 	}
 

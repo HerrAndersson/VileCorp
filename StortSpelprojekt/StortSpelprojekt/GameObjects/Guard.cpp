@@ -225,8 +225,11 @@ void Guard::Act(GameObject* obj)
 		case ENEMY:											//The guard hits the enemy
 			if (_interactionTime != 0)
 			{
-				UseCountdown(60);
-				Animate(FIGHTANIM);
+				UseCountdown(_animation->GetLength(4, 4.5f));
+				if (_interactionTime == _animation->GetLength(4, 4.5))
+				{
+					Animate(FIGHTANIM);
+				}
 			}
 			else
 			{

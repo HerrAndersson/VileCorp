@@ -411,16 +411,16 @@ void Unit::Animate(Anim anim)
 			switch (anim)
 			{
 			case IDLEANIM:
-				_animation->SetActionAsCycle(0, 1.0f, false);
+				_animation->SetActionAsCycle(0, 1.0f);
 				break;
 			case WALKANIM:
-				_animation->SetActionAsCycle(1, 1.0f, false);
+				_animation->SetActionAsCycle(1, 1.0f);
 				break;
 			case FIXTRAPANIM:
-				_animation->SetActionAsCycle(2, 1.0f, false);
+				_animation->SetActionAsCycle(2, 1.0f);
 				break;
 			case FIGHTANIM:
-				_animation->PlayAction(4, 3.5f, false, false);
+				_animation->PlayAction(4, 4.5f);
 				break;
 			default:
 				break;
@@ -431,16 +431,16 @@ void Unit::Animate(Anim anim)
 			switch (anim)
 			{
 			case IDLEANIM:
-				_animation->SetActionAsCycle(0, 1.0f, false);
+				_animation->SetActionAsCycle(0, 1.0f);
 				break;
 			case WALKANIM:
-				_animation->SetActionAsCycle(1, 1.0f, false);
+				_animation->SetActionAsCycle(1, 1.0f);
 				break;
 			case FIGHTANIM:
-				_animation->PlayAction(1, 1.0f, false, false);
+				_animation->PlayAction(1, 1.0f);
 				break;
 			case PICKUPOBJECTANIM:
-				_animation->PlayAction(3, 1.0f, false, false);
+				_animation->PlayAction(3, 1.0f);
 				break;
 			default:
 				break;

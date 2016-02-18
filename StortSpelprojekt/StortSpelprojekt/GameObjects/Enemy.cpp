@@ -156,7 +156,16 @@ void Enemy::Act(GameObject* obj)
 		switch (obj->GetType())
 		{
 		case LOOT:
-			if (_heldObject == nullptr)
+			if (_interactionTime != 0)
+			{
+				UseCountdown(_animation->GetLength(3));
+				if (_interactionTime == _animation->GetLength(3))
+				{
+					_moveState = MoveState::AT_OBJECTIVE;
+					Animate(PICKUPOBJECTANIM);
+				}
+			}
+			else if(_heldObject == nullptr)
 			{
 				obj->SetPickUpState(PICKINGUP);
 				_heldObject = obj;
@@ -191,10 +200,21 @@ void Enemy::Act(GameObject* obj)
 		}
 		break;
 		case GUARD:
-			static_cast<Unit*>(obj)->TakeDamage(1);
-			if (static_cast<Unit*>(obj)->GetHealth() <= 0)
+			if (_interactionTime != 0)
 			{
-				ClearObjective();
+				UseCountdown(60);
+				if (_interactionTime == 60)
+				{
+					Animate(FIGHTANIM);
+				}
+			}
+			else
+			{
+				static_cast<Unit*>(obj)->TakeDamage(1);
+				if (static_cast<Unit*>(obj)->GetHealth() <= 0)
+				{
+					ClearObjective();
+				}
 			}
 			break;
 		case ENEMY:
@@ -241,8 +261,6 @@ void Enemy::Update(float deltaTime)
 		break;
 	case MoveState::AT_OBJECTIVE:
 		Act(_objective);
-		UseCountdown(120);
-		Animate(PICKUPOBJECTANIM);
 		break;
 	case MoveState::FLEEING:
 		Flee();

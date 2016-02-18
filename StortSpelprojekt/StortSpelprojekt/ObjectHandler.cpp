@@ -662,6 +662,19 @@ void ObjectHandler::UpdateLights()
 			}
 		}
 	}
+	for (pair<GameObject*, Renderer::Pointlight*> point : _pointligths)
+	{
+		if (point.first->IsActive() && point.first->IsVisible())
+		{
+			XMFLOAT3 pos = point.first->GetPosition();
+			point.second->SetPosition(DirectX::XMFLOAT3(pos.x, 2, pos.z));
+			point.second->SetActive(true);
+		}
+		else
+		{
+			point.second->SetActive(false);
+		}
+	}
 }
 
 map<GameObject*, Renderer::Spotlight*>* ObjectHandler::GetSpotlights()
