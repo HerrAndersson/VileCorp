@@ -201,33 +201,25 @@ void GameLogic::HandleUnitMove()
 			}
 		}
 
-
-		int numUnits = _player->AreUnitsSelected();
 		AI::Vec2D selectedTile = _pickingDevice->PickTile(_controls->GetMouseCoord()._pos);
-		//if more than 1 unit. Dont rotate and move them to tile.
-		if (numUnits>1)
-		{
-			_player->MoveUnits(selectedTile);
-		}
+		vector<Unit*> units = _player->GetSelectedUnits();
+
 		//if one unit
-		if (numUnits == 1)
+		if (units.size() == 1)
 		{
 			//if tile is the same as he is on
-			vector<Unit*> units = _player->GetSelectedUnits();
 			if (selectedTile == units.at(0)->GetTilePosition())
 			{
 				//Check which direction he should be pointing
-
 				AI::Vec2D direction = _pickingDevice->PickDirection(_controls->GetMouseCoord()._pos, _objectHandler->GetTileMap());
 
 				//Change direction
 				units.at(0)->SetDirection(direction);
 			}
-			//else move
-			else
-			{
-				_player->MoveUnits(selectedTile);
-			}
+		}
+		else
+		{
+			_player->MoveUnits(selectedTile);
 		}
 	}
 }
