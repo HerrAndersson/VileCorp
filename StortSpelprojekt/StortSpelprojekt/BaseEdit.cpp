@@ -602,23 +602,33 @@ bool BaseEdit::CheckValidity(AI::Vec2D tile, Type type)
 		}
 		else
 		{
-			if (type == GUARD || type == ENEMY)
+			if (_tileMap->IsFloorOnTile(tile))
 			{
-				if (_tileMap->UnitsOnTile(tile) || _tileMap->IsTrapOnTile(tile) || _tileMap->IsTypeOnTile(tile, CAMERA))
+				if (type == GUARD || type == ENEMY)
 				{
-					valid = false;
+					if (_tileMap->UnitsOnTile(tile) || _tileMap->IsTrapOnTile(tile) || _tileMap->IsTypeOnTile(tile, CAMERA))
+					{
+						valid = false;
+					}
+				}
+				else if (type == TRAP)
+				{
+					if (_tileMap->UnitsOnTile(tile) || _tileMap->IsTypeOnTile(tile, CAMERA))
+					{
+						valid = false;
+					}
+				}
+				else if (type == CAMERA)
+				{
+					if (_tileMap->UnitsOnTile(tile) || _tileMap->IsTrapOnTile(tile))
+					{
+						valid = false;
+					}
 				}
 			}
-			else if (type == TRAP)
+			else
 			{
-				if (_tileMap->UnitsOnTile(tile) || _tileMap->IsTypeOnTile(tile, CAMERA))
-				{
-					valid = false;
-				}
-			}
-			else if (type == CAMERA)
-			{
-				if (_tileMap->UnitsOnTile(tile) || _tileMap->IsTrapOnTile(tile))
+				if (type != FLOOR && type != WALL)
 				{
 					valid = false;
 				}
