@@ -108,6 +108,7 @@ void Enemy::act(GameObject* obj)
 			if (_heldObject == nullptr)
 			{
 				obj->SetPickUpState(PICKINGUP);
+				Animate(PICKUPOBJECTANIM);
 				_heldObject = obj;
 				obj->SetVisibility(_visible);
 			}
@@ -142,6 +143,8 @@ void Enemy::act(GameObject* obj)
 			if (static_cast<Unit*>(obj)->GetHealth() > 0)
 			{
 				static_cast<Unit*>(obj)->TakeDamage(10);
+				_stop = true;
+				Animate(FIGHTANIM);
 			}
 			break;
 		case ENEMY:

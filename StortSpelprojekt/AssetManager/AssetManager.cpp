@@ -506,7 +506,6 @@ Mesh* AssetManager::GetModel(string name)
 
 Skeleton* AssetManager::LoadSkeleton(string name)
 {
-
 	for (Skeleton* skeleton : *_skeletons)
 	{
 		if (strcmp(skeleton->_name.c_str(), name.data()))
