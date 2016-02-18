@@ -75,8 +75,8 @@ public:
 
 	void SetTilePosition(AI::Vec2D pos);
 
-	void Moving();
-	void SwitchingNode();
+	virtual void Moving();
+	virtual void SwitchingNode();
 
 };
 

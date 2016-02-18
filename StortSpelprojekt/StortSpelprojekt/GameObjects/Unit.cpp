@@ -41,7 +41,7 @@ void Unit::Rotate()
 	}
 	//_visionCone->ColorVisibleTiles({0,0,0});
 	_visionCone->FindVisibleTiles(_tilePosition, _direction);
-//	_visionCone->ColorVisibleTiles({0,0,3});
+	//_visionCone->ColorVisibleTiles({0,0,3});
 }
 
 int Unit::GetApproxDistance(AI::Vec2D target) const
@@ -168,6 +168,7 @@ Checks tiles that are visible to the unit
 void Unit::CheckVisibleTiles()
 {
 	AI::Vec2D* visibleTiles = _visionCone->GetVisibleTiles();
+
 	for (int i = 0; i < _visionCone->GetNrOfVisibleTiles(); i++)
 	{
 		if (_tileMap->IsTrapOnTile(visibleTiles[i]._x, visibleTiles[i]._y))											//TODO: Traps shouldn't be automatically visible --Victor
@@ -294,6 +295,9 @@ void Unit::SetVisibility(bool visible)
 void Unit::SetTilePosition(AI::Vec2D pos)
 {
 	GameObject::SetTilePosition(pos);
+	//_visionCone->ColorVisibleTiles({0,0,0});
+	_visionCone->FindVisibleTiles(_tilePosition, _direction);
+	//_visionCone->ColorVisibleTiles({0,0,3});
 	if (_moveState == MoveState::IDLE)
 	{
 		_nextTile = pos;
@@ -327,9 +331,15 @@ void Unit::Moving()
 
 void Unit::SwitchingNode()
 {
-	//_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,0});
+	//if (_tileMap->IsFloorOnTile(_tilePosition))
+	//{
+	//	_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,0});
+	//}
 	_tilePosition = _nextTile;
-	//_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,4,0});
+	//if (_tileMap->IsFloorOnTile(_tilePosition))
+	//{
+	//	_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,4});
+	//}
 	if (_objective != nullptr && _objective->GetPickUpState() == ONTILE)
 	{
 		if (_objective->InRange(_tilePosition))

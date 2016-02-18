@@ -25,4 +25,5 @@ public:
 	//void Moving();
 	//void SetNextTile();			//replacement for move'
 	void Act(GameObject* obj);
+	void SwitchingNode();
 };

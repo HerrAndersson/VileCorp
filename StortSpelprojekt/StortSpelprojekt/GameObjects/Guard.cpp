@@ -214,7 +214,7 @@ void Guard::Act(GameObject* obj)
 			break;
 		case ENEMY:											//The guard hits the enemy
 			static_cast<Unit*>(obj)->TakeDamage(1);
-			if (static_cast<Unit*>(obj)->GetHealth() < 0)
+			if (static_cast<Unit*>(obj)->GetHealth() <= 0)
 			{
 				ClearObjective();
 			}
@@ -245,5 +245,15 @@ void Guard::Act(GameObject* obj)
 	if (_objective == nullptr)
 	{
 		_moveState = MoveState::MOVING;
+	}
+}
+
+void Guard::SwitchingNode()
+{
+	Unit::SwitchingNode();
+	if (_tileMap->IsEnemyOnTile(_nextTile))
+	{
+		_objective = _tileMap->GetObjectOnTile(_nextTile, ENEMY);
+		_moveState = MoveState::AT_OBJECTIVE;
 	}
 }
