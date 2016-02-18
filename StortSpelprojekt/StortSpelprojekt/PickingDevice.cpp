@@ -91,7 +91,7 @@ vector<GameObject*> PickingDevice::SinglePickObjects(POINT mousePoint, vector<Ga
 		Hitbox* hitbox = pickableObjects.at(i)->GetRenderObject()->_mesh._hitbox;
 		if (hitbox != nullptr)
 		{
-			pickObject = Box(hitbox->_depth, hitbox->_height, hitbox->_width, Vec3(hitbox->_center[0], hitbox->_center[1], hitbox->_center[2]), pickableObjects[i]->GetRotation());
+			pickObject = Box(hitbox->_depth, hitbox->_height, hitbox->_width, Vec3(pickableObjects[i]->GetPosition()) + Vec3(hitbox->_center[0], hitbox->_center[1], hitbox->_center[2]), pickableObjects[i]->GetRotation());
 		}
 		else
 		{
@@ -99,14 +99,6 @@ vector<GameObject*> PickingDevice::SinglePickObjects(POINT mousePoint, vector<Ga
 		}
 
 		if (Collision(ray, pickObject))
-		{
-			pickedObjects.push_back(pickableObjects[i]);
-		}
-	}
-
-	for (unsigned int i = 0; i < pickableObjects.size(); i++)
-	{
-		if (pickableObjects[i]->GetTilePosition() == PickTile(mousePoint))
 		{
 			pickedObjects.push_back(pickableObjects[i]);
 		}
