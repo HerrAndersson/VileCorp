@@ -75,6 +75,7 @@ void BaseEdit::CreateMarker()
 
 	_objectHandler->Add(_sB->_blueprint, _sB->_textureId, pos, XMFLOAT3(0.0f, 0.0f, 0.0f), false);
 	_marker._g = _objectHandler->GetGameObjects()->at(_sB->_blueprint->_type).back();
+	_marker._origPos = _marker._g->GetTilePosition();
 	_marker._created = false;
 	_isPlace = true;
 }
@@ -357,8 +358,13 @@ void BaseEdit::HandleMouseInput()
 			_isPlace = false;
 		}
 
+		if (_controls->IsFunctionKeyDown("MOUSE:SELECT") && !_isPlace && !_isDragAndDropMode)
+		{
+			_isPlace = true;
+		}
+
 		if ((_isDragAndDropMode && _controls->IsFunctionKeyUp("MOUSE:SELECT"))
-			|| (!_isDragAndDropMode && _controls->IsFunctionKeyDown("MOUSE:DRAG")))
+			|| (!_isDragAndDropMode && _controls->IsFunctionKeyDown("MOUSE:DRAG") && _isPlace))
 		{
 			DropEvent();
 		}
