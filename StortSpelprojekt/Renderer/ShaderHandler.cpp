@@ -130,6 +130,18 @@ namespace Renderer
 		_billboardingPS = CreatePixelShader(device, L"Assets/Shaders/BillboardingPS.hlsl");
 		_billboardingGS = CreateGeometryShader(device, L"Assets/Shaders/BillboardingGS.hlsl");
 
+		////Animation shadow map init
+		//D3D11_INPUT_ELEMENT_DESC animShadowInputDesc[] =
+		//{
+		//	{ "BONEINDEX", 0, DXGI_FORMAT_R32G32B32A32_UINT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		//	{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		//	{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		//	{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		//	{ "BONEWEIGHT", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		//};
+		//numElements = sizeof(animShadowInputDesc) / sizeof(animShadowInputDesc[0]);
+		//_animShadowMapVS = CreateVertexShader(device, L"Assets/Shaders/AnimShadowVS.hlsl", animShadowInputDesc, numElements);
+
 		//Animation pass init
 		D3D11_INPUT_ELEMENT_DESC animInputDesc[] =
 		{
@@ -449,6 +461,24 @@ namespace Renderer
 		//Set shaders
 		deviceContext->VSSetShader(_hudPassVS->_vertexShader, nullptr, 0);
 		deviceContext->PSSetShader(_hudPassPS, nullptr, 0);
+		deviceContext->GSSetShader(nullptr, nullptr, 0);
+		//deviceContext->HSSetShader(nullptr, nullptr, 0);
+		//deviceContext->DSSetShader(nullptr, nullptr, 0);
+		//deviceContext->CSSetShader(nullptr, nullptr, 0);
+
+		//Set sampler
+		ID3D11SamplerState* samplers[2] = { _samplerWRAP, _samplerCLAMP };
+		deviceContext->PSSetSamplers(0, 2, samplers);
+	}
+
+	void ShaderHandler::SetAnimaShadowGenerationShaders(ID3D11DeviceContext* deviceContext)
+	{
+		//Set vertex layout
+		deviceContext->IASetInputLayout(_animShadowMapVS->_inputLayout);
+
+		//Set shaders
+		deviceContext->VSSetShader(_animShadowMapVS->_vertexShader, nullptr, 0);
+		deviceContext->PSSetShader(nullptr, nullptr, 0);
 		deviceContext->GSSetShader(nullptr, nullptr, 0);
 		//deviceContext->HSSetShader(nullptr, nullptr, 0);
 		//deviceContext->DSSetShader(nullptr, nullptr, 0);
