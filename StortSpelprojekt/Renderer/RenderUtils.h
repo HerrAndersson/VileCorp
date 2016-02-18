@@ -83,6 +83,7 @@ struct Point
 struct Mesh
 {
 	ID3D11Buffer* _vertexBuffer;
+	Hitbox* _hitbox = nullptr;
 	int _vertexBufferSize, _toMesh;
 	std::vector<PointlightData> _pointLights;
 	std::vector<SpotlightData> _spotLights;
@@ -90,6 +91,10 @@ struct Mesh
 	{
 		_pointLights.clear();
 		_spotLights.clear();
+		if (_hitbox != nullptr)
+		{
+			delete _hitbox;
+		}
 	}
 };
 
