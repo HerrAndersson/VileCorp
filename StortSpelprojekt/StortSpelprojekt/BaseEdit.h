@@ -10,6 +10,17 @@
 #include "../PickingDevice.h"
 #include "../System/Camera.h"
 
+struct SpecificBlueprint
+{
+	SpecificBlueprint()
+	{
+		_blueprint = nullptr;
+		_textureId = -1;
+	}
+	Blueprint* _blueprint;
+	int _textureId;
+};
+
 class BaseEdit
 {
 private:
@@ -18,6 +29,8 @@ private:
 	Tilemap*				_tileMap;
 	ObjectHandler*			_objectHandler;
 	PickingDevice*			_pickingDevice;
+
+	SpecificBlueprint* _sB;
 
 	struct Marker
 	{
@@ -35,44 +48,43 @@ private:
 	} _marker, _baseMarker;
 
 	// FLAGS
+	bool _extendedMode;
 	bool _isSelectionMode;
 	bool _isDragAndDropMode;
 	bool _isDragAndPlaceMode;
 	bool _isPlace;
 	bool _modeLock;
 
-	void HandleInput(double deltaTime);
+	void MarkerMoveEvent();
+	void DragEvent(Type type);
+	void DropEvent();
+
+	// Should be reworked 
+	void DragAndPlace(SpecificBlueprint* sB);
+
+	void HandleMouseInput();
+	void HandleKeyInput(double deltaTime);
+
 	void HandleCamMode();
 	void HandleCamZoom(float deltaTime);
 	void HandleCamRot();
 	void HandleCamMove(float deltaTime);
-	
+
 	bool CheckValidity(AI::Vec2D tile, Type type);
-	void SetValidity(Marker* m, Type type);
-
-	void MarkerMoveEvent(Type type);
-	void DragAndDropEvent(Type type);
-
 	// Used for Drag&Place
-	void CreateMarkers(Blueprint* blueprint, int textureId);
+	void CreateMarker();
+	void CreateMarkers();
 	void ReleaseMarkers();
 
 public:
-	BaseEdit(ObjectHandler* objectHandler, System::Controls* controls, PickingDevice* pickingDevice, System::Camera* camera);
+
+	BaseEdit(ObjectHandler* objectHandler, System::Controls* controls, PickingDevice* pickingDevice, System::Camera* camera, bool extendedMode);
 	~BaseEdit();
 
-	GameObject* GetSelectedObject();
-	bool DeleteSelectedObject();
+	GameObject* GetMarkedObject();
+	bool DeleteMarkedObject();
 
-//	bool Add(Type type, const std::string& name);
-	bool Delete(Type type);
-	bool TypeOn(Type type);
-
-	void DragAndDrop(Type type); // TODO: Change to general selection mode
-	void DragAndDrop(); // TODO: Change to general selection mode
-	void DragAndPlace(Blueprint* blueprint, int textureId);
-	
-	void CreateMarker(Blueprint* blueprint, int textureId);
+	void HandleBlueprint(SpecificBlueprint* sB);
 
 	void ChangePlaceState();
 	bool IsSelection() const;

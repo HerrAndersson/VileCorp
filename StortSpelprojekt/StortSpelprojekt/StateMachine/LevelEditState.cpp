@@ -66,9 +66,6 @@ void LevelEditState::Update(float deltaTime)
 	_baseEdit->Update(deltaTime);
 	HandleInput();
 	HandleButtons();
-
-	_baseEdit->DragAndDrop();
-	_baseEdit->DragAndPlace(_toPlace._blueprint, _toPlace._textureId);
 }
 
 void LevelEditState::OnStateEnter()
@@ -90,7 +87,7 @@ void LevelEditState::OnStateEnter()
 
 	_objectHandler->EnlargeTilemap(50);
 
-	_baseEdit = new BaseEdit(_objectHandler, _controls, _pickingDevice, _camera);
+	_baseEdit = new BaseEdit(_objectHandler, _controls, _pickingDevice, _camera, true);
 
 	XMFLOAT3 campos;
 	campos.x = (float)_objectHandler->GetTileMap()->GetWidth() / 2;
@@ -200,7 +197,9 @@ void LevelEditState::HandleButtons()
 						GUI::BlueprintNode* currentBlueprintButton = static_cast<GUI::BlueprintNode*>(currentButton);
 						_toPlace._blueprint = currentBlueprintButton->GetBlueprint();
 						_toPlace._textureId = currentBlueprintButton->GetTextureId();
-						_baseEdit->CreateMarker(_toPlace._blueprint, _toPlace._textureId);
+
+
+						_baseEdit->HandleBlueprint(&_toPlace);
 						break;
 					}
 				}

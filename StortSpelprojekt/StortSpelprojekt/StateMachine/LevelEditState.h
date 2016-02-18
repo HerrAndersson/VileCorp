@@ -25,11 +25,7 @@ private:
 	bool _floorChosen = false;
 	bool _wallChosen = false;
 
-	struct ToPlace
-	{
-		Blueprint* _blueprint;
-		int _textureId;
-	} _toPlace;
+	SpecificBlueprint _toPlace;
 	
 	int GetVectorIndexOfString(std::vector<std::string>* vec ,std::string str);
 
