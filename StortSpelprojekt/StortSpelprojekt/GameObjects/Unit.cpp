@@ -135,7 +135,8 @@ AI::Vec2D Unit::GetDirection()
 void Unit::SetDirection(const AI::Vec2D direction)
 {
 	_direction = direction;
-	_visionCone->FindVisibleTiles(_tilePosition, _direction);
+	Rotate();
+	//_visionCone->FindVisibleTiles(_tilePosition, _direction);
 }
 
 int Unit::GetHealth()
