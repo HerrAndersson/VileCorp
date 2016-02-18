@@ -26,6 +26,7 @@ namespace System
 		void SetSettingsChanged(bool changed);
 
 		Profile* GetProfile();
+		void ApplyProfileSettings();
 
 		template<typename Archive>
 		void LoadXML(const std::string& filename, Archive& a)

@@ -1,0 +1,93 @@
+{
+	"bg": {
+		"position": [0.0, 0.0],
+		"scale": [1.0, 1.0],
+		"texture": "../Menues/settings/settings1.png"
+	},
+	"title": {
+		"position": [0.0, 0.0],
+		"scale": [1.0, 0.8],
+		"text": "Level Select",
+		"centered": true,
+		"color": "FF000000",
+		"fontsize": 60.0
+	},
+	"playbutton": {
+		"position": [0.0, -0.7],
+		"scale": [0.12, 0.12],
+		"texture": "../Menues/PlacementStateGUI/placementResources.png",
+		"": {
+			"position": [0.0, -0.02],
+			"scale": [0.1, 0.1],
+			"text": "PLAY",
+			"centered": true,
+			"fontsize": 68,
+			"color": "FF000000"
+		}
+	},
+
+	"nextlevel": {
+		"position": [0.3, -0.7],
+		"scale": [0.1, 0.1],
+		"texture": "../Menues/settings/settings6-arrow.png"
+	},
+	"prevlevel": {
+		"position": [-0.3, -0.7],
+		"scale": [0.1, 0.1],
+		"texture": "../Menues/settings/settings6-arrow2.png"
+	},
+	"": {
+		"position": [0.0, 0.5],
+		"7": {
+			"position": [0.0, 0.0],
+			"scale": [1.0, 1.0],
+			"levelname": {
+				"position": [-0.08, 0.0],
+				"scale": [0.3, 0.05],
+				"text": "First day on the job",
+				"color": "FF000000"
+			},
+			"description": {
+				"position": [-0.00, -0.1],
+				"scale": [0.38, 0.05],
+				"text": "Vile Corp just got their most dangerous assignment yet. The international crime cooperation Google.com has hired VileCorp to protect the huge orange blood diamonds of Africa. CIA obtained information of the whereabouts of the diamonds. Your task is to protect the diamonds and kill any intruders that enter the premises.",
+				"color": "FF888888",
+				"fontsize": 25.0
+			}
+		},
+		"8": {
+			"position": [0.0, 0.0],
+			"scale": [1.0, 1.0],
+			"levelname": {
+				"position": [-0.08, 0.0],
+				"scale": [0.3, 0.05],
+				"text": "Just another day on the job.",
+				"color": "FF000000"
+			},
+			"description": {
+				"position": [-0.00, -0.1],
+				"scale": [0.38, 0.05],
+				"text": "The success rate of Vile Corp is spreading and many want to get in on that. As Facebook has a great deal of blood diamonds as well, they gave us a call. We are to protect the blood diamonds and potentially integrate us with them.",
+				"color": "FF888888",
+				"fontsize": 25.0
+			}
+		},
+		"9": {
+			"position": [0.0, 0.0],
+			"scale": [1.0, 1.0],
+			"levelname": {
+				"position": [-0.08, 0.0],
+				"scale": [0.3, 0.05],
+				"text": "Best in the business",
+				"color": "FF000000"
+			},
+			"description": {
+				"position": [-0.00, -0.1],
+				"scale": [0.38, 0.05],
+				"text": "A team of game developers have aquired a couple of huge orange diamonds that needs protecting. Rival programmers are on the hunt for their treasures and they will stop at nothing to get them.",
+				"color": "FF888888",
+				"fontsize": 25.0
+			}
+		}
+	}
+}

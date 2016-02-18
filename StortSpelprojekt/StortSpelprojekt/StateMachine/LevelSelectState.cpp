@@ -3,7 +3,7 @@
 
 
 LevelSelectState::LevelSelectState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule) :
-	BaseState(controls, objectHandler, camera, pickingDevice, filename, "LEVELSELECT", assetManager, fontWrapper, settingsReader, soundModule)
+	BaseState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settingsReader, soundModule)
 {
 	_levelSelection = 7;
 	_levelSelectionMin = 7;
@@ -64,6 +64,8 @@ void LevelSelectState::Update(float deltaTime)
 void LevelSelectState::OnStateEnter()
 {
 	GetFilenamesInDirectory((char*)LEVEL_FOLDER_PATH.c_str(), ".json", _levelHeaderFilenames);
+	//TODO: This is hardcoded to nine due to the functionality in LevelSelectState constructor /Sebastian
+	_levelSelectionMax = min(_levelSelectionMin + _settingsReader->GetProfile()->_level, 9);
 }
 
 void LevelSelectState::OnStateExit()

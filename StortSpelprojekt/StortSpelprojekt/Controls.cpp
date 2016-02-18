@@ -338,18 +338,6 @@ namespace System
 	{
 		bool ret = false;
 		unsigned char modifersActivated = NONE;
-		if (_inputDevice->IsDown(Input::Shift))
-		{
-			modifersActivated |= SHIFT;
-		}
-		if (_inputDevice->IsDown(Input::Control))
-		{
-			modifersActivated |= CTRL;
-		}
-		if (_inputDevice->IsDown(Input::Alt))
-		{
-			modifersActivated |= ALT;
-		}
 		if ((*_keymap)[key].keyModifier & REPEAT)
 		{
 			ret = _inputDevice->IsUp((*_keymap)[key].mainKey);

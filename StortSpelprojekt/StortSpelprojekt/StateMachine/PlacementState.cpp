@@ -1,5 +1,25 @@
 #include "PlacementState.h"
 
+PlacementState::PlacementState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule)
+	: BaseState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settingsReader, soundModule)
+{
+	_playerProfile.resize(1);
+
+
+	//load all player profiles
+	GetFilenamesInDirectory("Assets/PlayerProfiles/", ".json", _playerProfilesPath);
+
+	//rezise vector that stores player profiles
+	_playerProfile.resize(_playerProfilesPath.size());
+	_controls = controls;
+	_objectHandler = objectHandler;
+	_camera = camera;
+	_pickingDevice = pickingDevice;
+	_baseEdit = nullptr;
+
+	_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_playerProfile[_currentPlayer]._gold));
+}
+
 void PlacementState::EvaluateGoldCost()
 {
 	int costOfAnvilTrap = 50;
@@ -26,25 +46,7 @@ void PlacementState::EvaluateGoldCost()
 	}
 }
 
-PlacementState::PlacementState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule)
-	: BaseState(controls, objectHandler, camera, pickingDevice, filename, "PLACEMENT", assetManager, fontWrapper, settingsReader, soundModule)
-{
-	_playerProfile.resize(1);
-	
-	
-	//load all player profiles
-	GetFilenamesInDirectory("Assets/PlayerProfiles/", ".json", _playerProfilesPath);
-	
-	//rezise vector that stores player profiles
-	_playerProfile.resize(_playerProfilesPath.size());
-	_controls = controls;
-	_objectHandler = objectHandler;
-	_camera = camera;
-	_pickingDevice = pickingDevice;
-	_baseEdit = nullptr;
-	
-	_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_playerProfile[_currentPlayer]._gold));
-}
+
 
 
 PlacementState::~PlacementState()
