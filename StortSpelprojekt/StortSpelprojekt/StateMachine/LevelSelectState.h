@@ -5,6 +5,7 @@ class LevelSelectState :
 	public BaseState
 {
 private:
+	System::Profile* _profile;
 	std::vector<std::string> _levelHeaderFilenames;
 	int _levelSelection;
 	int _levelSelectionMin;

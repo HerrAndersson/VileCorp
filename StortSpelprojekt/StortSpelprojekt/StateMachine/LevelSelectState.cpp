@@ -5,7 +5,8 @@
 LevelSelectState::LevelSelectState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule) :
 	BaseState(controls, objectHandler, camera, pickingDevice, filename, "LEVELSELECT", assetManager, fontWrapper, settingsReader, soundModule)
 {
-	_levelSelection = 7;
+	_profile = _settingsReader->GetProfile();
+	_levelSelection = _profile->_level;
 	_levelSelectionMin = 7;
 	_levelSelectionMax = 9; //TODO: Add to this if more levels are added
 	for (int i = _levelSelectionMin+1; i < _levelSelectionMax + 1; i++)

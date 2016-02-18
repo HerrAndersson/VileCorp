@@ -14,6 +14,7 @@ BaseState::BaseState(System::Controls* controls, ObjectHandler* objectHandler, S
 	_newStateRequest	= SPLASHSTATE;
 	_oldState			= EXITSTATE;
 	_soundModule		= soundModule;
+	_settingsReader		= settingsReader;
 }
 
 BaseState::~BaseState()
