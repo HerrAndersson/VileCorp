@@ -64,8 +64,12 @@ void LevelSelectState::Update(float deltaTime)
 
 void LevelSelectState::OnStateEnter()
 {
+<<<<<<< HEAD
+	GetFilenamesInDirectory((char*)LEVEL_FOLDER_PATH.c_str(), ".json", _levelHeaderFilenames);
+=======
 	//TODO: This is hardcoded to nine due to the functionality in LevelSelectState constructor /Sebastian
 	_levelSelectionMax = min(_levelSelectionMin + _settingsReader->GetProfile()->_level, 9);
+>>>>>>> origin/Developer
 }
 
 void LevelSelectState::OnStateExit()

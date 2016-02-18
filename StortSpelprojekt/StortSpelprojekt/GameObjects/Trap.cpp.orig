@@ -216,6 +216,16 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	_occupiedTiles = nullptr;
 	_subType = trapType;
 
+<<<<<<< HEAD
+	if (_renderObject->_mesh->_isSkinned)
+	{
+		_animation = new Animation(_renderObject->_mesh->_skeleton);
+		_animation->Freeze(false);
+		_animation->SetActionAsCycle(0, true);
+	}
+
+=======
+>>>>>>> origin/Developer
 	int radius = 0;
 	
 	switch (_trapType)
@@ -224,9 +234,9 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 		Initialize(3, 1, 1, 50, 50);
 		_occupiedTiles[0] = _tilePosition;
 		_areaOfEffect[_nrOfAOETiles++] = _tilePosition;
-		if (_renderObject->_mesh->_isSkinned)
+		if (_renderObject->_isSkinned)
 		{
-			_animation = new Animation(_renderObject->_mesh->_skeleton, true);
+			_animation = new Animation(_renderObject->_skeleton, true);
 			_animation->Freeze(true);
 		}
 		break;
@@ -238,9 +248,9 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 			_occupiedTiles[i] = _tilePosition + offset;
 		}
 		CalculateCircleAOE(3);
-		if (_renderObject->_mesh->_isSkinned)
+		if (_renderObject->_isSkinned)
 		{
-			_animation = new Animation(_renderObject->_mesh->_skeleton);
+			_animation = new Animation(_renderObject->_skeleton);
 			_animation->Freeze(false);
 		}
 		break;
@@ -261,9 +271,9 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 			_occupiedTiles[3 * i + 2] = _tilePosition + dirOffset + offset;
 			dirOffset += direction;
 		}
-		if (_renderObject->_mesh->_isSkinned)
+		if (_renderObject->_isSkinned)
 		{
-			_animation = new Animation(_renderObject->_mesh->_skeleton);
+			_animation = new Animation(_renderObject->_skeleton);
 			_animation->Freeze(false);
 		}
 		break;
@@ -508,7 +518,7 @@ void Trap::SetTilePosition(AI::Vec2D pos)
 
 void Trap::Animate(Anim anim)
 {
-	if (_renderObject->_mesh->_isSkinned)
+	if (_renderObject->_isSkinned)
 	{
 		if (_trapType == SPIKE)
 		{

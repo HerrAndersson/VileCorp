@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cereal>
+	<value0>
+		<_name>Player</_name>
+		<_money>0</_money>
+		<_level>2</_level>
+		<_firstTime>true</_firstTime>
+	</value0>
+</cereal>
+

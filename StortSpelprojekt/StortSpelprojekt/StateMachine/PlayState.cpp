@@ -40,7 +40,7 @@ void PlayState::Update(float deltaTime)
 void PlayState::OnStateEnter()
 {
 	_uiTree.GetNode("Tutorial")->SetHidden(false);
-	_gameLogic = new GameLogic(_objectHandler, _camera, _controls, _pickingDevice, &_uiTree, _assetManager);
+	_gameLogic = new GameLogic(_objectHandler, _camera, _controls, _pickingDevice, &_uiTree, _assetManager, _settingsReader);
 }
 
 void PlayState::OnStateExit()

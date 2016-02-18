@@ -10,8 +10,8 @@ class Tilemap
 private:
 	struct Tile
 	{
-		static const int OBJECT_CAPACITY = 4;
-		GameObject* _objectsOnTile[OBJECT_CAPACITY];					//0 = floor or wall, 1 = enemy, 2 = guard, 3 = trap or thief objectives or spawnpoint
+		static const int OBJECT_CAPACITY = 5;
+		GameObject* _objectsOnTile[OBJECT_CAPACITY];					//0 = floor or wall, 1 = enemy, 2 = guard, 3 = trap or thief objectives or spawnpoint, 4 = furniture
 		bool _isVisible;
 		Tile()
 		{
@@ -72,6 +72,8 @@ public:
 	bool IsArchitectureOnTile(AI::Vec2D pos)const;
 	bool IsWallOnTile(int x, int z)const;
 	bool IsWallOnTile(AI::Vec2D pos)const;
+	bool IsFurnitureOnTile(int x, int z)const;
+	bool IsFurnitureOnTile(AI::Vec2D pos)const;
 	bool IsFloorOnTile(int x, int z)const;
 	bool IsFloorOnTile(AI::Vec2D pos)const;
 	int UnitsOnTile(int x, int z)const;
