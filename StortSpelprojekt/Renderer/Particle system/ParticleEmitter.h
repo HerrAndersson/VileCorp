@@ -4,6 +4,7 @@
 #include <d3d11.h>
 #include "Particle.h"
 #include <vector>
+#include <limits>
 
 //Disable warning about DirectX XMFLOAT3/XMMATRIX etc
 #pragma warning( disable: 4251 )
@@ -29,6 +30,7 @@ namespace Renderer
 		bool _isActive;
 		float _timeLeft;
 		int _particleCount;
+		float _particleScale; //Used in the geometry shader to generate particles of given scale
 
 		ID3D11Device* _device;
 		ID3D11DeviceContext* _deviceContext;
@@ -38,15 +40,26 @@ namespace Renderer
 
 		void CreateVertexBuffer();
 		void UpdateVertexBuffer();
-		void CreateParticles(int count, const DirectX::XMFLOAT3& baseDirection, const DirectX::XMFLOAT3& targetPosition);
+		void CreateAllParticles(int count, const DirectX::XMFLOAT3& baseDirection, const DirectX::XMFLOAT3& targetPosition);
+
+		Particle CreateSingleParticle(const DirectX::XMFLOAT3& baseDirection);
+		void CreateElectricityPattern(int count, const DirectX::XMFLOAT3& targetPosition);
+
+		//If includeNegative is true, the return will be in the range [-max, max]
+		float GetRandomOffset(float maxOffset, bool includeNegative);
+
+		//Generates a random number in the range [offsets.x, offsets.y]
+		float GetRandomOffsetInRange(DirectX::XMFLOAT2 offsets);
+
+		DirectX::XMFLOAT3 NormalizeDirection(DirectX::XMFLOAT3 dir);
 
 	public:
 
 		ParticleEmitter(ID3D11Device* device, ID3D11DeviceContext* deviceContext, ParticleModifierOffsets* modifers);
-		ParticleEmitter(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const ParticleType& type, const ParticleSubType& subType, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& direction, int particleCount, float timeLimit, bool isActive, ParticleModifierOffsets* modifers, const DirectX::XMFLOAT3& target = DirectX::XMFLOAT3(0, 0, 0));
+		ParticleEmitter(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const ParticleType& type, const ParticleSubType& subType, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& direction, int particleCount, float timeLimit, float scale, bool isActive, ParticleModifierOffsets* modifers, const DirectX::XMFLOAT3& target = DirectX::XMFLOAT3(0, 0, 0));
 		virtual ~ParticleEmitter();
 
-		void Reset(const ParticleType& type, const ParticleSubType& subType, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& direction, int particleCount, float timeLimit, bool isActive, const DirectX::XMFLOAT3& target = DirectX::XMFLOAT3(0, 0, 0));
+		void Reset(const ParticleType& type, const ParticleSubType& subType, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& direction, int particleCount, float timeLimit, float scale, bool isActive, const DirectX::XMFLOAT3& target = DirectX::XMFLOAT3(0, 0, 0));
 
 		void Update(double deltaTime);
 
@@ -57,6 +70,7 @@ namespace Renderer
 		ParticleSubType GetSubType() const;
 		int GetParticleCount() const;
 		int GetVertexSize() const;
+		float GetParticleScale() const;
 
 		void SetPosition(const DirectX::XMFLOAT3 position);
 

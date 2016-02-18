@@ -35,7 +35,7 @@ namespace Renderer
 
 		void Update(double deltaTime);
 
-		void ActivateEmitter(ParticleType type, ParticleSubType subType, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& direction, int particleCount, float timeLimit, bool isActive);
+		void ActivateEmitter(ParticleType type, ParticleSubType subType, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& direction, int particleCount, float timeLimit, float scale, bool isActive);
 
 		int GetEmitterCount() const;
 		ParticleEmitter* GetEmitter(int index);

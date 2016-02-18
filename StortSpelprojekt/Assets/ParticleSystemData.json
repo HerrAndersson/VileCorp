@@ -6,6 +6,14 @@
     "_splashDirectionOffset": 0.52359879016876221,
     "_smokeDirectionOffset": 0.2617993950843811,
     "_fireDirectionOffset": 0.1745329350233078,
+    "_splashSpeedRange.x": 6.95,
+    "_splashSpeedRange.y": 7.55,
+    "_smokeSpeedRange.x": 0.20000000298023224,
+    "_smokeSpeedRange.y": 0.5,
+    "_fireSpeedRange.x": 0.5,
+    "_fireSpeedRange.y": 0.69999998807907104,
+    "_smokeRepeatTime": 1000,
+    "_fireRepeatTime": 1500,
     "_subtypeTexturePaths": [
       [
         "Particles/blood1.png",
@@ -14,10 +22,10 @@
         "Particles/blood4.png"
       ],
       [
-        "Particles/flash1.png",
-        "Particles/flash2.png",
-        "Particles/flash3.png",
-        "Particles/flash4.png"
+        "Particles/water1.png",
+        "Particles/water2.png",
+        "Particles/water3.png",
+        "Particles/water4.png"
       ],
       [
         "Particles/blood1.png",

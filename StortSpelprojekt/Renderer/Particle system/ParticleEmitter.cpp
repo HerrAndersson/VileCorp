@@ -19,9 +19,10 @@ namespace Renderer
 		_vertexSize = 0;
 		_particleCount = 0;
 		_modifiers = modifers;
+		_particleScale = 1.0f;
 	}
 
-	ParticleEmitter::ParticleEmitter(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const ParticleType& type, const ParticleSubType& subType, const XMFLOAT3& position, const XMFLOAT3& direction, int particleCount, float timeLimit, bool isActive, ParticleModifierOffsets* modifers, const XMFLOAT3& target)
+	ParticleEmitter::ParticleEmitter(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const ParticleType& type, const ParticleSubType& subType, const XMFLOAT3& position, const XMFLOAT3& direction, int particleCount, float timeLimit, float scale, bool isActive, ParticleModifierOffsets* modifers, const XMFLOAT3& target)
 	{
 		_type = type;
 		_subType = subType;
@@ -33,8 +34,9 @@ namespace Renderer
 		_particleCount = particleCount;
 		_particles.clear();
 		_modifiers = modifers;
+		_particleScale = scale;
 
-		CreateParticles(particleCount, direction, target);
+		CreateAllParticles(particleCount, direction, target);
 
 		CreateVertexBuffer();
 	}
@@ -47,7 +49,7 @@ namespace Renderer
 		_particles.clear();
 	}
 
-	void ParticleEmitter::Reset(const ParticleType& type, const ParticleSubType& subType, const XMFLOAT3& position, const XMFLOAT3& direction, int particleCount, float timeLimit, bool isActive, const XMFLOAT3& target)
+	void ParticleEmitter::Reset(const ParticleType& type, const ParticleSubType& subType, const XMFLOAT3& position, const XMFLOAT3& direction, int particleCount, float timeLimit, float scale, bool isActive, const XMFLOAT3& target)
 	{
 		_type = type;
 		_subType = subType;
@@ -55,43 +57,189 @@ namespace Renderer
 		_timeLeft = timeLimit;
 		_isActive = isActive;
 		_particleCount = particleCount;
+		_particleScale = scale;
 
-		CreateParticles(particleCount, direction, target);
+		CreateAllParticles(particleCount, direction, target);
 		CreateVertexBuffer();
 	}
 
-	void ParticleEmitter::CreateParticles(int count, const XMFLOAT3& baseDirection, const XMFLOAT3& targetPosition)
+	void ParticleEmitter::CreateElectricityPattern(int count, const DirectX::XMFLOAT3& targetPosition)
 	{
-		int diff = count - (signed)_particles.size();
+		_particles.clear();
 
-		//The vector of particles needs to be created/recreated/enlarged
-		if (diff > 0)
+		XMVECTOR basePos = XMLoadFloat3(&_position);
+		XMVECTOR target = XMLoadFloat3(&targetPosition);
+		XMVECTOR posToTarget = target - basePos;
+
+		float length = XMVectorGetX(XMVector3Length(posToTarget));
+		posToTarget = XMVector3Normalize(posToTarget);
+
+		//Breaks if posToTarget is (0,1,0,0)
+		XMVECTOR perpendicular = XMVector3Cross(posToTarget, XMVectorSet(0, 1, 0, 0));
+
+		for (int i = 0; i < count; i++)
 		{
-			_particles.clear();
-			for (int i = 0; i < diff; i++)
-			{
-				//TODO: Set offset on the direction and position /Jonas
+			XMVECTOR posV = posToTarget * (length / count) * i;
+			XMFLOAT3 pos;
+			XMStoreFloat3(&pos, posV);
 
-				//_modifiers->_fireDirectionOffset;
-				XMFLOAT3 dir = baseDirection;
 
-				Particle particle(XMFLOAT3(-20 / 100.0f + (rand() % 20) / 100.0f, 0, -20 / 100.0f + (rand() % 20) / 100.0f), dir);
-				particle.Activate();
-				_particles.push_back(particle);
-			}
+
+			Particle p = Particle(pos, 0.0f, _timeLeft);
 		}
-		//The vector is big enough to reuse
+
+	}
+
+	void ParticleEmitter::CreateAllParticles(int count, const XMFLOAT3& baseDirection, const XMFLOAT3& targetPosition)
+	{
+
+		if (_type == ParticleType::ELECTRICITY)
+		{
+			CreateElectricityPattern(count, targetPosition);
+		}
 		else
 		{
-			for (int i = 0; i < count; i++)
-			{
-				//TODO: Set offset on the direction and position /Jonas
-				XMFLOAT3 dir = baseDirection;
+			int diff = count - (signed)_particles.size();
 
-				_particles.at(i).Reset(XMFLOAT3(-20 / 100.0f + (rand() % 20) / 100.0f, 0, -20 / 100.0f + (rand() % 20) / 100.0f), dir);
-				_particles.at(i).Activate();
+			//The vector of particles needs to be created/recreated/enlarged
+			if (diff > 0)
+			{
+				_particles.clear();
+				for (int i = 0; i < count; i++)
+				{
+					if (_type != ParticleType::ELECTRICITY)
+					{
+						Particle particle = CreateSingleParticle(baseDirection);
+						particle.Activate();
+						_particles.push_back(particle);
+					}
+				}
+			}
+			//The vector is big enough to reuse
+			else
+			{
+				for (int i = 0; i < count; i++)
+				{
+					if (_type != ParticleType::ELECTRICITY)
+					{
+						_particles.at(i) = CreateSingleParticle(baseDirection);
+						_particles.at(i).Activate();
+					}
+				}
 			}
 		}
+	}
+
+	float ParticleEmitter::GetRandomOffset(float maxOffset, bool includeNegative)
+	{
+		float offset = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (maxOffset + std::numeric_limits<float>::epsilon())));
+
+		if (includeNegative)
+		{
+			int sign = rand() % 2;
+
+			if (sign > 0)
+			{
+				offset *= -1;
+			}
+		}
+
+		return offset;
+	}
+
+	float ParticleEmitter::GetRandomOffsetInRange(DirectX::XMFLOAT2 offsets)
+	{
+		return offsets.x + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (offsets.y - offsets.x + std::numeric_limits<float>::epsilon())));
+	}
+
+	DirectX::XMFLOAT3 ParticleEmitter::NormalizeDirection(DirectX::XMFLOAT3 dir)
+	{
+		float length = abs(dir.x) + abs(dir.y) + abs(dir.z);
+
+		//Eliminates division by zero
+		if (length <= 0)
+		{
+			return XMFLOAT3(0, 0, 0);
+		}
+
+		return XMFLOAT3(dir.x / length, dir.y / length, dir.z / length);
+	}
+
+	Particle ParticleEmitter::CreateSingleParticle(const DirectX::XMFLOAT3& baseDirection)
+	{
+		Particle p;
+		XMFLOAT3 pos;
+		XMFLOAT3 dir;
+
+		switch (_type)
+		{
+			case SPLASH:
+			{
+				pos.x = GetRandomOffset(_modifiers->_splashPositionOffset, true);
+				pos.y = GetRandomOffset(_modifiers->_splashPositionOffset, true);
+				pos.z = GetRandomOffset(_modifiers->_splashPositionOffset, true);
+
+				dir.x = baseDirection.x + GetRandomOffset(_modifiers->_splashDirectionOffset, true);
+				dir.y = baseDirection.y + GetRandomOffset(_modifiers->_splashDirectionOffset, true);
+				dir.z = baseDirection.z + GetRandomOffset(_modifiers->_splashDirectionOffset, true);
+
+				dir = NormalizeDirection(dir);
+
+				float speed = GetRandomOffsetInRange(_modifiers->_splashSpeedRange);
+
+				p = Particle(pos, speed, FLT_MAX, dir);
+
+				break;
+			}
+			case SMOKE:
+			{
+				pos.x = GetRandomOffset(_modifiers->_smokePositionOffset, true);
+				pos.y = GetRandomOffset(_modifiers->_smokePositionOffset, true);
+				pos.z = GetRandomOffset(_modifiers->_smokePositionOffset, true);
+
+				dir.x = baseDirection.x + GetRandomOffset(_modifiers->_smokeDirectionOffset, true);
+				dir.y = baseDirection.y + GetRandomOffset(_modifiers->_smokeDirectionOffset, true);
+				dir.z = baseDirection.z + GetRandomOffset(_modifiers->_smokeDirectionOffset, true);
+
+				dir = NormalizeDirection(dir);
+
+				float speed = GetRandomOffsetInRange(_modifiers->_smokeSpeedRange);
+
+				XMFLOAT2 offsets(_modifiers->_smokeRepeatTime/2, _modifiers->_smokeRepeatTime);
+				float time = GetRandomOffsetInRange(offsets);
+
+				p = Particle(pos, speed, time, dir);
+				break;
+			}
+			case FIRE:
+			{
+				pos.x = GetRandomOffset(_modifiers->_firePositionOffset, true);
+				pos.y = GetRandomOffset(_modifiers->_firePositionOffset, true);
+				pos.z = GetRandomOffset(_modifiers->_firePositionOffset, true);
+
+				dir.x = baseDirection.x + GetRandomOffset(_modifiers->_fireDirectionOffset, true);
+				dir.y = baseDirection.y + GetRandomOffset(_modifiers->_fireDirectionOffset, true);
+				dir.z = baseDirection.z + GetRandomOffset(_modifiers->_fireDirectionOffset, true);
+
+				dir = NormalizeDirection(dir);
+
+				float speed = GetRandomOffsetInRange(_modifiers->_fireSpeedRange);
+
+				XMFLOAT2 offsets(_modifiers->_fireRepeatTime / 2, _modifiers->_fireRepeatTime);
+				float time = GetRandomOffsetInRange(offsets);
+
+				p = Particle(pos, speed, time, dir);
+
+				break;
+			}
+			default:
+			{
+				throw std::runtime_error("Particle::CreateSingleParticle: Invalid particle type");
+				break;
+			}
+		}
+
+		return p;
 	}
 
 	//Used for initializing the vertex buffer that is holding all the positions of the particles
@@ -168,19 +316,18 @@ namespace Renderer
 			{
 				if (p.IsActive())
 				{
-					float velocity = 0;
 					XMFLOAT3 position = p.GetPosition();
 					XMFLOAT3 direction = p.GetDirection();
+					float speed = p.GetSpeed();
 					float deltatimeSeconds = deltaTime / 1000.0f;
 
 					switch (_type)
 					{
 						case SPLASH:
 						{
-							velocity = 1.0f;
-							position.y += direction.y * velocity * deltatimeSeconds;
-							position.x += direction.x * velocity * deltatimeSeconds;
-							position.z += direction.z * velocity * deltatimeSeconds;
+							position.y += direction.y * speed * deltatimeSeconds;
+							position.x += direction.x * speed * deltatimeSeconds;
+							position.z += direction.z * speed * deltatimeSeconds;
 
 							p.SetPosition(position);
 
@@ -188,19 +335,27 @@ namespace Renderer
 						}
 						case SMOKE:
 						{
-							//TODO: Move in smoke pattern
-							velocity = 0.825f;
+							//Change direction a little each update?
+		
+							position.y += direction.y * speed * deltatimeSeconds;
+							position.x += direction.x * speed * deltatimeSeconds;
+							position.z += direction.z * speed * deltatimeSeconds;
 
-							position.y += direction.y * velocity * deltatimeSeconds;
-							position.x += direction.x * velocity * deltatimeSeconds;
-							position.z += direction.z * velocity * deltatimeSeconds;
-
-							if (position.y > 3)
+							if (p.GetTimeLeft() < 0)
 							{
-								position.y = 0;
+								position.x = GetRandomOffset(_modifiers->_smokePositionOffset, true);
+								position.y = GetRandomOffset(_modifiers->_smokePositionOffset, true);
+								position.z = GetRandomOffset(_modifiers->_smokePositionOffset, true);
+
+								XMFLOAT2 offsets(_modifiers->_smokeRepeatTime/2, _modifiers->_smokeRepeatTime);
+								float time = GetRandomOffsetInRange(offsets);
+
+								p.ResetTimeLeft(time);
 							}
 
 							p.SetPosition(position);
+
+							p.DecreaseTimeLeft(deltaTime);
 
 							break;
 						}
@@ -209,21 +364,34 @@ namespace Renderer
 							//TODO: generate a bolt of pixels towards target
 							//http://gamedevelopment.tutsplus.com/tutorials/how-to-generate-shockingly-good-2d-lightning-effects--gamedev-2681
 
-							position.y += direction.y * velocity * deltatimeSeconds;
-							position.x += direction.x * velocity * deltatimeSeconds;
-							position.z += direction.z * velocity * deltatimeSeconds;
+							//position.y += direction.y * velocity * deltatimeSeconds;
+							//position.x += direction.x * velocity * deltatimeSeconds;
+							//position.z += direction.z * velocity * deltatimeSeconds;
 
 							break;
 						}
 						case FIRE:
 						{
-							velocity = 0.5f;
+							position.y += direction.y * speed * deltatimeSeconds;
+							position.x += direction.x * speed * deltatimeSeconds;
+							position.z += direction.z * speed * deltatimeSeconds;
 
-							position.y += direction.y * velocity * deltatimeSeconds;
-							position.x += direction.x * velocity * deltatimeSeconds;
-							position.z += direction.z * velocity * deltatimeSeconds;
+							if (p.GetTimeLeft() < 0)
+							{
+								position.x = GetRandomOffset(_modifiers->_firePositionOffset, true);
+								position.y = GetRandomOffset(_modifiers->_firePositionOffset, true);
+								position.z = GetRandomOffset(_modifiers->_firePositionOffset, true);
 
-							//TODO: move particles in fire pattern. Upwards?
+								XMFLOAT2 offsets(_modifiers->_fireRepeatTime / 2, _modifiers->_fireRepeatTime);
+								float time = GetRandomOffsetInRange(offsets);
+
+								p.ResetTimeLeft(time);
+							}
+
+							p.SetPosition(position);
+
+							p.DecreaseTimeLeft(deltaTime);
+
 							break;
 						}
 						default:
@@ -269,6 +437,11 @@ namespace Renderer
 	int ParticleEmitter::GetVertexSize() const
 	{
 		return _vertexSize;
+	}
+
+	float ParticleEmitter::GetParticleScale() const
+	{
+		return _particleScale;
 	}
 
 	void ParticleEmitter::SetPosition(const XMFLOAT3 position)

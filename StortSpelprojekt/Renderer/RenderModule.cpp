@@ -241,7 +241,7 @@ namespace Renderer
 	}
 
 	void RenderModule::SetDataPerParticleEmitter(const XMFLOAT3& position, const DirectX::XMFLOAT4& color, XMMATRIX* camView, XMMATRIX* camProjection,
-												 const XMFLOAT3& camPos, ID3D11ShaderResourceView** textures, int textureCount)
+												 const XMFLOAT3& camPos, float scale, ID3D11ShaderResourceView** textures, int textureCount)
 	{
 		HRESULT result;
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -261,7 +261,7 @@ namespace Renderer
 		dataPtr->_camProjection = XMMatrixTranspose(*camProjection);
 		dataPtr->_camPosition = camPos;
 		dataPtr->_color = color;
-		dataPtr->pad = 0;
+		dataPtr->_scale = scale;
 		dataPtr->_ambientLight = AMBIENT_LIGHT;
 		deviceContext->Unmap(_matrixBufferParticles, 0);
 
@@ -616,6 +616,8 @@ namespace Renderer
 		SetDataPerObject(world, colorOffset);
 
 		deviceContext->Draw(nrOfPoints, 0);
+
+		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	}
 
 	void RenderModule::RenderScreenQuad()

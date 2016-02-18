@@ -18,23 +18,30 @@ namespace Renderer
 		DirectX::XMFLOAT3 _direction;
 		DirectX::XMFLOAT3 _target;
 
+		float _speed;
+		float _timeLeft;
+
 		bool _isActive;
 
 	public:
 
 		Particle();
-		Particle(const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& target = DirectX::XMFLOAT3(0, 0, 0), const DirectX::XMFLOAT3& direction = DirectX::XMFLOAT3(0, 1, 0));
+		Particle(const DirectX::XMFLOAT3& position, float speed, float timeLeft, const DirectX::XMFLOAT3& direction = DirectX::XMFLOAT3(0, 1, 0), const DirectX::XMFLOAT3& target = DirectX::XMFLOAT3(0, 0, 0));
 		virtual ~Particle();
-
-		void Reset(const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& target = DirectX::XMFLOAT3(0, 0, 0), const DirectX::XMFLOAT3& direction = DirectX::XMFLOAT3(0, 1, 0));
 
 		DirectX::XMFLOAT3 GetPosition() const;
 		DirectX::XMFLOAT3 GetDirection() const;
 		DirectX::XMFLOAT3 GetTargetPosition() const;
+		float GetSpeed() const;
+		float GetTimeLeft() const;
 
 		void SetPosition(const DirectX::XMFLOAT3& position);
 		void SetDirection(const DirectX::XMFLOAT3& direction);
 		void SetTargetPosition(const DirectX::XMFLOAT3& target);
+		void SetSpeed(float speed);
+
+		void ResetTimeLeft(float time);
+		void DecreaseTimeLeft(float deltaTime);
 
 		bool IsActive() const;
 		void Activate();

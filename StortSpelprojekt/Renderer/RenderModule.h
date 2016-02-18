@@ -128,7 +128,7 @@ namespace Renderer
 			DirectX::XMMATRIX _camProjection;
 			DirectX::XMFLOAT4 _color;
 			DirectX::XMFLOAT3 _camPosition;
-			float pad;
+			float _scale;
 			DirectX::XMFLOAT3 _ambientLight;
 		};
 
@@ -173,7 +173,7 @@ namespace Renderer
 		void SetDataPerObjectType(RenderObject* renderObject);
 		void SetDataPerLineList(ID3D11Buffer* lineList, int vertexSize);
 		void SetDataPerParticleEmitter(const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT4& color, DirectX::XMMATRIX* camView, DirectX::XMMATRIX* camProjection, 
-									   const DirectX::XMFLOAT3& camPos, ID3D11ShaderResourceView** textures = nullptr, int textureCount = 0);
+									   const DirectX::XMFLOAT3& camPos, float scale, ID3D11ShaderResourceView** textures = nullptr, int textureCount = 0);
 
 		void SetShadowMapDataPerObjectType(RenderObject* renderObject);
 		void SetShadowMapDataPerSpotlight(DirectX::XMMATRIX* lightView, DirectX::XMMATRIX* lightProjection);

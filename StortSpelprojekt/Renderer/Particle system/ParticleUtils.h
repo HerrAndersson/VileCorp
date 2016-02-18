@@ -23,12 +23,13 @@ struct ParticleRequestMessage
 	float _timeLimit = 0; //Milliseconds
 	int _particleCount = 0;
 	bool _isActive = false;
+	float _scale = 1.0f;
 
 	ParticleRequestMessage()
 	{
 	}
 
-	ParticleRequestMessage(ParticleType type, ParticleSubType subType, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& direction, float timeLimit, int particleCount, bool isActive, const DirectX::XMFLOAT3& target = DirectX::XMFLOAT3(0, 0, 0))
+	ParticleRequestMessage(ParticleType type, ParticleSubType subType, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& direction, float timeLimit, int particleCount, float scale, bool isActive, const DirectX::XMFLOAT3& target = DirectX::XMFLOAT3(0, 0, 0))
 	{
 		_type = type;
 		_subType = subType;
@@ -38,6 +39,7 @@ struct ParticleRequestMessage
 		_particleCount = particleCount;
 		_isActive = isActive;
 		_target = target;
+		_scale = scale;
 	}
 };
 
@@ -73,6 +75,9 @@ Example: If the emitter-position is at (2, 1, 3), the particle position.x can be
 
 The base direction can be rotated by the direction offset values, randomized in the range [0,offsetValue]. 
 For example, if the base direction is (0, 1, 0), and the offset is pi/4 (45 degrees), the final direction might be (0, 0.5f, 0.5f)
+
+The repeat times are applicable to smoke and fire, and used as a limit of movement. 
+For example, a smoke particle should be reset after _smokeRepeatTime to limit the height. 
 */
 struct ParticleModifierOffsets
 {
@@ -84,10 +89,13 @@ struct ParticleModifierOffsets
 	float _smokeDirectionOffset = DirectX::XM_PI / 12.0f; //15 degrees
 	float _fireDirectionOffset = DirectX::XM_PI / 18.0f;  //10 degrees
 
-	//TODO: Read these values aswell
 	DirectX::XMFLOAT2 _splashSpeedRange = DirectX::XMFLOAT2(0.75f, 1.0f);
 	DirectX::XMFLOAT2 _smokeSpeedRange = DirectX::XMFLOAT2(0.2f, 0.5f);
 	DirectX::XMFLOAT2 _fireSpeedRange = DirectX::XMFLOAT2(0.5f, 0.7f);
+
+	//Milliseconds
+	float _smokeRepeatTime = 1000.0f; 
+	float _fireRepeatTime = 1500.0f;
 };
 
 struct ParticleSystemData
@@ -99,6 +107,13 @@ struct ParticleSystemData
 	float _splashDirectionOffset = DirectX::XM_PI / 6.0f;
 	float _smokeDirectionOffset = DirectX::XM_PI / 12.0f;
 	float _fireDirectionOffset = DirectX::XM_PI / 18.0f;
+
+	DirectX::XMFLOAT2 _splashSpeedRange = DirectX::XMFLOAT2(0.75f, 1.0f);
+	DirectX::XMFLOAT2 _smokeSpeedRange = DirectX::XMFLOAT2(0.2f, 0.5f);
+	DirectX::XMFLOAT2 _fireSpeedRange = DirectX::XMFLOAT2(0.5f, 0.7f);
+
+	float _smokeRepeatTime = 1000.0f;
+	float _fireRepeatTime = 1500.0f;
 
 	std::vector<std::vector<std::string>> _subtypeTexturePaths;
 
@@ -112,6 +127,14 @@ struct ParticleSystemData
 			(CEREAL_NVP(_splashDirectionOffset)),
 			(CEREAL_NVP(_smokeDirectionOffset)),
 			(CEREAL_NVP(_fireDirectionOffset)),
+			(CEREAL_NVP(_splashSpeedRange.x)),
+			(CEREAL_NVP(_splashSpeedRange.y)),
+			(CEREAL_NVP(_smokeSpeedRange.x)),
+			(CEREAL_NVP(_smokeSpeedRange.y)),
+			(CEREAL_NVP(_fireSpeedRange.x)),
+			(CEREAL_NVP(_fireSpeedRange.y)),
+			(CEREAL_NVP(_smokeRepeatTime)),
+			(CEREAL_NVP(_fireRepeatTime)),
 			(CEREAL_NVP(_subtypeTexturePaths))
 		);
 	}

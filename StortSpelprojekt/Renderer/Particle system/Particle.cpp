@@ -9,24 +9,21 @@ namespace Renderer
 		_position = XMFLOAT3(0.0f, 0.0f, 0.0f);
 		_direction = XMFLOAT3(0.0f, 1.0f, 0.0f);
 		_isActive = false;
+		_speed = 0;
+		_timeLeft = 0;
 	}
 
-	Particle::Particle(const XMFLOAT3& position, const XMFLOAT3& target, const XMFLOAT3& direction)
+	Particle::Particle(const XMFLOAT3& position, float speed, float timeLeft, const XMFLOAT3& direction, const XMFLOAT3& target)
 	{
 		_position = position;
 		_direction = direction;
 		_target = target;
+		_speed = speed;
+		_timeLeft = timeLeft;
 	}
 
 	Particle::~Particle()
 	{
-	}
-
-	void Particle::Reset(const XMFLOAT3& position, const XMFLOAT3& target, const XMFLOAT3& direction)
-	{
-		_position = position;
-		_direction = direction;
-		_target = target;
 	}
 
 	XMFLOAT3 Particle::GetPosition() const
@@ -44,6 +41,16 @@ namespace Renderer
 		return _target;
 	}
 
+	float Particle::GetSpeed() const
+	{
+		return _speed;
+	}
+
+	float Particle::GetTimeLeft() const
+	{
+		return _timeLeft;
+	}
+
 	void Particle::SetPosition(const XMFLOAT3& position)
 	{
 		_position = position;
@@ -57,6 +64,21 @@ namespace Renderer
 	void Particle::SetTargetPosition(const DirectX::XMFLOAT3& target)
 	{
 		_target = target;
+	}
+
+	void Particle::SetSpeed(float speed)
+	{
+		_speed = speed;
+	}
+
+	void Particle::ResetTimeLeft(float time)
+	{
+		_timeLeft = time;
+	}
+
+	void Particle::DecreaseTimeLeft(float deltaTime)
+	{
+		_timeLeft -= deltaTime;
 	}
 
 	bool Particle::IsActive() const

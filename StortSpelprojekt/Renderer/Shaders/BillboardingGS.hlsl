@@ -5,7 +5,7 @@ cbuffer matrixBufferBillboarding : register(b6)
 	matrix camProjectionMatrix;
 	float4 color;
 	float3 campos;
-	float pad;
+	float scale;
 	float3 ambientLight;
 };
 
@@ -36,7 +36,6 @@ void main(point GS_IN input[1], inout TriangleStream<GS_OUT> OutputStream)
 {
 	GS_OUT output = (GS_OUT)0;
 
-	float scale = 0.1f;
 	float3 particleToCam = campos - mul(input[0].position, worldMatrix).xyz;
 	float3 normal = normalize(particleToCam);
 	float4 up = float4(0, 0, 1, 0) * scale;
