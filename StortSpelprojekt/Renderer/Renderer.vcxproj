@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -25,10 +25,10 @@
     <ClCompile Include="FontWrapper.cpp" />
     <ClCompile Include="Grid.cpp" />
     <ClCompile Include="Node.cpp" />
-    <ClCompile Include="Particle system\ParticleHandler.cpp" />
-    <ClCompile Include="Particle system\Particle.cpp" />
-    <ClCompile Include="Particle system\ParticleEmitter.cpp" />
-    <ClCompile Include="Particle system\ParticleRequestQueue.cpp" />
+    <ClCompile Include="ParticleSystem\Particle.cpp" />
+    <ClCompile Include="ParticleSystem\ParticleEmitter.cpp" />
+    <ClCompile Include="ParticleSystem\ParticleHandler.cpp" />
+    <ClCompile Include="ParticleSystem\ParticleRequestQueue.cpp" />
     <ClCompile Include="Pointlight.cpp" />
     <ClCompile Include="RenderModule.cpp" />
     <ClCompile Include="ShaderHandler.cpp" />
@@ -44,11 +44,11 @@
     <ClInclude Include="FW\FW1FontWrapper.h" />
     <ClInclude Include="Grid.h" />
     <ClInclude Include="Node.h" />
-    <ClInclude Include="Particle system\ParticleHandler.h" />
-    <ClInclude Include="Particle system\Particle.h" />
-    <ClInclude Include="Particle system\ParticleEmitter.h" />
-    <ClInclude Include="Particle system\ParticleUtils.h" />
-    <ClInclude Include="Particle system\ParticleRequestQueue.h" />
+    <ClInclude Include="ParticleSystem\Particle.h" />
+    <ClInclude Include="ParticleSystem\ParticleEmitter.h" />
+    <ClInclude Include="ParticleSystem\ParticleHandler.h" />
+    <ClInclude Include="ParticleSystem\ParticleRequestQueue.h" />
+    <ClInclude Include="ParticleSystem\ParticleUtils.h" />
     <ClInclude Include="Pointlight.h" />
     <ClInclude Include="RenderModule.h" />
     <ClInclude Include="RenderUtils.h" />

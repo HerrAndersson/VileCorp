@@ -28,7 +28,13 @@ Game::Game(HINSTANCE hInstance, int nCmdShow):
 	gameObjectDataLoader.WriteSampleGameObjects();
 	gameObjectDataLoader.LoadGameObjectInfo(&_data);
 
-	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager, &_data);
+	ParticleTextures particleTextures;
+	ParticleModifierOffsets modifiers;
+	LoadParticleSystemData(particleTextures, modifiers);
+
+	_particleHandler = new Renderer::ParticleHandler(_renderModule->GetDevice(), _renderModule->GetDeviceContext(), particleTextures, modifiers);
+
+	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager, &_data, _particleHandler->GetParticleRequestQueue());
 	_pickingDevice = new PickingDevice(_camera, settings);
 	_SM = new StateMachine(_controls, _objectHandler, _camera, _pickingDevice, "Assets/gui.json", _assetManager, _fontWrapper, settings, &_settingsReader, &_soundModule);
 
@@ -37,12 +43,6 @@ Game::Game(HINSTANCE hInstance, int nCmdShow):
 	_enemiesHasSpawned = false;
 	_soundModule.AddSound("Assets/Sounds/theme.wav", 0.15f, 1.0f, true, true);
 	_soundModule.Play("Assets/Sounds/theme.wav");
-
-	ParticleTextures particleTextures;
-	ParticleModifierOffsets modifiers;
-	LoadParticleSystemData(particleTextures, modifiers);
-
-	_particleHandler = new Renderer::ParticleHandler(_renderModule->GetDevice(), _renderModule->GetDeviceContext(), particleTextures, modifiers);
 }
 
 Game::~Game()

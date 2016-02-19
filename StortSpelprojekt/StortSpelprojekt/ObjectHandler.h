@@ -17,6 +17,8 @@
 #include "Pointlight.h"
 #include "Grid.h"
 #include "LightCulling.h"
+#include "ParticleSystem\ParticleUtils.h"
+#include "ParticleSystem\ParticleRequestQueue.h"
 
 /*
 ObjectHandler
@@ -60,6 +62,8 @@ private:
 	map<GameObject*, Renderer::Pointlight*> _pointligths;
 	LightCulling* _lightCulling;
 
+	Renderer::ParticleRequestQueue* _particleRequestQueue;
+
 	Architecture*	MakeFloor(GameObjectFloorInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation);
 	Architecture*	MakeWall(GameObjectWallInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation);
 	Architecture*	MakeFurniture(GameObjectFurnitureInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation);
@@ -74,7 +78,7 @@ private:
 
 public:
 
-	ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data);
+	ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data, Renderer::ParticleRequestQueue* particleRequestQueue);
 	~ObjectHandler();
 
 	//Add a gameobject

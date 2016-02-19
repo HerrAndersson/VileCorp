@@ -1,7 +1,7 @@
 #include "ObjectHandler.h"
 #include "stdafx.h"
 
-ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data)
+ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data, Renderer::ParticleRequestQueue* particleRequestQueue)
 {
 	_idCount = 0;
 	_assetManager = assetManager;
@@ -10,6 +10,7 @@ ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, G
 	_gameObjectInfo = data;
 	_device = device;
 	_lightCulling = nullptr;
+	_particleRequestQueue = particleRequestQueue;
 
 	ActivateTileset("default2");
 }
@@ -598,7 +599,6 @@ void ObjectHandler::Update(float deltaTime)
 							heldObject->SetPosition(XMFLOAT3(heldObject->GetPosition().x, 0.0f, heldObject->GetPosition().z));
 						}
 					}
-
 					Remove(g);
 					g = nullptr;
 					j--;

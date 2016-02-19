@@ -17,8 +17,8 @@
 #include "Pointlight.h"
 #include "GameObjectDataLoader.h"
 #include "ShadowMap.h"
-#include "Particle system\ParticleHandler.h"
-#include "Particle system\ParticleUtils.h"
+#include "ParticleSystem\ParticleHandler.h"
+#include "ParticleSystem\ParticleUtils.h"
 #include "SettingsReader.h"
 
 class Game
