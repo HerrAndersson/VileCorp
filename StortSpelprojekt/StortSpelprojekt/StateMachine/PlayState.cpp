@@ -29,6 +29,7 @@ void PlayState::Update(float deltaTime)
 	}
 
 	_gameLogic->Update(deltaTime);
+	HandleCam(deltaTime);
 }
 
 void PlayState::OnStateEnter()
