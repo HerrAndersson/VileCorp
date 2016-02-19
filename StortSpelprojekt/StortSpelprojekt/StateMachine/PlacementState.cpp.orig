@@ -64,9 +64,13 @@ PlacementState::~PlacementState()
 void PlacementState::Update(float deltaTime)
 {
 	_baseEdit->Update(deltaTime);
+<<<<<<< HEAD
+=======
+
 
 	HandleCam(deltaTime);
 
+>>>>>>> origin/Developer
 	HandleInput();
 	HandleButtons();
 }

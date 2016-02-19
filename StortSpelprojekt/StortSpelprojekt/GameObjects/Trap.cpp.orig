@@ -531,7 +531,11 @@ void Trap::SetTilePosition(AI::Vec2D pos)
 
 void Trap::Animate(Anim anim)
 {
-	if (_renderObject->_mesh->_isSkinned && _animation->GetisFinished())
+<<<<<<< HEAD
+	if (_renderObject->_mesh->_isSkinned)
+=======
+	if (_renderObject->_isSkinned && _animation->GetisFinished())
+>>>>>>> origin/Developer
 	{
 		if (_trapType == SPIKE)
 		{

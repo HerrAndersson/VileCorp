@@ -385,6 +385,17 @@ namespace Renderer
 
 			break;
 		}
+		case ANIM_SHADOW_GENERATION:
+		{
+			//Topology has to be set here because GRID_STAGE, which is the previous stage, will change to LINELIST
+			deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+			_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::DISABLE);
+			_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::FRONT);
+
+			_shaderHandler->SetAnimaShadowGenerationShaders(deviceContext);
+
+			break;
+		}
 		case GEO_PASS:
 		{
 			_d3d->SetGeometryStage();

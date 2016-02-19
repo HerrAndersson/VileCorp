@@ -411,26 +411,6 @@ void BaseEdit::HandleKeyInput(double deltaTime)
 			}
 		}
 	}
-
-	/*
-	Toggle free camera mode
-	*/
-	HandleCamMode();
-	
-	/*
-	Camera scroll
-	*/
-	HandleCamZoom(deltaTime);
-
-	/*
-	Camera rotation
-	*/
-	HandleCamRot();
-
-	/*
-	Camera move
-	*/
-	HandleCamMove(deltaTime);
 }
 
 
