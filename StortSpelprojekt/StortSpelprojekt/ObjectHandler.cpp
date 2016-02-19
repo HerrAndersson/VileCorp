@@ -615,12 +615,13 @@ void ObjectHandler::Update(float deltaTime)
 					}
 					Remove(g);
 					g = nullptr;
+					unit = nullptr;
 					j--;
 				}
-				if (unit->IsSwitchingTile())
+				else if (unit->IsSwitchingTile())
 				{
-					_tilemap->RemoveObjectFromTile(unit->GetTilePosition(), g);			//TODO: update correctly
-					_tilemap->AddObjectToTile(unit->GetTilePosition() + unit->GetDirection(), g);
+					_tilemap->RemoveObjectFromTile(unit->GetTilePosition(), g);
+					_tilemap->AddObjectToTile(unit->GetNextTile(), g);
 				}
 			}
 			else if (g->GetType() == SPAWN)															//Manage enemy spawning
