@@ -188,7 +188,7 @@
 		{
 			"position": [-0.2, -1.1],
 			"scale": [0.1, 0.065],
-			"texture": "../Menues/General/button.png",
+			"texture": "../Menues/General/wide-button.png",
 			"hidden" : true,
 			"":
 			{
@@ -203,12 +203,12 @@
 		{
 			"position": [0.2, -1.1],
 			"scale": [0.1, 0.065],
-			"texture": "../Menues/General/button.png",
+			"texture": "../Menues/General/wide-button.png",
 			"":
 			{
 				"position" : [0.0, -0.03],
 				"scale": [0.1, 0.07],
-				"text" : "Cancel",
+				"text" : "Return",
 				"centered" : true,
 				"color" : "FF000000"
 			}
