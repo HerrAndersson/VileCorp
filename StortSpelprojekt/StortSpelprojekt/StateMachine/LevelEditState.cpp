@@ -91,6 +91,25 @@ void LevelEditState::OnStateEnter()
 	campos.z = (float)_objectHandler->GetTileMap()->GetHeight() / 2 - 10;
 	_camera->SetPosition(campos);
 
+	_listId = -2;
+	for (int i = 0; i < 11; i++)
+	{
+		if (i < 7)
+		{
+			GUI::Node* currentButton = _uiTree.GetNode("Buttons")->GetChildren()->at(i);
+
+			currentButton->SetPosition(_buttonPositions[i]);
+
+		}
+		else
+		{
+			GUI::Node* currentButton = _uiTree.GetNode("Otherbuttons")->GetChildren()->at(i-7);
+
+			currentButton->SetPosition(_buttonPositions[i]);
+			_isPressed[i - 7] = false;
+		}
+	}
+
 }
 
 void LevelEditState::OnStateExit()
@@ -294,7 +313,7 @@ void LevelEditState::HandleButtons()
 				//Move Button
 				GUI::Node* node = _uiTree.GetNode("ThiefButton");
 				XMFLOAT2 move = _buttonPositions[10];
-				move.x += 0.453f;
+				move.x += 0.449f;
 
 				//Show List
 				_uiTree.GetNode("ThiefControlList")->SetHidden(false);
