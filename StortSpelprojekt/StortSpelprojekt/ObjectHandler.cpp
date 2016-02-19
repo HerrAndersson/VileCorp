@@ -658,7 +658,18 @@ void ObjectHandler::UpdateLights()
 				rot.y = XMConvertToDegrees(rot.y) + 180;
 				rot.z = XMConvertToDegrees(rot.z);
 
-				spot.second->SetPositionAndRotation(pos, rot);
+				if (spot.first->GetType() == CAMERA)
+				{
+					spot.second->SetPositionAndRotation(XMFLOAT3(pos.x, 0, pos.z), rot);
+				}
+				else if (spot.first->GetType() == GUARD)
+				{
+					spot.second->SetPositionAndRotation(XMFLOAT3(pos.x, 0.2f, pos.z), rot);
+				}
+				else
+				{
+					spot.second->SetPositionAndRotation(pos, rot);
+				}
 			}
 		}
 	}

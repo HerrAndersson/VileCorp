@@ -266,6 +266,7 @@ void Game::Render()
 		{
 			if (spot.second->IsActive() && spot.first->IsActive())
 			{
+				// Non skinned
 				_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::SHADOW_GENERATION);
 				_renderModule->SetShadowMapDataPerSpotlight(spot.second->GetViewMatrix(), spot.second->GetProjectionMatrix());
 
@@ -275,14 +276,43 @@ void Game::Render()
 					if (j.size() > 0)
 					{
 						RenderObject* renderObject = j.at(0)->GetRenderObject();
-						_renderModule->SetShadowMapDataPerObjectType(renderObject);
-						int vertexBufferSize = renderObject->_mesh._vertexBufferSize;
-
-						for (GameObject* g : j)
+						if (!renderObject->_isSkinned)
 						{
-							if (g->IsVisible())
+							_renderModule->SetShadowMapDataPerObjectType(renderObject);
+							int vertexBufferSize = renderObject->_mesh._vertexBufferSize;
+
+							for (GameObject* g : j)
 							{
-								_renderModule->RenderShadowMap(g->GetMatrix(), vertexBufferSize);
+								if (g->IsVisible())
+								{
+									_renderModule->RenderShadowMap(g->GetMatrix(), vertexBufferSize);
+								}
+							}
+						}
+					}
+				}
+
+				// Skinned
+				_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::ANIM_SHADOW_GENERATION);
+				_renderModule->SetShadowMapDataPerSpotlight(spot.second->GetViewMatrix(), spot.second->GetProjectionMatrix());
+
+				inLight = _objectHandler->GetObjectsInLight(spot.second);
+				for (auto j : *inLight)
+				{
+					if (j.size() > 0)
+					{
+						RenderObject* renderObject = j.at(0)->GetRenderObject();
+						if (renderObject->_isSkinned)
+						{
+							_renderModule->SetShadowMapDataPerObjectType(renderObject);
+							int vertexBufferSize = renderObject->_mesh._vertexBufferSize;
+
+							for (GameObject* g : j)
+							{
+								if (g->IsVisible())
+								{
+									_renderModule->RenderShadowMap(g->GetMatrix(), vertexBufferSize);
+								}
 							}
 						}
 					}
@@ -300,7 +330,7 @@ void Game::Render()
 		map<GameObject*, Renderer::Pointlight*>* pointlights = _objectHandler->GetPointlights();
 		for (pair<GameObject*, Renderer::Pointlight*> pointlight : *pointlights)
 		{
-			if (pointlight.second->IsActive() && pointlight.first->IsActive())
+			if (pointlight.second->IsActive() && pointlight.first->IsActive() && !pointlight.first->GetRenderObject()->_isSkinned)
 			{
 				_renderModule->SetLightDataPerPointlight(pointlight.second);
 				_renderModule->RenderLightVolume(pointlight.second->GetVolumeBuffer(), pointlight.second->GetWorldMatrix(), pointlight.second->GetVertexCount(), pointlight.second->GetVertexSize());
