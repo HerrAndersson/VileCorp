@@ -26,7 +26,7 @@ namespace GUI
 			float fontSize = 32.0f,
 			bool centered = false,
 			bool hidden = false);
-		BlueprintNode(GUI::Node* node,
+		BlueprintNode(GUI::Node &node,
 			Blueprint* blueprint,
 			int textureId = 0);
 		~BlueprintNode();

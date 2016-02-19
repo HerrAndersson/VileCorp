@@ -4,6 +4,7 @@ Tilemap::Tilemap()
 {
 	_height = 10;
 	_width = 10;
+	_nrOfLoot = 0;
 	_map = new Tile*[_width];
 
 	for (int i = 0; i < _width; i++)
@@ -23,6 +24,7 @@ Tilemap::Tilemap(AI::Vec2D size)
 	{
 		_height = size._x;
 		_width = size._y;
+		_nrOfLoot = 0;
 		_map = new Tile*[_width];
 		for (int i = 0; i < _width; i++)
 		{
@@ -79,10 +81,13 @@ bool Tilemap::AddObjectToTile(AI::Vec2D pos, GameObject * obj)
 			arrayPos = 2;
 			break;
 		case TRAP:
-		case LOOT:
 		case SPAWN:
 		case CAMERA:
 			arrayPos = 3;
+			break;
+		case LOOT:
+			arrayPos = 3;
+			_nrOfLoot++;
 			break;
 		case FURNITURE:
 			arrayPos = 4;
@@ -96,7 +101,7 @@ bool Tilemap::AddObjectToTile(AI::Vec2D pos, GameObject * obj)
 			if (_map[pos._x][pos._y]._objectsOnTile[arrayPos] == nullptr)
 			{
 				_map[pos._x][pos._y]._objectsOnTile[arrayPos] = obj;
-				obj->SetTilePosition(pos);
+			//	obj->SetTilePosition(pos);
 				result = true;
 			}
 		}
@@ -145,6 +150,10 @@ bool Tilemap::RemoveObjectFromTile(AI::Vec2D pos, GameObject * obj)
 			{
 				_map[pos._x][pos._y]._objectsOnTile[arrayPos] = nullptr;
 				result = true;
+				if (obj->GetType() == LOOT)
+				{
+					_nrOfLoot--;
+				}
 			}
 		}
 		
@@ -188,6 +197,11 @@ int Tilemap::GetHeight() const
 int Tilemap::GetWidth() const
 {
 	return _width;
+}
+
+int Tilemap::GetNrOfLoot() const
+{
+	return _nrOfLoot;
 }
 
 std::vector<GameObject*> Tilemap::GetAllObjectsOnTile(AI::Vec2D tileCoords) const

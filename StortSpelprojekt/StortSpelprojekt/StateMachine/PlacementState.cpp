@@ -17,12 +17,14 @@ PlacementState::PlacementState(System::Controls* controls, ObjectHandler* object
 	_pickingDevice = pickingDevice;
 	_baseEdit = nullptr;
 
-	_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_playerProfile[_currentPlayer]._gold));
+	_uiTree.GetNode("BudgetValue")->SetText(StringToWstring("FIX ME!!!"));
 
 	std::vector<GUI::Node*>* units = _uiTree.GetNode("Units")->GetChildren();
-	for (GUI::Node* unit : *units)
+	for (int i = 0; i < units->size(); i++)
 	{
-		GUI::BlueprintNode* newUnit = new GUI::BlueprintNode(unit, _objectHandler->GetBlueprintByName(unit->GetId()), 0);
+		GUI::BlueprintNode* newUnit = new GUI::BlueprintNode(*units->at(i), _objectHandler->GetBlueprintByName(units->at(i)->GetId()), 0);
+		delete units->at(i);
+		units->at(i) = (GUI::Node*)newUnit;
 	}
 }
 
@@ -33,20 +35,20 @@ void PlacementState::EvaluateGoldCost()
 	int costOfCamera = 80;
 	int costOfGuard = 200;
 
-	if (_toPlace._sB->_blueprint->_subType == SPIKE)
+	if (_toPlace._sB._blueprint->_subType == SPIKE)
 	{
 		_toPlace._goldCost = costOfAnvilTrap;
 	}
-	else if (_toPlace._sB->_blueprint->_subType == TESLACOIL)
+	else if (_toPlace._sB._blueprint->_subType == TESLACOIL)
 	{
 		_toPlace._goldCost = costOfTeslaCoil;
 	}
 
-	if (_toPlace._sB->_blueprint->_type == CAMERA)
+	if (_toPlace._sB._blueprint->_type == CAMERA)
 	{
 		_toPlace._goldCost = costOfCamera;
 	}
-	else if (_toPlace._sB->_blueprint->_type == GUARD)
+	else if (_toPlace._sB._blueprint->_type == GUARD)
 	{
 		_toPlace._goldCost = costOfGuard;
 	}
@@ -75,9 +77,9 @@ void PlacementState::OnStateEnter()
 	{
 		System::loadJSON(&_playerProfile[i], _playerProfilesPath[i]);
 	}
-	//TODO: Temporary solution for budget problem when changing back to placement state (Previously it kept spent budget and did not reset it)
-	_playerProfile[_currentPlayer]._gold = 700;
-	_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_playerProfile[_currentPlayer]._gold));
+	_budget = _objectHandler->GetCurrentLevelHeader()->_budget;
+
+	_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_budget));
 	_baseEdit = new BaseEdit(_objectHandler, _controls, _pickingDevice, _camera, false);
 	_objectHandler->DisableSpawnPoints();
 
@@ -125,10 +127,10 @@ void PlacementState::HandleInput()
 
 
 	// placement invalid
-	if (_toPlace._goldCost != -1 && !_objectHandler->Find(_toPlace._sB->_blueprint->_type, _toPlace._markerID) && !_baseEdit->IsPlace())
+	if (_toPlace._goldCost != -1 && !_objectHandler->Find(_toPlace._sB._blueprint->_type, _toPlace._markerID) && !_baseEdit->IsPlace())
 	{
-		_playerProfile[_currentPlayer]._gold += _toPlace._goldCost;
-		_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_playerProfile[_currentPlayer]._gold));
+		_budget += _toPlace._goldCost;
+		_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_budget));
 		_toPlace.ResetTemps();
 	}
 }
@@ -143,11 +145,7 @@ void PlacementState::HandleButtons()
 	{
 		//Hide how to screen when clicked
 		_uiTree.GetNode("Tutorial")->SetHidden(true);
-		_playerProfile[_currentPlayer]._firstTime = false;
-		System::saveJSON(&_playerProfile[_currentPlayer], _playerProfilesPath[_currentPlayer], "Player Profile");
 	}
-
-
 
 	if (_uiTree.IsButtonColliding("Play", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
@@ -156,7 +154,6 @@ void PlacementState::HandleButtons()
 
 	if (_baseEdit->IsSelection() && !_baseEdit->IsPlace() && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
-
 		std::vector<GUI::Node*>* units = _uiTree.GetNode("Units")->GetChildren();
 		for (unsigned y = 0; y < units->size(); y++)
 		{
@@ -164,8 +161,8 @@ void PlacementState::HandleButtons()
 			if (_uiTree.IsButtonColliding(currentButton, coord._pos.x, coord._pos.y))
 			{
 				GUI::BlueprintNode* currentBlueprintButton = static_cast<GUI::BlueprintNode*>(currentButton);
-				_toPlace._sB->_blueprint = currentBlueprintButton->GetBlueprint();
-				_toPlace._sB->_textureId = currentBlueprintButton->GetTextureId();
+				_toPlace._sB._blueprint = currentBlueprintButton->GetBlueprint();
+				_toPlace._sB._textureId = currentBlueprintButton->GetTextureId();
 				create = true;
 				break;
 			}
@@ -176,11 +173,11 @@ void PlacementState::HandleButtons()
 	{
 		EvaluateGoldCost();
 
-		if (_playerProfile[_currentPlayer]._gold >= _toPlace._goldCost)
+		if (_budget >= _toPlace._goldCost)
 		{
-			_baseEdit->HandleBlueprint(_toPlace._sB);
-			_playerProfile[_currentPlayer]._gold -= _toPlace._goldCost;
-			_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_playerProfile[_currentPlayer]._gold));
+			_baseEdit->HandleBlueprint(&_toPlace._sB);
+			_budget -= _toPlace._goldCost;
+			_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_budget));
 			_toPlace._markerID = _baseEdit->GetMarkedObject()->GetID();
 		}
 		else

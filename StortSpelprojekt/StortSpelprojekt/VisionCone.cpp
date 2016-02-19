@@ -278,7 +278,7 @@ void VisionCone::ColorVisibleTiles(DirectX::XMFLOAT3 color)
 		GameObject* floor = _tileMap->GetObjectOnTile(_visibleTiles[i], FLOOR);
 		if (floor != nullptr)
 		{
-			//floor->SetColorOffset(color);
+			floor->SetColorOffset(color);
 		}
 	}
 }

@@ -1,7 +1,7 @@
 {
     "sample": {
-        "_name": "camera_proto",
-        "_renderObjectName": "camera",
+        "_name": "shark_trap",
+        "_renderObjectName": "objective",
         "_type": 0,
         "_cost": 40,
         "_speed": 200,

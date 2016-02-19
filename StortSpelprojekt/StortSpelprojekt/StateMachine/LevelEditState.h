@@ -9,22 +9,10 @@ class LevelEditState : public BaseState
 private:
 	BaseEdit* _baseEdit;
 
-	struct LevelHeader
-	{
-		int _version;
-		int _levelSizeX;
-		int _levelSizeY;
-		int _nrOfGameObjects;
-	};
+	Level::LevelHeader _levelHeader;
 
-	struct MapData
-	{
-		int _posX;
-		int _posZ;
-		float _rotY;
-		int _tileType;
-	};
-	
+	std::string _currentLevelFileName;
+	bool _isNewLevel;
 	int _listId;
 	int _moveCheck;
 	bool _pageCheck;

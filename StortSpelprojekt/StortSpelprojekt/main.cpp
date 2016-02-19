@@ -4,7 +4,7 @@ int WINAPI wWinMain(HINSTANCE _hInstance, HINSTANCE _hPrevInstance, LPWSTR _lpCm
 {
 	int result = 0;
 
-	//_CrtSetBreakAlloc(21644);
+	//_CrtSetBreakAlloc(655);
 
 	try
 	{

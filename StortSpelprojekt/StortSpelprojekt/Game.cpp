@@ -26,10 +26,6 @@ Game::Game(HINSTANCE hInstance, int nCmdShow):
 	_camera->SetPosition(XMFLOAT3(3, 20, 0));
 	_camera->SetRotation(XMFLOAT3(60, 0, 0));
 
-	GameObjectDataLoader gameObjectDataLoader;
-	gameObjectDataLoader.WriteSampleGameObjects();
-	gameObjectDataLoader.LoadGameObjectInfo(&_data);
-
 	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager, &_data, settings);
 	_pickingDevice = new PickingDevice(_camera, settings);
 	_SM = new StateMachine(_controls, _objectHandler, _camera, _pickingDevice, "Assets/gui.json", _assetManager, _fontWrapper, settings, &_settingsReader, &_soundModule);
@@ -37,8 +33,8 @@ Game::Game(HINSTANCE hInstance, int nCmdShow):
 	_SM->Update(_timer.GetFrameTime());
 
 	_enemiesHasSpawned = false;
-	_soundModule.AddSound("Assets/Sounds/theme.wav", 0.15f, 1.0f, true, true);
-	_soundModule.Play("Assets/Sounds/theme.wav");
+	_soundModule.AddSound("Assets/Sounds/theme", 0.15f, 1.0f, true, true);
+	_soundModule.Play("Assets/Sounds/theme");
 }
 
 Game::~Game()
@@ -177,22 +173,6 @@ void Game::Render()
 
 	/*--------------------------------------------------  Render skinned objects  -----------------------------------------------------*/
 	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::ANIM_STAGE);
-	//if (gameObjects->size() > 0)
-	//{
-	//	if (gameObjects->at(GUARD).size() > 0)
-	//	{
-	//		RenderObject* renderObject = gameObjects->at(GUARD).at(0)->GetRenderObject();
-
-	//		_renderModule->SetDataPerObjectType(renderObject);
-	//		int vertexBufferSize = renderObject->_mesh->_vertexBufferSize;
-
-	//		for (GameObject* a : gameObjects->at(GUARD))
-	//		{
-	//			// temporary uncommenting
-	//			_renderModule->RenderAnimation(a->GetMatrix(), vertexBufferSize, a->GetAnimation()->GetFloats(), a->GetColorOffset());
-	//		}
-	//	}
-	//}
 	// Now every gameobject can be animated
 	for (auto i : *gameObjects)
 	{

@@ -97,6 +97,7 @@ private:
 	Mesh* ScanModel26();
 	Mesh* ScanModel27();
 	Mesh* ScanModel(string name);
+	RenderObject* ScanModel28();
 	Texture* ScanTexture(string name);
 	Mesh* GetModel(string name);
 	Skeleton* LoadSkeleton(string name);
@@ -106,7 +107,7 @@ public:
 	~AssetManager();
 	RenderObject* GetRenderObject(int index);
 	RenderObject* GetRenderObject(string meshName, string textureName);
-	HRESULT ParseLevelHeader(LevelHeader* outputLevelHead, std::string levelHeaderFilePath);
-	HRESULT ParseLevelBinary(LevelBinary* outputLevelBin, std::string levelBinaryFilePath);
+	HRESULT ParseLevelHeader(Level::LevelHeader* outputLevelHead, std::string levelHeaderFilePath);
+	HRESULT ParseLevelBinary(Level::LevelBinary* outputLevelBin, std::string levelBinaryFilePath);
 	Texture* GetTexture(string name);
 };

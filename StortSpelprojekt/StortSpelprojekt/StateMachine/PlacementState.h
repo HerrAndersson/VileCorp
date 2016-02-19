@@ -23,7 +23,6 @@ private:
 	{
 		ToPlace()
 		{
-			_sB = nullptr;
 			ResetTemps();
 		}
 		void ResetTemps()
@@ -31,7 +30,7 @@ private:
 			_goldCost = -1;
 			_markerID = 1;
 		}
-		SpecificBlueprint* _sB;
+		SpecificBlueprint _sB;
 		int _goldCost;
 		int _markerID;
 	} _toPlace;

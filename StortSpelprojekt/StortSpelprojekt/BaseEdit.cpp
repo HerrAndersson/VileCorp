@@ -454,25 +454,25 @@ void BaseEdit::HandleCamZoom(float deltaTime)
 	Camera scroll
 	*/
 	const float ZOOM_MAX = 12.0f;
-	const float ZOOM_MIN = 4.0f;
-	float velocity = deltaTime / 20.0f;
+	const float ZOOM_MIN = 5.0f;
+	float camStepSize = 2.0f;
 
 	if (_camera->GetMode() == System::LOCKED_CAM)
 	{
 		if (_controls->IsFunctionKeyDown("CAMERA:ZOOM_CAMERA_IN") &&
-			(_camera->GetPosition().y - velocity) > ZOOM_MIN)
+			(_camera->GetPosition().y) > ZOOM_MIN)
 		{
-			_camera->Move(_camera->GetForwardVector(), velocity);
+			_camera->Move(_camera->GetForwardVector(), camStepSize);
 		}
 		else if (_controls->IsFunctionKeyDown("CAMERA:ZOOM_CAMERA_OUT") &&
-			(_camera->GetPosition().y + velocity) < ZOOM_MAX)
+			(_camera->GetPosition().y) < ZOOM_MAX)
 		{
 			XMFLOAT3 negForward = XMFLOAT3(
 				_camera->GetForwardVector().x * -1,
 				_camera->GetForwardVector().y * -1,
 				_camera->GetForwardVector().z * -1);
 
-			_camera->Move(negForward, velocity);
+			_camera->Move(negForward, camStepSize);
 		}
 	}
 }
@@ -482,12 +482,21 @@ void BaseEdit::HandleCamRot()
 	/*
 	Camera rotation
 	*/
-	bool isRotating = false;
-	XMFLOAT3 rotation(0.0f, 0.0f, 0.0f);
-	float rotV = 1.4f;
-
 	if (_camera->GetMode() == System::LOCKED_CAM)
 	{
+		bool isRotating = false;
+		float rotV = 1.4f;
+		XMFLOAT3 rotation(0.0f, 0.0f, 0.0f);
+
+		Vec3 p0 = Vec3(XMFLOAT3(1.0f, 0.0f, 0.0f));
+		Vec3 p1 = Vec3(XMFLOAT3(0.0f, 0.0f, 1.0f));
+		Vec3 n = Vec3(XMFLOAT3(0.0f, 1.0f, 0.0f));
+		Vec3 camPos = Vec3(_camera->GetPosition());
+		Vec3 camDir = Vec3(_camera->GetForwardVector());
+
+		float distance = (((p0 - camPos).Dot(n)) / (camDir.Dot(n)));
+		_camera->Move(camDir.convertToXMFLOAT(), distance);
+
 		if (_controls->IsFunctionKeyDown("CAMERA:ROTATE_CAMERA_LEFT"))
 		{
 			rotation.y = 1.0f;
@@ -503,6 +512,9 @@ void BaseEdit::HandleCamRot()
 		{
 			_camera->Rotate(XMFLOAT3((rotation.x * rotV), (rotation.y * rotV), (rotation.z * rotV)));
 		}
+
+		camDir = _camera->GetForwardVector();
+		_camera->Move((camDir * -1).convertToXMFLOAT(), distance);
 	}
 
 	//Camera rotation - locked mouse

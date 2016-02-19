@@ -206,6 +206,7 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 		  const Tilemap* tileMap, int trapType, AI::Vec2D direction)
 	: GameObject(ID, position, rotation, tilePosition, type, renderObject)
 {
+	_isActive = true;
 	_direction = direction;
 	_trapType = (TrapType)trapType;
 	//_trapType = SHARK;
@@ -216,8 +217,6 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	_occupiedTiles = nullptr;
 	_subType = trapType;
 
-	if (_renderObject->_mesh->_isSkinned)
-		_animation = new Animation(_renderObject->_mesh->_skeleton);
 	int radius = 0;
 	
 	switch (_trapType)
@@ -388,12 +387,12 @@ void Trap::Activate()
 		}
 	}
 	Animate(ACTIVATE);
-	SetActive(false);
+	SetTrapActive(false);
 }
 
 void Trap::Update(float deltaTime)
 {	
-	if (_animation != nullptr && !_active)
+	if (_animation != nullptr && !_isActive)
 	{
 		_animation->Update(deltaTime);
 	}
@@ -408,6 +407,14 @@ void Trap::Update(float deltaTime)
 	if (triggered && _isActive)
 	{
 		Activate();
+	}
+	if (_isActive)
+	{
+		SetColorOffset({0,3,0});
+	}
+	else
+	{
+		SetColorOffset({3,0,0});
 	}
 }
 
@@ -485,6 +492,13 @@ void Trap::SetTilePosition(AI::Vec2D pos)
 		break;
 	case SHARK:			//Trigger area is currently the same as the trap's physical area. Might be awkward since the shark trap is larger than its AOE.
 	{
+		for (int i = 0; i < _tileSize; i++)
+		{
+			if (_tileMap->IsFloorOnTile(_occupiedTiles[i]))
+			{
+				_tileMap->GetObjectOnTile(_occupiedTiles[i], FLOOR)->SetColorOffset({ 0,0,0 });
+			}
+		}
 		_nrOfAOETiles = 0;
 		AI::Vec2D offset = { _direction._y, _direction._x };
 		_nrOfAOETiles = 3;
@@ -499,6 +513,13 @@ void Trap::SetTilePosition(AI::Vec2D pos)
 			_occupiedTiles[3 * i + 1] = _tilePosition + dirOffset;
 			_occupiedTiles[3 * i + 2] = _tilePosition + dirOffset + offset;
 			dirOffset += _direction;
+		}
+		for (int i = 0; i < _tileSize; i++)
+		{
+			if (_tileMap->IsFloorOnTile(_occupiedTiles[i]))
+			{
+				_tileMap->GetObjectOnTile(_occupiedTiles[i], FLOOR)->SetColorOffset({ 2.0f, 2.0f, 0.0f });
+			}
 		}
 		break;
 	}

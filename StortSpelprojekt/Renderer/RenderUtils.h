@@ -84,9 +84,11 @@ struct Mesh
 {
 	ID3D11Buffer* _vertexBuffer;
 	bool _meshLoaded;
+	Hitbox* _hitbox = nullptr;
 	bool _isSkinned = false;
 	bool DecrementUsers();
 	short _activeUsers = 0;
+	std::string _skeletonName;
 	Skeleton* _skeleton;
 	int _vertexBufferSize, _toMesh;
 	std::string _name;
@@ -99,6 +101,10 @@ struct Mesh
 		if (_meshLoaded && _vertexBuffer != nullptr)
 		{
 			_vertexBuffer->Release();
+		}
+		if (_hitbox != nullptr)
+		{
+			delete _hitbox;
 		}
 	}
 };
@@ -129,6 +135,9 @@ struct RenderObject
 		{
 			_specularTexture->DecrementUsers();
 		}
-		_mesh->DecrementUsers();
+		if (_mesh->DecrementUsers())
+		{
+			delete _mesh;
+		}
 	}
 };

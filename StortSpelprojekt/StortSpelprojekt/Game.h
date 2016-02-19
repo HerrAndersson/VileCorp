@@ -15,7 +15,6 @@
 #include "PickingDevice.h"
 #include "Spotlight.h"
 #include "Pointlight.h"
-#include "GameObjectDataLoader.h"
 #include "ShadowMap.h"
 #include "Particle system\ParticleHandler.h"
 #include "Particle system\ParticleUtils.h"

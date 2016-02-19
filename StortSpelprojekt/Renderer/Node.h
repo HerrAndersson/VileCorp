@@ -71,6 +71,9 @@ namespace GUI
 			float fontSize = 32.0f,
 			bool centered = false,
 			bool hidden = false);
+
+		Node(const Node& copy);
+
 		virtual ~Node();
 
 		void SetPosition(DirectX::XMFLOAT2 position);

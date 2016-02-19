@@ -72,9 +72,9 @@ Blueprint* Blueprints::GetBlueprintByName(std::string name)
 
 Blueprint* Blueprints::GetBlueprintByType(int type, int subType /*= 0*/)
 {
-	if (type < _blueprintsByType.size() - 1 && type >= 0)
+	if (type <= _blueprintsByType.size() - 1 && type >= 0)
 	{
-		if (subType < _blueprintsByType[type].size() - 1 && subType >= 0)
+		if (subType <= _blueprintsByType[type].size() - 1 && subType >= 0)
 		{
 			return _blueprintsByType[type][subType];
 		}

@@ -14,6 +14,7 @@ AssetManager::AssetManager(ID3D11Device* device)
 	_meshFormatVersion[24] = &AssetManager::ScanModel24;
 	_meshFormatVersion[26] = &AssetManager::ScanModel26;
 	_meshFormatVersion[27] = &AssetManager::ScanModel27;
+	//_meshFormatVersion[28] = &AssetManager::ScanModel28;
 
 	GetFilenamesInDirectory((char*)LEVEL_FOLDER_PATH.c_str(), ".lvl", *_levelFileNames);
 }
@@ -27,14 +28,6 @@ AssetManager::~AssetManager()
 			texture->_data->Release();
 		}
 		delete texture;
-	}
-	for (Mesh* mesh : *_meshes)
-	{
-		if (mesh->_meshLoaded)
-		{
-			mesh->_vertexBuffer->Release();
-		}
-		delete mesh;
 	}
 	for (uint i = 0; i < _renderObjects->size(); i++)
 	{
@@ -166,7 +159,7 @@ Mesh* AssetManager::ScanModel(string name)
 	int version;
 	_infile->read((char*)&version, 4);
 
-	if (version != 24 && version != 26 && version != 27)
+	if (version != 24 && version != 26 && version != 27 && version != 28)
 	{
 		throw std::runtime_error("Failed to load " + file_path + ":\nIncorrect fileversion");
 	}
@@ -203,9 +196,48 @@ Mesh* AssetManager::ScanModel(string name)
 	}
 */
 	mesh->_meshLoaded = false;
-
+	_meshes->push_back(mesh);
 	return mesh;
 }
+
+//TODO: SHIT'S NOT MERGING YO! /Rikhard
+//RenderObject* AssetManager::ScanModel28()
+//{
+//	RenderObject* renderObject = new RenderObject;
+//	int skeletonStringLength;
+//	_infile->read((char*)&skeletonStringLength, 4);
+//	renderObject->_mesh->_skeletonName.resize(skeletonStringLength);
+//	_infile->read((char*)renderObject->_mesh->_skeletonName.data(), skeletonStringLength);
+//
+//	renderObject->_mesh->_isSkinned = strcmp(renderObject->_mesh->_skeletonName.data(), "Unrigged") != 0;
+//
+//	_infile->read((char*)&renderObject->_mesh->_toMesh, 4);
+//
+//	MeshHeader26 meshHeader;
+//	_infile->read((char*)&meshHeader, sizeof(MeshHeader26));
+//
+//	if (renderObject->_mesh->_isSkinned)
+//	{
+//		_infile->seekg(meshHeader._numberOfVertices * sizeof(WeightedVertex), ios::cur);
+//	}
+//	else
+//	{
+//		_infile->seekg(meshHeader._numberOfVertices * sizeof(Vertex), ios::cur);
+//	}
+//
+//	renderObject->_mesh->_pointLights.resize(meshHeader._numberPointLights);
+//	_infile->read((char*)renderObject->_mesh->_pointLights.data(), sizeof(PointlightData) * meshHeader._numberPointLights);
+//
+//	renderObject->_mesh->_spotLights.resize(meshHeader._numberSpotLights);
+//	_infile->read((char*)renderObject->_mesh->_spotLights.data(), sizeof(SpotlightData) * meshHeader._numberSpotLights);
+//
+//	renderObject->_mesh->_vertexBufferSize = meshHeader._numberOfVertices;
+//
+//	renderObject->_mesh->_hitbox = new Hitbox();
+//	_infile->read((char*)renderObject->_mesh->_hitbox, sizeof(Hitbox));
+//
+//	return renderObject;
+//}
 
 Mesh* AssetManager::ScanModel27()
 {
@@ -439,10 +471,11 @@ RenderObject* AssetManager::GetRenderObject(string meshName, string textureName)
 	RenderObject* renderObject = new RenderObject;
 	renderObject->_mesh = GetModel(meshName);
 	renderObject->_diffuseTexture = GetTexture(textureName);
+	_renderObjects->push_back(renderObject);
 	return renderObject;
 }
 
-HRESULT AssetManager::ParseLevelHeader(LevelHeader* outputLevelHead, std::string levelHeaderFilePath)
+HRESULT AssetManager::ParseLevelHeader(Level::LevelHeader* outputLevelHead, std::string levelHeaderFilePath)
 {
 	try
 	{
@@ -458,7 +491,7 @@ HRESULT AssetManager::ParseLevelHeader(LevelHeader* outputLevelHead, std::string
 	return S_OK;
 }
 
-HRESULT AssetManager::ParseLevelBinary(LevelBinary* outputLevelBin, std::string levelBinaryFilePath)
+HRESULT AssetManager::ParseLevelBinary(Level::LevelBinary* outputLevelBin, std::string levelBinaryFilePath)
 {
 	try
 	{
@@ -500,6 +533,7 @@ Mesh* AssetManager::GetModel(string name)
 		}
 	}
 	Mesh* mesh = ScanModel(name);
+	mesh->_activeUsers++;
 	LoadModel(name, mesh);
 	return mesh;
 }
