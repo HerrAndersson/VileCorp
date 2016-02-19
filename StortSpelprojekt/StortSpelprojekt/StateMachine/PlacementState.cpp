@@ -54,9 +54,6 @@ void PlacementState::EvaluateGoldCost()
 	}
 }
 
-
-
-
 PlacementState::~PlacementState()
 {
 	delete _baseEdit;
@@ -66,7 +63,6 @@ PlacementState::~PlacementState()
 void PlacementState::Update(float deltaTime)
 {
 	_baseEdit->Update(deltaTime);
-
 	HandleInput();
 	HandleButtons();
 }
@@ -124,15 +120,35 @@ void PlacementState::HandleInput()
 			}
 		}
 	*/
+	if (_baseEdit->DroppedObject())
+	{
+		if (_budget >= _toPlace._goldCost && _baseEdit->CreatedObject() != nullptr)
+		{
+			_budget -= _toPlace._goldCost;
+			_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_budget));
+		}
+		else
+		{
+			_objectHandler->Remove(_baseEdit->CreatedObject());
+		}
+	}
+
+	if (_baseEdit->DeletedObjectBlueprint() != nullptr)
+	{
+		_toPlace._sB._blueprint = _baseEdit->DeletedObjectBlueprint();
+		EvaluateGoldCost();
+		_budget += _toPlace._goldCost;
+		_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_budget));
+	}
 
 
 	// placement invalid
-	if (_toPlace._goldCost != -1 && !_objectHandler->Find(_toPlace._sB._blueprint->_type, _toPlace._markerID) && !_baseEdit->IsPlace())
-	{
-		_budget += _toPlace._goldCost;
-		_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_budget));
-		_toPlace.ResetTemps();
-	}
+	//if (_toPlace._goldCost != -1 && !_objectHandler->Find(_toPlace._sB._blueprint->_type, _toPlace._markerID) && !_baseEdit->IsPlace())
+	//{
+	//	_budget += _toPlace._goldCost;
+	//	_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_budget));
+	//	_toPlace.ResetTemps();
+	//}
 }
 
 void PlacementState::HandleButtons()
@@ -172,18 +188,20 @@ void PlacementState::HandleButtons()
 	if (create)
 	{
 		EvaluateGoldCost();
+		_baseEdit->HandleBlueprint(&_toPlace._sB);
+		_toPlace._markerID = _baseEdit->GetMarkedObject()->GetID();
 
-		if (_budget >= _toPlace._goldCost)
-		{
-			_baseEdit->HandleBlueprint(&_toPlace._sB);
-			_budget -= _toPlace._goldCost;
-			_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_budget));
-			_toPlace._markerID = _baseEdit->GetMarkedObject()->GetID();
-		}
-		else
-		{
-			_toPlace._goldCost = -1;
-		}
+		//if (_budget >= _toPlace._goldCost)
+		//{
+		//	_baseEdit->HandleBlueprint(&_toPlace._sB);
+		//	_budget -= _toPlace._goldCost;
+		//	_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_budget));
+		//	_toPlace._markerID = _baseEdit->GetMarkedObject()->GetID();
+		//}
+		//else
+		//{
+		//	_toPlace._goldCost = -1;
+		//}
 	}
 }
 

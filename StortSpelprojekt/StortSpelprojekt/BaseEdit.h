@@ -47,6 +47,10 @@ private:
 		}
 	} _marker, _baseMarker;
 
+	bool _droppedObject;
+	GameObject* _createdObject;
+	Blueprint* _deletedObjectBlueprint;
+
 	// FLAGS
 	bool _extendedMode;
 	bool _isSelectionMode;
@@ -88,6 +92,10 @@ public:
 	bool IsSelection() const;
 	bool IsDragAndPlace() const;
 	bool IsPlace() const;
+
+	bool DroppedObject();
+	GameObject* CreatedObject();
+	Blueprint* DeletedObjectBlueprint();
 
 	void Update(float deltaTime);
 };

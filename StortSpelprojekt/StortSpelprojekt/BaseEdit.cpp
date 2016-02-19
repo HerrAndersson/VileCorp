@@ -128,11 +128,6 @@ void BaseEdit::MarkerMoveEvent()
 		{
 			_marker._g->SetColorOffset(XMFLOAT3(0.0f, 1.0f, 0.0f));
 		}
-
-		if (_isDragAndPlaceMode)
-		{
-
-		}
 	}
 }
 
@@ -164,6 +159,7 @@ void BaseEdit::DropEvent()
 	_marker._g->SetColorOffset(XMFLOAT3(0.0f, 0.0f, 0.0f));
 	XMFLOAT3 p = XMFLOAT3(_marker._g->GetPosition());
 
+	
 	if (!_marker._placeable)
 	{
 		//Redirect position to old pos
@@ -176,25 +172,27 @@ void BaseEdit::DropEvent()
 
 	if (_marker._g != nullptr && _isPlace)
 	{
-		if (!_marker._g->IsVisible())
+		_droppedObject = true;
+		if (!_marker._g->IsVisible() || (_marker._created == false && _marker._placeable == false))
 		{
-			_objectHandler->Remove(_marker._g);
-		}
-		if (_marker._created == false && _marker._placeable == false)
-		{
+			_droppedObject = false;
 			_objectHandler->Remove(_marker._g);
 		}
 	}
 
-	_marker.Reset();
-
 	if (_isDragAndDropMode)
 	{
+		_marker.Reset();
 		_isPlace = false;
 		_isDragAndDropMode = false;
 	}
 	else
 	{
+		if (_droppedObject)
+		{
+			_createdObject = _marker._g;
+		}
+		_marker.Reset();
 		CreateMarker();
 	}
 }
@@ -276,21 +274,21 @@ void BaseEdit::BoxEvent()
 
 void BaseEdit::HandleMouseInput()
 {
-	if (_controls->IsFunctionKeyDown("MOUSE:BOX_PLACE") || _controls->IsFunctionKeyDown("MOUSE:BOX_DELETE"))
+	if (_extendedMode)
 	{
-		if (!_modeLock && _isSelectionMode)
+		if (_controls->IsFunctionKeyDown("MOUSE:BOX_PLACE") || _controls->IsFunctionKeyDown("MOUSE:BOX_DELETE"))
 		{
-			_isSelectionMode = false;
-			_isDragAndPlaceMode = true;
+			if (!_modeLock && _isSelectionMode)
+			{
+				_isSelectionMode = false;
+				_isDragAndPlaceMode = true;
 
-			_isDragAndDropMode = false;
-			_isPlace = false;
+				_isDragAndDropMode = false;
+				_isPlace = false;
+			}
 		}
-	}
 
-	if (_isSelectionMode)
-	{
-		if (_extendedMode)
+		if (_isSelectionMode)
 		{
 			if (_marker._g == nullptr)
 			{
@@ -305,52 +303,63 @@ void BaseEdit::HandleMouseInput()
 					}
 				}
 			}
-			else
-			{
-				// For buttons
-				DragEvent(_marker._g->GetType());
-			}
+			//else
+			//{
+			//	// For buttons
+			//	DragEvent(_marker._g->GetType());
+			//}
 		}
 		else
+		{
+			if (_sB != nullptr)
+			{
+				if (!_modeLock)
+				{
+					if (_controls->IsFunctionKeyDown("MOUSE:BOX_PLACE"))
+					{
+						CreateMarkers();
+						_isPlace = true;
+					}
+
+					// Not really diselect but activates remove mode (temp)
+					if (_controls->IsFunctionKeyDown("MOUSE:BOX_DELETE"))
+					{
+						CreateMarkers();
+						_isPlace = false;
+					}
+				}
+				BoxEvent();
+			}
+		}
+	}
+	else
+	{
+
+		if (_isSelectionMode && _marker._g == nullptr)
 		{
 			DragEvent(TRAP);
 			DragEvent(GUARD);
 			DragEvent(CAMERA);
 		}
 	}
-	else
-	{
-		if (_sB != nullptr)
-		{
-			if (!_modeLock)
-			{
-				if (_controls->IsFunctionKeyDown("MOUSE:BOX_PLACE"))
-				{
-					CreateMarkers();
-					_isPlace = true;
-				}
 
-				// Not really diselect but activates remove mode (temp)
-				if (_controls->IsFunctionKeyDown("MOUSE:BOX_DELETE"))
-				{
-					CreateMarkers();
-					_isPlace = false;
-				}
-			}
-			BoxEvent();
-		}
-	}
+
 
 	if (_marker._g != nullptr)
 	{
 		MarkerMoveEvent();
 
 
-		if (!_isDragAndDropMode && _controls->IsFunctionKeyUp("MOUSE:DESELECT") || _controls->IsFunctionKeyDown("MOUSE:DESELECT"))
+		if ((!_isDragAndDropMode && _controls->IsFunctionKeyUp("MOUSE:DESELECT")) || _controls->IsFunctionKeyDown("MOUSE:DESELECT"))
 		{
+			if (_isDragAndDropMode)
+			{
+				_deletedObjectBlueprint = _objectHandler->GetBlueprintByType(_marker._g->GetType(), _marker._g->GetSubType());
+			}
 			ReleaseMarkers();
 			_isPlace = false;
 		}
+		
 
 		if (_controls->IsFunctionKeyDown("MOUSE:SELECT") && !_isPlace && !_isDragAndDropMode)
 		{
@@ -685,8 +694,26 @@ bool BaseEdit::IsPlace() const
 	return _isPlace;
 }
 
+bool BaseEdit::DroppedObject()
+{
+	return _droppedObject;
+}
+
+GameObject * BaseEdit::CreatedObject()
+{
+	return _createdObject;
+}
+
+Blueprint * BaseEdit::DeletedObjectBlueprint()
+{
+	return _deletedObjectBlueprint;
+}
+
 void BaseEdit::Update(float deltaTime)
 {
+	_droppedObject = false;
+	_createdObject = false;
+	_deletedObjectBlueprint = nullptr;
 	HandleMouseInput();
 	HandleKeyInput(deltaTime);
 }

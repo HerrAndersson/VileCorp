@@ -39,11 +39,6 @@ Blueprints::Blueprints()
 	for (int i = 0; i < _blueprintsByName.size(); i++)
 	{
 		Blueprint* blueprint = &_blueprintsByName[i];
-
-		if (blueprint->_subType > _blueprintsByType[blueprint->_type].size() - 1)
-		{
-			_blueprintsByType[blueprint->_type].resize(blueprint->_subType + 1);
-		}
 		_blueprintsByType[blueprint->_type].push_back(blueprint);
 	}
 }
