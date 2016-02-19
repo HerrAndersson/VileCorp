@@ -584,7 +584,7 @@ void ObjectHandler::Update(float deltaTime)
 			{
 				Unit* unit = static_cast<Unit*>(g);
 				GameObject* heldObject = unit->GetHeldObject();
-				if (heldObject != nullptr)
+				if (heldObject != nullptr && heldObject->GetPickUpState() == HELD)
 				{
 					heldObject->SetPosition(DirectX::XMFLOAT3(unit->GetPosition().x, unit->GetPosition().y + 2, unit->GetPosition().z));
 					heldObject->SetTilePosition(AI::Vec2D(heldObject->GetPosition().x, heldObject->GetPosition().z));
@@ -643,48 +643,52 @@ void ObjectHandler::UpdateLights()
 {
 	for (pair<GameObject*, Renderer::Spotlight*> spot : _spotlights)
 	{
-		if (spot.second->IsActive() && spot.first->IsActive())
+		if (spot.first == nullptr)
 		{
-			if (spot.second->GetBone() != 255)
+			SAFE_DELETE(spot.second);
+			spot.second = nullptr;
+		}
+		else
+		{
+			if (spot.second->IsActive() && spot.first->IsActive())
 			{
-				spot.second->SetPositionAndRotation(spot.first->GetAnimation()->GetTransforms()[spot.second->GetBone()]);
-			}
-			else
-			{
-				XMFLOAT3 pos = spot.first->GetPosition();
-				pos.y = 0.5f;
+				if (spot.second->GetBone() != 255)
+				{
+					spot.second->SetPositionAndRotation(spot.first->GetAnimation()->GetTransforms()[spot.second->GetBone()]);
+				}
+				else
+				{
+					XMFLOAT3 pos = spot.first->GetPosition();
+					pos.y = 0.5f;
 
-				XMFLOAT3 rot = spot.first->GetRotation();
-				rot.x = XMConvertToDegrees(rot.x);
-				rot.y = XMConvertToDegrees(rot.y) + 180;
-				rot.z = XMConvertToDegrees(rot.z);
-
-				//if (spot.first->GetType() == CAMERA)
-				//{
-				//	spot.second->SetPositionAndRotation(XMFLOAT3(pos.x, 0, pos.z), rot);
-				//}
-				//else if (spot.first->GetType() == GUARD)
-				//{
-				//	spot.second->SetPositionAndRotation(XMFLOAT3(pos.x, 0.2f, pos.z), rot);
-				//}
-				//else
-				//{
+					XMFLOAT3 rot = spot.first->GetRotation();
+					rot.x = XMConvertToDegrees(rot.x);
+					rot.y = XMConvertToDegrees(rot.y) + 180;
+					rot.z = XMConvertToDegrees(rot.z);
 					spot.second->SetPositionAndRotation(pos, rot);
-				//}
+				}
 			}
 		}
 	}
 	for (pair<GameObject*, Renderer::Pointlight*> point : _pointligths)
 	{
-		if (point.first->IsActive() && point.first->IsVisible())
+		if (point.first == nullptr)
 		{
-			XMFLOAT3 pos = point.first->GetPosition();
-			point.second->SetPosition(DirectX::XMFLOAT3(pos.x, 2, pos.z));
-			point.second->SetActive(true);
+			SAFE_DELETE(point.second);
+			point.second = nullptr;
 		}
 		else
 		{
-			point.second->SetActive(false);
+			if (point.first->IsActive() && point.first->IsVisible())
+			{
+				XMFLOAT3 pos = point.first->GetPosition();
+				point.second->SetPosition(DirectX::XMFLOAT3(pos.x, 2, pos.z));
+				point.second->SetActive(true);
+			}
+			else
+			{
+				point.second->SetActive(false);
+			}
 		}
 	}
 }

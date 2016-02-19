@@ -264,7 +264,7 @@ void Game::Render()
 		map<GameObject*, Renderer::Spotlight*>* spotlights = _objectHandler->GetSpotlights();
 		for (pair<GameObject*, Renderer::Spotlight*> spot : *spotlights)
 		{
-			if (spot.second->IsActive() && spot.first->IsActive())
+			if (spot.second != nullptr && spot.second->IsActive() && spot.first->IsActive())
 			{
 				// Non skinned
 				_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::SHADOW_GENERATION);
@@ -330,7 +330,7 @@ void Game::Render()
 		map<GameObject*, Renderer::Pointlight*>* pointlights = _objectHandler->GetPointlights();
 		for (pair<GameObject*, Renderer::Pointlight*> pointlight : *pointlights)
 		{
-			if (pointlight.second->IsActive() && pointlight.first->IsActive() && !pointlight.first->GetRenderObject()->_isSkinned)
+			if (pointlight.second != nullptr && pointlight.second->IsActive() && pointlight.first->IsActive())
 			{
 				_renderModule->SetLightDataPerPointlight(pointlight.second);
 				_renderModule->RenderLightVolume(pointlight.second->GetVolumeBuffer(), pointlight.second->GetWorldMatrix(), pointlight.second->GetVertexCount(), pointlight.second->GetVertexSize());
