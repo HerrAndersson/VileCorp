@@ -13,10 +13,11 @@
 class BaseState
 {
 private:
-	static State BaseState::_newStateRequest;
-	static State BaseState::_oldState; //To make us able to return from pause state back to correct state.
+	static State _newStateRequest;
+	static State _oldState; //To make us able to return from pause state back to correct state.
 
 protected:
+	static bool				_tutorial;
 	System::Controls*		_controls;
 	ObjectHandler*			_objectHandler;
 	GUI::UITree				_uiTree;

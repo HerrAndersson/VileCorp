@@ -2,6 +2,7 @@
 
 State BaseState::_newStateRequest;
 State BaseState::_oldState;
+bool BaseState::_tutorial;
 
 BaseState::BaseState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule)
 	: _uiTree(filename, assetManager, fontWrapper, settingsReader)

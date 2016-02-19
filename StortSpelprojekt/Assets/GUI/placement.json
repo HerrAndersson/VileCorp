@@ -92,9 +92,138 @@
 		}
 	},
 	"Tutorial": {
-		"position": [0.0, -0.0],
-		"scale": [0.75, 0.90],
-		"texture": "../Menues/PlacementStateGUI/tutorialplacement.png",
-		"fontsize": 25.0
+		"welcome": {
+			"position": [0.0, 0.0],
+			"scale": [1.0, 1.0],
+			"texture": "../Menues/Pause Menu/pause-fade.png",
+			"": {
+				"position": [0, 0.15],
+				"scale": [0.28, 0.6],
+				"texture": "../Menues/Pause Menu/pause1-nocup.png"
+			},
+			"": {
+					"position": [0, -0.0],
+					"scale": [0.2, 0.6],
+					"text": "Welcome to VileCorp!\n\nIn this tutorial, we will go through the basic in how to play the game.",
+					"color": "FF000000",
+					"centered": true,
+					"fontsize": 30.0
+				},
+			"": {
+				"position": [0, -0.85],
+				"scale": [0.28, 0.6],
+				"text": "Press Enter to Continue.",
+				"color": "FF000000",
+				"centered": true,
+				"fontsize": 30.0
+			}
+		},
+		"controls": {
+			"position": [0.8, 0.15],
+			"scale": [0.2, 0.6],
+			"texture": "../Menues/Pause Menu/pause1-nocup.png",
+			"": {
+				"position": [0, -0.15],
+				"scale": [0.15, 0.6],
+				"text": "You control the camera by using W,A,S,D.\n\n You can also rotate it by using Q and E.\n\n Use the scrollwheel to zoom in and out.",
+				"color": "FF000000",
+				"centered": true,
+				"fontsize": 30.0
+			},
+			"": {
+				"position": [0, -1],
+				"scale": [0.2, 0.6],
+				"text": "Press Enter to Continue.",
+				"color": "FF000000",
+				"centered": true,
+				"fontsize": 30.0
+			}
+		},
+		"objective": {
+			"position": [0.8, 0.15],
+			"scale": [0.2, 0.6],
+			"texture": "../Menues/Pause Menu/pause1-nocup.png",
+			"": {
+				"position": [0, -0.15],
+				"scale": [0.15, 0.6],
+				"text": "The objective is to protect the valuables that are lit up on the map from thieves. These thieves will come in through the windows. ",
+				"color": "FF000000",
+				"centered": true,
+				"fontsize": 30.0
+			},
+			"": {
+				"position": [0, -1],
+				"scale": [0.2, 0.6],
+				"text": "Press Enter to Continue.",
+				"color": "FF000000",
+				"centered": true,
+				"fontsize": 30.0
+			},
+			"thief": {
+				"position": [0.0, -0.8],
+				"scale": [0.2, 0.2],
+				"texture": "../Menues/Pause Menu/pause1-nocup.png",
+				"": {
+					"position": [0.0, 0.0],
+					"scale": [0.15, 0.15],
+					"texture": "../Menues/LevelEdit/Units/Enemy.png"
+				}
+			}
+		},
+		"guard": {
+			"position": [0.8, 0.15],
+			"scale": [0.2, 0.6],
+			"texture": "../Menues/Pause Menu/pause1-nocup.png",
+			"": {
+				"position": [0, -0.15],
+				"scale": [0.15, 0.6],
+				"text": "Guards are controlable units that you can use to hunt these thieves down. Move the guards towards the thieves and he will kill them. But be wiery though. Unattended guards can get killed by thieves sneaking up from behind.",
+				"color": "FF000000",
+				"centered": true,
+				"fontsize": 30.0
+			},
+			"": {
+				"position": [0, -1],
+				"scale": [0.2, 0.6],
+				"text": "Press Enter to Continue.",
+				"color": "FF000000",
+				"centered": true,
+				"fontsize": 30.0
+			}
+		},
+		"guardplace": {
+			"position": [0.8, 0.15],
+			"scale": [0.2, 0.6],
+			"texture": "../Menues/Pause Menu/pause1-nocup.png",
+			"": {
+				"position": [0, -0.15],
+				"scale": [0.15, 0.6],
+				"text": "Click and drag the guard to the position you want place him. ",
+				"color": "FF000000",
+				"centered": true,
+				"fontsize": 30.0
+			}
+		},
+		"anvil": {
+			"position": [0.8, 0.15],
+			"scale": [0.2, 0.6],
+			"texture": "../Menues/Pause Menu/pause1-nocup.png",
+			"": {
+				"position": [0, -0.15],
+				"scale": [0.15, 0.6],
+				"text": "Anvil.",
+				"color": "FF000000",
+				"centered": true,
+				"fontsize": 30.0
+			},
+			"": {
+				"position": [0, -1],
+				"scale": [0.2, 0.6],
+				"text": "Press Enter to Continue.",
+				"color": "FF000000",
+				"centered": true,
+				"fontsize": 30.0
+			}
+		}
 	}
 }

@@ -34,7 +34,7 @@ void LevelSelectState::Update(float deltaTime)
 {
 	if (_controls->IsFunctionKeyDown("DEBUG:RELOAD_GUI"))
 	{
-		_uiTree.ReloadTree("../../../../StortSpelprojekt/Assets/gui.json", "LEVELSELECT");
+		_uiTree.ReloadTree("../../../../StortSpelprojekt/Assets/GUI/Levelselect.json");
 	}
 	if (_controls->IsFunctionKeyDown("MENU:MENU"))
 	{
@@ -45,7 +45,7 @@ void LevelSelectState::Update(float deltaTime)
 		System::MouseCoord coord = _controls->GetMouseCoord();
 		if (_uiTree.IsButtonColliding("playbutton", coord._pos.x, coord._pos.y))
 		{
-			_soundModule->Play("Assets/Sounds/page.wav");
+			//_soundModule->Play("Assets/Sounds/page.wav");
 			_objectHandler->LoadLevel(_levelSelection);
 			ChangeState(State::PLACEMENTSTATE);
 		}
@@ -75,7 +75,7 @@ void LevelSelectState::Update(float deltaTime)
 void LevelSelectState::OnStateEnter()
 {
 	//TODO: This is hardcoded to nine due to the functionality in LevelSelectState constructor /Sebastian
-	//_levelSelectionMax = min(_levelSelectionMin + _settingsReader->GetProfile()->_level, 9);
+	_levelSelectionMax = min(_levelSelectionMin + _settingsReader->GetProfile()->_level, _levelSelectionMax);
 }
 
 void LevelSelectState::OnStateExit()

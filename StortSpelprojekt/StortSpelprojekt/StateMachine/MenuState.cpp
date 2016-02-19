@@ -15,7 +15,7 @@ void MenuState::Update(float deltaTime)
 {
 	if (_controls->IsFunctionKeyDown("DEBUG:RELOAD_GUI"))
 	{
-		_uiTree.ReloadTree("../../../../StortSpelprojekt/Assets/gui.json", "MENU");
+		_uiTree.ReloadTree("../../../../StortSpelprojekt/Assets/GUI/menu.json");
 	}
 	if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{

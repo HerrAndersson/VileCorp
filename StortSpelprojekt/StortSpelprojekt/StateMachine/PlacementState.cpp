@@ -5,6 +5,11 @@ PlacementState::PlacementState(System::Controls* controls, ObjectHandler* object
 {
 	_playerProfile.resize(1);
 
+	//Money
+	_costOfAnvilTrap	= 50;
+	_costOfTeslaCoil	= 100;
+	_costOfCamera		= 80;
+	_costOfGuard		= 200;
 
 	//load all player profiles
 	GetFilenamesInDirectory("Assets/PlayerProfiles/", ".json", _playerProfilesPath);
@@ -22,45 +27,50 @@ PlacementState::PlacementState(System::Controls* controls, ObjectHandler* object
 
 void PlacementState::EvaluateGoldCost()
 {
-	int costOfAnvilTrap = 50;
-	int costOfTeslaCoil = 100;
-	int costOfCamera = 80;
-	int costOfGuard = 200;
-
 	if (_toPlace._subType == SPIKE)
 	{
-		_toPlace._goldCost = costOfAnvilTrap;
+		_toPlace._goldCost = _costOfAnvilTrap;
 	}
 	else if (_toPlace._subType == TESLACOIL)
 	{
-		_toPlace._goldCost = costOfTeslaCoil;
+		_toPlace._goldCost = _costOfTeslaCoil;
 	}
 
 	if (_toPlace._type == CAMERA)
 	{
-		_toPlace._goldCost = costOfCamera;
+		_toPlace._goldCost = _costOfCamera;
 	}
 	else if (_toPlace._type == GUARD)
 	{
-		_toPlace._goldCost = costOfGuard;
+		_toPlace._goldCost = _costOfGuard;
 	}
 }
-
-
-
 
 PlacementState::~PlacementState()
 {
 	delete _baseEdit;
 	_baseEdit = nullptr;
+	delete _tutorialLogic;
 }
 
 void PlacementState::Update(float deltaTime)
 {
-	_baseEdit->Update(deltaTime);
-
+	//if tutorial mode. Then bypass normal baseEdit update loops.
+	if (_tutorial)
+	{
+		//bypass the normal UI interface to interface the tutorial elements into it.
+		_tutorialLogic->Update(deltaTime, _baseEdit, _toPlace);
+	}
+	else
+	{
+		//Handle the buttons normally
+		HandleButtons();
+	}
 	HandleInput();
-	HandleButtons();
+	
+	
+	//baseEdit update handles basic controls.
+	_baseEdit->Update(deltaTime);
 }
 
 void PlacementState::OnStateEnter()
@@ -81,10 +91,11 @@ void PlacementState::OnStateEnter()
 	campos.z = _objectHandler->GetTileMap()->GetHeight() / 2 - 10;
 	_camera->SetPosition(campos);
 
-	//if (_playerProfile[0]._firstTime != true)
-	//{
-	_uiTree.GetNode("Tutorial")->SetHidden(false);
-	//}
+	//if tutorial should initialize
+	if(_playerProfile[_currentPlayer]._firstTime)
+	{
+		_tutorialLogic = new TutorialLogic(&_uiTree, _controls);
+	}
 }
 
 void PlacementState::OnStateExit()
@@ -95,14 +106,14 @@ void PlacementState::OnStateExit()
 
 void PlacementState::HandleInput()
 {
-	_baseEdit->DragAndDrop(TRAP);
-	_baseEdit->DragAndDrop(GUARD);
-	_baseEdit->DragAndDrop(CAMERA);
-
 	if (_controls->IsFunctionKeyDown("MENU:MENU"))
 	{
 		ChangeState(PAUSESTATE);
 	}
+
+	_baseEdit->DragAndDrop(TRAP);
+	_baseEdit->DragAndDrop(GUARD);
+	_baseEdit->DragAndDrop(CAMERA);
 
 	if (_baseEdit->GetSelectedObject() != nullptr)
 	{
@@ -119,8 +130,6 @@ void PlacementState::HandleInput()
 		}
 	}
 
-
-
 	// placement invalid
 	if (_toPlace._goldCost != -1 && !_objectHandler->Find(_toPlace._type, _toPlace._blueprintID) && !_baseEdit->IsPlace())
 	{
@@ -136,6 +145,8 @@ void PlacementState::HandleButtons()
 
 	System::MouseCoord coord = _controls->GetMouseCoord();
 
+	/*
+	//Tutorial image
 	if (_uiTree.IsButtonColliding("Tutorial", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
 		//Hide how to screen when clicked
@@ -143,12 +154,25 @@ void PlacementState::HandleButtons()
 		_playerProfile[_currentPlayer]._firstTime = false;
 		System::saveJSON(&_playerProfile[_currentPlayer], _playerProfilesPath[_currentPlayer], "Player Profile");
 	}
+	*/
 
-
-
+	//Play
 	if (_uiTree.IsButtonColliding("Play", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
 		ChangeState(PLAYSTATE);
+	}
+
+	//Item UI
+	if (_uiTree.IsButtonColliding("Guard", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
+	{
+		// Temp, should be replaced with blueprint
+		_toPlace._type = GUARD;
+		_toPlace._name = "guard_proto";
+
+		if (_baseEdit->IsSelection() && !_baseEdit->IsPlace())
+		{
+			create = true;
+		}
 	}
 
 	if (_uiTree.IsButtonColliding("AnvilTrap", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
@@ -185,18 +209,7 @@ void PlacementState::HandleButtons()
 		}
 	}
 
-	if (_uiTree.IsButtonColliding("Guard", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
-	{
-		// Temp, should be replaced with blueprint
-		_toPlace._type = GUARD;
-		_toPlace._name = "guard_proto";
-
-		if (_baseEdit->IsSelection() && !_baseEdit->IsPlace())
-		{
-			create = true;
-		}
-	}
-
+	//Check whether we can afford to place items.
 	if (create)
 	{
 		EvaluateGoldCost();
