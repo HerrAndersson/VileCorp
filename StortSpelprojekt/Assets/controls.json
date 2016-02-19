@@ -57,6 +57,6 @@
 		"INSTANT_WIN": ["2", "ctrl", "alt"],
 		"NO_FOG": ["3", "ctrl", "alt"],
     "RELOAD_GUI": [ "G" ],
-    "REQUEST_PARTICLE": [ "P"]
+    "REQUEST_PARTICLE": [ "P", "repeat"]
 	}
 }

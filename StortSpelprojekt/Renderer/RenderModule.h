@@ -130,6 +130,7 @@ namespace Renderer
 			DirectX::XMFLOAT3 _camPosition;
 			float _scale;
 			int _textureCount;
+			int _isIcon;
 		};
 
 		ID3D11Buffer*		_matrixBufferPerObject;
@@ -173,7 +174,7 @@ namespace Renderer
 		void SetDataPerObjectType(RenderObject* renderObject);
 		void SetDataPerLineList(ID3D11Buffer* lineList, int vertexSize);
 		void SetDataPerParticleEmitter(const DirectX::XMFLOAT3& position, DirectX::XMMATRIX* camView, DirectX::XMMATRIX* camProjection, 
-									   const DirectX::XMFLOAT3& camPos, float scale, ID3D11ShaderResourceView** textures = nullptr, int textureCount = 0);
+									   const DirectX::XMFLOAT3& camPos, float scale, ID3D11ShaderResourceView** textures, int textureCount, int isIcon);
 
 		void SetShadowMapDataPerObjectType(RenderObject* renderObject);
 		void SetShadowMapDataPerSpotlight(DirectX::XMMATRIX* lightView, DirectX::XMMATRIX* lightProjection);

@@ -168,18 +168,19 @@ bool Game::Update(double deltaTime)
 
 		pos = XMFLOAT3(7, 1.0f, 2);
 		dir = XMFLOAT3(0, 1, 0);
-		msg = ParticleRequestMessage(ParticleType::SPLASH, ParticleSubType::WATER_SUBTYPE, pos, dir, 1000.0f, 20, 0.1f, true, XMFLOAT3(6.0f, 1.0f, 2.0f));
+		msg = ParticleRequestMessage(ParticleType::SPLASH, ParticleSubType::WATER_SUBTYPE, pos, dir, 400.0f, 20, 0.1f, true, XMFLOAT3(6.0f, 1.0f, 2.0f));
 		_particleHandler->GetParticleRequestQueue()->Insert(msg);
 
-		pos = XMFLOAT3(5, 1.0f, 2);
-		msg = ParticleRequestMessage(ParticleType::ELECTRICITY, ParticleSubType::SPARK_SUBTYPE, pos, XMFLOAT3(0, 0, 0), 1000.0f, 20, 0.1f, true, XMFLOAT3(5.00001f, 10.0f, 2));
+		pos = XMFLOAT3(5, 1.0f, 3);
+		msg = ParticleRequestMessage(ParticleType::ELECTRICITY, ParticleSubType::SPARK_SUBTYPE, pos, XMFLOAT3(0, 0, 0), 1000.0f, 20, 0.1f, true, XMFLOAT3(14.0f, 1.0f, 3));
 		_particleHandler->GetParticleRequestQueue()->Insert(msg);
 
-		pos = XMFLOAT3(11, 1.0f, 3);
+		//Icons have to be requested each frame if they should follow a target
+		pos = XMFLOAT3(11, 1.0f, 4);
 		msg = ParticleRequestMessage(ParticleType::ICON, ParticleSubType::EXCLAMATIONMARK_SUBTYPE, pos, XMFLOAT3(0, 0, 0), 1000.0f, 1, 0.25f, true);
 		_particleHandler->GetParticleRequestQueue()->Insert(msg);
 
-		pos = XMFLOAT3(13, 1.0f, 3);
+		pos = XMFLOAT3(13, 1.0f, 4);
 		msg = ParticleRequestMessage(ParticleType::ICON, ParticleSubType::QUESTIONMARK_SUBTYPE, pos, XMFLOAT3(0, 0, 0), 1000.0f, 1, 0.25f, true);
 		_particleHandler->GetParticleRequestQueue()->Insert(msg);
 	}
@@ -326,13 +327,13 @@ void Game::Render()
 						ID3D11ShaderResourceView* textures[1];
 						textures[0] = _particleHandler->GetIconTexture(emitter->GetSubType());
 
-						_renderModule->SetDataPerParticleEmitter(emitter->GetPosition(), _camera->GetViewMatrix(), _camera->GetProjectionMatrix(), _camera->GetPosition(), emitter->GetParticleScale(), textures, textureCount);
+						_renderModule->SetDataPerParticleEmitter(emitter->GetPosition(), _camera->GetViewMatrix(), _camera->GetProjectionMatrix(), _camera->GetPosition(), emitter->GetParticleScale(), textures, textureCount, 1);
 						_renderModule->RenderParticles(vertexBuffer, emitter->GetParticleCount(), emitter->GetVertexSize());
 					}
 					else
 					{
 						ID3D11ShaderResourceView** textures = _particleHandler->GetTextures(textureCount, emitter->GetSubType());
-						_renderModule->SetDataPerParticleEmitter(emitter->GetPosition(), _camera->GetViewMatrix(), _camera->GetProjectionMatrix(), _camera->GetPosition(), emitter->GetParticleScale(), textures, textureCount);
+						_renderModule->SetDataPerParticleEmitter(emitter->GetPosition(), _camera->GetViewMatrix(), _camera->GetProjectionMatrix(), _camera->GetPosition(), emitter->GetParticleScale(), textures, textureCount, 0);
 
 						_renderModule->RenderParticles(vertexBuffer, emitter->GetParticleCount(), emitter->GetVertexSize());
 					}

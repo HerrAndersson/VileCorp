@@ -241,7 +241,7 @@ namespace Renderer
 	}
 
 	void RenderModule::SetDataPerParticleEmitter(const XMFLOAT3& position, XMMATRIX* camView, XMMATRIX* camProjection,
-												 const XMFLOAT3& camPos, float scale, ID3D11ShaderResourceView** textures, int textureCount)
+												 const XMFLOAT3& camPos, float scale, ID3D11ShaderResourceView** textures, int textureCount, int isIcon)
 	{
 		HRESULT result;
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -262,6 +262,7 @@ namespace Renderer
 		dataPtr->_camPosition = camPos;
 		dataPtr->_scale = scale;
 		dataPtr->_textureCount = textureCount;
+		dataPtr->_isIcon = isIcon;
 		deviceContext->Unmap(_matrixBufferParticles, 0);
 
 		deviceContext->GSSetConstantBuffers(6, 1, &_matrixBufferParticles);

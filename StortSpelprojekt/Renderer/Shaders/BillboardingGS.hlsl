@@ -6,6 +6,7 @@ cbuffer matrixBufferBillboarding : register(b6)
 	float3 campos;
 	float scale;
 	int textureCount;
+	int isIcon;
 };
 
 struct GS_IN
@@ -34,12 +35,28 @@ void main(point GS_IN input[1], inout TriangleStream<GS_OUT> OutputStream)
 	GS_OUT output = (GS_OUT)0;
 
 	float3 particleToCam = campos - mul(input[0].position, worldMatrix).xyz;
-	float3 normal = normalize(particleToCam);
-	float4 up = float4(0, 0, 1, 0) * scale;
-	float4 right = float4(normalize(cross(particleToCam, up.xyz)).xyz, 0) * scale;
-	up = float4(normalize(cross(particleToCam, right.xyz)).xyz, 0) * scale;
+	float3 normal;
+	float4 up;
+	float4 right;
+	float textureNumber;
 
-	float textureNumber = textureCount * random(input[0].position.xz);
+	if (isIcon > 0)
+	{
+		up = float4(0, 1, 0, 0) * scale;
+		right = float4(normalize(cross(particleToCam, up.xyz)).xyz, 0) * scale;
+		normal = cross(up, right).xyz;
+		normal = normalize(normal.xyz);
+		textureNumber = 0;
+	}
+	else
+	{
+		normal = normalize(particleToCam);
+		up = float4(0, 0, 1, 0) * scale;
+		right = float4(normalize(cross(particleToCam, up.xyz)).xyz, 0) * scale;
+		up = float4(normalize(cross(particleToCam, right.xyz)).xyz, 0) * scale;
+
+		textureNumber = textureCount * random(input[0].position.xz);
+	}
 
 	//2------4
 	//|		 |
