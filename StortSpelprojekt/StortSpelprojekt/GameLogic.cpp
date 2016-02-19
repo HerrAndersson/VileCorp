@@ -18,6 +18,7 @@ GameLogic::GameLogic(ObjectHandler* objectHandler, System::Camera* camera, Syste
 	_uiTree->GetNode("winscreen")->SetHidden(true);
 	_uiTree->GetNode("losescreen")->SetHidden(true);
 	_gameDone = false;
+	_buttonReady = 3999.0f;
 }
 
 GameLogic::~GameLogic()
@@ -36,14 +37,42 @@ void GameLogic::Update(float deltaTime)
 		if (_objectHandler->GetAllByType(LOOT).size() <= 0)				//You lost
 		{
 			_uiTree->GetNode("losescreen")->SetHidden(false);
-			_gameDone = true;
+			System::MouseCoord coord = _controls->GetMouseCoord();
+			int time = _buttonReady / 1000;
+			if (time > 0)
+			{
+				_uiTree->GetNode("losebuttontext")->SetText(L".." + to_wstring(time));
+			}
+			else
+			{
+				_uiTree->GetNode("losebuttontext")->SetText(L"Continue");
+			}
+			if (time <= 0 && _uiTree->IsButtonColliding("losebutton", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
+			{
+				_gameDone = true;
+			}
+			_buttonReady -= deltaTime;
 		}
 		else if (_objectHandler->GetAllByType(ENEMY).size() <= 0)		//You won
 		{
+			System::MouseCoord coord = _controls->GetMouseCoord();
 			_uiTree->GetNode("winscreen")->SetHidden(false);
-			_gameDone = true;
-			_settingsReader->GetProfile()->_level += 1;
-			_settingsReader->ApplyProfileSettings();
+			int time = _buttonReady / 1000;
+			if (time > 0)
+			{
+				_uiTree->GetNode("winbuttontext")->SetText(L".." + to_wstring(time));
+			}
+			else
+			{
+				_uiTree->GetNode("winbuttontext")->SetText(L"Continue");
+			}
+			if (time <= 0 && _uiTree->IsButtonColliding("winbutton", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
+			{
+				_gameDone = true;
+				_settingsReader->GetProfile()->_level += 1;
+				_settingsReader->ApplyProfileSettings();
+			}
+			_buttonReady -= deltaTime;
 		}
 	}
 	_uiTree->GetNode("objectivetext")->SetText(L"Defeat the intruders! \n" + std::to_wstring(_objectHandler->GetAllByType(ENEMY).size()) + L" enemies still remain.");

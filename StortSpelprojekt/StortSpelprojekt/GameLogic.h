@@ -22,6 +22,7 @@ private:
 	ID3D11ShaderResourceView* _guardTexture;
 	bool					_gameDone;
 	System::SettingsReader* _settingsReader;
+	float					_buttonReady;
 
 	void HandleInput(float deltaTime);
 	void HandleUnitSelect();
