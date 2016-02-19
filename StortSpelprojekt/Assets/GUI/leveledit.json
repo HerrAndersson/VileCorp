@@ -144,12 +144,12 @@
 				
 				"ThiefButtonText":
 				{
-					"position" : [-0.003, 0.0],
+					"position" : [-0.003, -0.0025],
 					"scale": [0.025, 0.025],
 					"centered": true,
 					"text": "Spawn",
 					"color": "FF000000",
-					"fontsize" : 16.0
+					"fontsize" : 18.0
 				}
 			}
 		},

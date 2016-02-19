@@ -17,6 +17,7 @@ PlacementState::PlacementState(System::Controls* controls, ObjectHandler* object
 	_pickingDevice = pickingDevice;
 	_baseEdit = nullptr;
 
+	//Rikhard left FIX ME!!!, ask him when he gets back! Enbom
 	_uiTree.GetNode("BudgetValue")->SetText(StringToWstring("FIX ME!!!"));
 }
 
@@ -70,7 +71,8 @@ void PlacementState::OnStateEnter()
 		System::loadJSON(&_playerProfile[i], _playerProfilesPath[i]);
 	}
 	_budget = _objectHandler->GetCurrentLevelHeader()->_budget;
-
+	
+	//Fix so that budgetvalue won't get read if we go into pause state! We don't want the players to cheat themselves back to their budget money by pressing pause, resume, pause etc.. Enbom
 	_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_budget));
 	_baseEdit = new BaseEdit(_objectHandler, _controls, _pickingDevice, _camera, false);
 	_objectHandler->DisableSpawnPoints();
