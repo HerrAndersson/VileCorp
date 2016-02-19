@@ -165,10 +165,7 @@ void Enemy::Act(GameObject* obj)
 			}
 			break;
 		case SPAWN:
-			/*if (_heldObject != nullptr)*/
-			{
-				TakeDamage(_health);						//TODO: Right now despawn is done by killing the unit. This should be changed to reflect that it's escaping --Victor
-			}
+			TakeDamage(_health);						//TODO: Right now despawn is done by killing the unit. This should be changed to reflect that it's escaping --Victor
 			break;
 		case TRAP:
 		{
