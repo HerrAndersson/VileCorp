@@ -569,7 +569,7 @@ void ObjectHandler::Update(float deltaTime)
 			GameObject* g = _gameObjects[i][j];
 			g->Update(deltaTime);
 
-			if (g->GetPickUpState() == PICKINGUP)
+			if (g->GetPickUpState() == PICKEDUP)
 			{
 				_tilemap->RemoveObjectFromTile(g);
 				g->SetPickUpState(HELD);
@@ -658,18 +658,18 @@ void ObjectHandler::UpdateLights()
 				rot.y = XMConvertToDegrees(rot.y) + 180;
 				rot.z = XMConvertToDegrees(rot.z);
 
-				if (spot.first->GetType() == CAMERA)
-				{
-					spot.second->SetPositionAndRotation(XMFLOAT3(pos.x, 0, pos.z), rot);
-				}
-				else if (spot.first->GetType() == GUARD)
-				{
-					spot.second->SetPositionAndRotation(XMFLOAT3(pos.x, 0.2f, pos.z), rot);
-				}
-				else
-				{
+				//if (spot.first->GetType() == CAMERA)
+				//{
+				//	spot.second->SetPositionAndRotation(XMFLOAT3(pos.x, 0, pos.z), rot);
+				//}
+				//else if (spot.first->GetType() == GUARD)
+				//{
+				//	spot.second->SetPositionAndRotation(XMFLOAT3(pos.x, 0.2f, pos.z), rot);
+				//}
+				//else
+				//{
 					spot.second->SetPositionAndRotation(pos, rot);
-				}
+				//}
 			}
 		}
 	}

@@ -156,21 +156,25 @@ void Enemy::Act(GameObject* obj)
 		switch (obj->GetType())
 		{
 		case LOOT:
-			if (_interactionTime != 0)
+			if (_heldObject == nullptr)
 			{
-				UseCountdown(_animation->GetLength(3));
-				if (_interactionTime == _animation->GetLength(3))
+				if (_interactionTime < 0)
 				{
-					_moveState = MoveState::AT_OBJECTIVE;
+					UseCountdown(_animation->GetLength(3, 1.0f * speedMultiplyer));
+					obj->SetPickUpState(PICKINGUP);
 					Animate(PICKUPOBJECTANIM);
 				}
-			}
-			else if(_heldObject == nullptr)
-			{
-				obj->SetPickUpState(PICKINGUP);
-				_heldObject = obj;
-				obj->SetVisibility(_visible);
-				ClearObjective();
+				else if(_interactionTime == 0)
+				{
+					obj->SetPickUpState(PICKEDUP);
+					_heldObject = obj;
+					obj->SetVisibility(_visible);
+					ClearObjective();
+				}
+				else
+				{
+					UseCountdown();
+				}
 			}
 			break;
 		case SPAWN:
@@ -202,19 +206,20 @@ void Enemy::Act(GameObject* obj)
 		case GUARD:
 			if (_interactionTime != 0)
 			{
-				UseCountdown(60);
-				if (_interactionTime == 60)
-				{
-					Animate(FIGHTANIM);
-				}
+				UseCountdown(_animation->GetLength(1, 1.0f * speedMultiplyer));
+				Animate(FIGHTANIM);
 			}
-			else
+			else if (_interactionTime == 0)
 			{
 				static_cast<Unit*>(obj)->TakeDamage(1);
 				if (static_cast<Unit*>(obj)->GetHealth() <= 0)
 				{
 					ClearObjective();
 				}
+			}
+			else
+			{
+				UseCountdown();
 			}
 			break;
 		case ENEMY:
