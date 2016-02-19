@@ -96,6 +96,7 @@ struct ParticleModifierOffsets
 	//Milliseconds
 	float _smokeRepeatTime = 1000.0f; 
 	float _fireRepeatTime = 1500.0f;
+	float _lightningRepeatTime = 100.0f;
 };
 
 struct ParticleSystemData
@@ -114,6 +115,7 @@ struct ParticleSystemData
 
 	float _smokeRepeatTime = 1000.0f;
 	float _fireRepeatTime = 1500.0f;
+	float _lightningRepeatTime = 100.0f;
 
 	std::vector<std::vector<std::string>> _subtypeTexturePaths;
 
@@ -135,6 +137,7 @@ struct ParticleSystemData
 			(CEREAL_NVP(_fireSpeedRange.y)),
 			(CEREAL_NVP(_smokeRepeatTime)),
 			(CEREAL_NVP(_fireRepeatTime)),
+			(CEREAL_NVP(_lightningRepeatTime)),
 			(CEREAL_NVP(_subtypeTexturePaths))
 		);
 	}

@@ -121,6 +121,7 @@ void Game::LoadParticleSystemData(ParticleTextures& particleTextures, ParticleMo
 
 	modifiers._smokeRepeatTime = data._smokeRepeatTime;
 	modifiers._fireRepeatTime = data._fireRepeatTime;
+	modifiers._lightningRepeatTime = data._lightningRepeatTime;
 }
 
 bool Game::Update(double deltaTime)
@@ -143,25 +144,21 @@ bool Game::Update(double deltaTime)
 	_controls->Update();
 	run = _SM->Update(deltaTime);
 
-
-
-
 	if (_controls->IsFunctionKeyDown("DEBUG:REQUEST_PARTICLE"))
 	{
 		XMFLOAT3 pos = XMFLOAT3(11, 1.0f, 2);
 		XMFLOAT3 dir = XMFLOAT3(0, 1, 0);
-
 		ParticleRequestMessage msg = ParticleRequestMessage(ParticleType::SPLASH, ParticleSubType::BLOOD_SUBTYPE, pos, dir, 300.0f, 20, 0.1f, true);
 		_particleHandler->GetParticleRequestQueue()->Insert(msg);
 
 		pos = XMFLOAT3(14, 1.0f, 2);
 		dir = XMFLOAT3(0, 1, 0);
-		msg = ParticleRequestMessage(ParticleType::SMOKE, ParticleSubType::SMOKE_SUBTYPE, pos, dir, 150000.0f, 50, 0.1f, true);
+		msg = ParticleRequestMessage(ParticleType::SMOKE, ParticleSubType::SMOKE_SUBTYPE, pos, dir, 1500.0f, 50, 0.1f, true);
 		_particleHandler->GetParticleRequestQueue()->Insert(msg);
 
 		pos = XMFLOAT3(9, 1.0f, 2);
 		dir = XMFLOAT3(0, 1, 0);
-		msg = ParticleRequestMessage(ParticleType::FIRE, ParticleSubType::FIRE_SUBTYPE, pos, dir, 100000.0f, 100, 0.04f, true);
+		msg = ParticleRequestMessage(ParticleType::FIRE, ParticleSubType::FIRE_SUBTYPE, pos, dir, 1000.0f, 100, 0.04f, true);
 		_particleHandler->GetParticleRequestQueue()->Insert(msg);
 
 		pos = XMFLOAT3(7, 1.0f, 2);
@@ -170,10 +167,8 @@ bool Game::Update(double deltaTime)
 		_particleHandler->GetParticleRequestQueue()->Insert(msg);
 
 		pos = XMFLOAT3(5, 1.0f, 2);
-		dir = XMFLOAT3(0, 1, 0);
-		msg = ParticleRequestMessage(ParticleType::ELECTRICITY, ParticleSubType::SPARK_SUBTYPE, pos, dir, 1000.0f, 20, 0.1f, true, XMFLOAT3(6.0f, 1.0f, 2.0f));
+		msg = ParticleRequestMessage(ParticleType::ELECTRICITY, ParticleSubType::SPARK_SUBTYPE, pos, XMFLOAT3(0, 0, 0), 1000.0f, 20, 0.1f, true, XMFLOAT3(5.00001f, 10.0f, 2));
 		_particleHandler->GetParticleRequestQueue()->Insert(msg);
-
 	}
 
 	_particleHandler->Update(deltaTime);
@@ -294,8 +289,35 @@ void Game::Render()
 
 	/*------------------------------------------------  Render billboarded objects  ---------------------------------------------------*/
 	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::BILLBOARDING_STAGE);
-
 	int count = _particleHandler->GetEmitterCount();
+
+	//Render all particle emitter except for electricity, as thsoe use linestrip instead of pointlist
+	for (int i = 0; i < count; i++)
+	{
+		Renderer::ParticleEmitter* emitter = _particleHandler->GetEmitter(i);
+
+		if (emitter)
+		{
+			ID3D11Buffer* vertexBuffer = emitter->GetParticleBuffer();
+
+			if (vertexBuffer)
+			{
+				if (emitter->GetType() != ParticleType::ELECTRICITY)
+				{
+					_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::BILLBOARDING_STAGE);
+					int textureCount = 0;
+					ID3D11ShaderResourceView** textures = _particleHandler->GetTextures(textureCount, emitter->GetSubType());
+					_renderModule->SetDataPerParticleEmitter(emitter->GetPosition(), _camera->GetViewMatrix(), _camera->GetProjectionMatrix(), _camera->GetPosition(), emitter->GetParticleScale(), textures, textureCount);
+
+					_renderModule->RenderParticles(vertexBuffer, emitter->GetParticleCount(), emitter->GetVertexSize());
+				}
+			}
+		}
+	}
+
+	//Render all electricity particles
+	_renderModule->SetShaderStage(Renderer::RenderModule::RENDER_LINESTRIP);
+
 	for (int i = 0; i < count; i++)
 	{
 		Renderer::ParticleEmitter* emitter = _particleHandler->GetEmitter(i);
@@ -307,29 +329,15 @@ void Game::Render()
 			if (vertexBuffer)
 			{
 				XMFLOAT4 color(0.9f, 0.6f, 0.25f, 1.0f);
-
-				//For electricity, activate linelist and render the sam way as the grid
 				if (emitter->GetType() == ParticleType::ELECTRICITY)
 				{
-					_renderModule->SetShaderStage(Renderer::RenderModule::GRID_STAGE);
+					_renderModule->SetShaderStage(Renderer::RenderModule::RENDER_LINESTRIP);
 					XMFLOAT3 pos = emitter->GetPosition();
 
-					XMMATRIX t = XMMatrixTranslation(pos.x, pos.y, pos.z);
-					XMMATRIX s = XMMatrixScaling(1, 1, 1);
-
-					XMMATRIX m = s * t;
+					XMMATRIX m = XMMatrixTranslation(pos.x, pos.y, pos.z);
 
 					_renderModule->SetDataPerLineList(emitter->GetParticleBuffer(), emitter->GetVertexSize());
-					_renderModule->RenderLineList(&m, emitter->GetParticleCount(), XMFLOAT3(0.3f, 0.6f, 0.95f));
-				}
-				else
-				{
-					_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::BILLBOARDING_STAGE);
-					int textureCount = 0;
-					ID3D11ShaderResourceView** textures = _particleHandler->GetTextures(textureCount, emitter->GetSubType());
-					_renderModule->SetDataPerParticleEmitter(emitter->GetPosition(), color, _camera->GetViewMatrix(), _camera->GetProjectionMatrix(), _camera->GetPosition(), emitter->GetParticleScale(), textures, textureCount);
-
-					_renderModule->RenderParticles(vertexBuffer, emitter->GetParticleCount(), emitter->GetVertexSize());
+					_renderModule->RenderLineStrip(&m, emitter->GetParticleCount(), XMFLOAT3(0.3f, 0.6f, 0.95f));
 				}
 			}
 		}
@@ -338,7 +346,7 @@ void Game::Render()
 	/*-------------------------------------------------------  Render grid  -----------------------------------------------------------*/
 	if (_SM->GetState() == LEVELEDITSTATE)
 	{
-		_renderModule->SetShaderStage(Renderer::RenderModule::GRID_STAGE);
+		_renderModule->SetShaderStage(Renderer::RenderModule::RENDER_LINESTRIP);
 
 		Grid* gr = _objectHandler->GetBuildingGrid();
 		_renderModule->SetDataPerLineList(gr->GetLineBuffer(), gr->GetVertexSize());
@@ -346,7 +354,7 @@ void Game::Render()
 		std::vector<DirectX::XMMATRIX>* gridMatrices = gr->GetGridMatrices();
 		for (auto &matrix : *gridMatrices)
 		{
-			_renderModule->RenderLineList(&matrix, gr->GetNrOfPoints(), gr->GetColorOffset());
+			_renderModule->RenderLineStrip(&matrix, gr->GetNrOfPoints(), gr->GetColorOffset());
 		}
 	}
 	

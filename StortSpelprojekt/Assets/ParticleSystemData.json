@@ -14,6 +14,7 @@
     "_fireSpeedRange.y": 0.69999998807907104,
     "_smokeRepeatTime": 1000,
     "_fireRepeatTime": 1500,
+    "_lightningRepeatTime": 100,
     "_subtypeTexturePaths": [
       [
         "Particles/blood1.png",

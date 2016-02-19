@@ -28,14 +28,14 @@ namespace Renderer
 
 		int _emitterCount;
 
+		void ActivateEmitter(ParticleType type, ParticleSubType subType, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& direction, int particleCount, float timeLimit, float scale, bool isActive, const DirectX::XMFLOAT3& target = DirectX::XMFLOAT3(0, 0, 0));
+
 	public:
 
 		ParticleHandler(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const ParticleTextures& textures, const ParticleModifierOffsets& modifiers);
 		virtual ~ParticleHandler();
 
 		void Update(double deltaTime);
-
-		void ActivateEmitter(ParticleType type, ParticleSubType subType, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& direction, int particleCount, float timeLimit, float scale, bool isActive);
 
 		int GetEmitterCount() const;
 		ParticleEmitter* GetEmitter(int index);

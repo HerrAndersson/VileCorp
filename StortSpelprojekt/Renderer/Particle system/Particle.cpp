@@ -13,11 +13,10 @@ namespace Renderer
 		_timeLeft = 0;
 	}
 
-	Particle::Particle(const XMFLOAT3& position, float speed, float timeLeft, const XMFLOAT3& direction, const XMFLOAT3& target)
+	Particle::Particle(const XMFLOAT3& position, float speed, float timeLeft, const XMFLOAT3& direction)
 	{
 		_position = position;
 		_direction = direction;
-		_target = target;
 		_speed = speed;
 		_timeLeft = timeLeft;
 	}
@@ -34,11 +33,6 @@ namespace Renderer
 	XMFLOAT3 Particle::GetDirection() const
 	{
 		return _direction;
-	}
-
-	DirectX::XMFLOAT3 Particle::GetTargetPosition() const
-	{
-		return _target;
 	}
 
 	float Particle::GetSpeed() const
@@ -59,11 +53,6 @@ namespace Renderer
 	void Particle::SetDirection(const XMFLOAT3& direction)
 	{
 		_direction = direction;
-	}
-
-	void Particle::SetTargetPosition(const DirectX::XMFLOAT3& target)
-	{
-		_target = target;
 	}
 
 	void Particle::SetSpeed(float speed)

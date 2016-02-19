@@ -126,7 +126,6 @@ namespace Renderer
 			DirectX::XMMATRIX _world;
 			DirectX::XMMATRIX _camView;
 			DirectX::XMMATRIX _camProjection;
-			DirectX::XMFLOAT4 _color;
 			DirectX::XMFLOAT3 _camPosition;
 			float _scale;
 			DirectX::XMFLOAT3 _ambientLight;
@@ -162,7 +161,7 @@ namespace Renderer
 	public:
 
 		const DirectX::XMFLOAT3 AMBIENT_LIGHT = DirectX::XMFLOAT3(0.14f,0.15f,0.2f);
-		enum ShaderStage { GEO_PASS, SHADOW_GENERATION, LIGHT_APPLICATION_SPOTLIGHT, LIGHT_APPLICATION_POINTLIGHT, GRID_STAGE, ANIM_STAGE, HUD_STAGE, AA_STAGE, BILLBOARDING_STAGE };
+		enum ShaderStage { GEO_PASS, SHADOW_GENERATION, LIGHT_APPLICATION_SPOTLIGHT, LIGHT_APPLICATION_POINTLIGHT, RENDER_LINESTRIP, ANIM_STAGE, HUD_STAGE, AA_STAGE, BILLBOARDING_STAGE };
 
 		RenderModule(HWND hwnd, System::Settings* settings);
 		~RenderModule();
@@ -172,7 +171,7 @@ namespace Renderer
 		void SetDataPerFrame(DirectX::XMMATRIX* view, DirectX::XMMATRIX* projection);
 		void SetDataPerObjectType(RenderObject* renderObject);
 		void SetDataPerLineList(ID3D11Buffer* lineList, int vertexSize);
-		void SetDataPerParticleEmitter(const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT4& color, DirectX::XMMATRIX* camView, DirectX::XMMATRIX* camProjection, 
+		void SetDataPerParticleEmitter(const DirectX::XMFLOAT3& position, DirectX::XMMATRIX* camView, DirectX::XMMATRIX* camProjection, 
 									   const DirectX::XMFLOAT3& camPos, float scale, ID3D11ShaderResourceView** textures = nullptr, int textureCount = 0);
 
 		void SetShadowMapDataPerObjectType(RenderObject* renderObject);
@@ -188,7 +187,7 @@ namespace Renderer
 		void Render(DirectX::XMMATRIX* world, int vertexBufferSize, const DirectX::XMFLOAT3& colorOffset = DirectX::XMFLOAT3(0, 0, 0));
 		void RenderAnimation(DirectX::XMMATRIX* world, int vertexBufferSize, std::vector<DirectX::XMFLOAT4X4>* extra = nullptr, const DirectX::XMFLOAT3& colorOffset = DirectX::XMFLOAT3(0, 0, 0));
 		void Render(GUI::Node* root, FontWrapper* fontWrapper);
-		void RenderLineList(DirectX::XMMATRIX* world, int nrOfPoints, const DirectX::XMFLOAT3& colorOffset = DirectX::XMFLOAT3(0,0,0));
+		void RenderLineStrip(DirectX::XMMATRIX* world, int nrOfPoints, const DirectX::XMFLOAT3& colorOffset = DirectX::XMFLOAT3(0,0,0));
 		void RenderShadowMap(DirectX::XMMATRIX* world, int vertexBufferSize);
 		void RenderScreenQuad();
 		void RenderParticles(ID3D11Buffer* particlePointsBuffer, int vertexCount, int vertexSize);

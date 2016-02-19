@@ -20,6 +20,7 @@ namespace Renderer
 		_particleCount = 0;
 		_modifiers = modifers;
 		_particleScale = 1.0f;
+		_targetPosition = XMFLOAT3(0, 0, 0);
 	}
 
 	ParticleEmitter::ParticleEmitter(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const ParticleType& type, const ParticleSubType& subType, const XMFLOAT3& position, const XMFLOAT3& direction, int particleCount, float timeLimit, float scale, bool isActive, ParticleModifierOffsets* modifers, const XMFLOAT3& target)
@@ -35,8 +36,9 @@ namespace Renderer
 		_particles.clear();
 		_modifiers = modifers;
 		_particleScale = scale;
+		_targetPosition = target;
 
-		CreateAllParticles(particleCount, direction, target);
+		CreateAllParticles(particleCount, direction, _targetPosition);
 
 		CreateVertexBuffer();
 	}
@@ -58,6 +60,7 @@ namespace Renderer
 		_isActive = isActive;
 		_particleCount = particleCount;
 		_particleScale = scale;
+		_targetPosition = target;
 
 		CreateAllParticles(particleCount, direction, target);
 		CreateVertexBuffer();
@@ -65,7 +68,7 @@ namespace Renderer
 
 	void ParticleEmitter::CreateElectricityPattern(int count, const DirectX::XMFLOAT3& targetPosition)
 	{
-		_particles.clear();
+		_particles.resize(count);
 
 		XMVECTOR basePos = XMLoadFloat3(&_position);
 		XMVECTOR target = XMLoadFloat3(&targetPosition);
@@ -74,20 +77,49 @@ namespace Renderer
 		float length = XMVectorGetX(XMVector3Length(posToTarget));
 		posToTarget = XMVector3Normalize(posToTarget);
 
-		//Breaks if posToTarget is (0,1,0,0)
-		XMVECTOR perpendicular = XMVector3Cross(posToTarget, XMVectorSet(0, 1, 0, 0));
-
 		for (int i = 0; i < count; i++)
 		{
 			XMVECTOR posV = posToTarget * (length / count) * i;
 			XMFLOAT3 pos;
 			XMStoreFloat3(&pos, posV);
 
-
-
-			Particle p = Particle(pos, 0.0f, _timeLeft);
+			_particles[i] = Particle(pos, 0.0f, _modifiers->_lightningRepeatTime);
 		}
 
+		ComputeLightning(0, count - 1, length);
+	}
+
+	void ParticleEmitter::ComputeLightning(int startIndex, int endIndex, float totalLength)
+	{
+		if (endIndex - startIndex <= 1)
+		{
+			return;
+		}
+
+		int midpoint = (startIndex + endIndex) / 2;
+
+		ComputeLightning(startIndex, midpoint, totalLength);
+		ComputeLightning(midpoint, endIndex, totalLength);
+
+		XMVECTOR basePos = XMLoadFloat3(&_particles[startIndex].GetPosition());
+		XMVECTOR target = XMLoadFloat3(&_particles[endIndex].GetPosition());
+		XMVECTOR posToTarget = target - basePos;
+
+		float length = XMVectorGetX(XMVector3Length(posToTarget));
+
+		//Breaks if posToTarget is (0,1,0,0)
+		XMVECTOR perpendicular1 = XMVector3Cross(posToTarget, XMVectorSet(0, 1, 0, 0));
+		perpendicular1 = XMVector3Normalize(perpendicular1);
+		XMVECTOR perpendicular2 = XMVector3Cross(posToTarget, perpendicular1);
+		perpendicular2 = XMVector3Normalize(perpendicular2);
+
+		XMVECTOR midpointPos = XMLoadFloat3(&_particles[midpoint].GetPosition());
+
+		midpointPos += perpendicular1 * GetRandomOffset(totalLength/_particleCount, true) + perpendicular2 * GetRandomOffset(totalLength/_particleCount, true);
+
+		XMFLOAT3 pos;
+		XMStoreFloat3(&pos, midpointPos);
+		_particles[midpoint].SetPosition(pos);
 	}
 
 	void ParticleEmitter::CreateAllParticles(int count, const XMFLOAT3& baseDirection, const XMFLOAT3& targetPosition)
@@ -290,8 +322,6 @@ namespace Renderer
 			points.push_back(v);
 		}
 
-
-
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
 		ZeroMemory(&mappedResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
 		HRESULT hr = _deviceContext->Map(_particlePointsBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
@@ -361,12 +391,12 @@ namespace Renderer
 						}
 						case ELECTRICITY:
 						{
-							//TODO: generate a bolt of pixels towards target
-							//http://gamedevelopment.tutsplus.com/tutorials/how-to-generate-shockingly-good-2d-lightning-effects--gamedev-2681
+							if (_particles.at(0).GetTimeLeft() <= 0)
+							{
+								CreateElectricityPattern(_particleCount, _targetPosition);
+							}
 
-							//position.y += direction.y * velocity * deltatimeSeconds;
-							//position.x += direction.x * velocity * deltatimeSeconds;
-							//position.z += direction.z * velocity * deltatimeSeconds;
+							_particles.at(0).DecreaseTimeLeft(deltaTime);
 
 							break;
 						}

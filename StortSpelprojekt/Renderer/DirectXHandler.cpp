@@ -425,7 +425,7 @@ namespace Renderer
 		_deviceContext->OMSetDepthStencilState(_depthStateDisable, 1);
 	}
 
-	void DirectXHandler::SetGridStage()
+	void DirectXHandler::SetLinestripStage()
 	{
 		_deviceContext->OMSetDepthStencilState(_depthStateEnable, 1);
 		_deviceContext->RSSetState(_rasterizerStateBack);

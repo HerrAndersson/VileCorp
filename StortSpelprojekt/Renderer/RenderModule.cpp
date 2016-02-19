@@ -240,7 +240,7 @@ namespace Renderer
 		deviceContext->VSSetConstantBuffers(1, 1, &_matrixBufferPerObject);
 	}
 
-	void RenderModule::SetDataPerParticleEmitter(const XMFLOAT3& position, const DirectX::XMFLOAT4& color, XMMATRIX* camView, XMMATRIX* camProjection,
+	void RenderModule::SetDataPerParticleEmitter(const XMFLOAT3& position, XMMATRIX* camView, XMMATRIX* camProjection,
 												 const XMFLOAT3& camPos, float scale, ID3D11ShaderResourceView** textures, int textureCount)
 	{
 		HRESULT result;
@@ -260,7 +260,6 @@ namespace Renderer
 		dataPtr->_camView = XMMatrixTranspose(*camView);
 		dataPtr->_camProjection = XMMatrixTranspose(*camProjection);
 		dataPtr->_camPosition = camPos;
-		dataPtr->_color = color;
 		dataPtr->_scale = scale;
 		dataPtr->_ambientLight = AMBIENT_LIGHT;
 		deviceContext->Unmap(_matrixBufferParticles, 0);
@@ -423,12 +422,14 @@ namespace Renderer
 		{
 		case ANIM_STAGE:
 		{
+			deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 			_shaderHandler->SetAnimationPassShaders(_d3d->GetDeviceContext());
 
 			break;
 		}
 		case GEO_PASS:
 		{
+			deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 			_d3d->SetGeometryStage();
 			_shaderHandler->SetGeometryStageShaders(deviceContext);
 
@@ -481,10 +482,11 @@ namespace Renderer
 
 			break;
 		}
-		case GRID_STAGE:
+		case RENDER_LINESTRIP:
 		{
-			_d3d->SetGridStage();
-			_shaderHandler->SetGridPassShaders(_d3d->GetDeviceContext());
+			deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
+			_d3d->SetLinestripStage();
+			_shaderHandler->SetLinestripShaders(_d3d->GetDeviceContext());
 			break;
 		}
 		case HUD_STAGE:
@@ -608,16 +610,13 @@ namespace Renderer
 		}
 	}
 
-	void RenderModule::RenderLineList(XMMATRIX* world, int nrOfPoints, const XMFLOAT3& colorOffset)
+	void RenderModule::RenderLineStrip(XMMATRIX* world, int nrOfPoints, const XMFLOAT3& colorOffset)
 	{
 		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
 
-		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
 		SetDataPerObject(world, colorOffset);
 
 		deviceContext->Draw(nrOfPoints, 0);
-
-		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	}
 
 	void RenderModule::RenderScreenQuad()

@@ -3,7 +3,6 @@ cbuffer matrixBufferBillboarding : register(b6)
 	matrix worldMatrix;
 	matrix camViewMatrix;
 	matrix camProjectionMatrix;
-	float4 color;
 	float3 campos;
 	float scale;
 	float3 ambientLight;
@@ -57,7 +56,6 @@ void main(point GS_IN input[1], inout TriangleStream<GS_OUT> OutputStream)
 	output.position = mul(output.position, camProjectionMatrix);
 	output.tex = float2(0, 1);
 	output.normal = normal;
-	output.color = color;
 	output.ambientLight = ambientLight;
 	output.textureNumber = textureNumber;
 
@@ -69,7 +67,6 @@ void main(point GS_IN input[1], inout TriangleStream<GS_OUT> OutputStream)
 	output.position = mul(output.position, camProjectionMatrix);
 	output.tex = float2(0, 0);
 	output.normal = normal;
-	output.color = color;
 	output.ambientLight = ambientLight;
 	output.textureNumber = textureNumber;
 
@@ -81,7 +78,6 @@ void main(point GS_IN input[1], inout TriangleStream<GS_OUT> OutputStream)
 	output.position = mul(output.position, camProjectionMatrix);
 	output.tex = float2(1, 1);
 	output.normal = normal;
-	output.color = color;
 	output.ambientLight = ambientLight;
 	output.textureNumber = textureNumber;
 
@@ -93,7 +89,6 @@ void main(point GS_IN input[1], inout TriangleStream<GS_OUT> OutputStream)
 	output.position = mul(output.position, camProjectionMatrix);
 	output.tex = float2(1, 0);
 	output.normal = normal;
-	output.color = color;
 	output.ambientLight = ambientLight;
 	output.textureNumber = textureNumber;
 

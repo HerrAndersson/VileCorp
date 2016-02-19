@@ -152,8 +152,8 @@ namespace Renderer
 
 		numElements = sizeof(gridInputDesc) / sizeof(gridInputDesc[0]);
 
-		_gridPassVS = CreateVertexShader(device, L"Assets/Shaders/GridVS.hlsl", gridInputDesc, numElements);
-		_gridPassPS = CreatePixelShader(device, L"Assets/Shaders/GridPS.hlsl");
+		_linestripVS = CreateVertexShader(device, L"Assets/Shaders/LinestripVS.hlsl", gridInputDesc, numElements);
+		_linestripPS = CreatePixelShader(device, L"Assets/Shaders/LinestripPS.hlsl");
 	}
 
 	ShaderHandler::~ShaderHandler()
@@ -162,13 +162,13 @@ namespace Renderer
 		delete _passthroughVS;
 		delete _animPassVS;
 		delete _shadowMapVS;
-		delete _gridPassVS;
+		delete _linestripVS;
 		delete _hudPassVS;
 		delete _lightApplyLightVolumeVS;
 		delete _billboardingVS;
 
 		SAFE_RELEASE(_geoPassPS);
-		SAFE_RELEASE(_gridPassPS);
+		SAFE_RELEASE(_linestripPS);
 		SAFE_RELEASE(_lightApplySpotlightVolumePS);
 		SAFE_RELEASE(_hudPassPS);
 		SAFE_RELEASE(_lightApplyPointlightVolumePS);
@@ -422,14 +422,14 @@ namespace Renderer
 		deviceContext->PSSetSamplers(0, 2, samplers);
 	}
 
-	void ShaderHandler::SetGridPassShaders(ID3D11DeviceContext * deviceContext)
+	void ShaderHandler::SetLinestripShaders(ID3D11DeviceContext * deviceContext)
 	{
 		// Set vertex layout
-		deviceContext->IASetInputLayout(_gridPassVS->_inputLayout);
+		deviceContext->IASetInputLayout(_linestripVS->_inputLayout);
 
 		// Set shaders
-		deviceContext->VSSetShader(_gridPassVS->_vertexShader, nullptr, 0);
-		deviceContext->PSSetShader(_gridPassPS, nullptr, 0);
+		deviceContext->VSSetShader(_linestripVS->_vertexShader, nullptr, 0);
+		deviceContext->PSSetShader(_linestripPS, nullptr, 0);
 		deviceContext->GSSetShader(nullptr, nullptr, 0);
 		//deviceContext->HSSetShader(nullptr, nullptr, 0);
 		//deviceContext->DSSetShader(nullptr, nullptr, 0);

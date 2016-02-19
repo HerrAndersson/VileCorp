@@ -26,6 +26,7 @@ namespace Renderer
 		DirectX::XMFLOAT3 _position;
 		std::vector<Particle> _particles;
 		ParticleModifierOffsets* _modifiers;
+		DirectX::XMFLOAT3 _targetPosition;
 
 		bool _isActive;
 		float _timeLeft;
@@ -44,6 +45,7 @@ namespace Renderer
 
 		Particle CreateSingleParticle(const DirectX::XMFLOAT3& baseDirection);
 		void CreateElectricityPattern(int count, const DirectX::XMFLOAT3& targetPosition);
+		void ComputeLightning(int startIndex, int endIndex, float totalLength);
 
 		//If includeNegative is true, the return will be in the range [-max, max]
 		float GetRandomOffset(float maxOffset, bool includeNegative);
