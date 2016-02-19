@@ -8,10 +8,11 @@
 #include <cereal\types\vector.hpp>
 
 //Determines how it moves
-enum ParticleType { SPLASH, SMOKE, ELECTRICITY, FIRE };
+enum ParticleType { SPLASH, SMOKE, ELECTRICITY, FIRE, ICON };
 
 //Determines how it looks
-enum ParticleSubType { BLOOD_SUBTYPE, WATER_SUBTYPE, SPARK_SUBTYPE, SMOKE_SUBTYPE, FIRE_SUBTYPE }; 
+enum ParticleSubType { BLOOD_SUBTYPE, WATER_SUBTYPE, SPARK_SUBTYPE, SMOKE_SUBTYPE, FIRE_SUBTYPE, EXCLAMATIONMARK_SUBTYPE, QUESTIONMARK_SUBTYPE }; //Icons have to be last
+enum ParticleIconType { ICON_EXCLAMATIONMARK, ICON_QUESTIONMARK }; //Used for loading and using textures
 
 struct ParticleRequestMessage
 {
@@ -46,6 +47,7 @@ struct ParticleRequestMessage
 //Has to be set in the BillboardingPS shader aswell. The array there has to be of hard-coded length, 
 //so "dynamic" number of textures is not possible if more than the hard-coded number
 static const int PARTICLE_TEXTURE_COUNT = 4;
+static const int ICON_TEXTURE_COUNT = 2;
 
 struct ParticleTextures
 {
@@ -54,6 +56,7 @@ struct ParticleTextures
 	ID3D11ShaderResourceView* _smokeTextures[PARTICLE_TEXTURE_COUNT];
 	ID3D11ShaderResourceView* _sparkTextures[PARTICLE_TEXTURE_COUNT];
 	ID3D11ShaderResourceView* _fireTextures[PARTICLE_TEXTURE_COUNT];
+	ID3D11ShaderResourceView* _iconTextures[ICON_TEXTURE_COUNT];
 
 	ParticleTextures()
 	{
@@ -64,6 +67,11 @@ struct ParticleTextures
 			_smokeTextures[i] = nullptr;
 			_sparkTextures[i] = nullptr;
 			_fireTextures[i] = nullptr;
+		}
+
+		for (int i = 0; i < ICON_TEXTURE_COUNT; i++)
+		{
+			_iconTextures[i] = nullptr;
 		}
 	}
 };
@@ -118,6 +126,7 @@ struct ParticleSystemData
 	float _lightningRepeatTime = 100.0f;
 
 	std::vector<std::vector<std::string>> _subtypeTexturePaths;
+	std::vector<std::string> _iconTexturePaths;
 
 	template<class A>
 	void serialize(A& a)
@@ -138,7 +147,8 @@ struct ParticleSystemData
 			(CEREAL_NVP(_smokeRepeatTime)),
 			(CEREAL_NVP(_fireRepeatTime)),
 			(CEREAL_NVP(_lightningRepeatTime)),
-			(CEREAL_NVP(_subtypeTexturePaths))
+			(CEREAL_NVP(_subtypeTexturePaths)),
+			(CEREAL_NVP(_iconTexturePaths))
 		);
 	}
 };

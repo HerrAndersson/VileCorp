@@ -5,7 +5,7 @@ cbuffer matrixBufferBillboarding : register(b6)
 	matrix camProjectionMatrix;
 	float3 campos;
 	float scale;
-	float3 ambientLight;
+	int textureCount;
 };
 
 struct GS_IN
@@ -18,8 +18,6 @@ struct GS_OUT
 	float4 position : SV_POSITION;
 	float2 tex : TEXCOORD0;
 	float3 normal : NORMAL;
-	float4 color : COLOROFFSET;
-	float3 ambientLight : AMBIENT;
 	float textureNumber : TEXNUM;
 };
 
@@ -41,7 +39,7 @@ void main(point GS_IN input[1], inout TriangleStream<GS_OUT> OutputStream)
 	float4 right = float4(normalize(cross(particleToCam, up.xyz)).xyz, 0) * scale;
 	up = float4(normalize(cross(particleToCam, right.xyz)).xyz, 0) * scale;
 
-	float textureNumber = 4 * random(input[0].position.xz);
+	float textureNumber = textureCount * random(input[0].position.xz);
 
 	//2------4
 	//|		 |
@@ -56,7 +54,6 @@ void main(point GS_IN input[1], inout TriangleStream<GS_OUT> OutputStream)
 	output.position = mul(output.position, camProjectionMatrix);
 	output.tex = float2(0, 1);
 	output.normal = normal;
-	output.ambientLight = ambientLight;
 	output.textureNumber = textureNumber;
 
 	OutputStream.Append(output);
@@ -67,7 +64,6 @@ void main(point GS_IN input[1], inout TriangleStream<GS_OUT> OutputStream)
 	output.position = mul(output.position, camProjectionMatrix);
 	output.tex = float2(0, 0);
 	output.normal = normal;
-	output.ambientLight = ambientLight;
 	output.textureNumber = textureNumber;
 
 	OutputStream.Append(output);
@@ -78,7 +74,6 @@ void main(point GS_IN input[1], inout TriangleStream<GS_OUT> OutputStream)
 	output.position = mul(output.position, camProjectionMatrix);
 	output.tex = float2(1, 1);
 	output.normal = normal;
-	output.ambientLight = ambientLight;
 	output.textureNumber = textureNumber;
 
 	OutputStream.Append(output);
@@ -89,7 +84,6 @@ void main(point GS_IN input[1], inout TriangleStream<GS_OUT> OutputStream)
 	output.position = mul(output.position, camProjectionMatrix);
 	output.tex = float2(1, 0);
 	output.normal = normal;
-	output.ambientLight = ambientLight;
 	output.textureNumber = textureNumber;
 
 	OutputStream.Append(output);

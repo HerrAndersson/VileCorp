@@ -261,7 +261,7 @@ namespace Renderer
 		dataPtr->_camProjection = XMMatrixTranspose(*camProjection);
 		dataPtr->_camPosition = camPos;
 		dataPtr->_scale = scale;
-		dataPtr->_ambientLight = AMBIENT_LIGHT;
+		dataPtr->_textureCount = textureCount;
 		deviceContext->Unmap(_matrixBufferParticles, 0);
 
 		deviceContext->GSSetConstantBuffers(6, 1, &_matrixBufferParticles);

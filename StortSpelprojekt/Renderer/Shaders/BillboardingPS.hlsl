@@ -10,8 +10,6 @@ struct GS_OUT
 	float4 position : SV_POSITION;
 	float2 tex : TEXCOORD0;
 	float3 normal : NORMAL;
-	float4 color : COLOROFFSET;
-	float3 ambientLight : AMBIENT;
 	float textureNumber : TEXNUM;
 };
 
@@ -27,7 +25,7 @@ PS_OUT main(GS_OUT input)
 	PS_OUT output = (PS_OUT)0;
 
 	float4 color = float4(0, 0, 0, 0); 
-	float texNum = input.textureNumber;
+	float texNum = floor(input.textureNumber);
 
 	if (texNum < 1)
 	{

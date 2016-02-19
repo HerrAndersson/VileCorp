@@ -136,6 +136,30 @@ namespace Renderer
 		return textures;
 	}
 
+	ID3D11ShaderResourceView* ParticleHandler::GetIconTexture(const ParticleSubType& subType)
+	{
+		ID3D11ShaderResourceView* icon = nullptr;
+		switch (subType)
+		{
+			case ParticleSubType::EXCLAMATIONMARK_SUBTYPE:
+			{
+				icon = _textures._iconTextures[ICON_EXCLAMATIONMARK];
+				break;
+			}
+
+			case ParticleSubType::QUESTIONMARK_SUBTYPE:
+			{
+				icon = _textures._iconTextures[ICON_QUESTIONMARK];
+				break;
+			}
+			default:
+			{
+				break;
+			}
+		}
+		return icon;
+	}
+
 	//Only return if the emitter is both valid and active
 	ParticleEmitter* ParticleHandler::GetEmitter(int index)
 	{

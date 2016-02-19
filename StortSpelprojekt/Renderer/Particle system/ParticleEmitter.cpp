@@ -264,6 +264,11 @@ namespace Renderer
 
 				break;
 			}
+			case ICON:
+			{
+				p = Particle(XMFLOAT3(0, 0, 0), 0, 100);
+				break;
+			}
 			default:
 			{
 				throw std::runtime_error("Particle::CreateSingleParticle: Invalid particle type");
@@ -349,7 +354,7 @@ namespace Renderer
 					XMFLOAT3 position = p.GetPosition();
 					XMFLOAT3 direction = p.GetDirection();
 					float speed = p.GetSpeed();
-					float deltatimeSeconds = deltaTime / 1000.0f;
+					float deltatimeSeconds = (float)deltaTime / 1000.0f;
 
 					switch (_type)
 					{
@@ -365,8 +370,6 @@ namespace Renderer
 						}
 						case SMOKE:
 						{
-							//Change direction a little each update?
-		
 							position.y += direction.y * speed * deltatimeSeconds;
 							position.x += direction.x * speed * deltatimeSeconds;
 							position.z += direction.z * speed * deltatimeSeconds;
@@ -422,6 +425,11 @@ namespace Renderer
 
 							p.DecreaseTimeLeft(deltaTime);
 
+							break;
+						}
+						case ICON:
+						{
+							p.DecreaseTimeLeft(deltaTime);
 							break;
 						}
 						default:

@@ -46,6 +46,10 @@
         "Particles/fire1.png",
         "Particles/fire2.png"
       ]
+    ],
+    "_iconTexturePaths": [
+      "Particles/icon_exclamationmark.png",
+      "Particles/icon_questionmark.png"
     ]
   }
 }

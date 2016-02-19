@@ -50,9 +50,10 @@ Before rendering to shadow map:
 
 Billboarding:
 ~ When rendering billboarded objects, make sure that the TEXTURE_COUNT and the hard-coded length of the texture array in BillboardingPS match.
-  A "dynamic" amount of textures can be used, as long as the number is lower than the hard-coded number in BillboardingPS, 
-  and the actual number is sent to the shader so it know which ones to sample from.
+  A "dynamic" amount of textures can be used, as long as the number is lower than the hard-coded number in BillboardingPS, and the actual number is sent to the shader so it know which ones to sample from.
 ~ The billboarded objects should use textures with alpha channel to determine what parts of the texture to render. Alpha-blending has to be activated before this can be used.
+~ The scaling of particles is doubled, so if 0.5f is sent to it, the final quad will have 1.0f as scale. That is because the data that is sent to the shader contains the center points of all particles.
+  Therefore it will offset the scale from the middle, in all four directions.
 
 */
 
@@ -128,7 +129,7 @@ namespace Renderer
 			DirectX::XMMATRIX _camProjection;
 			DirectX::XMFLOAT3 _camPosition;
 			float _scale;
-			DirectX::XMFLOAT3 _ambientLight;
+			int _textureCount;
 		};
 
 		ID3D11Buffer*		_matrixBufferPerObject;

@@ -107,6 +107,11 @@ void Game::LoadParticleSystemData(ParticleTextures& particleTextures, ParticleMo
 		particleTextures._fireTextures[i] = _assetManager->GetTexture(data._subtypeTexturePaths.at(ParticleSubType::FIRE_SUBTYPE).at(i));
 	}
 
+	for (unsigned int i = 0; i < data._iconTexturePaths.size(); i++)
+	{
+		particleTextures._iconTextures[i] = _assetManager->GetTexture(data._iconTexturePaths.at(i));
+	}
+
 	modifiers._splashPositionOffset = data._splashPositionOffset;
 	modifiers._smokePositionOffset = data._smokePositionOffset;
 	modifiers._firePositionOffset = data._firePositionOffset;
@@ -168,6 +173,14 @@ bool Game::Update(double deltaTime)
 
 		pos = XMFLOAT3(5, 1.0f, 2);
 		msg = ParticleRequestMessage(ParticleType::ELECTRICITY, ParticleSubType::SPARK_SUBTYPE, pos, XMFLOAT3(0, 0, 0), 1000.0f, 20, 0.1f, true, XMFLOAT3(5.00001f, 10.0f, 2));
+		_particleHandler->GetParticleRequestQueue()->Insert(msg);
+
+		pos = XMFLOAT3(11, 1.0f, 3);
+		msg = ParticleRequestMessage(ParticleType::ICON, ParticleSubType::EXCLAMATIONMARK_SUBTYPE, pos, XMFLOAT3(0, 0, 0), 1000.0f, 1, 0.25f, true);
+		_particleHandler->GetParticleRequestQueue()->Insert(msg);
+
+		pos = XMFLOAT3(13, 1.0f, 3);
+		msg = ParticleRequestMessage(ParticleType::ICON, ParticleSubType::QUESTIONMARK_SUBTYPE, pos, XMFLOAT3(0, 0, 0), 1000.0f, 1, 0.25f, true);
 		_particleHandler->GetParticleRequestQueue()->Insert(msg);
 	}
 
@@ -305,11 +318,24 @@ void Game::Render()
 				if (emitter->GetType() != ParticleType::ELECTRICITY)
 				{
 					_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::BILLBOARDING_STAGE);
-					int textureCount = 0;
-					ID3D11ShaderResourceView** textures = _particleHandler->GetTextures(textureCount, emitter->GetSubType());
-					_renderModule->SetDataPerParticleEmitter(emitter->GetPosition(), _camera->GetViewMatrix(), _camera->GetProjectionMatrix(), _camera->GetPosition(), emitter->GetParticleScale(), textures, textureCount);
 
-					_renderModule->RenderParticles(vertexBuffer, emitter->GetParticleCount(), emitter->GetVertexSize());
+					int textureCount = PARTICLE_TEXTURE_COUNT;
+					if (emitter->GetType() == ParticleType::ICON)
+					{
+						textureCount = 1;
+						ID3D11ShaderResourceView* textures[1];
+						textures[0] = _particleHandler->GetIconTexture(emitter->GetSubType());
+
+						_renderModule->SetDataPerParticleEmitter(emitter->GetPosition(), _camera->GetViewMatrix(), _camera->GetProjectionMatrix(), _camera->GetPosition(), emitter->GetParticleScale(), textures, textureCount);
+						_renderModule->RenderParticles(vertexBuffer, emitter->GetParticleCount(), emitter->GetVertexSize());
+					}
+					else
+					{
+						ID3D11ShaderResourceView** textures = _particleHandler->GetTextures(textureCount, emitter->GetSubType());
+						_renderModule->SetDataPerParticleEmitter(emitter->GetPosition(), _camera->GetViewMatrix(), _camera->GetProjectionMatrix(), _camera->GetPosition(), emitter->GetParticleScale(), textures, textureCount);
+
+						_renderModule->RenderParticles(vertexBuffer, emitter->GetParticleCount(), emitter->GetVertexSize());
+					}
 				}
 			}
 		}
