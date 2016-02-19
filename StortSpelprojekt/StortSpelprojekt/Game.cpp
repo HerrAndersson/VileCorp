@@ -283,7 +283,7 @@ void Game::Render()
 
 							for (GameObject* g : j)
 							{
-								if (g->IsVisible())
+								if (g->IsVisible() && g->GetID() != spot.first->GetID())
 								{
 									_renderModule->RenderShadowMap(g->GetMatrix(), vertexBufferSize);
 								}
@@ -309,7 +309,7 @@ void Game::Render()
 
 							for (GameObject* g : j)
 							{
-								if (g->IsVisible())
+								if (g->IsVisible() && g->GetID() != spot.first->GetID())
 								{
 									_renderModule->RenderShadowMap(g->GetMatrix(), vertexBufferSize);
 								}
