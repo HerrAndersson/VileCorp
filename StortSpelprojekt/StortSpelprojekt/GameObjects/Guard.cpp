@@ -3,6 +3,9 @@
 Guard::Guard()
 	: Unit()
 {
+	_health = 100;
+	_baseDamage = 30;
+
 	_isSelected = false;
 	_currentPatrolGoal = -1;
 }
@@ -12,6 +15,8 @@ Guard::Guard(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 ro
 {
 	_isSelected = false;
 	_currentPatrolGoal = 0;
+	_health = 100;
+	_baseDamage = 30;
 }
 
 Guard::~Guard()
@@ -44,7 +49,8 @@ void Guard::EvaluateTile(GameObject * obj)
 			break;
 		}
 		tempPriority;
-		if (tempPriority > 0 && obj->GetTilePosition() != _tilePosition && (_pathLength <= 0 || tempPriority * GetApproxDistance(obj->GetTilePosition()) < _goalPriority * GetApproxDistance(GetGoalTilePosition())))			//TODO Either optimize properly or check path properly --Victor
+		if (tempPriority > 0 && obj->GetTilePosition() != _tilePosition && 
+			(_pathLength <= 0 || tempPriority * GetApproxDistance(obj->GetTilePosition()) < _goalPriority * GetApproxDistance(GetGoalTilePosition())))			//TODO Either optimize properly or check path properly --Victor
 		{
 			SetGoalTilePosition(obj->GetTilePosition());
 			_goalPriority = tempPriority;

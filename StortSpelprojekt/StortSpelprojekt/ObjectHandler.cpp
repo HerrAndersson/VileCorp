@@ -111,7 +111,7 @@ bool ObjectHandler::Add(Type type, int index, const XMFLOAT3& position, const XM
 		object = MakeSecurityCamera(_gameObjectInfo->Cameras(index), position, rotation);
 		break;
 	case ENEMY:
-		object = MakeEnemy(_gameObjectInfo->Enemies(index), position, rotation);
+		object = MakeEnemy(_gameObjectInfo->Enemies(index), position, rotation, subIndex);
 		break;
 	case GUARD:
 		object = MakeGuard(_gameObjectInfo->Guards(index), position, rotation);
@@ -823,7 +823,7 @@ Guard * ObjectHandler::MakeGuard(GameObjectGuardInfo * data, const XMFLOAT3& pos
 	return obj;
 }
 
-Enemy * ObjectHandler::MakeEnemy(GameObjectEnemyInfo * data, const XMFLOAT3& position, const XMFLOAT3& rotation)
+Enemy * ObjectHandler::MakeEnemy(GameObjectEnemyInfo * data, const XMFLOAT3& position, const XMFLOAT3& rotation, const int subIndex)
 {
 	Enemy* obj = new Enemy(
 		_idCount,
@@ -832,7 +832,8 @@ Enemy * ObjectHandler::MakeEnemy(GameObjectEnemyInfo * data, const XMFLOAT3& pos
 		AI::Vec2D((int)position.x, (int)position.z),
 		ENEMY,
 		_assetManager->GetRenderObject(data->_renderObject),
-		_tilemap);
+		_tilemap,
+		subIndex);						
 
 	// read more data
 

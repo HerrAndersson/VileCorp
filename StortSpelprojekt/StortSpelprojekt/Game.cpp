@@ -110,18 +110,6 @@ bool Game::Update(double deltaTime)
 		{
 			_enemiesHasSpawned = true;
 		}
-
-		if (_enemies.size() == 0 && _enemiesHasSpawned == true)
-		{
-			if (_loot.size() >= 1)
-			{
-				//TODO: Add something to notify the player that they've beat the level
-			}
-			else
-			{
-				//TODO: Add something to notify the player that they've SUCK and they can replay the level
-			}
-		}
 	}
 	return run;
 }

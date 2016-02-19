@@ -14,7 +14,7 @@ void Enemy::Flee()
 	//{
 	//	_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,4});
 	//}
-	if (_pursuer == nullptr)		//TODO Add other conditions to stop fleeing --Victor
+	if (_pursuer == nullptr)
 	{
 		_moveState = MoveState::IDLE;
 	}
@@ -59,20 +59,109 @@ void Enemy::Flee()
 	}
 }
 
+bool Enemy::SafeToAttack(AI::Vec2D direction)
+{
+	srand((int)time(NULL));
+	int weight = 0;
+	if (direction == _direction)
+	{
+		weight = 5;
+	}
+	else
+	{
+		weight = std::abs(_direction._x + direction._x) + std::abs(_direction._y + direction._y) + 1;
+	}
+
+	bool safeToAttack = false;
+
+	if ((rand() % 20) * weight > 17)
+	{
+		safeToAttack = true;
+	}
+
+	return safeToAttack;
+}
+
+bool Enemy::TryToDisarm(Trap* trap)
+{
+	srand((int)time(NULL));
+	return trap->IsTrapActive() && SpotTrap(trap) && (_disarmSkill - trap->GetDisarmDifficulty() > (rand() % 50) - 25);
+}
+
+bool Enemy::SpotTrap(Trap * trap)
+{
+	if (!trap->IsVisibleToEnemies())
+	{
+		srand((int)time(NULL));
+		int detectRoll = rand() % 100;
+		if (detectRoll + _detectionSkill - trap->GetDetectionDifficulty() >= 50)
+		{
+			trap->SetVisibleToEnemies(true);
+		}
+	}
+	//trap->SetColorOffset({ 3, 0, 3 });
+	return trap->IsVisibleToEnemies();
+}
+
+void Enemy::DisarmTrap(Trap * trap)
+{
+	if (trap->IsTrapActive())
+	{
+		srand((int)time(NULL));
+		int disarmRoll = rand() % 100;
+		if (disarmRoll + _disarmSkill - trap->GetDisarmDifficulty() >= 50)
+		{
+			trap->SetTrapActive(false);
+		}
+		else
+		{
+			trap->Activate();
+		}
+	}
+}
+
 Enemy::Enemy()
 	: Unit()
 {
-	SetVisibility(false);
-}
-
-Enemy::Enemy(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject * renderObject, const Tilemap * tileMap)
-	: Unit(ID, position, rotation, tilePosition, type, renderObject, tileMap)
-{
+	_enemyType = BASICENEMY;
 	SetVisibility(false);
 	_visibilityTimer = TIME_TO_HIDE;
 	_detectionSkill = 50;
 	_disarmSkill = 50;
 	_pursuer = nullptr;
+}
+
+Enemy::Enemy(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject * renderObject, const Tilemap * tileMap, const int enemyType)
+	: Unit(ID, position, rotation, tilePosition, type, renderObject, tileMap)
+{
+	_enemyType = (EnemyType)enemyType;
+	SetVisibility(false);
+	_visibilityTimer = TIME_TO_HIDE;
+	_pursuer = nullptr;
+
+	switch (_enemyType)
+	{
+	case BASICENEMY:
+		_health = 80;
+		_baseDamage = 25;
+		_detectionSkill = 40;
+		_disarmSkill = 30;
+		break;
+	case DISABLER:
+		_health = 60;
+		_baseDamage = 20;
+		_detectionSkill = 80;
+		_disarmSkill = 70;
+		break;
+	case ASSASSIN:
+		_health = 100;
+		_baseDamage = 50;
+		_detectionSkill = 20;
+		_disarmSkill = 20;
+		break;
+	default:
+		break;
+	}
 }
 
 Enemy::~Enemy()
@@ -110,9 +199,13 @@ void Enemy::EvaluateTile(GameObject* obj)
 		case TRAP:
 		{
 			Trap* trap = static_cast<Trap*>(obj);
-			if (trap->IsTrapActive() && SpotTrap(trap) && (_disarmSkill - trap->GetDisarmDifficulty() > -20))
+			if (TryToDisarm(trap))
 			{
 				tempPriority = 1;
+			}
+			else
+			{
+				//TODO: Avoid trap --Victor
 			}
 		}
 			break;	
@@ -121,7 +214,7 @@ void Enemy::EvaluateTile(GameObject* obj)
 			{
 				if (SafeToAttack(static_cast<Unit*>(obj)->GetDirection()))
 				{
-					tempPriority = 2;			//TODO Make actual calculations based on attack skill etc --Victor
+					tempPriority = 100 / _baseDamage;
 				}
 				else if (obj != _objective && _visible)
 				{
@@ -264,61 +357,6 @@ void Enemy::ResetVisibilityTimer()
 	{
 		_heldObject->SetVisibility(true);
 	}
-}
-
-bool Enemy::SpotTrap(Trap * trap)
-{
-	if (!trap->IsVisibleToEnemies())
-	{
-		srand((int)time(NULL));
-		int detectRoll = rand() % 100;
-		if (detectRoll + _detectionSkill - trap->GetDetectionDifficulty() >= 50)
-		{
-			trap->SetVisibleToEnemies(true);
-		}
-	}
-	//trap->SetColorOffset({ 3, 0, 3 });
-	return trap->IsVisibleToEnemies();
-}
-
-void Enemy::DisarmTrap(Trap * trap)
-{
-	if (trap->IsTrapActive())
-	{
-		srand((int)time(NULL));
-		int disarmRoll = rand()%100;
-		if (disarmRoll + _disarmSkill - trap->GetDisarmDifficulty() >= 50)
-		{
-			trap->SetTrapActive(false);
-		}
-		else
-		{
-			trap->Activate();
-		}
-	}
-}
-
-bool Enemy::SafeToAttack(AI::Vec2D direction)
-{
-	srand((int)time(NULL));
-	int weight = 0;
-	if (direction == _direction)
-	{
-		weight = 5;
-	}
-	else
-	{
-		weight = std::abs(_direction._x + direction._x) + std::abs(_direction._y + direction._y) + 1;
-	}
-	
-	bool safeToAttack = false;
-
-	if ((rand()%20) * weight > 17)
-	{
-		safeToAttack = true;
-	}
-
-	return safeToAttack;
 }
 
 void Enemy::Moving()
