@@ -63,7 +63,10 @@ void Guard::SetPatrolPoint(AI::Vec2D patrolPoint)
 			_currentPatrolGoal = 1;
 
 		}
-		_patrolRoute.push_back(patrolPoint);
+		if (patrolPoint != _patrolRoute[_patrolRoute.size() - 1])
+		{
+			_patrolRoute.push_back(patrolPoint);
+		}
 		ClearObjective();
 		_goalTilePosition = _patrolRoute[_currentPatrolGoal % _patrolRoute.size()];
 		_moveState = MoveState::FINDING_PATH;
