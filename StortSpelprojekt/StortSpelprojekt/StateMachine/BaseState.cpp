@@ -153,6 +153,11 @@ void BaseState::HandleCamMove(float deltaTime)
 	/*
 	Camera move
 	*/
+	const float LIMIT_UPPER = _objectHandler->GetTileMap()->GetHeight() * 1.2f;
+	const float LIMIT_LOWER = _objectHandler->GetTileMap()->GetHeight() * -0.2f;
+	const float LIMIT_RIGHT = _objectHandler->GetTileMap()->GetWidth() * 1.2f;
+	const float LIMIT_LEFT = _objectHandler->GetTileMap()->GetWidth() * -0.2f;
+
 	XMFLOAT3 right(0.0f, 0.0f, 0.0f);
 	XMFLOAT3 forward(0.0f, 0.0f, 0.0f);
 	bool isMoving = false;
@@ -207,6 +212,20 @@ void BaseState::HandleCamMove(float deltaTime)
 	if (isMoving)
 	{
 		_camera->Move(XMFLOAT3((forward.x + right.x) * v, (forward.y + right.y) * v, (forward.z + right.z) * v), deltaTime / 10);
+
+		if (_camera->GetMode() == System::LOCKED_CAM)
+		{
+			//Checks if out of bounds
+			_camera->SetPosition(XMFLOAT3(
+				max(_camera->GetPosition().x, LIMIT_LEFT),
+				_camera->GetPosition().y,
+				max(_camera->GetPosition().z, LIMIT_LOWER)));
+
+			_camera->SetPosition(XMFLOAT3(
+				min(_camera->GetPosition().x, LIMIT_RIGHT),
+				_camera->GetPosition().y,
+				min(_camera->GetPosition().z, LIMIT_UPPER)));
+		}
 	}
 }
 
