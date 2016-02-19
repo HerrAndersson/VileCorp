@@ -4,7 +4,7 @@
 #include <sstream>
 
 Game::Game(HINSTANCE hInstance, int nCmdShow):
-	_settingsReader("Assets/settings.xml")
+	_settingsReader("Assets/settings.xml", "Assets/profile.xml")
 {
 	srand(time(NULL));
 	System::Settings* settings = _settingsReader.GetSettings();
@@ -34,15 +34,15 @@ Game::Game(HINSTANCE hInstance, int nCmdShow):
 
 	_particleHandler = new Renderer::ParticleHandler(_renderModule->GetDevice(), _renderModule->GetDeviceContext(), particleTextures, modifiers);
 
-	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager, &_data, _particleHandler->GetParticleRequestQueue());
+	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager, &_data, _settingsReader.GetSettings(), _particleHandler->GetParticleRequestQueue());
 	_pickingDevice = new PickingDevice(_camera, settings);
 	_SM = new StateMachine(_controls, _objectHandler, _camera, _pickingDevice, "Assets/gui.json", _assetManager, _fontWrapper, settings, &_settingsReader, &_soundModule);
 
 	_SM->Update(_timer.GetFrameTime());
 
 	_enemiesHasSpawned = false;
-	_soundModule.AddSound("Assets/Sounds/theme.wav", 0.15f, 1.0f, true, true);
-	_soundModule.Play("Assets/Sounds/theme.wav");
+	_soundModule.AddSound("Assets/Sounds/theme", 0.15f, 1.0f, true, true);
+	_soundModule.Play("Assets/Sounds/theme");
 }
 
 Game::~Game()
@@ -61,10 +61,11 @@ Game::~Game()
 
 void Game::ResizeResources(System::Settings* settings)
 {
+	//RenderModule must update it's swapchain before window resizes /Alex
+	_renderModule->ResizeResources(settings);
 	_window->ResizeWindow(settings);
 	_camera->Resize(settings);
 	_SM->Resize(settings);
-	_renderModule->ResizeResources(_window->GetHWND(), settings);
 }
 
 void Game::LoadParticleSystemData(ParticleTextures& particleTextures, ParticleModifierOffsets& modifiers)
@@ -396,8 +397,9 @@ void Game::Render()
 		map<GameObject*, Renderer::Spotlight*>* spotlights = _objectHandler->GetSpotlights();
 		for (pair<GameObject*, Renderer::Spotlight*> spot : *spotlights)
 		{
-			if (spot.second->IsActive() && spot.first->IsActive())
+			if (spot.second != nullptr && spot.second->IsActive() && spot.first->IsActive())
 			{
+				// Non skinned
 				_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::SHADOW_GENERATION);
 				_renderModule->SetShadowMapDataPerSpotlight(spot.second->GetViewMatrix(), spot.second->GetProjectionMatrix());
 
@@ -407,14 +409,43 @@ void Game::Render()
 					if (j.size() > 0)
 					{
 						RenderObject* renderObject = j.at(0)->GetRenderObject();
-						_renderModule->SetShadowMapDataPerObjectType(renderObject);
-						int vertexBufferSize = renderObject->_mesh._vertexBufferSize;
-
-						for (GameObject* g : j)
+						if (!renderObject->_isSkinned)
 						{
-							if (g->IsVisible())
+							_renderModule->SetShadowMapDataPerObjectType(renderObject);
+							int vertexBufferSize = renderObject->_mesh._vertexBufferSize;
+
+							for (GameObject* g : j)
 							{
-								_renderModule->RenderShadowMap(g->GetMatrix(), vertexBufferSize);
+								if (g->IsVisible() && g->GetID() != spot.first->GetID())
+								{
+									_renderModule->RenderShadowMap(g->GetMatrix(), vertexBufferSize);
+								}
+							}
+						}
+					}
+				}
+
+				// Skinned
+				_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::ANIM_SHADOW_GENERATION);
+				_renderModule->SetShadowMapDataPerSpotlight(spot.second->GetViewMatrix(), spot.second->GetProjectionMatrix());
+
+				inLight = _objectHandler->GetObjectsInLight(spot.second);
+				for (auto j : *inLight)
+				{
+					if (j.size() > 0)
+					{
+						RenderObject* renderObject = j.at(0)->GetRenderObject();
+						if (renderObject->_isSkinned)
+						{
+							_renderModule->SetShadowMapDataPerObjectType(renderObject);
+							int vertexBufferSize = renderObject->_mesh._vertexBufferSize;
+
+							for (GameObject* g : j)
+							{
+								if (g->IsVisible() && g->GetID() != spot.first->GetID())
+								{
+									_renderModule->RenderShadowMap(g->GetMatrix(), vertexBufferSize);
+								}
 							}
 						}
 					}
@@ -425,12 +456,14 @@ void Game::Render()
 
 				_renderModule->RenderLightVolume(spot.second->GetVolumeBuffer(), spot.second->GetWorldMatrix(), spot.second->GetVertexCount(), spot.second->GetVertexSize());
 			}
+		}
+		/*---------------------------------------------------------  Pointlights  ------------------------------------------------------------*/
+		_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::LIGHT_APPLICATION_POINTLIGHT);
 
-			/*---------------------------------------------------------  Pointlights  ------------------------------------------------------------*/
-			_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::LIGHT_APPLICATION_POINTLIGHT);
-
-			map<GameObject*, Renderer::Pointlight*>* pointlights = _objectHandler->GetPointlights();
-			for (pair<GameObject*, Renderer::Pointlight*> pointlight : *pointlights)
+		map<GameObject*, Renderer::Pointlight*>* pointlights = _objectHandler->GetPointlights();
+		for (pair<GameObject*, Renderer::Pointlight*> pointlight : *pointlights)
+		{
+			if (pointlight.second != nullptr && pointlight.second->IsActive() && pointlight.first->IsActive())
 			{
 				_renderModule->SetLightDataPerPointlight(pointlight.second);
 				_renderModule->RenderLightVolume(pointlight.second->GetVolumeBuffer(), pointlight.second->GetWorldMatrix(), pointlight.second->GetVertexCount(), pointlight.second->GetVertexSize());
@@ -517,6 +550,11 @@ LRESULT CALLBACK Game::WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM l
 	{
 		PostQuitMessage(0);
 		return 0;
+	}
+	case WM_CHAR:
+	{
+		_gameHandle->_controls->HandleTextInput(wparam, lparam);
+		break;
 	}
 	case WM_INPUT:
 	{

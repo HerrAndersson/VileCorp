@@ -1,5 +1,25 @@
 #include "PlacementState.h"
 
+PlacementState::PlacementState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule)
+	: BaseState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settingsReader, soundModule)
+{
+	_playerProfile.resize(1);
+
+
+	//load all player profiles
+	GetFilenamesInDirectory("Assets/PlayerProfiles/", ".json", _playerProfilesPath);
+
+	//rezise vector that stores player profiles
+	_playerProfile.resize(_playerProfilesPath.size());
+	_controls = controls;
+	_objectHandler = objectHandler;
+	_camera = camera;
+	_pickingDevice = pickingDevice;
+	_baseEdit = nullptr;
+
+	_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_playerProfile[_currentPlayer]._gold));
+}
+
 void PlacementState::EvaluateGoldCost()
 {
 	int costOfAnvilTrap = 50;
@@ -26,25 +46,7 @@ void PlacementState::EvaluateGoldCost()
 	}
 }
 
-PlacementState::PlacementState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::Settings* settings, System::SoundModule* soundModule)
-	: BaseState(controls, objectHandler, camera, pickingDevice, filename, "PLACEMENT", assetManager, fontWrapper, settings, soundModule)
-{
-	_playerProfile.resize(1);
-	
-	
-	//load all player profiles
-	GetFilenamesInDirectory("Assets/PlayerProfiles/", ".json", _playerProfilesPath);
-	
-	//rezise vector that stores player profiles
-	_playerProfile.resize(_playerProfilesPath.size());
-	_controls = controls;
-	_objectHandler = objectHandler;
-	_camera = camera;
-	_pickingDevice = pickingDevice;
-	_baseEdit = nullptr;
-	
-	_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_playerProfile[_currentPlayer]._gold));
-}
+
 
 
 PlacementState::~PlacementState()
@@ -56,6 +58,9 @@ PlacementState::~PlacementState()
 void PlacementState::Update(float deltaTime)
 {
 	_baseEdit->Update(deltaTime);
+
+
+	HandleCam(deltaTime);
 
 	HandleInput();
 	HandleButtons();
@@ -169,6 +174,17 @@ void PlacementState::HandleButtons()
 		if (_baseEdit->IsSelection() && !_baseEdit->IsPlace())
 		{
 			_toPlace._subType = TESLACOIL;
+			create = true;
+		}
+	}
+	if (_uiTree.IsButtonColliding("SharkTrap", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
+	{
+		_toPlace._type = TRAP;
+		_toPlace._name = "shark_trap";
+
+		if (_baseEdit->IsSelection() && !_baseEdit->IsPlace())
+		{
+			_toPlace._subType = SHARK;
 			create = true;
 		}
 	}

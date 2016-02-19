@@ -118,6 +118,11 @@ Type GameObject::GetType() const
 	return _type;
 }
 
+bool GameObject::IsCenteredOnTile(AI::Vec2D tile) const
+{
+	return abs(_position.x - tile._x) < TILE_EPSILON && abs(_position.z - tile._y) < TILE_EPSILON;
+}
+
 unsigned int GameObject::GetSubType() const
 {
 	return _subType;
@@ -133,10 +138,10 @@ bool GameObject::IsActive() const
 	return _active;
 }
 
-void GameObject::SetActive(bool active)
-{
-	_active = active;
-}
+//void GameObject::SetActive(bool active)
+//{
+//	_active = active;
+//}
 
 void GameObject::SetVisibility(bool visible)
 {

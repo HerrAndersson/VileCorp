@@ -32,6 +32,7 @@ namespace Renderer
 		VertexShaderData*		_geoPassVS;
 		VertexShaderData*		_passthroughVS;
 		VertexShaderData*		_animPassVS;
+		VertexShaderData*		_animShadowMapVS;
 		VertexShaderData*		_shadowMapVS;
 		VertexShaderData*		_linestripVS;
 		VertexShaderData*		_hudPassVS;
@@ -72,6 +73,7 @@ namespace Renderer
 		void SetGeometryStageShaders(ID3D11DeviceContext* deviceContext);
 		void SetAnimationPassShaders(ID3D11DeviceContext* deviceContext);
 		void SetLinestripShaders(ID3D11DeviceContext* deviceContest);
+		void SetAnimaShadowGenerationShaders(ID3D11DeviceContext* deviceContext);
 		void SetShadowGenerationShaders(ID3D11DeviceContext* deviceContext);
 		void SetSpotlightApplicationShaders(ID3D11DeviceContext* deviceContext);
 		void SetPointlightApplicationShaders(ID3D11DeviceContext* deviceContext);

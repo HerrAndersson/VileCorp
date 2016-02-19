@@ -1,8 +1,9 @@
 #include "ObjectHandler.h"
 #include "stdafx.h"
 
-ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data, Renderer::ParticleRequestQueue* particleRequestQueue)
+ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data, System::Settings* settings, Renderer::ParticleRequestQueue* particleRequestQueue)
 {
+	_settings = settings;
 	_idCount = 0;
 	_assetManager = assetManager;
 	_tilemap = nullptr;
@@ -59,6 +60,13 @@ void ObjectHandler::UnloadLevel()
 		spot.first = nullptr;
 	}
 	_spotlights.clear();
+	for (pair<GameObject*, Renderer::Pointlight*> point : _pointligths)
+	{
+		SAFE_DELETE(point.second);
+		point.second = nullptr;
+		point.first = nullptr;
+	}
+	_pointligths.clear();
 
 	ReleaseGameObjects();
 	SAFE_DELETE(_tilemap);
@@ -183,6 +191,15 @@ bool ObjectHandler::Add(Type type, int index, const XMFLOAT3& position, const XM
 			d._pos = XMFLOAT3(0, 0, 0);
 			d._range = (float)static_cast<SecurityCamera*>(object)->GetVisionRadius();
 			_spotlights[object] = new Renderer::Spotlight(_device, d, 0.1f, 1000.0f);
+		}
+		if (type == LOOT)
+		{
+			PointlightData d;
+			d._pos = XMFLOAT3(object->GetPosition().x, 2, object->GetPosition().z);
+			d._range = 6.0f;
+			d._intensity = 0.8f;
+			d._col = XMFLOAT3(0.9f, 0.5f, 0.5f);
+			_pointligths[object] = new Renderer::Pointlight(_device, d._pos, d._range, d._intensity, d._col);
 		}
 
 		//for(auto i : object->GetRenderObject()->_mesh._spotLights)
@@ -507,15 +524,13 @@ void ObjectHandler::InitPathfinding()
 	for (GameObject* i : _gameObjects[ENEMY])
 	{
 		Unit* unit = dynamic_cast<Unit*>(i);
-		//unit->CheckAllTiles();
-		unit->Move();
+		unit->InitializePathFinding();
 	}
 
 	for (GameObject* i : _gameObjects[GUARD])
 	{
-		Unit* unit = dynamic_cast<Unit*>(i);
-		//unit->CheckAllTiles();
-		unit->Move();
+		Unit* unit = dynamic_cast<Unit*>(i);		unit->InitializePathFinding();
+		unit->InitializePathFinding();
 	}
 }
 
@@ -548,7 +563,6 @@ int ObjectHandler::GetRemainingToSpawn() const
 void ObjectHandler::Update(float deltaTime)
 {
 	//Update all objects' gamelogic
-
 	for (int i = 0; i < NR_OF_TYPES; i++)
 	{
 		for (unsigned int j = 0; j < _gameObjects[i].size(); j++)
@@ -556,7 +570,7 @@ void ObjectHandler::Update(float deltaTime)
 			GameObject* g = _gameObjects[i][j];
 			g->Update(deltaTime);
 
-			if (g->GetPickUpState() == PICKINGUP)
+			if (g->GetPickUpState() == PICKEDUP)
 			{
 				_tilemap->RemoveObjectFromTile(g);
 				g->SetPickUpState(HELD);
@@ -567,12 +581,11 @@ void ObjectHandler::Update(float deltaTime)
 				g->SetPickUpState(ONTILE);
 			}
 
-			if (g->GetType() == GUARD || g->GetType() == ENEMY)									//Handle unit movement
+			if (g->GetType() == GUARD || g->GetType() == ENEMY)
 			{
 				Unit* unit = static_cast<Unit*>(g);
 				GameObject* heldObject = unit->GetHeldObject();
-
-				if (heldObject != nullptr)
+				if (heldObject != nullptr && heldObject->GetPickUpState() == HELD)
 				{
 					heldObject->SetPosition(DirectX::XMFLOAT3(unit->GetPosition().x, unit->GetPosition().y + 2, unit->GetPosition().z));
 					heldObject->SetTilePosition(AI::Vec2D(heldObject->GetPosition().x, heldObject->GetPosition().z));
@@ -590,6 +603,8 @@ void ObjectHandler::Update(float deltaTime)
 							if (_gameObjects[SPAWN][k]->InRange(unit->GetTilePosition()))
 							{
 								lootRemoved = Remove(heldObject);
+								((SpawnPoint*)_gameObjects[SPAWN][k])->AddUnitsToSpawn(1);
+								((SpawnPoint*)_gameObjects[SPAWN][k])->Enable();
 							}
 						}
 
@@ -601,73 +616,25 @@ void ObjectHandler::Update(float deltaTime)
 					}
 					Remove(g);
 					g = nullptr;
+					unit = nullptr;
 					j--;
 				}
-				else
+				else if (unit->IsSwitchingTile())
 				{
-					float xOffset = abs(g->GetPosition().x - g->GetTilePosition()._x);
-					float zOffset = abs(g->GetPosition().z - g->GetTilePosition()._y);
-					if (xOffset > 0.99f || zOffset > 0.99f)																		 //If unit is on a new tile	
-					{
-						_tilemap->RemoveObjectFromTile(g->GetTilePosition(), unit);
-						unit->Move();
-						_tilemap->AddObjectToTile(g->GetTilePosition(), unit);
-
-						/*if (_tilemap->IsTrapOnTile(g->GetTilePosition()._x, g->GetTilePosition()._y))
-						{
-							static_cast<Trap*>(_tilemap->GetObjectOnTile(g->GetTilePosition()._x, g->GetTilePosition()._y, TRAP))->Activate(unit);
-						}*/
-					}
-
-					if (unit->GetType() == GUARD && _tilemap->IsEnemyOnTile(g->GetTilePosition()))
-					{
-						unit->act(_tilemap->GetObjectOnTile(g->GetTilePosition(), ENEMY));
-					}
-					if (unit->GetType() == ENEMY)
-					{
-						//unit->SetVisibility(false);
-					}
-
-					//If all the objectives are looted and the enemy is at a (de)spawn point, despawn them.
-					bool allLootIsCarried = true;
-					for (uint k = 0; k < _gameObjects[SPAWN].size(); k++)
-					{
-						for (uint l = 0; l < _gameObjects[LOOT].size() && allLootIsCarried; l++)
-						{
-							if (_gameObjects[LOOT][l]->GetPickUpState() == ONTILE || _gameObjects[LOOT][l]->GetPickUpState() == DROPPING)
-							{
-								allLootIsCarried = false;
-							}
-						}
-
-						if (unit->GetType() != GUARD &&
-							(_gameObjects[LOOT].size() == 0 || allLootIsCarried) &&
-							unit->InRange(_gameObjects[SPAWN][k]->GetTilePosition()))
-						{
-							unit->TakeDamage(10);
-						}
-					}
+					_tilemap->RemoveObjectFromTile(unit->GetTilePosition(), g);
+					_tilemap->AddObjectToTile(unit->GetNextTile(), g);
 				}
 			}
 			else if (g->GetType() == SPAWN)															//Manage enemy spawning
 			{
-				if (static_cast<SpawnPoint*>(g)->isSpawning())
+				if (static_cast<SpawnPoint*>(g)->isSpawning() && _tilemap->GetNrOfLoot() > 0)
 				{
 					if (Add(ENEMY, "enemy_proto", g->GetPosition(), g->GetRotation()))
 					{
-						((Unit*)_gameObjects[ENEMY].back())->Move();
+						((Unit*)_gameObjects[ENEMY].back())->InitializePathFinding();
 					}
 				}
 			}
-			//else if (g->GetType() == TRAP)
-			//{
-			//	Unit* unit = static_cast<Unit*>(_tilemap->GetUnitOnTile(g->GetTilePosition()._x, g->GetTilePosition()._y));
-			//	//Enemy walks over trap
-			//	if (unit != nullptr)
-			//	{
-			//		static_cast<Trap*>(g)->Activate(unit);
-			//	}
-			//}
 		}
 	}
 	UpdateLights();
@@ -677,23 +644,51 @@ void ObjectHandler::UpdateLights()
 {
 	for (pair<GameObject*, Renderer::Spotlight*> spot : _spotlights)
 	{
-		if (spot.second->IsActive() && spot.first->IsActive())
+		if (spot.first == nullptr)
 		{
-			if (spot.second->GetBone() != 255)
+			SAFE_DELETE(spot.second);
+			spot.second = nullptr;
+		}
+		else
+		{
+			if (spot.second->IsActive() && spot.first->IsActive())
 			{
-				spot.second->SetPositionAndRotation(spot.first->GetAnimation()->GetTransforms()[spot.second->GetBone()]);
+				if (spot.second->GetBone() != 255)
+				{
+					spot.second->SetPositionAndRotation(spot.first->GetAnimation()->GetTransforms()[spot.second->GetBone()]);
+				}
+				else
+				{
+					XMFLOAT3 pos = spot.first->GetPosition();
+					pos.y = 0.5f;
+
+					XMFLOAT3 rot = spot.first->GetRotation();
+					rot.x = XMConvertToDegrees(rot.x);
+					rot.y = XMConvertToDegrees(rot.y) + 180;
+					rot.z = XMConvertToDegrees(rot.z);
+					spot.second->SetPositionAndRotation(pos, rot);
+				}
+			}
+		}
+	}
+	for (pair<GameObject*, Renderer::Pointlight*> point : _pointligths)
+	{
+		if (point.first == nullptr)
+		{
+			SAFE_DELETE(point.second);
+			point.second = nullptr;
+		}
+		else
+		{
+			if (point.first->IsActive() && point.first->IsVisible())
+			{
+				XMFLOAT3 pos = point.first->GetPosition();
+				point.second->SetPosition(DirectX::XMFLOAT3(pos.x, 2, pos.z));
+				point.second->SetActive(true);
 			}
 			else
 			{
-				XMFLOAT3 pos = spot.first->GetPosition();
-				pos.y = 0.5f;
-
-				XMFLOAT3 rot = spot.first->GetRotation();
-				rot.x = XMConvertToDegrees(rot.x);
-				rot.y = XMConvertToDegrees(rot.y) + 180;
-				rot.z = XMConvertToDegrees(rot.z);
-
-				spot.second->SetPositionAndRotation(pos, rot);
+				point.second->SetActive(false);
 			}
 		}
 	}

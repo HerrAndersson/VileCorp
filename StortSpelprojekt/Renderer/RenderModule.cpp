@@ -13,7 +13,7 @@ namespace Renderer
 		InitializeScreenQuadBuffer();
 		InitializeConstantBuffers();
 
-		_shadowMap = new ShadowMap(_d3d->GetDevice(), settings->_shadowMapHeight);
+		_shadowMap = new ShadowMap(_d3d->GetDevice(), settings->_shadowMapSize);
 	}
 
 	RenderModule::~RenderModule()
@@ -124,12 +124,12 @@ namespace Renderer
 		}
 	}
 
-	void RenderModule::ResizeResources(HWND hwnd, System::Settings* settings)
+	void RenderModule::ResizeResources(System::Settings* settings)
 	{
-		_d3d->ResizeResources(hwnd, settings);
+		_d3d->ResizeResources(settings);
 		_settings = settings;
 
-		_shadowMap->Resize(_d3d->GetDevice(), settings->_shadowMapHeight);
+		_shadowMap->Resize(_d3d->GetDevice(), settings->_shadowMapSize);
 	}
 
 	void RenderModule::SetDataPerFrame(DirectX::XMMATRIX* view, DirectX::XMMATRIX* projection)
@@ -425,6 +425,17 @@ namespace Renderer
 		{
 			deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 			_shaderHandler->SetAnimationPassShaders(_d3d->GetDeviceContext());
+
+			break;
+		}
+		case ANIM_SHADOW_GENERATION:
+		{
+			//Topology has to be set here because GRID_STAGE, which is the previous stage, will change to LINELIST
+			deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+			_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::DISABLE);
+			_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::FRONT);
+
+			_shaderHandler->SetAnimaShadowGenerationShaders(deviceContext);
 
 			break;
 		}

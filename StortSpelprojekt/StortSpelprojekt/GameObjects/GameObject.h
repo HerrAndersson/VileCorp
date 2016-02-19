@@ -14,7 +14,8 @@ If the object doesn't need a _renderObject, set it to nullptr.
 If the object has a renderObject but is out of sight _visibility will be false.
 */
 
-enum PickUpState{ONTILE, HELD, PICKINGUP, DROPPING};
+enum PickUpState{ONTILE, HELD, PICKINGUP, PICKEDUP, DROPPING};
+const float TILE_EPSILON = 0.05f;			//Maximum offset for a position to be considered centered on a tile
 class GameObject
 {
 protected:
@@ -68,9 +69,11 @@ public:
 	Type GetType() const;
 	unsigned int GetSubType() const;
 
+	bool IsCenteredOnTile(AI::Vec2D tile)const;
+
 	bool IsVisible() const;
 	bool IsActive() const;
-	void SetActive(bool active);
+	//void SetActive(bool active);						out-commented to avoid confusion with trap activation
 	void SetVisibility(bool visible);
 	virtual bool InRange(AI::Vec2D pos)const;
 

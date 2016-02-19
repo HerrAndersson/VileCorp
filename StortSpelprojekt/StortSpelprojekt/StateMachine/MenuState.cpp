@@ -1,15 +1,9 @@
 #include "MenuState.h"
 
-MenuState::MenuState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::Settings* settings, System::SoundModule* soundModule)
-	: BaseState (controls, objectHandler, camera, pickingDevice, filename, "MENU", assetManager, fontWrapper, settings, soundModule)
+MenuState::MenuState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule)
+	: BaseState (controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settingsReader, soundModule)
 {
-	_controls = controls;
-	_objectHandler = objectHandler;
-	
-	_camera = camera;
-	_pickingDevice = pickingDevice;
-
-	_soundModule->AddSound("Assets/Sounds/page.wav",1.0f, 1.0f, true, false);
+	_soundModule->AddSound("Assets/Sounds/page", 1.0f, 1.0f, true, false);
 }
 
 MenuState::~MenuState()
@@ -31,14 +25,14 @@ void MenuState::Update(float deltaTime)
 		System::MouseCoord coord = _controls->GetMouseCoord();
 		if (_uiTree.IsButtonColliding("playbutton", coord._pos.x, coord._pos.y))
 		{
-			_soundModule->Stop("Assets/Sounds/theme.wav");
-			_soundModule->Play("Assets/Sounds/page.wav");
+			_soundModule->Stop("Assets/Sounds/theme");
+			_soundModule->Play("Assets/Sounds/page");
 
 			ChangeState(State::LEVELSELECTSTATE);
 		}
 		if (_uiTree.IsButtonColliding("optionsbutton", coord._pos.x, coord._pos.y))
 		{
-			_soundModule->Play("Assets/Sounds/page.wav");
+			_soundModule->Play("Assets/Sounds/page");
 			ChangeState(State::OPTIONSSTATE);
 		}
 		if (_uiTree.IsButtonColliding("leveleditbutton", coord._pos.x, coord._pos.y))

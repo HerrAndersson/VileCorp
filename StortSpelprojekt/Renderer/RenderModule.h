@@ -163,12 +163,12 @@ namespace Renderer
 	public:
 
 		const DirectX::XMFLOAT3 AMBIENT_LIGHT = DirectX::XMFLOAT3(0.14f,0.15f,0.2f);
-		enum ShaderStage { GEO_PASS, SHADOW_GENERATION, LIGHT_APPLICATION_SPOTLIGHT, LIGHT_APPLICATION_POINTLIGHT, RENDER_LINESTRIP, ANIM_STAGE, HUD_STAGE, AA_STAGE, BILLBOARDING_STAGE };
+		enum ShaderStage { GEO_PASS, SHADOW_GENERATION, LIGHT_APPLICATION_SPOTLIGHT, LIGHT_APPLICATION_POINTLIGHT, RENDER_LINESTRIP, ANIM_STAGE, HUD_STAGE, AA_STAGE, BILLBOARDING_STAGE, ANIM_SHADOW_GENERATION };
 
 		RenderModule(HWND hwnd, System::Settings* settings);
 		~RenderModule();
 
-		void ResizeResources(HWND hwnd, System::Settings* settings);
+		void ResizeResources(System::Settings* settings);
 
 		void SetDataPerFrame(DirectX::XMMATRIX* view, DirectX::XMMATRIX* projection);
 		void SetDataPerObjectType(RenderObject* renderObject);

@@ -37,8 +37,7 @@
     "NEWLEVEL": [ "C" ]
   },
   "PLAY": {
-    "BOX_SELECT": [ "leftmouse", "shift" ],
-    "SET_PATROL": [ "leftmouse", "ctrl" ],
+    "SET_PATROL": [ "rightmouse", "shift" ],
     "CONTROL_GROUP0": [ "0", "ctrl" ],
     "CONTROL_GROUP1": [ "1", "ctrl" ],
     "CONTROL_GROUP2": [ "2", "ctrl" ],

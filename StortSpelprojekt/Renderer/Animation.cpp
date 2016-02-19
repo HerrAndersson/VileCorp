@@ -1,6 +1,6 @@
 #include"Animation.h"
 
-Animation::Animation(Skeleton* skeleton)
+Animation::Animation(Skeleton* skeleton, bool firstFrame)
 {
 	_skeleton = skeleton;
 	_boneCount = _skeleton->_parents.size();
@@ -8,14 +8,45 @@ Animation::Animation(Skeleton* skeleton)
 	toParentTransforms = (XMMATRIX*)_aligned_malloc(sizeof(XMMATRIX) * _boneCount, 16);
 	finalTransforms = (XMMATRIX*)_aligned_malloc(sizeof(XMMATRIX) * _boneCount, 16);
 	finalFloats.resize(_boneCount);
-	for (unsigned i = 0; i < _boneCount; i++)
-	{
-		finalTransforms[i] = XMMatrixIdentity();
-		XMStoreFloat4x4(&finalFloats[i], XMMatrixIdentity());
-	}
+
 	_animTime = 0.0f;
 	_currentAction = -1;
 	_currentCycle = 0;
+	_inactive = false;
+	_lastFrame = false;
+	_actionSpeed = 1.0f;
+	_cycleSpeed = 1.0f;
+	_isFinished = true;
+
+	if (firstFrame)
+	{
+		_frozen = false;
+		Update(_skeleton->_actions[0]._bones[0]._frameTime[0]);
+		_frozen = true;
+	}
+	else
+	{
+		for (unsigned i = 0; i < _boneCount; i++)
+		{
+			finalTransforms[i] = XMMatrixIdentity();
+			XMStoreFloat4x4(&finalFloats[i], XMMatrixIdentity());
+		}
+	}
+	for (int i = 0; i < _skeleton->_actions.size(); i++)
+	{
+		_length.push_back(int());
+		float maxTime = 0.0f;
+		for (int j = 0; j < _boneCount; j++)
+		{
+			for (int k = 0; k < _skeleton->_actions[i]._bones[j]._frameTime.size(); k++)
+			{
+				if (_skeleton->_actions[i]._bones[j]._frameTime[k] > maxTime)
+				{
+					_length[i] = _skeleton->_actions[i]._bones[j]._frameTime[k] * 60;
+				}
+			}
+		}
+	}
 }
 
 Animation::~Animation()
@@ -31,13 +62,30 @@ void Animation::Update(float time)
 	{
 		return;
 	}
-	_animTime += time / 1000;
+	if (_currentAction != -1)
+	{
+		_animTime += (time / 1000) * _actionSpeed;
+	}
+	else
+	{
+		_animTime += (time / 1000) * _cycleSpeed;
+	}
 	if (_currentAction != -1)
 	{
 		if (_skeleton->_actions[_currentAction]._bones[0]._frameTime.back() < _animTime)
 		{
-			_currentAction = -1;
 			_animTime = 0.0f;
+			if (_lastFrameRender)
+			{
+				_animTime = _skeleton->_actions[_currentAction]._bones[0]._frameTime.back();
+			}
+			if (_inactive)
+			{
+				_inactive = false;
+				_frozen = true;
+			}
+			_currentAction = -1;
+			_isFinished = true;
 		}
 		else
 		{
@@ -47,7 +95,7 @@ void Animation::Update(float time)
 			}
 		}
 	}
-	if (_currentAction == -1 && _currentCycle != -1)
+	if (_currentAction == -1)
 	{
 		if (_skeleton->_actions[_currentCycle]._bones[0]._frameTime.back() < _animTime)
 		{
@@ -88,13 +136,14 @@ int Animation::GetBoneCount() const
 	return _boneCount;
 }
 
-void Animation::SetActionAsCycle(int action, bool reset)
+void Animation::SetActionAsCycle(int action, float speed, bool reset)
 {
 	if (reset)
 	{
 		_animTime = 0.0f;
 	}
 	_currentCycle = action;
+	_cycleSpeed = speed;
 }
 
 void Animation::Freeze(bool freeze)
@@ -102,10 +151,41 @@ void Animation::Freeze(bool freeze)
 	_frozen = freeze;
 }
 
-void Animation::PlayAction(int action)
+void Animation::SetSpeed(float speed, bool cycle)
 {
+	if (cycle)
+	{
+		_cycleSpeed = speed;
+	}
+	else
+	{
+		_actionSpeed = speed;
+	}
+}
+
+void Animation::PlayAction(int action, float speed, bool freeze, bool lastFrame)
+{
+	_frozen = false;
 	_animTime = 0.0f;
 	_currentAction = action;
+	_isFinished = false;
+	if (freeze)
+	{
+		_inactive = true;
+	}
+	_lastFrameRender = lastFrame;
+	_actionSpeed = speed;
+}
+
+bool Animation::GetisFinished()
+{
+	return _isFinished;
+}
+
+float Animation::GetLength(int animation, float speed)
+{
+	int test = _length[animation] / speed;
+	return test;
 }
 
 XMMATRIX Animation::Interpolate(unsigned boneID, int action)

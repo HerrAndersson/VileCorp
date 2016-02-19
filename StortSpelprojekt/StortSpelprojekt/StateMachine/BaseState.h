@@ -7,6 +7,7 @@
 #include "../../System/Camera.h"
 #include "../PickingDevice.h"
 #include "../UITree.h"
+#include "../../System/SettingsReader.h"
 
 
 class BaseState
@@ -22,13 +23,21 @@ protected:
 	System::Camera*			_camera;
 	PickingDevice*			_pickingDevice;
 	System::SoundModule*	_soundModule;
+	System::SettingsReader* _settingsReader;
+	AssetManager*			_assetManager;
 	
 	void ChangeState(State newState);
 	void ResetMouse();
 	State GetOldState() const;
 
+	void HandleCam(float deltaTime);
+	void HandleCamMode();
+	void HandleCamZoom();
+	void HandleCamRot();
+	void HandleCamMove(float deltaTime);
+
 public:
-	BaseState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, const std::string& statename, AssetManager* assetManager, FontWrapper* fontWrapper, System::Settings* settings, System::SoundModule* soundModule);
+	BaseState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule);
 	virtual ~BaseState();
 
 	virtual void Update(float deltaTime) = 0;

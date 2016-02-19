@@ -2,8 +2,8 @@
 
 
 
-LevelSelectState::LevelSelectState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::Settings* settings, System::SoundModule* soundModule) :
-	BaseState(controls, objectHandler, camera, pickingDevice, filename, "LEVELSELECT", assetManager, fontWrapper, settings, soundModule)
+LevelSelectState::LevelSelectState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule) :
+	BaseState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settingsReader, soundModule)
 {
 	_levelSelection = 7;
 	_levelSelectionMin = 7;
@@ -34,7 +34,7 @@ void LevelSelectState::Update(float deltaTime)
 		System::MouseCoord coord = _controls->GetMouseCoord();
 		if (_uiTree.IsButtonColliding("playbutton", coord._pos.x, coord._pos.y))
 		{
-			_soundModule->Play("Assets/Sounds/page.wav");
+			_soundModule->Play("Assets/Sounds/page");
 			_objectHandler->LoadLevel(_levelSelection);
 			ChangeState(State::PLACEMENTSTATE);
 		}
@@ -42,7 +42,7 @@ void LevelSelectState::Update(float deltaTime)
 		{
 			if (_levelSelection > _levelSelectionMin)
 			{
-				_soundModule->Play("Assets/Sounds/page.wav");
+				_soundModule->Play("Assets/Sounds/page");
 				_uiTree.GetNode(std::to_string(_levelSelection))->SetHidden(true);
 				_levelSelection--;
 				_uiTree.GetNode(std::to_string(_levelSelection))->SetHidden(false);
@@ -52,7 +52,7 @@ void LevelSelectState::Update(float deltaTime)
 		{
 			if (_levelSelection < _levelSelectionMax)
 			{
-				_soundModule->Play("Assets/Sounds/page.wav");
+				_soundModule->Play("Assets/Sounds/page");
 				_uiTree.GetNode(std::to_string(_levelSelection))->SetHidden(true);
 				_levelSelection++;
 				_uiTree.GetNode(std::to_string(_levelSelection))->SetHidden(false);
@@ -63,7 +63,8 @@ void LevelSelectState::Update(float deltaTime)
 
 void LevelSelectState::OnStateEnter()
 {
-
+	//TODO: This is hardcoded to nine due to the functionality in LevelSelectState constructor /Sebastian
+	_levelSelectionMax = min(_levelSelectionMin + _settingsReader->GetProfile()->_level, 9);
 }
 
 void LevelSelectState::OnStateExit()

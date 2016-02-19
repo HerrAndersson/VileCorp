@@ -102,7 +102,7 @@
 
 robocopy "$(SolutionDir)Renderer\Shaders" "$(OutDir)Assets\Shaders" *.hlsl /MIR /Z /XA:H /W:1 /R:1 /V
 
-robocopy "$(SolutionDir)Assets" "$(OutDir)Assets" *.json /E /Z /XA:H /W:1 /R:1 /V
+robocopy "$(SolutionDir)Assets" "$(OutDir)Assets" *.json *.xml /E /Z /XA:H /W:1 /R:1 /V
 
 robocopy "$(SolutionDir)include\yse\dll" "$(OutDir)" /E /Z /XA:H /W:1 /R:1 /V
 
@@ -132,6 +132,8 @@ if errorlevel 1 exit 0 else exit %errorlevel%</Command>
 robocopy "$(SolutionDir)Renderer\Shaders" "$(OutDir)Assets\Shaders" *.hlsl /MIR /Z /XA:H /W:1 /R:1 /V
 
 robocopy "$(SolutionDir)Assets" "$(OutDir)Assets" *.json /E /Z /XA:H /W:1 /R:1 /V
+
+robocopy "$(SolutionDir)include\yse\dll" "$(OutDir)" /E /Z /XA:H /W:1 /R:1 /V
 
 if errorlevel 1 exit 0 else exit %errorlevel%</Command>
     </CustomBuildStep>
@@ -193,6 +195,8 @@ robocopy "$(SolutionDir)Renderer\Shaders" "$(OutDir)Assets\Shaders" *.hlsl /MIR 
 
 robocopy "$(SolutionDir)Assets" "$(OutDir)Assets" *.json /E /Z /XA:H /W:1 /R:1 /V
 
+robocopy "$(SolutionDir)include\yse\dll" "$(OutDir)" /E /Z /XA:H /W:1 /R:1 /V
+
 if errorlevel 1 exit 0 else exit %errorlevel%</Command>
     </CustomBuildStep>
     <CustomBuildStep>
@@ -204,6 +208,7 @@ if errorlevel 1 exit 0 else exit %errorlevel%</Command>
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="InputDevice.cpp" />
     <ClCompile Include="SettingsReader.cpp" />
+    <ClCompile Include="Settings\Profile.cpp" />
     <ClCompile Include="SoundModule.cpp" />
     <ClCompile Include="Settings\Settings.cpp" />
     <ClCompile Include="Timer.cpp" />
@@ -215,6 +220,7 @@ if errorlevel 1 exit 0 else exit %errorlevel%</Command>
     <ClInclude Include="JsonParser.h" />
     <ClInclude Include="InputDevice.h" />
     <ClInclude Include="SettingsReader.h" />
+    <ClInclude Include="Settings\Profile.h" />
     <ClInclude Include="Settings\Settings.h" />
     <ClInclude Include="Shapes.h" />
     <ClInclude Include="SoundModule.h" />

@@ -19,6 +19,7 @@ namespace Renderer
 
 		float				_intensity;
 		float				_range;
+		bool				_active;
 
 		ID3D11Buffer*		_lightSphereVolume;
 		int					_vertexCount;
@@ -41,6 +42,9 @@ namespace Renderer
 		DirectX::XMFLOAT3 GetColor() const;
 		float GetRange() const;
 		float GetIntensity() const;
+
+		bool IsActive() const;
+		void SetActive(bool active);
 
 		ID3D11Buffer* GetVolumeBuffer();
 

@@ -10,7 +10,7 @@
 
   ],
   "loot": [
-    "diamond-24.bin"
+    "Diamond-27.bin"
 
   ],
   "spawns": [
@@ -18,9 +18,10 @@
 
   ],
   "traps": [
-    "Anvil-27.bin",
-    "Anvil-27.bin",
-    "TeslaTrap-26.bin"
+    "AnvilAnimation-27.bin",
+    "AnvilAnimation-27.bin",
+    "TeslaAnimation-27.bin",
+	"SharkTrap-27.bin"
 
   ],
   "triggers": [
@@ -28,12 +29,12 @@
 
   ],
   "guards": [
-    "guard-24.bin",
-    "guard-24.bin"
+    "ErikBaseman-28.bin",
+    "ErikBaseman-28.bin"
 
   ],
   "enemies": [
-    "enemy-24.bin"
+    "ErikEnemy-27.bin"
 
   ],
   "cameras": [
@@ -41,7 +42,7 @@
 
   ],
   "furnitures": [
-    "Cupboard-27.bin"
+    "PillowPedestal-27.bin"
 
   ]
 }

@@ -1,5 +1,64 @@
 #include "Enemy.h"
 
+/*
+Decides the best direction to run away from a foe.
+*/
+void Enemy::Flee()
+{
+	//if (_tileMap->IsFloorOnTile(_tilePosition))
+	//{
+	//	_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,0});
+	//}
+	_tilePosition = _nextTile;
+	//if (_tileMap->IsFloorOnTile(_tilePosition))
+	//{
+	//	_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,4});
+	//}
+	if (_pursuer == nullptr)		//TODO Add other conditions to stop fleeing --Victor
+	{
+		_moveState = MoveState::IDLE;
+	}
+	else
+	{
+		float distance = _aStar->GetHeuristicDistance(_tilePosition, _pursuer->GetTilePosition());
+		if (!_visible || distance > (float)_pursuer->GetVisionRadius())
+		{
+			_moveState = MoveState::IDLE;
+			_pursuer = nullptr;
+		}
+		else
+		{
+			AI::Vec2D offset = _tilePosition - _pursuer->GetTilePosition();
+			AI::Vec2D bestDir = {0,0};
+			float bestDist = 0;
+			float tempDist = 0;
+			for (int i = 0; i < 8; i++)
+			{
+				//	AI::Vec2D tempDist = offset + AI::NEIGHBOUR_OFFSETS[i];
+
+				if (i < 4)						//weighting to normalize diagonal and straight directions
+				{
+					tempDist = pow(offset._x + AI::SQRT2 * AI::NEIGHBOUR_OFFSETS[i]._x, 2) + pow(offset._y + AI::SQRT2 * AI::NEIGHBOUR_OFFSETS[i]._y, 2);
+				}
+				else
+				{
+					tempDist = (float)pow(offset._x + AI::NEIGHBOUR_OFFSETS[i]._x, 2) + (float)pow(offset._y + AI::NEIGHBOUR_OFFSETS[i]._y, 2);
+				}
+
+				if (_tileMap->IsFloorOnTile(_tilePosition + AI::NEIGHBOUR_OFFSETS[i]) && !_tileMap->IsEnemyOnTile(_tilePosition + AI::NEIGHBOUR_OFFSETS[i]) && tempDist > bestDist)
+				{
+					bestDist = tempDist;
+					bestDir = AI::NEIGHBOUR_OFFSETS[i];
+				}
+			}
+			_direction = bestDir;
+			_nextTile = _tilePosition + _direction;
+			Rotate();
+			_moveState = MoveState::MOVING;
+		}
+	}
+}
+
 Enemy::Enemy()
 	: Unit()
 {
@@ -11,9 +70,9 @@ Enemy::Enemy(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 ro
 {
 	SetVisibility(false);
 	_visibilityTimer = TIME_TO_HIDE;
-
 	_detectionSkill = 50;
 	_disarmSkill = 50;
+	_pursuer = nullptr;
 }
 
 Enemy::~Enemy()
@@ -32,7 +91,7 @@ void Enemy::EvaluateTile(Type objective, AI::Vec2D tile)
 void Enemy::EvaluateTile(GameObject* obj)
 {
 	int tempPriority = 0;
-	if (obj != nullptr)
+	if (obj != nullptr && obj->GetPickUpState() == ONTILE)
 	{
 		switch (obj->GetType())
 		{
@@ -43,7 +102,7 @@ void Enemy::EvaluateTile(GameObject* obj)
 			}
 			break;
 		case SPAWN:
-			if (_heldObject != nullptr)
+			if (_heldObject != nullptr || _tileMap->GetNrOfLoot() <= 0)
 			{
 				tempPriority = 2;
 			}
@@ -60,16 +119,15 @@ void Enemy::EvaluateTile(GameObject* obj)
 		case GUARD:
 			if (static_cast<Unit*>(obj)->GetHealth() > 0)
 			{
-				if (!SafeToAttack(static_cast<Unit*>(obj)->GetDirection()) && (obj != _objective || _visible))
-				{
-					_isFleeing = true;
-					_pursuer = obj;
-					ClearObjective();
-					Flee();
-				}
-				else if (GetApproxDistance(obj->GetTilePosition()) < 3 && !_visible)
+				if (SafeToAttack(static_cast<Unit*>(obj)->GetDirection()))
 				{
 					tempPriority = 2;			//TODO Make actual calculations based on attack skill etc --Victor
+				}
+				else if (obj != _objective && _visible)
+				{
+					_pursuer = static_cast<Unit*>(obj);
+					ClearObjective();
+					_moveState = MoveState::MOVING;
 				}
 			}
 			break;
@@ -80,25 +138,18 @@ void Enemy::EvaluateTile(GameObject* obj)
 		}
 
 		//Head to the objective
-		if (obj->GetPickUpState() == ONTILE && 
-			tempPriority > 0 &&
+		if (tempPriority > 0 &&
  			obj->GetTilePosition() != _tilePosition && 
-			(_pathLength <= 0 || tempPriority * GetApproxDistance(obj->GetTilePosition()) < _goalPriority * GetApproxDistance(GetGoal())))
+			(_objective == nullptr || tempPriority * GetApproxDistance(obj->GetTilePosition()) < _goalPriority * GetApproxDistance(GetGoalTilePosition())))
 		{
+			SetGoalTilePosition(obj->GetTilePosition());
+			_objective = obj;
 			_goalPriority = tempPriority;
-			SetGoal(obj);
-		}
-		//Head for the exit, all objectives are taken
-		else if (_heldObject == nullptr && _pathLength <= 0 && !_isFleeing)
-		{
-			//Lowest possible priority, temporary solution that will be solved with the state machine, Aron and Victor
-			_goalPriority = _MAX_INT_DIG;
-			SetGoal(obj);
 		}
 	}
 }
 
-void Enemy::act(GameObject* obj)
+void Enemy::Act(GameObject* obj)
 {
 	if (obj != nullptr)
 	{
@@ -107,26 +158,37 @@ void Enemy::act(GameObject* obj)
 		case LOOT:
 			if (_heldObject == nullptr)
 			{
-				obj->SetPickUpState(PICKINGUP);
-				_heldObject = obj;
-				obj->SetVisibility(_visible);
+				if (_interactionTime < 0)
+				{
+					UseCountdown(_animation->GetLength(3, 1.0f * speedMultiplyer));
+					obj->SetPickUpState(PICKINGUP);
+					Animate(PICKUPOBJECTANIM);
+				}
+				else if(_interactionTime == 0)
+				{
+					obj->SetPickUpState(PICKEDUP);
+					_heldObject = obj;
+					obj->SetVisibility(_visible);
+					ClearObjective();
+				}
+				else
+				{
+					UseCountdown();
+				}
 			}
 			break;
 		case SPAWN:
-			if (_heldObject != nullptr)
-			{
-				TakeDamage(10);						//TODO: Right now despawn is done by killing the unit. This should be changed to reflect that it's escaping --Victor
-			}
+			TakeDamage(_health);						//TODO: Right now despawn is done by killing the unit. This should be changed to reflect that it's escaping --Victor
 			break;
 		case TRAP:
 		{
 			if (static_cast<Trap*>(obj)->IsTrapActive())
 			{
-				if (_trapInteractionTime < 0)
+				if (_interactionTime != 0)
 				{
-					UseTrap();
+					UseCountdown(60);
 				}
-				else if (_trapInteractionTime == 0)
+				else
 				{
 					DisarmTrap(static_cast<Trap*>(obj));
 					ClearObjective();
@@ -139,15 +201,32 @@ void Enemy::act(GameObject* obj)
 		}
 		break;
 		case GUARD:
-			if (static_cast<Unit*>(obj)->GetHealth() > 0)
+			if (_interactionTime != 0)
 			{
-				static_cast<Unit*>(obj)->TakeDamage(10);
+				UseCountdown(_animation->GetLength(1, 1.0f * speedMultiplyer));
+				Animate(FIGHTANIM);
+			}
+			else if (_interactionTime == 0)
+			{
+				static_cast<Unit*>(obj)->TakeDamage(1);
+				if (static_cast<Unit*>(obj)->GetHealth() <= 0)
+				{
+					ClearObjective();
+				}
+			}
+			else
+			{
+				UseCountdown();
 			}
 			break;
 		case ENEMY:
 			break;
 		default:
 			break;
+		}
+		if (_objective == nullptr)
+		{
+			_moveState = MoveState::MOVING;
 		}
 	}
 }
@@ -157,7 +236,41 @@ void Enemy::Release()
 
 void Enemy::Update(float deltaTime)
 {
-	Unit::Update(deltaTime);
+	//Unit::Update(deltaTime);
+	if (_renderObject->_isSkinned)
+	{
+		_animation->Update(deltaTime);
+	}
+
+	switch (_moveState)
+	{
+	case MoveState::IDLE:
+		CheckAllTiles();
+		Animate(IDLEANIM);
+		break;
+	case MoveState::FINDING_PATH:
+		if (_objective != nullptr)
+		{
+			SetGoal(_objective);
+		}
+		break;
+	case MoveState::MOVING:
+		Moving();
+		Animate(WALKANIM);
+		break;
+	case MoveState::SWITCHING_NODE:
+		SwitchingNode();
+		break;
+	case MoveState::AT_OBJECTIVE:
+		Act(_objective);
+		break;
+	case MoveState::FLEEING:
+		Flee();
+		break;
+	default:
+		break;
+	}
+
 	_visibilityTimer--;
 	if (_visibilityTimer <= 0)
 	{
@@ -184,7 +297,7 @@ bool Enemy::SpotTrap(Trap * trap)
 {
 	if (!trap->IsVisibleToEnemies())
 	{
-		srand(time(NULL));
+		srand((int)time(NULL));
 		int detectRoll = rand() % 100;
 		if (detectRoll + _detectionSkill - trap->GetDetectionDifficulty() >= 50)
 		{
@@ -199,7 +312,7 @@ void Enemy::DisarmTrap(Trap * trap)
 {
 	if (trap->IsTrapActive())
 	{
-		srand(time(NULL));
+		srand((int)time(NULL));
 		int disarmRoll = rand()%100;
 		if (disarmRoll + _disarmSkill - trap->GetDisarmDifficulty() >= 50)
 		{
@@ -214,7 +327,7 @@ void Enemy::DisarmTrap(Trap * trap)
 
 bool Enemy::SafeToAttack(AI::Vec2D direction)
 {
-	srand(time(NULL));
+	srand((int)time(NULL));
 	int weight = 0;
 	if (direction == _direction)
 	{
@@ -225,12 +338,27 @@ bool Enemy::SafeToAttack(AI::Vec2D direction)
 		weight = std::abs(_direction._x + direction._x) + std::abs(_direction._y + direction._y) + 1;
 	}
 	
-	bool safeToAttack = true;
+	bool safeToAttack = false;
 
-	if ((rand()%20) * weight > 13)
+	if ((rand()%20) * weight > 17)
 	{
-		safeToAttack = false;
+		safeToAttack = true;
 	}
 
 	return safeToAttack;
+}
+
+void Enemy::Moving()
+{
+	if (_pursuer != nullptr && IsCenteredOnTile(_nextTile))
+	{
+		_moveState = MoveState::FLEEING;
+		_isSwitchingTile = true;
+		_position.x = _nextTile._x;
+		_position.z = _nextTile._y;
+	}
+	else
+	{
+		Unit::Moving();
+	}
 }

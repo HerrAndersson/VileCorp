@@ -211,6 +211,7 @@ private:
 	RenderObject* ScanModel24();
 	RenderObject* ScanModel26();
 	RenderObject* ScanModel27();
+	RenderObject* ScanModel28();
 	RenderObject* ScanModel(const string& file_path);
 	Texture* ScanTexture(const string& filename);
 

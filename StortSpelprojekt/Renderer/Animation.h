@@ -31,16 +31,25 @@ private:
 	Skeleton* _skeleton;
 	float _animTime;
 	int _currentCycle, _currentAction;
+	bool _inactive;
+	bool _lastFrameRender;
+	float _cycleSpeed;
+	float _actionSpeed;
+	bool _isFinished;
+	std::vector<int> _length;
 
 public:
-	Animation(Skeleton* skeleton);
+	Animation(Skeleton* skeleton, bool firstFrame = false);
 	~Animation();
 
 	void Update(float time);
-	void SetActionAsCycle(int action, bool reset);
+	void SetActionAsCycle(int action, float speed, bool reset = false);
 	void Freeze(bool freeze);
-	void PlayAction(int action);
+	void SetSpeed(float speed, bool cycle);
 	XMMATRIX* GetTransforms();
+	void PlayAction(int action, float speed, bool freeze = false, bool lastFrame = false);
 	std::vector<XMFLOAT4X4>* GetFloats();
 	int GetBoneCount() const;
+	bool GetisFinished();
+	float GetLength(int animation, float speed = 1.0f);
 };

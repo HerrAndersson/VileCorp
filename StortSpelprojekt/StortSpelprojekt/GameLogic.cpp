@@ -2,12 +2,13 @@
 #include <DirectXMath.h>
 #include "InputDevice.h"
 
-GameLogic::GameLogic(ObjectHandler* objectHandler, System::Camera* camera, System::Controls* controls, PickingDevice* pickingDevice, GUI::UITree* uiTree, AssetManager* assetManager)
+GameLogic::GameLogic(ObjectHandler* objectHandler, System::Camera* camera, System::Controls* controls, PickingDevice* pickingDevice, GUI::UITree* uiTree, AssetManager* assetManager, System::SettingsReader* settingsReader)
 {
 	_objectHandler = objectHandler;
 	_camera = camera;
 	_controls = controls;
 	_pickingDevice = pickingDevice;
+	_settingsReader = settingsReader;
 
 	_player = new Player(objectHandler);
 	_objectHandler->InitPathfinding();
@@ -30,7 +31,7 @@ void GameLogic::Update(float deltaTime)
 	HandleInput(deltaTime);
 	_objectHandler->Update(deltaTime);
 
-	if (_objectHandler->GetRemainingToSpawn() <= 0)
+	if (_objectHandler->GetRemainingToSpawn() <= 0 && !_gameDone)
 	{
 		if (_objectHandler->GetAllByType(LOOT).size() <= 0)				//You lost
 		{
@@ -41,6 +42,8 @@ void GameLogic::Update(float deltaTime)
 		{
 			_uiTree->GetNode("winscreen")->SetHidden(false);
 			_gameDone = true;
+			_settingsReader->GetProfile()->_level += 1;
+			_settingsReader->ApplyProfileSettings();
 		}
 	}
 	_uiTree->GetNode("objectivetext")->SetText(L"Defeat the intruders! \n" + std::to_wstring(_objectHandler->GetAllByType(ENEMY).size()) + L" enemies still remain.");
@@ -51,14 +54,43 @@ bool GameLogic::IsGameDone() const
 	return _gameDone;
 }
 
+/*
+Private functions
+*/
 void GameLogic::HandleInput(float deltaTime)
 {
-	//Boxselect Units
+	/*
+	Select units
+	*/
+	HandleUnitSelect();
+
+	/*
+	Show selected units on the GUI
+	*/
+	ShowSelectedInfo();
+
+	/*
+	Handle patrol
+	*/
+	HandlePatrol();
+
+	/*
+	Move units
+	*/
+	HandleUnitMove();
+
+}
+
+void GameLogic::HandleUnitSelect()
+{
+	/*
+	Select units
+	*/
 	if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
 		_pickingDevice->SetFirstBoxPoint(_controls->GetMouseCoord()._pos);
 	}
-	
+
 	if (_controls->IsFunctionKeyUp("MOUSE:SELECT"))
 	{
 		//deselect everything first.
@@ -67,12 +99,18 @@ void GameLogic::HandleInput(float deltaTime)
 		for (unsigned int i = 0; i < units.size(); i++)
 		{
 			units[i]->SetColorOffset(DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f));
+			if (units[i]->GetType() == GUARD)
+			{
+				for (auto p : ((Guard*)units[i])->GetPatrolRoute())
+				{
+					_objectHandler->GetTileMap()->GetObjectOnTile(p, FLOOR)->SetColorOffset(XMFLOAT3(0.0f, 0.0f, 0.0f));
+				}
+			}
 		}
 		_player->DeselectUnits();
 
 		//Check if we picked anything
-		vector<GameObject*> pickedUnits = _pickingDevice->BoxPickObjects(_controls->GetMouseCoord()._pos, _objectHandler->GetAllByType(GUARD));
-		//vector<GameObject*> pickedUnits = _pickingDevice->PickObjects(_controls->GetMouseCoord()._pos, _objectHandler->GetAllByType(GUARD));
+		vector<GameObject*> pickedUnits = _pickingDevice->PickObjects(_controls->GetMouseCoord()._pos, _objectHandler->GetAllByType(GUARD));
 
 		//if units selected
 		if (pickedUnits.size() > 0)
@@ -82,29 +120,92 @@ void GameLogic::HandleInput(float deltaTime)
 			{
 				_player->SelectUnit((Unit*)pickedUnits[i]);
 				pickedUnits[i]->SetColorOffset(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));
+				if (pickedUnits[i]->GetType() == GUARD)
+				{
+					for (auto p : ((Guard*)pickedUnits[i])->GetPatrolRoute())
+					{
+						_objectHandler->GetTileMap()->GetObjectOnTile(p, FLOOR)->SetColorOffset(XMFLOAT3(0.0f, 0.0f, 1.0f));
+					}
+				}
 			}
 		}
 	}
+}
 
-	//Move units
-	if (_controls->IsFunctionKeyDown("MOUSE:DESELECT"))
-	{
-		if (_player->AreUnitsSelected())
-		{
-			_player->MoveUnits(_pickingDevice->PickTile(_controls->GetMouseCoord()._pos));
-		}
-	}
-
+void GameLogic::HandlePatrol()
+{
 	//Set Guard Patrol Route if a Guard is Selected
 	if (_controls->IsFunctionKeyDown("PLAY:SET_PATROL"))
 	{
 		if (_player->AreUnitsSelected())
 		{
-			_player->PatrolUnits(_pickingDevice->PickTile(_controls->GetMouseCoord()._pos));
+			AI::Vec2D tilePos = _pickingDevice->PickTile(_controls->GetMouseCoord()._pos);
+
+			if (_objectHandler->GetTileMap()->IsFloorOnTile(tilePos))
+			{
+				_player->PatrolUnits(tilePos);
+			}
+
+			for (auto u : _player->GetSelectedUnits())
+			{
+				if (u->GetType() == GUARD)
+				{
+					for (auto p : ((Guard*)u)->GetPatrolRoute())
+					{
+						GameObject* patrolFloor = _objectHandler->GetTileMap()->GetObjectOnTile(p, FLOOR);
+						if (patrolFloor != nullptr)
+						{
+
+							patrolFloor->SetColorOffset(XMFLOAT3(0.0f, 0.0f, 1.0f));
+						}
+					}
+				}
+			}
 		}
 	}
+}
 
-	//Show selected units on the GUI
+void GameLogic::HandleUnitMove()
+{
+	//Move units
+	if (_controls->IsFunctionKeyDown("MOUSE:DESELECT"))
+	{
+		//Remove colour from patrolroute
+		for (auto u : _player->GetSelectedUnits())
+		{
+			if (u->GetType() == GUARD)
+			{
+				for (auto p : ((Guard*)u)->GetPatrolRoute())
+				{
+					_objectHandler->GetTileMap()->GetObjectOnTile(p, FLOOR)->SetColorOffset(XMFLOAT3(0.0f, 0.0f, 0.0f));
+				}
+			}
+		}
+
+		AI::Vec2D selectedTile = _pickingDevice->PickTile(_controls->GetMouseCoord()._pos);
+		vector<Unit*> units = _player->GetSelectedUnits();
+
+		//if one unit
+		if (units.size() == 1 && selectedTile == units.at(0)->GetTilePosition() && units.at(0)->GetMoveState() == Unit::MoveState::IDLE)
+		{
+				//Check which direction he should be pointing
+				AI::Vec2D direction = _pickingDevice->PickDirection(_controls->GetMouseCoord()._pos, _objectHandler->GetTileMap());
+
+				//Change direction
+				units.at(0)->SetDirection(direction);
+		}
+		else
+		{
+			_player->MoveUnits(selectedTile);
+		}
+	}
+}
+
+void GameLogic::ShowSelectedInfo()
+{
+	/*
+	Show selected units on the GUI
+	*/
 	if (_player->AreUnitsSelected())
 	{
 		vector<Unit*> units = _player->GetSelectedUnits();
@@ -140,144 +241,4 @@ void GameLogic::HandleInput(float deltaTime)
 	{
 		_uiTree->GetNode("unitinfocontainer")->SetHidden(true);
 	}
-
-	/*
-	Toggle free camera mode
-	*/
-	if (_controls->IsFunctionKeyDown("DEBUG:ENABLE_FREECAM"))
-	{
-		if (_camera->GetMode() == System::LOCKED_CAM)
-		{
-			_controls->ToggleCursorLock();
-			_camera->SetMode(System::FREE_CAM);
-		}
-		else
-		{
-			_controls->ToggleCursorLock();
-			_camera->SetMode(System::LOCKED_CAM);
-			_camera->SetRotation(DirectX::XMFLOAT3(70, 0, 0));
-		}
-	}
-
-	/*
-	Camera scroll
-	*/
-	const float ZOOM_MAX = 12.0f;
-	const float ZOOM_MIN = 4.0f;
-	float velocity = deltaTime / 20.0f;
-
-	if (_camera->GetMode() == System::LOCKED_CAM)
-	{
-		if (_controls->IsFunctionKeyDown("CAMERA:ZOOM_CAMERA_IN") &&
-			(_camera->GetPosition().y - velocity) > ZOOM_MIN)
-		{
-			_camera->Move(_camera->GetForwardVector(), velocity);
-		}
-		else if (_controls->IsFunctionKeyDown("CAMERA:ZOOM_CAMERA_OUT") &&
-			(_camera->GetPosition().y + velocity) < ZOOM_MAX)
-		{
-			XMFLOAT3 negForward = XMFLOAT3(
-				_camera->GetForwardVector().x * -1,
-				_camera->GetForwardVector().y * -1,
-				_camera->GetForwardVector().z * -1);
-
-			_camera->Move( negForward, velocity);
-		}
-	}
-
-	/*
-	Camera rotation
-	*/
-	bool isRotating = false;
-	XMFLOAT3 rotation(0.0f, 0.0f, 0.0f);
-	float rotV = 1.4f;
-
-	if (_camera->GetMode() == System::LOCKED_CAM)
-	{
-		if (_controls->IsFunctionKeyDown("CAMERA:ROTATE_CAMERA_LEFT"))
-		{
-			rotation.y = 1.0f;
-			isRotating = true;
-		}
-		if (_controls->IsFunctionKeyDown("CAMERA:ROTATE_CAMERA_RIGHT"))
-		{
-			rotation.y = -1.0f;
-			isRotating = true;
-		}
-
-		if (isRotating)
-		{
-			_camera->Rotate(XMFLOAT3((rotation.x * rotV), (rotation.y * rotV), (rotation.z * rotV)));
-		}
-	}
-
-	//Camera rotation - locked mouse
-	if (_controls->CursorLocked())
-	{
-		XMFLOAT3 rotation = _camera->GetRotation();
-		rotation.x += _controls->GetMouseCoord()._deltaPos.y / 10.0f;
-		rotation.y += _controls->GetMouseCoord()._deltaPos.x / 10.0f;
-
-		_camera->SetRotation(rotation);
-	}
-
-	/*
-	Camera move
-	*/
-	XMFLOAT3 right(0.0f, 0.0f, 0.0f);
-	XMFLOAT3 forward(0.0f, 0.0f, 0.0f);
-	bool isMoving = false;
-	float v = 0.06f + (_camera->GetPosition().y * 0.01);
-
-	if (_controls->IsFunctionKeyDown("CAMERA:MOVE_CAMERA_UP"))
-	{
-		if (_camera->GetMode() == System::FREE_CAM)
-		{
-			forward = _camera->GetForwardVector();
-		}
-		else if (_camera->GetMode() == System::LOCKED_CAM)
-		{
-			forward = (Vec3(_camera->GetRightVector()).Cross(Vec3(XMFLOAT3(0.0f, 1.0f, 0.0f))).convertToXMFLOAT());
-		}
-
-		isMoving = true;
-	}
-
-	if (_controls->IsFunctionKeyDown("CAMERA:MOVE_CAMERA_DOWN"))
-	{
-		if (_camera->GetMode() == System::FREE_CAM)
-		{
-			forward = _camera->GetForwardVector();
-		}
-		else if (_camera->GetMode() == System::LOCKED_CAM)
-		{
-			forward = (Vec3(_camera->GetRightVector()).Cross(Vec3(XMFLOAT3(0.0f, 1.0f, 0.0f))).convertToXMFLOAT());
-		}
-
-		forward.x *= -1;
-		forward.y *= -1;
-		forward.z *= -1;
-		isMoving = true;
-	}
-
-	if (_controls->IsFunctionKeyDown("CAMERA:MOVE_CAMERA_RIGHT"))
-	{
-		right = _camera->GetRightVector();
-		isMoving = true;
-	}
-
-	if (_controls->IsFunctionKeyDown("CAMERA:MOVE_CAMERA_LEFT"))
-	{
-		right = _camera->GetRightVector();
-		right.x *= -1;
-		right.y *= -1;
-		right.z *= -1;
-		isMoving = true;
-	}
-
-	if (isMoving)
-	{
-		_camera->Move(XMFLOAT3((forward.x + right.x) * v, (forward.y + right.y) * v, (forward.z + right.z) * v), deltaTime / 10);
-	}
-	
 }

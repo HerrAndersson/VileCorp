@@ -10,8 +10,8 @@ class Tilemap
 private:
 	struct Tile
 	{
-		static const int OBJECT_CAPACITY = 4;
-		GameObject* _objectsOnTile[OBJECT_CAPACITY];					//0 = floor or wall, 1 = enemy, 2 = guard, 3 = trap or thief objectives or spawnpoint
+		static const int OBJECT_CAPACITY = 6;
+		GameObject* _objectsOnTile[OBJECT_CAPACITY];					//0 = floor or wall, 1 = enemy, 2 = guard, 3 = trap or spawnpoint, 4 = furniture, 5 = thief objectives 
 		bool _isVisible;
 		Tile()
 		{
@@ -35,6 +35,7 @@ private:
 	int _height;
 	int _width;
 
+	int _nrOfLoot;			//Note: This is the amount of loot on the tilemap. Does not count held objects.
 	Tile** _map;
 
 
@@ -54,6 +55,7 @@ public:
 	int GetNrOfTiles() const;
 	int GetHeight() const;
 	int GetWidth() const;
+	int GetNrOfLoot()const;
 
 	GameObject* GetObjectOnTile(AI::Vec2D pos, Type type) const;
 	GameObject* GetObjectOnTile(int x, int z, Type type) const;
@@ -72,6 +74,8 @@ public:
 	bool IsArchitectureOnTile(AI::Vec2D pos)const;
 	bool IsWallOnTile(int x, int z)const;
 	bool IsWallOnTile(AI::Vec2D pos)const;
+	bool IsFurnitureOnTile(int x, int z)const;
+	bool IsFurnitureOnTile(AI::Vec2D pos)const;
 	bool IsFloorOnTile(int x, int z)const;
 	bool IsFloorOnTile(AI::Vec2D pos)const;
 	int UnitsOnTile(int x, int z)const;
