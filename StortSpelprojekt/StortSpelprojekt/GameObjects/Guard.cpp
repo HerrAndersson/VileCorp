@@ -157,30 +157,38 @@ void Guard::Act(GameObject* obj)
 			{
 				if (_interactionTime != 0)
 				{
-					UseCountdown(60);
+					UseCountdown(_animation->GetLength(2, 1.0f * speedMultiplyer));
 					Animate(FIXTRAPANIM);
 				}
-				else
+				else if (_interactionTime == 0)
 				{
 					static_cast<Trap*>(obj)->SetTrapActive(true);
 					//	obj->SetColorOffset({0,0,0});
 					ClearObjective();
+				}
+				else
+				{
+					UseCountdown();
 				}
 			}
 			break;
 		case ENEMY:											//The guard hits the enemy
 			if (_interactionTime != 0)
 			{
-				UseCountdown(60);
+				UseCountdown(_animation->GetLength(4, 4.5f * speedMultiplyer));
 				Animate(FIGHTANIM);
 			}
-			else
+			else if (_interactionTime == 0)
 			{
 				static_cast<Unit*>(obj)->TakeDamage(1);
 				if (static_cast<Unit*>(obj)->GetHealth() <= 0)
 				{
 					ClearObjective();
 				}
+			}
+			else
+			{
+				UseCountdown();
 			}
 			break;
 		case FLOOR:

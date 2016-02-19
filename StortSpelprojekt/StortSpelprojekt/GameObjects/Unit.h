@@ -80,6 +80,6 @@ public:
 	enum Anim { IDLEANIM, WALKANIM, FIXTRAPANIM, FIGHTANIM, PICKUPOBJECTANIM, NR_OF_ANIM/*Has to be last*/ };
 	void Animate(Anim anim);
 	bool GetAnimisFinished();
-
+	float speedMultiplyer;
 };
 

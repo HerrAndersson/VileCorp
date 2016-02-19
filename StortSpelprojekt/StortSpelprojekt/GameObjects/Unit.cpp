@@ -88,6 +88,7 @@ Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	_direction = {0, 1};
 	_nextTile = _tilePosition;
 	_isSwitchingTile = false;
+	speedMultiplyer = 2.0f;
 	Rotate();
 	if (_renderObject->_isSkinned)
 	{
@@ -410,23 +411,23 @@ bool Unit::GetAnimisFinished()
 }
 void Unit::Animate(Anim anim)
 {
-	if (_renderObject->_isSkinned)
+	if (_renderObject->_isSkinned && _animation->GetisFinished())
 	{
 		if (_renderObject->_type == GUARD)
 		{
 			switch (anim)
 			{
 			case IDLEANIM:
-				_animation->SetActionAsCycle(0, 1.0f, false);
+				_animation->SetActionAsCycle(0, 1.0f * speedMultiplyer);
 				break;
 			case WALKANIM:
-				_animation->SetActionAsCycle(1, 1.0f, false);
+				_animation->SetActionAsCycle(1, 1.0f * speedMultiplyer);
 				break;
 			case FIXTRAPANIM:
-				_animation->SetActionAsCycle(2, 1.0f, false);
+				_animation->SetActionAsCycle(2, 1.0f * speedMultiplyer);
 				break;
 			case FIGHTANIM:
-				_animation->PlayAction(4, 3.5f, false, false);
+				_animation->PlayAction(4, 4.5f * speedMultiplyer);
 				break;
 			default:
 				break;
@@ -437,16 +438,16 @@ void Unit::Animate(Anim anim)
 			switch (anim)
 			{
 			case IDLEANIM:
-				_animation->SetActionAsCycle(0, 1.0f, false);
+				_animation->SetActionAsCycle(0, 1.0f * speedMultiplyer);
 				break;
 			case WALKANIM:
-				_animation->SetActionAsCycle(1, 1.0f, false);
+				_animation->SetActionAsCycle(1, 1.0f * speedMultiplyer);
 				break;
 			case FIGHTANIM:
-				_animation->PlayAction(1, 1.0f, false, false);
+				_animation->PlayAction(1, 1.0f * speedMultiplyer);
 				break;
 			case PICKUPOBJECTANIM:
-				_animation->PlayAction(3, 1.0f, false, false);
+				_animation->PlayAction(3, 1.0f * speedMultiplyer);
 				break;
 			default:
 				break;

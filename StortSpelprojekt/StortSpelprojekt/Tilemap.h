@@ -10,8 +10,8 @@ class Tilemap
 private:
 	struct Tile
 	{
-		static const int OBJECT_CAPACITY = 5;
-		GameObject* _objectsOnTile[OBJECT_CAPACITY];					//0 = floor or wall, 1 = enemy, 2 = guard, 3 = trap or thief objectives or spawnpoint, 4 = furniture
+		static const int OBJECT_CAPACITY = 6;
+		GameObject* _objectsOnTile[OBJECT_CAPACITY];					//0 = floor or wall, 1 = enemy, 2 = guard, 3 = trap or spawnpoint, 4 = furniture, 5 = thief objectives 
 		bool _isVisible;
 		Tile()
 		{
