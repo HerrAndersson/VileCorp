@@ -358,6 +358,7 @@ void BaseEdit::HandleMouseInput()
 			}
 			ReleaseMarkers();
 			_isPlace = false;
+			_isDragAndDropMode = false;
 		}
 		
 
