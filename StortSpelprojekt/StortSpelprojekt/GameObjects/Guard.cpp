@@ -10,13 +10,32 @@ Guard::Guard()
 	_currentPatrolGoal = -1;
 }
 
-Guard::Guard(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject * renderObject, const Tilemap * tileMap)
+Guard::Guard(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject * renderObject, const Tilemap * tileMap, const int guardType)
 	: Unit(ID, position, rotation, tilePosition, type, renderObject, tileMap)
 {
+	_guardType = (GuardType)guardType;
 	_isSelected = false;
 	_currentPatrolGoal = 0;
 	_health = 100;
 	_baseDamage = 30;
+
+	switch (_guardType)				//TODO: Repair time, vision radius, etc --Victor
+	{
+	case BASICGUARD:
+		_health = 100;
+		_baseDamage = 30;
+		break;
+	case ENGINEER:
+		_health = 100;
+		_baseDamage = 30;
+		break;
+	case MARKSMAN:
+		_health = 100;
+		_baseDamage = 30;
+		break;
+	default:
+		break;
+	}
 }
 
 Guard::~Guard()
