@@ -285,12 +285,12 @@ bool Tilemap::IsValid(int x, int z) const
 	return IsValid(AI::Vec2D(x, z));
 }
 
-bool Tilemap::IsPlaceable(int x, int z, Type type) const
+bool Tilemap::IsPlaceable(int x, int z, Type type, int subType) const
 {
 	bool placable = false;
 	if (IsValid(x, z))
 	{
-		if (!IsWallOnTile(x, z))
+		if (!IsWallOnTile(x, z) && IsFloorOnTile(x, z))
 		{
 			GameObject* result = nullptr;
 			switch (type)
@@ -306,9 +306,11 @@ bool Tilemap::IsPlaceable(int x, int z, Type type) const
 				result = _map[x][z]._objectsOnTile[2];
 				break;
 			case SPAWN:
-			case TRAP:
 			case CAMERA:
 				result = _map[x][z]._objectsOnTile[3];
+				break;
+			case TRAP:
+				return CheckTrapTiles(x, z, subType);
 				break;
 			case FURNITURE:
 				result = _map[x][z]._objectsOnTile[4];
@@ -329,9 +331,38 @@ bool Tilemap::IsPlaceable(int x, int z, Type type) const
 	return placable;
 }
 
-bool Tilemap::IsPlaceable(AI::Vec2D pos, Type type) const
+bool Tilemap::IsPlaceable(AI::Vec2D pos, Type type, int subType) const
 {
-	return IsPlaceable(pos._x, pos._y, type);
+	return IsPlaceable(pos._x, pos._y, type, subType);
+}
+
+bool Tilemap::CheckTrapTiles(int x, int z, int subType) const
+{
+	// Should be replaced by trap subtype
+	if (subType == 0)
+	{
+		if (_map[x][z]._objectsOnTile[3] == nullptr)
+		{
+			return true;
+		}
+	}
+	else if(subType == 1)
+	{
+		AI::Vec2D occupiedTile(x, z);
+		AI::Vec2D offset;
+		AI::Vec2D currentTile;
+		for (int i = 0; i < 9; i++)
+		{
+			offset = { i / 3 - 1, i % 3 - 1 };
+			currentTile = occupiedTile + offset;
+			if (!IsPlaceable(currentTile, TRAP))
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+	return false;
 }
 /*
 To place an object, the tile should be empty besides a floor

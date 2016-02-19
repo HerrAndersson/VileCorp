@@ -83,13 +83,13 @@ bool BaseEdit::TypeOn(Type type)
 	return false;
 }
 
-bool BaseEdit::CheckValidity(AI::Vec2D tile, Type type)
+bool BaseEdit::CheckValidity(AI::Vec2D tile, Type type, int subType)
 {
 	GameObject* objectOnTile = _tileMap->GetObjectOnTile(tile._x, tile._y, type);
 
 	bool valid = true;
 
-	if (objectOnTile == nullptr && _tileMap->IsPlaceable(tile, type))
+	if (objectOnTile == nullptr && _tileMap->IsPlaceable(tile, type, subType))
 	{
 		if (type == WALL && !_tileMap->IsTileEmpty(tile))
 		{
@@ -143,7 +143,7 @@ void BaseEdit::SetValidity(Marker* m, Type type)
 		p.z = pickedTile._y;
 
 		// Check validity of placement
-		m->_placeable = CheckValidity(/*m->_g,*/ pickedTile, type);
+		m->_placeable = CheckValidity(/*m->_g,*/ pickedTile, type, m->_g->GetSubType());
 
 		// Move marker grafically
 		m->_g->SetPosition(p);
@@ -279,7 +279,7 @@ void BaseEdit::DragAndDrop()
 	}
 }
 
-void BaseEdit::DragAndPlace(Type type, const std::string& objectName)
+void BaseEdit::DragAndPlace(Type type, const std::string& objectName, int subType)
 {
 	if (_isDragAndPlaceMode)
 	{
@@ -348,7 +348,7 @@ void BaseEdit::DragAndPlace(Type type, const std::string& objectName)
 					{
 						objectOnTile = _tileMap->GetObjectOnTile(x, y, type);
 
-						if (CheckValidity(AI::Vec2D(x, y), type))
+						if (CheckValidity(AI::Vec2D(x, y), type), subType)
 						{
 							// Add to valid place
 							_objectHandler->Add(type, objectName, XMFLOAT3(x, 0, y), XMFLOAT3(0.0f, 0.0f, 0.0f), SHARK);

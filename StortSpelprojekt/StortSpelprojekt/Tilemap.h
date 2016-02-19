@@ -37,6 +37,7 @@ private:
 
 	int _nrOfLoot;			//Note: This is the amount of loot on the tilemap. Does not count held objects.
 	Tile** _map;
+	bool CheckTrapTiles(int x, int z, int subType) const;
 
 
 public:
@@ -65,8 +66,8 @@ public:
 	bool IsValid(AI::Vec2D pos) const;
 	bool IsValid(int x, int z) const;
 
-	bool IsPlaceable(int x, int z, Type type) const;
-	bool IsPlaceable(AI::Vec2D pos, Type type) const;
+	bool IsPlaceable(int x, int z, Type type, int subType = 0) const;
+	bool IsPlaceable(AI::Vec2D pos, Type type, int subType = 0) const;
 	bool CanPlaceObject(AI::Vec2D pos) const;
 	bool CanPlaceObject(int x, int z) const;
 

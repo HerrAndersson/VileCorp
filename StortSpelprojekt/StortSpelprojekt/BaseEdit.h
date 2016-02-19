@@ -46,7 +46,7 @@ private:
 	void HandleCamRot();
 	void HandleCamMove(float deltaTime);
 	
-	bool CheckValidity(AI::Vec2D tile, Type type);
+	bool CheckValidity(AI::Vec2D tile, Type type, int subType = 0);
 	void SetValidity(Marker* m, Type type);
 	void MarkerMoveEvent(Type type);
 	void DragAndDropEvent(Type type);
@@ -69,7 +69,7 @@ public:
 
 	void DragAndDrop(Type type);
 	void DragAndDrop();
-	void DragAndPlace(Type type, const std::string& objectName);
+	void DragAndPlace(Type type, const std::string& objectName, int subType = 0);
 	void DragActivate(Type type, const std::string& objectName, int subType = 0);
 
 
