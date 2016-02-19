@@ -7,6 +7,12 @@ namespace GUI
 		_textureId = textureId;
 		_blueprint = blueprint;
 	}
+	BlueprintNode::BlueprintNode(GUI::Node* node, Blueprint * blueprint, int textureId)
+		: Node(*node)
+	{
+		_textureId = textureId;
+		_blueprint = blueprint;
+	}
 	BlueprintNode::~BlueprintNode()
 	{
 	}

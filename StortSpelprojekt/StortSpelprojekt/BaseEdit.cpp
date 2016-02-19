@@ -128,6 +128,11 @@ void BaseEdit::MarkerMoveEvent()
 		{
 			_marker._g->SetColorOffset(XMFLOAT3(0.0f, 1.0f, 0.0f));
 		}
+
+		if (_isDragAndPlaceMode)
+		{
+
+		}
 	}
 }
 
@@ -228,13 +233,6 @@ void BaseEdit::BoxEvent()
 
 		ReleaseMarkers();
 
-		// Check if extreme poins is outside Tilemap
-		if (minX < 0) minX == 0;
-		if (minY < 0) minY == 0;
-		if (maxX >= _tileMap->GetWidth()) maxX >= _tileMap->GetWidth() - 1;
-		if (maxY >= _tileMap->GetHeight()) maxX >= _tileMap->GetHeight() - 1;
-
-
 		// Check tiles
 		GameObject* objectOnTile;
 		if (_isPlace) // Place
@@ -243,8 +241,6 @@ void BaseEdit::BoxEvent()
 			{
 				for (int y = minY; y <= maxY; y++)
 				{
-					objectOnTile = _tileMap->GetObjectOnTile(x, y, _sB->_blueprint->_type);
-
 					if (CheckValidity(AI::Vec2D(x, y), _sB->_blueprint->_type))
 					{
 						// Add to valid place
@@ -259,9 +255,7 @@ void BaseEdit::BoxEvent()
 			{
 				for (int y = minY; y <= maxY; y++)
 				{
-					// TRAP/LOOT/SPAWN OBS!
-					objectOnTile = _tileMap->GetObjectOnTile(x, y, _sB->_blueprint->_type);
-
+					GameObject* objectOnTile = _tileMap->GetObjectOnTile(x, y, _sB->_blueprint->_type);
 					if (objectOnTile != nullptr && _sB->_blueprint->_type == objectOnTile->GetType())
 					{
 						// Remove
