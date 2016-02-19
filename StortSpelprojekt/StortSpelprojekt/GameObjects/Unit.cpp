@@ -139,6 +139,11 @@ void Unit::SetDirection(const AI::Vec2D direction)
 	//_visionCone->FindVisibleTiles(_tilePosition, _direction);
 }
 
+AI::Vec2D Unit::GetNextTile() const
+{
+	return _nextTile;
+}
+
 int Unit::GetHealth()
 {
 	return _health;
