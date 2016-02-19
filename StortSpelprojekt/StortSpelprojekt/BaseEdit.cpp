@@ -649,6 +649,7 @@ void BaseEdit::HandleBlueprint(SpecificBlueprint* sB)
 	_sB = sB;
 	if (_isSelectionMode)
 	{
+		ReleaseMarkers();
 		CreateMarker();
 		_isPlace = false;
 		//_modeLock = true;
