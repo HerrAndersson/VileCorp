@@ -33,12 +33,12 @@ void GameLogic::Update(float deltaTime)
 
 	if (_objectHandler->GetRemainingToSpawn() <= 0 && !_gameDone)
 	{
-		if (_objectHandler->GetAllByType(LOOT).size() <= 0)				//You lost
+		if (_objectHandler->GetAllByType(LOOT)->size() <= 0)				//You lost
 		{
 			_uiTree->GetNode("losescreen")->SetHidden(false);
 			_gameDone = true;
 		}
-		else if (_objectHandler->GetAllByType(ENEMY).size() <= 0)		//You won
+		else if (_objectHandler->GetAllByType(ENEMY)->size() <= 0)		//You won
 		{
 			_uiTree->GetNode("winscreen")->SetHidden(false);
 			_gameDone = true;
@@ -46,7 +46,7 @@ void GameLogic::Update(float deltaTime)
 			_settingsReader->ApplyProfileSettings();
 		}
 	}
-	_uiTree->GetNode("objectivetext")->SetText(L"Defeat the intruders! \n" + std::to_wstring(_objectHandler->GetAllByType(ENEMY).size()) + L" enemies still remain.");
+	_uiTree->GetNode("objectivetext")->SetText(L"Defeat the intruders! \n" + std::to_wstring(_objectHandler->GetAllByType(ENEMY)->size()) + L" enemies still remain.");
 }
 
 bool GameLogic::IsGameDone() const
@@ -110,7 +110,7 @@ void GameLogic::HandleUnitSelect()
 		_player->DeselectUnits();
 
 		//Check if we picked anything
-		vector<GameObject*> pickedUnits = _pickingDevice->PickObjects(_controls->GetMouseCoord()._pos, _objectHandler->GetAllByType(GUARD));
+		vector<GameObject*> pickedUnits = _pickingDevice->PickObjects(_controls->GetMouseCoord()._pos, *_objectHandler->GetAllByType(GUARD));
 
 		//if units selected
 		if (pickedUnits.size() > 0)

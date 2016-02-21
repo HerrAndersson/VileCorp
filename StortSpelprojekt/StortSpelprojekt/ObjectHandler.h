@@ -94,7 +94,7 @@ public:
 	GameObject* Find(Type type, short index);
 
 	//Returns a vector containing all gameobjects with the same type
-	vector<GameObject*> GetAllByType(Type type);
+	vector<GameObject*>* GetAllByType(Type type);
 	//Returns a list of a renderobject and matrices for all objects using the renderobject
 	RenderList GetAllByType(int renderObjectID);
 	vector<vector<GameObject*>>* GetGameObjects();

@@ -335,9 +335,9 @@ GameObject* ObjectHandler::Find(Type type, short index)
 	return nullptr;
 }
 
-vector<GameObject*> ObjectHandler::GetAllByType(Type type)
+vector<GameObject*>* ObjectHandler::GetAllByType(Type type)
 {
-	return _gameObjects[type];
+	return &_gameObjects[type];
 }
 
 RenderList ObjectHandler::GetAllByType(int renderObjectID)
