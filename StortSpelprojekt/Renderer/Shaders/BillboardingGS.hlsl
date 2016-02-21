@@ -44,7 +44,7 @@ void main(point GS_IN input[1], inout TriangleStream<GS_OUT> OutputStream)
 	{
 		up = float4(0, 1, 0, 0) * scale;
 		right = float4(normalize(cross(particleToCam, up.xyz)).xyz, 0) * scale;
-		normal = cross(up, right).xyz;
+		normal = cross(up.xyz, right.xyz).xyz;
 		normal = normalize(normal.xyz);
 		textureNumber = 0;
 	}

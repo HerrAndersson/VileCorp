@@ -79,7 +79,7 @@ namespace Renderer
 
 		for (int i = 0; i < count; i++)
 		{
-			XMVECTOR posV = posToTarget * (length / count) * i;
+			XMVECTOR posV = posToTarget * (length / (float)count) * (float)i;
 			XMFLOAT3 pos;
 			XMStoreFloat3(&pos, posV);
 
@@ -388,7 +388,7 @@ namespace Renderer
 
 							p.SetPosition(position);
 
-							p.DecreaseTimeLeft(deltaTime);
+							p.DecreaseTimeLeft((float)deltaTime);
 
 							break;
 						}
@@ -399,7 +399,7 @@ namespace Renderer
 								CreateElectricityPattern(_particleCount, _targetPosition);
 							}
 
-							_particles.at(0).DecreaseTimeLeft(deltaTime);
+							_particles.at(0).DecreaseTimeLeft((float)deltaTime);
 
 							break;
 						}
@@ -423,13 +423,13 @@ namespace Renderer
 
 							p.SetPosition(position);
 
-							p.DecreaseTimeLeft(deltaTime);
+							p.DecreaseTimeLeft((float)deltaTime);
 
 							break;
 						}
 						case ICON:
 						{
-							p.DecreaseTimeLeft(deltaTime);
+							p.DecreaseTimeLeft((float)deltaTime);
 							break;
 						}
 						default:
