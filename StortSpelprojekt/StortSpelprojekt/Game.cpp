@@ -186,6 +186,21 @@ bool Game::Update(double deltaTime)
 		_particleHandler->GetParticleRequestQueue()->Insert(msg);
 	}
 
+	std::vector<std::vector<GameObject*>>* gameObjects = _objectHandler->GetGameObjects();
+	if (gameObjects->size() > 0)
+	{
+		for (unsigned int i = 0; i < gameObjects->at(GUARD).size(); i++)
+		{
+			XMFLOAT3 pos = gameObjects->at(GUARD).at(i)->GetPosition();
+			pos.y = 2.5f;
+			ParticleRequestMessage msg = ParticleRequestMessage(ParticleType::ICON, ParticleSubType::QUESTIONMARK_SUBTYPE, pos, XMFLOAT3(0, 0, 0), 0.0f, 1, 0.25f, true);
+			_particleHandler->GetParticleRequestQueue()->Insert(msg);
+		}
+	}
+
+
+
+
 	_particleHandler->Update(deltaTime);
 
 
