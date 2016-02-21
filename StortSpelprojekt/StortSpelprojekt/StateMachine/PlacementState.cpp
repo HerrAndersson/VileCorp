@@ -55,11 +55,16 @@ PlacementState::~PlacementState()
 
 void PlacementState::Update(float deltaTime)
 {
+	bool tutorialCompleted = false;
 	//if tutorial mode. Then bypass normal baseEdit update loops.
 	if (_tutorial)
 	{
 		//bypass the normal UI interface to interface the tutorial elements into it.
-		_tutorialLogic->Update(deltaTime, _baseEdit, _toPlace);
+		tutorialCompleted = _tutorialLogic->Update(deltaTime, _baseEdit, _toPlace);
+		if (tutorialCompleted)
+		{
+			ChangeState(State::PLAYSTATE);
+		}
 	}
 	else
 	{

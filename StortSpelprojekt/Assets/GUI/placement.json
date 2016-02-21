@@ -102,13 +102,13 @@
 				"texture": "../Menues/Pause Menu/pause1-nocup.png"
 			},
 			"": {
-					"position": [0, -0.0],
-					"scale": [0.2, 0.6],
-					"text": "Welcome to VileCorp!\n\nIn this tutorial, we will go through the basic in how to play the game.",
-					"color": "FF000000",
-					"centered": true,
-					"fontsize": 30.0
-				},
+				"position": [0, -0.0],
+				"scale": [0.2, 0.6],
+				"text": "Welcome to VileCorp!\n\nIn this tutorial, we will go through the basic in how to play the game.",
+				"color": "FF000000",
+				"centered": true,
+				"fontsize": 30.0
+			},
 			"": {
 				"position": [0, -0.85],
 				"scale": [0.28, 0.6],
@@ -170,14 +170,14 @@
 				}
 			}
 		},
-		"guard": {
+		"guardexplained": {
 			"position": [0.8, 0.15],
 			"scale": [0.2, 0.6],
 			"texture": "../Menues/Pause Menu/pause1-nocup.png",
 			"": {
 				"position": [0, -0.15],
 				"scale": [0.15, 0.6],
-				"text": "Guards are controlable units that you can use to hunt these thieves down. Move the guards towards the thieves and he will kill them. But be wiery though. Unattended guards can get killed by thieves sneaking up from behind.",
+				"text": "Guards\n\nGuards are controllable units that you can use to hunt these thieves down. Move the guards towards the thieves and he will kill them. But be wiery though. Unattended guards can get killed by thieves sneaking up from behind.",
 				"color": "FF000000",
 				"centered": true,
 				"fontsize": 30.0
@@ -204,14 +204,14 @@
 				"fontsize": 30.0
 			}
 		},
-		"anvil": {
+		"anvilexplained": {
 			"position": [0.8, 0.15],
 			"scale": [0.2, 0.6],
 			"texture": "../Menues/Pause Menu/pause1-nocup.png",
 			"": {
 				"position": [0, -0.15],
 				"scale": [0.15, 0.6],
-				"text": "Anvil.",
+				"text": "The Anvil\n\nAvils is a one tile trap that will crush any thieves walking below it. But be aware, some thieves have a very particular set of skills. Acquired over a very long career. Skills that would be a nightmare for traps like this. ",
 				"color": "FF000000",
 				"centered": true,
 				"fontsize": 30.0
@@ -220,6 +220,137 @@
 				"position": [0, -1],
 				"scale": [0.2, 0.6],
 				"text": "Press Enter to Continue.",
+				"color": "FF000000",
+				"centered": true,
+				"fontsize": 30.0
+			}
+		},
+		"anvilplace": {
+			"position": [0.8, 0.15],
+			"scale": [0.2, 0.6],
+			"texture": "../Menues/Pause Menu/pause1-nocup.png",
+			"": {
+				"position": [0, -0.15],
+				"scale": [0.15, 0.6],
+				"text": "Click and drag the anvil to the position of your desire.",
+				"color": "FF000000",
+				"centered": true,
+				"fontsize": 30.0
+			}
+		},
+		"teslaexplained": {
+			"position": [0.8, 0.15],
+			"scale": [0.2, 0.6],
+			"texture": "../Menues/Pause Menu/pause1-nocup.png",
+			"": {
+				"position": [0, -0.15],
+				"scale": [0.15, 0.6],
+				"text": "The Tesla Trap\n\nUnlike the Anvil, the Tesla trap is an area of effect trap. That activates on the inner circle but affects units, both friend and foe, to the outer circle. ",
+				"color": "FF000000",
+				"centered": true,
+				"fontsize": 30.0
+			},
+			"": {
+				"position": [0, -1],
+				"scale": [0.2, 0.6],
+				"text": "Press Enter to Continue.",
+				"color": "FF000000",
+				"centered": true,
+				"fontsize": 30.0
+			}
+		},
+		"teslaplace": {
+			"position": [0.8, 0.15],
+			"scale": [0.2, 0.6],
+			"texture": "../Menues/Pause Menu/pause1-nocup.png",
+			"": {
+				"position": [0, -0.15],
+				"scale": [0.15, 0.6],
+				"text": "Click and drag the tesla trap to the position you find suitable.",
+				"color": "FF000000",
+				"centered": true,
+				"fontsize": 30.0
+			}
+		},
+		"securitycameraexplained": {
+			"position": [0.8, 0.15],
+			"scale": [0.2, 0.6],
+			"texture": "../Menues/Pause Menu/pause1-nocup.png",
+			"": {
+				"position": [0, -0.15],
+				"scale": [0.15, 0.6],
+				"text": "The Security Camera\n\nSecurity Cameras provide vision for any thieves in its sights. They are cheap but unlike a guard, they cant actually harm anyone.",
+				"color": "FF000000",
+				"centered": true,
+				"fontsize": 30.0
+			},
+			"": {
+				"position": [0, -1],
+				"scale": [0.2, 0.6],
+				"text": "Press Enter to Continue.",
+				"color": "FF000000",
+				"centered": true,
+				"fontsize": 30.0
+			}
+		},
+		"securitycameraplace": {
+			"position": [0.8, 0.15],
+			"scale": [0.2, 0.6],
+			"texture": "../Menues/Pause Menu/pause1-nocup.png",
+			"": {
+				"position": [0, -0.15],
+				"scale": [0.15, 0.6],
+				"text": "Click and drag the security camera to a neat place. You can rotate the camera by using R and T once on the position you find suitable.",
+				"color": "FF000000",
+				"centered": true,
+				"fontsize": 30.0
+			},
+			"": {
+				"position": [0, -1],
+				"scale": [0.2, 0.6],
+				"text": "Press Enter to Continue.",
+				"color": "FF000000",
+				"centered": true,
+				"fontsize": 30.0
+			}
+		},
+		"budgetexplained": {
+			"position": [0.8, 0.15],
+			"scale": [0.2, 0.6],
+			"texture": "../Menues/Pause Menu/pause1-nocup.png",
+			"": {
+				"position": [0, -0.15],
+				"scale": [0.15, 0.6],
+				"text": "If you havent noticed already. You have a budget at the top left that deducts money for each item you place. In case you change your mind, you can refund items by selecting them and pressing delete on your keyboard.",
+				"color": "FF000000",
+				"centered": true,
+				"fontsize": 30.0
+			},
+			"": {
+				"position": [0, -1],
+				"scale": [0.2, 0.6],
+				"text": "Press Enter to Continue.",
+				"color": "FF000000",
+				"centered": true,
+				"fontsize": 30.0
+			}
+		},
+		"playexplained": {
+			"position": [0.8, 0.15],
+			"scale": [0.2, 0.6],
+			"texture": "../Menues/Pause Menu/pause1-nocup.png",
+			"": {
+				"position": [0, -0.15],
+				"scale": [0.15, 0.6],
+				"text": "Once you done placing objects. Hit Play at the top right corner to start the game.",
+				"color": "FF000000",
+				"centered": true,
+				"fontsize": 30.0
+			},
+			"": {
+				"position": [0, -1],
+				"scale": [0.2, 0.6],
+				"text": "Good luck!",
 				"color": "FF000000",
 				"centered": true,
 				"fontsize": 30.0

@@ -20,10 +20,13 @@ private:
 		GUARD,
 		GUARDPLACE,
 		ANVIL,
+		ANVILPLACE,
 		TESLA,
+		TESLAPLACE,
 		SECURITYCAMERA,
-		BUDGET,
-		PLAY
+		SECURITYCAMERAPLACE,
+		BUDGETEXPLAINED,
+		PLAYEXPLAINED
 	};
 
 private:
@@ -37,6 +40,6 @@ public:
 	TutorialLogic(GUI::UITree* uiTree, System::Controls* controls);
 	~TutorialLogic();
 
-	void Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace);
+	bool Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace);
 	void OnStateEnter();
 };
