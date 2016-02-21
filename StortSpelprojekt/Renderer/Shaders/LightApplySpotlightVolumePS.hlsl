@@ -37,10 +37,11 @@ Texture2D lightDepthMap : register(t4);
 
 SamplerState samplerWrap : register(s0);
 SamplerState samplerClamp : register(s1);
+SamplerState samplerPoint : register(s2);
 
 float3 ReconstructWorldFromCamDepth(float2 uv)
 {
-	// Get the depth value for this pixel
+	// Get the depth value for this pixel, then transform it by inverse camera matrices
 	float z = camDepthMap.Sample(samplerWrap, uv).r;
 
 	float x = uv.x * 2 - 1;
@@ -66,7 +67,38 @@ bool IsPositionWithinCone(float3 conePos, float3 coneDirection, float3 position,
 		return false;
 	}
 
-	return (dot(coneDirection,differenceVector) >= cos(coneFov/2));
+	//return (dot(coneDirection, differenceVector) >= cos(coneFov / 2)); //This is what it should be according to tutorial, but sin eliminates the artifacts
+	return (dot(coneDirection,differenceVector) >= sin(coneFov/2));
+}
+
+float Get2x2ShadowFactor(float2 smTex, float offset, float2 lerps)
+{
+	//Sample
+	float s0 = lightDepthMap.Sample(samplerPoint, smTex).r;
+	float s1 = lightDepthMap.Sample(samplerPoint, smTex + float2(offset, 0.0f)).r;
+	float s2 = lightDepthMap.Sample(samplerPoint, smTex + float2(0.0f, offset)).r;
+	float s3 = lightDepthMap.Sample(samplerPoint, smTex + float2(offset, offset)).r;
+
+	//Interpolate
+	float shadowFactor = lerp(lerp(s0, s1, lerps.x), lerp(s2, s3, lerps.x), lerps.y);
+
+	return shadowFactor;
+}
+
+float Get3x3ShadowFactor(float2 smTex, float offset)
+{
+	float sum = 0;
+	int index = 0;
+
+	for (int x = -1; x <= 1; x++)
+	{
+		for (int y = -1; y <= 1; y++)
+		{
+			sum += lightDepthMap.Sample(samplerPoint, smTex + float2(x*offset, y*offset)).r;
+		}
+	}
+
+	return sum/9;
 }
 
 float4 main(VS_OUT input) : SV_TARGET
@@ -101,34 +133,29 @@ float4 main(VS_OUT input) : SV_TARGET
 
 		float depth = lightSpacePos.z / lightSpacePos.w;
 
-		float epsilon = 0.00001f;
+		float epsilon = 0.0001f;
 		float dx = 1.0f / shadowMapDimensions;
-
-		float s0 = lightDepthMap.Sample(samplerClamp, smTex).r;
-		float s1 = lightDepthMap.Sample(samplerClamp, smTex + float2(dx, 0.0f)).r;
-		float s2 = lightDepthMap.Sample(samplerClamp, smTex + float2(0.0f, dx)).r;
-		float s3 = lightDepthMap.Sample(samplerClamp, smTex + float2(dx, dx)).r;
 
 		float2 texelPos = smTex * shadowMapDimensions;
 		float2 lerps = frac(texelPos);
-		float shadowCoeff = lerp(lerp(s0, s1, lerps.x), lerp(s2, s3, lerps.x), lerps.y);
+		float shadowFactor = Get2x2ShadowFactor(smTex, dx, lerps);
 
 		float4 diffuse = diffuseTex.Sample(samplerWrap, uv);
 
 		//In light
-		if (shadowCoeff > depth - epsilon)
+		if (shadowFactor > depth - epsilon)
 		{
 			float4 finalColor = float4((diffuse.xyz * lightColor * lightIntensity), 0.5f);
 
-			if (pixToLightAngle > lightAngleDiv2 * 0.85f)
+			if (pixToLightAngle > lightAngleDiv2 * 0.72f)
 			{
 				finalColor.a = 0.15f;
 			}
-			else if (pixToLightAngle > lightAngleDiv2 * 0.75f)
+			else if (pixToLightAngle > lightAngleDiv2 * 0.63f)
 			{
 				finalColor.a = 0.25f;
 			}
-			else if (pixToLightAngle > lightAngleDiv2 * 0.65f)
+			else if (pixToLightAngle > lightAngleDiv2 * 0.58f)
 			{
 				finalColor.a = 0.35f;
 			}
