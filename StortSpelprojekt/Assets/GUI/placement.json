@@ -14,11 +14,12 @@
 				
 				"GuardText":
 				{
-					"position" : [0.975, -1.08],
-					"scale": [1.0, 1.0],
+					"position" : [0.0, -0.173],
+					"scale": [0.068, 0.083],
 					"text": "Guard 200$",
 					"color": "FF000000",
-					"fontsize" : 18.0
+					"fontsize" : 18.0,
+					"centered": true
 				}				
 			},
 			"AnvilTrap" :
@@ -29,11 +30,12 @@
 				
 				"AnvilText":
 				{
-					"position" : [0.96, -1.08],
-					"scale": [1.0, 1.0],
+					"position" : [0.0, -0.173],
+					"scale": [0.068, 0.083],
 					"text": "Anvil Trap 50$",
 					"color": "FF000000",
-					"fontsize" : 18.0
+					"fontsize" : 18.0,
+					"centered": true
 				}
 			},
 			"TeslaTrap" :
@@ -44,11 +46,12 @@
 				
 				"TeslaText":
 				{
-					"position" : [0.96, -1.08],
-					"scale": [1.0, 1.0],
+					"position" : [0.0, -0.173],
+					"scale": [0.068, 0.083],
 					"text": "Tesla Trap 100$",
 					"color": "FF000000",
-					"fontsize" : 18.0
+					"fontsize" : 18.0,
+					"centered": true
 				}
 			},
 			"Camera" :
@@ -59,11 +62,12 @@
 				
 				"CameraText":
 				{
-					"position" : [0.97, -1.08],
-					"scale": [1.0, 1.0],
+					"position" : [0.0, -0.173],
+					"scale": [0.068, 0.083],
 					"text": "Camera 80$",
 					"color": "FF000000",
-					"fontsize" : 18.0
+					"fontsize" : 18.0,
+					"centered": true
 				}
 			}
 		},
