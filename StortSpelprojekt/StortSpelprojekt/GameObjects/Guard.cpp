@@ -3,15 +3,40 @@
 Guard::Guard()
 	: Unit()
 {
+	_health = 100;
+	_baseDamage = 30;
+
 	_isSelected = false;
 	_currentPatrolGoal = -1;
 }
 
-Guard::Guard(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject * renderObject, const Tilemap * tileMap)
+Guard::Guard(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject * renderObject, const Tilemap * tileMap, const int guardType)
 	: Unit(ID, position, rotation, tilePosition, type, renderObject, tileMap)
 {
+	_subType = guardType;
+	_guardType = (GuardType)guardType;
 	_isSelected = false;
 	_currentPatrolGoal = 0;
+	_health = 100;
+	_baseDamage = 30;
+
+	switch (_guardType)				//TODO: Repair time, vision radius, etc --Victor
+	{
+	case BASICGUARD:
+		_health = 100;
+		_baseDamage = 30;
+		break;
+	case ENGINEER:
+		_health = 100;
+		_baseDamage = 30;
+		break;
+	case MARKSMAN:
+		_health = 100;
+		_baseDamage = 30;
+		break;
+	default:
+		break;
+	}
 }
 
 Guard::~Guard()
@@ -44,7 +69,8 @@ void Guard::EvaluateTile(GameObject * obj)
 			break;
 		}
 		tempPriority;
-		if (tempPriority > 0 && obj->GetTilePosition() != _tilePosition && (_pathLength <= 0 || tempPriority * GetApproxDistance(obj->GetTilePosition()) < _goalPriority * GetApproxDistance(GetGoalTilePosition())))			//TODO Either optimize properly or check path properly --Victor
+		if (tempPriority > 0 && obj->GetTilePosition() != _tilePosition && 
+			(_pathLength <= 0 || tempPriority * GetApproxDistance(obj->GetTilePosition()) < _goalPriority * GetApproxDistance(GetGoalTilePosition())))			//TODO Either optimize properly or check path properly --Victor
 		{
 			SetGoalTilePosition(obj->GetTilePosition());
 			_goalPriority = tempPriority;

@@ -19,21 +19,24 @@ protected:
 	int _pathLength;
 	GameObject* _objective;
 	int _goalPriority;				//Lower value means higher priority
-	float  _moveSpeed;
 	const Tilemap* _tileMap;		//Pointer to the tileMap in objectHandler(?). Units should preferably have read-, but not write-access.
 				
 	int _visionRadius;
 	VisionCone* _visionCone;
 
 	int _waiting;
-
-	int _health;
 	bool _isSwitchingTile;
 
 	int _interactionTime;
 	GameObject* _heldObject;
 
 	MoveState _moveState;
+
+	// The following variables should be set in Enemy/Guard
+	float  _moveSpeed;
+	int _health;
+	int _baseDamage;
+
 
 	void CalculatePath();
 	void Rotate();

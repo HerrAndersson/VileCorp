@@ -218,8 +218,7 @@ void GameLogic::ShowSelectedInfo()
 		{
 			healthSum += i->GetHealth();
 		}
-		//TODO: Health is always 1? //Mattias
-		_uiTree->GetNode("unithealth")->SetText(std::to_wstring(healthSum * 100) + L"%");
+		_uiTree->GetNode("unithealth")->SetText(L"HP: " + std::to_wstring(healthSum));
 
 		//Show the number of units selected
 		if (nrOfUnits > 1)

@@ -82,7 +82,6 @@ Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	_heldObject = nullptr;
 	_objective = nullptr;
 	_waiting = -1;
-	_health = 1;					//TODO: Update constructor parameters to include health  --Victor
 	_pathLength = 0;
 	_path = nullptr;
 	_direction = {0, 1};
@@ -178,7 +177,7 @@ void Unit::CheckVisibleTiles()
 
 	for (int i = 0; i < _visionCone->GetNrOfVisibleTiles(); i++)
 	{
-		if (_tileMap->IsTrapOnTile(visibleTiles[i]._x, visibleTiles[i]._y))											//TODO: Traps shouldn't be automatically visible --Victor
+		if (_tileMap->IsTrapOnTile(visibleTiles[i]._x, visibleTiles[i]._y))
 		{
 			EvaluateTile(_tileMap->GetObjectOnTile(visibleTiles[i], TRAP));
 		}
@@ -360,7 +359,7 @@ void Unit::SwitchingNode()
 			Rotate();
 			_moveState = MoveState::MOVING;
 		}
-		else			// TODO: else find unblocked path to goal --Victor
+		else			// TODO: Check for units in the way --Victor
 		{
 			ClearObjective();
 			_moveState = MoveState::IDLE;

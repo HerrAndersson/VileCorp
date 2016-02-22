@@ -111,10 +111,10 @@ bool ObjectHandler::Add(Type type, int index, const XMFLOAT3& position, const XM
 		object = MakeSecurityCamera(_gameObjectInfo->Cameras(index), position, rotation);
 		break;
 	case ENEMY:
-		object = MakeEnemy(_gameObjectInfo->Enemies(index), position, rotation);
+		object = MakeEnemy(_gameObjectInfo->Enemies(index), position, rotation, subIndex);
 		break;
 	case GUARD:
-		object = MakeGuard(_gameObjectInfo->Guards(index), position, rotation);
+		object = MakeGuard(_gameObjectInfo->Guards(index), position, rotation, subIndex);
 		break;
 	case FURNITURE:
 		object = MakeFurniture(_gameObjectInfo->Furnitures(index), position, rotation);
@@ -628,6 +628,7 @@ void ObjectHandler::Update(float deltaTime)
 			{
 				if (static_cast<SpawnPoint*>(g)->isSpawning() && _tilemap->GetNrOfLoot() > 0)
 				{
+					// enemy_proto = BASICENEMY, disabler = DISABLER, assassin = ASSASSIN
 					if (Add(ENEMY, "enemy_proto", g->GetPosition(), g->GetRotation()))
 					{
 						((Unit*)_gameObjects[ENEMY].back())->InitializePathFinding();
@@ -835,7 +836,7 @@ SecurityCamera*	ObjectHandler::MakeSecurityCamera(GameObjectCameraInfo* data, co
 	return obj;
 }
 
-Guard * ObjectHandler::MakeGuard(GameObjectGuardInfo * data, const XMFLOAT3& position, const XMFLOAT3& rotation)
+Guard * ObjectHandler::MakeGuard(GameObjectGuardInfo * data, const XMFLOAT3& position, const XMFLOAT3& rotation, const int subIndex)
 {
 	Guard* obj = new Guard(
 		_idCount,
@@ -844,14 +845,15 @@ Guard * ObjectHandler::MakeGuard(GameObjectGuardInfo * data, const XMFLOAT3& pos
 		AI::Vec2D((int)position.x, (int)position.z),
 		GUARD,
 		_assetManager->GetRenderObject(data->_renderObject),
-		_tilemap);
+		_tilemap,
+		subIndex);
 
 	// read more data
 
 	return obj;
 }
 
-Enemy * ObjectHandler::MakeEnemy(GameObjectEnemyInfo * data, const XMFLOAT3& position, const XMFLOAT3& rotation)
+Enemy * ObjectHandler::MakeEnemy(GameObjectEnemyInfo * data, const XMFLOAT3& position, const XMFLOAT3& rotation, const int subIndex)
 {
 	Enemy* obj = new Enemy(
 		_idCount,
@@ -860,7 +862,8 @@ Enemy * ObjectHandler::MakeEnemy(GameObjectEnemyInfo * data, const XMFLOAT3& pos
 		AI::Vec2D((int)position.x, (int)position.z),
 		ENEMY,
 		_assetManager->GetRenderObject(data->_renderObject),
-		_tilemap);
+		_tilemap,
+		subIndex);						
 
 	// read more data
 

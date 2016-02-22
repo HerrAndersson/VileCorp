@@ -207,6 +207,34 @@ void PlacementState::HandleButtons()
 
 		if (_baseEdit->IsSelection() && !_baseEdit->IsPlace())
 		{
+			// BASICGUARD
+			_toPlace._subType = 0;
+			create = true;
+		}
+	}
+	if (_uiTree.IsButtonColliding("Guard2", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
+	{
+		// Temp, should be replaced with blueprint
+		_toPlace._type = GUARD;
+		_toPlace._name = "engineer";
+
+		if (_baseEdit->IsSelection() && !_baseEdit->IsPlace())
+		{
+			// ENGINEER
+			_toPlace._subType = 1;
+			create = true;
+		}
+	}
+	if (_uiTree.IsButtonColliding("Guard3", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
+	{
+		// Temp, should be replaced with blueprint
+		_toPlace._type = GUARD;
+		_toPlace._name = "marksman";
+
+		if (_baseEdit->IsSelection() && !_baseEdit->IsPlace())
+		{
+			// MARKSMAN
+			_toPlace._subType = 2;
 			create = true;
 		}
 	}

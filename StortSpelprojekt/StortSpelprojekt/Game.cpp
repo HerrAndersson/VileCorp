@@ -112,18 +112,6 @@ bool Game::Update(double deltaTime)
 		{
 			_enemiesHasSpawned = true;
 		}
-
-		if (_enemies.size() == 0 && _enemiesHasSpawned == true)
-		{
-			if (_loot.size() >= 1)
-			{
-				//TODO: Add something to notify the player that they've beat the level
-			}
-			else
-			{
-				//TODO: Add something to notify the player that they've SUCK and they can replay the level
-			}
-		}
 	}
 	return run;
 }
@@ -146,24 +134,24 @@ void Game::Render()
 		if (i.size() > 0)
 		{
 			RenderObject* renderObject = i.at(0)->GetRenderObject();
-			if (renderObject->_isSkinned)
-			{
-				continue;
-			}
-			else
+			int vertexBufferSize;
+			if (!renderObject->_isSkinned)
 			{
 				_renderModule->SetDataPerObjectType(renderObject);
-				int vertexBufferSize = renderObject->_mesh._vertexBufferSize;
+				vertexBufferSize = renderObject->_mesh._vertexBufferSize;
 				if (i.at(0)->IsVisible())
 				{
 					_renderModule->Render(i.at(0)->GetMatrix(), vertexBufferSize, i.at(0)->GetColorOffset());
 				}
+			}
 
-				for (int j = 1; j < i.size(); j++)
+			for (int j = 1; j < i.size(); j++)
+			{
+				renderObject = i.at(j)->GetRenderObject();
+				if (!renderObject->_isSkinned)
 				{
 					if (i.at(j)->GetSubType() != i.at(j - 1)->GetSubType())
 					{
-						renderObject = i.at(j)->GetRenderObject();
 						_renderModule->SetDataPerObjectType(renderObject);
 						vertexBufferSize = renderObject->_mesh._vertexBufferSize;
 					}
@@ -171,7 +159,6 @@ void Game::Render()
 					{
 						_renderModule->Render(i.at(j)->GetMatrix(), vertexBufferSize, i.at(j)->GetColorOffset());
 					}
-					
 				}
 			}
 		}
@@ -185,24 +172,24 @@ void Game::Render()
 		if (i.size() > 0)
 		{
 			RenderObject* renderObject = i.at(0)->GetRenderObject();
-			if (!renderObject->_isSkinned)
-			{
-				continue;
-			}
-			else
+			int vertexBufferSize;
+			if (renderObject->_isSkinned)
 			{
 				_renderModule->SetDataPerObjectType(renderObject);
-				int vertexBufferSize = renderObject->_mesh._vertexBufferSize;
+				vertexBufferSize = renderObject->_mesh._vertexBufferSize;
 				if (i.at(0)->IsVisible())
 				{
 					_renderModule->RenderAnimation(i.at(0)->GetMatrix(), vertexBufferSize, i.at(0)->GetAnimation()->GetFloats(), i.at(0)->GetColorOffset());
 				}
+			}
 
-				for (int j = 1; j < i.size(); j++)
+			for (int j = 1; j < i.size(); j++)
+			{
+				renderObject = i.at(j)->GetRenderObject();
+				if (renderObject->_isSkinned)
 				{
 					if (i.at(j)->GetSubType() != i.at(j - 1)->GetSubType())
 					{
-						renderObject = i.at(j)->GetRenderObject();
 						_renderModule->SetDataPerObjectType(renderObject);
 						vertexBufferSize = renderObject->_mesh._vertexBufferSize;
 					}
@@ -210,8 +197,8 @@ void Game::Render()
 					{
 						_renderModule->RenderAnimation(i.at(j)->GetMatrix(), vertexBufferSize, i.at(j)->GetAnimation()->GetFloats(), i.at(j)->GetColorOffset());
 					}
-
 				}
+
 			}
 		}
 	}
@@ -287,7 +274,10 @@ void Game::Render()
 							{
 								if (g->IsVisible() && g->GetID() != spot.first->GetID())
 								{
-									_renderModule->RenderShadowMap(g->GetMatrix(), vertexBufferSize);
+									if (g->IsVisible() || gameObjects->at(6).size() == 0)
+									{
+										_renderModule->RenderShadowMap(g->GetMatrix(), vertexBufferSize);
+									}
 								}
 							}
 						}
@@ -313,7 +303,10 @@ void Game::Render()
 							{
 								if (g->IsVisible() && g->GetID() != spot.first->GetID())
 								{
-									_renderModule->RenderShadowMap(g->GetMatrix(), vertexBufferSize);
+									if (g->IsVisible() || gameObjects->at(6).size() == 0)
+									{
+										_renderModule->RenderShadowMap(g->GetMatrix(), vertexBufferSize);
+									}
 								}
 							}
 						}
