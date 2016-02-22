@@ -8,6 +8,7 @@
 #include "../PickingDevice.h"
 #include "../UITree.h"
 #include "../../System/SettingsReader.h"
+#include "../TutorialLogic.h"
 
 
 class BaseState
@@ -17,7 +18,11 @@ private:
 	static State _oldState; //To make us able to return from pause state back to correct state.
 
 protected:
+	static TutorialState	_tutorialState;
 	static bool				_tutorial;
+	//Unlike the _tutorial variable which tells if tutorial mode is active. The _pausedTutorial helps identify inbetween an unfinished tutorial level and other normal games.
+	//Only LevelSelectState are allowed to manipulate this variable.
+	static bool				_pausedTutorial;
 	System::Controls*		_controls;
 	ObjectHandler*			_objectHandler;
 	GUI::UITree				_uiTree;

@@ -9,6 +9,13 @@
 #include "ToPlace.h"
 #include "CommonUtils.h"
 
+enum TutorialState
+{
+	NEWTUTORIAL,
+	OLDTUTORIAL,
+	NOTUTORIAL
+};
+
 class TutorialLogic
 {
 private:
@@ -17,13 +24,13 @@ private:
 		WELCOME,
 		OBJECTIVE,
 		CONTROLS,
-		GUARD,
+		GUARDEXPLAINED,
 		GUARDPLACE,
-		ANVIL,
+		ANVILEXPLAINED,
 		ANVILPLACE,
-		TESLA,
+		TESLAEXPLAINED,
 		TESLAPLACE,
-		SECURITYCAMERA,
+		SECURITYCAMERAEXPLAINED,
 		SECURITYCAMERAPLACE,
 		BUDGETEXPLAINED,
 		PLAYEXPLAINED
@@ -34,12 +41,16 @@ private:
 	System::Controls* _controls;
 	Stage _currentStage;
 	int _gold;
-	void ResetUiTree();
+	bool _sCameraPlaced;
+	bool _tutorialCompleted;
+	
 
 public:
 	TutorialLogic(GUI::UITree* uiTree, System::Controls* controls);
 	~TutorialLogic();
 
-	bool Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace);
+	bool Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace, PlayerInfo playerProfile);
 	void OnStateEnter();
+	void ResetUiTree();
+	bool IsTutorialCompleted()const;
 };

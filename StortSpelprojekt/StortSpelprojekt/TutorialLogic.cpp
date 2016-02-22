@@ -5,11 +5,26 @@ TutorialLogic::TutorialLogic(GUI::UITree* uiTree, System::Controls* controls)
 	_uiTree = uiTree;
 	_controls = controls;
 	_gold = 500;
+	_sCameraPlaced = false;
+	_tutorialCompleted = false;
 	ResetUiTree();
 }
 
 TutorialLogic::~TutorialLogic()
 {
+	_uiTree->GetNode("welcome")->SetHidden(true);
+	_uiTree->GetNode("controls")->SetHidden(true);
+	_uiTree->GetNode("objective")->SetHidden(true);
+	_uiTree->GetNode("guardexplained")->SetHidden(true);
+	_uiTree->GetNode("guardplace")->SetHidden(true);
+	_uiTree->GetNode("anvilexplained")->SetHidden(true);
+	_uiTree->GetNode("anvilplace")->SetHidden(true);
+	_uiTree->GetNode("teslaexplained")->SetHidden(true);
+	_uiTree->GetNode("teslaplace")->SetHidden(true);
+	_uiTree->GetNode("securitycameraexplained")->SetHidden(true);
+	_uiTree->GetNode("securitycameraplace")->SetHidden(true);
+	_uiTree->GetNode("budgetexplained")->SetHidden(true);
+	_uiTree->GetNode("playexplained")->SetHidden(true);
 }
 
 void TutorialLogic::ResetUiTree()
@@ -30,10 +45,8 @@ void TutorialLogic::ResetUiTree()
 	_uiTree->GetNode("playexplained")->SetHidden(true);
 }
 
-bool TutorialLogic::Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace)
+bool TutorialLogic::Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace, PlayerInfo playerProfile)
 {
-	bool tutorialComplete = false;
-	bool sCameraPlaced = false;
 	if (_controls->IsFunctionKeyDown("DEBUG:RELOAD_GUI"))
 	{
 		_uiTree->ReloadTree("../../../../StortSpelprojekt/Assets/GUI/placement.json");
@@ -66,18 +79,18 @@ bool TutorialLogic::Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace
 	{
 		if (_controls->IsFunctionKeyDown("MENU:CONTINUE"))
 		{
-			_currentStage = GUARD;
+			_currentStage = GUARDEXPLAINED;
 			_uiTree->GetNode("objective")->SetHidden(true);
-			_uiTree->GetNode("guard")->SetHidden(false);
+			_uiTree->GetNode("guardexplained")->SetHidden(false);
 		}
 		break;
 	}
-	case TutorialLogic::GUARD:
+	case TutorialLogic::GUARDEXPLAINED:
 	{
 		if (_controls->IsFunctionKeyDown("MENU:CONTINUE"))
 		{
 			_currentStage = GUARDPLACE;
-			_uiTree->GetNode("guard")->SetHidden(true);
+			_uiTree->GetNode("guardexplained")->SetHidden(true);
 			_uiTree->GetNode("guardplace")->SetHidden(false);
 		}
 		break;
@@ -100,19 +113,19 @@ bool TutorialLogic::Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace
 				_uiTree->GetNode("BudgetValue")->SetText(to_wstring(_gold));
 				toPlace._blueprintID = baseEdit->GetSelectedObject()->GetID();
 
-				_currentStage = ANVIL;
+				_currentStage = ANVILEXPLAINED;
 				_uiTree->GetNode("guardplace")->SetHidden(true);
-				_uiTree->GetNode("anvil")->SetHidden(false);
+				_uiTree->GetNode("anvilexplained")->SetHidden(false);
 			}
 		}
 		break;
 	}
-	case TutorialLogic::ANVIL:
+	case TutorialLogic::ANVILEXPLAINED:
 	{
 		if (_controls->IsFunctionKeyDown("MENU:CONTINUE"))
 		{
-			_currentStage = ANVIL;
-			_uiTree->GetNode("anvil")->SetHidden(true);
+			_currentStage = ANVILPLACE;
+			_uiTree->GetNode("anvilexplained")->SetHidden(true);
 			_uiTree->GetNode("anvilplace")->SetHidden(false);
 		}
 		break;
@@ -130,25 +143,26 @@ bool TutorialLogic::Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace
 			//If we placed an anvil.
 			if (baseEdit->IsSelection() && !baseEdit->IsPlace())
 			{
+				toPlace._subType = TrapType::SPIKE;
 				baseEdit->DragActivate(toPlace._type, toPlace._name, toPlace._subType);
 				_gold -= toPlace._goldCost;
 				_uiTree->GetNode("BudgetValue")->SetText(to_wstring(_gold));
 				toPlace._blueprintID = baseEdit->GetSelectedObject()->GetID();
 
-				_currentStage = TESLA;
+				_currentStage = TESLAEXPLAINED;
 				_uiTree->GetNode("anvilplace")->SetHidden(true);
-				_uiTree->GetNode("tesla")->SetHidden(false);
+				_uiTree->GetNode("teslaexplained")->SetHidden(false);
 			}
 		}
 		break;
 	}
-	case TutorialLogic::TESLA:
+	case TutorialLogic::TESLAEXPLAINED:
 	{
 		if (_controls->IsFunctionKeyDown("MENU:CONTINUE"))
 		{
 			_currentStage = TESLAPLACE;
-			_uiTree->GetNode("teslaplace")->SetHidden(true);
-			_uiTree->GetNode("securitycamera")->SetHidden(false);
+			_uiTree->GetNode("teslaexplained")->SetHidden(true);
+			_uiTree->GetNode("teslaplace")->SetHidden(false);
 		}
 		break;
 	}
@@ -161,6 +175,7 @@ bool TutorialLogic::Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace
 			// Temp, should be replaced with blueprint
 			toPlace._type = Type::TRAP;
 			toPlace._name = "tesla_trap";
+			toPlace._subType = TrapType::TESLACOIL;
 
 			//If we placed an anvil.
 			if (baseEdit->IsSelection() && !baseEdit->IsPlace())
@@ -170,19 +185,19 @@ bool TutorialLogic::Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace
 				_uiTree->GetNode("BudgetValue")->SetText(to_wstring(_gold));
 				toPlace._blueprintID = baseEdit->GetSelectedObject()->GetID();
 
-				_currentStage = SECURITYCAMERA;
+				_currentStage = SECURITYCAMERAEXPLAINED;
 				_uiTree->GetNode("teslaplace")->SetHidden(true);
-				_uiTree->GetNode("securitycamera")->SetHidden(false);
+				_uiTree->GetNode("securitycameraexplained")->SetHidden(false);
 			}
 		}
 		break;
 	}
-	case TutorialLogic::SECURITYCAMERA:
+	case TutorialLogic::SECURITYCAMERAEXPLAINED:
 	{
 		if (_controls->IsFunctionKeyDown("MENU:CONTINUE"))
 		{
-			_currentStage = TESLAPLACE;
-			_uiTree->GetNode("securitycamera")->SetHidden(true);
+			_currentStage = SECURITYCAMERAPLACE;
+			_uiTree->GetNode("securitycameraexplained")->SetHidden(true);
 			_uiTree->GetNode("securitycameraplace")->SetHidden(false);
 		}
 		break;
@@ -204,14 +219,14 @@ bool TutorialLogic::Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace
 				_gold -= toPlace._goldCost;
 				_uiTree->GetNode("BudgetValue")->SetText(to_wstring(_gold));
 				toPlace._blueprintID = baseEdit->GetSelectedObject()->GetID();
-				sCameraPlaced = true;
+				_sCameraPlaced = true;
 			}
-			if (_controls->IsFunctionKeyDown("MENU:CONTINUE") && sCameraPlaced)
-			{
-				_currentStage = BUDGETEXPLAINED;
-				_uiTree->GetNode("securitycameraplace")->SetHidden(true);
-				_uiTree->GetNode("budgetexplained")->SetHidden(false);
-			}
+		}
+		if (_controls->IsFunctionKeyDown("MENU:CONTINUE") && _sCameraPlaced)
+		{
+			_currentStage = BUDGETEXPLAINED;
+			_uiTree->GetNode("securitycameraplace")->SetHidden(true);
+			_uiTree->GetNode("budgetexplained")->SetHidden(false);
 		}
 		break;
 	}
@@ -219,10 +234,12 @@ bool TutorialLogic::Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace
 	{
 		if (_controls->IsFunctionKeyDown("MENU:CONTINUE"))
 		{
-			_currentStage = TESLAPLACE;
-			_uiTree->GetNode("budget")->SetHidden(true);
+			_currentStage = PLAYEXPLAINED;
+			_uiTree->GetNode("budgetexplained")->SetHidden(true);
 			_uiTree->GetNode("playexplained")->SetHidden(false);
 		}
+
+
 		break;
 	}
 	case TutorialLogic::PLAYEXPLAINED:
@@ -230,14 +247,79 @@ bool TutorialLogic::Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace
 		System::MouseCoord coord = _controls->GetMouseCoord();
 		if (_uiTree->IsButtonColliding("Play", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
 		{
-			tutorialComplete = true;
+			playerProfile._firstTime = false;
+			_tutorialCompleted = true;
 		}
+
+		/*
+		//If we want to be able to place even more traps before hitting play.
+		//Guards
+		if (_uiTree->IsButtonColliding("Guard", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
+		{
+			toPlace._type = Type::GUARD;
+			toPlace._name = "guard_proto";
+
+			if (baseEdit->IsSelection() && !baseEdit->IsPlace())
+			{
+				baseEdit->DragActivate(toPlace._type, toPlace._name, toPlace._subType);
+				_gold -= toPlace._goldCost;
+				_uiTree->GetNode("BudgetValue")->SetText(to_wstring(_gold));
+				toPlace._blueprintID = baseEdit->GetSelectedObject()->GetID();
+			}
+		}
+		if (_uiTree->IsButtonColliding("AnvilTrap", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
+		{
+			toPlace._type = Type::TRAP;
+			toPlace._name = "trap_proto";
+
+			if (baseEdit->IsSelection() && !baseEdit->IsPlace())
+			{
+				toPlace._subType = TrapType::SPIKE;
+				baseEdit->DragActivate(toPlace._type, toPlace._name, toPlace._subType);
+				_gold -= toPlace._goldCost;
+				_uiTree->GetNode("BudgetValue")->SetText(to_wstring(_gold));
+				toPlace._blueprintID = baseEdit->GetSelectedObject()->GetID();
+			}
+		}
+
+		if (_uiTree->IsButtonColliding("TeslaTrap", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
+		{
+			toPlace._type = Type::TRAP;
+			toPlace._name = "tesla_trap";
+
+			if (baseEdit->IsSelection() && !baseEdit->IsPlace())
+			{
+				toPlace._subType = TrapType::TESLACOIL;
+				baseEdit->DragActivate(toPlace._type, toPlace._name, toPlace._subType);
+				_gold -= toPlace._goldCost;
+				_uiTree->GetNode("BudgetValue")->SetText(to_wstring(_gold));
+				toPlace._blueprintID = baseEdit->GetSelectedObject()->GetID();
+			}
+		}
+		if (_uiTree->IsButtonColliding("Camera", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
+		{
+			toPlace._type = Type::CAMERA;
+			toPlace._name = "camera_proto";
+
+			if (baseEdit->IsSelection() && !baseEdit->IsPlace())
+			{
+				baseEdit->DragActivate(toPlace._type, toPlace._name, toPlace._subType);
+				_gold -= toPlace._goldCost;
+				_uiTree->GetNode("BudgetValue")->SetText(to_wstring(_gold));
+				toPlace._blueprintID = baseEdit->GetSelectedObject()->GetID();
+			}
+		}
+		*/
 		break;
 	}
 	default:
 		break;
 	}
 
-	return tutorialComplete;
+	return _tutorialCompleted;
 }
 
+bool TutorialLogic::IsTutorialCompleted() const
+{
+	return _tutorialCompleted;
+}

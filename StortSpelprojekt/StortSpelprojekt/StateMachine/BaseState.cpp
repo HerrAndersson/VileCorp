@@ -2,7 +2,9 @@
 
 State BaseState::_newStateRequest;
 State BaseState::_oldState;
+TutorialState BaseState::_tutorialState;
 bool BaseState::_tutorial;
+bool BaseState::_pausedTutorial;
 
 BaseState::BaseState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule)
 	: _uiTree(filename, assetManager, fontWrapper, settingsReader)
@@ -13,6 +15,8 @@ BaseState::BaseState(System::Controls* controls, ObjectHandler* objectHandler, S
 	_pickingDevice		= pickingDevice;
 	_newStateRequest	= SPLASHSTATE;
 	_oldState			= EXITSTATE;
+	_tutorial			= false;
+	_pausedTutorial		= false;
 	_soundModule		= soundModule;
 	_settingsReader		= settingsReader;
 	_assetManager		= assetManager;

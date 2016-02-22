@@ -4,6 +4,8 @@ PlacementState::PlacementState(System::Controls* controls, ObjectHandler* object
 	: BaseState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settingsReader, soundModule)
 {
 	_playerProfile.resize(1);
+	_tutorialLogic = nullptr;
+	_baseEdit = nullptr;
 
 	//Money
 	_costOfAnvilTrap	= 50;
@@ -20,9 +22,11 @@ PlacementState::PlacementState(System::Controls* controls, ObjectHandler* object
 	_objectHandler = objectHandler;
 	_camera = camera;
 	_pickingDevice = pickingDevice;
-	_baseEdit = nullptr;
 
 	_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_playerProfile[_currentPlayer]._gold));
+
+	//if tutorial should initialize
+	_tutorialLogic = new TutorialLogic(&_uiTree, _controls);
 }
 
 void PlacementState::EvaluateGoldCost()
@@ -51,17 +55,17 @@ PlacementState::~PlacementState()
 	delete _baseEdit;
 	_baseEdit = nullptr;
 	delete _tutorialLogic;
+	_tutorialLogic = nullptr;
 }
 
 void PlacementState::Update(float deltaTime)
 {
-	bool tutorialCompleted = false;
 	//if tutorial mode. Then bypass normal baseEdit update loops.
-	if (_tutorial)
+	if (_tutorial && !_pausedTutorial)
 	{
 		//bypass the normal UI interface to interface the tutorial elements into it.
-		tutorialCompleted = _tutorialLogic->Update(deltaTime, _baseEdit, _toPlace);
-		if (tutorialCompleted)
+		_tutorialLogic->Update(deltaTime, _baseEdit, _toPlace, _playerProfile.at(_currentPlayer));
+		if (_tutorialLogic->IsTutorialCompleted())
 		{
 			ChangeState(State::PLAYSTATE);
 		}
@@ -96,10 +100,10 @@ void PlacementState::OnStateEnter()
 	campos.z = _objectHandler->GetTileMap()->GetHeight() / 2 - 10;
 	_camera->SetPosition(campos);
 
-	//if tutorial should initialize
-	if(_playerProfile[_currentPlayer]._firstTime)
+	//if tutorial is active but we are pausing. Hide tutorial.
+	if (_tutorial && !_pausedTutorial)
 	{
-		_tutorialLogic = new TutorialLogic(&_uiTree, _controls);
+		_uiTree.GetNode("Tutorial")->SetHidden(false);
 	}
 }
 
@@ -107,6 +111,15 @@ void PlacementState::OnStateExit()
 {
 	delete _baseEdit;
 	_baseEdit = nullptr;
+	//if tutorial is active but we are pausing. Hide tutorial.
+	if (_tutorial && !_pausedTutorial)
+	{
+		_uiTree.GetNode("Tutorial")->SetHidden(true);
+	}
+	else
+	{
+		_tutorialLogic->ResetUiTree();
+	}
 }
 
 void PlacementState::HandleInput()
