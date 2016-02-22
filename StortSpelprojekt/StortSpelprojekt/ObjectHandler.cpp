@@ -114,7 +114,7 @@ bool ObjectHandler::Add(Type type, int index, const XMFLOAT3& position, const XM
 		object = MakeEnemy(_gameObjectInfo->Enemies(index), position, rotation, subIndex);
 		break;
 	case GUARD:
-		object = MakeGuard(_gameObjectInfo->Guards(index), position, rotation);
+		object = MakeGuard(_gameObjectInfo->Guards(index), position, rotation, subIndex);
 		break;
 	case FURNITURE:
 		object = MakeFurniture(_gameObjectInfo->Furnitures(index), position, rotation);
@@ -628,6 +628,7 @@ void ObjectHandler::Update(float deltaTime)
 			{
 				if (static_cast<SpawnPoint*>(g)->isSpawning() && _tilemap->GetNrOfLoot() > 0)
 				{
+					// enemy_proto = BASICENEMY, disabler = DISABLER, assassin = ASSASSIN
 					if (Add(ENEMY, "enemy_proto", g->GetPosition(), g->GetRotation()))
 					{
 						((Unit*)_gameObjects[ENEMY].back())->InitializePathFinding();

@@ -65,6 +65,36 @@
 					"color": "FF000000",
 					"fontsize" : 18.0
 				}
+			},
+			"Guard2" :
+			{
+				"position": [0.30, 0.057],	
+				"scale": [0.048, 0.083],
+				"texture": "../Menues/PlacementStateGUI/units/Guardbutton1.png",
+				
+				"GuardText2":
+				{
+					"position" : [0.975, -1.08],
+					"scale": [1.0, 1.0],
+					"text": "Guard 200$",
+					"color": "FF000000",
+					"fontsize" : 18.0
+				}				
+			},
+			"Guard3" :
+			{
+				"position": [0.42, 0.057],	
+				"scale": [0.048, 0.083],
+				"texture": "../Menues/PlacementStateGUI/units/Guardbutton1.png",
+				
+				"GuardText3":
+				{
+					"position" : [0.975, -1.08],
+					"scale": [1.0, 1.0],
+					"text": "Guard 200$",
+					"color": "FF000000",
+					"fontsize" : 18.0
+				}				
 			}
 		},
   		"Play" :
