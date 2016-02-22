@@ -179,6 +179,7 @@ namespace Renderer
 		delete _hudPassVS;
 		delete _lightApplyLightVolumeVS;
 		delete _billboardingVS;
+		delete _animShadowMapVS;
 
 		SAFE_RELEASE(_geoPassPS);
 		SAFE_RELEASE(_linestripPS);
