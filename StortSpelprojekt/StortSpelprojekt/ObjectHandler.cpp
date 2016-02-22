@@ -110,9 +110,9 @@ bool ObjectHandler::Add(Type type, int index, const XMFLOAT3& position, const XM
 	case CAMERA:
 		object = MakeSecurityCamera(_gameObjectInfo->Cameras(index), position, rotation);
 		break;
-	//case ENEMY:
-	//	object = MakeEnemy(_gameObjectInfo->Enemies(index), position, rotation);
-	//	break;
+	case ENEMY:
+		object = MakeEnemy(_gameObjectInfo->Enemies(index), position, rotation);
+		break;
 	case GUARD:
 		object = MakeGuard(_gameObjectInfo->Guards(index), position, rotation);
 		break;
