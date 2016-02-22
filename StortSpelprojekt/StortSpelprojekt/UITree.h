@@ -40,6 +40,6 @@ namespace GUI
 		Node* GetNode(const std::string& id);
 
 		
-		void ReloadTree(const std::string& filename, const std::string& statename);
+		void ReloadTree(const std::string& filename);
 	};
 }

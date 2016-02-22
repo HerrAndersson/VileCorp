@@ -19,6 +19,8 @@ private:
 	GUI::Node* _nextLevelButtonNode = nullptr;
 	GUI::Node* _previousLevelButtonNode = nullptr;
 
+	XMFLOAT2 _tabPosition[2];
+
 	int _campaignSelection;
 	int _campaignSelectionMin;
 	int _campaignSelectionMax;

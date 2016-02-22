@@ -94,7 +94,7 @@ void OptionsState::Update(float deltaTime)
 {
 	if (_controls->IsFunctionKeyDown("DEBUG:RELOAD_GUI"))
 	{
-		_uiTree.ReloadTree("../../../../StortSpelprojekt/Assets/gui.json", "OPTIONS");
+		_uiTree.ReloadTree("../../../../StortSpelprojekt/Assets/GUI/options.json");
 	}
 	if (_controls->IsFunctionKeyDown("MENU:MENU"))
 	{

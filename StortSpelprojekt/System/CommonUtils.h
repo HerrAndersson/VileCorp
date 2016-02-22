@@ -11,6 +11,7 @@ const std::string MODEL_FOLDER_PATH = "Assets/Models/";
 const std::wstring TEXTURE_FOLDER_PATH_W = L"Assets/Textures/";
 const std::string LEVEL_FOLDER_PATH = "Assets/Levels/Format12/";
 const std::string CAMPAIGN_PATH = LEVEL_FOLDER_PATH + "Campaign/";
+const std::string SKIRMISH_PATH = LEVEL_FOLDER_PATH + "Skirmish/";
 const std::string ANIMATION_FOLDER_PATH = "Assets/Animations/";
 const std::string BLUEPRINTS_PATH = "Assets/blueprints.json";
 

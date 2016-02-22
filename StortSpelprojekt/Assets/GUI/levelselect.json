@@ -11,15 +11,6 @@
 		"scale": [1.0, 1.0],
 		"texture" : "../Menues/Level Select/selectmenu1.png"
 	},
-	"title":
-	{
-		"position": [0.0, 0.0],
-		"scale" : [1.0, 0.8],
-		"text": "Level Select",
-		"centered" : true,
-		"color" : "FF000000",
-		"fontsize" : 60.0
-	},
 	"LevelSelectionTabs" :
 	{
 		"CampaignTab" :
@@ -61,12 +52,12 @@
 	},
 	"playbutton" :
 	{
-		"position": [0.0, -0.7],
+		"position": [0.013, -0.7],
 		"scale": [0.125, 0.1],
 		"texture": "../Menues/PlacementStateGUI/placementResources.png",
 		"" :
 		{
-			"position": [0.0, -0.02],
+			"position": [-0.005, -0.02],
 			"scale": [0.1, 0.1],
 			"text" : "PLAY",
 			"centered": true,
@@ -76,15 +67,31 @@
 	},
 	"nextlevel" :
 	{
-		"position": [0.27, -0.7],
+		"position": [0.285, -0.7],
 		"scale": [0.08, 0.08],
 		"texture": "../Menues/settings/settings6-arrow.png"
 	},
 	"prevlevel" :
 	{
-		"position": [-0.27, -0.7],
+		"position": [-0.255, -0.7],
 		"scale": [0.08, 0.08],
 		"texture": "../Menues/settings/settings6-arrow2.png"
+	},
+	"title":
+	{
+		"position": [0.0, 0.65],
+		"scale" : [0.15, 0.06],
+		"text": "Level Select",
+		"color" : "FF000000",
+		"fontsize" : 60.0
+	},
+	"GameModeText":
+	{
+		"position" : [0.045, -0.078],
+		"scale": [0.38, 0.44],
+		"text" : "Game Mode:",
+		"color" : "FF000000",
+		"fontsize" : 26.0
 	},
 	"LevelSelectionPage" :
 	{
@@ -95,32 +102,34 @@
 			"scale": [1.0, 1.0],
 			"LevelName":
 			{
-				"position" : [-0.08, 0.1],
+				"position" : [0.625, -1.35],
 				"scale": [0.3, 0.05],
-				"text" : "LevelName",
-				"color" : "FF000000"
+				"text" : "Level Name",
+				"color" : "FF000000",
+				"fontsize" : 18.0
 			},
 			"StoryTitle":
 			{
-				"position" : [-0.08, 0.0],
+				"position" : [-0.08, -0.11],
 				"scale": [0.3, 0.05],
-				"text" : "StoryTitle",
+				"text" : "Story Title",
 				"color" : "FF000000"
 			},
 			"StoryBody":
 			{
-				"position" : [-0.00, -0.1],
-				"scale": [0.38, 0.05],
-				"text" : "StoryBody",
+				"position" : [0.0, -0.645],
+				"scale": [0.38, 0.44],
+				"text" : "Story Body",
 				"color" : "FF888888",
 				"fontsize" : 25.0
 			},
 			"GameMode":
 			{
-				"position" : [-0.08, 0.2],
+				"position" : [0.115, -0.19],
 				"scale": [0.3, 0.05],
-				"text" : "GameMode",
-				"color" : "FF000000"
+				"text" : "Current Mode",
+				"color" : "FF000000",
+				"fontsize" : 26.0
 			}
 		}
 	}

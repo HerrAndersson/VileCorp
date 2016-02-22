@@ -151,7 +151,7 @@ void LevelEditState::HandleInput()
 
 	if (_controls->IsFunctionKeyDown("DEBUG:RELOAD_GUI"))
 	{
-		_uiTree.ReloadTree("../../../../StortSpelprojekt/Assets/gui.json", "LEVELEDIT");
+		_uiTree.ReloadTree("../../../../StortSpelprojekt/Assets/GUI/leveledit.json");
 	}
 }
 
@@ -499,6 +499,7 @@ void LevelEditState::HandleButtons()
 			}
 			else
 			{
+				//TODO: Clean up Level so that if you go back to the menu it won't crash! Enbom
 				_leaveCheck = -1;
 				ChangeState(MENUSTATE);
 			}
