@@ -18,7 +18,7 @@ void PlayState::Update(float deltaTime)
 	{
 		ChangeState(State::PAUSESTATE);
 	}
-	if (_gameLogic->IsGameDone() && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
+	if (_gameLogic->GoToMenu())
 	{
 		ChangeState(State::MENUSTATE);
 	}
@@ -29,6 +29,7 @@ void PlayState::Update(float deltaTime)
 	}
 
 	_gameLogic->Update(deltaTime);
+	HandleCam(deltaTime);
 }
 
 void PlayState::OnStateEnter()

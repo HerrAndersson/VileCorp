@@ -106,7 +106,10 @@ void Guard::RemovePatrol()
 	_currentPatrolGoal = 0;
 }
 
-
+std::vector<AI::Vec2D> Guard::GetPatrolRoute()
+{
+	return _patrolRoute;
+}
 
 void Guard::Wait()
 {
@@ -130,8 +133,13 @@ void Guard::Release()
 
 void Guard::Update(float deltaTime) 
 {
+	if (_renderObject->_isSkinned)
+	{
+		_animation->Update(deltaTime);
+	}
 	switch( _moveState ) {
 	case MoveState::IDLE:
+		Animate(IDLEANIM);
 		Wait();
 		break;
 	case MoveState::FINDING_PATH:
@@ -146,6 +154,7 @@ void Guard::Update(float deltaTime)
 		break;
 	case MoveState::MOVING:
 		Moving();
+		Animate(WALKANIM);
 		break;
 	case MoveState::SWITCHING_NODE:
 		SwitchingNode();
@@ -174,28 +183,39 @@ void Guard::Act(GameObject* obj)
 				{
 					if (_interactionTime != 0)
 					{
-						UseCountdown(60);
+					UseCountdown(_animation->GetLength(2, 1.0f * speedMultiplyer));
 						Animate(FIXTRAPANIM);
 					}
-					else
+				else if (_interactionTime == 0)
 					{
 						static_cast<Trap*>(obj)->SetTrapActive(true);
 						//	obj->SetColorOffset({0,0,0});
 						ClearObjective();
 					}
+				else
+				{
+					UseCountdown();
+				}
 				}
 				break;
 			case ENEMY:											//The guard hits the enemy
-				
-				if (static_cast<Unit*>(obj)->GetHealth() == 1)
-					int a = 2;
-				static_cast<Unit*>(obj)->TakeDamage(1);
-				_stop = true;
+			if (_interactionTime != 0)
+			{
+				UseCountdown(_animation->GetLength(4, 4.5f * speedMultiplyer));
 				Animate(FIGHTANIM);
+			}
+			else if (_interactionTime == 0)
+			{
+				static_cast<Unit*>(obj)->TakeDamage(1);
 				if (static_cast<Unit*>(obj)->GetHealth() <= 0)
 				{
 					ClearObjective();
 				}
+			}
+			else
+			{
+				UseCountdown();
+			}
 				break;
 			case FLOOR:
 				if (!_patrolRoute.empty())
@@ -229,11 +249,6 @@ void Guard::Act(GameObject* obj)
 	{
 		_moveState = MoveState::MOVING;
 	}
-}
-
-std::vector<AI::Vec2D> Guard::GetPatrolRoute()
-{
-	return _patrolRoute;
 }
 
 void Guard::SwitchingNode()

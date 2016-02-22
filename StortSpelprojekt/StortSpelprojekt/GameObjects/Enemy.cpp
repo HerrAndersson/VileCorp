@@ -251,11 +251,23 @@ void Enemy::Act(GameObject* obj)
 		case LOOT:
 			if (_heldObject == nullptr)
 			{
-				obj->SetPickUpState(PICKINGUP);
-				Animate(PICKUPOBJECTANIM);
-				_heldObject = obj;
-				obj->SetVisibility(_visible);
-				ClearObjective();
+				if (_interactionTime < 0)
+				{
+					UseCountdown(_animation->GetLength(3, 1.0f * speedMultiplyer));
+					obj->SetPickUpState(PICKINGUP);
+					Animate(PICKUPOBJECTANIM);
+				}
+				else if(_interactionTime == 0)
+				{
+					obj->SetPickUpState(PICKEDUP);
+					_heldObject = obj;
+					obj->SetVisibility(_visible);
+					ClearObjective();
+				}
+				else
+				{
+					UseCountdown();
+				}
 			}
 			break;
 		case SPAWN:
@@ -282,13 +294,22 @@ void Enemy::Act(GameObject* obj)
 		}
 		break;
 		case GUARD:
-			static_cast<Unit*>(obj)->TakeDamage(1);
-			_stop = true;
-			Animate(FIGHTANIM);
-
-			if (static_cast<Unit*>(obj)->GetHealth() <= 0)
+			if (_interactionTime != 0)
 			{
-				ClearObjective();
+				UseCountdown(_animation->GetLength(1, 1.0f * speedMultiplyer));
+				Animate(FIGHTANIM);
+			}
+			else if (_interactionTime == 0)
+			{
+				static_cast<Unit*>(obj)->TakeDamage(1);
+				if (static_cast<Unit*>(obj)->GetHealth() <= 0)
+				{
+					ClearObjective();
+				}
+			}
+			else
+			{
+				UseCountdown();
 			}
 			break;
 		case ENEMY:
@@ -309,11 +330,16 @@ void Enemy::Release()
 void Enemy::Update(float deltaTime)
 {
 	//Unit::Update(deltaTime);
+	if (_renderObject->_isSkinned)
+	{
+		_animation->Update(deltaTime);
+	}
 
 	switch (_moveState)
 	{
 	case MoveState::IDLE:
 		CheckAllTiles();
+		Animate(IDLEANIM);
 		break;
 	case MoveState::FINDING_PATH:
 		if (_objective != nullptr)
@@ -323,6 +349,7 @@ void Enemy::Update(float deltaTime)
 		break;
 	case MoveState::MOVING:
 		Moving();
+		Animate(WALKANIM);
 		break;
 	case MoveState::SWITCHING_NODE:
 		SwitchingNode();

@@ -485,6 +485,13 @@ void Trap::SetTilePosition(AI::Vec2D pos)
 		break;
 	case SHARK:			//Trigger area is currently the same as the trap's physical area. Might be awkward since the shark trap is larger than its AOE.
 	{
+		for (int i = 0; i < _tileSize; i++)
+		{
+			if (_tileMap->IsFloorOnTile(_occupiedTiles[i]))
+			{
+				_tileMap->GetObjectOnTile(_occupiedTiles[i], FLOOR)->SetColorOffset({ 0,0,0 });
+			}
+		}
 		_nrOfAOETiles = 0;
 		AI::Vec2D offset = { _direction._y, _direction._x };
 		_nrOfAOETiles = 3;
@@ -500,6 +507,13 @@ void Trap::SetTilePosition(AI::Vec2D pos)
 			_occupiedTiles[3 * i + 2] = _tilePosition + dirOffset + offset;
 			dirOffset += _direction;
 		}
+		for (int i = 0; i < _tileSize; i++)
+		{
+			if (_tileMap->IsFloorOnTile(_occupiedTiles[i]))
+			{
+				_tileMap->GetObjectOnTile(_occupiedTiles[i], FLOOR)->SetColorOffset({ 2.0f, 2.0f, 0.0f });
+			}
+		}
 		break;
 	}
 	default:
@@ -510,14 +524,14 @@ void Trap::SetTilePosition(AI::Vec2D pos)
 
 void Trap::Animate(Anim anim)
 {
-	if (_renderObject->_isSkinned)
+	if (_renderObject->_isSkinned && _animation->GetisFinished())
 	{
 		if (_trapType == SPIKE)
 		{
 			switch (anim)
 			{
 			case IDLE:
-				_animation->SetActionAsCycle(0, 2.0f, false);
+				_animation->SetActionAsCycle(0, 2.0f);
 				break;
 			case ACTIVATE:
 				_animation->PlayAction(0, 1.0f, true, true);
@@ -531,10 +545,10 @@ void Trap::Animate(Anim anim)
 			switch (anim)
 			{
 			case IDLE:
-				_animation->SetActionAsCycle(0, 2.0f, false);
+				_animation->SetActionAsCycle(0, 2.0f);
 				break;
 			case ACTIVATE:
-				_animation->PlayAction(1, 1.0f, true, false);
+				_animation->PlayAction(1, 1.0f);
 				break;
 			default:
 				break;

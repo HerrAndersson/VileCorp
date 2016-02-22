@@ -41,7 +41,6 @@ protected:
 	void CalculatePath();
 	void Rotate();
 	int GetApproxDistance(AI::Vec2D target)const;
-	bool _stop;
 	void SetGoal(AI::Vec2D goal);
 	void SetGoal(GameObject* objective);
 public:
@@ -78,13 +77,13 @@ public:
 	void UseCountdown(int frames = 0);
 	int GetVisionRadius()const;
 
+	void SetTilePosition(AI::Vec2D pos);
+	virtual void Moving();
+	virtual void SwitchingNode();
+	
 	enum Anim { IDLEANIM, WALKANIM, FIXTRAPANIM, FIGHTANIM, PICKUPOBJECTANIM, NR_OF_ANIM/*Has to be last*/ };
 	void Animate(Anim anim);
 	bool GetAnimisFinished();
-	void SetTilePosition(AI::Vec2D pos);
-
-	virtual void Moving();
-	virtual void SwitchingNode();
-
+	float speedMultiplyer;
 };
 

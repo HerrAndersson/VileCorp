@@ -19,5 +19,13 @@ void Architecture::Release()
 
 bool Architecture::InRange(AI::Vec2D pos) const
 {
-	return pos == _tilePosition;
+	if (_type == LOOT)
+	{
+		return GameObject::InRange(pos);
+	}
+	else
+	{
+		return pos == _tilePosition;
+	}
+	
 }

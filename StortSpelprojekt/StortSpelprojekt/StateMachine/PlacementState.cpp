@@ -59,6 +59,9 @@ void PlacementState::Update(float deltaTime)
 {
 	_baseEdit->Update(deltaTime);
 
+
+	HandleCam(deltaTime);
+
 	HandleInput();
 	HandleButtons();
 }
@@ -171,6 +174,17 @@ void PlacementState::HandleButtons()
 		if (_baseEdit->IsSelection() && !_baseEdit->IsPlace())
 		{
 			_toPlace._subType = TESLACOIL;
+			create = true;
+		}
+	}
+	if (_uiTree.IsButtonColliding("SharkTrap", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
+	{
+		_toPlace._type = TRAP;
+		_toPlace._name = "shark_trap";
+
+		if (_baseEdit->IsSelection() && !_baseEdit->IsPlace())
+		{
+			_toPlace._subType = SHARK;
 			create = true;
 		}
 	}
