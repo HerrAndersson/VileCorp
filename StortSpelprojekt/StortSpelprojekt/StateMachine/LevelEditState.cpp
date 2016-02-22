@@ -61,11 +61,9 @@ LevelEditState::~LevelEditState()
 
 void LevelEditState::Update(float deltaTime)
 {
-	if (_controls->IsFunctionKeyDown("MAP_EDIT:PLACEMENTFLAG"))
-	{
-		_baseEdit->ChangePlaceState();
-	}
 	_baseEdit->Update(deltaTime);
+
+	HandleCam(deltaTime);
 	HandleInput();
 	HandleButtons();
 }

@@ -147,7 +147,7 @@
       },
       {
 				"_mesh": "trap-24.bin",
-				"_name": "Spiketrap",
+				"_name": "SpikeTrap",
 				"_type": "TRAP",
 				"_subType": 0,
 				"_tooltip": "SampleText",
@@ -160,7 +160,7 @@
 			},
 			{
 				"_mesh": "TeslaTrap-26.bin",
-				"_name": "Teslatrap",
+				"_name": "TeslaTrap",
 				"_type": "TRAP",
 				"_subType": 1,
 				"_tooltip": "SampleText",
@@ -168,7 +168,20 @@
 					"Tesla.png"
 				],
 				"_thumbnails": [
-					"../Menues/LevelEdit/Traps/spiketrap.png"
+					"../Menues/LevelEdit/Traps/Tesla.png"
+				]
+			},
+			{
+				"_mesh": "Anvil-27.bin",
+				"_name": "AnvilTrap",
+				"_type": "TRAP",
+				"_subType": 0,
+				"_tooltip": "SampleText",
+				"_textures": [
+					"Anvil.png"
+				],
+				"_thumbnails": [
+					"../Menues/PlacementStateGUI/units/Anvilbutton1.png"
 				]
 			},
 			{
@@ -186,6 +199,19 @@
 					"textureblue.png",
 					"textureblue2.png",
 					"texturebrown.png"
+				]
+			},
+			{
+				"_mesh": "SecurityCamera-27.bin",
+				"_name": "Camera",
+				"_type": "CAMERA",
+				"_subType": 0,
+				"_tooltip": "SampleText",
+				"_textures": [
+					"cameraFin.png"
+				],
+				"_thumbnails": [
+					"../Menues/PlacementStateGUI/units/Camerabutton1.png"
 				]
 			},
 			{

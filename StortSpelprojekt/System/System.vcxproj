@@ -98,13 +98,13 @@
       <AdditionalLibraryDirectories>../include/yse/dll;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <CustomBuildStep>
-      <Command>robocopy "C:\%HOMEPATH%\Google Drive\Stort spelprojekt\Assets" "$(OutDir)Assets" /MIR /Z /XA:H /W:1 /R:1 /V
+      <Command>robocopy "C:\%HOMEPATH%\Google Drive\Stort spelprojekt\Assets" "$(OutDir)Assets" /E /Z /XA:H /W:0 /R:0 /V
 
-robocopy "$(SolutionDir)Renderer\Shaders" "$(OutDir)Assets\Shaders" *.hlsl /MIR /Z /XA:H /W:1 /R:1 /V
+robocopy "$(SolutionDir)Renderer\Shaders" "$(OutDir)Assets\Shaders" *.hlsl /E /XA:H /W:0 /R:0 /V
 
-robocopy "$(SolutionDir)Assets" "$(OutDir)Assets" *.json *.xml /E /Z /XA:H /W:1 /R:1 /V
+robocopy "$(SolutionDir)Assets" "$(OutDir)Assets" *.json *.xml /E /XA:H /W:0 /R:0 /V
 
-robocopy "$(SolutionDir)include\yse\dll" "$(OutDir)" /E /Z /XA:H /W:1 /R:1 /V
+robocopy "$(SolutionDir)include\yse\dll" "$(OutDir)" /E /XA:H /W:0 /R:0 /V
 
 if errorlevel 1 exit 0 else exit %errorlevel%</Command>
     </CustomBuildStep>
@@ -157,19 +157,18 @@ if errorlevel 1 exit 0 else exit %errorlevel%</Command>
       <AdditionalLibraryDirectories>../include/yse/dll;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <CustomBuildStep>
-      <Command>robocopy "C:\%HOMEPATH%\Google Drive\Stort spelprojekt\Assets" "$(OutDir)Assets" /MIR /Z /XA:H /W:1 /R:1 /V
+      <Command>robocopy "C:\%HOMEPATH%\Google Drive\Stort spelprojekt\Assets" "$(OutDir)Assets" /E /Z /XA:H /W:0 /R:0 /V
 
-robocopy "$(SolutionDir)Renderer\Shaders" "$(OutDir)Assets\Shaders" *.hlsl /MIR /Z /XA:H /W:1 /R:1 /V
+robocopy "$(SolutionDir)Renderer\Shaders" "$(OutDir)Assets\Shaders" *.hlsl /E /XA:H /W:0 /R:0 /V
 
-robocopy "$(SolutionDir)Assets" "$(OutDir)Assets" *.json /E /Z /XA:H /W:1 /R:1 /V
+robocopy "$(SolutionDir)Assets" "$(OutDir)Assets" *.json *.xml /E /XA:H /W:0 /R:0 /V
 
-robocopy "$(SolutionDir)include\yse\dll" "$(OutDir)" /E /Z /XA:H /W:1 /R:1 /V
+robocopy "$(SolutionDir)include\yse\dll" "$(OutDir)" /E /XA:H /W:0 /R:0 /V
 
 if errorlevel 1 exit 0 else exit %errorlevel%</Command>
     </CustomBuildStep>
     <CustomBuildStep>
-      <Outputs>
-      </Outputs>
+      <Outputs>a</Outputs>
     </CustomBuildStep>
     <PostBuildEvent>
       <Command>

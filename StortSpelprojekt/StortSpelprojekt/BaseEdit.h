@@ -47,6 +47,10 @@ private:
 		}
 	} _marker, _baseMarker;
 
+	bool _droppedObject;
+	GameObject* _createdObject;
+	Blueprint* _deletedObjectBlueprint;
+
 	// FLAGS
 	bool _extendedMode;
 	bool _isSelectionMode;
@@ -58,9 +62,7 @@ private:
 	void MarkerMoveEvent();
 	void DragEvent(Type type);
 	void DropEvent();
-
-	// Should be reworked 
-	void DragAndPlace(SpecificBlueprint* sB);
+	void BoxEvent();
 
 	void HandleMouseInput();
 	void HandleKeyInput(double deltaTime);
@@ -71,9 +73,10 @@ private:
 	void HandleCamMove(float deltaTime);
 
 	bool CheckValidity(AI::Vec2D tile, Type type);
-	// Used for Drag&Place
-	void CreateMarker();
-	void CreateMarkers();
+
+
+	void CreateMarker();	// Used for Drag&Drop and Click
+	void CreateMarkers(); 	// Used for Drag&Place
 	void ReleaseMarkers();
 
 public:
@@ -86,10 +89,13 @@ public:
 
 	void HandleBlueprint(SpecificBlueprint* sB);
 
-	void ChangePlaceState();
 	bool IsSelection() const;
 	bool IsDragAndPlace() const;
 	bool IsPlace() const;
+
+	bool DroppedObject();
+	GameObject* CreatedObject();
+	Blueprint* DeletedObjectBlueprint();
 
 	void Update(float deltaTime);
 };

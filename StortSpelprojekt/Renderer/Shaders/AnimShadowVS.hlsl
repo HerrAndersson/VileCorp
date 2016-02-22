@@ -1,18 +1,17 @@
 /*--------------------------------------------------------------------------------------------------------------------
-| Vertex shader that is used for rendering objects with skeletal animation								             |
+| Animation Vertex shader used for generate the depth buffer for objects that should cast shadows.							 |
+| Binds null-rendertarget and a depth stencil view																     |
 --------------------------------------------------------------------------------------------------------------------*/
 
-cbuffer matrixBufferPerFrame : register(b0)
+cbuffer matrixBufferPerFrame : register(b4)
 {
 	matrix viewMatrix;
 	matrix projectionMatrix;
-	float3 ambientLight;
 };
 
-cbuffer matrixBufferPerObjectObject : register(b1)
+cbuffer matrixBufferPerObject : register(b1)
 {
 	matrix worldMatrix;
-	float3 colorOffset;
 };
 
 cbuffer matrixBufferPerObjectObject : register(b5)
@@ -20,7 +19,7 @@ cbuffer matrixBufferPerObjectObject : register(b5)
 	matrix bones[30];
 };
 
-struct VS_IN
+struct VertexInputType
 {
 	uint4 boneIndex		: BONEINDEX;
 	float3 pos			: POSITION;
@@ -29,19 +28,8 @@ struct VS_IN
 	float4 boneWeight	: BONEWEIGHT;
 };
 
-struct VS_OUT
+float4 main(VertexInputType input) : SV_POSITION
 {
-	float4 pos			: SV_POSITION;
-	float3 normal		: NORMAL;
-	float2 uv			: TEXCOORD;
-	float3 ambientLight : AMBIENT;
-	float3 colorOffset  : COLOROFFSET;
-};
-
-VS_OUT main(VS_IN input)
-{
-	VS_OUT output = (VS_OUT)0;
-	
 	float4 inputPos = float4(input.pos, 1.0f);
 	float4 animPos;
 
@@ -54,12 +42,7 @@ VS_OUT main(VS_IN input)
 	animPos = mul(animPos, worldMatrix);
 	animPos = mul(animPos, viewMatrix);
 	animPos = mul(animPos, projectionMatrix);
+	animPos.w = 1.0f;
 
-	output.pos = animPos;
-	output.normal = input.normal;
-	output.uv = input.uv;
-	output.ambientLight = ambientLight;
-	output.colorOffset = colorOffset;
-
-	return output;
+	return animPos;
 }

@@ -272,10 +272,15 @@ void Game::Render()
 					if (j.size() > 0)
 					{
 						RenderObject* renderObject = j.at(0)->GetRenderObject();
-						if (!renderObject->_mesh->_isSkinned)
+<<<<<<< HEAD
+						_renderModule->SetShadowMapDataPerObjectType(renderObject);
+						int vertexBufferSize = renderObject->_mesh->_vertexBufferSize;
+=======
+						if (!renderObject->_isSkinned)
 						{
 							_renderModule->SetShadowMapDataPerObjectType(renderObject);
-							int vertexBufferSize = renderObject->_mesh->_vertexBufferSize;
+							int vertexBufferSize = renderObject->_mesh._vertexBufferSize;
+>>>>>>> origin/Developer
 
 							for (GameObject* g : j)
 							{
@@ -298,10 +303,10 @@ void Game::Render()
 					if (j.size() > 0)
 					{
 						RenderObject* renderObject = j.at(0)->GetRenderObject();
-						if (renderObject->_mesh->_isSkinned)
+						if (renderObject->_isSkinned)
 						{
 							_renderModule->SetShadowMapDataPerObjectType(renderObject);
-							int vertexBufferSize = renderObject->_mesh->_vertexBufferSize;
+							int vertexBufferSize = renderObject->_mesh._vertexBufferSize;
 
 							for (GameObject* g : j)
 							{

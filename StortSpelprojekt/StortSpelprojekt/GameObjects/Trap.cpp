@@ -531,14 +531,14 @@ void Trap::SetTilePosition(AI::Vec2D pos)
 
 void Trap::Animate(Anim anim)
 {
-	if (_renderObject->_mesh->_isSkinned)
+	if (_renderObject->_mesh->_isSkinned && _animation->GetisFinished())
 	{
 		if (_trapType == SPIKE)
 		{
 			switch (anim)
 			{
 			case IDLE:
-				_animation->SetActionAsCycle(0, 2.0f, false);
+				_animation->SetActionAsCycle(0, 2.0f);
 				break;
 			case ACTIVATE:
 				_animation->PlayAction(0, 1.0f, true, true);
@@ -552,10 +552,10 @@ void Trap::Animate(Anim anim)
 			switch (anim)
 			{
 			case IDLE:
-				_animation->SetActionAsCycle(0, 2.0f, false);
+				_animation->SetActionAsCycle(0, 2.0f);
 				break;
 			case ACTIVATE:
-				_animation->PlayAction(1, 1.0f, true, false);
+				_animation->PlayAction(1, 1.0f);
 				break;
 			default:
 				break;

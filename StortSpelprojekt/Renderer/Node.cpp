@@ -20,6 +20,25 @@ namespace GUI
 		UpdateFont();
 	}
 
+	Node::Node(const Node & copy)
+	{
+		_info = copy._info;
+		_position = copy._position;
+		_positionFinal = copy._positionFinal;
+		_scale = copy._scale;
+		_colorOffset = copy._colorOffset;
+		_texture = copy._texture;
+		_id = copy._id;
+		_text = copy._text;
+		_color = copy._color;
+		_fontSize = copy._fontSize;
+		_centered = copy._centered;
+		_hidden = copy._hidden;
+		_children = copy._children;
+		UpdateMatrix();
+		UpdateFont();
+	};
+
 	Node::~Node()
 	{
 	}

@@ -30,6 +30,12 @@ protected:
 	void ResetMouse();
 	State GetOldState() const;
 
+	void HandleCam(float deltaTime);
+	void HandleCamMode();
+	void HandleCamZoom();
+	void HandleCamRot();
+	void HandleCamMove(float deltaTime);
+
 public:
 	BaseState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule);
 	virtual ~BaseState();

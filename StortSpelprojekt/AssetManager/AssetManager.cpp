@@ -200,7 +200,7 @@ Mesh* AssetManager::ScanModel(string name)
 	return mesh;
 }
 
-//TODO: SHIT'S NOT MERGING YO! /Rikhard
+//TODO: This stubborn code refuses to work when merged. I need an adult. /Rikhard
 //RenderObject* AssetManager::ScanModel28()
 //{
 //	RenderObject* renderObject = new RenderObject;
