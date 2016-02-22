@@ -222,15 +222,10 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	
 	switch (_trapType)
 	{
-	case SPIKE:
+	case ANVIL:
 		Initialize(3, 1, 1, 50, 50);
 		_occupiedTiles[0] = _tilePosition;
 		_areaOfEffect[_nrOfAOETiles++] = _tilePosition;
-		if (_renderObject->_isSkinned)
-		{
-			_animation = new Animation(_renderObject->_skeleton, true);
-			_animation->Freeze(true);
-		}
 		break;
 	case TESLACOIL:	
 		Initialize(2, 9, 37, 50, 50);
@@ -240,11 +235,6 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 			_occupiedTiles[i] = _tilePosition + offset;
 		}
 		CalculateCircleAOE(3);
-		if (_renderObject->_isSkinned)
-		{
-			_animation = new Animation(_renderObject->_skeleton);
-			_animation->Freeze(false);
-		}
 		break;
 	case SHARK:			//Trigger area is currently the same as the trap's physical area. Might be awkward since the shark trap is larger than its AOE.
 	{
@@ -263,16 +253,18 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 			_occupiedTiles[3 * i + 2] = _tilePosition + dirOffset + offset;
 			dirOffset += direction;
 		}
-		if (_renderObject->_isSkinned)
-		{
-			_animation = new Animation(_renderObject->_skeleton);
-			_animation->Freeze(false);
-		}
 		break;
 	}
 	default:
 		_areaOfEffect = nullptr;
 		break;
+	}
+
+	if (_renderObject->_isSkinned)
+	{
+		_animation = new Animation(_renderObject->_skeleton, true);
+		_animation->Freeze(false);
+		Animate(IDLE);
 	}
 
 	//Floor gets colored for debugging. Note that the tiles won't get decolored if the trap is removed
@@ -324,7 +316,7 @@ bool Trap::InRange(AI::Vec2D pos) const
 	AI::Vec2D tempPos = _tilePosition;
 	switch (_trapType)
 	{
-	case SPIKE:
+	case ANVIL:
 		result = GameObject::InRange(pos);
 		break;
 	case TESLACOIL:
@@ -385,7 +377,7 @@ void Trap::Activate()
 
 void Trap::Update(float deltaTime)
 {	
-	if (_animation != nullptr && !_isActive)
+	if (_animation != nullptr)
 	{
 		_animation->Update(deltaTime);
 	}
@@ -437,7 +429,7 @@ void Trap::SetTilePosition(AI::Vec2D pos)
 
 	switch (_trapType)
 	{
-	case SPIKE:
+	case ANVIL:
 	{
 		_nrOfAOETiles = 0;
 		_occupiedTiles[0] = _tilePosition;
@@ -526,12 +518,12 @@ void Trap::Animate(Anim anim)
 {
 	if (_renderObject->_isSkinned && _animation->GetisFinished())
 	{
-		if (_trapType == SPIKE)
+		if (_trapType == ANVIL)
 		{
 			switch (anim)
 			{
 			case IDLE:
-				_animation->SetActionAsCycle(0, 2.0f);
+				_animation->Freeze(true);
 				break;
 			case ACTIVATE:
 				_animation->PlayAction(0, 1.0f, true, true);
@@ -548,7 +540,7 @@ void Trap::Animate(Anim anim)
 				_animation->SetActionAsCycle(0, 2.0f);
 				break;
 			case ACTIVATE:
-				_animation->PlayAction(1, 1.0f);
+				_animation->PlayAction(1, 1.0f, true);
 				break;
 			default:
 				break;

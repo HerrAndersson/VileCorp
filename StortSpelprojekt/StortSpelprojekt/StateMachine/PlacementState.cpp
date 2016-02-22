@@ -27,7 +27,7 @@ void PlacementState::EvaluateGoldCost()
 	int costOfCamera = 80;
 	int costOfGuard = 200;
 
-	if (_toPlace._subType == SPIKE)
+	if (_toPlace._subType == ANVIL)
 	{
 		_toPlace._goldCost = costOfAnvilTrap;
 	}
@@ -162,7 +162,7 @@ void PlacementState::HandleButtons()
 
 		if (_baseEdit->IsSelection() && !_baseEdit->IsPlace())
 		{
-			_toPlace._subType = SPIKE;
+			_toPlace._subType = ANVIL;
 			create = true;
 		}
 	}
