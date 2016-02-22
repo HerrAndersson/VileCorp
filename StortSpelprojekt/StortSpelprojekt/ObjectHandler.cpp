@@ -807,7 +807,7 @@ SecurityCamera*	ObjectHandler::MakeSecurityCamera(GameObjectCameraInfo* data, co
 	return obj;
 }
 
-Guard * ObjectHandler::MakeGuard(GameObjectGuardInfo * data, const XMFLOAT3& position, const XMFLOAT3& rotation)
+Guard * ObjectHandler::MakeGuard(GameObjectGuardInfo * data, const XMFLOAT3& position, const XMFLOAT3& rotation, const int subIndex)
 {
 	Guard* obj = new Guard(
 		_idCount,
@@ -816,7 +816,8 @@ Guard * ObjectHandler::MakeGuard(GameObjectGuardInfo * data, const XMFLOAT3& pos
 		AI::Vec2D((int)position.x, (int)position.z),
 		GUARD,
 		_assetManager->GetRenderObject(data->_renderObject),
-		_tilemap);
+		_tilemap,
+		subIndex);
 
 	// read more data
 
