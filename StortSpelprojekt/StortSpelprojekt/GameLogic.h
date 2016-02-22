@@ -20,9 +20,10 @@ private:
 	GUI::UITree*			_uiTree;
 	AssetManager*			_assetManager;
 	ID3D11ShaderResourceView* _guardTexture;
-	bool					_gameDone;
+	bool					_gameOver;
 	System::SettingsReader* _settingsReader;
 	float					_buttonReady;
+	bool					_gameOverDialog;
 
 	void HandleInput(float deltaTime);
 	void HandleUnitSelect();
@@ -33,11 +34,12 @@ private:
 	void HandleCamZoom();
 	void HandleCamRot();
 	void HandleCamMove(float deltaTime);
+	void HandleWinLoseDialog(float deltaTime);
 public:
 	GameLogic(ObjectHandler* objectHandler, System::Camera* camera, System::Controls* controls, PickingDevice* pickingDevice, GUI::UITree* uiTree, AssetManager* assetManager, System::SettingsReader* settingsReader);
 	~GameLogic();
 	void Update(float deltaTime);
-	bool IsGameDone()const;
+	bool IsGoToMenu()const;
 };
 
 
