@@ -22,7 +22,7 @@ struct GS_OUT
 	float textureNumber : TEXNUM;
 };
 
-//Gives random number in the range [0, 0.99999...]
+///Gives random number in the range [0, 0.99999...]
 float random(float2 p)
 {
 	const float2 randomSeed = float2(23.1406926327792690, 2.6651441426902251);
@@ -55,7 +55,7 @@ void main(point GS_IN input[1], inout TriangleStream<GS_OUT> OutputStream)
 		right = float4(normalize(cross(particleToCam, up.xyz)).xyz, 0) * scale;
 		up = float4(normalize(cross(particleToCam, right.xyz)).xyz, 0) * scale;
 
-		textureNumber = textureCount * random(input[0].position.xz);
+		textureNumber = textureCount * random(float2(input[0].position.xz));
 	}
 
 	//2------4

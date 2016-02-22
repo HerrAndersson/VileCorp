@@ -189,7 +189,7 @@ namespace Renderer
 		return offsets.x + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (offsets.y - offsets.x + std::numeric_limits<float>::epsilon())));
 	}
 
-	DirectX::XMFLOAT3 ParticleEmitter::NormalizeDirection(DirectX::XMFLOAT3 dir)
+	DirectX::XMFLOAT3 ParticleEmitter::Normalize(DirectX::XMFLOAT3 dir)
 	{
 		float length = abs(dir.x) + abs(dir.y) + abs(dir.z);
 
@@ -208,65 +208,88 @@ namespace Renderer
 		XMFLOAT3 pos;
 		XMFLOAT3 dir;
 
+		float positionOffset;
+		float directionOffset;
+		float repeatTime;
+		XMFLOAT2 speedRange;
+		float speed;
+		bool hasModifiers = false;
+
+		//Set modifier values depending on the type
 		switch (_type)
 		{
 			case SPLASH:
 			{
-				pos.x = GetRandomOffset(_modifiers->_splashPositionOffset, true);
-				pos.y = GetRandomOffset(_modifiers->_splashPositionOffset, true);
-				pos.z = GetRandomOffset(_modifiers->_splashPositionOffset, true);
-
-				dir.x = _baseDirection.x + GetRandomOffset(_modifiers->_splashDirectionOffset, true);
-				dir.y = _baseDirection.y + GetRandomOffset(_modifiers->_splashDirectionOffset, true);
-				dir.z = _baseDirection.z + GetRandomOffset(_modifiers->_splashDirectionOffset, true);
-
-				dir = NormalizeDirection(dir);
-
-				float speed = GetRandomOffsetInRange(_modifiers->_splashSpeedRange);
-
-				p = Particle(pos, speed, FLT_MAX, dir);
-
+				positionOffset = _modifiers->_splashPositionOffset;
+				directionOffset = _modifiers->_splashDirectionOffset;
+				speedRange = _modifiers->_splashSpeedRange;
+				repeatTime = FLT_MAX;
+				hasModifiers = true;
 				break;
 			}
 			case SMOKE:
 			{
-				pos.x = GetRandomOffset(_modifiers->_smokePositionOffset, true);
-				pos.y = GetRandomOffset(_modifiers->_smokePositionOffset, true);
-				pos.z = GetRandomOffset(_modifiers->_smokePositionOffset, true);
-
-				dir.x = _baseDirection.x + GetRandomOffset(_modifiers->_smokeDirectionOffset, true);
-				dir.y = _baseDirection.y + GetRandomOffset(_modifiers->_smokeDirectionOffset, true);
-				dir.z = _baseDirection.z + GetRandomOffset(_modifiers->_smokeDirectionOffset, true);
-
-				dir = NormalizeDirection(dir);
-
-				float speed = GetRandomOffsetInRange(_modifiers->_smokeSpeedRange);
-
-				XMFLOAT2 offsets(_modifiers->_smokeRepeatTime/2, _modifiers->_smokeRepeatTime);
-				float time = GetRandomOffsetInRange(offsets);
-
-				p = Particle(pos, speed, time, dir);
+				positionOffset = _modifiers->_smokePositionOffset;
+				directionOffset = _modifiers->_smokeDirectionOffset;
+				speedRange = _modifiers->_smokeSpeedRange;
+				repeatTime = _modifiers->_smokeRepeatTime;
+				hasModifiers = true;
 				break;
 			}
 			case FIRE:
 			{
-				pos.x = GetRandomOffset(_modifiers->_firePositionOffset, true);
-				pos.y = GetRandomOffset(_modifiers->_firePositionOffset, true);
-				pos.z = GetRandomOffset(_modifiers->_firePositionOffset, true);
+				positionOffset = _modifiers->_firePositionOffset;
+				directionOffset = _modifiers->_fireDirectionOffset;
+				speedRange = _modifiers->_fireSpeedRange;
+				repeatTime = _modifiers->_fireRepeatTime;
+				hasModifiers = true;
 
-				dir.x = _baseDirection.x + GetRandomOffset(_modifiers->_fireDirectionOffset, true);
-				dir.y = _baseDirection.y + GetRandomOffset(_modifiers->_fireDirectionOffset, true);
-				dir.z = _baseDirection.z + GetRandomOffset(_modifiers->_fireDirectionOffset, true);
+				break;
+			}
+			default:
+			{
+				break;
+			}
+		}
 
-				dir = NormalizeDirection(dir);
+		//Set all common variables
+		if (hasModifiers)
+		{
+			pos.x = GetRandomOffset(positionOffset, true);
+			pos.y = GetRandomOffset(positionOffset, true);
+			pos.z = GetRandomOffset(positionOffset, true);
 
-				float speed = GetRandomOffsetInRange(_modifiers->_fireSpeedRange);
+			dir.x = _baseDirection.x + GetRandomOffset(directionOffset, true);
+			dir.y = _baseDirection.y + GetRandomOffset(directionOffset, true);
+			dir.z = _baseDirection.z + GetRandomOffset(directionOffset, true);
+			dir = Normalize(dir);
 
-				XMFLOAT2 offsets(_modifiers->_fireRepeatTime / 2, _modifiers->_fireRepeatTime);
+			speed = GetRandomOffsetInRange(speedRange);
+		}
+
+		//Set variables that are not shared for all types, and create the particle
+		switch (_type)
+		{
+			case SPLASH:
+			{
+				p = Particle(pos, speed, repeatTime, dir);
+
+				break;
+			}
+			case FIRE:
+			case SMOKE:
+			{
+				XMFLOAT2 offsets(repeatTime /2, repeatTime);
 				float time = GetRandomOffsetInRange(offsets);
 
 				p = Particle(pos, speed, time, dir);
 
+				break;
+			}
+			case MUZZLE_FLASH:
+			{
+				pos = XMFLOAT3(GetRandomOffset(0.01f, true), GetRandomOffset(0.01f, true), GetRandomOffset(0.01f, true));
+				p = Particle(pos, 0, 100);
 				break;
 			}
 			case ICON:
@@ -373,24 +396,6 @@ namespace Renderer
 
 							break;
 						}
-						case SMOKE:
-						{
-							position.y += direction.y * speed * deltatimeSeconds;
-							position.x += direction.x * speed * deltatimeSeconds;
-							position.z += direction.z * speed * deltatimeSeconds;
-
-							if (p.GetTimeLeft() < 0)
-							{
-								p = CreateSingleParticle();
-							}
-							else
-							{
-								p.SetPosition(position);
-								p.DecreaseTimeLeft((float)deltaTime);
-							}
-
-							break;
-						}
 						case ELECTRICITY:
 						{
 							if (_particles.at(0).GetTimeLeft() <= 0)
@@ -402,6 +407,7 @@ namespace Renderer
 
 							break;
 						}
+						case SMOKE:
 						case FIRE:
 						{
 							position.y += direction.y * speed * deltatimeSeconds;
@@ -420,6 +426,7 @@ namespace Renderer
 
 							break;
 						}
+						case MUZZLE_FLASH:
 						case ICON:
 						{
 							p.DecreaseTimeLeft((float)deltaTime);

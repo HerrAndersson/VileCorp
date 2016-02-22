@@ -56,7 +56,7 @@ namespace Renderer
 		//Generates a random number in the range [offsets.x, offsets.y]
 		float GetRandomOffsetInRange(DirectX::XMFLOAT2 offsets);
 
-		DirectX::XMFLOAT3 NormalizeDirection(DirectX::XMFLOAT3 dir);
+		DirectX::XMFLOAT3 Normalize(DirectX::XMFLOAT3 dir);
 
 	public:
 

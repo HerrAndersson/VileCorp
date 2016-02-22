@@ -110,6 +110,11 @@ void Game::LoadParticleSystemData(ParticleTextures& particleTextures, ParticleMo
 		particleTextures._fireTextures[i] = _assetManager->GetTexture(data._subtypeTexturePaths.at(ParticleSubType::FIRE_SUBTYPE).at(i));
 	}
 
+	for (unsigned int i = 0; i < data._subtypeTexturePaths.at(ParticleSubType::MUZZLE_FLASH_SUBTYPE).size(); i++)
+	{
+		particleTextures._muzzleFlashTextures[i] = _assetManager->GetTexture(data._subtypeTexturePaths.at(ParticleSubType::MUZZLE_FLASH_SUBTYPE).at(i));
+	}
+
 	for (unsigned int i = 0; i < data._iconTexturePaths.size(); i++)
 	{
 		particleTextures._iconTextures[i] = _assetManager->GetTexture(data._iconTexturePaths.at(i));
@@ -158,6 +163,11 @@ bool Game::Update(double deltaTime)
 		XMFLOAT3 pos = XMFLOAT3(11, 1.0f, 2);
 		XMFLOAT3 dir = XMFLOAT3(0, 1, 0);
 		ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::SPLASH, ParticleSubType::BLOOD_SUBTYPE, -1, pos, dir, 300.0f, 20, 0.1f, true);
+		_particleHandler->GetParticleRequestQueue()->Insert(msg);
+
+		pos = XMFLOAT3(16, 1.0f, 2);
+		dir = XMFLOAT3(0, 0, 1);
+		msg = new ParticleRequestMessage(ParticleType::MUZZLE_FLASH, ParticleSubType::MUZZLE_FLASH_SUBTYPE, -1, pos, dir, 50.0f, 1, 0.1f, true);
 		_particleHandler->GetParticleRequestQueue()->Insert(msg);
 
 		pos = XMFLOAT3(14, 1.0f, 2);
@@ -346,21 +356,22 @@ void Game::Render()
 
 			if (vertexBuffer)
 			{
-				if (emitter->GetType() != ParticleType::ELECTRICITY)
+				ParticleType type = emitter->GetType();
+				if (type != ParticleType::ELECTRICITY)
 				{
 					_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::BILLBOARDING_STAGE);
 
 					int textureCount = PARTICLE_TEXTURE_COUNT;
-					if (emitter->GetType() == ParticleType::ICON)
+					if (type == ParticleType::ICON)
 					{
-						textureCount = 1;
-						ID3D11ShaderResourceView* textures[1];
-						textures[0] = _particleHandler->GetIconTexture(emitter->GetSubType());
+						//textureCount = 1;
+						//ID3D11ShaderResourceView* textures[1];
+						//textures[0] = _particleHandler->GetIconTexture(emitter->GetSubType());
 
-						_renderModule->SetDataPerParticleEmitter(emitter->GetPosition(), _camera->GetViewMatrix(), _camera->GetProjectionMatrix(), _camera->GetPosition(), emitter->GetParticleScale(), textures, textureCount, 1);
-						_renderModule->RenderParticles(vertexBuffer, emitter->GetParticleCount(), emitter->GetVertexSize());
+						//_renderModule->SetDataPerParticleEmitter(emitter->GetPosition(), _camera->GetViewMatrix(), _camera->GetProjectionMatrix(), _camera->GetPosition(), emitter->GetParticleScale(), textures, textureCount, 1);
+						//_renderModule->RenderParticles(vertexBuffer, emitter->GetParticleCount(), emitter->GetVertexSize());
 					}
-					else
+					else if(type == ParticleType::MUZZLE_FLASH)
 					{
 						ID3D11ShaderResourceView** textures = _particleHandler->GetTextures(textureCount, emitter->GetSubType());
 						_renderModule->SetDataPerParticleEmitter(emitter->GetPosition(), _camera->GetViewMatrix(), _camera->GetProjectionMatrix(), _camera->GetPosition(), emitter->GetParticleScale(), textures, textureCount, 0);
@@ -372,7 +383,7 @@ void Game::Render()
 		}
 	}
 
-	//Render all electricity particles
+	//Render all electricity "particles"
 	_renderModule->SetShaderStage(Renderer::RenderModule::RENDER_LINESTRIP);
 
 	for (int i = 0; i < count; i++)

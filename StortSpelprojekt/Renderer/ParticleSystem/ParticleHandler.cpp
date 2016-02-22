@@ -152,6 +152,12 @@ namespace Renderer
 				textures = _textures._fireTextures;
 				break;
 			}
+			case ParticleSubType::MUZZLE_FLASH_SUBTYPE:
+			{
+				count = PARTICLE_TEXTURE_COUNT;
+				textures = _textures._muzzleFlashTextures;
+				break;
+			}
 			default:
 			{
 				break;

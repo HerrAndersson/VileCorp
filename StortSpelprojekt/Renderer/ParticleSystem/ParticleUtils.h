@@ -8,11 +8,11 @@
 #include <cereal\types\vector.hpp>
 
 //Determines how it moves
-enum ParticleType { SPLASH, SMOKE, ELECTRICITY, FIRE, ICON };
+enum ParticleType { SPLASH, SMOKE, ELECTRICITY, FIRE, MUZZLE_FLASH, ICON };
 
 //Determines how it looks
-enum ParticleSubType { BLOOD_SUBTYPE, WATER_SUBTYPE, SPARK_SUBTYPE, SMOKE_SUBTYPE, FIRE_SUBTYPE, EXCLAMATIONMARK_SUBTYPE, QUESTIONMARK_SUBTYPE }; //Icons have to be last
-enum ParticleIconType { ICON_EXCLAMATIONMARK, ICON_QUESTIONMARK }; //Used for loading and using textures
+enum ParticleSubType { BLOOD_SUBTYPE, WATER_SUBTYPE, SPARK_SUBTYPE, SMOKE_SUBTYPE, FIRE_SUBTYPE, MUZZLE_FLASH_SUBTYPE, EXCLAMATIONMARK_SUBTYPE, QUESTIONMARK_SUBTYPE }; //Icons have to be last
+enum ParticleIconType { ICON_EXCLAMATIONMARK, ICON_QUESTIONMARK }; //Used for loading and using icon textures
 
 struct ParticleMessage
 {
@@ -90,6 +90,7 @@ struct ParticleTextures
 	ID3D11ShaderResourceView* _smokeTextures[PARTICLE_TEXTURE_COUNT];
 	ID3D11ShaderResourceView* _sparkTextures[PARTICLE_TEXTURE_COUNT];
 	ID3D11ShaderResourceView* _fireTextures[PARTICLE_TEXTURE_COUNT];
+	ID3D11ShaderResourceView* _muzzleFlashTextures[PARTICLE_TEXTURE_COUNT];
 	ID3D11ShaderResourceView* _iconTextures[ICON_TEXTURE_COUNT];
 
 	ParticleTextures()
