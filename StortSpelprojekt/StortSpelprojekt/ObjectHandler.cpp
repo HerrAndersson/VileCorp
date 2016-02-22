@@ -613,10 +613,24 @@ void ObjectHandler::Update(float deltaTime)
 							heldObject->SetPosition(XMFLOAT3(heldObject->GetPosition().x, 0.0f, heldObject->GetPosition().z));
 						}
 					}
+
+					//Avoids the case where the Guard tries to attack a scrap value when the Enemy has been taken care of, Aron
+					for (int i = 0; i < _gameObjects[GUARD].size(); i++)
+					{
+						if (((Guard*)_gameObjects[GUARD][i])->GetObjective() != nullptr)
+						{
+							if (((Guard*)_gameObjects[GUARD][i])->GetObjective()->GetID() == g->GetID())
+							{
+								((Guard*)_gameObjects[GUARD][i])->ClearObjective();
+							}
+						}
+					}
+
 					Remove(g);
 					g = nullptr;
 					unit = nullptr;
 					j--;
+					return;
 				}
 				else if (unit->IsSwitchingTile())
 				{

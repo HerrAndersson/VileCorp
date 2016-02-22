@@ -153,6 +153,11 @@ GameObject * Unit::GetHeldObject() const
 	return _heldObject;
 }
 
+GameObject* Unit::GetObjective() const
+{
+	return _objective;
+}
+
 Unit::MoveState Unit::GetMoveState() const
 {
 	return _moveState;

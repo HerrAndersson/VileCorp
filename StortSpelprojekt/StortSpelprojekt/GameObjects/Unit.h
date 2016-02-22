@@ -56,6 +56,7 @@ public:
 	AI::Vec2D GetNextTile()const;
 	int GetHealth();
 	GameObject* GetHeldObject()const;
+	GameObject* GetObjective() const;
 	MoveState GetMoveState()const;
 
 	bool IsSwitchingTile()const;

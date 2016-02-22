@@ -160,65 +160,70 @@ void Guard::Update(float deltaTime)
 
 void Guard::Act(GameObject* obj)
 {
-	//AI::Vec2D dist = obj->GetTilePosition() - _tilePosition;
-	if (obj != nullptr && obj->InRange(_tilePosition))
+	if (obj != nullptr)
 	{
-		switch (obj->GetType())
+		if (obj->InRange(_tilePosition))
 		{
-		case LOOT:
-		case GUARD:
-			break;
-		case TRAP:
-			if (!static_cast<Trap*>(obj)->IsTrapActive())
+			switch (obj->GetType())
 			{
-				if (_interactionTime != 0)
+			case LOOT:
+			case GUARD:
+				break;
+			case TRAP:
+				if (!static_cast<Trap*>(obj)->IsTrapActive())
 				{
-					UseCountdown(60);
-					Animate(FIXTRAPANIM);
+					if (_interactionTime != 0)
+					{
+						UseCountdown(60);
+						Animate(FIXTRAPANIM);
+					}
+					else
+					{
+						static_cast<Trap*>(obj)->SetTrapActive(true);
+						//	obj->SetColorOffset({0,0,0});
+						ClearObjective();
+					}
+				}
+				break;
+			case ENEMY:											//The guard hits the enemy
+				
+				if (static_cast<Unit*>(obj)->GetHealth() == 1)
+					int a = 2;
+				static_cast<Unit*>(obj)->TakeDamage(1);
+				_stop = true;
+				Animate(FIGHTANIM);
+				if (static_cast<Unit*>(obj)->GetHealth() <= 0)
+				{
+					ClearObjective();
+				}
+				break;
+			case FLOOR:
+				if (!_patrolRoute.empty())
+				{
+					if (_tilePosition == _patrolRoute[_currentPatrolGoal % _patrolRoute.size()])
+					{
+						_currentPatrolGoal++;
+						SetGoalTilePosition(_patrolRoute[_currentPatrolGoal % _patrolRoute.size()]);
+						if (_tileMap->IsFloorOnTile(_goalTilePosition))
+						{
+							_objective = _tileMap->GetObjectOnTile(_goalTilePosition, FLOOR);
+						}
+					}
 				}
 				else
 				{
-					static_cast<Trap*>(obj)->SetTrapActive(true);
-					//	obj->SetColorOffset({0,0,0});
 					ClearObjective();
 				}
-			}
-			break;
-		case ENEMY:											//The guard hits the enemy
-			static_cast<Unit*>(obj)->TakeDamage(1);
-			_stop = true;
-			Animate(FIGHTANIM);
-			if (static_cast<Unit*>(obj)->GetHealth() <= 0)
-			{
-				ClearObjective();
-			}
-			break;
-		case FLOOR:
-			if (!_patrolRoute.empty())
-			{
-				if (_tilePosition == _patrolRoute[_currentPatrolGoal % _patrolRoute.size()])
-				{
-					_currentPatrolGoal++;
-					SetGoalTilePosition(_patrolRoute[_currentPatrolGoal % _patrolRoute.size()]);
-					if (_tileMap->IsFloorOnTile(_goalTilePosition))
-					{
-						_objective = _tileMap->GetObjectOnTile(_goalTilePosition, FLOOR);
-					}
-				}
-			}
-			else
-			{
-				ClearObjective();
-			}
 
-			break;
-		default:
-			break;
+				break;
+			default:
+				break;
+			}
 		}
-	}
-	else
-	{
-		ClearObjective();
+		else
+		{
+			ClearObjective();
+		}
 	}
 	if (_objective == nullptr)
 	{
