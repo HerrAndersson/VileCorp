@@ -437,8 +437,9 @@ namespace Renderer
 
 		UpdateVertexBuffer();
 
-		//The emitter has an owner and should be deactivated through a message from there
-		if (_ownerID != -1)
+		//The emitter has no owner and should be removed when the time is out. For example Splash.
+		//Emitters with an owner should be deactivated from there
+		if (_ownerID == -1)
 		{
 			_timeLeft -= (float)deltaTime;
 		}

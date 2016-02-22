@@ -12,6 +12,7 @@ Game::Game(HINSTANCE hInstance, int nCmdShow):
 	_gameHandle = this;
 	_window = new System::Window("Amazing game", hInstance, settings, WndProc);
 
+
 	_timer = System::Timer();
 
 	_renderModule = new Renderer::RenderModule(_window->GetHWND(), settings);
@@ -43,6 +44,8 @@ Game::Game(HINSTANCE hInstance, int nCmdShow):
 	_enemiesHasSpawned = false;
 	_soundModule.AddSound("Assets/Sounds/theme", 0.15f, 1.0f, true, true);
 	_soundModule.Play("Assets/Sounds/theme");
+	
+	ResizeResources(settings);//This fixes a bug which offsets mousepicking, do not touch! //Markus
 }
 
 Game::~Game()
@@ -61,11 +64,10 @@ Game::~Game()
 
 void Game::ResizeResources(System::Settings* settings)
 {
-	//RenderModule must update it's swapchain before window resizes /Alex
-	_renderModule->ResizeResources(settings);
 	_window->ResizeWindow(settings);
-	_camera->Resize(settings);
 	_SM->Resize(settings);
+	_camera->Resize(settings);
+	_renderModule->ResizeResources(settings);
 }
 
 void Game::LoadParticleSystemData(ParticleTextures& particleTextures, ParticleModifierOffsets& modifiers)
