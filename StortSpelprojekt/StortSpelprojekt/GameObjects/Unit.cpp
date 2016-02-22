@@ -406,7 +406,10 @@ int Unit::GetVisionRadius() const
 }
 bool Unit::GetAnimisFinished()
 {
-	return _animation->GetisFinished();
+	if (_renderObject->_isSkinned)
+	{
+		return _animation->GetisFinished();
+	}
 }
 void Unit::Animate(Anim anim)
 {

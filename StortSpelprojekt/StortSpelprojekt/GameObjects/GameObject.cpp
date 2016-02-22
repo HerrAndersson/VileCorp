@@ -173,7 +173,10 @@ RenderObject * GameObject::GetRenderObject() const
 
 Animation * GameObject::GetAnimation() const
 {
-	return _animation;
+	if (_renderObject->_isSkinned)
+	{
+		return _animation;
+	}
 }
 
 void GameObject::SetPickUpState(PickUpState state)
