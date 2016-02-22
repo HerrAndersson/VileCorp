@@ -174,11 +174,11 @@ void PlacementState::HandleButtons()
 	if (_uiTree.IsButtonColliding("TeslaTrap", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
 		_toPlace._type = TRAP;
-		_toPlace._name = "tesla_trap";
+		_toPlace._name = "gun_trap";
 
 		if (_baseEdit->IsSelection() && !_baseEdit->IsPlace())
 		{
-			_toPlace._subType = TESLACOIL;
+			_toPlace._subType = GUN;
 			create = true;
 		}
 	}

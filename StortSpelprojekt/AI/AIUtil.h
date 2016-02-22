@@ -11,7 +11,7 @@ namespace AI
 			_x = 0;
 			_y = 0;
 		}
-		Vec2D(int x, int y)
+ 		Vec2D(int x, int y)
 		{
 			_x = x;
 			_y = y;

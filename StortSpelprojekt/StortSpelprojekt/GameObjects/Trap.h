@@ -3,7 +3,7 @@
 #include "Unit.h"
 #include <memory>
 
-enum TrapType{ SPIKE, TESLACOIL, SHARK};
+enum TrapType{ SPIKE, TESLACOIL, SHARK, GUN};
 
 
 class Trap : public GameObject
