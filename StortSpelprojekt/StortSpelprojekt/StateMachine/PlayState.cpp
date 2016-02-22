@@ -18,7 +18,7 @@ void PlayState::Update(float deltaTime)
 	{
 		ChangeState(State::PAUSESTATE);
 	}
-	if (_gameLogic->IsGoToMenu())
+	if (_gameLogic->GoToMenu())
 	{
 		ChangeState(State::MENUSTATE);
 	}

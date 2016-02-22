@@ -19,7 +19,7 @@ GameLogic::GameLogic(ObjectHandler* objectHandler, System::Camera* camera, Syste
 	_uiTree->GetNode("losescreen")->SetHidden(true);
 	_gameOver = false;
 	_buttonReady = 3999.0f;
-	_gameOverDialog = false;
+	_returnToMenu = false;
 }
 
 GameLogic::~GameLogic()
@@ -30,22 +30,22 @@ GameLogic::~GameLogic()
 
 void GameLogic::Update(float deltaTime)
 {
-	if (!_gameOverDialog)
+	CheckGameStatus();
+	if (!_returnToMenu)
 	{
 		HandleInput(deltaTime);
 		_objectHandler->Update(deltaTime);
 	}
-	if (_objectHandler->GetRemainingToSpawn() <= 0 && !_gameOver)
+	if(_gameOver)
 	{
-		_gameOverDialog = true;
 		HandleWinLoseDialog(deltaTime);
 	}
 	_uiTree->GetNode("objectivetext")->SetText(L"Defeat the intruders! \n" + std::to_wstring(_objectHandler->GetAllByType(ENEMY)->size()) + L" enemies still remain.");
 }
 
-bool GameLogic::IsGoToMenu() const
+bool GameLogic::GoToMenu() const
 {
-	return _gameOver;
+	return _returnToMenu;
 }
 
 /*
@@ -254,7 +254,7 @@ void GameLogic::HandleWinLoseDialog(float deltaTime)
 		}
 		if (time <= 0 && _uiTree->IsButtonColliding("losebutton", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
 		{
-			_gameOver = true;
+			_returnToMenu = true;
 		}
 		_buttonReady -= deltaTime;
 	}
@@ -273,10 +273,24 @@ void GameLogic::HandleWinLoseDialog(float deltaTime)
 		}
 		if (time <= 0 && _uiTree->IsButtonColliding("winbutton", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
 		{
-			_gameOver = true;
+			_returnToMenu = true;
 			_settingsReader->GetProfile()->_level += 1;
 			_settingsReader->ApplyProfileSettings();
 		}
 		_buttonReady -= deltaTime;
 	}
+}
+
+bool GameLogic::CheckGameStatus()
+{
+	if (_objectHandler->GetAllByType(LOOT)->size() <= 0 && _objectHandler->GetRemainingToSpawn() <= 0 
+		|| _objectHandler->GetAllByType(ENEMY)->size() <= 0 && _objectHandler->GetRemainingToSpawn() <= 0)
+	{
+		_gameOver = true;
+	}
+	else
+	{
+		_gameOver = false;
+	}
+	return _gameOver;
 }
