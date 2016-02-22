@@ -229,6 +229,18 @@ void BaseState::HandleCamMove(float deltaTime)
 	}
 }
 
+void BaseState::HandleHoverColorOffset(const std::string& button, const std::string& node, System::MouseCoord coord, XMFLOAT4 rgba)
+{
+	if (_uiTree.IsButtonColliding(button, coord._pos.x, coord._pos.y))
+	{
+		_uiTree.GetNode(node)->SetColorOffset(rgba);
+	}
+	else
+	{
+		_uiTree.GetNode(node)->SetColorOffset(XMFLOAT4(0, 0, 0, 1));
+	}
+}
+
 GUI::UITree* BaseState::GetUITree()
 {
 	return &_uiTree;
