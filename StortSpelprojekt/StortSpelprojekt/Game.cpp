@@ -188,8 +188,9 @@ bool Game::Update(double deltaTime)
 		_particleHandler->GetParticleRequestQueue()->Insert(msg);
 	}
 
-	//If the emitter itself should be updated, for example if the icons move or if we have a spinning flamethrower
-	//Set "isAlive" parameter to disable all emitters that are connected to the ID of the GameObject
+	//If the emitter itself should be updated, for example if the icons move or if we have a spinning flamethrower.
+	//Set "isAlive" parameter to disable all emitters that are connected to the ID of the GameObject. This should be done when, for example a trap is fixed and should stop smoking
+	//It is possible to update only position
 	std::vector<std::vector<GameObject*>>* gameObjects = _objectHandler->GetGameObjects();
 	if (gameObjects->size() > 0)
 	{

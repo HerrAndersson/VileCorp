@@ -437,7 +437,11 @@ namespace Renderer
 
 		UpdateVertexBuffer();
 
-		_timeLeft -= (float)deltaTime;
+		//The emitter has an owner and should be deactivated through a message from there
+		if (_ownerID != -1)
+		{
+			_timeLeft -= (float)deltaTime;
+		}
 	}
 
 	ID3D11Buffer* ParticleEmitter::GetParticleBuffer()

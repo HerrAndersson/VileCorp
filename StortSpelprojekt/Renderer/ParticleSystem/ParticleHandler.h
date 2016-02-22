@@ -28,7 +28,7 @@ namespace Renderer
 
 		int _emitterCount;
 
-		void ActivateEmitter(ParticleType type, ParticleSubType subType, int ownerID, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& direction, int particleCount, float timeLimit, float scale, bool isActive, const DirectX::XMFLOAT3& target = DirectX::XMFLOAT3(0, 0, 0));
+		void ActivateEmitter(const ParticleType& type, const ParticleSubType& subType, int ownerID, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& direction, int particleCount, float timeLimit, float scale, bool isActive, const DirectX::XMFLOAT3& target = DirectX::XMFLOAT3(0, 0, 0));
 
 	public:
 
@@ -41,6 +41,8 @@ namespace Renderer
 		ParticleEmitter* GetEmitter(int index);
 		ID3D11ShaderResourceView** GetTextures(int& count, const ParticleSubType& subType);
 		ID3D11ShaderResourceView* GetIconTexture(const ParticleSubType& subType);
+		
+		void DeactivateAllEmitters();
 
 		ParticleRequestQueue* GetParticleRequestQueue();
 

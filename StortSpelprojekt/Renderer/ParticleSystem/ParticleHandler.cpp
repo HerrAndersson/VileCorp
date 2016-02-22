@@ -83,7 +83,7 @@ namespace Renderer
 		}
 	}
 
-	void ParticleHandler::ActivateEmitter(ParticleType type, ParticleSubType subType, int ownerID, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& direction, int particleCount, float timeLimit, float scale, bool isActive, const DirectX::XMFLOAT3& target)
+	void ParticleHandler::ActivateEmitter(const ParticleType& type, const ParticleSubType& subType, int ownerID, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& direction, int particleCount, float timeLimit, float scale, bool isActive, const DirectX::XMFLOAT3& target)
 	{
 		bool found = false;
 
@@ -200,5 +200,13 @@ namespace Renderer
 		}
 
 		return emitter;
+	}
+
+	void ParticleHandler::DeactivateAllEmitters()
+	{
+		for (ParticleEmitter* p : _particleEmitters)
+		{
+			p->Deactivate();
+		}
 	}
 }
