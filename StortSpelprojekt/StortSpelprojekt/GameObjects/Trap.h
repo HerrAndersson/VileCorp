@@ -26,11 +26,14 @@ private:
 	int _nrOfAOETiles;
 	int _areaOfEffectArrayCapacity;
 
-	void CalculateCircleAOE(int radius);
-	void CalculateLineAOE(int length, AI::Vec2D direction);
+	int CalculateCircle(int radius, AI::Vec2D basePosition, AI::Vec2D* arr);
+	int CalculateLine(int length, AI::Vec2D basePosition, AI::Vec2D* arr);
+	int CalculateRectangle(int length, int width, AI::Vec2D basePosition, AI::Vec2D* arr);
 	bool IsUnblocked(AI::Vec2D pos);
 	AI::Vec2D ConvertOctant(int octant, AI::Vec2D pos, bool in = true);
+
 	void Initialize(int damage, int tileSize, int AOESize, int detectDifficulty, int disarmDifficulty);
+	void SetAOE();
 public:
 	Trap();
 	Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject * renderObject, 
