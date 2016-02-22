@@ -364,14 +364,14 @@ void Game::Render()
 					int textureCount = PARTICLE_TEXTURE_COUNT;
 					if (type == ParticleType::ICON)
 					{
-						//textureCount = 1;
-						//ID3D11ShaderResourceView* textures[1];
-						//textures[0] = _particleHandler->GetIconTexture(emitter->GetSubType());
+						textureCount = 1;
+						ID3D11ShaderResourceView* textures[1];
+						textures[0] = _particleHandler->GetIconTexture(emitter->GetSubType());
 
-						//_renderModule->SetDataPerParticleEmitter(emitter->GetPosition(), _camera->GetViewMatrix(), _camera->GetProjectionMatrix(), _camera->GetPosition(), emitter->GetParticleScale(), textures, textureCount, 1);
-						//_renderModule->RenderParticles(vertexBuffer, emitter->GetParticleCount(), emitter->GetVertexSize());
+						_renderModule->SetDataPerParticleEmitter(emitter->GetPosition(), _camera->GetViewMatrix(), _camera->GetProjectionMatrix(), _camera->GetPosition(), emitter->GetParticleScale(), textures, textureCount, 1);
+						_renderModule->RenderParticles(vertexBuffer, emitter->GetParticleCount(), emitter->GetVertexSize());
 					}
-					else if(type == ParticleType::MUZZLE_FLASH)
+					else
 					{
 						ID3D11ShaderResourceView** textures = _particleHandler->GetTextures(textureCount, emitter->GetSubType());
 						_renderModule->SetDataPerParticleEmitter(emitter->GetPosition(), _camera->GetViewMatrix(), _camera->GetProjectionMatrix(), _camera->GetPosition(), emitter->GetParticleScale(), textures, textureCount, 0);
