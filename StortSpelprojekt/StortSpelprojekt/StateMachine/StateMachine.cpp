@@ -9,15 +9,16 @@ StateMachine::StateMachine(System::Controls* controls,
 	FontWrapper* fontWrapper,
 	System::Settings* settings,
 	System::SettingsReader* settingsReader,
-	System::SoundModule* soundModule)
+	System::SoundModule* soundModule,
+	DirectX::XMFLOAT3* ambientLight)
 {
 	_currentState = State::SPLASHSTATE;
 
 	_baseStates.push_back(new SplashState(controls, objectHandler, camera, pickingDevice, "Assets/GUI/splash.json", assetManager, fontWrapper, settingsReader, soundModule));
 	_baseStates.push_back(new MenuState(controls, objectHandler, camera, pickingDevice, "Assets/GUI/menu.json", assetManager, fontWrapper, settingsReader, soundModule));
-	_baseStates.push_back(new PlayState(controls, objectHandler, camera, pickingDevice, "Assets/GUI/play.json", assetManager, fontWrapper, settingsReader, soundModule));
-	_baseStates.push_back(new PlacementState(controls, objectHandler, camera, pickingDevice, "Assets/GUI/placement.json", assetManager, fontWrapper, settingsReader, soundModule));
-	_baseStates.push_back(new LevelEditState(controls, objectHandler, camera, pickingDevice, "Assets/GUI/leveledit.json", assetManager, fontWrapper, settingsReader, soundModule));
+	_baseStates.push_back(new PlayState(controls, objectHandler, camera, pickingDevice, "Assets/GUI/play.json", assetManager, fontWrapper, settingsReader, soundModule, ambientLight));
+	_baseStates.push_back(new PlacementState(controls, objectHandler, camera, pickingDevice, "Assets/GUI/placement.json", assetManager, fontWrapper, settingsReader, soundModule, ambientLight));
+	_baseStates.push_back(new LevelEditState(controls, objectHandler, camera, pickingDevice, "Assets/GUI/leveledit.json", assetManager, fontWrapper, settingsReader, soundModule, ambientLight));
 	_baseStates.push_back(new LevelSelectState(controls, objectHandler, camera, pickingDevice, "Assets/GUI/levelselect.json", assetManager, fontWrapper, settingsReader, soundModule));
 	_baseStates.push_back(new OptionsState(controls, objectHandler, camera, pickingDevice, "Assets/GUI/options.json", assetManager, fontWrapper, settingsReader, soundModule));
 	_baseStates.push_back(new PauseState(controls, objectHandler, camera, pickingDevice, "Assets/GUI/pause.json", assetManager, fontWrapper, settingsReader, soundModule));

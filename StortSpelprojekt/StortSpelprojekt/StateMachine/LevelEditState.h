@@ -21,16 +21,15 @@ private:
 	GUI::Node* _currentList = nullptr;
 	int _currentPage = 0;
 	std::vector<GUI::Node*>* _objectTabs;
+	DirectX::XMFLOAT3* _ambientLight;
 
 	bool _floorChosen = false;
 	bool _wallChosen = false;
 
 	SpecificBlueprint _toPlace;
-	
-	int GetVectorIndexOfString(std::vector<std::string>* vec ,std::string str);
 
 public:
-	LevelEditState(System::Controls * controls, ObjectHandler * objectHandler, System::Camera * camera, PickingDevice * pickingDevice, const std::string & filename, AssetManager * assetManager, FontWrapper * fontWrapper, System::SettingsReader * settingsReader, System::SoundModule * soundModule);
+	LevelEditState(System::Controls * controls, ObjectHandler * objectHandler, System::Camera * camera, PickingDevice * pickingDevice, const std::string & filename, AssetManager * assetManager, FontWrapper * fontWrapper, System::SettingsReader * settingsReader, System::SoundModule * soundModule, DirectX::XMFLOAT3* ambientLight);
 	virtual ~LevelEditState();
 
 	void Update(float deltaTime);

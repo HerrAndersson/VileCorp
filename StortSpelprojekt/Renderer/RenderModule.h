@@ -127,7 +127,9 @@ namespace Renderer
 		DirectXHandler*		_d3d;
 		ShaderHandler*		_shaderHandler;
 
-		System::Settings* _settings;
+		System::Settings*	_settings;
+
+		DirectX::XMFLOAT3	_ambientLight;
 
 		void InitializeConstantBuffers();
 		void InitializeScreenQuadBuffer();
@@ -142,8 +144,6 @@ namespace Renderer
 		ShadowMap* _shadowMap;
 
 	public:
-
-		const DirectX::XMFLOAT3 AMBIENT_LIGHT = DirectX::XMFLOAT3(0.14f, 0.15f, 0.2f);
 		enum ShaderStage { GEO_PASS, SHADOW_GENERATION, LIGHT_APPLICATION_SPOTLIGHT, LIGHT_APPLICATION_POINTLIGHT, GRID_STAGE, ANIM_STAGE, HUD_STAGE, AA_STAGE, BILLBOARDING_STAGE, ANIM_SHADOW_GENERATION };
 
 		RenderModule(HWND hwnd, System::Settings* settings);
@@ -163,6 +163,9 @@ namespace Renderer
 		void SetLightDataPerPointlight(Pointlight* pointlight);
 
 		void SetShaderStage(ShaderStage stage);
+
+		DirectX::XMFLOAT3 GetAmbientLight() const;
+		void SetAmbientLight(const DirectX::XMFLOAT3 &ambientLight);
 
 		void BeginScene(float red, float green, float blue, float alpha);
 		void Render(DirectX::XMMATRIX* world, int vertexBufferSize, const DirectX::XMFLOAT3& colorOffset = DirectX::XMFLOAT3(0, 0, 0));

@@ -1,10 +1,9 @@
 #include "PlacementState.h"
 
-PlacementState::PlacementState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule)
+PlacementState::PlacementState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule, DirectX::XMFLOAT3* ambientLight)
 	: BaseState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settingsReader, soundModule)
 {
 	_playerProfile.resize(1);
-
 
 	//load all player profiles
 	GetFilenamesInDirectory("Assets/PlayerProfiles/", ".json", _playerProfilesPath);
@@ -16,6 +15,7 @@ PlacementState::PlacementState(System::Controls* controls, ObjectHandler* object
 	_camera = camera;
 	_pickingDevice = pickingDevice;
 	_baseEdit = nullptr;
+	_ambientLight = ambientLight;
 
 	//Rikhard left FIX ME!!!, ask him when he gets back! Enbom
 	_uiTree.GetNode("BudgetValue")->SetText(StringToWstring("FIX ME!!!"));
@@ -73,6 +73,10 @@ void PlacementState::Update(float deltaTime)
 
 void PlacementState::OnStateEnter()
 {
+	_ambientLight->x = AMBIENT_LIGHT_DAY.x;
+	_ambientLight->y = AMBIENT_LIGHT_DAY.y;
+	_ambientLight->z = AMBIENT_LIGHT_DAY.z;
+
 	for (int i = 0; i < _playerProfilesPath.size(); i++)
 	{
 		System::loadJSON(&_playerProfile[i], _playerProfilesPath[i]);

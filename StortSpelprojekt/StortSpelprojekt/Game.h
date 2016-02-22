@@ -46,6 +46,8 @@ private:
 	bool						_hasFocus;
 	bool						_enemiesHasSpawned;
 
+	DirectX::XMFLOAT3			_ambientLight;
+
 	//Resizing window, directx resources, camera
 	void ResizeResources(System::Settings* settings);
 	bool Update(double deltaTime);

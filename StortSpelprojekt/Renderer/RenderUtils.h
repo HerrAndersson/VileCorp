@@ -6,6 +6,9 @@
 #include <map>
 #include "CommonUtils.h"
 
+static const DirectX::XMFLOAT3 AMBIENT_LIGHT_NIGHT = DirectX::XMFLOAT3(0.14f, 0.15f, 0.2f);
+static const DirectX::XMFLOAT3 AMBIENT_LIGHT_DAY = DirectX::XMFLOAT3(0.5f, 0.5f, 0.5f);
+
 struct Bone
 {
 	int _parent;

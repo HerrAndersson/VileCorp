@@ -14,6 +14,7 @@ private:
 	int _budget;
 
 	int _currentPlayer = 0;
+	DirectX::XMFLOAT3* _ambientLight;
 
 	std::vector<PlayerInfo> _playerProfile;
 	std::vector<string> _playerProfilesPath;
@@ -38,7 +39,7 @@ private:
 	void EvaluateGoldCost();
 
 public:
-	PlacementState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule);
+	PlacementState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule, DirectX::XMFLOAT3* ambientLight);
 	~PlacementState();
 
 	void Update(float deltaTime);

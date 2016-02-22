@@ -99,7 +99,7 @@
 				]
 			},
 			{
-				"_mesh": "wall-24.bin",
+				"_mesh": "wall-27.bin",
 				"_name": "Wall",
 				"_type": "WALL",
 				"_subType": 0,

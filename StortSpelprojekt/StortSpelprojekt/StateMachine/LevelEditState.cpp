@@ -1,12 +1,14 @@
 #include "LevelEditState.h"
 
-LevelEditState::LevelEditState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule)
+LevelEditState::LevelEditState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule, DirectX::XMFLOAT3* ambientLight)
 	: BaseState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settingsReader, soundModule)
 {
 	_listId = -1;
 	_moveCheck = -1;
 	_baseEdit = nullptr;
 	_pageCheck = false;
+
+	_ambientLight = ambientLight;
 
 	_objectTabs = _uiTree.GetNode("Buttons")->GetChildren();
 
@@ -64,6 +66,10 @@ void LevelEditState::Update(float deltaTime)
 
 void LevelEditState::OnStateEnter()
 {
+	_ambientLight->x = AMBIENT_LIGHT_DAY.x;
+	_ambientLight->y = AMBIENT_LIGHT_DAY.y;
+	_ambientLight->z = AMBIENT_LIGHT_DAY.z;
+
 	_objectHandler->DisableSpawnPoints();
 	_uiTree.GetNode("wholelist")->SetHidden(true);
 	_uiTree.GetNode("MapList")->SetHidden(true);

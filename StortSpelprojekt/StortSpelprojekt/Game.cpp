@@ -28,13 +28,15 @@ Game::Game(HINSTANCE hInstance, int nCmdShow):
 
 	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager, &_data, settings);
 	_pickingDevice = new PickingDevice(_camera, settings);
-	_SM = new StateMachine(_controls, _objectHandler, _camera, _pickingDevice, "Assets/gui.json", _assetManager, _fontWrapper, settings, &_settingsReader, &_soundModule);
+	_SM = new StateMachine(_controls, _objectHandler, _camera, _pickingDevice, "Assets/gui.json", _assetManager, _fontWrapper, settings, &_settingsReader, &_soundModule, &_ambientLight);
 
 	_SM->Update(_timer.GetFrameTime());
 
 	_enemiesHasSpawned = false;
 	_soundModule.AddSound("Assets/Sounds/theme", 0.15f, 1.0f, true, true);
 	_soundModule.Play("Assets/Sounds/theme");
+
+	_ambientLight = _renderModule->GetAmbientLight();
 }
 
 Game::~Game()
@@ -124,6 +126,7 @@ bool Game::Update(double deltaTime)
 
 void Game::Render()
 {
+	_renderModule->SetAmbientLight(_ambientLight);
 	_renderModule->BeginScene(0.0f, 0.5f, 0.5f, 1.0f);
 	_renderModule->SetDataPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
 
