@@ -76,6 +76,19 @@
 					"text": "Tesla Trap\n    100$",
 					"color": "FF000000",
 					"fontsize" : 18.0
+				},
+				"TeslaDescription":
+				{
+					"position" : [0.0, 0.25],
+					"scale": [0.05, 0.1],
+					"texture": "../Menues/General/button.png",
+					
+					"HP":
+					{
+						"position" : [0.0, 0.0],
+						"text": "HP: 100",
+						"fontsize" : 18.0
+					}
 				}
 			},
 			"MachineGunTrap" :
@@ -84,7 +97,7 @@
 				"scale": [0.037, 0.063],
 				"texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png",
 				
-				"TeslaText":
+				"MachineGunText":
 				{
 					"position" : [0.952, -1.08],
 					"scale": [1.0, 1.0],
@@ -93,7 +106,7 @@
 					"fontsize" : 18.0
 				},
 				
-				"TeslaDescription":
+				"MachineGunDescription":
 				{
 					"position" : [0.0, 0.25],
 					"scale": [0.05, 0.1],

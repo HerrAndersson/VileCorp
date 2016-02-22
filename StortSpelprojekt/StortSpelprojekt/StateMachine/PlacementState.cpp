@@ -88,6 +88,7 @@ void PlacementState::OnStateEnter()
 	_uiTree.GetNode("AnvilDescription")->SetHidden(true);
 	_uiTree.GetNode("TeslaDescription")->SetHidden(true);
 	_uiTree.GetNode("CameraDescription")->SetHidden(true);
+	_uiTree.GetNode("MachineGunDescription")->SetHidden(true);
 
 	//if (_playerProfile[0]._firstTime != true)
 	//{
@@ -277,6 +278,17 @@ void PlacementState::HandleDescriptions()
 	else
 	{
 		_uiTree.GetNode("TeslaDescription")->SetHidden(true);
+	}
+
+	if (_uiTree.IsButtonColliding("MachineGunTrap", coord._pos.x, coord._pos.y))
+	{
+		_uiTree.GetNode("MachineGunDescription")->SetHidden(false);
+
+		// Add description
+	}
+	else
+	{
+		_uiTree.GetNode("MachineGunDescription")->SetHidden(true);
 	}
 
 	if (_uiTree.IsButtonColliding("Camera", coord._pos.x, coord._pos.y))
