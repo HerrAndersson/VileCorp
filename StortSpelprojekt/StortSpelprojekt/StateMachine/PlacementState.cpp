@@ -166,11 +166,11 @@ void PlacementState::HandleButtons()
 	if (_uiTree.IsButtonColliding("TeslaTrap", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
 		_toPlace._type = TRAP;
-		_toPlace._name = "gun_trap";
+		_toPlace._name = "tesla_trap";
 
 		if (_baseEdit->IsSelection() && !_baseEdit->IsPlace())
 		{
-			_toPlace._subType = GUN;
+			_toPlace._subType = TESLACOIL;
 			create = true;
 		}
 	}
@@ -185,6 +185,19 @@ void PlacementState::HandleButtons()
 			create = true;
 		}
 	}
+
+	if (_uiTree.IsButtonColliding("MachineGunTrap", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
+	{
+		_toPlace._type = TRAP;
+		_toPlace._name = "gun_trap";
+
+		if (_baseEdit->IsSelection() && !_baseEdit->IsPlace())
+		{
+			_toPlace._subType = GUN;
+			create = true;
+		}
+	}
+
 	if (_uiTree.IsButtonColliding("Camera", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
 		_toPlace._type = CAMERA;
