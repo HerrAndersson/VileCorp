@@ -22,13 +22,13 @@ namespace Renderer
 		ParticleTextures _textures;
 		ParticleModifierOffsets _modifiers;
 
-		std::vector<ParticleRequestMessage> _queue;
+		std::vector<ParticleMessage*> _queue;
 		ParticleRequestQueue* _requestQueue;
 		std::vector<ParticleEmitter*> _particleEmitters;
 
 		int _emitterCount;
 
-		void ActivateEmitter(ParticleType type, ParticleSubType subType, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& direction, int particleCount, float timeLimit, float scale, bool isActive, const DirectX::XMFLOAT3& target = DirectX::XMFLOAT3(0, 0, 0));
+		void ActivateEmitter(ParticleType type, ParticleSubType subType, int ownerID, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& direction, int particleCount, float timeLimit, float scale, bool isActive, const DirectX::XMFLOAT3& target = DirectX::XMFLOAT3(0, 0, 0));
 
 	public:
 

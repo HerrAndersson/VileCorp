@@ -11,13 +11,13 @@ namespace Renderer
 
 	private:
 
-		std::vector<ParticleRequestMessage>* _queue;
+		std::vector<ParticleMessage*>* _queue;
 
 	public:
 
-		ParticleRequestQueue(std::vector<ParticleRequestMessage>* queue);
+		ParticleRequestQueue(std::vector<ParticleMessage*>* queue);
 		virtual ~ParticleRequestQueue();
 
-		void Insert(ParticleRequestMessage& msg);
+		void Insert(ParticleMessage* msg);
 	};
 }

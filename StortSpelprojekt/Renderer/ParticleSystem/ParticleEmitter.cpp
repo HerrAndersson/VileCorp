@@ -21,9 +21,10 @@ namespace Renderer
 		_modifiers = modifers;
 		_particleScale = 1.0f;
 		_targetPosition = XMFLOAT3(0, 0, 0);
+		_ownerID = -1;
 	}
 
-	ParticleEmitter::ParticleEmitter(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const ParticleType& type, const ParticleSubType& subType, const XMFLOAT3& position, const XMFLOAT3& direction, int particleCount, float timeLimit, float scale, bool isActive, ParticleModifierOffsets* modifers, const XMFLOAT3& target)
+	ParticleEmitter::ParticleEmitter(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const ParticleType& type, const ParticleSubType& subType, int ownerID, const XMFLOAT3& position, const XMFLOAT3& direction, int particleCount, float timeLimit, float scale, bool isActive, ParticleModifierOffsets* modifers, const XMFLOAT3& target)
 	{
 		_type = type;
 		_subType = subType;
@@ -37,8 +38,10 @@ namespace Renderer
 		_modifiers = modifers;
 		_particleScale = scale;
 		_targetPosition = target;
+		_ownerID = ownerID;
+		_baseDirection = direction;
 
-		CreateAllParticles(particleCount, direction, _targetPosition);
+		CreateAllParticles(particleCount, _targetPosition);
 
 		CreateVertexBuffer();
 	}
@@ -51,7 +54,7 @@ namespace Renderer
 		_particles.clear();
 	}
 
-	void ParticleEmitter::Reset(const ParticleType& type, const ParticleSubType& subType, const XMFLOAT3& position, const XMFLOAT3& direction, int particleCount, float timeLimit, float scale, bool isActive, const XMFLOAT3& target)
+	void ParticleEmitter::Reset(const ParticleType& type, const ParticleSubType& subType, int ownerID, const XMFLOAT3& position, const XMFLOAT3& direction, int particleCount, float timeLimit, float scale, bool isActive, const XMFLOAT3& target)
 	{
 		_type = type;
 		_subType = subType;
@@ -61,8 +64,10 @@ namespace Renderer
 		_particleCount = particleCount;
 		_particleScale = scale;
 		_targetPosition = target;
+		_ownerID = ownerID;
+		_baseDirection = direction;
 
-		CreateAllParticles(particleCount, direction, target);
+		CreateAllParticles(particleCount, target);
 		CreateVertexBuffer();
 	}
 
@@ -122,7 +127,7 @@ namespace Renderer
 		_particles[midpoint].SetPosition(pos);
 	}
 
-	void ParticleEmitter::CreateAllParticles(int count, const XMFLOAT3& baseDirection, const XMFLOAT3& targetPosition)
+	void ParticleEmitter::CreateAllParticles(int count, const XMFLOAT3& targetPosition)
 	{
 
 		if (_type == ParticleType::ELECTRICITY)
@@ -141,7 +146,7 @@ namespace Renderer
 				{
 					if (_type != ParticleType::ELECTRICITY)
 					{
-						Particle particle = CreateSingleParticle(baseDirection);
+						Particle particle = CreateSingleParticle();
 						particle.Activate();
 						_particles.push_back(particle);
 					}
@@ -154,7 +159,7 @@ namespace Renderer
 				{
 					if (_type != ParticleType::ELECTRICITY)
 					{
-						_particles.at(i) = CreateSingleParticle(baseDirection);
+						_particles.at(i) = CreateSingleParticle();
 						_particles.at(i).Activate();
 					}
 				}
@@ -197,7 +202,7 @@ namespace Renderer
 		return XMFLOAT3(dir.x / length, dir.y / length, dir.z / length);
 	}
 
-	Particle ParticleEmitter::CreateSingleParticle(const DirectX::XMFLOAT3& baseDirection)
+	Particle ParticleEmitter::CreateSingleParticle()
 	{
 		Particle p;
 		XMFLOAT3 pos;
@@ -211,9 +216,9 @@ namespace Renderer
 				pos.y = GetRandomOffset(_modifiers->_splashPositionOffset, true);
 				pos.z = GetRandomOffset(_modifiers->_splashPositionOffset, true);
 
-				dir.x = baseDirection.x + GetRandomOffset(_modifiers->_splashDirectionOffset, true);
-				dir.y = baseDirection.y + GetRandomOffset(_modifiers->_splashDirectionOffset, true);
-				dir.z = baseDirection.z + GetRandomOffset(_modifiers->_splashDirectionOffset, true);
+				dir.x = _baseDirection.x + GetRandomOffset(_modifiers->_splashDirectionOffset, true);
+				dir.y = _baseDirection.y + GetRandomOffset(_modifiers->_splashDirectionOffset, true);
+				dir.z = _baseDirection.z + GetRandomOffset(_modifiers->_splashDirectionOffset, true);
 
 				dir = NormalizeDirection(dir);
 
@@ -229,9 +234,9 @@ namespace Renderer
 				pos.y = GetRandomOffset(_modifiers->_smokePositionOffset, true);
 				pos.z = GetRandomOffset(_modifiers->_smokePositionOffset, true);
 
-				dir.x = baseDirection.x + GetRandomOffset(_modifiers->_smokeDirectionOffset, true);
-				dir.y = baseDirection.y + GetRandomOffset(_modifiers->_smokeDirectionOffset, true);
-				dir.z = baseDirection.z + GetRandomOffset(_modifiers->_smokeDirectionOffset, true);
+				dir.x = _baseDirection.x + GetRandomOffset(_modifiers->_smokeDirectionOffset, true);
+				dir.y = _baseDirection.y + GetRandomOffset(_modifiers->_smokeDirectionOffset, true);
+				dir.z = _baseDirection.z + GetRandomOffset(_modifiers->_smokeDirectionOffset, true);
 
 				dir = NormalizeDirection(dir);
 
@@ -249,9 +254,9 @@ namespace Renderer
 				pos.y = GetRandomOffset(_modifiers->_firePositionOffset, true);
 				pos.z = GetRandomOffset(_modifiers->_firePositionOffset, true);
 
-				dir.x = baseDirection.x + GetRandomOffset(_modifiers->_fireDirectionOffset, true);
-				dir.y = baseDirection.y + GetRandomOffset(_modifiers->_fireDirectionOffset, true);
-				dir.z = baseDirection.z + GetRandomOffset(_modifiers->_fireDirectionOffset, true);
+				dir.x = _baseDirection.x + GetRandomOffset(_modifiers->_fireDirectionOffset, true);
+				dir.y = _baseDirection.y + GetRandomOffset(_modifiers->_fireDirectionOffset, true);
+				dir.z = _baseDirection.z + GetRandomOffset(_modifiers->_fireDirectionOffset, true);
 
 				dir = NormalizeDirection(dir);
 
@@ -376,19 +381,13 @@ namespace Renderer
 
 							if (p.GetTimeLeft() < 0)
 							{
-								position.x = GetRandomOffset(_modifiers->_smokePositionOffset, true);
-								position.y = GetRandomOffset(_modifiers->_smokePositionOffset, true);
-								position.z = GetRandomOffset(_modifiers->_smokePositionOffset, true);
-
-								XMFLOAT2 offsets(_modifiers->_smokeRepeatTime/2, _modifiers->_smokeRepeatTime);
-								float time = GetRandomOffsetInRange(offsets);
-
-								p.ResetTimeLeft(time);
+								p = CreateSingleParticle();
 							}
-
-							p.SetPosition(position);
-
-							p.DecreaseTimeLeft((float)deltaTime);
+							else
+							{
+								p.SetPosition(position);
+								p.DecreaseTimeLeft((float)deltaTime);
+							}
 
 							break;
 						}
@@ -411,19 +410,13 @@ namespace Renderer
 
 							if (p.GetTimeLeft() < 0)
 							{
-								position.x = GetRandomOffset(_modifiers->_firePositionOffset, true);
-								position.y = GetRandomOffset(_modifiers->_firePositionOffset, true);
-								position.z = GetRandomOffset(_modifiers->_firePositionOffset, true);
-
-								XMFLOAT2 offsets(_modifiers->_fireRepeatTime / 2, _modifiers->_fireRepeatTime);
-								float time = GetRandomOffsetInRange(offsets);
-
-								p.ResetTimeLeft(time);
+								p = CreateSingleParticle();
 							}
-
-							p.SetPosition(position);
-
-							p.DecreaseTimeLeft((float)deltaTime);
+							else
+							{
+								p.SetPosition(position);
+								p.DecreaseTimeLeft((float)deltaTime);
+							}
 
 							break;
 						}
@@ -482,9 +475,19 @@ namespace Renderer
 		return _particleScale;
 	}
 
-	void ParticleEmitter::SetPosition(const XMFLOAT3 position)
+	int ParticleEmitter::GetOwnerID() const
+	{
+		return _ownerID;
+	}
+
+	void ParticleEmitter::SetPosition(const XMFLOAT3& position)
 	{
 		_position = position;
+	}
+
+	void ParticleEmitter::SetDirection(const XMFLOAT3& direction)
+	{
+		_baseDirection = direction;
 	}
 
 	bool ParticleEmitter::HasTimeLeft() const

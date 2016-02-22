@@ -14,7 +14,21 @@ enum ParticleType { SPLASH, SMOKE, ELECTRICITY, FIRE, ICON };
 enum ParticleSubType { BLOOD_SUBTYPE, WATER_SUBTYPE, SPARK_SUBTYPE, SMOKE_SUBTYPE, FIRE_SUBTYPE, EXCLAMATIONMARK_SUBTYPE, QUESTIONMARK_SUBTYPE }; //Icons have to be last
 enum ParticleIconType { ICON_EXCLAMATIONMARK, ICON_QUESTIONMARK }; //Used for loading and using textures
 
-struct ParticleRequestMessage
+struct ParticleMessage
+{
+	enum ParticleMessageType { REQUEST, UPDATE };
+
+	ParticleMessageType _messageType;
+	int _ownerID = -1;
+
+	ParticleMessage(ParticleMessageType messageType, int ownerID)
+	{
+		_messageType = messageType;
+		_ownerID = ownerID;
+	}
+};
+
+struct ParticleRequestMessage : ParticleMessage
 {
 	ParticleType _type = SPLASH;
 	ParticleSubType _subType = BLOOD_SUBTYPE;
@@ -26,11 +40,12 @@ struct ParticleRequestMessage
 	bool _isActive = false;
 	float _scale = 1.0f;
 
-	ParticleRequestMessage()
+	ParticleRequestMessage() : ParticleMessage(REQUEST, -1)
 	{
 	}
 
-	ParticleRequestMessage(ParticleType type, ParticleSubType subType, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& direction, float timeLimit, int particleCount, float scale, bool isActive, const DirectX::XMFLOAT3& target = DirectX::XMFLOAT3(0, 0, 0))
+	ParticleRequestMessage(ParticleType type, ParticleSubType subType, int ownerID, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& direction, float timeLimit, int particleCount, float scale, bool isActive, const DirectX::XMFLOAT3& target = DirectX::XMFLOAT3(0, 0, 0))
+						 : ParticleMessage(REQUEST, ownerID)
 	{
 		_type = type;
 		_subType = subType;
@@ -41,6 +56,25 @@ struct ParticleRequestMessage
 		_isActive = isActive;
 		_target = target;
 		_scale = scale;
+	}
+};
+
+struct ParticleUpdateMessage : ParticleMessage
+{
+	DirectX::XMFLOAT3 _position = DirectX::XMFLOAT3(0, 0, 0);
+	DirectX::XMFLOAT3 _direction = DirectX::XMFLOAT3(0, 1, 0);
+	bool _isActive = false;
+
+	ParticleUpdateMessage() : ParticleMessage(UPDATE, -1)
+	{
+	}
+
+	ParticleUpdateMessage(int ownerID, bool isActive, const DirectX::XMFLOAT3& position = DirectX::XMFLOAT3(0, 0, 0), const DirectX::XMFLOAT3& direction = DirectX::XMFLOAT3(0, 0, 0))
+		                : ParticleMessage(UPDATE, ownerID)
+	{
+		_position = position;
+		_direction = direction;
+		_isActive = isActive;
 	}
 };
 

@@ -152,49 +152,60 @@ bool Game::Update(double deltaTime)
 
 	if (_controls->IsFunctionKeyDown("DEBUG:REQUEST_PARTICLE"))
 	{
+		//If the emitters shouldn't move
 		XMFLOAT3 pos = XMFLOAT3(11, 1.0f, 2);
 		XMFLOAT3 dir = XMFLOAT3(0, 1, 0);
-		ParticleRequestMessage msg = ParticleRequestMessage(ParticleType::SPLASH, ParticleSubType::BLOOD_SUBTYPE, pos, dir, 300.0f, 20, 0.1f, true);
+		ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::SPLASH, ParticleSubType::BLOOD_SUBTYPE, -1, pos, dir, 300.0f, 20, 0.1f, true);
 		_particleHandler->GetParticleRequestQueue()->Insert(msg);
 
 		pos = XMFLOAT3(14, 1.0f, 2);
 		dir = XMFLOAT3(0, 1, 0);
-		msg = ParticleRequestMessage(ParticleType::SMOKE, ParticleSubType::SMOKE_SUBTYPE, pos, dir, 1500.0f, 50, 0.1f, true);
-		_particleHandler->GetParticleRequestQueue()->Insert(msg);
-
-		pos = XMFLOAT3(9, 1.0f, 2);
-		dir = XMFLOAT3(0, 1, 0);
-		msg = ParticleRequestMessage(ParticleType::FIRE, ParticleSubType::FIRE_SUBTYPE, pos, dir, 1000.0f, 100, 0.04f, true);
+		msg = new ParticleRequestMessage(ParticleType::SMOKE, ParticleSubType::SMOKE_SUBTYPE, -1, pos, dir, 1500.0f, 50, 0.1f, true);
 		_particleHandler->GetParticleRequestQueue()->Insert(msg);
 
 		pos = XMFLOAT3(7, 1.0f, 2);
 		dir = XMFLOAT3(0, 1, 0);
-		msg = ParticleRequestMessage(ParticleType::SPLASH, ParticleSubType::WATER_SUBTYPE, pos, dir, 400.0f, 20, 0.1f, true, XMFLOAT3(6.0f, 1.0f, 2.0f));
+		msg = new ParticleRequestMessage(ParticleType::SPLASH, ParticleSubType::WATER_SUBTYPE, -1, pos, dir, 400.0f, 20, 0.1f, true, XMFLOAT3(6.0f, 1.0f, 2.0f));
 		_particleHandler->GetParticleRequestQueue()->Insert(msg);
 
-		pos = XMFLOAT3(5, 1.0f, 3);
-		msg = ParticleRequestMessage(ParticleType::ELECTRICITY, ParticleSubType::SPARK_SUBTYPE, pos, XMFLOAT3(0, 0, 0), 1000.0f, 20, 0.1f, true, XMFLOAT3(14.0f, 1.0f, 3));
-		_particleHandler->GetParticleRequestQueue()->Insert(msg);
-
-		//Icons have to be requested each frame if they should follow a target
 		pos = XMFLOAT3(11, 1.0f, 4);
-		msg = ParticleRequestMessage(ParticleType::ICON, ParticleSubType::EXCLAMATIONMARK_SUBTYPE, pos, XMFLOAT3(0, 0, 0), 1000.0f, 1, 0.25f, true);
+		msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::EXCLAMATIONMARK_SUBTYPE, -1, pos, XMFLOAT3(0, 0, 0), 1000.0f, 1, 0.25f, true);
 		_particleHandler->GetParticleRequestQueue()->Insert(msg);
 
+		//If the emitters should change, for example move, connect them to an ID of a game object
 		pos = XMFLOAT3(13, 1.0f, 4);
-		msg = ParticleRequestMessage(ParticleType::ICON, ParticleSubType::QUESTIONMARK_SUBTYPE, pos, XMFLOAT3(0, 0, 0), 1000.0f, 1, 0.25f, true);
+		msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::QUESTIONMARK_SUBTYPE, 5, pos, XMFLOAT3(0, 0, 0), 100000.0f, 1, 0.25f, true);
+		_particleHandler->GetParticleRequestQueue()->Insert(msg);
+
+		pos = XMFLOAT3(9, 1.0f, 2);
+		dir = XMFLOAT3(0, 0, 1);
+		msg = new ParticleRequestMessage(ParticleType::FIRE, ParticleSubType::FIRE_SUBTYPE, 5, pos, dir, 100000.0f, 100, 0.04f, true);
+		_particleHandler->GetParticleRequestQueue()->Insert(msg);
+
+		//Electricity should never move. One bolt of lightning is created each request, and updated the given time
+		pos = XMFLOAT3(5, 1.0f, 3);
+		msg = new ParticleRequestMessage(ParticleType::ELECTRICITY, ParticleSubType::SPARK_SUBTYPE, -1, pos, XMFLOAT3(0, 0, 0), 1000.0f, 20, 0.1f, true, XMFLOAT3(14.0f, 1.0f, 3));
 		_particleHandler->GetParticleRequestQueue()->Insert(msg);
 	}
 
+	//If the emitter itself should be updated, for example if the icons move or if we have a spinning flamethrower
+	//Set "isAlive" parameter to disable all emitters that are connected to the ID of the GameObject
 	std::vector<std::vector<GameObject*>>* gameObjects = _objectHandler->GetGameObjects();
 	if (gameObjects->size() > 0)
 	{
 		for (unsigned int i = 0; i < gameObjects->at(GUARD).size(); i++)
 		{
-			XMFLOAT3 pos = gameObjects->at(GUARD).at(i)->GetPosition();
-			pos.y = 2.5f;
-			ParticleRequestMessage msg = ParticleRequestMessage(ParticleType::ICON, ParticleSubType::QUESTIONMARK_SUBTYPE, pos, XMFLOAT3(0, 0, 0), 0.0f, 1, 0.25f, true);
-			_particleHandler->GetParticleRequestQueue()->Insert(msg);
+			GameObject* g = gameObjects->at(GUARD).at(i);
+			if (g)
+			{
+				XMFLOAT3 pos = g->GetPosition();
+				AI::Vec2D dirv2d = ((Unit*)g)->GetDirection();
+				XMFLOAT3 dir = XMFLOAT3(dirv2d._x, 0, dirv2d._y);
+
+				pos.y = 2.5f;
+				ParticleUpdateMessage* msg = new ParticleUpdateMessage(5, true, pos, dir);
+				_particleHandler->GetParticleRequestQueue()->Insert(msg);
+			}
 		}
 	}
 

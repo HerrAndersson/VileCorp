@@ -74,13 +74,13 @@ float4 main(VS_OUT input) : SV_TARGET
 		//float4 finalColor = float4(((diffuse.xyz + lightColor) * lightIntensity), howMuchLight * (1.0f / attenuation));
 
 
-		// calculate normalized light vector and distance to sphere light surface
+		//calculate normalized light vector and distance to sphere light surface
 		float r = lightRange/4;
 		float3 L = lightPosition - worldPos;
 		float d = max(len - r, 0);
 		L /= len;
 
-		// calculate basic attenuation
+		//calculate basic attenuation
 		float denom = d / r + 1;
 		float attenuation = 1 / (denom*denom*denom);
 

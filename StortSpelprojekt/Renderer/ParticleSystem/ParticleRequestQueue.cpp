@@ -3,7 +3,7 @@
 
 namespace Renderer
 {
-	ParticleRequestQueue::ParticleRequestQueue(std::vector<ParticleRequestMessage>* queue)
+	ParticleRequestQueue::ParticleRequestQueue(std::vector<ParticleMessage*>* queue)
 	{
 		_queue = queue;
 	}
@@ -13,7 +13,7 @@ namespace Renderer
 		_queue = nullptr;
 	}
 
-	void ParticleRequestQueue::Insert(ParticleRequestMessage& msg)
+	void ParticleRequestQueue::Insert(ParticleMessage* msg)
 	{
 		_queue->push_back(msg);
 	}
