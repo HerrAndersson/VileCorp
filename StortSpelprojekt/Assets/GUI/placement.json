@@ -22,13 +22,14 @@
 				},
 				"GuardDescription":
 				{
-					"position" : [0.0, 0.25],
-					"scale": [0.05, 0.1],
-					"texture": "../Menues/General/button.png",
+					"position" : [0.0, 0.20],
+					"scale": [0.1, 0.07],
+					"texture": "../Menues/General/wide-button-thin.png",
 					
 					"HP":
 					{
 						"position" : [0.0, 0.0],
+						"scale": [0.05, 0.02],
 						"text": "HP: 100",
 						"fontsize" : 18.0
 					}
@@ -51,13 +52,14 @@
 				
 				"AnvilDescription":
 				{
-					"position" : [0.0, 0.25],
-					"scale": [0.05, 0.1],
-					"texture": "../Menues/General/button.png",
+					"position" : [0.0, 0.20],
+					"scale": [0.1, 0.07],
+					"texture": "../Menues/General/wide-button-thin.png",
 					
 					"HP":
 					{
 						"position" : [0.0, 0.0],
+						"scale": [0.05, 0.02],
 						"text": "HP: 100",
 						"fontsize" : 18.0
 					}
@@ -79,13 +81,14 @@
 				},
 				"TeslaDescription":
 				{
-					"position" : [0.0, 0.25],
-					"scale": [0.05, 0.1],
-					"texture": "../Menues/General/button.png",
+					"position" : [0.0, 0.20],
+					"scale": [0.1, 0.07],
+					"texture": "../Menues/General/wide-button-thin.png",
 					
 					"HP":
 					{
 						"position" : [0.0, 0.0],
+						"scale": [0.05, 0.02],
 						"text": "HP: 100",
 						"fontsize" : 18.0
 					}
@@ -108,13 +111,14 @@
 				
 				"MachineGunDescription":
 				{
-					"position" : [0.0, 0.25],
-					"scale": [0.05, 0.1],
-					"texture": "../Menues/General/button.png",
+					"position" : [0.0, 0.20],
+					"scale": [0.1, 0.07],
+					"texture": "../Menues/General/wide-button-thin.png",
 					
 					"HP":
 					{
 						"position" : [0.0, 0.0],
+						"scale": [0.05, 0.02],
 						"text": "HP: 100",
 						"fontsize" : 18.0
 					}
@@ -137,13 +141,14 @@
 				
 				"CameraDescription":
 				{
-					"position" : [0.0, 0.25],
-					"scale": [0.05, 0.1],
-					"texture": "../Menues/General/button.png",
+					"position" : [0.0, 0.20],
+					"scale": [0.1, 0.07],
+					"texture": "../Menues/General/wide-button-thin.png",
 					
 					"HP":
 					{
 						"position" : [0.0, 0.0],
+						"scale": [0.05, 0.02],
 						"text": "HP: 100",
 						"fontsize" : 18.0
 					}
