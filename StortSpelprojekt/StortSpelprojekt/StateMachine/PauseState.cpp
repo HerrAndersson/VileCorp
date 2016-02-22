@@ -11,9 +11,15 @@ PauseState::~PauseState()
 
 void PauseState::Update(float deltaTime)
 {
+	System::MouseCoord coord = _controls->GetMouseCoord();
+	XMFLOAT4 color(0.3f, 0.3f, 0.3f, 1.0f);
+	HandleHoverColorOffset("resume", "resume", coord, color);
+	HandleHoverColorOffset("mainmenu", "mainmenu", coord, color);
+	HandleHoverColorOffset("quit", "quit", coord, color);
+
+
 	if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
-		System::MouseCoord coord = _controls->GetMouseCoord();
 		if (_uiTree.IsButtonColliding("resume", coord._pos.x, coord._pos.y))
 		{
 			ChangeState(GetOldState());
