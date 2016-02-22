@@ -52,5 +52,6 @@ public:
 
 	void HandleInput();
 	void HandleButtons();
+	void HandleDescriptions();
 };
 

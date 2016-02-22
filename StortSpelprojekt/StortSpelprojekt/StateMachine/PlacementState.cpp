@@ -64,6 +64,7 @@ void PlacementState::Update(float deltaTime)
 
 	HandleInput();
 	HandleButtons();
+	HandleDescriptions();
 }
 
 void PlacementState::OnStateEnter()
@@ -83,6 +84,8 @@ void PlacementState::OnStateEnter()
 	campos.y = 15;
 	campos.z = _objectHandler->GetTileMap()->GetHeight() / 2 - 10;
 	_camera->SetPosition(campos);
+	_uiTree.GetNode("GuardDescription")->SetHidden(true);
+	_uiTree.GetNode("AnvilDescription")->SetHidden(true);
 
 	//if (_playerProfile[0]._firstTime != true)
 	//{
@@ -237,4 +240,24 @@ void PlacementState::HandleButtons()
 
 }
 
+void PlacementState::HandleDescriptions()
+{
+	System::MouseCoord coord = _controls->GetMouseCoord();
+	if (_uiTree.IsButtonColliding("Guard", coord._pos.x, coord._pos.y))
+	{
+		_uiTree.GetNode("GuardDescription")->SetHidden(false);
+	}
+	else
+	{
+		_uiTree.GetNode("GuardDescription")->SetHidden(true);
+	}
 
+	if (_uiTree.IsButtonColliding("AnvilTrap", coord._pos.x, coord._pos.y))
+	{
+		_uiTree.GetNode("AnvilDescription")->SetHidden(false);
+	}
+	else
+	{
+		_uiTree.GetNode("AnvilDescription")->SetHidden(true);
+	}
+}

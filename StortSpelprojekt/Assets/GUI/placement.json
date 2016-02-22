@@ -19,7 +19,21 @@
 					"text": "Guard 200$",
 					"color": "FF000000",
 					"fontsize" : 18.0
-				}				
+				},
+				"GuardDescription":
+				{
+					"position" : [0.0, 0.25],
+					"scale": [0.05, 0.1],
+					"color": "FF000000",
+					"texture": "../Menues/General/button.png",
+					
+					"HP":
+					{
+						"position" : [0.0, 0.0],
+						"text": "HP: 100",
+						"fontsize" : 18.0
+					}
+				}
 			},
 			"AnvilTrap" :
 			{
@@ -34,6 +48,15 @@
 					"text": "Anvil Trap 50$",
 					"color": "FF000000",
 					"fontsize" : 18.0
+				},
+				"AnvilDescription":
+				{
+					"position" : [0.0, 0.25],
+					"scale": [0.05, 0.1],
+					"text": "Guard 200$",
+					"color": "FF000000",
+					"fontsize" : 18.0,
+					"texture": "../Menues/General/button.png"
 				}
 			},
 			"TeslaTrap" :
