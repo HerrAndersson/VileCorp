@@ -273,7 +273,7 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	case GUN:
 	{
 		
-		Initialize(300, 5, 10, 50, 50);
+		Initialize(300, 10, 10, 100, 50);
 		
 		for (int i = 0; i < _tileSize; i++)
 		{
@@ -541,7 +541,12 @@ void Trap::SetTilePosition(AI::Vec2D pos)
 	break;
 	case GUN:
 	{
-		_occupiedTiles[0] = _tilePosition;
+		for (int i = 0; i < _tileSize; i++)
+		{
+			AI::Vec2D offset = {i, 0};
+			_occupiedTiles[i] = _tilePosition + offset;
+		}
+	//	_occupiedTiles[0] = _tilePosition;
 		CalculateLineAOE(10, { 1, 0 });
 	}
 	break;
