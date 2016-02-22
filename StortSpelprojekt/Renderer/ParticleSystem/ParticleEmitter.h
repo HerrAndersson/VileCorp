@@ -18,7 +18,8 @@ namespace Renderer
 
 		struct ParticleVertex
 		{
-			DirectX::XMFLOAT3 _position;
+			//This should hold position.xyz and then texture number. This way the texture only has to be randomized on creation, and stays the same until it dies/resets /Jonas
+			DirectX::XMFLOAT4 _position;
 		};
 
 		ParticleType _type;
