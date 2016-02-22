@@ -84,11 +84,17 @@ void PlacementState::OnStateEnter()
 	campos.y = 15;
 	campos.z = _objectHandler->GetTileMap()->GetHeight() / 2 - 10;
 	_camera->SetPosition(campos);
+
 	_uiTree.GetNode("GuardDescription")->SetHidden(true);
+	_uiTree.GetNode("GuardCost")->SetText(L"Cost: " + to_wstring(200) + L"$");
 	_uiTree.GetNode("AnvilDescription")->SetHidden(true);
+	_uiTree.GetNode("AnvilCost")->SetText(L"Cost: " + to_wstring(50) + L"$");
 	_uiTree.GetNode("TeslaDescription")->SetHidden(true);
+	_uiTree.GetNode("TeslaCost")->SetText(L"Cost: " + to_wstring(100) + L"$");
 	_uiTree.GetNode("CameraDescription")->SetHidden(true);
+	_uiTree.GetNode("CameraCost")->SetText(L"Cost: " + to_wstring(80) + L"$");
 	_uiTree.GetNode("MachineGunDescription")->SetHidden(true);
+	_uiTree.GetNode("MachineGunCost")->SetText(L"Cost: " + to_wstring(120) + L"$");
 
 	//if (_playerProfile[0]._firstTime != true)
 	//{
@@ -251,7 +257,6 @@ void PlacementState::HandleDescriptions()
 		_uiTree.GetNode("GuardDescription")->SetHidden(false);
 
 		// Add description
-
 	}
 	else
 	{

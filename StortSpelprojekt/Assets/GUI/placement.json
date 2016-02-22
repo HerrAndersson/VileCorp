@@ -12,25 +12,18 @@
 				"scale": [0.037, 0.063],
 				"texture": "../Menues/PlacementStateGUI/units/Guardbutton1.png",
 				
-				"GuardText":
-				{
-					"position" : [0.975, -1.08],
-					"scale": [1.0, 1.0],
-					"text": "Guard\n  200$",
-					"color": "FF000000",
-					"fontsize" : 18.0
-				},
 				"GuardDescription":
 				{
 					"position" : [0.0, 0.20],
 					"scale": [0.1, 0.07],
 					"texture": "../Menues/General/wide-button-thin.png",
 					
-					"HP":
+					"GuardCost":
 					{
 						"position" : [0.0, 0.0],
 						"scale": [0.05, 0.02],
-						"text": "HP: 100",
+						"text": "Cost: 100",
+						"centered": true,
 						"fontsize" : 18.0
 					}
 				}
@@ -41,26 +34,18 @@
 				"scale": [0.037, 0.063],
 				"texture": "../Menues/PlacementStateGUI/units/Anvilbutton1.png",
 				
-				"AnvilText":
-				{
-					"position" : [0.96, -1.08],
-					"scale": [1.0, 1.0],
-					"text": "Anvil Trap\n    50$",
-					"color": "FF000000",
-					"fontsize" : 18.0
-				},
-				
 				"AnvilDescription":
 				{
 					"position" : [0.0, 0.20],
 					"scale": [0.1, 0.07],
 					"texture": "../Menues/General/wide-button-thin.png",
 					
-					"HP":
+					"AnvilCost":
 					{
 						"position" : [0.0, 0.0],
 						"scale": [0.05, 0.02],
-						"text": "HP: 100",
+						"text": "Cost: 100",
+						"centered": true,
 						"fontsize" : 18.0
 					}
 				}
@@ -70,26 +55,19 @@
 				"position": [0.0, 0.057],	
 				"scale": [0.037, 0.063],
 				"texture": "../Menues/PlacementStateGUI/units/Teslabutton1.png",
-				
-				"TeslaText":
-				{
-					"position" : [0.964, -1.08],
-					"scale": [1.0, 1.0],
-					"text": "Tesla Trap\n    100$",
-					"color": "FF000000",
-					"fontsize" : 18.0
-				},
+
 				"TeslaDescription":
 				{
 					"position" : [0.0, 0.20],
 					"scale": [0.1, 0.07],
 					"texture": "../Menues/General/wide-button-thin.png",
 					
-					"HP":
+					"TeslaCost":
 					{
 						"position" : [0.0, 0.0],
 						"scale": [0.05, 0.02],
-						"text": "HP: 100",
+						"text": "Cost: 100",
+						"centered": true,
 						"fontsize" : 18.0
 					}
 				}
@@ -100,26 +78,18 @@
 				"scale": [0.037, 0.063],
 				"texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png",
 				
-				"MachineGunText":
-				{
-					"position" : [0.952, -1.08],
-					"scale": [1.0, 1.0],
-					"text": "MachineGun\n       200$",
-					"color": "FF000000",
-					"fontsize" : 18.0
-				},
-				
 				"MachineGunDescription":
 				{
 					"position" : [0.0, 0.20],
 					"scale": [0.1, 0.07],
 					"texture": "../Menues/General/wide-button-thin.png",
 					
-					"HP":
+					"MachineGunCost":
 					{
 						"position" : [0.0, 0.0],
 						"scale": [0.05, 0.02],
-						"text": "HP: 100",
+						"text": "Cost: 100",
+						"centered": true,
 						"fontsize" : 18.0
 					}
 				}
@@ -130,26 +100,17 @@
 				"scale": [0.037, 0.063],
 				"texture": "../Menues/PlacementStateGUI/units/Camerabutton1.png",
 				
-				"CameraText":
-				{
-					"position" : [0.965, -1.08],
-					"scale": [1.0, 1.0],
-					"text": "Camera\n    80$",
-					"color": "FF000000",
-					"fontsize" : 18.0
-				},
-				
 				"CameraDescription":
 				{
 					"position" : [0.0, 0.20],
 					"scale": [0.1, 0.07],
 					"texture": "../Menues/General/wide-button-thin.png",
 					
-					"HP":
+					"CameraCost":
 					{
 						"position" : [0.0, 0.0],
 						"scale": [0.05, 0.02],
-						"text": "HP: 100",
+						"text": "Cost: 100",
 						"fontsize" : 18.0
 					}
 				}
