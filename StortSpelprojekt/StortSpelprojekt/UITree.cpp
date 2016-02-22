@@ -83,9 +83,10 @@ namespace GUI
 		return createdThumbnails;
 	}
 
-	Node* UITree::LoadGUITree(const std::string& name, rapidjson::Value::ConstMemberIterator start, rapidjson::Value::ConstMemberIterator end)
+	Node* UITree::LoadGUITree(const std::string& name, rapidjson::Value::ConstMemberIterator start, rapidjson::Value::ConstMemberIterator end, Node* parent)
 	{
 		Node* returnNode = new Node(&_info);
+		returnNode->SetParent(parent);
 		returnNode->SetId(name);
 		for (Value::ConstMemberIterator i = start; i != end; ++i)
 		{
@@ -142,7 +143,7 @@ namespace GUI
 			}
 			else
 			{
-				returnNode->AddChild(LoadGUITree(i->name.GetString(), i->value.MemberBegin(), i->value.MemberEnd()));
+				returnNode->AddChild(LoadGUITree(i->name.GetString(), i->value.MemberBegin(), i->value.MemberEnd(), returnNode));
 			}
 		}
 		return returnNode;
@@ -192,6 +193,40 @@ namespace GUI
 //		return IsButtonColliding(current->GetId(), x, y);
 	}
 
+	bool UITree::IsButtonColliding(const std::string& id, System::MouseCoord coord)
+	{
+		return IsButtonColliding(id, coord._pos.x, coord._pos.y);
+	}
+
+	bool UITree::IsButtonColliding(Node* current, System::MouseCoord coord)
+	{
+		return IsButtonColliding(current, coord._pos.x, coord._pos.y);
+	}
+
+	bool UITree::IsNodeHidden(const std::string& id)
+	{
+		Node* node = GetNode(id);
+		return IsNodeHidden(node);
+	}
+
+	bool UITree::IsNodeHidden(Node* node)
+	{
+		bool isHidden = false;
+		if (node != nullptr)
+		{
+			while (node->GetParent() != nullptr && !isHidden)
+			{
+				node = node->GetParent();
+				isHidden = node->GetHidden();
+			}
+		}
+		else
+		{
+			isHidden = true;
+		}
+		return isHidden;
+	}
+
 	Node* UITree::FindNode(Node* current, const std::string& id)
 	{
 		if (current->GetId() == id)
@@ -219,7 +254,7 @@ namespace GUI
 		return node;
 	}
 
-	void UITree::ReloadTree(const std::string& filename, const std::string& statename)
+	void UITree::ReloadTree(const std::string& filename)
 	{
 		Release(_root);
 		ifstream file(filename);
@@ -233,18 +268,7 @@ namespace GUI
 		Document d;
 		d.Parse(str.c_str());
 
-		bool found = false;
-		for (Value::ConstMemberIterator i = d.MemberBegin(); i != d.MemberEnd(); ++i)
-		{
-			if (i->name.IsString() && string(i->name.GetString()) == statename)
-			{
-				found = true;
-				_root = LoadGUITree("root", i->value.MemberBegin(), i->value.MemberEnd());
-			}
-		}
-		if (!found)
-		{
-			throw std::runtime_error("Could not find " + statename + " in " + filename);
-		}
+		_root = LoadGUITree("root", d.MemberBegin(), d.MemberEnd());
+		_root->SetPosition(_root->GetFinalPosition());
 	}
 }

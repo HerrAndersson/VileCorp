@@ -42,20 +42,21 @@ namespace GUI
 		std::string _id;
 		NodeInfo* _info;
 		bool _hidden;
-
+		
 		//Text info
 		std::wstring _text;
 		UINT32 _color;
 		float _fontSize;
 		FontWrapper::CustomFont _font;
 		bool _centered;
+		bool _firstTimeEditingText = true;
 
 		//Image info
 		ID3D11ShaderResourceView* _texture;
 
 		void UpdateMatrix();
 	protected:
-
+		Node* _parent = nullptr;
 		std::vector<Node*> _children;
 
 	public:
@@ -88,6 +89,8 @@ namespace GUI
 		void SetAlpha(float alpha);
 		void SetCentered(bool centered);
 		void SetHidden(bool hidden);
+		void SetParent(Node* parent);
+		void SetFirstTimeEditingText(bool firstTimeEditingText);
 
 		DirectX::XMFLOAT4 GetColorOffset() const;
 		float GetAlpha() const;
@@ -102,6 +105,8 @@ namespace GUI
 		ID3D11ShaderResourceView* GetTexture();
 		bool GetCentered() const;
 		bool GetHidden() const;
+		Node* GetParent() const;
+		bool IsFirstTimeEditingText() const;
 
 		DirectX::XMMATRIX* Node::GetModelMatrix();
 		std::vector<GUI::Node*>* GetChildren();

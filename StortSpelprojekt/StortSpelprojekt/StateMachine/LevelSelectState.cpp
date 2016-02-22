@@ -14,7 +14,18 @@ LevelSelectState::LevelSelectState(System::Controls* controls, ObjectHandler* ob
 	_nextLevelButtonNode = _uiTree.GetNode("nextlevel");
 	_previousLevelButtonNode = _uiTree.GetNode("prevlevel");
 
+	_campaignTabNode = _uiTree.GetNode("CampaignTab");
+	_skirmishTabNode = _uiTree.GetNode("SkirmishTab");
+
 	_campaignSelectionMin = 1;
+	_skirmishSelectedIndex = 1;
+
+	for (unsigned i = 0; i < _uiTree.GetNode("LevelSelectionTabs")->GetChildren()->size(); i++)
+	{
+		GUI::Node* modeSelect = _uiTree.GetNode("LevelSelectionTabs")->GetChildren()->at(i);
+
+		_tabPosition[i] = modeSelect->GetLocalPosition();
+	}
 }
 
 LevelSelectState::~LevelSelectState()
@@ -25,7 +36,7 @@ void LevelSelectState::Update(float deltaTime)
 {
 	if (_controls->IsFunctionKeyDown("DEBUG:RELOAD_GUI"))
 	{
-		_uiTree.ReloadTree("../../../../StortSpelprojekt/Assets/gui.json", "LEVELSELECT");
+		_uiTree.ReloadTree("../../../../StortSpelprojekt/Assets/GUI/levelselect.json");
 	}
 	if (_controls->IsFunctionKeyDown("MENU:MENU"))
 	{
@@ -34,75 +45,94 @@ void LevelSelectState::Update(float deltaTime)
 	if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
 		System::MouseCoord coord = _controls->GetMouseCoord();
-		if (_uiTree.IsButtonColliding("playbutton", coord._pos.x, coord._pos.y))
+		if (_isCampaignMode || _skirmishHeaderFilenames.size() > 0)
 		{
-			_soundModule->Play("Assets/Sounds/page");
-
-			std::string levelBinaryPath;
-			if (_isCampaignMode)
+			if (_uiTree.IsButtonColliding("playbutton", coord._pos.x, coord._pos.y))
 			{
-				levelBinaryPath = CAMPAIGN_PATH;
-			}
-			else
-			{
-				levelBinaryPath = LEVEL_FOLDER_PATH;
-			}
-			levelBinaryPath += _selectedLevelHeader._levelBinaryFilename;
+				_soundModule->Play("Assets/Sounds/page");
 
-			_objectHandler->SetCurrentLevelHeader(_selectedLevelHeader);
-			_objectHandler->LoadLevel(levelBinaryPath);
-			ChangeState(State::PLACEMENTSTATE);
+				std::string levelBinaryPath;
+				if (_isCampaignMode)
+				{
+					levelBinaryPath = CAMPAIGN_FOLDER_PATH;
+				}
+				else
+				{
+					levelBinaryPath = SKIRMISH_FOLDER_PATH;
+				}
+				levelBinaryPath += _selectedLevelHeader._levelBinaryFilename;
+
+				_objectHandler->SetCurrentLevelHeader(_selectedLevelHeader);
+				_objectHandler->LoadLevel(levelBinaryPath);
+				ChangeState(State::PLACEMENTSTATE);
+			}
+			if (_uiTree.IsButtonColliding("prevlevel", coord._pos.x, coord._pos.y))
+			{
+				_soundModule->Play("Assets/Sounds/page");
+				if (_isCampaignMode && _campaignSelection != _campaignSelectionMin)
+				{
+					_campaignSelection--;
+					LoadLevelHeader(_campaignSelection, &_selectedLevelHeader);
+					SelectedLevelHeaderToGUI();
+				}
+				else if (!_isCampaignMode && _skirmishSelectedIndex != 0)
+				{
+					_skirmishSelectedIndex--;
+					LoadLevelHeader(_skirmishHeaderFilenames[_skirmishSelectedIndex], &_selectedLevelHeader);
+					SelectedLevelHeaderToGUI();
+				}
+
+				UpdateButtonsNextPreviousVisability();
+			}
+			if (_uiTree.IsButtonColliding("nextlevel", coord._pos.x, coord._pos.y))
+			{
+				_soundModule->Play("Assets/Sounds/page");
+				if (_isCampaignMode && _campaignSelection != _campaignSelectionMax)
+				{
+					_campaignSelection++;
+					LoadLevelHeader(_campaignSelection, &_selectedLevelHeader);
+					SelectedLevelHeaderToGUI();
+				}
+				else if (!_isCampaignMode && _skirmishSelectedIndex != _skirmishHeaderFilenames.size() - 1)
+				{
+					_skirmishSelectedIndex++;
+					LoadLevelHeader(_skirmishHeaderFilenames[_skirmishSelectedIndex], &_selectedLevelHeader);
+					SelectedLevelHeaderToGUI();
+				}
+
+				UpdateButtonsNextPreviousVisability();
+			}
 		}
-		if (_uiTree.IsButtonColliding("prevlevel", coord._pos.x, coord._pos.y))
+		if (_isCampaignMode)
 		{
-			_soundModule->Play("Assets/Sounds/page");
-			if (_isCampaignMode)
+			if (_uiTree.IsButtonColliding("SkirmishTab", coord._pos.x, coord._pos.y))
 			{
-				_campaignSelection--;
+				SwitchLevelSelectionMode();
+				if (_skirmishHeaderFilenames.size() > 0)
+				{
+					_skirmishSelectedIndex = 0;
+					LoadLevelHeader(_skirmishHeaderFilenames[_skirmishSelectedIndex], &_selectedLevelHeader);
+					SelectedLevelHeaderToGUI();
+				}
+				else
+				{
+					_uiTree.GetNode("LevelSelectionTabContent")->SetHidden(true);
+				}
+				UpdateButtonsNextPreviousVisability();
+			}
+		}
+		else
+		{
+			if (_uiTree.IsButtonColliding("CampaignTab", coord._pos.x, coord._pos.y))
+			{
+				_uiTree.GetNode("LevelSelectionTabContent")->SetHidden(false);
+				SwitchLevelSelectionMode();
+				_campaignSelection = _profile->_level;
 				LoadLevelHeader(_campaignSelection, &_selectedLevelHeader);
+				UpdateButtonsNextPreviousVisability();
 				SelectedLevelHeaderToGUI();
 			}
-
-			UpdateButtonsNextPreviousVisability();
 		}
-		if (_uiTree.IsButtonColliding("nextlevel", coord._pos.x, coord._pos.y))
-		{
-			_soundModule->Play("Assets/Sounds/page");
-			if (_isCampaignMode)
-			{
-				_campaignSelection++;
-				LoadLevelHeader(_campaignSelection, &_selectedLevelHeader);
-				SelectedLevelHeaderToGUI();
-			}
-
-			UpdateButtonsNextPreviousVisability();
-		}
-		else if (_uiTree.IsButtonColliding("SkirmishTab", coord._pos.x, coord._pos.y) || _uiTree.IsButtonColliding("CampaignTab", coord._pos.x, coord._pos.y))
-		{
-			//Move Button icon
-			GUI::Node* node = _uiTree.GetNode("CampaignTab");
-			XMFLOAT2 unpickedTab = node->GetLocalPosition();
-
-			GUI::Node* node2 = _uiTree.GetNode("SkirmishTab");
-			XMFLOAT2 pickedTab = node2->GetLocalPosition();
-
-			node2->SetPosition(XMFLOAT2(unpickedTab.x,pickedTab.y));
-			node->SetPosition(XMFLOAT2(pickedTab.x, unpickedTab.y));
-
-			if (pickedTab.x > unpickedTab.x)
-			{
-				int help = 0;
-				//CAMPAIGN has been picked
-				//TODO: Different functions for different modes
-			}
-			else
-			{
-				int help = 0;
-				//SKIRMISH has been picked
-				//TODO: Different functions for different modes
-			}
-		}
-
 	}
 }
 
@@ -111,6 +141,19 @@ void LevelSelectState::OnStateEnter()
 	_profile = _settingsReader->GetProfile();
 
 	_isCampaignMode = true;
+	_uiTree.GetNode("LevelName")->SetHidden(true);
+	_uiTree.GetNode("LevelSelectionTabContent")->SetHidden(false);
+
+	for (unsigned i = 0; i < _uiTree.GetNode("LevelSelectionTabs")->GetChildren()->size(); i++)
+	{
+		GUI::Node* modeSelect = _uiTree.GetNode("LevelSelectionTabs")->GetChildren()->at(i);
+
+		modeSelect->SetPosition(_tabPosition[i]);
+	}
+
+	_skirmishHeaderFilenames.clear();
+	GetFilenamesInDirectory(const_cast<char*>(SKIRMISH_FOLDER_PATH.c_str()), ".json", _skirmishHeaderFilenames, false);
+
 	_campaignSelectionMax = _campaignSelection = _profile->_level;
 	LoadLevelHeader(_campaignSelection, &_selectedLevelHeader);
 	SelectedLevelHeaderToGUI();
@@ -131,11 +174,11 @@ void LevelSelectState::LoadLevelHeader(std::string levelFilename, Level::LevelHe
 	std::string levelPath;
 	if (_isCampaignMode)
 	{
-		levelPath = CAMPAIGN_PATH + levelFilename + ".json";
+		levelPath = CAMPAIGN_FOLDER_PATH + levelFilename + ".json";
 	}
 	else
 	{
-		levelPath = LEVEL_FOLDER_PATH + levelFilename;
+		levelPath = SKIRMISH_FOLDER_PATH + levelFilename;
 	}
 	System::loadJSON(headerToLoad, levelPath);
 }
@@ -149,7 +192,7 @@ void LevelSelectState::SelectedLevelHeaderToGUI()
 	else
 	{
 		_levelNameNode->SetHidden(false);
-		_levelNameNode->SetText(StringToWstring(_skirmishHeaderFilenames[_skirmishSelectedIndex]));
+		_levelNameNode->SetText(StringToWstring(_selectedLevelHeader._levelBinaryFilename));
 	}
 	_storyTitleNode->SetText(StringToWstring(_selectedLevelHeader._storyTitle));
 	_storyBodyNode->SetText(StringToWstring(_selectedLevelHeader._storyBody));
@@ -182,6 +225,34 @@ void LevelSelectState::UpdateButtonsNextPreviousVisability()
 	}
 	else
 	{
+		bool isHidden = true;
+		if (_skirmishSelectedIndex > 0)
+		{
+			isHidden = false;
+		}
+		_previousLevelButtonNode->SetHidden(isHidden);
 
+		isHidden = true;
+		if (_skirmishSelectedIndex < _skirmishHeaderFilenames.size() - 1)
+		{
+			isHidden = false;
+		}
+		_nextLevelButtonNode->SetHidden(isHidden);
 	}
+}
+
+void LevelSelectState::SwitchLevelSelectionMode()
+{
+	_isCampaignMode = !_isCampaignMode;
+
+	DirectX::XMFLOAT2 _skirmishTabNodePos = _skirmishTabNode->GetLocalPosition();
+	DirectX::XMFLOAT2 _campaignTabNodePos = _campaignTabNode->GetLocalPosition();
+	float tempPosX = _skirmishTabNodePos.x;
+	_skirmishTabNodePos.x = _campaignTabNodePos.x;
+	_campaignTabNodePos.x = tempPosX;
+
+	_skirmishTabNode->SetPosition(_skirmishTabNodePos);
+	_campaignTabNode->SetPosition(_campaignTabNodePos);
+
+	_levelNameNode->SetHidden(!_levelNameNode->GetHidden());
 }

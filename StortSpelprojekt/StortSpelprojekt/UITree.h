@@ -1,5 +1,6 @@
 #pragma once
 #include "Node.h"
+#include "InputDevice.h"
 #include "BlueprintNode.h"
 #include "AssetManager.h"
 #include "ObjectHandler.h"
@@ -23,7 +24,7 @@ namespace GUI
 		AssetManager* _AM;
 		Node::NodeInfo _info;
 	private:
-		Node* LoadGUITree(const std::string& name, rapidjson::Value::ConstMemberIterator start, rapidjson::Value::ConstMemberIterator end);
+		Node* LoadGUITree(const std::string& name, rapidjson::Value::ConstMemberIterator start, rapidjson::Value::ConstMemberIterator end, Node* parent = nullptr);
 		void Release(Node* node);
 		Node* FindNode(Node* current, const std::string& id);
 	public:
@@ -36,10 +37,14 @@ namespace GUI
 
 		int CreateTilesetObject(Blueprint* object, Node* list, int index);
 		bool IsButtonColliding(const std::string& id, int x, int y);
+		bool IsButtonColliding(const std::string& id, System::MouseCoord coord);
 		bool IsButtonColliding(Node* current, int x, int y);
+		bool IsButtonColliding(Node* current, System::MouseCoord coord);
+		bool IsNodeHidden(const std::string& id);
+		bool IsNodeHidden(Node* node);
 		Node* GetNode(const std::string& id);
 
 		
-		void ReloadTree(const std::string& filename, const std::string& statename);
+		void ReloadTree(const std::string& filename);
 	};
 }

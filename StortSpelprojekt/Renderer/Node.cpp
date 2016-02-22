@@ -173,6 +173,16 @@ namespace GUI
 		_hidden = hidden;
 	}
 
+	void Node::SetParent(Node* parent)
+	{
+		_parent = parent;
+	}
+
+	void Node::SetFirstTimeEditingText(bool firstTimeEditingText)
+	{
+		_firstTimeEditingText = firstTimeEditingText;
+	}
+
 	DirectX::XMFLOAT2 Node::GetFinalPosition() const
 	{
 		return _positionFinal;
@@ -220,6 +230,16 @@ namespace GUI
 	bool Node::GetHidden() const
 	{
 		return _hidden;
+	}
+
+	Node* Node::GetParent() const
+	{
+		return _parent;
+	}
+
+	bool Node::IsFirstTimeEditingText() const
+	{
+		return _firstTimeEditingText;
 	}
 
 	DirectX::XMMATRIX* Node::GetModelMatrix()

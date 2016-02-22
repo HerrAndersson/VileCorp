@@ -39,7 +39,7 @@ struct SkeletonHeader
 	unsigned int _version, _framerate, _boneCount, _actionCount;
 };
 
-static bool GetFilenamesInDirectory(char* folder, char* extension, vector<string> &listToFill)
+static bool GetFilenamesInDirectory(char* folder, char* extension, vector<string> &listToFill, bool appendFullPath = true)
 {
 	bool result = false;
 	if (folder != nullptr && extension != nullptr)
@@ -57,7 +57,14 @@ static bool GetFilenamesInDirectory(char* folder, char* extension, vector<string
 				if (!(fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
 				{
 					string path = fd.cFileName;
-					listToFill.push_back(folder + path);
+					if (appendFullPath)
+					{
+						listToFill.push_back(folder + path);
+					}
+					else
+					{
+						listToFill.push_back(path);
+					}
 				}
 			} while (FindNextFile(hFind, &fd));
 			FindClose(hFind);

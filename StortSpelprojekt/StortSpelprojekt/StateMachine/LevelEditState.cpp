@@ -7,47 +7,9 @@ LevelEditState::LevelEditState(System::Controls* controls, ObjectHandler* object
 	_moveCheck = -1;
 	_baseEdit = nullptr;
 	_pageCheck = false;
+	_leaveCheck = -1;
 
 	_ambientLight = ambientLight;
-
-	_objectTabs = _uiTree.GetNode("Buttons")->GetChildren();
-
-	std::map<Type, std::string> typeLists =
-	{
-		{ FLOOR, "floorlist" },
-		{ WALL, "walllist" },
-		{ LOOT, "objectivelist" },
-		{ SPAWN, "entrylist" },
-		{ TRAP, "traplist" },
-		{ CAMERA, "traplist" },
-		{ GUARD, "unitlist" },
-		{ ENEMY, "unitlist" },
-		{ FURNITURE, "decorationlist" }
-	};
-	for (unsigned i = 0; i < NR_OF_TYPES; i++)
-	{
-		int index = 0;
-		vector<Blueprint>* blueprints = _objectHandler->GetBlueprints();
-		for (unsigned b = 0; b < blueprints->size();b++)
-		{
-			if (blueprints->at(b)._type == i)
-			{
-				index += _uiTree.CreateTilesetObject(&blueprints->at(b), _uiTree.GetNode(typeLists[(Type)blueprints->at(b)._type]), index);
-			}
-		}
-	}
-	
-
-	for (unsigned i = 0; i < _objectTabs->size(); i++)
-	{
-		_buttonPositions[i] = _objectTabs->at(i)->GetLocalPosition();
-	}
-	for (unsigned i = 0; i < _uiTree.GetNode("Otherbuttons")->GetChildren()->size(); i++)
-	{
-		_buttonPositions[i + _objectTabs->size()] = _uiTree.GetNode("Otherbuttons")->GetChildren()->at(i)->GetLocalPosition();
-		_isPressed[i] = false;
-	}
-	_uiTree.GetRootNode()->SetPosition(_uiTree.GetRootNode()->GetFinalPosition());
 }
 
 LevelEditState::~LevelEditState()
@@ -66,19 +28,56 @@ void LevelEditState::Update(float deltaTime)
 
 void LevelEditState::OnStateEnter()
 {
+	_uiTree.ReloadTree(LEVELEDIT_GUI_PATH);
+	_objectTabs = _uiTree.GetNode("Buttons")->GetChildren();
+	_settingsTabs = _uiTree.GetNode("Otherbuttons")->GetChildren();
+
+	_currentTextInputNode = nullptr;
+	_editableTextNodes.push_back(_uiTree.GetNode("StoryTitleText"));
+	_editableTextNodes.push_back(_uiTree.GetNode("StoryText"));
+
+	for (unsigned i = 0; i < NR_OF_TYPES; i++)
+	{
+		int index = 0;
+		vector<Blueprint>* blueprints = _objectHandler->GetBlueprints();
+		for (unsigned b = 0; b < blueprints->size(); b++)
+		{
+			if (blueprints->at(b)._type == i)
+			{
+				index += _uiTree.CreateTilesetObject(&blueprints->at(b), _uiTree.GetNode(_typeLists[(Type)blueprints->at(b)._type]), index);
+			}
+		}
+	}
+
+	for (unsigned i = 0; i < _objectTabs->size(); i++)
+	{
+		_buttonPositions[i] = _objectTabs->at(i)->GetLocalPosition();
+	}
+	for (unsigned i = 0; i < _uiTree.GetNode("Otherbuttons")->GetChildren()->size(); i++)
+	{
+		_buttonPositions[i + _objectTabs->size()] = _uiTree.GetNode("Otherbuttons")->GetChildren()->at(i)->GetLocalPosition();
+		_isPressed[i] = false;
+	}
+	for (unsigned i = 0; i < 7; i++)
+	{
+		_OrginLockColor[i] = _uiTree.GetNode("UnitLockButtons")->GetChildren()->at(i)->GetColorOffset();
+	}
+	_uiTree.GetRootNode()->SetPosition(_uiTree.GetRootNode()->GetFinalPosition());
+
 	_ambientLight->x = AMBIENT_LIGHT_DAY.x;
 	_ambientLight->y = AMBIENT_LIGHT_DAY.y;
 	_ambientLight->z = AMBIENT_LIGHT_DAY.z;
 
 	_objectHandler->DisableSpawnPoints();
 	_uiTree.GetNode("wholelist")->SetHidden(true);
-	_uiTree.GetNode("MapList")->SetHidden(true);
+	_uiTree.GetNode("SettingList")->SetHidden(true);
+	_uiTree.GetNode("UnitLockToolTip")->SetHidden(true);
 	_uiTree.GetNode("StoryList")->SetHidden(true);
 	_uiTree.GetNode("ControlsList")->SetHidden(true);
 	_uiTree.GetNode("MapSurviveSelected")->SetHidden(true);
 	_uiTree.GetNode("ThiefControlList")->SetHidden(true);
 	_uiTree.GetNode("NoPlacementButton")->SetHidden(true);
-	_uiTree.GetNode("NewMapConfirmation")->SetHidden(true);
+	_uiTree.GetNode("LeaveMap")->SetHidden(true);
 	_uiTree.GetNode("listbuttons")->SetHidden(true);
 
 	_levelHeader = Level::LevelHeader();
@@ -96,7 +95,8 @@ void LevelEditState::OnStateEnter()
 	_camera->SetPosition(campos);
 
 	_listId = -2;
-	for (int i = 0; i < 11; i++)
+	_settingsId = -2;
+	for (int i = 0; i < 12; i++)
 	{
 		if (i < 7)
 		{
@@ -113,7 +113,10 @@ void LevelEditState::OnStateEnter()
 			_isPressed[i - 7] = false;
 		}
 	}
-
+	for (unsigned i = 0; i < 7; i++)
+	{
+		_isLocked[i] = false;
+	}
 }
 
 void LevelEditState::OnStateExit()
@@ -135,7 +138,8 @@ void LevelEditState::HandleInput()
 
 	if (_controls->IsFunctionKeyDown("MENU:MENU"))
 	{
-		ChangeState(MENUSTATE);
+		_uiTree.GetNode("LeaveMap")->SetHidden(false);
+		_leaveCheck = 1;
 	}
 
 	if (_controls->IsFunctionKeyDown("DEBUG:EXPORT_LEVEL"))
@@ -145,7 +149,7 @@ void LevelEditState::HandleInput()
 
 	if (_controls->IsFunctionKeyDown("DEBUG:RELOAD_GUI"))
 	{
-		_uiTree.ReloadTree("../../../../StortSpelprojekt/Assets/gui.json", "LEVELEDIT");
+		_uiTree.ReloadTree("../../../../StortSpelprojekt/Assets/GUI/leveledit.json");
 	}
 }
 
@@ -157,296 +161,383 @@ void LevelEditState::HandleButtons()
 
 	System::MouseCoord coord = _controls->GetMouseCoord();
 
-
-	if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
+	if (_currentTextInputNode != nullptr)
 	{
-		//Open Level editor placement GUI
-		bool buttonClicked = false;
-		for (unsigned i = 0; i < _objectTabs->size() && !buttonClicked; i++)
+		if (_controls->GetIsTextInputMode())
 		{
-			if (_uiTree.IsButtonColliding(_objectTabs->at(i), coord._pos.x, coord._pos.y))
+			_currentTextInputNode->SetText(_controls->GetCurrentText());
+			if (!_uiTree.IsButtonColliding(_currentTextInputNode, coord) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
 			{
-				if (_listId == i)
-				{
-					_listId = -1;
-				}
-				else
-				{
-					_listId = i;
-					_currentPage = 0;
-				}
-				_moveCheck = i;
-				buttonClicked = true;
+				_currentTextInputNode = nullptr;
+				_controls->ResetInputBuffers();
 			}
 		}
-		if (_currentList != nullptr)
+		else
 		{
-			//Changing pages for objects
-			if (_uiTree.IsButtonColliding("right", coord._pos.x, coord._pos.y))
+			_currentTextInputNode = nullptr;
+		}
+	}
+	else
+	{
+		if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
+		{
+			//Open Level editor placement GUI
+			bool buttonClicked = false;
+			for (unsigned i = 0; i < _objectTabs->size() && !buttonClicked; i++)
 			{
-				if ((int)_currentList->GetChildren()->size() - 1 > _currentPage)
+				if (_uiTree.IsButtonColliding(_objectTabs->at(i), coord._pos.x, coord._pos.y))
 				{
-					_currentPage++;
-					_pageCheck = true;
-				}
-			}
-			else if (_uiTree.IsButtonColliding("left", coord._pos.x, coord._pos.y))
-			{
-				if (_currentPage > 0)
-				{
-					_currentPage--;
-					_pageCheck = true;
-				}
-			}
-			else if (_uiTree.IsButtonColliding("NoPlacementButton", coord._pos.x, coord._pos.y))
-			{
-				//TODO Paint No Placement Zones! Julia and Enbom
-			}
-
-			//Need to go through "" json group to get to object buttons
-			if (_currentList != nullptr && _currentList->GetChildren()->size())
-			{
-				buttonClicked = false;
-				std::vector<GUI::Node*>* currentPageButtons = _currentList->GetChildren()->at(_currentPage)->GetChildren();
-				for (unsigned y = 0; y < currentPageButtons->size(); y++)
-				{
-					GUI::Node* currentButton = currentPageButtons->at(y);
-					if (_uiTree.IsButtonColliding(currentButton, coord._pos.x, coord._pos.y))
+					if (_listId == i)
 					{
-						GUI::BlueprintNode* currentBlueprintButton = static_cast<GUI::BlueprintNode*>(currentButton);
-						_toPlace._blueprint = currentBlueprintButton->GetBlueprint();
-						_toPlace._textureId = currentBlueprintButton->GetTextureId();
+						_listId = -1;
+					}
+					else
+					{
+						_listId = i;
+						_currentPage = 0;
+					}
+					_moveCheck = i;
+					buttonClicked = true;
+				}
+			}
+			if (_currentList != nullptr)
+			{
+				//Changing pages for objects
+				if (_uiTree.IsButtonColliding("right", coord._pos.x, coord._pos.y))
+				{
+					if ((int)_currentList->GetChildren()->size() - 1 > _currentPage)
+					{
+						_currentPage++;
+						_pageCheck = true;
+					}
+				}
+				else if (_uiTree.IsButtonColliding("left", coord._pos.x, coord._pos.y))
+				{
+					if (_currentPage > 0)
+					{
+						_currentPage--;
+						_pageCheck = true;
+					}
+				}
+				else if (_uiTree.IsButtonColliding("NoPlacementButton", coord._pos.x, coord._pos.y))
+				{
+					//TODO Paint No Placement Zones! Julia and Enbom
+				}
+
+				//Need to go through "" json group to get to object buttons
+				if (_currentList != nullptr && _currentList->GetChildren()->size())
+				{
+					buttonClicked = false;
+					std::vector<GUI::Node*>* currentPageButtons = _currentList->GetChildren()->at(_currentPage)->GetChildren();
+					for (unsigned y = 0; y < currentPageButtons->size(); y++)
+					{
+						GUI::Node* currentButton = currentPageButtons->at(y);
+						if (_uiTree.IsButtonColliding(currentButton, coord._pos.x, coord._pos.y))
+						{
+							GUI::BlueprintNode* currentBlueprintButton = static_cast<GUI::BlueprintNode*>(currentButton);
+							_toPlace._blueprint = currentBlueprintButton->GetBlueprint();
+							_toPlace._textureId = currentBlueprintButton->GetTextureId();
 
 
-						_baseEdit->HandleBlueprint(&_toPlace);
-						break;
+							_baseEdit->HandleBlueprint(&_toPlace);
+							break;
+						}
 					}
 				}
 			}
-		}
-		//Map data
-		if (_uiTree.IsButtonColliding("MapButton", coord._pos.x, coord._pos.y))
-		{
-			if (!_isPressed[0])
+			for (unsigned i = 0; i < _settingsTabs->size() - 3 && !buttonClicked; i++)
 			{
-				//Move gui
-				GUI::Node* node = _uiTree.GetNode("MapButton");
-				XMFLOAT2 move = _buttonPositions[7];
-				move.x = move.x - 0.29f;
-
-				//Show List
-				_uiTree.GetNode("MapList")->SetHidden(false);
-
-				node->SetPosition(move);
-				_isPressed[0] = true;
+				//Map/Unitlock data
+				if (_uiTree.IsButtonColliding(_settingsTabs->at(i), coord._pos.x, coord._pos.y))
+				{
+					if (_settingsId == i)
+					{
+						_settingsId = -1;
+					}
+					else
+					{
+						_settingsId = i;
+					}
+					_moveCheck = i;
+					buttonClicked = true;
+				}
 			}
-			else
+			//Lock Units for this level
+			if (_settingsId == 1)
 			{
-				//Move gui
-				GUI::Node* node = _uiTree.GetNode("MapButton");
-				node->SetPosition(_buttonPositions[7]);
-
-				//Show List
-				_uiTree.GetNode("MapList")->SetHidden(true);
-
-				_isPressed[0] = false;
+				for (unsigned i = 0; i < _uiTree.GetNode("UnitLockButtons")->GetChildren()->size(); i++)
+				{
+					if (_uiTree.IsButtonColliding(_uiTree.GetNode("UnitLockButtons")->GetChildren()->at(i), coord._pos.x, coord._pos.y))
+					{
+						if (_isLocked[i] == false)
+						{
+							_uiTree.GetNode("UnitLockButtons")->GetChildren()->at(i)->SetColorOffset(XMFLOAT4{ 0.4f, 0.4f, 0.4f, 1.0f });
+							_isLocked[i] = true;
+							//TODO: Lock Unit Enbom
+						}
+						else
+						{
+							_uiTree.GetNode("UnitLockButtons")->GetChildren()->at(i)->SetColorOffset(_OrginLockColor[i]);
+							_isLocked[i] = false;
+							//TODO: Unlock Unit Enbom
+						}
+					}
+				}
 			}
-		}
-		//Story data
-		else if (_uiTree.IsButtonColliding("StoryButton", coord._pos.x, coord._pos.y))
-		{
-			if (!_isPressed[1])
+			//Story data
+			if (_uiTree.IsButtonColliding("StoryButton", coord._pos.x, coord._pos.y))
+			{
+				if (!_isPressed[2])
+				{
+					//Move Button
+					GUI::Node* node = _uiTree.GetNode("StoryButton");
+					XMFLOAT2 move = _buttonPositions[9];
+					move.x = move.x - 0.404f;
+
+					node->SetPosition(move);
+
+					//Show List
+					_uiTree.GetNode("StoryList")->SetHidden(false);
+
+					_isPressed[2] = true;
+				}
+				else
+				{
+					//Move Button
+					GUI::Node* node = _uiTree.GetNode("StoryButton");
+					node->SetPosition(_buttonPositions[9]);
+
+					//Hide List
+					_uiTree.GetNode("StoryList")->SetHidden(true);
+
+					_isPressed[2] = false;
+				}
+			}
+			//Control data
+			else if (_uiTree.IsButtonColliding("ControlsButton", coord._pos.x, coord._pos.y))
+			{
+				if (!_isPressed[3])
+				{
+					//Move Button
+					GUI::Node* node = _uiTree.GetNode("ControlsButton");
+					XMFLOAT2 move = _buttonPositions[10];
+					move.x -= 0.275f;
+					move.y -= 1.075f;
+
+					//Show List
+					_uiTree.GetNode("ControlsList")->SetHidden(false);
+
+					node->SetPosition(move);
+					_isPressed[3] = true;
+				}
+				else
+				{
+					//Move gui
+					GUI::Node* node = _uiTree.GetNode("ControlsButton");
+					node->SetPosition(_buttonPositions[10]);
+
+					//Show List
+					_uiTree.GetNode("ControlsList")->SetHidden(true);
+
+					_isPressed[3] = false;
+				}
+			}
+			//Thief data
+			else if (_uiTree.IsButtonColliding("ThiefButton", coord._pos.x, coord._pos.y))
+			{
+				if (!_isPressed[4])
+				{
+					//Move Button
+					GUI::Node* node = _uiTree.GetNode("ThiefButton");
+					XMFLOAT2 move = _buttonPositions[11];
+					move.x += 0.449f;
+
+					//Show List
+					_uiTree.GetNode("ThiefControlList")->SetHidden(false);
+
+					node->SetPosition(move);
+					_isPressed[4] = true;
+				}
+				else
+				{
+					//Move gui
+					GUI::Node* node = _uiTree.GetNode("ThiefButton");
+					node->SetPosition(_buttonPositions[11]);
+
+					//Show List
+					_uiTree.GetNode("ThiefControlList")->SetHidden(true);
+
+					_isPressed[4] = false;
+				}
+			}
+			else if (_uiTree.IsButtonColliding("ThiefInactiveBox", coord._pos.x, coord._pos.y) && _isPressed[4] == true)
+			{
+				//Move Button icon
+				GUI::Node* node = _uiTree.GetNode("ThiefInactiveBox");
+				XMFLOAT2 unpickedPosition = node->GetLocalPosition();
+
+				GUI::Node* node2 = _uiTree.GetNode("ThiefActiveBox");
+				XMFLOAT2 pickedPosition = node2->GetLocalPosition();
+
+				node2->SetPosition(unpickedPosition);
+				node->SetPosition(pickedPosition);
+
+				if (pickedPosition.y > unpickedPosition.y)
+				{
+					//BURGLAR has been picked
+					//TODO: Save this setting for this wave
+				}
+				else if (pickedPosition.x > unpickedPosition.x)
+				{
+					//Assassin has been picked
+					//TODO: Save this setting for this wave
+				}
+				else
+				{
+					//DEMOLISHER has been picked
+					//TODO: Save this setting for this wave
+				}
+			}
+			else if (_uiTree.IsButtonColliding("ThiefInactiveBox2", coord._pos.x, coord._pos.y) && _isPressed[4] == true)
+			{
+				//Move Button icon
+				GUI::Node* node = _uiTree.GetNode("ThiefInactiveBox2");
+				XMFLOAT2 unpickedPosition = node->GetLocalPosition();
+
+				GUI::Node* node2 = _uiTree.GetNode("ThiefActiveBox");
+				XMFLOAT2 pickedPosition = node2->GetLocalPosition();
+
+				node2->SetPosition(unpickedPosition);
+				node->SetPosition(pickedPosition);
+
+				if (pickedPosition.y > unpickedPosition.y)
+				{
+					//BURGLAR has been picked
+					//TODO: Save this setting for this wave
+				}
+				else if (pickedPosition.x > unpickedPosition.x)
+				{
+					//Assassin has been picked
+					//TODO: Save this setting for this wave
+				}
+				else
+				{
+					//DEMOLISHER has been picked
+					//TODO: Save this setting for this wave
+				}
+			}
+			else if (_uiTree.IsButtonColliding("WaveAdd", coord._pos.x, coord._pos.y) && _isPressed[4] == true)
+			{
+				//TODO: Add functionality to add new page/wave
+			}
+			else if (_uiTree.IsButtonColliding("WaveDelete", coord._pos.x, coord._pos.y) && _isPressed[4] == true)
+			{
+				//TODO: Add functionality to delete current page/wave
+			}
+			else if (_uiTree.IsButtonColliding("WaveLeft", coord._pos.x, coord._pos.y) && _isPressed[4] == true)
+			{
+				//TODO: Find which page we are on, check so that it's not the first, if it is NOT the first, then you can press.
+			}
+			else if (_uiTree.IsButtonColliding("WaveRight", coord._pos.x, coord._pos.y) && _isPressed[4] == true)
+			{
+				//TODO: Find page so that we are not on the last page, also so that we are able to switch to a new page
+			}
+			else if (_uiTree.IsButtonColliding("GridOff", coord._pos.x, coord._pos.y) && _isPressed[0] == true)
 			{
 				//Move Button
-				GUI::Node* node = _uiTree.GetNode("StoryButton");
-				XMFLOAT2 move = _buttonPositions[8];
-				move.x = move.x - 0.404f;
+				GUI::Node* node = _uiTree.GetNode("GridOff");
+				XMFLOAT2 gridOffPosition = node->GetLocalPosition();
 
-				node->SetPosition(move);
+				GUI::Node* node2 = _uiTree.GetNode("GridOn");
+				XMFLOAT2 gridOnPosition = node2->GetLocalPosition();
 
-				//Show List
-				_uiTree.GetNode("StoryList")->SetHidden(false);
+				node2->SetPosition(gridOffPosition);
+				node->SetPosition(gridOnPosition);
 
-				_isPressed[1] = true;
+				if (gridOnPosition.x > gridOffPosition.x)
+				{
+					//TODO: Activate Grid Julia och Enbom
+				}
+				else
+				{
+					//TODO: Deactive Grid Julia och Enbom
+				}
 			}
-			else
+			else if (_uiTree.IsButtonColliding("ObjectiveOff", coord._pos.x, coord._pos.y) && _isPressed[0] == true)
 			{
 				//Move Button
-				GUI::Node* node = _uiTree.GetNode("StoryButton");
-				node->SetPosition(_buttonPositions[8]);
+				GUI::Node* node = _uiTree.GetNode("ObjectiveOff");
+				XMFLOAT2 objectiveOffPosition = node->GetLocalPosition();
 
-				//Hide List
-				_uiTree.GetNode("StoryList")->SetHidden(true);
+				GUI::Node* node2 = _uiTree.GetNode("ObjectiveOn");
+				XMFLOAT2 objectiveOnPosition = node2->GetLocalPosition();
 
-				_isPressed[1] = false;
+				node2->SetPosition(objectiveOffPosition);
+				node->SetPosition(objectiveOnPosition);
+
+				if (objectiveOnPosition.y > objectiveOffPosition.y)
+				{
+					//Survival
+					_uiTree.GetNode("MapSurviveSelected")->SetHidden(false);
+					_levelHeader._gameMode = Level::GameModes::SURVIVAL;
+				}
+				else
+				{
+					//Kill
+					_uiTree.GetNode("MapSurviveSelected")->SetHidden(true);
+					_levelHeader._gameMode = Level::GameModes::KILL_THEM_ALL;
+				}
 			}
-		}
-		//Control data
-		else if (_uiTree.IsButtonColliding("ControlsButton", coord._pos.x, coord._pos.y))
-		{
-			if (!_isPressed[2])
+			else if (_uiTree.IsButtonColliding("ExportMap", coord._pos.x, coord._pos.y))
 			{
-				//Move Button
-				GUI::Node* node = _uiTree.GetNode("ControlsButton");
-				XMFLOAT2 move = _buttonPositions[9];
-				move.x -= 0.275f;
-				move.y -= 1.075f;
-
-				//Show List
-				_uiTree.GetNode("ControlsList")->SetHidden(false);
-
-				node->SetPosition(move);
-				_isPressed[2] = true;
+				//TODO: ExportMap GUI stuff and functions Julia and Enbom
+			}
+			else if (_uiTree.IsButtonColliding("ImportMap", coord._pos.x, coord._pos.y))
+			{
+				//TODO: ImportMap GUI stuff and functions Julia and Enbom
+			}
+			else if (_uiTree.IsButtonColliding("NewMap", coord._pos.x, coord._pos.y))
+			{
+				//Is only supposed to bring up the confirmation button
+				_uiTree.GetNode("LeaveMap")->SetHidden(false);
+				_leaveCheck = 0;
+			}
+			else if (_uiTree.IsButtonColliding("LeaveMapYes", coord._pos.x, coord._pos.y) && _leaveCheck > -1)
+			{
+				if (_leaveCheck == 0)
+				{
+					//TODO: NewMap GUI stuff and functions (Make new Map) Julia and Enbom
+					_uiTree.GetNode("LeaveMap")->SetHidden(true);
+					_leaveCheck = -1;
+				}
+				else
+				{
+					//TODO: Clean up Level so that if you go back to the menu it won't crash! Enbom
+					_leaveCheck = -1;
+					ChangeState(MENUSTATE);
+				}
+			}
+			else if (_uiTree.IsButtonColliding("LeaveMapNo", coord._pos.x, coord._pos.y) && _leaveCheck > -1)
+			{
+				_uiTree.GetNode("LeaveMap")->SetHidden(true);
+				_leaveCheck = -1;
 			}
 			else
 			{
-				//Move gui
-				GUI::Node* node = _uiTree.GetNode("ControlsButton");
-				node->SetPosition(_buttonPositions[9]);
-
-				//Show List
-				_uiTree.GetNode("ControlsList")->SetHidden(true);
-
-				_isPressed[2] = false;
+				for (GUI::Node* editableTextNode : _editableTextNodes)
+				{
+					if (_uiTree.IsButtonColliding(editableTextNode, coord) && !_uiTree.IsNodeHidden(editableTextNode))
+					{
+						if (editableTextNode->IsFirstTimeEditingText())
+						{
+							editableTextNode->SetText(StringToWstring(""));
+							editableTextNode->SetFirstTimeEditingText(false);
+						}
+						_currentTextInputNode = editableTextNode;
+						_controls->SetIsTextInputMode(editableTextNode->GetText(), true, true, true);
+					}
+				}
 			}
-		}
-		else if (_uiTree.IsButtonColliding("ThiefButton", coord._pos.x, coord._pos.y))
-		{
-			if (!_isPressed[3])
-			{
-				//Move Button
-				GUI::Node* node = _uiTree.GetNode("ThiefButton");
-				XMFLOAT2 move = _buttonPositions[10];
-				move.x += 0.449f;
-
-				//Show List
-				_uiTree.GetNode("ThiefControlList")->SetHidden(false);
-
-				node->SetPosition(move);
-				_isPressed[3] = true;
-			}
-			else
-			{
-				//Move gui
-				GUI::Node* node = _uiTree.GetNode("ThiefButton");
-				node->SetPosition(_buttonPositions[10]);
-
-				//Show List
-				_uiTree.GetNode("ThiefControlList")->SetHidden(true);
-
-				_isPressed[3] = false;
-			}
-		}
-
-		else if (_uiTree.IsButtonColliding("DemolisherBox", coord._pos.x, coord._pos.y) && _isPressed[3] == true)
-		{
-			//Move Button icon
-			GUI::Node* node = _uiTree.GetNode("BurglarBox");
-			XMFLOAT2 unpickedPosition = node->GetLocalPosition();
-
-			GUI::Node* node2 = _uiTree.GetNode("DemolisherBox");
-			XMFLOAT2 pickedPosition = node2->GetLocalPosition();
-
-			node2->SetPosition(unpickedPosition);
-			node->SetPosition(pickedPosition);
-
-			if (pickedPosition.y > unpickedPosition.y)
-			{
-				//BURGLAR has been picked
-				//TODO: Save this setting for this wave
-			}
-			else
-			{
-				//DEMOLISHER has been picked
-				//TODO: Save this setting for this wave
-			}
-		}
-
-		else if (_uiTree.IsButtonColliding("WaveAdd", coord._pos.x, coord._pos.y) && _isPressed[3] == true)
-		{
-			//TODO: Add functionality to add new page/wave
-		}
-		else if (_uiTree.IsButtonColliding("WaveDelete", coord._pos.x, coord._pos.y) && _isPressed[3] == true)
-		{
-			//TODO: Add functionality to delete current page/wave
-		}
-
-		else if (_uiTree.IsButtonColliding("WaveLeft", coord._pos.x, coord._pos.y) && _isPressed[3] == true)
-		{
-			//TODO: Find which page we are on, check so that it's not the first, if it is NOT the first, then you can press.
-		}
-		else if (_uiTree.IsButtonColliding("WaveRight", coord._pos.x, coord._pos.y) && _isPressed[3] == true)
-		{
-			//TODO: Find page so that we are not on the last page, also so that we are able to switch to a new page
-		}
-
-
-		else if (_uiTree.IsButtonColliding("GridOff", coord._pos.x, coord._pos.y) && _isPressed[0] == true)
-		{
-			//Move Button
-			GUI::Node* node = _uiTree.GetNode("GridOff");
-			XMFLOAT2 gridOffPosition = node->GetLocalPosition();
-
-			GUI::Node* node2 = _uiTree.GetNode("GridOn");
-			XMFLOAT2 gridOnPosition = node2->GetLocalPosition();
-
-			node2->SetPosition(gridOffPosition);
-			node->SetPosition(gridOnPosition);
-
-			if (gridOnPosition.x > gridOffPosition.x)
-			{
-				//TODO: Activate Grid Julia och Enbom
-			}
-			else
-			{
-				//TODO: Deactive Grid Julia och Enbom
-			}
-		}
-		else if (_uiTree.IsButtonColliding("ObjectiveOff", coord._pos.x, coord._pos.y) && _isPressed[0] == true)
-		{
-			//Move Button
-			GUI::Node* node = _uiTree.GetNode("ObjectiveOff");
-			XMFLOAT2 objectiveOffPosition = node->GetLocalPosition();
-			
-			GUI::Node* node2 = _uiTree.GetNode("ObjectiveOn");
-			XMFLOAT2 objectiveOnPosition = node2->GetLocalPosition();
-
-			node2->SetPosition(objectiveOffPosition);
-			node->SetPosition(objectiveOnPosition);
-
-			if (objectiveOnPosition.y > objectiveOffPosition.y)
-			{
-				//Survival
-				_uiTree.GetNode("MapSurviveSelected")->SetHidden(false);
-				_levelHeader._gameMode = Level::GameModes::SURVIVAL;
-			}
-			else
-			{
-				//Kill
-				_uiTree.GetNode("MapSurviveSelected")->SetHidden(true);
-				_levelHeader._gameMode = Level::GameModes::KILL_THEM_ALL;
-			}
-		}
-		else if (_uiTree.IsButtonColliding("ExportMap", coord._pos.x, coord._pos.y))
-		{
-			//TODO: ExportMap GUI stuff and functions Julia and Enbom
-		}
-		else if (_uiTree.IsButtonColliding("ImportMap", coord._pos.x, coord._pos.y))
-		{
-			//TODO: ImportMap GUI stuff and functions Julia and Enbom
-		}
-		else if (_uiTree.IsButtonColliding("NewMap", coord._pos.x, coord._pos.y))
-		{
-			//Is only supposed to bring up the confirmation button
-			_uiTree.GetNode("NewMapConfirmation")->SetHidden(false);
-		}
-		else if (_uiTree.IsButtonColliding("NewYes", coord._pos.x, coord._pos.y) && _uiTree.GetNode("NewMapConfirmation")->GetHidden() != true)
-		{
-			//TODO: NewMap GUI stuff and functions (Make new Map) Julia and Enbom
-		}
-		else if (_uiTree.IsButtonColliding("NewNo", coord._pos.x, coord._pos.y) && _uiTree.GetNode("NewMapConfirmation")->GetHidden() != true)
-		{
-			_uiTree.GetNode("NewMapConfirmation")->SetHidden(true);
 		}
 	}
 
@@ -521,6 +612,65 @@ void LevelEditState::HandleButtons()
 			_currentList->GetChildren()->at(_currentPage)->SetHidden(false);
 		}
 		_pageCheck = false;
+	}
+
+	if (_settingsId == -1)
+	{
+		//Hide Gui
+		_uiTree.GetNode("SettingList")->SetHidden(true);
+		for (unsigned i = 0; i < _uiTree.GetNode("Otherbuttons")->GetChildren()->size()-3; i++)
+		{
+			//Move gui
+			GUI::Node* node = _uiTree.GetNode("Otherbuttons")->GetChildren()->at(i);
+			node->SetPosition(_buttonPositions[i+7]);
+			_isPressed[i] = false;
+		}
+		_settingsId = -2;
+	}
+	else if (_settingsId >= 0 && _moveCheck != -3)
+	{
+		////Show Gui
+		_uiTree.GetNode("SettingList")->SetHidden(false);
+		for (unsigned i = 0; i < _uiTree.GetNode("Otherbuttons")->GetChildren()->size()-3; i++)
+		{
+			//Move gui
+			GUI::Node* node = _uiTree.GetNode("Otherbuttons")->GetChildren()->at(i);
+			XMFLOAT2 move = _buttonPositions[i+7];
+			move.x = move.x - 0.296f;
+			XMFLOAT2 moveShort = move;
+			moveShort.x += 0.01f;
+
+			node->SetPosition(_settingsId == i ? move : moveShort);
+
+			if (_settingsId != i)
+			{
+				_uiTree.GetNode("SettingList")->GetChildren()->at(i)->SetHidden(true);
+				_isPressed[i] = false;
+			}
+			else
+			{
+				_uiTree.GetNode("SettingList")->GetChildren()->at(i)->SetHidden(false);
+				_isPressed[i] = true;
+			}
+		}
+		_moveCheck = -3;
+	}
+
+	if (_settingsId == 1)
+	{
+		//Need a means of hiding UnitLockToolTip when not holding over a button
+		_uiTree.GetNode("UnitLockToolTip")->SetHidden(false);
+		for (int i = 0; i < _uiTree.GetNode("UnitLockButtons")->GetChildren()->size(); i++)
+		{
+			if (_uiTree.IsButtonColliding(_uiTree.GetNode("UnitLockButtons")->GetChildren()->at(i)->GetId(), coord._pos.x, coord._pos.y))
+			{
+				_uiTree.GetNode("UnitLockToolTip")->GetChildren()->at(i)->SetHidden(false);
+			}
+			else
+			{
+				_uiTree.GetNode("UnitLockToolTip")->GetChildren()->at(i)->SetHidden(true);
+			}
+		}
 	}
 }
 
