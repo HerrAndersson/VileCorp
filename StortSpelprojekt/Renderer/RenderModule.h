@@ -9,7 +9,7 @@
 #include "ShadowMap.h"
 #include "Spotlight.h"
 #include "Pointlight.h"
-#include "Node.h"
+#include "GUI elements/Node.h"
 #include "FontWrapper.h"
 #include "../System/Settings/settings.h"
 

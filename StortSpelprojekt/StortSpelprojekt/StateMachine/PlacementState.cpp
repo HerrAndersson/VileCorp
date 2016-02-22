@@ -44,7 +44,6 @@ void PlacementState::EvaluateGoldCost()
 	{
 		_toPlace._goldCost = costOfTeslaCoil;
 	}
-
 	if (_toPlace._sB._blueprint->_type == CAMERA)
 	{
 		_toPlace._goldCost = costOfCamera;
@@ -63,12 +62,11 @@ PlacementState::~PlacementState()
 
 void PlacementState::Update(float deltaTime)
 {
-	_baseEdit->Update(deltaTime);
-
 	HandleCam(deltaTime);
-
 	HandleInput();
 	HandleButtons();
+	bool clickedOnGUI = false;
+	_baseEdit->Update(deltaTime, clickedOnGUI);
 }
 
 void PlacementState::OnStateEnter()
@@ -87,6 +85,8 @@ void PlacementState::OnStateEnter()
 	_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_budget));
 	_baseEdit = new BaseEdit(_objectHandler, _controls, _pickingDevice, _camera, false);
 	_objectHandler->DisableSpawnPoints();
+
+	_toPlace = ToPlace();
 
 	XMFLOAT3 campos;
 	campos.x = _objectHandler->GetTileMap()->GetWidth() / 2;

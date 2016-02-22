@@ -17,8 +17,8 @@ struct SpecificBlueprint
 		_blueprint = nullptr;
 		_textureId = -1;
 	}
-	Blueprint* _blueprint;
-	int _textureId;
+	Blueprint* _blueprint = nullptr;
+	int _textureId = -1;
 };
 
 class BaseEdit
@@ -65,6 +65,7 @@ private:
 	void BoxEvent();
 
 	void HandleMouseInput();
+
 	void HandleKeyInput(double deltaTime);
 
 	void HandleCamMode();
@@ -97,5 +98,5 @@ public:
 	GameObject* CreatedObject();
 	Blueprint* DeletedObjectBlueprint();
 
-	void Update(float deltaTime);
+	void Update(float deltaTime, bool clickedOnGUI);
 };

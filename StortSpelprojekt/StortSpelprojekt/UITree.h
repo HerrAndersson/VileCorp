@@ -1,7 +1,8 @@
 #pragma once
-#include "Node.h"
+#include "GUI elements/Node.h"
+#include "GUI elements/BlueprintNode.h"
+#include "GUI elements/TextBox.h"
 #include "InputDevice.h"
-#include "BlueprintNode.h"
 #include "AssetManager.h"
 #include "ObjectHandler.h"
 #include "SettingsReader.h"

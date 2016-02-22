@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 
-#include "FontWrapper.h"
+#include "../FontWrapper.h"
 
 #pragma warning (disable : 4251)
 
@@ -49,7 +49,6 @@ namespace GUI
 		float _fontSize;
 		FontWrapper::CustomFont _font;
 		bool _centered;
-		bool _firstTimeEditingText = true;
 
 		//Image info
 		ID3D11ShaderResourceView* _texture;
@@ -90,7 +89,6 @@ namespace GUI
 		void SetCentered(bool centered);
 		void SetHidden(bool hidden);
 		void SetParent(Node* parent);
-		void SetFirstTimeEditingText(bool firstTimeEditingText);
 
 		DirectX::XMFLOAT4 GetColorOffset() const;
 		float GetAlpha() const;
@@ -106,7 +104,6 @@ namespace GUI
 		bool GetCentered() const;
 		bool GetHidden() const;
 		Node* GetParent() const;
-		bool IsFirstTimeEditingText() const;
 
 		DirectX::XMMATRIX* Node::GetModelMatrix();
 		std::vector<GUI::Node*>* GetChildren();

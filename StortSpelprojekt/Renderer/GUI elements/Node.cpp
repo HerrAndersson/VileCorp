@@ -178,11 +178,6 @@ namespace GUI
 		_parent = parent;
 	}
 
-	void Node::SetFirstTimeEditingText(bool firstTimeEditingText)
-	{
-		_firstTimeEditingText = firstTimeEditingText;
-	}
-
 	DirectX::XMFLOAT2 Node::GetFinalPosition() const
 	{
 		return _positionFinal;
@@ -235,11 +230,6 @@ namespace GUI
 	Node* Node::GetParent() const
 	{
 		return _parent;
-	}
-
-	bool Node::IsFirstTimeEditingText() const
-	{
-		return _firstTimeEditingText;
 	}
 
 	DirectX::XMMATRIX* Node::GetModelMatrix()

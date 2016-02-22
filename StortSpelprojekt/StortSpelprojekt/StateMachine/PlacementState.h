@@ -29,7 +29,7 @@ private:
 		void ResetTemps()
 		{
 			_goldCost = -1;
-			_markerID = 1;
+			_markerID = -1;
 		}
 		SpecificBlueprint _sB;
 		int _goldCost;

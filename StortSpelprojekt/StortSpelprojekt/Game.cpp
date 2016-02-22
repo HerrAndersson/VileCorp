@@ -132,52 +132,17 @@ void Game::Render()
 
 	/*///////////////////////////////////////////////////////  Geometry pass  ////////////////////////////////////////////////////////////
 	Render the objects to the diffuse and normal resource views. Camera depth is also generated here.									*/
-
-	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::GEO_PASS);
-
 	std::vector<std::vector<GameObject*>>* gameObjects = _objectHandler->GetGameObjects();
-
+	
 	/*------------------------------------------------  Render non-skinned objects  ---------------------------------------------------*/
-	for (auto i : *gameObjects)
-	{
-		if (i.size() > 0)
-		{
-			RenderObject* renderObject = i.at(0)->GetRenderObject();
-			if (renderObject->_mesh->_isSkinned)
-			{
-				continue;
-			}
-			else
-			{
-				_renderModule->SetDataPerObjectType(renderObject);
-				int vertexBufferSize = renderObject->_mesh->_vertexBufferSize;
-				if (i.at(0)->IsVisible())
-				{
-					_renderModule->Render(i.at(0)->GetMatrix(), vertexBufferSize, i.at(0)->GetColorOffset());
-				}
-
-				for (int j = 1; j < i.size(); j++)
-				{
-					if (i.at(j)->GetSubType() != i.at(j - 1)->GetSubType())
-					{
-						renderObject = i.at(j)->GetRenderObject();
-						_renderModule->SetDataPerObjectType(renderObject);
-						vertexBufferSize = renderObject->_mesh->_vertexBufferSize;
-					}
-					if (i.at(j)->IsVisible())
-					{
-						_renderModule->Render(i.at(j)->GetMatrix(), vertexBufferSize, i.at(j)->GetColorOffset());
-					}
-					
-				}
-			}
-		}
-	}
+	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::GEO_PASS);
+	RenderGameObjects(Renderer::RenderModule::ShaderStage::GEO_PASS, gameObjects);
 
 	/*--------------------------------------------------  Render skinned objects  -----------------------------------------------------*/
 	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::ANIM_STAGE);
-	// Now every gameobject can be animated
-	for (auto i : *gameObjects)
+	RenderGameObjects(Renderer::RenderModule::ShaderStage::ANIM_STAGE, gameObjects);
+	
+	/*for (auto i : *gameObjects)
 	{
 		if (i.size() > 0)
 		{
@@ -211,7 +176,7 @@ void Game::Render()
 				}
 			}
 		}
-	}
+	}*/
 
 	/*------------------------------------------------  Render billboarded objects  ---------------------------------------------------*/
 
@@ -347,6 +312,49 @@ void Game::Render()
 	_renderModule->Render(_SM->GetCurrentStatePointer()->GetUITree()->GetRootNode(), _fontWrapper);
 
 	_renderModule->EndScene();
+}
+
+void Game::RenderGameObjects(int forShaderStage, std::vector<std::vector<GameObject*>>* gameObjects)
+{
+	for (auto i : *gameObjects)
+	{
+		if (i.size() > 0)
+		{
+			GameObject* lastGameObject = nullptr;
+			RenderObject* lastRenderObject = nullptr;
+			int vertexBufferSize = 0;
+			for (int j = 1; j < i.size(); j++)
+			{
+				GameObject* gameObject = i.at(j);
+				RenderObject* renderObject = gameObject->GetRenderObject();
+				
+				if ((forShaderStage == Renderer::RenderModule::ShaderStage::GEO_PASS && renderObject->_mesh->_isSkinned)
+					|| (forShaderStage == Renderer::RenderModule::ShaderStage::ANIM_STAGE && !renderObject->_mesh->_isSkinned))
+				{
+					continue;
+				}
+				else
+				{
+					if (lastGameObject == nullptr || (*lastRenderObject != *renderObject && lastGameObject->GetSubType() != gameObject->GetSubType()))
+					{
+						_renderModule->SetDataPerObjectType(renderObject);
+						vertexBufferSize = renderObject->_mesh->_vertexBufferSize;
+					}
+					if (gameObject->IsVisible())
+					{
+						if (forShaderStage == Renderer::RenderModule::ShaderStage::GEO_PASS)
+						{
+							_renderModule->Render(gameObject->GetMatrix(), vertexBufferSize, gameObject->GetColorOffset());
+						}
+						else
+						{
+							_renderModule->RenderAnimation(gameObject->GetMatrix(), vertexBufferSize, gameObject->GetAnimation()->GetFloats(), gameObject->GetColorOffset());
+						}
+					}
+				}
+			}
+		}
+	}
 }
 
 int Game::Run()

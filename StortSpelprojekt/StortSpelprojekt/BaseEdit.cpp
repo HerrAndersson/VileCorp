@@ -38,8 +38,6 @@ BaseEdit::~BaseEdit()
 	ReleaseMarkers();
 }
 
-
-
 // Marker functions
 
 void BaseEdit::CreateMarkers()
@@ -62,10 +60,16 @@ void BaseEdit::CreateMarkers()
 void BaseEdit::ReleaseMarkers()
 {
 	// Delete ghosts/blueprints
-	_objectHandler->Remove(_marker._g);
-	_marker._g = nullptr;
-	_objectHandler->Remove(_baseMarker._g);
-	_baseMarker._g = nullptr;
+	if (_marker._g != nullptr)
+	{
+		_objectHandler->Remove(_marker._g);
+		_marker._g = nullptr;
+	}
+	if (_baseMarker._g != nullptr)
+	{
+		_objectHandler->Remove(_baseMarker._g);
+		_baseMarker._g = nullptr;
+	}
 }
 
 void BaseEdit::CreateMarker()
@@ -349,7 +353,6 @@ void BaseEdit::HandleMouseInput()
 	{
 		MarkerMoveEvent();
 
-
 		if ((!_isDragAndDropMode && _controls->IsFunctionKeyUp("MOUSE:DESELECT")) || _controls->IsFunctionKeyDown("MOUSE:DESELECT"))
 		{
 			if (_isDragAndDropMode)
@@ -361,7 +364,6 @@ void BaseEdit::HandleMouseInput()
 			_isDragAndDropMode = false;
 		}
 		
-
 		if (_controls->IsFunctionKeyDown("MOUSE:SELECT") && !_isPlace && !_isDragAndDropMode)
 		{
 			_isPlace = true;
@@ -373,8 +375,6 @@ void BaseEdit::HandleMouseInput()
 			DropEvent();
 		}
 	}
-
-
 }
 
 void BaseEdit::HandleKeyInput(double deltaTime)
@@ -690,11 +690,14 @@ Blueprint * BaseEdit::DeletedObjectBlueprint()
 	return _deletedObjectBlueprint;
 }
 
-void BaseEdit::Update(float deltaTime)
+void BaseEdit::Update(float deltaTime, bool clickedOnGUI)
 {
 	_droppedObject = false;
 	_createdObject = false;
 	_deletedObjectBlueprint = nullptr;
-	HandleMouseInput();
+	if (!clickedOnGUI)
+	{
+		HandleMouseInput();
+	}
 	HandleKeyInput(deltaTime);
 }

@@ -53,6 +53,8 @@ private:
 	bool Update(double deltaTime);
 	void Render();
 
+	void RenderGameObjects(int forShaderStage, std::vector<std::vector<GameObject*>>* gameObjects);
+
 	std::vector<GameObject*> _enemies;
 	std::vector<GameObject*> _loot;
 

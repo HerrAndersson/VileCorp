@@ -41,8 +41,8 @@ private:
 		{ FURNITURE, "decorationlist" }
 	};
 
-	GUI::Node* _currentTextInputNode;
-	std::vector<GUI::Node*> _editableTextNodes;
+	GUI::TextBox* _currentlySelectedTextBox;
+	std::vector<GUI::TextBox> _textBoxes;
 
 	bool _floorChosen = false;
 	bool _wallChosen = false;
@@ -58,7 +58,7 @@ public:
 	void OnStateExit();
 	
 	void HandleInput();
-	void HandleButtons();
+	bool HandleButtons(); //returns true if any button was clicked
 
 	void ExportLevel();
 };

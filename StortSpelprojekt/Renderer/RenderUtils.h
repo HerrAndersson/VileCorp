@@ -127,7 +127,7 @@ struct RenderObject
 	Type _type = Type::FLOOR;
 	Texture* _diffuseTexture = nullptr;
 	Texture* _specularTexture = nullptr;
-	Mesh* _mesh;
+	Mesh* _mesh = nullptr;
 	~RenderObject()
 	{
 		if (_diffuseTexture != nullptr)
@@ -142,5 +142,40 @@ struct RenderObject
 		{
 			delete _mesh;
 		}
+	}
+	bool operator==(const RenderObject& other) 
+	{
+		bool isEqual = true;
+		if (this->_type != other._type)
+		{
+			isEqual = false;
+		}
+		if (this->_diffuseTexture != nullptr && other._diffuseTexture != nullptr)
+		{
+			if (this->_diffuseTexture->_name != other._diffuseTexture->_name)
+			{
+				isEqual = false;
+			}
+		}
+		else if (this->_diffuseTexture != other._diffuseTexture)
+		{
+			isEqual = false;
+		}
+		if (this->_mesh != nullptr && other._mesh != nullptr)
+		{
+			if (this->_mesh->_name != other._mesh->_name)
+			{
+				isEqual = false;
+			}
+		}
+		else if (this->_mesh != other._mesh)
+		{
+			isEqual = false;
+		}
+		return isEqual;
+	}
+	bool operator!=(const RenderObject& other) 
+	{
+		return !(*this == other);
 	}
 };

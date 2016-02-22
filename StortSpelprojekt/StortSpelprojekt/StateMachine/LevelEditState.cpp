@@ -19,11 +19,10 @@ LevelEditState::~LevelEditState()
 
 void LevelEditState::Update(float deltaTime)
 {
-	_baseEdit->Update(deltaTime);
-
 	HandleCam(deltaTime);
 	HandleInput();
-	HandleButtons();
+	bool clickedOnGUI = HandleButtons();  //TODO: make a separate function to check if any visible gui node was clicked
+	_baseEdit->Update(deltaTime, clickedOnGUI);
 }
 
 void LevelEditState::OnStateEnter()
@@ -32,9 +31,15 @@ void LevelEditState::OnStateEnter()
 	_objectTabs = _uiTree.GetNode("Buttons")->GetChildren();
 	_settingsTabs = _uiTree.GetNode("Otherbuttons")->GetChildren();
 
-	_currentTextInputNode = nullptr;
-	_editableTextNodes.push_back(_uiTree.GetNode("StoryTitleText"));
-	_editableTextNodes.push_back(_uiTree.GetNode("StoryText"));
+	_currentlySelectedTextBox = nullptr;
+	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("StoryTitleText"), 50, false, false, true));
+	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("StoryText"), 1000, true, false, true));
+	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("BudgetBoxText"), 7, false, true));
+	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("tileNumberX"), 3, false, true));
+	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("tileNumberY"), 3, false, true));
+	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("UnitAmmountText"), 2, false, true));
+	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("UnitStartingTimeText"), 3, false, true));
+	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("UnitSpawnFrequencyText"), 3, false, true));
 
 	for (unsigned i = 0; i < NR_OF_TYPES; i++)
 	{
@@ -153,28 +158,33 @@ void LevelEditState::HandleInput()
 	}
 }
 
-void LevelEditState::HandleButtons()
+bool LevelEditState::HandleButtons()
 {
 	//Use this if there is enough objects to take up a whole page:
 	//int currentFloorPage = 0;
 	//_uiTree.GetNode("floorpage0")->SetHidden(true);
 
 	System::MouseCoord coord = _controls->GetMouseCoord();
+	bool clickedOnGUI = false;
 
-	if (_currentTextInputNode != nullptr)
+	if (_currentlySelectedTextBox != nullptr)
 	{
 		if (_controls->GetIsTextInputMode())
 		{
-			_currentTextInputNode->SetText(_controls->GetCurrentText());
-			if (!_uiTree.IsButtonColliding(_currentTextInputNode, coord) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
+			_currentlySelectedTextBox->SetText(_controls->GetCurrentText());
+
+			//User clicks outside of the textbox
+			if (!_uiTree.IsButtonColliding(_currentlySelectedTextBox->GetAttachedGUINode(), coord) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
 			{
-				_currentTextInputNode = nullptr;
+				_currentlySelectedTextBox->DeselectTextBox();
+				_currentlySelectedTextBox = nullptr;
 				_controls->ResetInputBuffers();
 			}
 		}
 		else
 		{
-			_currentTextInputNode = nullptr;
+			_currentlySelectedTextBox->DeselectTextBox();
+			_currentlySelectedTextBox = nullptr;
 		}
 	}
 	else
@@ -187,6 +197,7 @@ void LevelEditState::HandleButtons()
 			{
 				if (_uiTree.IsButtonColliding(_objectTabs->at(i), coord._pos.x, coord._pos.y))
 				{
+					clickedOnGUI = true;
 					if (_listId == i)
 					{
 						_listId = -1;
@@ -205,6 +216,7 @@ void LevelEditState::HandleButtons()
 				//Changing pages for objects
 				if (_uiTree.IsButtonColliding("right", coord._pos.x, coord._pos.y))
 				{
+					clickedOnGUI = true;
 					if ((int)_currentList->GetChildren()->size() - 1 > _currentPage)
 					{
 						_currentPage++;
@@ -213,6 +225,7 @@ void LevelEditState::HandleButtons()
 				}
 				else if (_uiTree.IsButtonColliding("left", coord._pos.x, coord._pos.y))
 				{
+					clickedOnGUI = true;
 					if (_currentPage > 0)
 					{
 						_currentPage--;
@@ -221,6 +234,7 @@ void LevelEditState::HandleButtons()
 				}
 				else if (_uiTree.IsButtonColliding("NoPlacementButton", coord._pos.x, coord._pos.y))
 				{
+					clickedOnGUI = true;
 					//TODO Paint No Placement Zones! Julia and Enbom
 				}
 
@@ -234,10 +248,10 @@ void LevelEditState::HandleButtons()
 						GUI::Node* currentButton = currentPageButtons->at(y);
 						if (_uiTree.IsButtonColliding(currentButton, coord._pos.x, coord._pos.y))
 						{
+							clickedOnGUI = true;
 							GUI::BlueprintNode* currentBlueprintButton = static_cast<GUI::BlueprintNode*>(currentButton);
 							_toPlace._blueprint = currentBlueprintButton->GetBlueprint();
 							_toPlace._textureId = currentBlueprintButton->GetTextureId();
-
 
 							_baseEdit->HandleBlueprint(&_toPlace);
 							break;
@@ -250,6 +264,7 @@ void LevelEditState::HandleButtons()
 				//Map/Unitlock data
 				if (_uiTree.IsButtonColliding(_settingsTabs->at(i), coord._pos.x, coord._pos.y))
 				{
+					clickedOnGUI = true;
 					if (_settingsId == i)
 					{
 						_settingsId = -1;
@@ -269,6 +284,7 @@ void LevelEditState::HandleButtons()
 				{
 					if (_uiTree.IsButtonColliding(_uiTree.GetNode("UnitLockButtons")->GetChildren()->at(i), coord._pos.x, coord._pos.y))
 					{
+						clickedOnGUI = true;
 						if (_isLocked[i] == false)
 						{
 							_uiTree.GetNode("UnitLockButtons")->GetChildren()->at(i)->SetColorOffset(XMFLOAT4{ 0.4f, 0.4f, 0.4f, 1.0f });
@@ -287,6 +303,7 @@ void LevelEditState::HandleButtons()
 			//Story data
 			if (_uiTree.IsButtonColliding("StoryButton", coord._pos.x, coord._pos.y))
 			{
+				clickedOnGUI = true;
 				if (!_isPressed[2])
 				{
 					//Move Button
@@ -316,6 +333,7 @@ void LevelEditState::HandleButtons()
 			//Control data
 			else if (_uiTree.IsButtonColliding("ControlsButton", coord._pos.x, coord._pos.y))
 			{
+				clickedOnGUI = true;
 				if (!_isPressed[3])
 				{
 					//Move Button
@@ -345,6 +363,7 @@ void LevelEditState::HandleButtons()
 			//Thief data
 			else if (_uiTree.IsButtonColliding("ThiefButton", coord._pos.x, coord._pos.y))
 			{
+				clickedOnGUI = true;
 				if (!_isPressed[4])
 				{
 					//Move Button
@@ -372,6 +391,7 @@ void LevelEditState::HandleButtons()
 			}
 			else if (_uiTree.IsButtonColliding("ThiefInactiveBox", coord._pos.x, coord._pos.y) && _isPressed[4] == true)
 			{
+				clickedOnGUI = true;
 				//Move Button icon
 				GUI::Node* node = _uiTree.GetNode("ThiefInactiveBox");
 				XMFLOAT2 unpickedPosition = node->GetLocalPosition();
@@ -400,6 +420,7 @@ void LevelEditState::HandleButtons()
 			}
 			else if (_uiTree.IsButtonColliding("ThiefInactiveBox2", coord._pos.x, coord._pos.y) && _isPressed[4] == true)
 			{
+				clickedOnGUI = true;
 				//Move Button icon
 				GUI::Node* node = _uiTree.GetNode("ThiefInactiveBox2");
 				XMFLOAT2 unpickedPosition = node->GetLocalPosition();
@@ -428,22 +449,27 @@ void LevelEditState::HandleButtons()
 			}
 			else if (_uiTree.IsButtonColliding("WaveAdd", coord._pos.x, coord._pos.y) && _isPressed[4] == true)
 			{
+				clickedOnGUI = true;
 				//TODO: Add functionality to add new page/wave
 			}
 			else if (_uiTree.IsButtonColliding("WaveDelete", coord._pos.x, coord._pos.y) && _isPressed[4] == true)
 			{
+				clickedOnGUI = true;
 				//TODO: Add functionality to delete current page/wave
 			}
 			else if (_uiTree.IsButtonColliding("WaveLeft", coord._pos.x, coord._pos.y) && _isPressed[4] == true)
 			{
+				clickedOnGUI = true;
 				//TODO: Find which page we are on, check so that it's not the first, if it is NOT the first, then you can press.
 			}
 			else if (_uiTree.IsButtonColliding("WaveRight", coord._pos.x, coord._pos.y) && _isPressed[4] == true)
 			{
+				clickedOnGUI = true;
 				//TODO: Find page so that we are not on the last page, also so that we are able to switch to a new page
 			}
 			else if (_uiTree.IsButtonColliding("GridOff", coord._pos.x, coord._pos.y) && _isPressed[0] == true)
 			{
+				clickedOnGUI = true;
 				//Move Button
 				GUI::Node* node = _uiTree.GetNode("GridOff");
 				XMFLOAT2 gridOffPosition = node->GetLocalPosition();
@@ -465,6 +491,7 @@ void LevelEditState::HandleButtons()
 			}
 			else if (_uiTree.IsButtonColliding("ObjectiveOff", coord._pos.x, coord._pos.y) && _isPressed[0] == true)
 			{
+				clickedOnGUI = true;
 				//Move Button
 				GUI::Node* node = _uiTree.GetNode("ObjectiveOff");
 				XMFLOAT2 objectiveOffPosition = node->GetLocalPosition();
@@ -490,20 +517,24 @@ void LevelEditState::HandleButtons()
 			}
 			else if (_uiTree.IsButtonColliding("ExportMap", coord._pos.x, coord._pos.y))
 			{
+				clickedOnGUI = true;
 				//TODO: ExportMap GUI stuff and functions Julia and Enbom
 			}
 			else if (_uiTree.IsButtonColliding("ImportMap", coord._pos.x, coord._pos.y))
 			{
+				clickedOnGUI = true;
 				//TODO: ImportMap GUI stuff and functions Julia and Enbom
 			}
 			else if (_uiTree.IsButtonColliding("NewMap", coord._pos.x, coord._pos.y))
 			{
+				clickedOnGUI = true;
 				//Is only supposed to bring up the confirmation button
 				_uiTree.GetNode("LeaveMap")->SetHidden(false);
 				_leaveCheck = 0;
 			}
 			else if (_uiTree.IsButtonColliding("LeaveMapYes", coord._pos.x, coord._pos.y) && _leaveCheck > -1)
 			{
+				clickedOnGUI = true;
 				if (_leaveCheck == 0)
 				{
 					//TODO: NewMap GUI stuff and functions (Make new Map) Julia and Enbom
@@ -519,22 +550,24 @@ void LevelEditState::HandleButtons()
 			}
 			else if (_uiTree.IsButtonColliding("LeaveMapNo", coord._pos.x, coord._pos.y) && _leaveCheck > -1)
 			{
+				clickedOnGUI = true;
 				_uiTree.GetNode("LeaveMap")->SetHidden(true);
 				_leaveCheck = -1;
 			}
 			else
 			{
-				for (GUI::Node* editableTextNode : _editableTextNodes)
+				for (int i = 0; i < _textBoxes.size(); i++)
 				{
-					if (_uiTree.IsButtonColliding(editableTextNode, coord) && !_uiTree.IsNodeHidden(editableTextNode))
+					GUI::TextBox* textBox = &_textBoxes[i];
+					GUI::Node* textBoxNode = textBox->GetAttachedGUINode();
+
+					//User clicked the textbox while it was visible
+					if (_uiTree.IsButtonColliding(textBoxNode, coord) && !_uiTree.IsNodeHidden(textBoxNode))
 					{
-						if (editableTextNode->IsFirstTimeEditingText())
-						{
-							editableTextNode->SetText(StringToWstring(""));
-							editableTextNode->SetFirstTimeEditingText(false);
-						}
-						_currentTextInputNode = editableTextNode;
-						_controls->SetIsTextInputMode(editableTextNode->GetText(), true, true, true);
+						clickedOnGUI = true;
+						textBox->SelectTextBox();
+						_currentlySelectedTextBox = textBox;
+						_controls->SetIsTextInputMode(_currentlySelectedTextBox->GetText(), true, !_currentlySelectedTextBox->GetAllowMultipleLines(), true);
 					}
 				}
 			}
@@ -672,6 +705,7 @@ void LevelEditState::HandleButtons()
 			}
 		}
 	}
+	return clickedOnGUI;
 }
 
 void LevelEditState::ExportLevel()
