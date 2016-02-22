@@ -14,13 +14,18 @@ private:
 	std::string _currentLevelFileName;
 	bool _isNewLevel;
 	int _listId;
+	int _settingsId;
 	int _moveCheck;
 	bool _pageCheck;
-	bool _isPressed[4];
-	XMFLOAT2 _buttonPositions[11];
+	bool _isPressed[5];
+	bool _isLocked[7];
+	XMFLOAT4 _OrginLockColor[7];
+	int _leaveCheck;
+	XMFLOAT2 _buttonPositions[12];
 	GUI::Node* _currentList = nullptr;
 	int _currentPage = 0;
 	std::vector<GUI::Node*>* _objectTabs;
+	std::vector<GUI::Node*>* _settingsTabs;
 
 	bool _floorChosen = false;
 	bool _wallChosen = false;
