@@ -569,7 +569,7 @@ void ObjectHandler::Update(float deltaTime)
 			GameObject* g = _gameObjects[i][j];
 			g->Update(deltaTime);
 
-			if (g->GetPickUpState() == PICKINGUP)
+			if (g->GetPickUpState() == PICKEDUP)
 			{
 				_tilemap->RemoveObjectFromTile(g);
 				g->SetPickUpState(HELD);
@@ -584,7 +584,7 @@ void ObjectHandler::Update(float deltaTime)
 			{
 				Unit* unit = static_cast<Unit*>(g);
 				GameObject* heldObject = unit->GetHeldObject();
-				if (heldObject != nullptr)
+				if (heldObject != nullptr && heldObject->GetPickUpState() == HELD)
 				{
 					heldObject->SetPosition(DirectX::XMFLOAT3(unit->GetPosition().x, unit->GetPosition().y + 2, unit->GetPosition().z));
 					heldObject->SetTilePosition(AI::Vec2D(heldObject->GetPosition().x, heldObject->GetPosition().z));
@@ -615,12 +615,13 @@ void ObjectHandler::Update(float deltaTime)
 					}
 					Remove(g);
 					g = nullptr;
+					unit = nullptr;
 					j--;
 				}
-				if (unit->IsSwitchingTile())
+				else if (unit->IsSwitchingTile())
 				{
-					_tilemap->RemoveObjectFromTile(unit->GetTilePosition(), g);			//TODO: update correctly
-					_tilemap->AddObjectToTile(unit->GetTilePosition() + unit->GetDirection(), g);
+					_tilemap->RemoveObjectFromTile(unit->GetTilePosition(), g);
+					_tilemap->AddObjectToTile(unit->GetNextTile(), g);
 				}
 			}
 			else if (g->GetType() == SPAWN)															//Manage enemy spawning
@@ -642,23 +643,51 @@ void ObjectHandler::UpdateLights()
 {
 	for (pair<GameObject*, Renderer::Spotlight*> spot : _spotlights)
 	{
-		if (spot.second->IsActive() && spot.first->IsActive())
+		if (spot.first == nullptr)
 		{
-			if (spot.second->GetBone() != 255)
+			SAFE_DELETE(spot.second);
+			spot.second = nullptr;
+		}
+		else
+		{
+			if (spot.second->IsActive() && spot.first->IsActive())
 			{
-				spot.second->SetPositionAndRotation(spot.first->GetAnimation()->GetTransforms()[spot.second->GetBone()]);
+				if (spot.second->GetBone() != 255)
+				{
+					spot.second->SetPositionAndRotation(spot.first->GetAnimation()->GetTransforms()[spot.second->GetBone()]);
+				}
+				else
+				{
+					XMFLOAT3 pos = spot.first->GetPosition();
+					pos.y = 0.5f;
+
+					XMFLOAT3 rot = spot.first->GetRotation();
+					rot.x = XMConvertToDegrees(rot.x);
+					rot.y = XMConvertToDegrees(rot.y) + 180;
+					rot.z = XMConvertToDegrees(rot.z);
+					spot.second->SetPositionAndRotation(pos, rot);
+				}
+			}
+		}
+	}
+	for (pair<GameObject*, Renderer::Pointlight*> point : _pointligths)
+	{
+		if (point.first == nullptr)
+		{
+			SAFE_DELETE(point.second);
+			point.second = nullptr;
+		}
+		else
+		{
+			if (point.first->IsActive() && point.first->IsVisible())
+			{
+				XMFLOAT3 pos = point.first->GetPosition();
+				point.second->SetPosition(DirectX::XMFLOAT3(pos.x, 2, pos.z));
+				point.second->SetActive(true);
 			}
 			else
 			{
-				XMFLOAT3 pos = spot.first->GetPosition();
-				pos.y = 0.5f;
-
-				XMFLOAT3 rot = spot.first->GetRotation();
-				rot.x = XMConvertToDegrees(rot.x);
-				rot.y = XMConvertToDegrees(rot.y) + 180;
-				rot.z = XMConvertToDegrees(rot.z);
-
-				spot.second->SetPositionAndRotation(pos, rot);
+				point.second->SetActive(false);
 			}
 		}
 	}
@@ -782,7 +811,7 @@ Trap * ObjectHandler::MakeTrap(GameObjectTrapInfo * data, const XMFLOAT3& positi
 		_assetManager->GetRenderObject(data->_renderObject),
 		_tilemap,
 		subIndex,
-		{ 1,0 },
+		{ -1,0 },
 		data->_cost);
 
 	// Read more data

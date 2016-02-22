@@ -36,7 +36,7 @@ private:
 public:
 	Trap();
 	Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject * renderObject, 
-		 const Tilemap* tileMap, int trapType = SPIKE, AI::Vec2D direction = {1,0}, int cost = 0);
+		 const Tilemap* tileMap, int trapType = SPIKE, AI::Vec2D direction = {-1,0}, int cost = 0);
 	virtual ~Trap();
 
 	AI::Vec2D* GetTiles()const;

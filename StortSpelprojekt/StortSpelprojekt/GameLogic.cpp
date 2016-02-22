@@ -17,7 +17,9 @@ GameLogic::GameLogic(ObjectHandler* objectHandler, System::Camera* camera, Syste
 	_guardTexture = _assetManager->GetTexture("../Menues/PlacementStateGUI/units/Guardbutton1.png");
 	_uiTree->GetNode("winscreen")->SetHidden(true);
 	_uiTree->GetNode("losescreen")->SetHidden(true);
-	_gameDone = false;
+	_gameOver = false;
+	_buttonReady = 3999.0f;
+	_returnToMenu = false;
 }
 
 GameLogic::~GameLogic()
@@ -28,30 +30,23 @@ GameLogic::~GameLogic()
 
 void GameLogic::Update(float deltaTime)
 {
-	HandleInput(deltaTime);
-	_objectHandler->Update(deltaTime);
-
-	if (_objectHandler->GetRemainingToSpawn() <= 0 && !_gameDone)
+	CheckGameStatus();
+	if (!_returnToMenu)
 	{
-		if (_objectHandler->GetAllByType(LOOT).size() <= 0)				//You lost
-		{
-			_uiTree->GetNode("losescreen")->SetHidden(false);
-			_gameDone = true;
-		}
-		else if (_objectHandler->GetAllByType(ENEMY).size() <= 0)		//You won
-		{
-			_uiTree->GetNode("winscreen")->SetHidden(false);
-			_gameDone = true;
-			_settingsReader->GetProfile()->_level += 1;
-			_settingsReader->ApplyProfileSettings();
-		}
+		HandleInput(deltaTime);
+		_objectHandler->Update(deltaTime);
+	}
+
+	if(_gameOver)
+	{
+		HandleWinLoseDialog(deltaTime);
 	}
 	_uiTree->GetNode("objectivetext")->SetText(L"Defeat the intruders! \n" + std::to_wstring(_objectHandler->GetAllByType(ENEMY).size()) + L" enemies still remain.");
 }
 
-bool GameLogic::IsGameDone() const
+bool GameLogic::GoToMenu() const
 {
-	return _gameDone;
+	return _returnToMenu;
 }
 
 /*
@@ -79,25 +74,6 @@ void GameLogic::HandleInput(float deltaTime)
 	*/
 	HandleUnitMove();
 
-	/*
-	Toggle free camera mode
-	*/
-	HandleCamMode();
-
-	/*
-	Camera scroll
-	*/
-	HandleCamZoom();
-
-	/*
-	Camera rotation
-	*/
-	HandleCamRot();
-
-	/*
-	Camera move
-	*/
-	HandleCamMove(deltaTime);
 }
 
 void GameLogic::HandleUnitSelect()
@@ -205,21 +181,17 @@ void GameLogic::HandleUnitMove()
 		vector<Unit*> units = _player->GetSelectedUnits();
 
 		//if one unit
-		if (units.size() == 1)
+		if (units.size() == 1 && selectedTile == units.at(0)->GetTilePosition() && units.at(0)->GetMoveState() == Unit::MoveState::IDLE)
 		{
-			//if tile is the same as he is on
-			if (selectedTile == units.at(0)->GetTilePosition())
-			{
 				//Check which direction he should be pointing
 				AI::Vec2D direction = _pickingDevice->PickDirection(_controls->GetMouseCoord()._pos, _objectHandler->GetTileMap());
 
 				//Change direction
 				units.at(0)->SetDirection(direction);
-			}
-			else
-			{
-				_player->MoveUnits(selectedTile);
-			}
+		}
+		else
+		{
+			_player->MoveUnits(selectedTile);
 		}
 	}
 }
@@ -266,167 +238,60 @@ void GameLogic::ShowSelectedInfo()
 	}
 }
 
-void GameLogic::HandleCamMode()
+void GameLogic::HandleWinLoseDialog(float deltaTime)
 {
-	/*
-	Toggle free camera mode
-	*/
-	if (_controls->IsFunctionKeyDown("DEBUG:ENABLE_FREECAM"))
+	if (_objectHandler->GetAllByType(LOOT).size() <= 0)				//You lost
 	{
-		if (_camera->GetMode() == System::LOCKED_CAM)
+		_uiTree->GetNode("losescreen")->SetHidden(false);
+		System::MouseCoord coord = _controls->GetMouseCoord();
+		int time = _buttonReady / 1000;
+		if (time > 0)
 		{
-			_controls->ToggleCursorLock();
-			_camera->SetMode(System::FREE_CAM);
+			_uiTree->GetNode("losebuttontext")->SetText(L".." + to_wstring(time));
 		}
 		else
 		{
-			_controls->ToggleCursorLock();
-			_camera->SetMode(System::LOCKED_CAM);
-			_camera->SetRotation(DirectX::XMFLOAT3(70, 0, 0));
+			_uiTree->GetNode("losebuttontext")->SetText(L"Continue");
 		}
+		if (time <= 0 && _uiTree->IsButtonColliding("losebutton", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
+		{
+			_returnToMenu = true;
+		}
+		_buttonReady -= deltaTime;
+	}
+	else if (_objectHandler->GetAllByType(ENEMY).size() <= 0)		//You won
+	{
+		System::MouseCoord coord = _controls->GetMouseCoord();
+		_uiTree->GetNode("winscreen")->SetHidden(false);
+		int time = _buttonReady / 1000;
+		if (time > 0)
+		{
+			_uiTree->GetNode("winbuttontext")->SetText(L".." + to_wstring(time));
+		}
+		else
+		{
+			_uiTree->GetNode("winbuttontext")->SetText(L"Continue");
+		}
+		if (time <= 0 && _uiTree->IsButtonColliding("winbutton", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
+		{
+			_returnToMenu = true;
+			_settingsReader->GetProfile()->_level += 1;
+			_settingsReader->ApplyProfileSettings();
+		}
+		_buttonReady -= deltaTime;
 	}
 }
 
-void GameLogic::HandleCamZoom()
+bool GameLogic::CheckGameStatus()
 {
-	/*
-	Camera scroll
-	*/
-	const float ZOOM_MAX = 12.0f;
-	const float ZOOM_MIN = 5.0f;
-	float camStepSize = 2.0f;
-
-	if (_camera->GetMode() == System::LOCKED_CAM)
+	if (_objectHandler->GetAllByType(LOOT).size() <= 0 && _objectHandler->GetRemainingToSpawn() <= 0 
+		|| _objectHandler->GetAllByType(ENEMY).size() <= 0 && _objectHandler->GetRemainingToSpawn() <= 0)
 	{
-		if (_controls->IsFunctionKeyDown("CAMERA:ZOOM_CAMERA_IN") &&
-			(_camera->GetPosition().y) > ZOOM_MIN)
-		{
-			_camera->Move(_camera->GetForwardVector(), camStepSize);
-		}
-		else if (_controls->IsFunctionKeyDown("CAMERA:ZOOM_CAMERA_OUT") &&
-			(_camera->GetPosition().y) < ZOOM_MAX)
-		{
-			XMFLOAT3 negForward = XMFLOAT3(
-				_camera->GetForwardVector().x * -1,
-				_camera->GetForwardVector().y * -1,
-				_camera->GetForwardVector().z * -1);
-
-			_camera->Move(negForward, camStepSize);
-		}
+		_gameOver = true;
 	}
-}
-
-void GameLogic::HandleCamRot()
-{
-	/*
-	Camera rotation
-	*/
-
-	if (_camera->GetMode() == System::LOCKED_CAM)
+	else
 	{
-		bool isRotating = false;
-		float rotV = 1.4f;
-		XMFLOAT3 rotation(0.0f, 0.0f, 0.0f);
-
-		Vec3 p0 = Vec3(XMFLOAT3(1.0f, 0.0f, 0.0f));
-		Vec3 p1 = Vec3(XMFLOAT3(0.0f, 0.0f, 1.0f));
-		Vec3 n = Vec3(XMFLOAT3(0.0f, 1.0f, 0.0f));
-		Vec3 camPos = Vec3(_camera->GetPosition());
-		Vec3 camDir = Vec3(_camera->GetForwardVector());
-
-		float distance = (((p0 - camPos).Dot(n)) / (camDir.Dot(n)));
-		_camera->Move(camDir.convertToXMFLOAT(), distance);
-
-		if (_controls->IsFunctionKeyDown("CAMERA:ROTATE_CAMERA_LEFT"))
-		{
-			rotation.y = 1.0f;
-			isRotating = true;
-		}
-		if (_controls->IsFunctionKeyDown("CAMERA:ROTATE_CAMERA_RIGHT"))
-		{
-			rotation.y = -1.0f;
-			isRotating = true;
-		}
-
-		if (isRotating)
-		{
-			_camera->Rotate(XMFLOAT3((rotation.x * rotV), (rotation.y * rotV), (rotation.z * rotV)));
-		}
-
-		camDir = _camera->GetForwardVector();
-		_camera->Move((camDir * -1).convertToXMFLOAT(), distance);
+		_gameOver = false;
 	}
-
-
-	//Camera rotation - locked mouse
-	if (_controls->CursorLocked())
-	{
-		XMFLOAT3 rotation = _camera->GetRotation();
-		rotation.x += _controls->GetMouseCoord()._deltaPos.y / 10.0f;
-		rotation.y += _controls->GetMouseCoord()._deltaPos.x / 10.0f;
-
-		_camera->SetRotation(rotation);
-	}
-}
-
-void GameLogic::HandleCamMove(float deltaTime)
-{
-	/*
-	Camera move
-	*/
-	XMFLOAT3 right(0.0f, 0.0f, 0.0f);
-	XMFLOAT3 forward(0.0f, 0.0f, 0.0f);
-	bool isMoving = false;
-	float v = 0.06f + (_camera->GetPosition().y * 0.01);
-
-	if (_controls->IsFunctionKeyDown("CAMERA:MOVE_CAMERA_UP"))
-	{
-		if (_camera->GetMode() == System::FREE_CAM)
-		{
-			forward = _camera->GetForwardVector();
-		}
-		else if (_camera->GetMode() == System::LOCKED_CAM)
-		{
-			forward = (Vec3(_camera->GetRightVector()).Cross(Vec3(XMFLOAT3(0.0f, 1.0f, 0.0f))).convertToXMFLOAT());
-		}
-
-		isMoving = true;
-	}
-
-	if (_controls->IsFunctionKeyDown("CAMERA:MOVE_CAMERA_DOWN"))
-	{
-		if (_camera->GetMode() == System::FREE_CAM)
-		{
-			forward = _camera->GetForwardVector();
-		}
-		else if (_camera->GetMode() == System::LOCKED_CAM)
-		{
-			forward = (Vec3(_camera->GetRightVector()).Cross(Vec3(XMFLOAT3(0.0f, 1.0f, 0.0f))).convertToXMFLOAT());
-		}
-
-		forward.x *= -1;
-		forward.y *= -1;
-		forward.z *= -1;
-		isMoving = true;
-	}
-
-	if (_controls->IsFunctionKeyDown("CAMERA:MOVE_CAMERA_RIGHT"))
-	{
-		right = _camera->GetRightVector();
-		isMoving = true;
-	}
-
-	if (_controls->IsFunctionKeyDown("CAMERA:MOVE_CAMERA_LEFT"))
-	{
-		right = _camera->GetRightVector();
-		right.x *= -1;
-		right.y *= -1;
-		right.z *= -1;
-		isMoving = true;
-	}
-
-	if (isMoving)
-	{
-		_camera->Move(XMFLOAT3((forward.x + right.x) * v, (forward.y + right.y) * v, (forward.z + right.z) * v), deltaTime / 10);
-	}
+	return _gameOver;
 }

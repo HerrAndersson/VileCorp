@@ -18,6 +18,8 @@ void LevelEditState::Update(float deltaTime)
 		_baseEdit->ChangePlaceState();
 	}
 	_baseEdit->Update(deltaTime);
+
+	HandleCam(deltaTime);
 	HandleInput();
 	HandleButtons();
 

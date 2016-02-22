@@ -10,6 +10,7 @@ namespace Renderer
 		_range = range;
 		_intensity = intensity;
 		_color = color;
+		_active = true;
 
 		Update();
 
@@ -340,6 +341,16 @@ namespace Renderer
 	int Pointlight::GetVertexSize() const
 	{
 		return _vertexSize;
+	}
+
+	bool Pointlight::IsActive() const
+	{
+		return _active;
+	}
+
+	void Pointlight::SetActive(bool active)
+	{
+		_active = active;
 	}
 
 	ID3D11Buffer* Pointlight::GetVolumeBuffer()

@@ -48,6 +48,7 @@ public:
 	void SetGoalTilePosition(AI::Vec2D goal);
 	AI::Vec2D GetDirection();
 	void SetDirection(const AI::Vec2D direction);
+	AI::Vec2D GetNextTile()const;
 	int GetHealth();
 	GameObject* GetHeldObject()const;
 	MoveState GetMoveState()const;
@@ -78,6 +79,6 @@ public:
 	enum Anim { IDLEANIM, WALKANIM, FIXTRAPANIM, FIGHTANIM, PICKUPOBJECTANIM, NR_OF_ANIM/*Has to be last*/ };
 	void Animate(Anim anim);
 	bool GetAnimisFinished();
-
+	float speedMultiplyer;
 };
 

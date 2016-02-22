@@ -16,7 +16,7 @@ Animation::Animation(Skeleton* skeleton, bool firstFrame)
 	_lastFrame = false;
 	_actionSpeed = 1.0f;
 	_cycleSpeed = 1.0f;
-	_isFinished = false;
+	_isFinished = true;
 
 	if (firstFrame)
 	{
@@ -34,14 +34,15 @@ Animation::Animation(Skeleton* skeleton, bool firstFrame)
 	}
 	for (int i = 0; i < _skeleton->_actions.size(); i++)
 	{
-		_length.push_back(float());
+		_length.push_back(int());
+		float maxTime = 0.0f;
 		for (int j = 0; j < _boneCount; j++)
 		{
 			for (int k = 0; k < _skeleton->_actions[i]._bones[j]._frameTime.size(); k++)
 			{
-				if (_skeleton->_actions[i]._bones[j]._frameTime[k] > _length[i])
+				if (_skeleton->_actions[i]._bones[j]._frameTime[k] > maxTime)
 				{
-					_length[i] = _skeleton->_actions[i]._bones[j]._frameTime[k];
+					_length[i] = _skeleton->_actions[i]._bones[j]._frameTime[k] * 60;
 				}
 			}
 		}
@@ -69,7 +70,6 @@ void Animation::Update(float time)
 	{
 		_animTime += (time / 1000) * _cycleSpeed;
 	}
-	_isFinished = false;
 	if (_currentAction != -1)
 	{
 		if (_skeleton->_actions[_currentAction]._bones[0]._frameTime.back() < _animTime)
@@ -168,9 +168,10 @@ bool Animation::GetisFinished()
 	return _isFinished;
 }
 
-float Animation::GetLength(int animation)
+float Animation::GetLength(int animation, float speed)
 {
-	return _length[animation];
+	int test = _length[animation] / speed;
+	return test;
 }
 
 XMMATRIX Animation::Interpolate(unsigned boneID, int action)
