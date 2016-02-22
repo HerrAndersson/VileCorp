@@ -86,6 +86,8 @@ void PlacementState::OnStateEnter()
 	_camera->SetPosition(campos);
 	_uiTree.GetNode("GuardDescription")->SetHidden(true);
 	_uiTree.GetNode("AnvilDescription")->SetHidden(true);
+	_uiTree.GetNode("TeslaDescription")->SetHidden(true);
+	_uiTree.GetNode("CameraDescription")->SetHidden(true);
 
 	//if (_playerProfile[0]._firstTime != true)
 	//{
@@ -246,6 +248,9 @@ void PlacementState::HandleDescriptions()
 	if (_uiTree.IsButtonColliding("Guard", coord._pos.x, coord._pos.y))
 	{
 		_uiTree.GetNode("GuardDescription")->SetHidden(false);
+
+		// Add description
+
 	}
 	else
 	{
@@ -255,9 +260,33 @@ void PlacementState::HandleDescriptions()
 	if (_uiTree.IsButtonColliding("AnvilTrap", coord._pos.x, coord._pos.y))
 	{
 		_uiTree.GetNode("AnvilDescription")->SetHidden(false);
+
+		// Add description
 	}
 	else
 	{
 		_uiTree.GetNode("AnvilDescription")->SetHidden(true);
+	}
+
+	if (_uiTree.IsButtonColliding("TeslaTrap", coord._pos.x, coord._pos.y))
+	{
+		_uiTree.GetNode("TeslaDescription")->SetHidden(false);
+
+		// Add description
+	}
+	else
+	{
+		_uiTree.GetNode("TeslaDescription")->SetHidden(true);
+	}
+
+	if (_uiTree.IsButtonColliding("Camera", coord._pos.x, coord._pos.y))
+	{
+		_uiTree.GetNode("CameraDescription")->SetHidden(false);
+
+		// Add description
+	}
+	else
+	{
+		_uiTree.GetNode("CameraDescription")->SetHidden(true);
 	}
 }
