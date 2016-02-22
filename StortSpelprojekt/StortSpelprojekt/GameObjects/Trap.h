@@ -17,7 +17,6 @@ private:
 	int _detectDifficulty;
 	int _disarmDifficulty;
 
-	AI::Vec2D _direction;
 	AI::Vec2D* _occupiedTiles;
 	int _tileSize;
 
@@ -33,7 +32,7 @@ private:
 	AI::Vec2D ConvertOctant(int octant, AI::Vec2D pos, bool in = true);
 
 	void Initialize(int damage, int tileSize, int AOESize, int detectDifficulty, int disarmDifficulty);
-	void SetAOE();
+	void SetTiles();
 public:
 	Trap();
 	Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject * renderObject, 
@@ -57,6 +56,8 @@ public:
 
 	// Overloaded function
 	void SetTilePosition(AI::Vec2D pos);
+	AI::Vec2D GetDirection();
+	void SetDirection(const AI::Vec2D direction);
 
 	enum Anim { IDLE, ACTIVATE, NR_OF_ANIM/*Has to be last*/ };
 	void Animate(Anim anim);

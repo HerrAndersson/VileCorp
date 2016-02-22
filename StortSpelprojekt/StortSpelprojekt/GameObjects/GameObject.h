@@ -27,6 +27,7 @@ protected:
 	DirectX::XMFLOAT3 _scale;
 	DirectX::XMFLOAT3 _colorOffset;
 	AI::Vec2D _tilePosition;
+	AI::Vec2D _direction;
 	Type _type;
 	unsigned int _subType;
 	bool _visible;
@@ -65,7 +66,10 @@ public:
 	void Rotate(const DirectX::XMFLOAT3& rotate);
 
 	AI::Vec2D GetTilePosition()const;
-	virtual void SetTilePosition(AI::Vec2D pos);
+	AI::Vec2D GetDirection()const;
+
+	virtual void SetTilePosition(AI::Vec2D dir);
+	virtual void SetDirection(AI::Vec2D pos);
 	Type GetType() const;
 	unsigned int GetSubType() const;
 

@@ -86,7 +86,7 @@ int Trap::CalculateLine(int length, AI::Vec2D basePosition, AI::Vec2D* arr)
 
 /*
 Get the tiles forming a rectangle. This will not check for wall and should be forced to be placed in an open area.
-Note that width should be uneven as the baseposition will be placed in the middle.
+Base position is the lower right corner when parallel to _direction.
 The tiles are saved in arr (should be either _occupiedTiles or _areaOfEffect).
 Returns the array size.
 */
@@ -95,9 +95,9 @@ int Trap::CalculateRectangle(int length, int width, AI::Vec2D basePosition, AI::
 	int size = 0;
 	for (int i = 0; i < length; i++)
 	{
-		for (int j = - width / 2; j < (width / 2) + 1; j++)
+		for (int j = 0; j < width; j++)
 		{
-			AI::Vec2D offset = {_direction._y * j, _direction._x * j};
+			AI::Vec2D offset = {_direction._y * (-j),  _direction._x * j};
 			arr[size++] = basePosition + (_direction * i) + offset;
 		}
 	}
@@ -226,7 +226,7 @@ void Trap::Initialize(int damage, int tileSize, int AOESize, int detectDifficult
 	_disarmDifficulty = disarmDifficulty;
 }
 
-void Trap::SetAOE()
+void Trap::SetTiles()
 {
 	for (int i = 0; i < _nrOfAOETiles; i++)
 	{
@@ -235,20 +235,31 @@ void Trap::SetAOE()
 			_tileMap->GetObjectOnTile(_areaOfEffect[i], FLOOR)->SetColorOffset({0.0f,0.0f,0.0f});
 		}
 	}
+	for (int i = 0; i < _tileSize; i++)
+	{
+		if (_tileMap->IsFloorOnTile(_occupiedTiles[i]))
+		{
+			_tileMap->GetObjectOnTile(_occupiedTiles[i], FLOOR)->SetColorOffset({0,0,0});
+		}
+	}
 	_nrOfAOETiles = 0;
-
+	_tileSize = 0;
 	switch (_trapType)
 	{
 	case SPIKE:
+		_occupiedTiles[0] = _tilePosition;
 		_areaOfEffect[_nrOfAOETiles++] = _tilePosition;
 		break;
 	case TESLACOIL:
-		CalculateCircle(3, _tilePosition, _areaOfEffect);
+		_tileSize = CalculateRectangle(3, 3, (_tilePosition - _direction - AI::Vec2D(-_direction._y, _direction._x)), _occupiedTiles);
+		_nrOfAOETiles = CalculateCircle(3, _tilePosition, _areaOfEffect);
 		break;
 	case SHARK:
-		CalculateRectangle(1, 3, _tilePosition, _areaOfEffect);
+		_tileSize = CalculateRectangle(6, 3, _tilePosition - AI::Vec2D(-_direction._y, _direction._x), _occupiedTiles);
+		_nrOfAOETiles = CalculateRectangle(1, 3, _tilePosition, _areaOfEffect);
 	case GUN:
-		CalculateLine(10, _tilePosition, _areaOfEffect);
+		_tileSize = CalculateLine(10, _tilePosition, _occupiedTiles);
+		_nrOfAOETiles = CalculateLine(10, _tilePosition, _areaOfEffect);
 		break;
 	default:
 		_areaOfEffect = nullptr;
@@ -260,6 +271,13 @@ void Trap::SetAOE()
 		if (_tileMap->IsFloorOnTile(_areaOfEffect[i]))
 		{
 			_tileMap->GetObjectOnTile(_areaOfEffect[i], FLOOR)->SetColorOffset({3.0f,1.0f,0.0f});
+		}
+	}
+	for (int i = 0; i < _tileSize; i++)
+	{
+		if (_tileMap->IsFloorOnTile(_occupiedTiles[i]))
+		{
+			_tileMap->GetObjectOnTile(_occupiedTiles[i], FLOOR)->SetColorOffset({2,2,0});
 		}
 	}
 }
@@ -294,23 +312,21 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	{
 	case SPIKE:
 		Initialize(3, 1, 1, 50, 50);
-		_occupiedTiles[0] = _tilePosition;
 		firstFrame = true;
 		break;
 	case TESLACOIL:	
+	{
 		Initialize(2, 9, 37, 50, 50);
-		CalculateRectangle(3, 3, _tilePosition, _occupiedTiles);
 		break;
+	}
 	case SHARK:			//Trigger area is currently the same as the trap's physical area. Might be awkward since the shark trap is larger than its AOE.
 	{
 		Initialize(100, 18, 3, 50, 50);
-		CalculateRectangle(6, 3, _tilePosition, _occupiedTiles);
 		break;
 	}
 	case GUN:
 	{
 		Initialize(300, 10, 10, 100, 50);
-		CalculateLine(10, _tilePosition, _occupiedTiles);
 		break;
 	}
 	default:
@@ -318,7 +334,7 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 		break;
 	}
 
-	SetAOE();
+	SetTiles();
 
 	if (_renderObject->_isSkinned)
 	{
@@ -467,23 +483,18 @@ void Trap::SetTilePosition(AI::Vec2D pos)
 
 	//_nrOfAOETiles = 0;
 	int radius = 0;
-
-	for (int i = 0; i < _tileSize; i++)
-	{
-		if (_tileMap->IsFloorOnTile(_occupiedTiles[i]))
-		{
-			_tileMap->GetObjectOnTile(_occupiedTiles[i], FLOOR)->SetColorOffset({0,0,0});
-		}
-
-		_occupiedTiles[i] += (pos - _tilePosition);
-
-		if (_tileMap->IsFloorOnTile(_occupiedTiles[i]))
-		{
-			_tileMap->GetObjectOnTile(_occupiedTiles[i], FLOOR)->SetColorOffset({2.0f, 2.0f, 0.0f});
-		}
-	}
 	GameObject::SetTilePosition(pos);	
-	SetAOE();
+	SetTiles();
+}
+
+AI::Vec2D Trap::GetDirection()
+{
+	return _direction;
+}
+
+void Trap::SetDirection(const AI::Vec2D direction)
+{
+	_direction = direction;
 }
 
 
