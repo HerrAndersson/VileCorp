@@ -29,7 +29,7 @@ private:
 	Options _aa[WINDOW_MAX];
 	int _aaOption;
 
-	static const int SOUND_MAX = 20;
+	static const int SOUND_MAX = 10;
 	Options _sound[SOUND_MAX];
 	int _soundOption;
 

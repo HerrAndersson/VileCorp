@@ -33,11 +33,11 @@ OptionsState::OptionsState(System::Controls* controls, ObjectHandler* objectHand
 	_aaOption = 0;
 
 	//TODO: Volume setting //Mattias
-	for (int i = 0; i < SOUND_MAX * 5; i += 5)
+	for (int i = 0; i < SOUND_MAX; i++)
 	{
-		_sound[i] = { to_wstring(i) + L"%", i, 0 };
+		_sound[i] = { to_wstring(i+1), i, 0 };
 	}
-	_soundOption = 100;
+	_soundOption = 9;
 }
 
 OptionsState::~OptionsState()
@@ -62,14 +62,7 @@ int OptionsState::ReadSetting(int setting, int setting2, Options* options, int m
 void OptionsState::UpdateText(const std::string& contentId, int optionValue, Options* options)
 {
 	GUI::Node* text = _uiTree.GetNode(contentId);
-	if (text && options != nullptr)
-	{
-		text->SetText(options[optionValue]._text);
-	}
-	else
-	{
-		text->SetText(to_wstring(optionValue) + L"%");
-	}
+	text->SetText(options[optionValue]._text);
 }
 
 bool OptionsState::HandleOptionSwitch(const std::string& leftId, const std::string& rightId, const std::string& contentId, int& optionValue, Options* options, int optionsMax)
@@ -141,6 +134,10 @@ void OptionsState::Update(float deltaTime)
 
 			//Shadow map resolution
 			settings->_shadowMapSize = _shadowmap[_shadowmapOption]._value;
+
+			//Sound volume
+			_soundModule->SetVolume((_soundOption + 1.0f) / 10.0f, CHMASTER);
+
 			//Window options
 			if (_window[_windowOption]._value == 1) //Fullscreen
 			{

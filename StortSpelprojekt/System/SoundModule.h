@@ -17,6 +17,8 @@ else SoundModule is muted to avoid crashes.
 Using a map of sounds to quickly find a desired sound to play.
 */
 
+enum Channel{CHMASTER, CHAMBIENT, CHFX, CHGUI, CHMUSIC, CHVOICE, NR_OF_CHANNELS};
+
 namespace System
 {
 	class SYSTEM_EXPORT SoundModule
@@ -24,6 +26,7 @@ namespace System
 	private:
 		std::map<std::string, YSE::sound*>* _allSounds;
 		const std::string soundExtension = ".ogg";
+		float _volume[NR_OF_CHANNELS];
 
 	public:
 		/*Functions*/
@@ -36,6 +39,8 @@ namespace System
 		void Update(/*position*/);
 		bool Play(std::string pathName);
 		bool Stop(std::string pathName);
+		void SetVolume(float volume, int channel);
+		float GetVolume(int channel);
 		//SetPosition();  //Sets position of a sound
 	};
 }
