@@ -14,7 +14,7 @@ AssetManager::AssetManager(ID3D11Device* device)
 	_meshFormatVersion[24] = &AssetManager::ScanModel24;
 	_meshFormatVersion[26] = &AssetManager::ScanModel26;
 	_meshFormatVersion[27] = &AssetManager::ScanModel27;
-	//_meshFormatVersion[28] = &AssetManager::ScanModel28;
+	_meshFormatVersion[28] = &AssetManager::ScanModel28;
 
 	GetFilenamesInDirectory((char*)LEVEL_FOLDER_PATH.c_str(), ".lvl", *_levelFileNames);
 }
@@ -188,67 +188,65 @@ Mesh* AssetManager::ScanModel(string name)
 	{
 		renderObject->_specularTexture = ScanTexture(specFile);
 	}
+	*/
 
-
-	if (renderObject->_isSkinned)
+	if (mesh->_isSkinned)
 	{
-		renderObject->_skeleton = LoadSkeleton(renderObject->_skeletonName);
+		mesh->_skeleton = LoadSkeleton(mesh->_skeletonName);
 	}
-*/
+
 	mesh->_meshLoaded = false;
 	_meshes->push_back(mesh);
 	return mesh;
 }
 
-//TODO: This stubborn code refuses to work when merged. I need an adult. /Rikhard
-//RenderObject* AssetManager::ScanModel28()
-//{
-//	RenderObject* renderObject = new RenderObject;
-//	int skeletonStringLength;
-//	_infile->read((char*)&skeletonStringLength, 4);
-//	renderObject->_mesh->_skeletonName.resize(skeletonStringLength);
-//	_infile->read((char*)renderObject->_mesh->_skeletonName.data(), skeletonStringLength);
-//
-//	renderObject->_mesh->_isSkinned = strcmp(renderObject->_mesh->_skeletonName.data(), "Unrigged") != 0;
-//
-//	_infile->read((char*)&renderObject->_mesh->_toMesh, 4);
-//
-//	MeshHeader26 meshHeader;
-//	_infile->read((char*)&meshHeader, sizeof(MeshHeader26));
-//
-//	if (renderObject->_mesh->_isSkinned)
-//	{
-//		_infile->seekg(meshHeader._numberOfVertices * sizeof(WeightedVertex), ios::cur);
-//	}
-//	else
-//	{
-//		_infile->seekg(meshHeader._numberOfVertices * sizeof(Vertex), ios::cur);
-//	}
-//
-//	renderObject->_mesh->_pointLights.resize(meshHeader._numberPointLights);
-//	_infile->read((char*)renderObject->_mesh->_pointLights.data(), sizeof(PointlightData) * meshHeader._numberPointLights);
-//
-//	renderObject->_mesh->_spotLights.resize(meshHeader._numberSpotLights);
-//	_infile->read((char*)renderObject->_mesh->_spotLights.data(), sizeof(SpotlightData) * meshHeader._numberSpotLights);
-//
-//	renderObject->_mesh->_vertexBufferSize = meshHeader._numberOfVertices;
-//
-//	renderObject->_mesh->_hitbox = new Hitbox();
-//	_infile->read((char*)renderObject->_mesh->_hitbox, sizeof(Hitbox));
-//
-//	return renderObject;
-//}
+Mesh* AssetManager::ScanModel28()
+{
+	Mesh* mesh = new Mesh;
+	int skeletonStringLength;
+	_infile->read((char*)&skeletonStringLength, 4);
+	mesh->_skeletonName.resize(skeletonStringLength);
+	_infile->read((char*)mesh->_skeletonName.data(), skeletonStringLength);
+
+	mesh->_isSkinned = strcmp(mesh->_skeletonName.data(), "Unrigged") != 0;
+
+	_infile->read((char*)&mesh->_toMesh, 4);
+
+	MeshHeader26 meshHeader;
+	_infile->read((char*)&meshHeader, sizeof(MeshHeader26));
+
+	if (mesh->_isSkinned)
+	{
+		_infile->seekg(meshHeader._numberOfVertices * sizeof(WeightedVertex), ios::cur);
+	}
+	else
+	{
+		_infile->seekg(meshHeader._numberOfVertices * sizeof(Vertex), ios::cur);
+	}
+
+	mesh->_pointLights.resize(meshHeader._numberPointLights);
+	_infile->read((char*)mesh->_pointLights.data(), sizeof(PointlightData) * meshHeader._numberPointLights);
+
+	mesh->_spotLights.resize(meshHeader._numberSpotLights);
+	_infile->read((char*)mesh->_spotLights.data(), sizeof(SpotlightData) * meshHeader._numberSpotLights);
+
+	mesh->_vertexBufferSize = meshHeader._numberOfVertices;
+
+	mesh->_hitbox = new Hitbox();
+	_infile->read((char*)mesh->_hitbox, sizeof(Hitbox));
+
+	return mesh;
+}
 
 Mesh* AssetManager::ScanModel27()
 {
 	Mesh* mesh = new Mesh;
 	int skeletonStringLength;
 	_infile->read((char*)&skeletonStringLength, 4);
-	string skeletonName;
-	skeletonName.resize(skeletonStringLength);
-	_infile->read((char*)skeletonName.data(), skeletonStringLength);
+	mesh->_skeletonName.resize(skeletonStringLength);
+	_infile->read((char*)mesh->_skeletonName.data(), skeletonStringLength);
 
-	mesh->_isSkinned = strcmp(skeletonName.data(), "Unrigged") != 0;
+	mesh->_isSkinned = strcmp(mesh->_skeletonName.data(), "Unrigged") != 0;
 
 	_infile->read((char*)&mesh->_toMesh, 4);
 
