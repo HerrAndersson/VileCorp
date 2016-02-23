@@ -407,11 +407,14 @@ int Unit::GetVisionRadius() const
 }
 bool Unit::GetAnimisFinished()
 {
-	return _animation->GetisFinished();
+	if (_animation != nullptr)
+	{
+		return _animation->GetisFinished();
+	}
 }
 void Unit::Animate(Anim anim)
 {
-	if (_renderObject->_mesh->_isSkinned && _animation->GetisFinished())
+	if (_animation != nullptr && _animation->GetisFinished())
 	{
 		if (_renderObject->_type == GUARD)
 		{

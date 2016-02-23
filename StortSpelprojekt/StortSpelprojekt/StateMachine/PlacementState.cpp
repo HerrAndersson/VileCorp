@@ -69,8 +69,9 @@ void PlacementState::Update(float deltaTime)
 	HandleHoverColorOffset("AnvilTrap", "AnvilTrap", coord, XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f));
 	HandleHoverColorOffset("TeslaTrap", "TeslaTrap", coord, XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f));
 	HandleHoverColorOffset("Camera", "Camera", coord, XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f));
-
 	HandleHoverColorOffset("Play", "Play", coord, XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f));
+
+	HandleDescriptions();
 }
 
 void PlacementState::OnStateEnter()
@@ -96,6 +97,21 @@ void PlacementState::OnStateEnter()
 	campos.z = _objectHandler->GetTileMap()->GetHeight() / 2 - 10;
 	_camera->SetPosition(campos);
 
+	//TODO: Move hardcoded costs and description to logical location /Rikhard
+	_uiTree.GetNode("GuardDescription")->SetHidden(true);
+	_uiTree.GetNode("GuardCost")->SetText(L"Cost: " + to_wstring(200) + L"$");
+	_uiTree.GetNode("AnvilDescription")->SetHidden(true);
+	_uiTree.GetNode("AnvilCost")->SetText(L"Cost: " + to_wstring(50) + L"$");
+	_uiTree.GetNode("TeslaDescription")->SetHidden(true);
+	_uiTree.GetNode("TeslaCost")->SetText(L"Cost: " + to_wstring(100) + L"$");
+	_uiTree.GetNode("MachineGunDescription")->SetHidden(true);
+	_uiTree.GetNode("MachineGunCost")->SetText(L"Cost: " + to_wstring(120) + L"$");
+	_uiTree.GetNode("SharkDescription")->SetHidden(true);
+	_uiTree.GetNode("SharkCost")->SetText(L"Cost: " + to_wstring(150) + L"$");
+	_uiTree.GetNode("CameraDescription")->SetHidden(true);
+	_uiTree.GetNode("CameraCost")->SetText(L"Cost: " + to_wstring(80) + L"$");
+
+
 	//if (_playerProfile[0]._firstTime != true)
 	//{
 	_uiTree.GetNode("Tutorial")->SetHidden(false);
@@ -113,6 +129,11 @@ void PlacementState::HandleInput()
 	if (_controls->IsFunctionKeyDown("MENU:MENU"))
 	{
 		ChangeState(PAUSESTATE);
+	}
+
+	if (_controls->IsFunctionKeyDown("DEBUG:RELOAD_GUI"))
+	{
+		_uiTree.ReloadTree("../../../../StortSpelprojekt/Assets/GUI/placement.json");
 	}
 
 	/*
@@ -181,7 +202,7 @@ void PlacementState::HandleButtons()
 
 	if (_baseEdit->IsSelection() && !_baseEdit->IsPlace() && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
-		std::vector<GUI::Node*>* units = _uiTree.GetNode("Units")->GetChildren();
+		std::vector<GUI::Node*>* units = _uiTree.GetNode("UnitList")->GetChildren();
 		for (unsigned y = 0; y < units->size(); y++)
 		{
 			GUI::Node* currentButton = units->at(y);
@@ -213,5 +234,75 @@ void PlacementState::HandleButtons()
 		//{
 		//	_toPlace._goldCost = -1;
 		//}
+	}
+}
+
+void PlacementState::HandleDescriptions()
+{
+	System::MouseCoord coord = _controls->GetMouseCoord();
+	if (_uiTree.IsButtonColliding("Guard", coord._pos.x, coord._pos.y))
+	{
+		_uiTree.GetNode("GuardDescription")->SetHidden(false);
+
+		// Add description
+	}
+	else
+	{
+		_uiTree.GetNode("GuardDescription")->SetHidden(true);
+	}
+
+	if (_uiTree.IsButtonColliding("AnvilTrap", coord._pos.x, coord._pos.y))
+	{
+		_uiTree.GetNode("AnvilDescription")->SetHidden(false);
+
+		// Add description
+	}
+	else
+	{
+		_uiTree.GetNode("AnvilDescription")->SetHidden(true);
+	}
+
+	if (_uiTree.IsButtonColliding("TeslaTrap", coord._pos.x, coord._pos.y))
+	{
+		_uiTree.GetNode("TeslaDescription")->SetHidden(false);
+
+		// Add description
+	}
+	else
+	{
+		_uiTree.GetNode("TeslaDescription")->SetHidden(true);
+	}
+
+	if (_uiTree.IsButtonColliding("MachineGunTrap", coord._pos.x, coord._pos.y))
+	{
+		_uiTree.GetNode("MachineGunDescription")->SetHidden(false);
+
+		// Add description
+	}
+	else
+	{
+		_uiTree.GetNode("MachineGunDescription")->SetHidden(true);
+	}
+
+	if (_uiTree.IsButtonColliding("SharkTrap", coord._pos.x, coord._pos.y))
+	{
+		_uiTree.GetNode("SharkDescription")->SetHidden(false);
+
+		// Add description
+	}
+	else
+	{
+		_uiTree.GetNode("SharkDescription")->SetHidden(true);
+	}
+
+	if (_uiTree.IsButtonColliding("Camera", coord._pos.x, coord._pos.y))
+	{
+		_uiTree.GetNode("CameraDescription")->SetHidden(false);
+
+		// Add description
+	}
+	else
+	{
+		_uiTree.GetNode("CameraDescription")->SetHidden(true);
 	}
 }

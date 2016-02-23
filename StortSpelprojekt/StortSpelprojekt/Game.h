@@ -32,7 +32,6 @@ private:
 	System::Camera*				_camera;
 	ObjectHandler*				_objectHandler;
 	System::Timer				_timer;
-//	Animation*					_animation;
 	System::Controls*			_controls;
 	AssetManager*				_assetManager;
 	FontWrapper*				_fontWrapper;

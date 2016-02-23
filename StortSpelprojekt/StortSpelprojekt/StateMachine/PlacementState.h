@@ -37,6 +37,7 @@ private:
 	} _toPlace;
 
 	void EvaluateGoldCost();
+	void HandleDescriptions();
 
 public:
 	PlacementState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule, DirectX::XMFLOAT3* ambientLight);

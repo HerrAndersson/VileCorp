@@ -98,9 +98,7 @@
       <AdditionalLibraryDirectories>../include/yse/dll;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <CustomBuildStep>
-      <Command>Powershell.exe -ExecutionPolicy Unrestricted -file "$(SolutionDir)batchRenameAssets.ps1"
-
-robocopy "C:\%HOMEPATH%\Google Drive\Stort spelprojekt\Assets" "$(OutDir)Assets" /E /Z /XA:H /W:0 /R:0 /V
+      <Command>robocopy "C:\%HOMEPATH%\Google Drive\Stort spelprojekt\Assets" "$(OutDir)Assets" /E /Z /XA:H /W:0 /R:0 /V
 
 robocopy "$(SolutionDir)Renderer\Shaders" "$(OutDir)Assets\Shaders" *.hlsl /E /XA:H /W:0 /R:0 /V
 
@@ -159,9 +157,7 @@ if errorlevel 1 exit 0 else exit %errorlevel%</Command>
       <AdditionalLibraryDirectories>../include/yse/dll;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <CustomBuildStep>
-      <Command>Powershell.exe -ExecutionPolicy Unrestricted -file "$(SolutionDir)batchRenameAssets.ps1"
-
-robocopy "C:\%HOMEPATH%\Google Drive\Stort spelprojekt\Assets" "$(OutDir)Assets" /E /Z /XA:H /W:0 /R:0 /V
+      <Command>robocopy "C:\%HOMEPATH%\Google Drive\Stort spelprojekt\Assets" "$(OutDir)Assets" /E /Z /XA:H /W:0 /R:0 /V
 
 robocopy "$(SolutionDir)Renderer\Shaders" "$(OutDir)Assets\Shaders" *.hlsl /E /XA:H /W:0 /R:0 /V
 

@@ -1,90 +1,122 @@
 {
-
 	"Units": {
-		"position": [-0.625, -0.855],
-		"scale": [0.375, 0.2],
+		"position": [-0.666, -0.855],
+		"scale": [0.34, 0.2],
 		"texture": "../Menues/PlacementStateGUI/placementUnits1.png",
+		"UnitList": {
+			"position": [0.03, 0],
+			"scale": [0.34, 0.2],
+			"Guard": {
+				"position": [-0.28, 0.04],
+				"scale": [0.044, 0.076],
+				"texture": "../Menues/PlacementStateGUI/units/Guardbutton1.png",
 
+				"GuardDescription": {
+					"position": [0.0, 0.20],
+					"scale": [0.1, 0.07],
+					"texture": "../Menues/General/wide-button-thin.png",
+					"GuardCost": {
+						"position": [0.0, 0.0],
+						"scale": [0.05, 0.02],
+						"text": "Cost: 100",
+						"centered": true,
+						"fontsize": 18.0
+					}
+				}
+			},
+			"AnvilTrap": {
+				"position": [-0.18, 0.04],
+				"scale": [0.044, 0.076],
+				"texture": "../Menues/PlacementStateGUI/units/Anvilbutton1.png",
 
-		"Guard": {
-			"position": [-0.24, 0.057],
-			"scale": [0.048, 0.083],
-			"texture": "../Menues/PlacementStateGUI/units/Guardbutton1.png",
+				"AnvilDescription": {
+					"position": [0.0, 0.20],
+					"scale": [0.1, 0.07],
+					"texture": "../Menues/General/wide-button-thin.png",
 
-			"GuardText": {
-				"position": [0.955, -1.08],
-				"scale": [1.0, 1.0],
-				"text": "Guard 200$",
-				"color": "FF000000",
-				"fontsize": 18.0,
-				"centered": true
-			}
-		},
-		"AnvilTrap": {
-			"position": [-0.12, 0.057],
-			"scale": [0.048, 0.083],
-			"texture": "../Menues/PlacementStateGUI/units/Anvilbutton1.png",
+					"AnvilCost": {
+						"position": [0.0, 0.0],
+						"scale": [0.05, 0.02],
+						"text": "Cost: 100",
+						"centered": true,
+						"fontsize": 18.0
+					}
+				}
+			},
+			"TeslaTrap": {
+				"position": [-0.08, 0.04],
+				"scale": [0.044, 0.076],
+				"texture": "../Menues/PlacementStateGUI/units/Teslabutton1.png",
 
-			"AnvilText": {
-				"position": [0.948, -1.08],
-				"scale": [1.0, 1.0],
-				"text": "Anvil Trap 50$",
-				"color": "FF000000",
-				"fontsize": 18.0,
-				"centered": true
-			}
-		},
-		"TeslaTrap": {
-			"position": [0.0, 0.057],
-			"scale": [0.048, 0.083],
-			"texture": "../Menues/PlacementStateGUI/units/Teslabutton1.png",
+				"TeslaDescription": {
+					"position": [0.0, 0.20],
+					"scale": [0.1, 0.07],
+					"texture": "../Menues/General/wide-button-thin.png",
 
-			"TeslaText": {
-				"position": [0.945, -1.08],
-				"scale": [1.0, 1.0],
-				"text": "Tesla Trap 100$",
-				"color": "FF000000",
-				"fontsize": 18.0
-			}
-		},
-		"MachineGunTrap": {
-			"position": [0.1, 0.057],
-			"scale": [0.037, 0.063],
-			"texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png",
+					"TeslaCost": {
+						"position": [0.0, 0.0],
+						"scale": [0.05, 0.02],
+						"text": "Cost: 100",
+						"centered": true,
+						"fontsize": 18.0
+					}
+				}
+			},
+			"MachineGunTrap": {
+				"position": [0.02, 0.04],
+				"scale": [0.044, 0.076],
+				"texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png",
 
-			"TeslaText": {
-				"position": [0.952, -1.08],
-				"scale": [1.0, 1.0],
-				"text": "MachineGun\n       200$",
-				"color": "FF000000",
-				"fontsize": 18.0,
-				"centered": true
-			}
-		},
-		"SharkTrap": {
-			"position": [0.12, 0.057],
-			"scale": [0.048, 0.083],
-			"texture": "../Menues/PlacementStateGUI/units/Sharkbutton1.png",
+				"MachineGunDescription": {
+					"position": [0.0, 0.20],
+					"scale": [0.1, 0.07],
+					"texture": "../Menues/General/wide-button-thin.png",
 
-			"SharkText": {
-				"position": [0.96, -1.08],
-				"scale": [1.0, 1.0],
-				"text": "Tesla Trap 150$",
-				"color": "FF000000",
-				"fontsize": 18.0
-			}
-		},
-		"Camera": {
-			"position": [0.24, 0.057],
-			"scale": [0.048, 0.083],
-			"texture": "../Menues/PlacementStateGUI/units/Camerabutton1.png",
-			"CameraText": {
-				"position": [0.97, -1.08],
-				"scale": [1.0, 1.0],
-				"text": "Camera 80$",
-				"color": "FF000000",
-				"fontsize": 18.0,
-				"centered": true
+					"MachineGunCost": {
+						"position": [0.0, 0.0],
+						"scale": [0.05, 0.02],
+						"text": "Cost: 100",
+						"centered": true,
+						"fontsize": 18.0
+					}
+				}
+			},
+			"SharkTrap": {
+				"position": [0.12, 0.04],
+				"scale": [0.044, 0.076],
+				"texture": "../Menues/PlacementStateGUI/units/Sharkbutton1.png",
+
+				"SharkDescription": {
+					"position": [0.0, 0.20],
+					"scale": [0.1, 0.07],
+					"texture": "../Menues/General/wide-button-thin.png",
+
+					"SharkCost": {
+						"position": [0.0, 0.0],
+						"scale": [0.05, 0.02],
+						"text": "Cost: 150",
+						"centered": true,
+						"fontsize": 18.0
+					}
+				}
+			},
+			"Camera": {
+				"position": [0.22, 0.04],
+				"scale": [0.044, 0.076],
+				"texture": "../Menues/PlacementStateGUI/units/Camerabutton1.png",
+
+				"CameraDescription": {
+					"position": [0.0, 0.20],
+					"scale": [0.1, 0.07],
+					"texture": "../Menues/General/wide-button-thin.png",
+
+					"CameraCost": {
+						"position": [0.0, 0.0],
+						"scale": [0.05, 0.02],
+						"text": "Cost: 100",
+						"fontsize": 18.0
+					}
+				}
 			}
 		}
 	},
@@ -125,7 +157,7 @@
 	"Tutorial": {
 		"position": [0.0, -0.0],
 		"scale": [0.75, 0.90],
-		"texture": "../Menues/PlacementStateGUI/tutorialplacement.png",
+
 		"fontsize": 25.0
 	}
 }

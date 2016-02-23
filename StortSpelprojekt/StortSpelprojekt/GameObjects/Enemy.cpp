@@ -160,9 +160,12 @@ void Enemy::Act(GameObject* obj)
 			{
 				if (_interactionTime < 0)
 				{
-					UseCountdown(_animation->GetLength(3, 1.0f * speedMultiplyer));
 					obj->SetPickUpState(PICKINGUP);
-					Animate(PICKUPOBJECTANIM);
+					if (obj->GetAnimation() != nullptr)
+					{
+						UseCountdown(_animation->GetLength(3, 1.0f * speedMultiplyer));
+						Animate(PICKUPOBJECTANIM);
+					}
 				}
 				else if(_interactionTime == 0)
 				{
@@ -203,7 +206,10 @@ void Enemy::Act(GameObject* obj)
 		case GUARD:
 			if (_interactionTime != 0)
 			{
-				UseCountdown(_animation->GetLength(1, 1.0f * speedMultiplyer));
+				if (_animation != nullptr)
+				{
+					UseCountdown(_animation->GetLength(1, 1.0f * speedMultiplyer));
+				}
 				Animate(FIGHTANIM);
 			}
 			else if (_interactionTime == 0)
@@ -237,7 +243,7 @@ void Enemy::Release()
 void Enemy::Update(float deltaTime)
 {
 	//Unit::Update(deltaTime);
-	if (_renderObject->_mesh->_isSkinned)
+	if (_animation != nullptr)
 	{
 		_animation->Update(deltaTime);
 	}
