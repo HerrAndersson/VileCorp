@@ -1,422 +1,530 @@
 {
 	"Units": {
-		"position": [-0.666, -0.855],
-		"scale": [0.34, 0.2],
+		"position": [-0.5, -0.855],
+		"scale": [0.8, 0.2],
 		"texture": "../Menues/PlacementStateGUI/placementUnits1.png",
-		"UnitList": {
-			"position": [0.03, 0],
-			"scale": [0.34, 0.2],
+
+		"UnitList":
+		{
+		"position": [-0.25, 0.0],
+		
 			"Guard": {
 				"position": [-0.18, 0.057],
 				"scale": [0.048, 0.083],
 				"texture": "../Menues/PlacementStateGUI/units/Guardbutton1.png",
-
-				"GuardDescription": {
-					"position": [0.0, 0.20],
+		
+				"GuardText": {
+					"position": [0.0, -0.173],
+					"scale": [0.068, 0.083],
+					"text": "Guard\n  200$",
+					"color": "FF000000",
+					"fontsize": 18.0,
+					"centered": true
+				},
+				"GuardDescription":
+				{
+					"position" : [0.0, 0.20],
 					"scale": [0.1, 0.07],
 					"texture": "../Menues/General/wide-button-thin.png",
-					"GuardCost": {
-						"position": [0.0, 0.0],
+					
+					"GuardCost":
+					{
+						"position" : [0.0, 0.0],
 						"scale": [0.05, 0.02],
 						"text": "Cost: 100",
 						"centered": true,
-						"fontsize": 18.0
+						"fontsize" : 18.0
+					}
+				}
+			},
+			"Engineer": {
+				"position": [-0.06, 0.057],
+				"scale": [0.048, 0.083],
+				"texture": "../Menues/PlacementStateGUI/units/Guardbutton1.png",
+		
+				"GuardText": {
+					"position": [0.0, -0.173],
+					"scale": [0.068, 0.083],
+					"text": "Engineer\n  200$",
+					"color": "FF000000",
+					"fontsize": 18.0,
+					"centered": true
+				}
+			},
+			"Camera": {
+				"position": [0.06, 0.057],
+				"scale": [0.048, 0.083],
+				"texture": "../Menues/PlacementStateGUI/units/Camerabutton1.png",
+		
+				"CameraText": {
+					"position": [0.0, -0.173],
+					"scale": [0.068, 0.083],
+					"text": "Camera\n  80$",
+					"color": "FF000000",
+					"fontsize": 18.0,
+					"centered": true
+				},
+				"CameraDescription":
+				{
+					"position" : [0.0, 0.20],
+					"scale": [0.1, 0.07],
+					"texture": "../Menues/General/wide-button-thin.png",
+					
+					"CameraCost":
+					{
+						"position" : [0.0, 0.0],
+						"scale": [0.05, 0.02],
+						"text": "Cost: 100",
+						"fontsize" : 18.0
 					}
 				}
 			},
 			"AnvilTrap": {
-				"position": [-0.06, 0.057],
+				"position": [0.18, 0.057],
 				"scale": [0.048, 0.083],
 				"texture": "../Menues/PlacementStateGUI/units/Anvilbutton1.png",
-
-				"AnvilDescription": {
-					"position": [0.0, 0.20],
+		
+				"AnvilText": {
+					"position": [0.0, -0.173],
+					"scale": [0.068, 0.083],
+					"text": "Anvil Trap\n  50$",
+					"color": "FF000000",
+					"fontsize": 18.0,
+					"centered": true
+				},
+				"AnvilDescription":
+				{
+					"position" : [0.0, 0.20],
 					"scale": [0.1, 0.07],
 					"texture": "../Menues/General/wide-button-thin.png",
-
-					"AnvilCost": {
-						"position": [0.0, 0.0],
+					
+					"AnvilCost":
+					{
+						"position" : [0.0, 0.0],
 						"scale": [0.05, 0.02],
 						"text": "Cost: 100",
 						"centered": true,
-						"fontsize": 18.0
+						"fontsize" : 18.0
 					}
 				}
 			},
 			"TeslaTrap": {
-				"position": [0.06, 0.057],
+				"position": [0.30, 0.057],
 				"scale": [0.048, 0.083],
 				"texture": "../Menues/PlacementStateGUI/units/Teslabutton1.png",
-
-				"TeslaDescription": {
-					"position": [0.0, 0.20],
+		
+				"TeslaText": {
+					"position": [0.03, -0.173],
+					"scale": [0.068, 0.083],
+					"text": "Tesla Trap\n  100$",
+					"color": "FF000000",
+					"fontsize" : 18.0
+					},
+				"TeslaDescription":
+				{
+					"position" : [0.0, 0.20],
 					"scale": [0.1, 0.07],
 					"texture": "../Menues/General/wide-button-thin.png",
-
-					"TeslaCost": {
-						"position": [0.0, 0.0],
+					
+					"TeslaCost":
+					{
+						"position" : [0.0, 0.0],
 						"scale": [0.05, 0.02],
 						"text": "Cost: 100",
 						"centered": true,
-						"fontsize": 18.0
+						"fontsize" : 18.0
 					}
 				}
-			},
-			"MachineGunTrap": {
-				"position": [0.1, 0.057],
-				"scale": [0.037, 0.063],
-				"texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png",
-
-				"MachineGunDescription": {
-					"position": [0.0, 0.20],
-					"scale": [0.1, 0.07],
-					"texture": "../Menues/General/wide-button-thin.png",
-
-					"MachineGunCost": {
-						"position": [0.0, 0.0],
-						"scale": [0.05, 0.02],
-						"text": "Cost: 100",
-						"centered": true,
-						"fontsize": 18.0
-					}
-				}
-			},
-			"SharkTrap": {
-				"position": [0.12, 0.04],
-				"scale": [0.044, 0.076],
-				"texture": "../Menues/PlacementStateGUI/units/Sharkbutton1.png",
-
-				"SharkDescription": {
-					"position": [0.0, 0.20],
-					"scale": [0.1, 0.07],
-					"texture": "../Menues/General/wide-button-thin.png",
-
-					"SharkCost": {
-						"position": [0.0, 0.0],
-						"scale": [0.05, 0.02],
-						"text": "Cost: 150",
-						"centered": true,
-						"fontsize": 18.0
-					}
-				}
-			},
-			"Camera": {
-				"position": [0.18, 0.057],
+				},
+			"MachineGunTrap" :{
+				"position": [0.42, 0.057],
 				"scale": [0.048, 0.083],
-				"texture": "../Menues/PlacementStateGUI/units/Camerabutton1.png",
-
-				"CameraDescription": {
-					"position": [0.0, 0.20],
+				"texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png",
+				
+				"TeslaText":
+				{
+					"position": [0.0, -0.173],
+					"scale": [0.068, 0.083],
+					"text": "Machine Gun\n  200$",
+				"color": "FF000000",
+				"fontsize": 18.0,
+				"centered": true
+				},
+				"MachineGunDescription":
+				{
+					"position" : [0.0, 0.20],
 					"scale": [0.1, 0.07],
 					"texture": "../Menues/General/wide-button-thin.png",
-
-					"CameraCost": {
-						"position": [0.0, 0.0],
+					
+					"MachineGunCost":
+					{
+						"position" : [0.0, 0.0],
 						"scale": [0.05, 0.02],
 						"text": "Cost: 100",
-						"fontsize": 18.0
-					}
-				}
-			}
-		},
-		"Play": {
-			"position": [0.87, 0.91],
-			"scale": [0.12, 0.08],
-			"texture": "../Menues/PlacementStateGUI/placementResources.png",
-
-			"PlayText": {
-				"position": [0.975, -0.968],
-				"scale": [1.0, 1.0],
-				"text": "Play",
-				"color": "FF000000",
-				"fontsize": 25.0
-			}
-		},
-		"Budget": {
-			"position": [-0.88, 0.91],
-			"scale": [0.12, 0.08],
-			"texture": "../Menues/PlacementStateGUI/placementResources.png",
-
-			"BudgetText": {
-				"position": [0.923, -0.968],
-				"scale": [1.0, 1.0],
-				"text": "Budget:",
-				"color": "FF000000",
-				"fontsize": 25.0
-			},
-
-			"BudgetValue": {
-				"position": [1.02, -0.968],
-				"scale": [1.0, 1.0],
-				"text": "1000",
-				"color": "FF000000",
-				"fontsize": 25.0
-			}
-		},
-		"Tutorial": {
-			"welcome": {
-				"position": [0.0, 0.0],
-				"scale": [1.0, 1.0],
-				"texture": "../Menues/Pause Menu/pause-fade.png",
-				"": {
-					"position": [0, 0.15],
-					"scale": [0.28, 0.6],
-					"texture": "../Menues/Pause Menu/pause1-nocup.png"
-				},
-				"": {
-					"position": [0, -0.0],
-					"scale": [0.2, 0.6],
-					"text": "\n\nHey there, boss!\n\nI know you're probably an expert, being in charge of Vilecorp and all...\n\nBut let's go over the basics,\nshall we?",
-					"color": "FF000000",
-					"centered": true,
-					"fontsize": 26.0
-				},
-				"": {
-					"position": [0, -0.85],
-					"scale": [0.28, 0.6],
-					"text": "Press Enter to Continue.",
-					"color": "FF000000",
-					"centered": true,
-					"fontsize": 24.0
-				}
-			},
-			"controls": {
-				"position": [0.8, 0.15],
-				"scale": [0.2, 0.6],
-				"texture": "../Menues/Pause Menu/pause1-nocup.png",
-				"": {
-					"position": [0, -0.15],
-					"scale": [0.15, 0.6],
-					"text": "\nYou control the camera with W A S D,\nand rotate it with Q and E.\n\n Use the scrollwheel to zoom in and out.",
-					"color": "FF000000",
-					"centered": true,
-					"fontsize": 26.0
-				},
-				"": {
-					"position": [0, -1],
-					"scale": [0.2, 0.6],
-					"text": "Press Enter to Continue.",
-					"color": "FF000000",
-					"centered": true,
-					"fontsize": 24.0
-				}
-			},
-			"objective": {
-				"position": [0.8, 0.15],
-				"scale": [0.2, 0.6],
-				"texture": "../Menues/Pause Menu/pause1-nocup.png",
-				"": {
-					"position": [0, -0.15],
-					"scale": [0.15, 0.6],
-					"text": "\nWe've been hired to keep our employer's valuables safe from thieves. These valuables are lit up on the map!\n\nThe thieves will try to get in through windows and doors.",
-					"color": "FF000000",
-					"centered": true,
-					"fontsize": 26.0
-				},
-				"": {
-					"position": [0, -1],
-					"scale": [0.2, 0.6],
-					"text": "Press Enter to Continue.",
-					"color": "FF000000",
-					"centered": true,
-					"fontsize": 24.0
-				},
-				"thief": {
-					"position": [0.0, -0.8],
-					"scale": [0.2, 0.2],
-					"texture": "../Menues/Pause Menu/pause1-nocup.png",
-					"": {
-						"position": [0.0, 0.0],
-						"scale": [0.15, 0.15],
-						"texture": "../Menues/LevelEdit/Units/Enemy.png"
+						"centered": true,
+						"fontsize" : 18.0
 					}
 				}
 			},
-			"guardexplained": {
-				"position": [0.8, 0.15],
-				"scale": [0.2, 0.6],
-				"texture": "../Menues/Pause Menu/pause1-nocup.png",
-				"": {
-					"position": [0, -0.15],
-					"scale": [0.15, 0.6],
-					"text": "Guards\n\nGuards are units that you can control! Make use of them to hunt the thieves down.\n\n You can direct your guard towards the thief, which will make your guard attack.\n However, be weary! Unattended guards might get hurt by thieves, sneaking up from behind them.",
-					"color": "FF000000",
-					"centered": true,
-					"fontsize": 24.0
-				},
-				"": {
-					"position": [0, -1],
-					"scale": [0.2, 0.6],
-					"text": "Press Enter to Continue.",
-					"color": "FF000000",
-					"centered": true,
-					"fontsize": 24.0
+			"SharkTrap" :{
+				"position": [0.54, 0.057],
+				"scale": [0.048, 0.083],
+				"texture": "../Menues/PlacementStateGUI/units/Sharkbutton1.png",
+				
+				"TeslaText":
+				{
+					"position": [0.0, -0.173],
+					"scale": [0.068, 0.083],
+					"text": "Shark Trap\n  300$",
+				"color": "FF000000",
+				"fontsize": 18.0,
+				"centered": true
 				}
 			},
-			"guardplace": {
-				"position": [0.8, 0.15],
-				"scale": [0.2, 0.6],
-				"texture": "../Menues/Pause Menu/pause1-nocup.png",
-				"": {
-					"position": [0, -0.15],
-					"scale": [0.15, 0.6],
-					"text": "Click and drag a guard\nto a position of your choice!",
-					"color": "FF000000",
-					"centered": true,
-					"fontsize": 20.0
+			"XTrap" :{
+				"position": [0.66, 0.057],
+				"scale": [0.048, 0.083],
+				"texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png",
+				
+				"TeslaText":
+				{
+					"position": [0.0, -0.173],
+					"scale": [0.068, 0.083],
+					"text": "Future Trap\n  X$",
+				"color": "FF000000",
+				"fontsize": 18.0,
+				"centered": true
 				}
 			},
-			"anvilexplained": {
-				"position": [0.8, 0.15],
-				"scale": [0.2, 0.6],
-				"texture": "../Menues/Pause Menu/pause1-nocup.png",
-				"": {
-					"position": [0, -0.15],
-					"scale": [0.15, 0.6],
-					"text": "The Anvil\n\nAnvils are single tile traps, that will, as they do, fall upon thieves beneath it.\n\nBut be aware, some types of thieves have learned how to deal with simplistic traps such as these.",
-					"color": "FF000000",
-					"centered": true,
-					"fontsize": 26.0
-				},
-				"": {
-					"position": [0, -1],
-					"scale": [0.2, 0.6],
-					"text": "Press Enter to Continue.",
-					"color": "FF000000",
-					"centered": true,
-					"fontsize": 24.0
+			"XTrap" :{
+				"position": [0.78, 0.057],
+				"scale": [0.048, 0.083],
+				"texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png",
+				
+				"TeslaText":
+				{
+					"position": [0.0, -0.173],
+					"scale": [0.068, 0.083],
+					"text": "Future Trap\n  X$",
+				"color": "FF000000",
+				"fontsize": 18.0,
+				"centered": true
 				}
 			},
-			"anvilplace": {
-				"position": [0.8, 0.15],
-				"scale": [0.2, 0.6],
-				"texture": "../Menues/Pause Menu/pause1-nocup.png",
-				"": {
-					"position": [0, -0.15],
-					"scale": [0.15, 0.6],
-					"text": "Click and drag an anvil\nto a position of your choice!",
-					"color": "FF000000",
-					"centered": true,
-					"fontsize": 20.0
+			"XTrap" :{
+				"position": [0.90, 0.057],
+				"scale": [0.048, 0.083],
+				"texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png",
+				
+				"TeslaText":
+				{
+					"position": [0.0, -0.173],
+					"scale": [0.068, 0.083],
+					"text": "Future Trap\n  X$",
+				"color": "FF000000",
+				"fontsize": 18.0,
+				"centered": true
 				}
+			}
+		}
+	},
+	"Play": {
+		"position": [0.87, 0.91],
+		"scale": [0.12, 0.08],
+		"texture": "../Menues/PlacementStateGUI/placementResources.png",
+
+		"PlayText": {
+			"position": [0.975, -0.968],
+			"scale": [1.0, 1.0],
+			"text": "Play",
+			"color": "FF000000",
+			"fontsize": 25.0
+		}
+	},
+	"Budget": {
+		"position": [-0.88, 0.91],
+		"scale": [0.12, 0.08],
+		"texture": "../Menues/PlacementStateGUI/placementResources.png",
+
+		"BudgetText": {
+			"position": [0.923, -0.968],
+			"scale": [1.0, 1.0],
+			"text": "Budget:",
+			"color": "FF000000",
+			"fontsize": 25.0
+		},
+
+		"BudgetValue": {
+			"position": [1.02, -0.968],
+			"scale": [1.0, 1.0],
+			"text": "1000",
+			"color": "FF000000",
+			"fontsize": 25.0
+		}
+	},
+	"Tutorial": {
+		"welcome": {
+			"position": [0.0, 0.0],
+			"scale": [1.0, 1.0],
+			"texture": "../Menues/Pause Menu/pause-fade.png",
+			"": {
+				"position": [0, 0.15],
+				"scale": [0.28, 0.6],
+				"texture": "../Menues/Pause Menu/pause1-nocup.png"
 			},
-			"teslaexplained": {
-				"position": [0.8, 0.15],
+			"": {
+				"position": [0, -0.0],
 				"scale": [0.2, 0.6],
-				"texture": "../Menues/Pause Menu/pause1-nocup.png",
-				"": {
-					"position": [0, -0.15],
-					"scale": [0.15, 0.6],
-					"text": "The Tesla Coil\n\nUnlike the Anvil, this trap affects an area around it.\nIt will be activated by entering the inner circle, but within the outer circle its effect will fall upon both friend or foe. ",
-					"color": "FF000000",
-					"centered": true,
-					"fontsize": 26.0
-				},
-				"": {
-					"position": [0, -1],
-					"scale": [0.2, 0.6],
-					"text": "Press Enter to Continue.",
-					"color": "FF000000",
-					"centered": true,
-					"fontsize": 24.0
-				}
+				"text": "\n\nHey there, boss!\n\nI know you're probably an expert, being in charge of Vilecorp and all...\n\nBut let's go over the basics,\nshall we?",
+				"color": "FF000000",
+				"centered": true,
+				"fontsize": 26.0
 			},
-			"teslaplace": {
-				"position": [0.8, 0.15],
-				"scale": [0.2, 0.6],
-				"texture": "../Menues/Pause Menu/pause1-nocup.png",
-				"": {
-					"position": [0, -0.15],
-					"scale": [0.15, 0.6],
-					"text": "Click and drag a Tesla Coil Trap\nto a position of your choice!",
-					"color": "FF000000",
-					"centered": true,
-					"fontsize": 20.0
-				}
+			"": {
+				"position": [0, -0.85],
+				"scale": [0.28, 0.6],
+				"text": "Press Enter to Continue.",
+				"color": "FF000000",
+				"centered": true,
+				"fontsize": 24.0
+			}
+		},
+		"controls": {
+			"position": [0.8, 0.15],
+			"scale": [0.2, 0.6],
+			"texture": "../Menues/Pause Menu/pause1-nocup.png",
+			"": {
+				"position": [0, -0.15],
+				"scale": [0.15, 0.6],
+				"text": "\nYou control the camera with W A S D,\nand rotate it with Q and E.\n\n Use the scrollwheel to zoom in and out.",
+				"color": "FF000000",
+				"centered": true,
+				"fontsize": 26.0
 			},
-			"securitycameraexplained": {
-				"position": [0.8, 0.15],
+			"": {
+				"position": [0, -1],
 				"scale": [0.2, 0.6],
-				"texture": "../Menues/Pause Menu/pause1-nocup.png",
-				"": {
-					"position": [0, -0.15],
-					"scale": [0.15, 0.6],
-					"text": "The Security Camera\n\nSecurity Cameras provide visibility of any thieves within their range. They are cheap but unlike a guard or trap, they do not cause any harm.",
-					"color": "FF000000",
-					"centered": true,
-					"fontsize": 26.0
-				},
-				"": {
-					"position": [0, -1],
-					"scale": [0.2, 0.6],
-					"text": "Press Enter to Continue.",
-					"color": "FF000000",
-					"centered": true,
-					"fontsize": 24.0
-				}
+				"text": "Press Enter to Continue.",
+				"color": "FF000000",
+				"centered": true,
+				"fontsize": 24.0
+			}
+		},
+		"objective": {
+			"position": [0.8, 0.15],
+			"scale": [0.2, 0.6],
+			"texture": "../Menues/Pause Menu/pause1-nocup.png",
+			"": {
+				"position": [0, -0.15],
+				"scale": [0.15, 0.6],
+				"text": "\nWe've been hired to keep our employer's valuables safe from thieves. These valuables are lit up on the map!\n\nThe thieves will try to get in through windows and doors.",
+				"color": "FF000000",
+				"centered": true,
+				"fontsize": 26.0
 			},
-			"securitycameraplace": {
-				"position": [0.8, 0.15],
+			"": {
+				"position": [0, -1],
 				"scale": [0.2, 0.6],
-				"texture": "../Menues/Pause Menu/pause1-nocup.png",
-				"": {
-					"position": [0, -0.15],
-					"scale": [0.15, 0.6],
-					"text": "Click and drag the security camera to a neat place. You can rotate the camera by using R and T once on the position you find suitable.",
-					"color": "FF000000",
-					"centered": true,
-					"fontsize": 30.0
-				},
-				"": {
-					"position": [0, -1],
-					"scale": [0.2, 0.6],
-					"text": "Press Enter to Continue.",
-					"color": "FF000000",
-					"centered": true,
-					"fontsize": 30.0
-				}
+				"text": "Press Enter to Continue.",
+				"color": "FF000000",
+				"centered": true,
+				"fontsize": 24.0
 			},
-			"budgetexplained": {
-				"position": [0.8, 0.15],
-				"scale": [0.2, 0.6],
+			"thief": {
+				"position": [0.0, -0.8],
+				"scale": [0.2, 0.2],
 				"texture": "../Menues/Pause Menu/pause1-nocup.png",
 				"": {
-					"position": [0, -0.15],
-					"scale": [0.15, 0.6],
-					"text": "If you havent noticed already. You have a budget at the top left that deducts money for each item you place. In case you change your mind, you can refund items by selecting them and pressing delete on your keyboard.",
-					"color": "FF000000",
-					"centered": true,
-					"fontsize": 30.0
-				},
-				"": {
-					"position": [0, -1],
-					"scale": [0.2, 0.6],
-					"text": "Press Enter to Continue.",
-					"color": "FF000000",
-					"centered": true,
-					"fontsize": 30.0
+					"position": [0.0, 0.0],
+					"scale": [0.15, 0.15],
+					"texture": "../Menues/LevelEdit/Units/Enemy.png"
 				}
+			}
+		},
+		"guardexplained": {
+			"position": [0.8, 0.15],
+			"scale": [0.2, 0.6],
+			"texture": "../Menues/Pause Menu/pause1-nocup.png",
+			"": {
+				"position": [0, -0.15],
+				"scale": [0.15, 0.6],
+				"text": "Guards\n\nGuards are units that you can control! Make use of them to hunt the thieves down.\n\n You can direct your guard towards the thief, which will make your guard attack.\n However, be weary! Unattended guards might get hurt by thieves, sneaking up from behind them.",
+				"color": "FF000000",
+				"centered": true,
+				"fontsize": 24.0
 			},
-			"playexplained": {
-				"position": [0.8, 0.15],
+			"": {
+				"position": [0, -1],
 				"scale": [0.2, 0.6],
-				"texture": "../Menues/Pause Menu/pause1-nocup.png",
-				"": {
-					"position": [0, -0.15],
-					"scale": [0.15, 0.6],
-					"text": "Once you done placing objects. Hit Play at the top right corner to start the game.",
-					"color": "FF000000",
-					"centered": true,
-					"fontsize": 30.0
-				},
-				"": {
-					"position": [0, -1],
-					"scale": [0.2, 0.6],
-					"text": "Good luck!",
-					"color": "FF000000",
-					"centered": true,
-					"fontsize": 30.0
-				}
+				"text": "Press Enter to Continue.",
+				"color": "FF000000",
+				"centered": true,
+				"fontsize": 24.0
+			}
+		},
+		"guardplace": {
+			"position": [0.8, 0.15],
+			"scale": [0.2, 0.6],
+			"texture": "../Menues/Pause Menu/pause1-nocup.png",
+			"": {
+				"position": [0, -0.15],
+				"scale": [0.15, 0.6],
+				"text": "Click and drag a guard\nto a position of your choice!",
+				"color": "FF000000",
+				"centered": true,
+				"fontsize": 20.0
+			}
+		},
+		"anvilexplained": {
+			"position": [0.8, 0.15],
+			"scale": [0.2, 0.6],
+			"texture": "../Menues/Pause Menu/pause1-nocup.png",
+			"": {
+				"position": [0, -0.15],
+				"scale": [0.15, 0.6],
+				"text": "The Anvil\n\nAnvils are single tile traps, that will, as they do, fall upon thieves beneath it.\n\nBut be aware, some types of thieves have learned how to deal with simplistic traps such as these.",
+				"color": "FF000000",
+				"centered": true,
+				"fontsize": 26.0
+			},
+			"": {
+				"position": [0, -1],
+				"scale": [0.2, 0.6],
+				"text": "Press Enter to Continue.",
+				"color": "FF000000",
+				"centered": true,
+				"fontsize": 24.0
+			}
+		},
+		"anvilplace": {
+			"position": [0.8, 0.15],
+			"scale": [0.2, 0.6],
+			"texture": "../Menues/Pause Menu/pause1-nocup.png",
+			"": {
+				"position": [0, -0.15],
+				"scale": [0.15, 0.6],
+				"text": "Click and drag an anvil\nto a position of your choice!",
+				"color": "FF000000",
+				"centered": true,
+				"fontsize": 20.0
+			}
+		},
+		"teslaexplained": {
+			"position": [0.8, 0.15],
+			"scale": [0.2, 0.6],
+			"texture": "../Menues/Pause Menu/pause1-nocup.png",
+			"": {
+				"position": [0, -0.15],
+				"scale": [0.15, 0.6],
+				"text": "The Tesla Coil\n\nUnlike the Anvil, this trap affects an area around it.\nIt will be activated by entering the inner circle, but within the outer circle its effect will fall upon both friend or foe. ",
+				"color": "FF000000",
+				"centered": true,
+				"fontsize": 26.0
+			},
+			"": {
+				"position": [0, -1],
+				"scale": [0.2, 0.6],
+				"text": "Press Enter to Continue.",
+				"color": "FF000000",
+				"centered": true,
+				"fontsize": 24.0
+			}
+		},
+		"teslaplace": {
+			"position": [0.8, 0.15],
+			"scale": [0.2, 0.6],
+			"texture": "../Menues/Pause Menu/pause1-nocup.png",
+			"": {
+				"position": [0, -0.15],
+				"scale": [0.15, 0.6],
+				"text": "Click and drag a Tesla Coil Trap\nto a position of your choice!",
+				"color": "FF000000",
+				"centered": true,
+				"fontsize": 20.0
+			}
+		},
+		"securitycameraexplained": {
+			"position": [0.8, 0.15],
+			"scale": [0.2, 0.6],
+			"texture": "../Menues/Pause Menu/pause1-nocup.png",
+			"": {
+				"position": [0, -0.15],
+				"scale": [0.15, 0.6],
+				"text": "The Security Camera\n\nSecurity Cameras provide visibility of any thieves within their range. They are cheap but unlike a guard or trap, they do not cause any harm.",
+				"color": "FF000000",
+				"centered": true,
+				"fontsize": 26.0
+			},
+			"": {
+				"position": [0, -1],
+				"scale": [0.2, 0.6],
+				"text": "Press Enter to Continue.",
+				"color": "FF000000",
+				"centered": true,
+				"fontsize": 24.0
+			}
+		},
+		"securitycameraplace": {
+			"position": [0.8, 0.15],
+			"scale": [0.2, 0.6],
+			"texture": "../Menues/Pause Menu/pause1-nocup.png",
+			"": {
+				"position": [0, -0.15],
+				"scale": [0.15, 0.6],
+				"text": "Click and drag the security camera to a neat place. You can rotate the camera by using R and T once on the position you find suitable.",
+				"color": "FF000000",
+				"centered": true,
+				"fontsize": 30.0
+			},
+			"": {
+				"position": [0, -1],
+				"scale": [0.2, 0.6],
+				"text": "Press Enter to Continue.",
+				"color": "FF000000",
+				"centered": true,
+				"fontsize": 30.0
+			}
+		},
+		"budgetexplained": {
+			"position": [0.8, 0.15],
+			"scale": [0.2, 0.6],
+			"texture": "../Menues/Pause Menu/pause1-nocup.png",
+			"": {
+				"position": [0, -0.15],
+				"scale": [0.15, 0.6],
+				"text": "If you havent noticed already. You have a budget at the top left that deducts money for each item you place. In case you change your mind, you can refund items by selecting them and pressing delete on your keyboard.",
+				"color": "FF000000",
+				"centered": true,
+				"fontsize": 30.0
+			},
+			"": {
+				"position": [0, -1],
+				"scale": [0.2, 0.6],
+				"text": "Press Enter to Continue.",
+				"color": "FF000000",
+				"centered": true,
+				"fontsize": 30.0
+			}
+		},
+		"playexplained": {
+			"position": [0.8, 0.15],
+			"scale": [0.2, 0.6],
+			"texture": "../Menues/Pause Menu/pause1-nocup.png",
+			"": {
+				"position": [0, -0.15],
+				"scale": [0.15, 0.6],
+				"text": "Once you done placing objects. Hit Play at the top right corner to start the game.",
+				"color": "FF000000",
+				"centered": true,
+				"fontsize": 30.0
+			},
+			"": {
+				"position": [0, -1],
+				"scale": [0.2, 0.6],
+				"text": "Good luck!",
+				"color": "FF000000",
+				"centered": true,
+				"fontsize": 30.0
 			}
 		}
 	}
