@@ -8,6 +8,8 @@ TutorialLogic::TutorialLogic(GUI::UITree* uiTree, System::Controls* controls)
 	_sCameraPlaced = false;
 	_tutorialCompleted = false;
 	ResetUiTree();
+	_time = 0;
+	_light = false;
 }
 
 TutorialLogic::~TutorialLogic()
@@ -48,6 +50,15 @@ void TutorialLogic::ResetUiTree()
 
 bool TutorialLogic::Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace, PlayerInfo playerProfile)
 {
+	System::MouseCoord coord = _controls->GetMouseCoord();
+	_time += deltaTime;
+	//icon blink speed
+	if (_time > 1200)
+	{
+		_time = 0;
+		_light = !_light;
+	}
+
 	if (_controls->IsFunctionKeyDown("DEBUG:RELOAD_GUI"))
 	{
 		_uiTree->ReloadTree("../../../../StortSpelprojekt/Assets/GUI/placement.json");
@@ -98,8 +109,17 @@ bool TutorialLogic::Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace
 	}
 	case GUARDPLACE:
 	{
-		//Check mouse pos with button
-		System::MouseCoord coord = _controls->GetMouseCoord();
+		//Blink button
+		if (_light)
+		{
+			_uiTree->GetNode("Guard")->SetColorOffset(DirectX::XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f));
+		}
+		else
+		{
+			_uiTree->GetNode("Guard")->SetColorOffset(DirectX::XMFLOAT4(0, 0, 0, 1.0f));
+		}
+
+
 		if (_uiTree->IsButtonColliding("Guard", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
 		{
 			// Temp, should be replaced with blueprint
@@ -117,6 +137,7 @@ bool TutorialLogic::Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace
 				_currentStage = ANVILEXPLAINED;
 				_uiTree->GetNode("guardplace")->SetHidden(true);
 				_uiTree->GetNode("anvilexplained")->SetHidden(false);
+				_uiTree->GetNode("Guard")->SetColorOffset(DirectX::XMFLOAT4(0, 0, 0, 1.0f));
 			}
 		}
 		break;
@@ -133,8 +154,16 @@ bool TutorialLogic::Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace
 	}
 	case ANVILPLACE:
 	{
+		//Blink button
+		if (_light)
+		{
+			_uiTree->GetNode("AnvilTrap")->SetColorOffset(DirectX::XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f));
+		}
+		else
+		{
+			_uiTree->GetNode("AnvilTrap")->SetColorOffset(DirectX::XMFLOAT4(0, 0, 0, 1.0f));
+		}
 		//Check mouse pos with button
-		System::MouseCoord coord = _controls->GetMouseCoord();
 		if (_uiTree->IsButtonColliding("AnvilTrap", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
 		{
 			// Temp, should be replaced with blueprint
@@ -153,6 +182,7 @@ bool TutorialLogic::Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace
 				_currentStage = TESLAEXPLAINED;
 				_uiTree->GetNode("anvilplace")->SetHidden(true);
 				_uiTree->GetNode("teslaexplained")->SetHidden(false);
+				_uiTree->GetNode("AnvilTrap")->SetColorOffset(DirectX::XMFLOAT4(0, 0, 0, 1.0f));
 			}
 		}
 		break;
@@ -169,8 +199,16 @@ bool TutorialLogic::Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace
 	}
 	case TESLAPLACE:
 	{
-		//Check mouse pos with button
-		System::MouseCoord coord = _controls->GetMouseCoord();
+		//Blink button
+		if (_light)
+		{
+			_uiTree->GetNode("TeslaTrap")->SetColorOffset(DirectX::XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f));
+		}
+		else
+		{
+			_uiTree->GetNode("TeslaTrap")->SetColorOffset(DirectX::XMFLOAT4(0, 0, 0, 1.0f));
+		}
+
 		if (_uiTree->IsButtonColliding("TeslaTrap", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
 		{
 			// Temp, should be replaced with blueprint
@@ -189,6 +227,7 @@ bool TutorialLogic::Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace
 				_currentStage = SECURITYCAMERAEXPLAINED;
 				_uiTree->GetNode("teslaplace")->SetHidden(true);
 				_uiTree->GetNode("securitycameraexplained")->SetHidden(false);
+				_uiTree->GetNode("TeslaTrap")->SetColorOffset(DirectX::XMFLOAT4(0, 0, 0, 1.0f));
 			}
 		}
 		break;
@@ -205,8 +244,17 @@ bool TutorialLogic::Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace
 	}
 	case SECURITYCAMERAPLACE:
 	{
+		//Blink button
+		if (_light)
+		{
+			_uiTree->GetNode("Camera")->SetColorOffset(DirectX::XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f));
+		}
+		else
+		{
+			_uiTree->GetNode("Camera")->SetColorOffset(DirectX::XMFLOAT4(0, 0, 0, 1.0f));
+		}
+
 		//Check mouse pos with button
-		System::MouseCoord coord = _controls->GetMouseCoord();
 		if (_uiTree->IsButtonColliding("Camera", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
 		{
 			// Temp, should be replaced with blueprint
@@ -221,6 +269,7 @@ bool TutorialLogic::Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace
 				_uiTree->GetNode("BudgetValue")->SetText(to_wstring(_gold));
 				toPlace._blueprintID = baseEdit->GetSelectedObject()->GetID();
 				_sCameraPlaced = true;
+				_uiTree->GetNode("Camera")->SetColorOffset(DirectX::XMFLOAT4(0, 0, 0, 1.0f));
 			}
 		}
 		if (_controls->IsFunctionKeyDown("MENU:CONTINUE") && _sCameraPlaced)
@@ -245,11 +294,21 @@ bool TutorialLogic::Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace
 	}
 	case PLAYEXPLAINED:
 	{
-		System::MouseCoord coord = _controls->GetMouseCoord();
+		//Blink button
+		if (_light)
+		{
+			_uiTree->GetNode("Play")->SetColorOffset(DirectX::XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f));
+		}
+		else
+		{
+			_uiTree->GetNode("Play")->SetColorOffset(DirectX::XMFLOAT4(0, 0, 0, 1.0f));
+		}
+
 		if (_uiTree->IsButtonColliding("Play", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
 		{
 			playerProfile._firstTime = false;
 			_tutorialCompleted = true;
+			_uiTree->GetNode("Play")->SetColorOffset(DirectX::XMFLOAT4(0, 0, 0, 1.0f));
 		}
 
 		/*

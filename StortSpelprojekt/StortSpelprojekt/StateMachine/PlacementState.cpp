@@ -60,6 +60,7 @@ PlacementState::~PlacementState()
 
 void PlacementState::Update(float deltaTime)
 {
+	System::MouseCoord coord = _controls->GetMouseCoord();
 	//if tutorial mode. Then bypass normal baseEdit update loops.
 	if (_tutorialState != TutorialState::NOTUTORIAL)
 	{
@@ -75,17 +76,16 @@ void PlacementState::Update(float deltaTime)
 	{
 		//Handle the buttons normally
 		HandleButtons();
+		HandleHoverColorOffset("Guard", "Guard", coord, XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f));
+		HandleHoverColorOffset("AnvilTrap", "AnvilTrap", coord, XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f));
+		HandleHoverColorOffset("TeslaTrap", "TeslaTrap", coord, XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f));
+		HandleHoverColorOffset("Camera", "Camera", coord, XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f));
+		HandleHoverColorOffset("Play", "Play", coord, XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f));
 	}
 	
 	HandleInput();
 	HandleCam(deltaTime);
-	System::MouseCoord coord = _controls->GetMouseCoord();
-	HandleHoverColorOffset("Guard", "Guard", coord, XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f));
-	HandleHoverColorOffset("AnvilTrap", "AnvilTrap", coord, XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f));
-	HandleHoverColorOffset("TeslaTrap", "TeslaTrap", coord, XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f));
-	HandleHoverColorOffset("Camera", "Camera", coord, XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f));
 
-	HandleHoverColorOffset("Play", "Play", coord, XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f));
 	//baseEdit update handles basic controls.
 	_baseEdit->Update(deltaTime);
 }
