@@ -17,9 +17,6 @@ PlacementState::PlacementState(System::Controls* controls, ObjectHandler* object
 	_baseEdit = nullptr;
 	_ambientLight = ambientLight;
 
-	//Rikhard left FIX ME!!!, ask him when he gets back! Enbom
-	_uiTree.GetNode("BudgetValue")->SetText(StringToWstring("FIX ME!!!"));
-
 	std::vector<GUI::Node*>* units = _uiTree.GetNode("Units")->GetChildren();
 	for (int i = 0; i < units->size(); i++)
 	{
