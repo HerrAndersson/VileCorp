@@ -36,6 +36,8 @@ protected:
 	void HandleCamRot();
 	void HandleCamMove(float deltaTime);
 
+	void HandleHoverColorOffset(const std::string& button, const std::string& node, System::MouseCoord coord, XMFLOAT4 rgba);
+
 public:
 	BaseState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule);
 	virtual ~BaseState();

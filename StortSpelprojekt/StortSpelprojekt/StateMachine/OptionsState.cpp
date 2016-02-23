@@ -98,6 +98,21 @@ void OptionsState::Update(float deltaTime)
 	{
 		_uiTree.ReloadTree("../../../../StortSpelprojekt/Assets/gui.json", "OPTIONS");
 	}
+	System::MouseCoord coord = _controls->GetMouseCoord();
+	XMFLOAT4 color(0.3f, 0.3f, 0.3f, 1.0f);
+	HandleHoverColorOffset("apply", "apply", coord, color);
+	HandleHoverColorOffset("cancel", "cancel", coord, color);
+
+	HandleHoverColorOffset("res_left", "res_left", coord, color);
+	HandleHoverColorOffset("win_left", "win_left", coord, color);
+	HandleHoverColorOffset("aa_left", "aa_left", coord, color);
+	HandleHoverColorOffset("shadow_left", "shadow_left", coord, color);
+
+	HandleHoverColorOffset("res_right", "res_right", coord, color);
+	HandleHoverColorOffset("win_right", "win_right", coord, color);
+	HandleHoverColorOffset("aa_right", "aa_right", coord, color);
+	HandleHoverColorOffset("shadow_right", "shadow_right", coord, color);
+
 	if (_controls->IsFunctionKeyDown("MENU:MENU"))
 	{
 		_soundModule->Play("Assets/Sounds/page");
@@ -117,7 +132,6 @@ void OptionsState::Update(float deltaTime)
 		}
 
 		//Check it the apply button was pressed and change settings file and update the window resolution if needed
-		System::MouseCoord coord = _controls->GetMouseCoord();
 		if (_uiTree.IsButtonColliding("apply", coord._pos.x, coord._pos.y))
 		{
 			System::Settings* settings = _settingsReader->GetSettings();
