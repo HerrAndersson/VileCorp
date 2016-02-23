@@ -1,78 +1,178 @@
 {
 	"Units": {
-		"position": [-0.7, -0.855],
-		"scale": [0.3, 0.2],
+		"position": [-0.5, -0.855],
+		"scale": [0.8, 0.2],
 		"texture": "../Menues/PlacementStateGUI/placementUnits1.png",
 
-		"Guard": {
-			"position": [-0.18, 0.057],
-			"scale": [0.048, 0.083],
-			"texture": "../Menues/PlacementStateGUI/units/Guardbutton1.png",
-
-			"GuardText": {
-				"position": [0.0, -0.173],
-				"scale": [0.068, 0.083],
-				"text": "Guard 200$",
-				"color": "FF000000",
-				"fontsize": 18.0,
-				"centered": true
-			}
-		},
-		"AnvilTrap": {
-			"position": [-0.06, 0.057],
-			"scale": [0.048, 0.083],
-			"texture": "../Menues/PlacementStateGUI/units/Anvilbutton1.png",
-
-			"AnvilText": {
-				"position": [0.0, -0.173],
-				"scale": [0.068, 0.083],
-				"text": "Anvil Trap 50$",
-				"color": "FF000000",
-				"fontsize": 18.0,
-				"centered": true
-			}
-		},
-		"TeslaTrap": {
-			"position": [0.06, 0.057],
-			"scale": [0.048, 0.083],
-			"texture": "../Menues/PlacementStateGUI/units/Teslabutton1.png",
-
-			"TeslaText": {
-				"position": [0.0, -0.173],
-				"scale": [0.068, 0.083],
-				"text": "Tesla Trap 100$",
+		"":
+		{
+		"position": [-0.25, 0.0],
+		
+			"Guard": {
+				"position": [-0.18, 0.057],
+				"scale": [0.048, 0.083],
+				"texture": "../Menues/PlacementStateGUI/units/Guardbutton1.png",
+		
+				"GuardText": {
+					"position": [0.0, -0.173],
+					"scale": [0.068, 0.083],
+					"text": "Guard\n  200$",
 					"color": "FF000000",
-					"fontsize" : 18.0
+					"fontsize": 18.0,
+					"centered": true
 				}
 			},
-		"MachineGunTrap" :{
-			"position": [0.1, 0.057],	
-			"scale": [0.037, 0.063],
-			"texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png",
-			
-			"TeslaText":
-			{
-				"position" : [0.952, -1.08],
-				"scale": [1.0, 1.0],
-				"text": "MachineGun\n       200$",
-			"color": "FF000000",
-			"fontsize": 18.0,
-			"centered": true
-			}
-		},
-		"Camera": {
-			"position": [0.18, 0.057],
-			"scale": [0.048, 0.083],
-			"texture": "../Menues/PlacementStateGUI/units/Camerabutton1.png",
-
-			"CameraText": {
-				"position": [0.0, -0.173],
-				"scale": [0.068, 0.083],
-				"text": "Camera 80$",
+			"Engineer": {
+				"position": [-0.06, 0.057],
+				"scale": [0.048, 0.083],
+				"texture": "../Menues/PlacementStateGUI/units/Guardbutton1.png",
+		
+				"GuardText": {
+					"position": [0.0, -0.173],
+					"scale": [0.068, 0.083],
+					"text": "Engineer\n  200$",
+					"color": "FF000000",
+					"fontsize": 18.0,
+					"centered": true
+				}
+			},
+			"Camera": {
+				"position": [0.06, 0.057],
+				"scale": [0.048, 0.083],
+				"texture": "../Menues/PlacementStateGUI/units/Camerabutton1.png",
+		
+				"CameraText": {
+					"position": [0.0, -0.173],
+					"scale": [0.068, 0.083],
+					"text": "Camera\n  80$",
+					"color": "FF000000",
+					"fontsize": 18.0,
+					"centered": true
+				}
+			},
+			"AnvilTrap": {
+				"position": [0.18, 0.057],
+				"scale": [0.048, 0.083],
+				"texture": "../Menues/PlacementStateGUI/units/Anvilbutton1.png",
+		
+				"AnvilText": {
+					"position": [0.0, -0.173],
+					"scale": [0.068, 0.083],
+					"text": "Anvil Trap\n  50$",
+					"color": "FF000000",
+					"fontsize": 18.0,
+					"centered": true
+				}
+			},
+			"TeslaTrap": {
+				"position": [0.30, 0.057],
+				"scale": [0.048, 0.083],
+				"texture": "../Menues/PlacementStateGUI/units/Teslabutton1.png",
+		
+				"TeslaText": {
+					"position": [0.03, -0.173],
+					"scale": [0.068, 0.083],
+					"text": "Tesla Trap\n  100$",
+					"color": "FF000000",
+					"fontsize" : 18.0
+					}
+				},
+			"MachineGunTrap" :{
+				"position": [0.42, 0.057],
+				"scale": [0.048, 0.083],
+				"texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png",
+				
+				"TeslaText":
+				{
+					"position": [0.0, -0.173],
+					"scale": [0.068, 0.083],
+					"text": "Machine Gun\n  200$",
 				"color": "FF000000",
 				"fontsize": 18.0,
 				"centered": true
+				}
+			},
+			"SharkTrap" :{
+				"position": [0.54, 0.057],
+				"scale": [0.048, 0.083],
+				"texture": "../Menues/PlacementStateGUI/units/Sharkbutton1.png",
+				
+				"TeslaText":
+				{
+					"position": [0.0, -0.173],
+					"scale": [0.068, 0.083],
+					"text": "Shark Trap\n  300$",
+				"color": "FF000000",
+				"fontsize": 18.0,
+				"centered": true
+				}
+			},
+			"XTrap" :{
+				"position": [0.66, 0.057],
+				"scale": [0.048, 0.083],
+				"texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png",
+				
+				"TeslaText":
+				{
+					"position": [0.0, -0.173],
+					"scale": [0.068, 0.083],
+					"text": "Future Trap\n  X$",
+				"color": "FF000000",
+				"fontsize": 18.0,
+				"centered": true
+				}
+			},
+			"XTrap" :{
+				"position": [0.78, 0.057],
+				"scale": [0.048, 0.083],
+				"texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png",
+				
+				"TeslaText":
+				{
+					"position": [0.0, -0.173],
+					"scale": [0.068, 0.083],
+					"text": "Future Trap\n  X$",
+				"color": "FF000000",
+				"fontsize": 18.0,
+				"centered": true
+				}
+			},
+			"XTrap" :{
+				"position": [0.90, 0.057],
+				"scale": [0.048, 0.083],
+				"texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png",
+				
+				"TeslaText":
+				{
+					"position": [0.0, -0.173],
+					"scale": [0.068, 0.083],
+					"text": "Future Trap\n  X$",
+				"color": "FF000000",
+				"fontsize": 18.0,
+				"centered": true
+				}
 			}
+		}
+	},
+	"UnitInformation":
+	{
+		"position": [-0.5, -0.48],
+		"scale": [0.1, 0.18],
+		"texture": "../Menues/Pause Menu/pause1-nocup.png",
+
+		"UnitText": {
+			"position": [0.03, -0.01],
+			"scale": [0.1, 0.18],
+			"text": "Unit Information",
+			"color": "FF000000",
+			"fontsize": 20.0
+		},
+			"UnitText": {
+			"position": [0.0075, -0.05],
+			"scale": [0.1, 0.18],
+			"text": "Write Unit info here!\nShould be activated\nupon hover over unit.\nShould be above\nhovered over unit.",
+			"color": "FF000000",
+			"fontsize": 18.0
 		}
 	},
 	"Play": {

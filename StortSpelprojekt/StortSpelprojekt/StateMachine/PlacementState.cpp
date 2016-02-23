@@ -162,6 +162,11 @@ void PlacementState::HandleInput()
 		}
 	}
 
+	if (_controls->IsFunctionKeyDown("DEBUG:RELOAD_GUI"))
+	{
+		_uiTree.ReloadTree("../../../../StortSpelprojekt/Assets/GUI/placement.json");
+	}
+
 	// placement invalid
 	if (_toPlace._goldCost != -1 && !_objectHandler->Find(_toPlace._type, _toPlace._blueprintID) && !_baseEdit->IsPlace())
 	{
