@@ -29,7 +29,7 @@ TutorialLogic::~TutorialLogic()
 
 void TutorialLogic::ResetUiTree()
 {
-	_currentStage = NEWTUTORIAL;
+	_currentStage = WELCOME;
 	_uiTree->GetNode("welcome")->SetHidden(false);
 	_uiTree->GetNode("controls")->SetHidden(true);
 	_uiTree->GetNode("objective")->SetHidden(true);
@@ -55,7 +55,7 @@ bool TutorialLogic::Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace
 
 	switch (_currentStage)
 	{
-	case NEWTUTORIAL:
+	case WELCOME:
 	{
 		if (_controls->IsFunctionKeyDown("MENU:CONTINUE"))
 		{

@@ -18,7 +18,7 @@ private:
 	static State _oldState; //To make us able to return from pause state back to correct state.
 
 protected:
-	static TutorialStage	_tutorialStage;
+	static TutorialState	_tutorialState;
 	System::Controls*		_controls;
 	ObjectHandler*			_objectHandler;
 	GUI::UITree				_uiTree;

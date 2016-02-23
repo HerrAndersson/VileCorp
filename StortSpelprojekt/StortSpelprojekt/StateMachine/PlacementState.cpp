@@ -61,14 +61,14 @@ PlacementState::~PlacementState()
 void PlacementState::Update(float deltaTime)
 {
 	//if tutorial mode. Then bypass normal baseEdit update loops.
-	if (_tutorialStage != TutorialStage::NOTUTORIAL)
+	if (_tutorialState != TutorialState::NOTUTORIAL)
 	{
 		//bypass the normal UI interface to interface the tutorial elements into it.
 		_tutorialLogic->Update(deltaTime, _baseEdit, _toPlace, _playerProfile.at(_currentPlayer));
 		if (_tutorialLogic->IsTutorialCompleted())
 		{
 			ChangeState(State::PLAYSTATE);
-			_tutorialStage = TutorialStage::NOTUTORIAL;
+			_tutorialState = TutorialState::NOTUTORIAL;
 		}
 	}
 	else
@@ -102,12 +102,12 @@ void PlacementState::OnStateEnter()
 	_camera->SetPosition(campos);
 
 	//if tutorial is active but we are pausing. Hide tutorial.
-	if (_tutorialStage != TutorialStage::NOTUTORIAL)
+	if (_tutorialState != TutorialState::NOTUTORIAL)
 	{
 		_uiTree.GetNode("Tutorial")->SetHidden(false);
 	}
 	//if it is also New tutorial. Reset it so we can start a new.
-	if (_tutorialStage != TutorialStage::NEWTUTORIAL)
+	if (_tutorialState != TutorialState::NEWTUTORIAL)
 	{
 		_tutorialLogic->ResetUiTree();
 	}
@@ -118,7 +118,7 @@ void PlacementState::OnStateExit()
 	delete _baseEdit;
 	_baseEdit = nullptr;
 	//if the tutorialstage is anything other than no tutorial. Hide it. We want to reset on entry, not exit.
-	if (_tutorialStage != NOTUTORIAL)
+	if (_tutorialState != NOTUTORIAL)
 	{
 		_uiTree.GetNode("Tutorial")->SetHidden(true);
 	}
