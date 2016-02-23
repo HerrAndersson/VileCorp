@@ -9,7 +9,6 @@ TutorialLogic::TutorialLogic(GUI::UITree* uiTree, System::Controls* controls)
 	_tutorialCompleted = false;
 	ResetUiTree();
 	_time = 0;
-	_light = false;
 }
 
 TutorialLogic::~TutorialLogic()
@@ -50,14 +49,10 @@ void TutorialLogic::ResetUiTree()
 
 bool TutorialLogic::Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace, PlayerInfo playerProfile)
 {
+
 	System::MouseCoord coord = _controls->GetMouseCoord();
 	_time += deltaTime;
-	//icon blink speed
-	if (_time > 1200)
-	{
-		_time = 0;
-		_light = !_light;
-	}
+	float color = cos(_time / 200)*0.2f + 0.4f;
 
 	if (_controls->IsFunctionKeyDown("DEBUG:RELOAD_GUI"))
 	{
@@ -109,15 +104,8 @@ bool TutorialLogic::Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace
 	}
 	case GUARDPLACE:
 	{
-		//Blink button
-		if (_light)
-		{
-			_uiTree->GetNode("Guard")->SetColorOffset(DirectX::XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f));
-		}
-		else
-		{
-			_uiTree->GetNode("Guard")->SetColorOffset(DirectX::XMFLOAT4(0, 0, 0, 1.0f));
-		}
+		//Fade button
+		_uiTree->GetNode("Guard")->SetColorOffset(DirectX::XMFLOAT4(color, color, 0, 1.0f));
 
 
 		if (_uiTree->IsButtonColliding("Guard", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
@@ -154,15 +142,8 @@ bool TutorialLogic::Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace
 	}
 	case ANVILPLACE:
 	{
-		//Blink button
-		if (_light)
-		{
-			_uiTree->GetNode("AnvilTrap")->SetColorOffset(DirectX::XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f));
-		}
-		else
-		{
-			_uiTree->GetNode("AnvilTrap")->SetColorOffset(DirectX::XMFLOAT4(0, 0, 0, 1.0f));
-		}
+		//Fade button
+		_uiTree->GetNode("AnvilTrap")->SetColorOffset(DirectX::XMFLOAT4(color, color, 0, 1.0f));
 		//Check mouse pos with button
 		if (_uiTree->IsButtonColliding("AnvilTrap", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
 		{
@@ -199,15 +180,8 @@ bool TutorialLogic::Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace
 	}
 	case TESLAPLACE:
 	{
-		//Blink button
-		if (_light)
-		{
-			_uiTree->GetNode("TeslaTrap")->SetColorOffset(DirectX::XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f));
-		}
-		else
-		{
-			_uiTree->GetNode("TeslaTrap")->SetColorOffset(DirectX::XMFLOAT4(0, 0, 0, 1.0f));
-		}
+		//Fade button
+		_uiTree->GetNode("TeslaTrap")->SetColorOffset(DirectX::XMFLOAT4(color, color, 0, 1.0f));
 
 		if (_uiTree->IsButtonColliding("TeslaTrap", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
 		{
@@ -244,15 +218,8 @@ bool TutorialLogic::Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace
 	}
 	case SECURITYCAMERAPLACE:
 	{
-		//Blink button
-		if (_light)
-		{
-			_uiTree->GetNode("Camera")->SetColorOffset(DirectX::XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f));
-		}
-		else
-		{
-			_uiTree->GetNode("Camera")->SetColorOffset(DirectX::XMFLOAT4(0, 0, 0, 1.0f));
-		}
+		//Fade button
+		_uiTree->GetNode("Camera")->SetColorOffset(DirectX::XMFLOAT4(color, color, 0, 1.0f));
 
 		//Check mouse pos with button
 		if (_uiTree->IsButtonColliding("Camera", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
@@ -269,7 +236,6 @@ bool TutorialLogic::Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace
 				_uiTree->GetNode("BudgetValue")->SetText(to_wstring(_gold));
 				toPlace._blueprintID = baseEdit->GetSelectedObject()->GetID();
 				_sCameraPlaced = true;
-				_uiTree->GetNode("Camera")->SetColorOffset(DirectX::XMFLOAT4(0, 0, 0, 1.0f));
 			}
 		}
 		if (_controls->IsFunctionKeyDown("MENU:CONTINUE") && _sCameraPlaced)
@@ -277,6 +243,7 @@ bool TutorialLogic::Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace
 			_currentStage = BUDGETEXPLAINED;
 			_uiTree->GetNode("securitycameraplace")->SetHidden(true);
 			_uiTree->GetNode("budgetexplained")->SetHidden(false);
+			_uiTree->GetNode("Camera")->SetColorOffset(DirectX::XMFLOAT4(0, 0, 0, 1.0f));
 		}
 		break;
 	}
@@ -294,15 +261,8 @@ bool TutorialLogic::Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace
 	}
 	case PLAYEXPLAINED:
 	{
-		//Blink button
-		if (_light)
-		{
-			_uiTree->GetNode("Play")->SetColorOffset(DirectX::XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f));
-		}
-		else
-		{
-			_uiTree->GetNode("Play")->SetColorOffset(DirectX::XMFLOAT4(0, 0, 0, 1.0f));
-		}
+		//Fade button
+		_uiTree->GetNode("Play")->SetColorOffset(DirectX::XMFLOAT4(color, color, 0, 1.0f));
 
 		if (_uiTree->IsButtonColliding("Play", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
 		{

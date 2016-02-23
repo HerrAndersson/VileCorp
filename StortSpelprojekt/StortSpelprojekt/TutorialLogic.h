@@ -44,7 +44,6 @@ private:
 	bool _sCameraPlaced;
 	bool _tutorialCompleted;
 	float _time;
-	bool _light;
 
 public:
 	TutorialLogic(GUI::UITree* uiTree, System::Controls* controls);
