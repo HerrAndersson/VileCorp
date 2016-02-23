@@ -22,9 +22,11 @@ namespace Renderer
 		_particleScale = 1.0f;
 		_targetPosition = XMFLOAT3(0, 0, 0);
 		_ownerID = -1;
+		_isTimed = true;
+		_shaderData.clear();
 	}
 
-	ParticleEmitter::ParticleEmitter(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const ParticleType& type, const ParticleSubType& subType, int ownerID, const XMFLOAT3& position, const XMFLOAT3& direction, int particleCount, float timeLimit, float scale, bool isActive, ParticleModifierOffsets* modifers, const XMFLOAT3& target)
+	ParticleEmitter::ParticleEmitter(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const ParticleType& type, const ParticleSubType& subType, int ownerID, const XMFLOAT3& position, const XMFLOAT3& direction, int particleCount, float timeLimit, float scale, bool isActive, bool isTimed, ParticleModifierOffsets* modifers, const XMFLOAT3& target)
 	{
 		_type = type;
 		_subType = subType;
@@ -40,6 +42,10 @@ namespace Renderer
 		_targetPosition = target;
 		_ownerID = ownerID;
 		_baseDirection = direction;
+		_isTimed = isTimed;
+
+		_shaderData.resize(_particleCount);
+		_particles.reserve(_particleCount);
 
 		CreateAllParticles(particleCount, _targetPosition);
 
@@ -54,7 +60,7 @@ namespace Renderer
 		_particles.clear();
 	}
 
-	void ParticleEmitter::Reset(const ParticleType& type, const ParticleSubType& subType, int ownerID, const XMFLOAT3& position, const XMFLOAT3& direction, int particleCount, float timeLimit, float scale, bool isActive, const XMFLOAT3& target)
+	void ParticleEmitter::Reset(const ParticleType& type, const ParticleSubType& subType, int ownerID, const XMFLOAT3& position, const XMFLOAT3& direction, int particleCount, float timeLimit, float scale, bool isActive, bool isTimed, const XMFLOAT3& target)
 	{
 		_type = type;
 		_subType = subType;
@@ -66,6 +72,10 @@ namespace Renderer
 		_targetPosition = target;
 		_ownerID = ownerID;
 		_baseDirection = direction;
+		_isTimed = isTimed;
+
+		_shaderData.resize(_particleCount);
+		_particles.reserve(_particleCount);
 
 		CreateAllParticles(particleCount, target);
 		CreateVertexBuffer();
@@ -88,7 +98,7 @@ namespace Renderer
 			XMFLOAT3 pos;
 			XMStoreFloat3(&pos, posV);
 
-			_particles[i] = Particle(pos, 0.0f, _modifiers->_lightningRepeatTime);
+			_particles[i] = Particle(pos, 0.0f, _modifiers->_lightningRepeatTime, 0);
 		}
 
 		ComputeLightning(0, count - 1, length);
@@ -146,9 +156,14 @@ namespace Renderer
 				{
 					if (_type != ParticleType::ELECTRICITY)
 					{
+						//Add the particle to the vector of particles
 						Particle particle = CreateSingleParticle();
 						particle.Activate();
 						_particles.push_back(particle);
+
+						//Add relevant data to the vector holding shader information
+						XMFLOAT3 pos = particle.GetPosition();
+						_shaderData[i]._position = XMFLOAT4(pos.x, pos.y, pos.z, particle.GetTextureNumber());
 					}
 				}
 			}
@@ -159,8 +174,13 @@ namespace Renderer
 				{
 					if (_type != ParticleType::ELECTRICITY)
 					{
-						_particles.at(i) = CreateSingleParticle();
+						Particle particle = CreateSingleParticle();
+						_particles.at(i) = particle;
 						_particles.at(i).Activate();
+
+						//Add relevant data to the vector holding shader information
+						XMFLOAT3 pos = particle.GetPosition();
+						_shaderData[i]._position = XMFLOAT4(pos.x, pos.y, pos.z, particle.GetTextureNumber());
 					}
 				}
 			}
@@ -214,6 +234,7 @@ namespace Renderer
 		XMFLOAT2 speedRange;
 		float speed;
 		bool hasModifiers = false;
+		float randomTexture = GetRandomOffset(PARTICLE_TEXTURE_COUNT, false);
 
 		//Set modifier values depending on the type
 		switch (_type)
@@ -272,7 +293,7 @@ namespace Renderer
 		{
 			case SPLASH:
 			{
-				p = Particle(pos, speed, repeatTime, dir);
+				p = Particle(pos, speed, repeatTime, randomTexture, dir);
 
 				break;
 			}
@@ -282,19 +303,20 @@ namespace Renderer
 				XMFLOAT2 offsets(repeatTime /2, repeatTime);
 				float time = GetRandomOffsetInRange(offsets);
 
-				p = Particle(pos, speed, time, dir);
+				p = Particle(pos, speed, time, randomTexture, dir);
 
 				break;
 			}
 			case MUZZLE_FLASH:
 			{
 				pos = XMFLOAT3(GetRandomOffset(0.01f, true), GetRandomOffset(0.01f, true), GetRandomOffset(0.01f, true));
-				p = Particle(pos, 0, 100);
+				p = Particle(pos, 0, 100, randomTexture);
 				break;
 			}
 			case ICON:
 			{
-				p = Particle(XMFLOAT3(0, 0, 0), 0, 100);
+				//Do not set random texture here. The desired icon texture will always be at register 0
+				p = Particle(XMFLOAT3(0, 0, 0), 0, 100, 0);
 				break;
 			}
 			default:
@@ -311,16 +333,15 @@ namespace Renderer
 	void ParticleEmitter::CreateVertexBuffer()
 	{
 		SAFE_RELEASE(_particlePointsBuffer);
-
 		unsigned int particleCount = _particles.size();
-		std::vector<ParticleVertex> points;
-		points.reserve(particleCount);
 
+		//Update the _shaderData vector
 		for (Particle& p : _particles)
 		{
 			ParticleVertex v;
-			v._position = p.GetPosition();
-			points.push_back(v);
+			XMFLOAT3 pos = p.GetPosition();
+			v._position = XMFLOAT4(pos.x, pos.y, pos.z, p.GetTextureNumber());
+			_shaderData.push_back(v);
 		}
 
 		_vertexSize = sizeof(ParticleVertex);
@@ -334,7 +355,7 @@ namespace Renderer
 
 		D3D11_SUBRESOURCE_DATA data;
 		ZeroMemory(&data, sizeof(D3D11_SUBRESOURCE_DATA));
-		data.pSysMem = points.data();
+		data.pSysMem = _shaderData.data();
 		HRESULT result = _device->CreateBuffer(&bufferDesc, &data, &_particlePointsBuffer);
 		if (FAILED(result))
 		{
@@ -351,7 +372,8 @@ namespace Renderer
 		for (Particle& p : _particles)
 		{
 			ParticleVertex v;
-			v._position = p.GetPosition();
+			XMFLOAT3 pos = p.GetPosition();
+			v._position = XMFLOAT4(pos.x, pos.y, pos.z, p.GetTextureNumber());
 			points.push_back(v);
 		}
 
@@ -445,8 +467,8 @@ namespace Renderer
 		UpdateVertexBuffer();
 
 		//The emitter has no owner and should be removed when the time is out. For example Splash.
-		//Emitters with an owner should be deactivated from there
-		if (_ownerID == -1)
+		//If the emitter has an owner this can be set to false, but then the emitter has to be deactivated from there through an UPDATE message in the queue
+		if (_isTimed)
 		{
 			_timeLeft -= (float)deltaTime;
 		}

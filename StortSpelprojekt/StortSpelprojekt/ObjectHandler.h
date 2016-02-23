@@ -19,7 +19,7 @@
 #include "Settings/Settings.h"
 #include "LightCulling.h"
 #include "ParticleSystem\ParticleUtils.h"
-#include "ParticleSystem\ParticleRequestQueue.h"
+#include "ParticleSystem\ParticleEventQueue.h"
 
 /*
 ObjectHandler
@@ -63,7 +63,7 @@ private:
 	map<GameObject*, Renderer::Pointlight*> _pointligths;
 	LightCulling* _lightCulling;
 
-	Renderer::ParticleRequestQueue* _particleRequestQueue;
+	Renderer::ParticleEventQueue* _ParticleEventQueue;
 
 	Architecture*	MakeFloor(GameObjectFloorInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation);
 	Architecture*	MakeWall(GameObjectWallInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation);
@@ -78,7 +78,7 @@ private:
 	void ReleaseGameObjects();
 
 public:
-	ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data, System::Settings* settings, Renderer::ParticleRequestQueue* particleReque);	
+	ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data, System::Settings* settings, Renderer::ParticleEventQueue* particleReque);	
 	~ObjectHandler();
 
 	//Add a gameobject

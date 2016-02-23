@@ -1,7 +1,7 @@
 #include "ObjectHandler.h"
 #include "stdafx.h"
 
-ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data, System::Settings* settings, Renderer::ParticleRequestQueue* particleRequestQueue)
+ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data, System::Settings* settings, Renderer::ParticleEventQueue* ParticleEventQueue)
 {
 	_settings = settings;
 	_idCount = 0;
@@ -11,7 +11,7 @@ ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, G
 	_gameObjectInfo = data;
 	_device = device;
 	_lightCulling = nullptr;
-	_particleRequestQueue = particleRequestQueue;
+	_ParticleEventQueue = ParticleEventQueue;
 
 	ActivateTileset("default2");
 }

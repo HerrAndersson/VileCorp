@@ -26,6 +26,7 @@ namespace Renderer
 		ParticleSubType _subType;
 		std::vector<Particle> _particles;
 		ParticleModifierOffsets* _modifiers;
+		std::vector<ParticleVertex> _shaderData;
 
 		DirectX::XMFLOAT3 _position;
 		DirectX::XMFLOAT3 _baseDirection;
@@ -33,6 +34,7 @@ namespace Renderer
 
 		int _ownerID;
 		bool _isActive;
+		bool _isTimed;
 		float _timeLeft;
 		int _particleCount;
 		float _particleScale; //Used in the geometry shader to generate particles of given scale
@@ -62,10 +64,10 @@ namespace Renderer
 	public:
 
 		ParticleEmitter(ID3D11Device* device, ID3D11DeviceContext* deviceContext, ParticleModifierOffsets* modifers);
-		ParticleEmitter(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const ParticleType& type, const ParticleSubType& subType, int ownerID, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& direction, int particleCount, float timeLimit, float scale, bool isActive, ParticleModifierOffsets* modifers, const DirectX::XMFLOAT3& target = DirectX::XMFLOAT3(0, 0, 0));
+		ParticleEmitter(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const ParticleType& type, const ParticleSubType& subType, int ownerID, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& direction, int particleCount, float timeLimit, float scale, bool isActive, bool isTimed, ParticleModifierOffsets* modifers, const DirectX::XMFLOAT3& target = DirectX::XMFLOAT3(0, 0, 0));
 		virtual ~ParticleEmitter();
 
-		void Reset(const ParticleType& type, const ParticleSubType& subType, int ownerID, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& direction, int particleCount, float timeLimit, float scale, bool isActive, const DirectX::XMFLOAT3& target = DirectX::XMFLOAT3(0, 0, 0));
+		void Reset(const ParticleType& type, const ParticleSubType& subType, int ownerID, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& direction, int particleCount, float timeLimit, float scale, bool isActive, bool isTimed, const DirectX::XMFLOAT3& target = DirectX::XMFLOAT3(0, 0, 0));
 
 		void Update(double deltaTime);
 

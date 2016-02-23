@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -28,7 +28,7 @@
     <ClCompile Include="ParticleSystem\Particle.cpp" />
     <ClCompile Include="ParticleSystem\ParticleEmitter.cpp" />
     <ClCompile Include="ParticleSystem\ParticleHandler.cpp" />
-    <ClCompile Include="ParticleSystem\ParticleRequestQueue.cpp" />
+    <ClCompile Include="ParticleSystem\ParticleEventQueue.cpp" />
     <ClCompile Include="Pointlight.cpp" />
     <ClCompile Include="RenderModule.cpp" />
     <ClCompile Include="ShaderHandler.cpp" />
@@ -47,7 +47,7 @@
     <ClInclude Include="ParticleSystem\Particle.h" />
     <ClInclude Include="ParticleSystem\ParticleEmitter.h" />
     <ClInclude Include="ParticleSystem\ParticleHandler.h" />
-    <ClInclude Include="ParticleSystem\ParticleRequestQueue.h" />
+    <ClInclude Include="ParticleSystem\ParticleEventQueue.h" />
     <ClInclude Include="ParticleSystem\ParticleUtils.h" />
     <ClInclude Include="Pointlight.h" />
     <ClInclude Include="RenderModule.h" />

@@ -127,7 +127,15 @@ namespace Renderer
 		_shadowMapVS = CreateVertexShader(device, L"Assets/Shaders/ShadowVS.hlsl", shadowInputDesc, numElements);
 		_lightApplyLightVolumeVS = CreateVertexShader(device, L"Assets/Shaders/LightApplyLightVolumeVS.hlsl", shadowInputDesc, numElements);
 
-		_billboardingVS = CreateVertexShader(device, L"Assets/Shaders/BillboardingVS.hlsl", shadowInputDesc, numElements);
+		//Holds position.xyz and texture number in a
+		D3D11_INPUT_ELEMENT_DESC billboardInputDesc[] =
+		{
+			{ "POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		};
+
+		numElements = sizeof(billboardInputDesc) / sizeof(billboardInputDesc[0]);
+
+		_billboardingVS = CreateVertexShader(device, L"Assets/Shaders/BillboardingVS.hlsl", billboardInputDesc, numElements);
 		_billboardingPS = CreatePixelShader(device, L"Assets/Shaders/BillboardingPS.hlsl");
 		_billboardingGS = CreateGeometryShader(device, L"Assets/Shaders/BillboardingGS.hlsl");
 

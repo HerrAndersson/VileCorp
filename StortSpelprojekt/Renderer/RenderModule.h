@@ -129,7 +129,6 @@ namespace Renderer
 			DirectX::XMMATRIX _camProjection;
 			DirectX::XMFLOAT3 _camPosition;
 			float _scale;
-			int _textureCount;
 			int _isIcon;
 		};
 

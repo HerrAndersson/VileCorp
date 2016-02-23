@@ -38,13 +38,14 @@ struct ParticleRequestMessage : ParticleMessage
 	float _timeLimit = 0; //Milliseconds
 	int _particleCount = 0;
 	bool _isActive = false;
+	bool _isTimed = true;
 	float _scale = 1.0f;
 
 	ParticleRequestMessage() : ParticleMessage(REQUEST, -1)
 	{
 	}
 
-	ParticleRequestMessage(ParticleType type, ParticleSubType subType, int ownerID, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& direction, float timeLimit, int particleCount, float scale, bool isActive, const DirectX::XMFLOAT3& target = DirectX::XMFLOAT3(0, 0, 0))
+	ParticleRequestMessage(ParticleType type, ParticleSubType subType, int ownerID, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& direction, float timeLimit, int particleCount, float scale, bool isActive, bool isTimed = true, const DirectX::XMFLOAT3& target = DirectX::XMFLOAT3(0, 0, 0))
 						 : ParticleMessage(REQUEST, ownerID)
 	{
 		_type = type;
@@ -54,6 +55,7 @@ struct ParticleRequestMessage : ParticleMessage
 		_timeLimit = timeLimit;
 		_particleCount = particleCount;
 		_isActive = isActive;
+		_isTimed = isTimed;
 		_target = target;
 		_scale = scale;
 	}

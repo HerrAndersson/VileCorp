@@ -12,7 +12,7 @@
     "_smokeSpeedRange.y": 0.5,
     "_fireSpeedRange.x": 0.5,
     "_fireSpeedRange.y": 0.69999998807907104,
-    "_smokeRepeatTime": 1000,
+    "_smokeRepeatTime": 5000,
     "_fireRepeatTime": 1500,
     "_lightningRepeatTime": 100,
     "_subtypeTexturePaths": [

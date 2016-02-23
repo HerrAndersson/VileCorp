@@ -17,7 +17,7 @@ namespace Renderer
 			_particleEmitters.push_back(new ParticleEmitter(device, deviceContext, &_modifiers));
 		}
 
-		_requestQueue = new ParticleRequestQueue(&_queue);
+		_requestQueue = new ParticleEventQueue(&_queue);
 	}
 
 	ParticleHandler::~ParticleHandler()
@@ -54,7 +54,7 @@ namespace Renderer
 				{
 					int ownerID = msg->_ownerID;
 					ParticleRequestMessage* message = (ParticleRequestMessage*)msg;
-					ActivateEmitter(message->_type, message->_subType, ownerID, message->_position, message->_direction, message->_particleCount, message->_timeLimit, message->_scale, message->_isActive, message->_target);
+					ActivateEmitter(message->_type, message->_subType, ownerID, message->_position, message->_direction, message->_particleCount, message->_timeLimit, message->_scale, message->_isActive, message->_isTimed, message->_target);
 				}
 				else if (msg->_messageType == msg->UPDATE)
 				{
@@ -83,7 +83,7 @@ namespace Renderer
 		}
 	}
 
-	void ParticleHandler::ActivateEmitter(const ParticleType& type, const ParticleSubType& subType, int ownerID, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& direction, int particleCount, float timeLimit, float scale, bool isActive, const DirectX::XMFLOAT3& target)
+	void ParticleHandler::ActivateEmitter(const ParticleType& type, const ParticleSubType& subType, int ownerID, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& direction, int particleCount, float timeLimit, float scale, bool isActive, bool isTimed, const DirectX::XMFLOAT3& target)
 	{
 		bool found = false;
 
@@ -91,7 +91,7 @@ namespace Renderer
 		{
 			if (!p->IsActive())
 			{
-				p->Reset(type, subType, ownerID, position, direction, particleCount, timeLimit, scale, isActive, target);
+				p->Reset(type, subType, ownerID, position, direction, particleCount, timeLimit, scale, isActive, isTimed, target);
 				found = true;
 				break;
 			}
@@ -99,7 +99,7 @@ namespace Renderer
 
 		if (!found)
 		{
-			ParticleEmitter* particleEmitter = new ParticleEmitter(_device, _deviceContext, type, subType, ownerID, position, direction, particleCount, timeLimit, scale, isActive, &_modifiers, target);
+			ParticleEmitter* particleEmitter = new ParticleEmitter(_device, _deviceContext, type, subType, ownerID, position, direction, particleCount, timeLimit, scale, isActive, isTimed, &_modifiers, target);
 			_particleEmitters.push_back(particleEmitter);
 			_emitterCount++;
 		}
@@ -110,7 +110,7 @@ namespace Renderer
 		return _emitterCount;
 	}
 
-	ParticleRequestQueue* ParticleHandler::GetParticleRequestQueue()
+	ParticleEventQueue* ParticleHandler::GetParticleEventQueue()
 	{
 		return _requestQueue;
 	}

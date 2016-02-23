@@ -261,7 +261,6 @@ namespace Renderer
 		dataPtr->_camProjection = XMMatrixTranspose(*camProjection);
 		dataPtr->_camPosition = camPos;
 		dataPtr->_scale = scale;
-		dataPtr->_textureCount = textureCount;
 		dataPtr->_isIcon = isIcon;
 		deviceContext->Unmap(_matrixBufferParticles, 0);
 
