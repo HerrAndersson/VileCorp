@@ -74,6 +74,8 @@ namespace Renderer
 		_baseDirection = direction;
 		_isTimed = isTimed;
 
+		_particles.clear();
+		_shaderData.clear();
 		_shaderData.resize(_particleCount);
 		_particles.reserve(_particleCount);
 
