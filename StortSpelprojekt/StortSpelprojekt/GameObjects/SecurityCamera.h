@@ -17,7 +17,7 @@ public:
 	SecurityCamera(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject* renderObject, const Tilemap* tileMap);
 	virtual ~SecurityCamera();
 	AI::Vec2D GetDirection() const;
-	void SetDirection(AI::Vec2D direction);
+	void SetDirection(const AI::Vec2D direction);
 	void CheckVisibleTiles();
 	void Update(float deltaTime);
 	void Release();

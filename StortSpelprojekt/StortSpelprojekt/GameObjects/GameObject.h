@@ -69,7 +69,7 @@ public:
 	AI::Vec2D GetDirection()const;
 
 	virtual void SetTilePosition(AI::Vec2D dir);
-	virtual void SetDirection(AI::Vec2D pos);
+	virtual void SetDirection(const AI::Vec2D pos);
 	Type GetType() const;
 	unsigned int GetSubType() const;
 
