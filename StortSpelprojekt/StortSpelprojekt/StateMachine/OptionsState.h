@@ -29,7 +29,9 @@ private:
 	Options _aa[WINDOW_MAX];
 	int _aaOption;
 
-	float _volumeOption;
+	static const int SOUND_MAX = 20;
+	Options _sound[SOUND_MAX];
+	int _soundOption;
 
 	System::SettingsReader* _settingsReader;
 private:

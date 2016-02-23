@@ -33,7 +33,11 @@ OptionsState::OptionsState(System::Controls* controls, ObjectHandler* objectHand
 	_aaOption = 0;
 
 	//TODO: Volume setting //Mattias
-	_volumeOption = 100.0f;
+	for (int i = 0; i < SOUND_MAX * 5; i += 5)
+	{
+		_sound[i] = { to_wstring(i) + L"%", i, 0 };
+	}
+	_soundOption = 100;
 }
 
 OptionsState::~OptionsState()
@@ -58,9 +62,13 @@ int OptionsState::ReadSetting(int setting, int setting2, Options* options, int m
 void OptionsState::UpdateText(const std::string& contentId, int optionValue, Options* options)
 {
 	GUI::Node* text = _uiTree.GetNode(contentId);
-	if (text)
+	if (text && options != nullptr)
 	{
 		text->SetText(options[optionValue]._text);
+	}
+	else
+	{
+		text->SetText(to_wstring(optionValue) + L"%");
 	}
 }
 
@@ -110,6 +118,7 @@ void OptionsState::Update(float deltaTime)
 		showApplyButton = showApplyButton || HandleOptionSwitch("win_left", "win_right", "win_content", _windowOption, _window, WINDOW_MAX);
 		showApplyButton = showApplyButton || HandleOptionSwitch("aa_left", "aa_right", "aa_content", _aaOption, _aa, AA_MAX);
 		showApplyButton = showApplyButton || HandleOptionSwitch("shadow_left", "shadow_right", "shadow_content", _shadowmapOption, _shadowmap, SHADOWMAP_MAX);
+		showApplyButton = showApplyButton || HandleOptionSwitch("sound_left", "sound_right", "sound_content", _soundOption, _sound, SOUND_MAX);
 
 		if (showApplyButton)
 		{
