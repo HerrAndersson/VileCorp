@@ -25,13 +25,18 @@ void LevelSelectState::Update(float deltaTime)
 	{
 		_uiTree.ReloadTree("../../../../StortSpelprojekt/Assets/gui.json", "LEVELSELECT");
 	}
+	System::MouseCoord coord = _controls->GetMouseCoord();
+	XMFLOAT4 color(0.3f, 0.3f, 0.3f, 1.0f);
+	HandleHoverColorOffset("nextlevel", "nextlevel", coord, color);
+	HandleHoverColorOffset("prevlevel", "prevlevel", coord, color);
+	HandleHoverColorOffset("playbutton", "playbutton", coord, color);
+
 	if (_controls->IsFunctionKeyDown("MENU:MENU"))
 	{
 		ChangeState(State::MENUSTATE);
 	}
 	if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
-		System::MouseCoord coord = _controls->GetMouseCoord();
 		if (_uiTree.IsButtonColliding("playbutton", coord._pos.x, coord._pos.y))
 		{
 			_soundModule->Play("Assets/Sounds/page");

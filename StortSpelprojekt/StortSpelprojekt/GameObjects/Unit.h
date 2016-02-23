@@ -11,7 +11,6 @@ public:
 
 	enum MoveState {IDLE, FINDING_PATH, MOVING, SWITCHING_NODE, AT_OBJECTIVE, FLEEING};
 protected:
-	AI::Vec2D _direction;
 	AI::Vec2D _nextTile;
 	AI::AStar* _aStar;
 	AI::Vec2D _goalTilePosition;

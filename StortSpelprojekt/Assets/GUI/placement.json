@@ -1,69 +1,88 @@
 {
-  
   		"Units":
 		{
 			"position": [-0.7, -0.855],	
 			"scale": [0.3, 0.2],
 			"texture": "../Menues/PlacementStateGUI/placementUnits1.png",
 			
+			
 			"Guard" :
 			{
-				"position": [-0.18, 0.057],	
-				"scale": [0.048, 0.083],
+				"position": [-0.20, 0.057],	
+				"scale": [0.037, 0.063],
 				"texture": "../Menues/PlacementStateGUI/units/Guardbutton1.png",
 				
 				"GuardText":
 				{
-					"position" : [0.975, -1.08],
-					"scale": [1.0, 1.0],
-					"text": "Guard 200$",
+					"position" : [0.0, -0.173],
+					"scale": [0.068, 0.083],
+					"text": "Guard\n  200$",
 					"color": "FF000000",
-					"fontsize" : 18.0
+					"fontsize" : 18.0,
+					"centered": true
 				}				
 			},
 			"AnvilTrap" :
 			{
-				"position": [-0.06, 0.057],	
-				"scale": [0.048, 0.083],
+				"position": [-0.1, 0.057],	
+				"scale": [0.037, 0.063],
 				"texture": "../Menues/PlacementStateGUI/units/Anvilbutton1.png",
 				
 				"AnvilText":
 				{
-					"position" : [0.96, -1.08],
-					"scale": [1.0, 1.0],
-					"text": "Anvil Trap 50$",
+					"position" : [0.0, -0.173],
+					"scale": [0.068, 0.083],
+					"text": "Anvil Trap\n    50$",
 					"color": "FF000000",
-					"fontsize" : 18.0
+					"fontsize" : 18.0,
+					"centered": true
 				}
 			},
 			"TeslaTrap" :
 			{
-				"position": [0.06, 0.057],	
-				"scale": [0.048, 0.083],
+				"position": [0.0, 0.057],	
+				"scale": [0.037, 0.063],
 				"texture": "../Menues/PlacementStateGUI/units/Teslabutton1.png",
 				
 				"TeslaText":
 				{
-					"position" : [0.96, -1.08],
-					"scale": [1.0, 1.0],
-					"text": "Tesla Trap 100$",
+					"position" : [0.0, -0.173],
+					"scale": [0.068, 0.083],
+					"text": "Tesla Trap\n    100$",
 					"color": "FF000000",
 					"fontsize" : 18.0
 				}
 			},
+			"MachineGunTrap" :
+			{
+				"position": [0.1, 0.057],	
+				"scale": [0.037, 0.063],
+				"texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png",
+				
+				"TeslaText":
+				{
+					"position" : [0.952, -1.08],
+					"scale": [1.0, 1.0],
+					"text": "MachineGun\n       200$",
+					"color": "FF000000",
+					"fontsize" : 18.0,
+					"centered": true
+				}
+			},
 			"Camera" :
 			{
-				"position": [0.18, 0.057],	
-				"scale": [0.048, 0.083],
+				"position": [0.2, 0.057],	
+				"scale": [0.037, 0.063],
 				"texture": "../Menues/PlacementStateGUI/units/Camerabutton1.png",
 				
 				"CameraText":
 				{
-					"position" : [0.97, -1.08],
-					"scale": [1.0, 1.0],
-					"text": "Camera 80$",
+					"position" : [0.0, -0.173],
+					"scale": [0.068, 0.083],
+					"text": "Camera\n    80$",
 					"color": "FF000000",
-					"fontsize" : 18.0
+					"fontsize" : 18.0,
+					"centered": true
 				}
 			}
 		},

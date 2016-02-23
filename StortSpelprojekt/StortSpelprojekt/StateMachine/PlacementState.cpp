@@ -64,6 +64,14 @@ void PlacementState::Update(float deltaTime)
 
 	HandleInput();
 	HandleButtons();
+
+	System::MouseCoord coord = _controls->GetMouseCoord();
+	HandleHoverColorOffset("Guard", "Guard", coord, XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f));
+	HandleHoverColorOffset("AnvilTrap", "AnvilTrap", coord, XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f));
+	HandleHoverColorOffset("TeslaTrap", "TeslaTrap", coord, XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f));
+	HandleHoverColorOffset("Camera", "Camera", coord, XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f));
+
+	HandleHoverColorOffset("Play", "Play", coord, XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f));
 }
 
 void PlacementState::OnStateEnter()
@@ -188,6 +196,19 @@ void PlacementState::HandleButtons()
 			create = true;
 		}
 	}
+
+	if (_uiTree.IsButtonColliding("MachineGunTrap", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
+	{
+		_toPlace._type = TRAP;
+		_toPlace._name = "gun_trap";
+
+		if (_baseEdit->IsSelection() && !_baseEdit->IsPlace())
+		{
+			_toPlace._subType = GUN;
+			create = true;
+		}
+	}
+
 	if (_uiTree.IsButtonColliding("Camera", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
 		_toPlace._type = CAMERA;
