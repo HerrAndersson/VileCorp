@@ -11,14 +11,16 @@ namespace Renderer
 		_isActive = false;
 		_speed = 0;
 		_timeLeft = 0;
+		_textureNumber = 0;
 	}
 
-	Particle::Particle(const XMFLOAT3& position, float speed, float timeLeft, const XMFLOAT3& direction)
+	Particle::Particle(const XMFLOAT3& position, float speed, float timeLeft, float textureNumber, const XMFLOAT3& direction)
 	{
 		_position = position;
 		_direction = direction;
 		_speed = speed;
 		_timeLeft = timeLeft;
+		_textureNumber = textureNumber;
 	}
 
 	Particle::~Particle()
@@ -43,6 +45,11 @@ namespace Renderer
 	float Particle::GetTimeLeft() const
 	{
 		return _timeLeft;
+	}
+
+	float Particle::GetTextureNumber() const
+	{
+		return _textureNumber;
 	}
 
 	void Particle::SetPosition(const XMFLOAT3& position)

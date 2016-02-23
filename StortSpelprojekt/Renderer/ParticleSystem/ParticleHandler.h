@@ -4,7 +4,7 @@
 #include <d3d11.h>
 #include "ParticleEmitter.h"
 #include <vector>
-#include "ParticleRequestQueue.h"
+#include "ParticleEventQueue.h"
 
 //Disable warning about DirectX XMFLOAT3/XMMATRIX etc
 #pragma warning( disable: 4251 )
@@ -23,12 +23,12 @@ namespace Renderer
 		ParticleModifierOffsets _modifiers;
 
 		std::vector<ParticleMessage*> _queue;
-		ParticleRequestQueue* _requestQueue;
+		ParticleEventQueue* _requestQueue;
 		std::vector<ParticleEmitter*> _particleEmitters;
 
 		int _emitterCount;
 
-		void ActivateEmitter(const ParticleType& type, const ParticleSubType& subType, int ownerID, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& direction, int particleCount, float timeLimit, float scale, bool isActive, const DirectX::XMFLOAT3& target = DirectX::XMFLOAT3(0, 0, 0));
+		void ActivateEmitter(const ParticleType& type, const ParticleSubType& subType, int ownerID, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& direction, int particleCount, float timeLimit, float scale, bool isActive, bool isTimed, const DirectX::XMFLOAT3& target = DirectX::XMFLOAT3(0, 0, 0));
 
 	public:
 
@@ -44,7 +44,7 @@ namespace Renderer
 		
 		void DeactivateAllEmitters();
 
-		ParticleRequestQueue* GetParticleRequestQueue();
+		ParticleEventQueue* GetParticleEventQueue();
 
 	};
 }

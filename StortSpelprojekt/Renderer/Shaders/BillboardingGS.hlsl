@@ -5,13 +5,13 @@ cbuffer matrixBufferBillboarding : register(b6)
 	matrix camProjectionMatrix;
 	float3 campos;
 	float scale;
-	int textureCount;
 	int isIcon;
 };
 
 struct GS_IN
 {
 	float4 position : SV_POSITION;
+	float textureNumber : TEXNUM;
 };
 
 struct GS_OUT
@@ -22,12 +22,12 @@ struct GS_OUT
 	float textureNumber : TEXNUM;
 };
 
-///Gives random number in the range [0, 0.99999...]
-float random(float2 p)
-{
-	const float2 randomSeed = float2(23.1406926327792690, 2.6651441426902251);
-	return (frac(cos(123456789.0f % 1e-7 + 256.0f * dot(p, randomSeed))));
-}
+/////Gives random number in the range [0, 0.99999...]
+//float random(float2 p)
+//{
+//	const float2 randomSeed = float2(23.1406926327792690, 2.6651441426902251);
+//	return (frac(cos(123456789.0f % 1e-7 + 256.0f * dot(p, randomSeed))));
+//}
 
 [maxvertexcount(4)]
 void main(point GS_IN input[1], inout TriangleStream<GS_OUT> OutputStream)
@@ -46,6 +46,8 @@ void main(point GS_IN input[1], inout TriangleStream<GS_OUT> OutputStream)
 		right = float4(normalize(cross(particleToCam, up.xyz)).xyz, 0) * scale;
 		normal = cross(up.xyz, right.xyz).xyz;
 		normal = normalize(normal.xyz);
+
+		//Icon should never be randomized. This is an extra safeguard
 		textureNumber = 0;
 	}
 	else
@@ -55,7 +57,7 @@ void main(point GS_IN input[1], inout TriangleStream<GS_OUT> OutputStream)
 		right = float4(normalize(cross(particleToCam, up.xyz)).xyz, 0) * scale;
 		up = float4(normalize(cross(particleToCam, right.xyz)).xyz, 0) * scale;
 
-		textureNumber = textureCount * random(float2(input[0].position.xz));
+		textureNumber = input[0].textureNumber;
 	}
 
 	//2------4
