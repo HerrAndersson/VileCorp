@@ -25,6 +25,10 @@ private:
 	float					_buttonReady;
 	bool					_gameOver;
 
+	//TODO: add gamemodes /Rikhard
+	int _gameMode;
+	int _surviveForSeconds;
+
 	void HandleInput(float deltaTime);
 	void HandleUnitSelect();
 	void ShowSelectedInfo();

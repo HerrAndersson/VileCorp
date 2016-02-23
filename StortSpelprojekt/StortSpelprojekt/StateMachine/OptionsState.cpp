@@ -5,8 +5,6 @@
 OptionsState::OptionsState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule)
 	: BaseState (controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settingsReader, soundModule)
 {
-	_settingsReader = settingsReader;
-
 	//Resolution options
 	_resolution[0] = { L"1280x720", 1280, 720 };
 	_resolution[1] = { L"1366x768", 1366, 768 };
@@ -96,8 +94,23 @@ void OptionsState::Update(float deltaTime)
 {
 	if (_controls->IsFunctionKeyDown("DEBUG:RELOAD_GUI"))
 	{
-		_uiTree.ReloadTree("../../../../StortSpelprojekt/Assets/gui.json", "OPTIONS");
+		_uiTree.ReloadTree("../../../../StortSpelprojekt/Assets/GUI/options.json");
 	}
+	System::MouseCoord coord = _controls->GetMouseCoord();
+	XMFLOAT4 color(0.3f, 0.3f, 0.3f, 1.0f);
+	HandleHoverColorOffset("apply", "apply", coord, color);
+	HandleHoverColorOffset("cancel", "cancel", coord, color);
+
+	HandleHoverColorOffset("res_left", "res_left", coord, color);
+	HandleHoverColorOffset("win_left", "win_left", coord, color);
+	HandleHoverColorOffset("aa_left", "aa_left", coord, color);
+	HandleHoverColorOffset("shadow_left", "shadow_left", coord, color);
+
+	HandleHoverColorOffset("res_right", "res_right", coord, color);
+	HandleHoverColorOffset("win_right", "win_right", coord, color);
+	HandleHoverColorOffset("aa_right", "aa_right", coord, color);
+	HandleHoverColorOffset("shadow_right", "shadow_right", coord, color);
+
 	if (_controls->IsFunctionKeyDown("MENU:MENU"))
 	{
 		_soundModule->Play("Assets/Sounds/page");
@@ -117,7 +130,6 @@ void OptionsState::Update(float deltaTime)
 		}
 
 		//Check it the apply button was pressed and change settings file and update the window resolution if needed
-		System::MouseCoord coord = _controls->GetMouseCoord();
 		if (_uiTree.IsButtonColliding("apply", coord._pos.x, coord._pos.y))
 		{
 			System::Settings* settings = _settingsReader->GetSettings();

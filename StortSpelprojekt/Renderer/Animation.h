@@ -8,6 +8,9 @@
 
 using namespace DirectX;
 
+//Disable warning about dll-interface
+#pragma warning( disable: 4251 )
+
 class __declspec(dllexport) Animation
 {
 private:
@@ -43,19 +46,10 @@ public:
 	void SetActionAsCycle(int action, float speed, bool reset = false);
 	void Freeze(bool freeze);
 	void SetSpeed(float speed, bool cycle);
+	XMMATRIX* GetTransforms();
 	void PlayAction(int action, float speed, bool freeze = false, bool lastFrame = false);
-	XMMATRIX* GetTransforms()
-	{
-		return finalTransforms;
-	}
-	std::vector<XMFLOAT4X4>* GetFloats()
-	{
-		return &finalFloats;
-	}
-	int GetBoneCount() const
-	{
-		return _boneCount;
-	} 
+	std::vector<XMFLOAT4X4>* GetFloats();
+	int GetBoneCount() const;
 	bool GetisFinished();
 	float GetLength(int animation, float speed = 1.0f);
 };
