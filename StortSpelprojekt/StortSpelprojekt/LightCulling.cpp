@@ -6,7 +6,8 @@ void LightCulling::TransformSpotlight(Renderer::Spotlight* spotlight, std::vecto
 	Vec3 direction = Vec3(spotlight->GetDirection()).Normalize();
 	Vec3 range = direction * spotlight->GetRange() * 1.2f;
 	Vec3 width = direction.Cross(Vec3(0.0f, 1.0f, 0.0f)) * (range * std::sin(spotlight->GetAngle()*0.5f)).Length();
-	Vec3 pos = Vec3(spotlight->GetPosition());
+	//Offalign the position a little so it won't get stuck between quads
+	Vec3 pos = Vec3(spotlight->GetPosition())*1.000001f;
 
 	//std::vector<Vec2>* triangle = new std::vector<Vec2>();
 	triangle->push_back(Vec2(pos._x, pos._z));
@@ -38,7 +39,8 @@ LightCulling::LightCulling()
 LightCulling::LightCulling(Tilemap* tilemap)
 {
 	_tilemap = tilemap;
-	_quadTreeRoot = new QuadTree(Vec2(), Vec2((float)_tilemap->GetWidth(), (float)_tilemap->GetHeight()));
+	//Align with tilemap
+	_quadTreeRoot = new QuadTree(Vec2(-0.5f,-0.5f), Vec2((float)_tilemap->GetWidth()+0.5f, (float)_tilemap->GetHeight()+0.5f));
 
 	_objectsInLight = new std::vector<std::vector<GameObject*>>();
 	_objectsInLight->reserve(NR_OF_TYPES);
