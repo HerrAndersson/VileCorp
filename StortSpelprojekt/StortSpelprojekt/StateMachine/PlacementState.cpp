@@ -27,6 +27,8 @@ PlacementState::PlacementState(System::Controls* controls, ObjectHandler* object
 
 	//if tutorial should initialize
 	_tutorialLogic = new TutorialLogic(&_uiTree, _controls);
+
+	unitsInfo = new UnitsInfo;
 }
 
 void PlacementState::EvaluateGoldCost()
@@ -87,7 +89,7 @@ void PlacementState::Update(float deltaTime)
 
 	HandleHoverColorOffset("Play", "Play", coord, XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f));
 	//baseEdit update handles basic controls.
-	_baseEdit->Update(deltaTime);
+	HandleDescriptions();
 }
 
 void PlacementState::OnStateEnter()
@@ -107,6 +109,17 @@ void PlacementState::OnStateEnter()
 	campos.y = 15;
 	campos.z = _objectHandler->GetTileMap()->GetHeight() / 2 - 10;
 	_camera->SetPosition(campos);
+
+	_uiTree.GetNode("GuardDescription")->SetHidden(true);
+	_uiTree.GetNode("GuardCost")->SetText(L"Cost: " + to_wstring(unitsInfo->guardCost) + L"$");
+	_uiTree.GetNode("AnvilDescription")->SetHidden(true);
+	_uiTree.GetNode("AnvilCost")->SetText(L"Cost: " + to_wstring(unitsInfo->anvilCost) + L"$");
+	_uiTree.GetNode("TeslaDescription")->SetHidden(true);
+	_uiTree.GetNode("TeslaCost")->SetText(L"Cost: " + to_wstring(unitsInfo->teslaCost) + L"$");
+	_uiTree.GetNode("CameraDescription")->SetHidden(true);
+	_uiTree.GetNode("CameraCost")->SetText(L"Cost: " + to_wstring(unitsInfo->cameraCost) + L"$");
+	_uiTree.GetNode("MachineGunDescription")->SetHidden(true);
+	_uiTree.GetNode("MachineGunCost")->SetText(L"Cost: " + to_wstring(unitsInfo->machineGunCost) + L"$");
 
 	//if it is also New tutorial. Reset it so we can start a new.
 	if (_tutorialState == TutorialState::NEWTUTORIAL)
@@ -297,4 +310,61 @@ void PlacementState::HandleButtons()
 
 }
 
+void PlacementState::HandleDescriptions()
+{
+	System::MouseCoord coord = _controls->GetMouseCoord();
+	if (_uiTree.IsButtonColliding("Guard", coord._pos.x, coord._pos.y))
+	{
+		_uiTree.GetNode("GuardDescription")->SetHidden(false);
 
+		// Add description
+	}
+	else
+	{
+		_uiTree.GetNode("GuardDescription")->SetHidden(true);
+	}
+
+	if (_uiTree.IsButtonColliding("AnvilTrap", coord._pos.x, coord._pos.y))
+	{
+		_uiTree.GetNode("AnvilDescription")->SetHidden(false);
+
+		// Add description
+	}
+	else
+	{
+		_uiTree.GetNode("AnvilDescription")->SetHidden(true);
+	}
+
+	if (_uiTree.IsButtonColliding("TeslaTrap", coord._pos.x, coord._pos.y))
+	{
+		_uiTree.GetNode("TeslaDescription")->SetHidden(false);
+
+		// Add description
+	}
+	else
+	{
+		_uiTree.GetNode("TeslaDescription")->SetHidden(true);
+	}
+
+	if (_uiTree.IsButtonColliding("MachineGunTrap", coord._pos.x, coord._pos.y))
+	{
+		_uiTree.GetNode("MachineGunDescription")->SetHidden(false);
+
+		// Add description
+	}
+	else
+	{
+		_uiTree.GetNode("MachineGunDescription")->SetHidden(true);
+	}
+
+	if (_uiTree.IsButtonColliding("Camera", coord._pos.x, coord._pos.y))
+	{
+		_uiTree.GetNode("CameraDescription")->SetHidden(false);
+
+		// Add description
+	}
+	else
+	{
+		_uiTree.GetNode("CameraDescription")->SetHidden(true);
+	}
+}

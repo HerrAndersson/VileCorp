@@ -20,6 +20,21 @@
 					"color": "FF000000",
 					"fontsize": 18.0,
 					"centered": true
+				},
+				"GuardDescription":
+				{
+					"position" : [0.0, 0.20],
+					"scale": [0.1, 0.07],
+					"texture": "../Menues/General/wide-button-thin.png",
+					
+					"GuardCost":
+					{
+						"position" : [0.0, 0.0],
+						"scale": [0.05, 0.02],
+						"text": "Cost: 100",
+						"centered": true,
+						"fontsize" : 18.0
+					}
 				}
 			},
 			"Engineer": {
@@ -48,6 +63,20 @@
 					"color": "FF000000",
 					"fontsize": 18.0,
 					"centered": true
+				},
+				"CameraDescription":
+				{
+					"position" : [0.0, 0.20],
+					"scale": [0.1, 0.07],
+					"texture": "../Menues/General/wide-button-thin.png",
+					
+					"CameraCost":
+					{
+						"position" : [0.0, 0.0],
+						"scale": [0.05, 0.02],
+						"text": "Cost: 100",
+						"fontsize" : 18.0
+					}
 				}
 			},
 			"AnvilTrap": {
@@ -62,6 +91,21 @@
 					"color": "FF000000",
 					"fontsize": 18.0,
 					"centered": true
+				},
+				"AnvilDescription":
+				{
+					"position" : [0.0, 0.20],
+					"scale": [0.1, 0.07],
+					"texture": "../Menues/General/wide-button-thin.png",
+					
+					"AnvilCost":
+					{
+						"position" : [0.0, 0.0],
+						"scale": [0.05, 0.02],
+						"text": "Cost: 100",
+						"centered": true,
+						"fontsize" : 18.0
+					}
 				}
 			},
 			"TeslaTrap": {
@@ -75,7 +119,22 @@
 					"text": "Tesla Trap\n  100$",
 					"color": "FF000000",
 					"fontsize" : 18.0
+					},
+				"TeslaDescription":
+				{
+					"position" : [0.0, 0.20],
+					"scale": [0.1, 0.07],
+					"texture": "../Menues/General/wide-button-thin.png",
+					
+					"TeslaCost":
+					{
+						"position" : [0.0, 0.0],
+						"scale": [0.05, 0.02],
+						"text": "Cost: 100",
+						"centered": true,
+						"fontsize" : 18.0
 					}
+				}
 				},
 			"MachineGunTrap" :{
 				"position": [0.42, 0.057],
@@ -90,6 +149,21 @@
 				"color": "FF000000",
 				"fontsize": 18.0,
 				"centered": true
+				},
+				"MachineGunDescription":
+				{
+					"position" : [0.0, 0.20],
+					"scale": [0.1, 0.07],
+					"texture": "../Menues/General/wide-button-thin.png",
+					
+					"MachineGunCost":
+					{
+						"position" : [0.0, 0.0],
+						"scale": [0.05, 0.02],
+						"text": "Cost: 100",
+						"centered": true,
+						"fontsize" : 18.0
+					}
 				}
 			},
 			"SharkTrap" :{
