@@ -88,7 +88,7 @@ Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	_direction = {0, 1};
 	_nextTile = _tilePosition;
 	_isSwitchingTile = false;
-	speedMultiplyer = 2.0f;
+	_speedMultiplier = 2.0f;
 	Rotate();
 	if (_renderObject->_isSkinned)
 	{
@@ -274,10 +274,6 @@ void Unit::Update(float deltaTime)
 void Unit::Release()
 {}
 
-void Unit::Wait()
-{
-}
-
 void Unit::ClearObjective()
 {
 	_objective = nullptr;
@@ -418,16 +414,16 @@ void Unit::Animate(Anim anim)
 			switch (anim)
 			{
 			case IDLEANIM:
-				_animation->SetActionAsCycle(0, 1.0f * speedMultiplyer);
+				_animation->SetActionAsCycle(0, 1.0f * _speedMultiplier);
 				break;
 			case WALKANIM:
-				_animation->SetActionAsCycle(1, 1.0f * speedMultiplyer);
+				_animation->SetActionAsCycle(1, 1.0f * _speedMultiplier);
 				break;
 			case FIXTRAPANIM:
-				_animation->SetActionAsCycle(2, 1.0f * speedMultiplyer);
+				_animation->SetActionAsCycle(2, 1.0f * _speedMultiplier);
 				break;
 			case FIGHTANIM:
-				_animation->PlayAction(4, 4.5f * speedMultiplyer);
+				_animation->PlayAction(4, 4.5f * _speedMultiplier);
 				break;
 			default:
 				break;
@@ -438,16 +434,16 @@ void Unit::Animate(Anim anim)
 			switch (anim)
 			{
 			case IDLEANIM:
-				_animation->SetActionAsCycle(0, 1.0f * speedMultiplyer);
+				_animation->SetActionAsCycle(0, 1.0f * _speedMultiplier);
 				break;
 			case WALKANIM:
-				_animation->SetActionAsCycle(1, 1.0f * speedMultiplyer);
+				_animation->SetActionAsCycle(1, 1.0f * _speedMultiplier);
 				break;
 			case FIGHTANIM:
-				_animation->PlayAction(1, 1.0f * speedMultiplyer);
+				_animation->PlayAction(1, 1.0f * _speedMultiplier);
 				break;
 			case PICKUPOBJECTANIM:
-				_animation->PlayAction(3, 1.0f * speedMultiplyer);
+				_animation->PlayAction(3, 1.0f * _speedMultiplier);
 				break;
 			default:
 				break;
