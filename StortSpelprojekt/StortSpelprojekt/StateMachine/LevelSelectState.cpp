@@ -11,7 +11,6 @@ LevelSelectState::LevelSelectState(System::Controls* controls, ObjectHandler* ob
 	{
 		_uiTree.GetNode(std::to_string(i))->SetHidden(true);
 	}
-	
 }
 
 

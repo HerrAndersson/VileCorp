@@ -75,8 +75,6 @@ void PlacementState::Update(float deltaTime)
 	{
 		//Handle the buttons normally
 		HandleButtons();
-
-	
 	}
 	
 	HandleInput();
@@ -87,8 +85,7 @@ void PlacementState::Update(float deltaTime)
 	HandleHoverColorOffset("TeslaTrap", "TeslaTrap", coord, XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f));
 	HandleHoverColorOffset("Camera", "Camera", coord, XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f));
 
-	HandleHoverColorOffset("Play", "Play", coord, XMFLOAT4(0.1f, 0.1f, 0.1f, 
-	
+	HandleHoverColorOffset("Play", "Play", coord, XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f));
 	//baseEdit update handles basic controls.
 	_baseEdit->Update(deltaTime);
 }
@@ -116,6 +113,11 @@ void PlacementState::OnStateEnter()
 	{
 		_uiTree.GetNode("Tutorial")->SetHidden(false);
 		_tutorialLogic->ResetUiTree();
+	}
+	//Coming back from pause state
+	if (_tutorialState == TutorialState::OLDTUTORIAL)
+	{
+		_uiTree.GetNode("Tutorial")->SetHidden(false);
 	}
 }
 

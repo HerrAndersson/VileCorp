@@ -12,6 +12,7 @@
 enum TutorialState
 {
 	NOTUTORIAL,
+	OLDTUTORIAL,
 	NEWTUTORIAL
 };
 
