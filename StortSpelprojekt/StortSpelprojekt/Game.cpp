@@ -323,7 +323,7 @@ void Game::RenderGameObjects(int forShaderStage, std::vector<std::vector<GameObj
 			GameObject* lastGameObject = nullptr;
 			RenderObject* lastRenderObject = nullptr;
 			int vertexBufferSize = 0;
-			for (int j = 1; j < i.size(); j++)
+			for (int j = 0; j < i.size(); j++)
 			{
 				GameObject* gameObject = i.at(j);
 				RenderObject* renderObject = gameObject->GetRenderObject();
@@ -335,7 +335,7 @@ void Game::RenderGameObjects(int forShaderStage, std::vector<std::vector<GameObj
 				}
 				else
 				{
-					if (lastGameObject == nullptr || (*lastRenderObject != *renderObject && lastGameObject->GetSubType() != gameObject->GetSubType()))
+					if (lastGameObject == nullptr || *lastRenderObject != *renderObject || lastGameObject->GetSubType() != gameObject->GetSubType())
 					{
 						_renderModule->SetDataPerObjectType(renderObject);
 						vertexBufferSize = renderObject->_mesh->_vertexBufferSize;
@@ -351,6 +351,8 @@ void Game::RenderGameObjects(int forShaderStage, std::vector<std::vector<GameObj
 							_renderModule->RenderAnimation(gameObject->GetMatrix(), vertexBufferSize, gameObject->GetAnimation()->GetFloats(), gameObject->GetColorOffset());
 						}
 					}
+					lastGameObject = gameObject;
+					lastRenderObject = renderObject;
 				}
 			}
 		}

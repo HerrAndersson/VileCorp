@@ -710,7 +710,7 @@ bool LevelEditState::HandleButtons()
 
 void LevelEditState::ExportLevel()
 {
-	_currentLevelFileName = "test";
+	_currentLevelFileName = "exported level";
 
 	////Fill Level Header:
 

@@ -145,34 +145,33 @@ struct RenderObject
 	}
 	bool operator==(const RenderObject& other) 
 	{
-		bool isEqual = true;
 		if (this->_type != other._type)
 		{
-			isEqual = false;
+			return false;
 		}
 		if (this->_diffuseTexture != nullptr && other._diffuseTexture != nullptr)
 		{
 			if (this->_diffuseTexture->_name != other._diffuseTexture->_name)
 			{
-				isEqual = false;
+				return false;
 			}
 		}
 		else if (this->_diffuseTexture != other._diffuseTexture)
 		{
-			isEqual = false;
+			return false;
 		}
 		if (this->_mesh != nullptr && other._mesh != nullptr)
 		{
 			if (this->_mesh->_name != other._mesh->_name)
 			{
-				isEqual = false;
+				return false;
 			}
 		}
 		else if (this->_mesh != other._mesh)
 		{
-			isEqual = false;
+			return false;
 		}
-		return isEqual;
+		return true;
 	}
 	bool operator!=(const RenderObject& other) 
 	{
