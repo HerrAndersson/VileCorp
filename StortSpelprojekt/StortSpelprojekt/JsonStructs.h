@@ -63,6 +63,25 @@ struct SettingInfo
 	}
 };
 
+struct UnitsInfo
+{
+	int guardCost = 200;
+	int anvilCost = 50;
+	int teslaCost = 100;
+	int machineGunCost = 120;
+	int cameraCost = 80;
+
+	template<class A>
+	void serialize(A& a)
+	{
+		a((CEREAL_NVP(guardCost)),
+		(CEREAL_NVP(anvilCost)),
+		(CEREAL_NVP(teslaCost)),
+		(CEREAL_NVP(machineGunCost)),
+		(CEREAL_NVP(cameraCost)));
+	}
+};
+
 /*
 
 1. Inkludera JsonStructs.h där du behöver den.

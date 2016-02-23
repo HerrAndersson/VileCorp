@@ -14,6 +14,7 @@ class PlacementState : public BaseState
 private:
 	TutorialLogic* _tutorialLogic;
 	BaseEdit* _baseEdit;
+	UnitsInfo* unitsInfo;
 	bool _trapChosen = false;
 
 	int _costOfAnvilTrap;
