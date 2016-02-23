@@ -3,6 +3,7 @@
 MenuState::MenuState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule)
 	: BaseState (controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settingsReader, soundModule)
 {
+	_soundModule->AddSound("Assets/Sounds/theme", 0.15f, 1.0f, true, true);
 	_soundModule->AddSound("Assets/Sounds/page", 1.0f, 1.0f, true, false);
 }
 
@@ -43,6 +44,7 @@ void MenuState::Update(float deltaTime)
 		}
 		if (_uiTree.IsButtonColliding("leveleditbutton", coord._pos.x, coord._pos.y))
 		{
+			_soundModule->Stop("Assets/Sounds/theme");
 			ChangeState(State::LEVELEDITSTATE);
 		}
 		if (_uiTree.IsButtonColliding("exitbutton", coord._pos.x, coord._pos.y))
@@ -61,8 +63,12 @@ void MenuState::OnStateEnter()
 	_objectHandler->UnloadLevel();
 
 	//Restart all music
+	_soundModule->Stop("Assets/Sounds/theme");
 	_soundModule->Stop("Assets/Sounds/in_game_1");
 	_soundModule->Stop("Assets/Sounds/in_game_2");
+
+	//Play theme
+	_soundModule->Play("Assets/Sounds/theme");
 }
 
 void MenuState::OnStateExit()

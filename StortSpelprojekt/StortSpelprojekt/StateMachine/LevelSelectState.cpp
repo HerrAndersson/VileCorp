@@ -38,7 +38,6 @@ void LevelSelectState::Update(float deltaTime)
 	{
 		if (_uiTree.IsButtonColliding("playbutton", coord._pos.x, coord._pos.y))
 		{
-			//_soundModule->Play("Assets/Sounds/page.wav");
 			if (_levelSelection == 6)
 			{
 				_tutorialState = TutorialState::NEWTUTORIAL;
@@ -55,7 +54,7 @@ void LevelSelectState::Update(float deltaTime)
 		{
 			if (_levelSelection > _levelSelectionMin)
 			{
-				//_soundModule->Play("Assets/Sounds/page.wav");
+				_soundModule->Play("Assets/Sounds/page");
 				_uiTree.GetNode(std::to_string(_levelSelection))->SetHidden(true);
 				_levelSelection--;
 				_uiTree.GetNode(std::to_string(_levelSelection))->SetHidden(false);
@@ -65,7 +64,7 @@ void LevelSelectState::Update(float deltaTime)
 		{
 			if (_levelSelection < _levelSelectionMax)
 			{
-				//_soundModule->Play("Assets/Sounds/page.wav");
+				_soundModule->Play("Assets/Sounds/page");
 				_uiTree.GetNode(std::to_string(_levelSelection))->SetHidden(true);
 				_levelSelection++;
 				_uiTree.GetNode(std::to_string(_levelSelection))->SetHidden(false);
@@ -91,5 +90,5 @@ void LevelSelectState::OnStateEnter()
 
 void LevelSelectState::OnStateExit()
 {
-
+	_uiTree.GetNode(std::to_string(_levelSelection))->SetHidden(true);
 }
