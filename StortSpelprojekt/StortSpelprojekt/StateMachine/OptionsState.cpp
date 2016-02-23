@@ -96,7 +96,7 @@ void OptionsState::Update(float deltaTime)
 {
 	if (_controls->IsFunctionKeyDown("DEBUG:RELOAD_GUI"))
 	{
-		_uiTree.ReloadTree("../../../../StortSpelprojekt/Assets/gui.json", "OPTIONS");
+		_uiTree.ReloadTree("../../../../StortSpelprojekt/Assets/GUI/options.json");
 	}
 	System::MouseCoord coord = _controls->GetMouseCoord();
 	XMFLOAT4 color(0.3f, 0.3f, 0.3f, 1.0f);

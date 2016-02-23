@@ -17,6 +17,16 @@ struct Frame
 	DirectX::XMVECTOR _translation;
 	DirectX::XMVECTOR _rotation;
 	DirectX::XMVECTOR _scale;
+
+	void* Frame::operator new(size_t i)
+	{
+		return _mm_malloc(i, 16);
+	}
+
+	void Frame::operator delete(void* p)
+	{
+		_mm_free(p);
+	}
 };
 
 struct BoneFrames

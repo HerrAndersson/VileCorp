@@ -5,10 +5,9 @@
 LevelSelectState::LevelSelectState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule) :
 	BaseState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settingsReader, soundModule)
 {
-	_levelSelection = 7;
-	_levelSelectionMin = 7;
+	_levelSelectionMin = 6;
 	_levelSelectionMax = 9; //TODO: Add to this if more levels are added
-	for (int i = _levelSelectionMin+1; i < _levelSelectionMax + 1; i++)
+	for (int i = _levelSelectionMin; i < _levelSelectionMax + 1; i++)
 	{
 		_uiTree.GetNode(std::to_string(i))->SetHidden(true);
 	}
@@ -23,7 +22,7 @@ void LevelSelectState::Update(float deltaTime)
 {
 	if (_controls->IsFunctionKeyDown("DEBUG:RELOAD_GUI"))
 	{
-		_uiTree.ReloadTree("../../../../StortSpelprojekt/Assets/gui.json", "LEVELSELECT");
+		_uiTree.ReloadTree("../../../../StortSpelprojekt/Assets/GUI/Levelselect.json");
 	}
 	System::MouseCoord coord = _controls->GetMouseCoord();
 	XMFLOAT4 color(0.3f, 0.3f, 0.3f, 1.0f);
@@ -39,15 +38,24 @@ void LevelSelectState::Update(float deltaTime)
 	{
 		if (_uiTree.IsButtonColliding("playbutton", coord._pos.x, coord._pos.y))
 		{
-			_soundModule->Play("Assets/Sounds/page");
+			//_soundModule->Play("Assets/Sounds/page.wav");
+			if (_levelSelection == 6)
+			{
+				_tutorialState = TutorialState::NEWTUTORIAL;
+			}
+			else
+			{
+				_tutorialState = TutorialState::NOTUTORIAL;
+			}
 			_objectHandler->LoadLevel(_levelSelection);
+			_uiTree.GetNode(std::to_string(_levelSelection))->SetHidden(true);
 			ChangeState(State::PLACEMENTSTATE);
 		}
 		if (_uiTree.IsButtonColliding("prevlevel", coord._pos.x, coord._pos.y))
 		{
 			if (_levelSelection > _levelSelectionMin)
 			{
-				_soundModule->Play("Assets/Sounds/page");
+				//_soundModule->Play("Assets/Sounds/page.wav");
 				_uiTree.GetNode(std::to_string(_levelSelection))->SetHidden(true);
 				_levelSelection--;
 				_uiTree.GetNode(std::to_string(_levelSelection))->SetHidden(false);
@@ -57,7 +65,7 @@ void LevelSelectState::Update(float deltaTime)
 		{
 			if (_levelSelection < _levelSelectionMax)
 			{
-				_soundModule->Play("Assets/Sounds/page");
+				//_soundModule->Play("Assets/Sounds/page.wav");
 				_uiTree.GetNode(std::to_string(_levelSelection))->SetHidden(true);
 				_levelSelection++;
 				_uiTree.GetNode(std::to_string(_levelSelection))->SetHidden(false);
@@ -68,10 +76,20 @@ void LevelSelectState::Update(float deltaTime)
 
 void LevelSelectState::OnStateEnter()
 {
+	if (_settingsReader->GetProfile()->_firstTime)
+	{
+		_levelSelection = _levelSelection = 6;
+	}
+	else
+	{
+		_levelSelection = 7;
+	}
+	_uiTree.GetNode(std::to_string(_levelSelection))->SetHidden(false);
 	//TODO: This is hardcoded to nine due to the functionality in LevelSelectState constructor /Sebastian
-	_levelSelectionMax = min(_levelSelectionMin + _settingsReader->GetProfile()->_level, 9);
+	_levelSelectionMax = min(_levelSelectionMin + _settingsReader->GetProfile()->_level, _levelSelectionMax);
 }
 
 void LevelSelectState::OnStateExit()
 {
+
 }
