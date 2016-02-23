@@ -99,7 +99,7 @@ Unit::Unit()
 	_isSwitchingTile = false;
 	_status = NO_EFFECT;
 	_statusTimer = 0;
-	_statusTicks = 0;
+	_statusInterval = 0;
 	Rotate();
 }
 
@@ -132,7 +132,7 @@ Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	_interactionTime = -1;
 	_status = NO_EFFECT;
 	_statusTimer = 0;
-	_statusTicks = 0;
+	_statusInterval = 0;
 }
 
 Unit::~Unit()
@@ -231,11 +231,11 @@ void Unit::SetTilePosition(AI::Vec2D pos)
 	}
 }
 
-void Unit::SetStatusEffect(StatusEffect effect, int intervalTime, int nrOfIntervals)
+void Unit::SetStatusEffect(StatusEffect effect, int intervalTime, int totalTime)
 {
 	_status = effect;
-	_statusTimer = intervalTime;
-	_statusTicks = nrOfIntervals;
+	_statusTimer = totalTime;
+	_statusInterval = intervalTime;
 }
 
 bool Unit::IsSwitchingTile() const
@@ -315,17 +315,16 @@ void Unit::Update(float deltaTime)
 		_animation->Update(deltaTime);
 	}
 
-	if (Countdown(_statusTimer))
+	if (_statusTimer == 0)
 	{
-		if (_statusTicks > 0)
-		{
-			ActivateStatus();
-		}
-		else
-		{
-			DeactivateStatus();
-		}
+		DeactivateStatus();
 	}
+	else if (StatusCountdown())
+	{
+		ActivateStatus();
+	}
+	
+
 }
 
 void Unit::Moving()
@@ -415,18 +414,15 @@ void Unit::ActivateStatus()
 	case StatusEffect::SLOWED:
 		_moveSpeed /= 2.0f;
 		break;
-	case StatusEffect::STUNNED:					//TODO: Don't update movement while stunned --Victor
+	case StatusEffect::STUNNED:					//No active effect. Instead units are prevented from updating while this is in effect.
 		break;
-	case StatusEffect::SCARED:
+	case StatusEffect::SCARED:					//TODO: Either allow pursuer to be a non-unit, or make a specific movement state
 		break;
 	case StatusEffect::CONFUSED:				//TODO: Pick random nearby tile when switching node --Victor
 		break;
 	default:
 		break;
 	}
-	_statusTimer = 60;		//TODO: reset timer based on the status --Victor
-	_statusTicks--;
-
 }
 
 void Unit::DeactivateStatus()
@@ -482,13 +478,15 @@ void Unit::UseCountdown(int frames)
 }
 
 //Returns true when the counter reaches 0
-bool Unit::Countdown(int& counter)
+bool Unit::StatusCountdown()
 {
-	if (counter > 0)
+	bool result = false;
+	if (_statusTimer > 0)
 	{
-		counter--;
+		result = _statusTimer % _statusInterval == 0;
+		_statusTimer--;
 	}
-	return counter == 0;
+	return result;
 }
 
 void Unit::Animate(Anim anim)

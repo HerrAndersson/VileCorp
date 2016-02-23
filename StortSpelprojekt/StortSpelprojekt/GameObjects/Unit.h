@@ -30,8 +30,8 @@ protected:
 
 	//Unit status
 	StatusEffect _status;
-	int _statusTicks;				//Nr of times left for the status to trigger
-	int _statusTimer;				//Time until next effect trigger
+	int _statusInterval;				//Time between status activations
+	int _statusTimer;				//Time until the status ends
 	
 	//Movement state variables
 	MoveState _moveState;
@@ -66,7 +66,7 @@ public:
 	void SetSwitchingTile(const bool switchTile);
 	void SetVisibility(bool visible);
 	void SetTilePosition(AI::Vec2D pos);
-	void SetStatusEffect(StatusEffect effect, int intervalTime = 0, int nrOfIntervals = 0);
+	void SetStatusEffect(StatusEffect effect, int intervalTime = 0, int totalTime = 0);			//set type of effect, duration of effect, and time between each activation
 
 	bool IsSwitchingTile()const;
 
@@ -91,7 +91,7 @@ public:
 	void TakeDamage(int damage);
 
 	void UseCountdown(int frames = 0);
-	bool Countdown(int& counter);
+	bool StatusCountdown();
 
 	void Animate(Anim anim);
 };

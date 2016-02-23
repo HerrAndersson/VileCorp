@@ -269,16 +269,16 @@ void Enemy::Update(float deltaTime)
 		default:
 			break;
 		}
-	}
 
-	_visibilityTimer--;
-	if (_visibilityTimer <= 0)
-	{
-		_visible = false;
-		_visibilityTimer = TIME_TO_HIDE;
-		if (_heldObject != nullptr)
+		_visibilityTimer--;
+		if (_visibilityTimer <= 0)
 		{
-			_heldObject->SetVisibility(false);
+			_visible = false;
+			_visibilityTimer = TIME_TO_HIDE;
+			if (_heldObject != nullptr)
+			{
+				_heldObject->SetVisibility(false);
+			}
 		}
 	}
 }

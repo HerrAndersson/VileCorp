@@ -14,6 +14,10 @@ private:
 	bool _isActive;
 	bool _isVisibleToEnemies;
 	int _damage;
+
+	Unit::StatusEffect _statusEffect;
+	int _statusTimer;					//Time the status lasts
+	int _statusInterval;				//time between status effects. Set to same time as _statusTimer to only activate once.
 	int _detectDifficulty;
 	int _disarmDifficulty;
 
@@ -31,7 +35,8 @@ private:
 	bool IsUnblocked(AI::Vec2D pos);
 	AI::Vec2D ConvertOctant(int octant, AI::Vec2D pos, bool in = true);
 
-	void Initialize(int damage, int tileSize, int AOESize, int detectDifficulty, int disarmDifficulty);
+	void Initialize(int damage, int tileSize, int AOESize, int detectDifficulty, int disarmDifficulty,
+					Unit::StatusEffect statusEffect, int statusTimer, int statusInterval);							/*Initialize adds any characteristics specific to the subtype*/
 	void SetTiles();
 public:
 	Trap();

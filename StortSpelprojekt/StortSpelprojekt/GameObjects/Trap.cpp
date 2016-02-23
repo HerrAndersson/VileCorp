@@ -213,7 +213,7 @@ AI::Vec2D Trap::ConvertOctant(int octant, AI::Vec2D pos, bool in)
 	return convertedPos;
 }
 
-void Trap::Initialize(int damage, int tileSize, int AOESize, int detectDifficulty, int disarmDifficulty)
+void Trap::Initialize(int damage, int tileSize, int AOESize, int detectDifficulty, int disarmDifficulty, Unit::StatusEffect statusEffect, int statusTimer, int statusInterval)
 {
 	delete[] _areaOfEffect;
 	delete[] _occupiedTiles;
@@ -224,10 +224,14 @@ void Trap::Initialize(int damage, int tileSize, int AOESize, int detectDifficult
 	_areaOfEffect = new AI::Vec2D[_areaOfEffectArrayCapacity];
 	_detectDifficulty = detectDifficulty;
 	_disarmDifficulty = disarmDifficulty;
+	_statusEffect = statusEffect;
+	_statusTimer = statusTimer;
+	_statusInterval = statusInterval;
 }
 
 void Trap::SetTiles()
 {
+	//Coloring
 	for (int i = 0; i < _nrOfAOETiles; i++)
 	{
 		if (_tileMap->IsFloorOnTile(_areaOfEffect[i]))
@@ -242,6 +246,7 @@ void Trap::SetTiles()
 			_tileMap->GetObjectOnTile(_occupiedTiles[i], FLOOR)->SetColorOffset({0,0,0});
 		}
 	}
+
 	_nrOfAOETiles = 0;
 	_tileSize = 0;
 	switch (_trapType)
@@ -311,22 +316,22 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	switch (_trapType)
 	{
 	case SPIKE:
-		Initialize(3, 1, 1, 50, 50);
+		Initialize(3, 1, 1, 50, 50, Unit::StatusEffect::NO_EFFECT, 0, 0);
 		firstFrame = true;
 		break;
 	case TESLACOIL:	
 	{
-		Initialize(2, 9, 37, 50, 50);
+		Initialize(0, 9, 37, 150, 50, Unit::StatusEffect::STUNNED, 120, 120);
 		break;
 	}
 	case SHARK:			//Trigger area is currently the same as the trap's physical area. Might be awkward since the shark trap is larger than its AOE.
 	{
-		Initialize(100, 18, 3, 50, 50);
+		Initialize(100, 18, 3, 50, 50, Unit::StatusEffect::NO_EFFECT, 0, 0);
 		break;
 	}
 	case GUN:
 	{
-		Initialize(300, 10, 10, 100, 50);
+		Initialize(300, 10, 10, 100, 50, Unit::StatusEffect::NO_EFFECT, 0, 0);
 		break;
 	}
 	default:
@@ -423,6 +428,7 @@ void Trap::Activate()
 		if (_tileMap->IsEnemyOnTile(_areaOfEffect[i]))
 		{
 			static_cast<Unit*>(_tileMap->GetObjectOnTile(_areaOfEffect[i], ENEMY))->TakeDamage(_damage);
+			static_cast<Unit*>(_tileMap->GetObjectOnTile(_areaOfEffect[i], ENEMY))->SetStatusEffect(_statusEffect, _statusInterval, _statusTimer);
 		}
 		if (_tileMap->IsGuardOnTile(_areaOfEffect[i]))
 		{
