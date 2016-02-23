@@ -45,8 +45,23 @@
 	"":
 	{
 		"position" : [0.0, 0.5],
-		"7" :
-		{
+		"6": {
+			"position": [0.0, 0.0],
+			"scale": [1.0, 1.0],
+			"levelname": {
+				"position": [-0.08, 0.0],
+				"scale": [0.3, 0.05],
+				"text": "Tutorial",
+				"color": "FF000000"
+			},
+			"description": {
+				"position": [-0.00, -0.1],
+				"scale": [0.38, 0.05],
+				"text": "Every villain or hero needs to know the basic before jumping into the action.",
+				"color": "FF888888",
+				"fontsize": 25.0
+			}
+		},
 			"position": [0.0, 0.0],
 			"scale": [1.0, 1.0],
 			"levelname":

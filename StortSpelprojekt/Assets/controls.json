@@ -5,7 +5,8 @@
 	"DRAG": ["leftmouse", "repeat"]
   },
   "MENU": {
-	"MENU": [ "escape" ]
+	"MENU": [ "escape" ],
+	"CONTINUE": [ "enter" ]
   },
   "CAMERA": {
 	"MOVE_CAMERA_UP": ["W", "repeat"],

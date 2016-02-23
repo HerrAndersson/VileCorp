@@ -200,7 +200,7 @@ namespace GUI
 		return FindNode(_root, id);
 	}
 
-	void UITree::ReloadTree(const std::string& filename, const std::string& statename)
+	void UITree::ReloadTree(const std::string& filename)
 	{
 		Release(_root);
 		ifstream file(filename);
@@ -214,18 +214,6 @@ namespace GUI
 		Document d;
 		d.Parse(str.c_str());
 
-		bool found = false;
-		for (Value::ConstMemberIterator i = d.MemberBegin(); i != d.MemberEnd(); ++i)
-		{
-			if (i->name.IsString() && string(i->name.GetString()) == statename)
-			{
-				found = true;
-				_root = LoadGUITree("root", i->value.MemberBegin(), i->value.MemberEnd());
-			}
-		}
-		if (!found)
-		{
-			throw std::runtime_error("Could not find " + statename + " in " + filename);
-		}
+		_root = LoadGUITree("root", d.MemberBegin(), d.MemberEnd());
 	}
 }
