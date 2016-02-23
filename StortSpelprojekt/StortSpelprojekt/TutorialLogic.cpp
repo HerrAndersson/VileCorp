@@ -29,6 +29,7 @@ TutorialLogic::~TutorialLogic()
 
 void TutorialLogic::ResetUiTree()
 {
+	_tutorialCompleted = false;
 	_currentStage = WELCOME;
 	_uiTree->GetNode("welcome")->SetHidden(false);
 	_uiTree->GetNode("controls")->SetHidden(true);

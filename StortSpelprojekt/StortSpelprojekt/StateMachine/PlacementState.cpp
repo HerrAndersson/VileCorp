@@ -101,14 +101,10 @@ void PlacementState::OnStateEnter()
 	campos.z = _objectHandler->GetTileMap()->GetHeight() / 2 - 10;
 	_camera->SetPosition(campos);
 
-	//if tutorial is active but we are pausing. Hide tutorial.
-	if (_tutorialState != TutorialState::NOTUTORIAL)
+	//if it is also New tutorial. Reset it so we can start a new.
+	if (_tutorialState == TutorialState::NEWTUTORIAL)
 	{
 		_uiTree.GetNode("Tutorial")->SetHidden(false);
-	}
-	//if it is also New tutorial. Reset it so we can start a new.
-	if (_tutorialState != TutorialState::NEWTUTORIAL)
-	{
 		_tutorialLogic->ResetUiTree();
 	}
 }
