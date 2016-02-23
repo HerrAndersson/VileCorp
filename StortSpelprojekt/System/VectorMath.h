@@ -42,7 +42,7 @@ struct Vec2
 
 	float Length()
 	{
-		return sqrt(_x*_x+_y*_y);
+		return (float)sqrt(_x*_x+_y*_y);
 	}
 	Vec2 operator+(const Vec2& rhs)
 	{
@@ -123,7 +123,7 @@ struct Vec3
 
 	float Length()
 	{
-		return sqrt(_x*_x + _y*_y + _z * _z);
+		return (float)sqrt(_x*_x + _y*_y + _z * _z);
 	}
 	Vec3 operator+(const Vec3& rhs)
 	{
@@ -206,7 +206,7 @@ struct Vec4
 
 	float Length()
 	{
-		return sqrt(_x*_x + _y*_y + _z* _z + _w * _w);
+		return (float)sqrt(_x*_x + _y*_y + _z* _z + _w * _w);
 	}
 	Vec4 operator+(const Vec4& rhs)
 	{
