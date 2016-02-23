@@ -160,7 +160,7 @@ void Guard::Act(GameObject* obj)
 				{
 					if (_animation != nullptr)
 					{
-						UseCountdown(_animation->GetLength(2, 1.0f * speedMultiplyer));
+						UseCountdown(_animation->GetLength(2, 1.0f * _speedMultiplier));
 						Animate(FIXTRAPANIM);
 					}
 
@@ -180,7 +180,7 @@ void Guard::Act(GameObject* obj)
 		case ENEMY:											//The guard hits the enemy
 			if (_animation != nullptr && _interactionTime != 0)
 			{
-				UseCountdown(_animation->GetLength(4, 4.5f * speedMultiplyer));
+				UseCountdown(_animation->GetLength(4, 4.5f * _speedMultiplier));
 				Animate(FIGHTANIM);
 			}
 			else if (_interactionTime == 0)

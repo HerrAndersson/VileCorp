@@ -19,6 +19,8 @@
 #include "Settings/Settings.h"
 #include "LightCulling.h"
 #include "Blueprints.h"
+#include "ParticleSystem\ParticleUtils.h"
+#include "ParticleSystem\ParticleEventQueue.h"
 
 /*
 ObjectHandler
@@ -64,10 +66,12 @@ private:
 	map<GameObject*, Renderer::Pointlight*> _pointligths;
 	LightCulling* _lightCulling;
 
+	Renderer::ParticleEventQueue* _ParticleEventQueue;
+
 	void ReleaseGameObjects();
 
 public:
-	ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data, System::Settings* settings);
+	ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data, System::Settings* settings, Renderer::ParticleEventQueue* particleReque);	
 	~ObjectHandler();
 
 	//Add a gameobject
@@ -83,7 +87,7 @@ public:
 	GameObject* Find(Type type, short index);
 
 	//Returns a vector containing all gameobjects with the same type
-	vector<GameObject*> GetAllByType(Type type);
+	vector<GameObject*>* GetAllByType(Type type);
 	//Returns a list of a renderobject and matrices for all objects using the renderobject
 	RenderList GetAllByType(int renderObjectID);
 	vector<vector<GameObject*>>* GetGameObjects();

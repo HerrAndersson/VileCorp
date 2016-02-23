@@ -48,8 +48,8 @@ private:
 	} _marker, _baseMarker;
 
 	bool _droppedObject;
-	GameObject* _createdObject;
-	Blueprint* _deletedObjectBlueprint;
+	GameObject* _createdObject = nullptr;
+	Blueprint* _deletedObjectBlueprint = nullptr;
 
 	// FLAGS
 	bool _extendedMode;
@@ -58,7 +58,7 @@ private:
 	bool _isDragAndPlaceMode;
 	bool _isPlace;
 	bool _modeLock;
-
+	
 	void MarkerMoveEvent();
 	void DragEvent(Type type);
 	void DropEvent();
@@ -68,14 +68,8 @@ private:
 
 	void HandleKeyInput(double deltaTime);
 
-	void HandleCamMode();
-	void HandleCamZoom(float deltaTime);
-	void HandleCamRot();
-	void HandleCamMove(float deltaTime);
 
 	bool CheckValidity(AI::Vec2D tile, Type type);
-
-
 	void CreateMarker();	// Used for Drag&Drop and Click
 	void CreateMarkers(); 	// Used for Drag&Place
 

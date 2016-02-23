@@ -19,9 +19,9 @@ namespace Renderer
 
 	RenderModule::~RenderModule()
 	{
-		delete _d3d;
-		delete _shaderHandler;
-		delete _shadowMap;
+		SAFE_DELETE(_d3d);
+		SAFE_DELETE(_shaderHandler);
+		SAFE_DELETE(_shadowMap);
 
 		SAFE_RELEASE(_screenQuad);
 		SAFE_RELEASE(_matrixBufferPerObject);
@@ -31,6 +31,7 @@ namespace Renderer
 		SAFE_RELEASE(_matrixBufferLightPassPerFrame);
 		SAFE_RELEASE(_matrixBufferLightPassPerSpotlight);
 		SAFE_RELEASE(_matrixBufferLightPassPerPointlight);
+		SAFE_RELEASE(_matrixBufferParticles);
 	}
 
 	void RenderModule::InitializeScreenQuadBuffer()
@@ -99,7 +100,7 @@ namespace Renderer
 		result = device->CreateBuffer(&matrixBufferDesc, NULL, &_matrixBufferLightPassPerFrame);
 		if (FAILED(result))
 		{
-			throw std::runtime_error("RenderModule::InitializeConstantBuffers: Failed to create MatrixBufferLightPassPerFrame");
+			throw std::runtime_error("RenderModule::InitializeConstantBuffers: Failed to create _matrixBufferLightPassPerFrame");
 		}
 
 		matrixBufferDesc.ByteWidth = sizeof(MatrixBufferLightPassPerSpotlight);
@@ -113,7 +114,14 @@ namespace Renderer
 		result = device->CreateBuffer(&matrixBufferDesc, NULL, &_matrixBufferLightPassPerPointlight);
 		if (FAILED(result))
 		{
-			throw std::runtime_error("RenderModule::InitializeConstantBuffers: Failed to create _MatrixBufferLightPassPerPointlight");
+			throw std::runtime_error("RenderModule::InitializeConstantBuffers: Failed to create _matrixBufferLightPassPerPointlight");
+		}
+
+		matrixBufferDesc.ByteWidth = sizeof(MatrixBufferPerParticleEmitter);
+		result = device->CreateBuffer(&matrixBufferDesc, NULL, &_matrixBufferParticles);
+		if (FAILED(result))
+		{
+			throw std::runtime_error("RenderModule::InitializeConstantBuffers: Failed to create _matrixBufferParticles");
 		}
 	}
 
@@ -231,6 +239,39 @@ namespace Renderer
 		deviceContext->Unmap(_matrixBufferPerObject, 0);
 
 		deviceContext->VSSetConstantBuffers(1, 1, &_matrixBufferPerObject);
+	}
+
+	void RenderModule::SetDataPerParticleEmitter(const XMFLOAT3& position, XMMATRIX* camView, XMMATRIX* camProjection,
+												 const XMFLOAT3& camPos, float scale, ID3D11ShaderResourceView** textures, int textureCount, int isIcon)
+	{
+		HRESULT result;
+		D3D11_MAPPED_SUBRESOURCE mappedResource;
+		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
+
+		result = deviceContext->Map(_matrixBufferParticles, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+		if (FAILED(result))
+		{
+			throw std::runtime_error("RenderModule::SetDataPerObject: Failed to Map _matrixBufferPerObject");
+		}
+
+		XMMATRIX world = XMMatrixTranslation(position.x, position.y, position.z);
+
+		MatrixBufferPerParticleEmitter* dataPtr = static_cast<MatrixBufferPerParticleEmitter*>(mappedResource.pData);
+		dataPtr->_world = XMMatrixTranspose(world);
+		dataPtr->_camView = XMMatrixTranspose(*camView);
+		dataPtr->_camProjection = XMMatrixTranspose(*camProjection);
+		dataPtr->_camPosition = camPos;
+		dataPtr->_scale = scale;
+		dataPtr->_isIcon = isIcon;
+		deviceContext->Unmap(_matrixBufferParticles, 0);
+
+		deviceContext->GSSetConstantBuffers(6, 1, &_matrixBufferParticles);
+
+		if (textures)
+		{
+			deviceContext->PSSetShaderResources(0, textureCount, textures);
+		}
+
 	}
 
 	void RenderModule::SetDataPerMesh(ID3D11Buffer* vertexBuffer, int vertexSize)
@@ -382,6 +423,7 @@ namespace Renderer
 		{
 		case ANIM_STAGE:
 		{
+			deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 			_shaderHandler->SetAnimationPassShaders(_d3d->GetDeviceContext());
 
 			break;
@@ -399,6 +441,7 @@ namespace Renderer
 		}
 		case GEO_PASS:
 		{
+			deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 			_d3d->SetGeometryStage();
 			_shaderHandler->SetGeometryStageShaders(deviceContext);
 
@@ -410,12 +453,12 @@ namespace Renderer
 			_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::BACK);
 			_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::DISABLE);
 			_d3d->SetAntiAliasingState();
+
 			_shaderHandler->SetFXAAPassShaders(deviceContext);
 			break;
 		}
 		case SHADOW_GENERATION:
 		{
-			//Topology has to be set here because GRID_STAGE, which is the previous stage, will change to LINELIST
 			deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 			_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::DISABLE);
 			_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::FRONT);
@@ -427,6 +470,7 @@ namespace Renderer
 		}
 		case LIGHT_APPLICATION_SPOTLIGHT:
 		{
+			deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 			_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::FRONT);
 			_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::ENABLE);
 
@@ -440,20 +484,21 @@ namespace Renderer
 		}
 		case LIGHT_APPLICATION_POINTLIGHT:
 		{
+			deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 			_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::ENABLE);
 			_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::FRONT);
 
-			//TODO: Should activate the pointlight shaders!
 			int nrOfSRVs = _d3d->SetLightStage();
 
 			_shaderHandler->SetPointlightApplicationShaders(deviceContext);
 
 			break;
 		}
-		case GRID_STAGE:
+		case RENDER_LINESTRIP:
 		{
-			_d3d->SetGridStage();
-			_shaderHandler->SetGridPassShaders(_d3d->GetDeviceContext());
+			deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
+			_d3d->SetLinestripStage();
+			_shaderHandler->SetLinestripShaders(_d3d->GetDeviceContext());
 			break;
 		}
 		case HUD_STAGE:
@@ -461,17 +506,21 @@ namespace Renderer
 			_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::ENABLE);
 			_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::BACK);
 			deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
 			_d3d->SetHUDStage();
 			_shaderHandler->SetHUDPassShaders(_d3d->GetDeviceContext());
+
 			break;
 		}
 		case BILLBOARDING_STAGE:
 		{
 			//Since this is part of the geometry pass, there is no need to set render targets etc.
 			_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::ENABLE);
-			_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::BACK);
-			deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST); //TODO: use triangle strip instead, if the geometry shader supports this
+			_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::NONE);
+			deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+
 			_shaderHandler->SetBillboardingStageShaders(_d3d->GetDeviceContext());
+
 			break;
 		}
 		default:
@@ -583,11 +632,10 @@ namespace Renderer
 		}
 	}
 
-	void RenderModule::RenderLineList(XMMATRIX* world, int nrOfPoints, const XMFLOAT3& colorOffset)
+	void RenderModule::RenderLineStrip(XMMATRIX* world, int nrOfPoints, const XMFLOAT3& colorOffset)
 	{
 		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
 
-		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
 		SetDataPerObject(world, colorOffset);
 
 		deviceContext->Draw(nrOfPoints, 0);
@@ -633,20 +681,13 @@ namespace Renderer
 		deviceContext->Draw(vertexCount, 0);
 	}
 
-	void RenderModule::RenderParticles(ID3D11Buffer* particlePointsBuffer, int vertexBufferSize, int vertexCount, const XMFLOAT3& position, const XMFLOAT3& color, ID3D11ShaderResourceView** textures, int textureCount)
+	void RenderModule::RenderParticles(ID3D11Buffer* particlePointsBuffer, int vertexCount, int vertexSize)
 	{
 		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
 
-		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
-
-		XMMATRIX world = XMMatrixTranslation(position.x, position.y, position.z);
-		SetDataPerObject(&world, color);
-		SetDataPerMesh(particlePointsBuffer, vertexBufferSize);
-
-		if (textures)
-		{
-			deviceContext->PSSetShaderResources(0, textureCount, textures);
-		}
+		UINT32 offset = 0;
+		UINT32 vs = vertexSize;
+		deviceContext->IASetVertexBuffers(0, 1, &particlePointsBuffer, &vs, &offset);
 
 		deviceContext->Draw(vertexCount, 0);
 	}

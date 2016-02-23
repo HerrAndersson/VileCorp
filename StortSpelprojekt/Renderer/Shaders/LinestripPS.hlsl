@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------------------------------------------------
-| Pixel shader used specifically for the grid, or other linelists. Renders the color to the render target.			   |
+| Pixel shader used specifically for the grid, or other linestrips. Renders the color to the render target.			   |
 ----------------------------------------------------------------------------------------------------------------------*/
 struct VS_OUT
 {

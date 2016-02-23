@@ -1,7 +1,7 @@
 #include "ObjectHandler.h"
 #include "stdafx.h"
 
-ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data, System::Settings* settings)
+ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data, System::Settings* settings, Renderer::ParticleEventQueue* ParticleEventQueue)
 {
 	_settings = settings;
 	_idCount = 0;
@@ -12,6 +12,7 @@ ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, G
 	_device = device;
 	_lightCulling = nullptr;
 	_gameObjects.resize(NR_OF_TYPES);
+	_ParticleEventQueue = ParticleEventQueue;
 }
 
 ObjectHandler::~ObjectHandler()
@@ -253,9 +254,9 @@ GameObject* ObjectHandler::Find(Type type, short index)
 	return nullptr;
 }
 
-vector<GameObject*> ObjectHandler::GetAllByType(Type type)
+vector<GameObject*>* ObjectHandler::GetAllByType(Type type)
 {
-	return _gameObjects[type];
+	return &_gameObjects[type];
 }
 
 RenderList ObjectHandler::GetAllByType(int renderObjectID)

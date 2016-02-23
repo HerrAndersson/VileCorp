@@ -5,13 +5,22 @@
 #include "../JsonStructs.h"
 #include "jsonparser.h"
 #include "Assetmanager.h"
+#include "../TutorialLogic.h"
+
+#include "../ToPlace.h"
 
 class PlacementState : public BaseState
 {
 private:
+	TutorialLogic* _tutorialLogic;
 	BaseEdit* _baseEdit;
 	bool _trapChosen = false;
+	
 	int _budget;
+	int _costOfAnvilTrap;
+	int _costOfTeslaCoil;
+	int _costOfCamera;
+	int _costOfGuard;
 
 	int _currentPlayer = 0;
 	DirectX::XMFLOAT3* _ambientLight;
@@ -20,21 +29,7 @@ private:
 	std::vector<string> _playerProfilesPath;
 
 	// Temp, should be replaced with blueprint
-	struct ToPlace
-	{
-		ToPlace()
-		{
-			ResetTemps();
-		}
-		void ResetTemps()
-		{
-			_goldCost = -1;
-			_markerID = -1;
-		}
-		SpecificBlueprint _sB;
-		int _goldCost;
-		int _markerID;
-	} _toPlace;
+	ToPlace _toPlace;
 
 	void EvaluateGoldCost();
 	void HandleDescriptions();

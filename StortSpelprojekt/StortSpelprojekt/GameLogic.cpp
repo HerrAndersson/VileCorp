@@ -40,12 +40,11 @@ void GameLogic::Update(float deltaTime)
 		HandleInput(deltaTime);
 		_objectHandler->Update(deltaTime);
 	}
-
 	if(_gameOver)
 	{
 		HandleWinLoseDialog(deltaTime);
 	}
-	_uiTree->GetNode("objectivetext")->SetText(L"Defeat the intruders! \n" + std::to_wstring(_objectHandler->GetAllByType(ENEMY).size()) + L" enemies still remain.");
+	_uiTree->GetNode("objectivetext")->SetText(L"Defeat the intruders! \n" + std::to_wstring(_objectHandler->GetAllByType(ENEMY)->size()) + L" enemies still remain.");
 }
 
 bool GameLogic::GoToMenu() const
@@ -109,7 +108,7 @@ void GameLogic::HandleUnitSelect()
 		_player->DeselectUnits();
 
 		//Check if we picked anything
-		vector<GameObject*> pickedUnits = _pickingDevice->PickObjects(_controls->GetMouseCoord()._pos, _objectHandler->GetAllByType(GUARD));
+		vector<GameObject*> pickedUnits = _pickingDevice->PickObjects(_controls->GetMouseCoord()._pos, *_objectHandler->GetAllByType(GUARD));
 
 		//if units selected
 		if (pickedUnits.size() > 0)
@@ -244,7 +243,7 @@ void GameLogic::ShowSelectedInfo()
 
 void GameLogic::HandleWinLoseDialog(float deltaTime)
 {
-	if (_objectHandler->GetAllByType(LOOT).size() <= 0)				//You lost
+	if (_objectHandler->GetAllByType(LOOT)->size() <= 0)				//You lost
 	{
 		_uiTree->GetNode("losescreen")->SetHidden(false);
 		System::MouseCoord coord = _controls->GetMouseCoord();
@@ -263,7 +262,7 @@ void GameLogic::HandleWinLoseDialog(float deltaTime)
 		}
 		_buttonReady -= deltaTime;
 	}
-	else if (_objectHandler->GetAllByType(ENEMY).size() <= 0)		//You won
+	else if (_objectHandler->GetAllByType(ENEMY)->size() <= 0)		//You won
 	{
 		System::MouseCoord coord = _controls->GetMouseCoord();
 		_uiTree->GetNode("winscreen")->SetHidden(false);
@@ -288,8 +287,8 @@ void GameLogic::HandleWinLoseDialog(float deltaTime)
 
 bool GameLogic::CheckGameStatus()
 {
-	if (_objectHandler->GetAllByType(LOOT).size() <= 0 && _objectHandler->GetRemainingToSpawn() <= 0 
-		|| _objectHandler->GetAllByType(ENEMY).size() <= 0 && _objectHandler->GetRemainingToSpawn() <= 0)
+	if (_objectHandler->GetAllByType(LOOT)->size() <= 0 && _objectHandler->GetRemainingToSpawn() <= 0 
+		|| _objectHandler->GetAllByType(ENEMY)->size() <= 0 && _objectHandler->GetRemainingToSpawn() <= 0)
 	{
 		_gameOver = true;
 	}

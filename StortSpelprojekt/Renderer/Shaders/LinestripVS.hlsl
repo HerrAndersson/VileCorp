@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------------------------------------------------
-| Vertex that is used to transform the grid (each linelist object) to the screen. 									   |
+| Vertex that is used to transform the grid (or other linestrip objects) to the screen. 									   |
 ----------------------------------------------------------------------------------------------------------------------*/
 
 cbuffer matrixBufferPerFrame : register(b0)

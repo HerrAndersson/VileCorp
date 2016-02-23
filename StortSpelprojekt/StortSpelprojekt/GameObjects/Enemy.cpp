@@ -163,7 +163,7 @@ void Enemy::Act(GameObject* obj)
 					obj->SetPickUpState(PICKINGUP);
 					if (obj->GetAnimation() != nullptr)
 					{
-						UseCountdown(_animation->GetLength(3, 1.0f * speedMultiplyer));
+						UseCountdown(_animation->GetLength(3, 1.0f * _speedMultiplier));
 						Animate(PICKUPOBJECTANIM);
 					}
 				}
@@ -208,7 +208,7 @@ void Enemy::Act(GameObject* obj)
 			{
 				if (_animation != nullptr)
 				{
-					UseCountdown(_animation->GetLength(1, 1.0f * speedMultiplyer));
+					UseCountdown(_animation->GetLength(1, 1.0f * _speedMultiplier));
 				}
 				Animate(FIGHTANIM);
 			}

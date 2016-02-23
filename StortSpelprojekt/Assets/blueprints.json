@@ -142,7 +142,7 @@
 			]
 		}, {
 			"_mesh": "trap-24.bin",
-			"_name": "SpikeTrap",
+			"_name": "Spike Trap",
 			"_type": "TRAP",
 			"_subType": 0,
 			"_tooltip": "SampleText",

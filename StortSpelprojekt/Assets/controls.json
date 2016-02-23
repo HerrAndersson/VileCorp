@@ -7,7 +7,8 @@
 	"BOX_DELETE": [ "rightmouse", "shift" ]
   },
   "MENU": {
-	"MENU": [ "escape" ]
+	"MENU": [ "escape" ],
+	"CONTINUE": [ "enter" ]
   },
   "CAMERA": {
 	"MOVE_CAMERA_UP": ["W", "repeat"],
@@ -52,7 +53,8 @@
 		"UNLIMITED_MONEY": ["1", "ctrl", "alt"],
 		"INSTANT_WIN": ["2", "ctrl", "alt"],
 		"NO_FOG": ["3", "ctrl", "alt"],
-		"RELOAD_GUI" : ["G"],
-		"EXPORT_LEVEL" : ["P"]
+		"RELOAD_GUI": [ "G" ],
+		"EXPORT_LEVEL" : ["S", "ctrl"],
+		"REQUEST_PARTICLE": [ "P"]
 	}
 }
