@@ -398,14 +398,20 @@ void BaseEdit::HandleKeyInput(double deltaTime)
 		}
 		if (rotated)
 		{
-			//TODO Make general for GameObject --Victor
-			if (_marker._g->GetType() == GUARD || _marker._g->GetType() == ENEMY)
+			_marker._g->SetDirection(AI::GetNextDirection(static_cast<Unit*>(_marker._g)->GetDirection(), clockwise));
+
+			if (_marker._g->GetType() == TRAP)			//Traps need to be right angles
 			{
-				static_cast<Unit*>(_marker._g)->SetDirection(AI::GetNextDirection(static_cast<Unit*>(_marker._g)->GetDirection(), clockwise));
-			}
-			else if (_marker._g->GetType() == CAMERA)
-			{
-				static_cast<SecurityCamera*>(_marker._g)->SetDirection(AI::GetNextDirection(static_cast<SecurityCamera*>(_marker._g)->GetDirection(), clockwise));
+				XMFLOAT3 tempRot = _marker._g->GetRotation();
+				_marker._g->SetDirection(AI::GetNextDirection(static_cast<Unit*>(_marker._g)->GetDirection(), clockwise));
+				if (clockwise)
+				{
+					_marker._g->SetRotation(XMFLOAT3(tempRot.x, tempRot.y + (DirectX::XM_PI / 4), tempRot.z));
+				}
+				else
+				{
+					_marker._g->SetRotation(XMFLOAT3(tempRot.x, tempRot.y - (DirectX::XM_PI / 4), tempRot.z));
+				}
 			}
 		}
 	}

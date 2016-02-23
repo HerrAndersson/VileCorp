@@ -20,8 +20,10 @@ private:
 	GUI::UITree*			_uiTree;
 	AssetManager*			_assetManager;
 	ID3D11ShaderResourceView* _guardTexture;
-	bool					_gameDone;
+	bool					_returnToMenu;
 	System::SettingsReader* _settingsReader;
+	float					_buttonReady;
+	bool					_gameOver;
 
 	//TODO: add gamemodes /Rikhard
 	int _gameMode;
@@ -36,11 +38,13 @@ private:
 	void HandleCamZoom();
 	void HandleCamRot();
 	void HandleCamMove(float deltaTime);
+	void HandleWinLoseDialog(float deltaTime);
+	bool CheckGameStatus();
 public:
 	GameLogic(ObjectHandler* objectHandler, System::Camera* camera, System::Controls* controls, PickingDevice* pickingDevice, GUI::UITree* uiTree, AssetManager* assetManager, System::SettingsReader* settingsReader);
 	~GameLogic();
 	void Update(float deltaTime);
-	bool IsGameDone()const;
+	bool GoToMenu()const;
 };
 
 

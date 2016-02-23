@@ -1,65 +1,91 @@
 {
-     "unitinfo": {
-      "position": [ -0.7, -0.855 ],
-      "scale": [ 0.3, 0.2 ],
-      "texture": "../Menues/PlacementStateGUI/placementUnits1.png",
+	"unitinfo": {
+		"position": [-0.7, -0.855],
+		"scale": [0.3, 0.2],
+		"texture": "../Menues/PlacementStateGUI/placementUnits1.png",
 
-      "unitinfocontainer": {
-        "unitpicture": {
-          "position": [ 0.2, 0.03 ],
-          "scale": [ 0.05866, 0.1 ]
-        },
-        "unitnumber": {
-          "position": [ 0.223333, -0.02 ],
-          "scale": [ 0.08666, 0.15 ],
-          "centered": true,
-          "color": "FF000000",
-          "fontsize": 35.0
-        },
-        "unitinfotext": {
-          "position": [ -0.08666, 0.04 ],
-          "scale": [ 0.1733, 0.08 ],
-          "centered": false,
-          "color": "FF000000",
-          "fontsize": 30.0
-        },
-        "unithealth": {
-          "position": [ -0.08666, -0.02 ],
-          "scale": [ 0.1733, 0.08 ],
-          "color": "FF000000",
-          "fontsize": 30.0
-        }
-      }
-    },
-    "objective": {
-      "position": [ 0.82, 0.88 ],
-      "scale": [ 0.18, 0.12 ],
-      "texture": "../Menues/PlayState GUI/gamegui-Resource.png",
+		"unitinfocontainer": {
+			"unitpicture": {
+				"position": [0.2, 0.03],
+				"scale": [0.05866, 0.1]
+			},
+			"unitnumber": {
+				"position": [0.223333, -0.02],
+				"scale": [0.08666, 0.15],
+				"centered": true,
+				"color": "FF000000",
+				"fontsize": 35.0
+			},
 
-      "objectivetext": {
-        "position": [ 0.03, 0.045 ],
-        "scale": [ 0.15, 0.07 ],
-        "text": "Defeat the intruders!",
-        "centered": true,
-        "color": "FF000000",
-        "fontsize": 25.0
-      }
-    },
-    "winscreen": {
-      "position": [ 0.0, 0.1 ],
-      "scale": [ 0.35, 0.35 ],
-      "texture": "../Menues/Win/win3.png"
-    },
-    "losescreen": {
-      "position": [ 0.0, 0.2 ],
-      "scale": [ 0.6, 0.6 ],
-      "texture": "../Menues/Lose/lose4.png"
-    },
-	"Tutorial":
-	{
-		"position" : [0.0, -0.0],
+			"unitinfotext": {
+				"position": [-0.08666, 0.04],
+				"scale": [0.1733, 0.08],
+				"centered": false,
+				"color": "FF000000",
+				"fontsize": 30.0
+			},
+			"unithealth": {
+				"position": [-0.08666, -0.02],
+				"scale": [0.1733, 0.08],
+				"color": "FF000000",
+				"fontsize": 30.0
+			}
+		}
+	},
+	"objective": {
+		"position": [0.82, 0.88],
+		"scale": [0.18, 0.12],
+		"texture": "../Menues/PlayState GUI/gamegui-Resource.png",
+
+		"objectivetext": {
+			"position": [0.03, 0.045],
+			"scale": [0.15, 0.07],
+			"text": "Defeat the intruders!",
+			"centered": true,
+			"color": "FF000000",
+			"fontsize": 25.0
+		}
+	},
+	"winscreen": {
+		"position": [0.0, 0.1],
+		"scale": [0.35, 0.35],
+		"texture": "../Menues/Win/win3.png",
+
+		"winbutton": {
+			"position": [0.0, -0.23],
+			"scale": [0.1, 0.1],
+			"texture": "../Menues/General/placementResources.png",
+			"winbuttontext": {
+				"position": [0.0, -0.96],
+				"text": "Continue",
+				"centered": true,
+				"color": "FF000000",
+				"fontsize": 35.0
+			}
+		}
+	},
+	"losescreen": {
+		"position": [0.0, 0.2],
+		"scale": [0.6, 0.6],
+		"texture": "../Menues/Lose/lose4.png",
+
+		"losebutton": {
+			"position": [0.0, -0.23],
+			"scale": [0.1, 0.1],
+			"texture": "../Menues/General/placementResources.png",
+			"losebuttontext": {
+				"position": [0.0, -0.96],
+				"text": "Continue",
+				"centered": true,
+				"color": "FF000000",
+				"fontsize": 35.0
+			}
+		}
+	},
+	"Tutorial": {
+		"position": [0.0, -0.0],
 		"scale": [0.75, 0.90],
 		"texture": "../Menues/PlacementStateGUI/tutorialplay.png",
-		"fontsize" : 25.0
+		"fontsize": 25.0
 	}
-  }
+}

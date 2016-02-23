@@ -63,6 +63,14 @@ void PlacementState::Update(float deltaTime)
 	HandleCam(deltaTime);
 	HandleInput();
 	HandleButtons();
+
+	System::MouseCoord coord = _controls->GetMouseCoord();
+	HandleHoverColorOffset("Guard", "Guard", coord, XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f));
+	HandleHoverColorOffset("AnvilTrap", "AnvilTrap", coord, XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f));
+	HandleHoverColorOffset("TeslaTrap", "TeslaTrap", coord, XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f));
+	HandleHoverColorOffset("Camera", "Camera", coord, XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f));
+
+	HandleHoverColorOffset("Play", "Play", coord, XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f));
 }
 
 void PlacementState::OnStateEnter()
@@ -207,5 +215,3 @@ void PlacementState::HandleButtons()
 		//}
 	}
 }
-
-

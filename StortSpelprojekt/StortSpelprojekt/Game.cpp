@@ -13,6 +13,7 @@ Game::Game(HINSTANCE hInstance, int nCmdShow):
 	_gameHandle = this;
 	_window = new System::Window("Amazing game", hInstance, settings, WndProc);
 
+
 	_timer = System::Timer();
 
 	_renderModule = new Renderer::RenderModule(_window->GetHWND(), settings);
@@ -36,7 +37,8 @@ Game::Game(HINSTANCE hInstance, int nCmdShow):
 	_soundModule.AddSound("Assets/Sounds/theme", 0.15f, 1.0f, true, true);
 	_soundModule.Play("Assets/Sounds/theme");
 
-	_ambientLight = _renderModule->GetAmbientLight();
+	_ambientLight = _renderModule->GetAmbientLight();	
+	ResizeResources(settings);//This fixes a bug which offsets mousepicking, do not touch! //Markus
 }
 
 Game::~Game()
@@ -55,11 +57,10 @@ Game::~Game()
 
 void Game::ResizeResources(System::Settings* settings)
 {
-	//RenderModule must update it's swapchain before window resizes /Alex
-	_renderModule->ResizeResources(settings);
 	_window->ResizeWindow(settings);
-	_camera->Resize(settings);
 	_SM->Resize(settings);
+	_camera->Resize(settings);
+	_renderModule->ResizeResources(settings);
 }
 
 bool Game::Update(double deltaTime)
@@ -148,6 +149,7 @@ void Game::Render()
 		{
 			RenderObject* renderObject = i.at(0)->GetRenderObject();
 			if (!renderObject->_mesh->_isSkinned)
+			if (renderObject->_isSkinned)
 			{
 				continue;
 			}
@@ -159,8 +161,12 @@ void Game::Render()
 				{
 					_renderModule->RenderAnimation(i.at(0)->GetMatrix(), vertexBufferSize, i.at(0)->GetAnimation()->GetFloats(), i.at(0)->GetColorOffset());
 				}
+			}
 
-				for (int j = 1; j < i.size(); j++)
+			for (int j = 1; j < i.size(); j++)
+			{
+				renderObject = i.at(j)->GetRenderObject();
+				if (renderObject->_isSkinned)
 				{
 					if (i.at(j)->GetSubType() != i.at(j - 1)->GetSubType())
 					{
@@ -174,6 +180,7 @@ void Game::Render()
 					}
 
 				}
+
 			}
 		}
 	}*/
