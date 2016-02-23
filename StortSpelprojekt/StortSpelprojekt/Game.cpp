@@ -143,7 +143,7 @@ bool Game::Update(double deltaTime)
 	{
 		_objectHandler->UpdateLights();
 	}
-	_soundModule.Update();
+	_soundModule.Update(_camera->GetPosition().x/5.0f, 2.0f, _camera->GetPosition().z / 5.0f);
 
 	bool run = true;
 

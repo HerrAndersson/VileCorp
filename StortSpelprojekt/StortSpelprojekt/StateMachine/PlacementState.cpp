@@ -27,6 +27,9 @@ PlacementState::PlacementState(System::Controls* controls, ObjectHandler* object
 
 	//if tutorial should initialize
 	_tutorialLogic = new TutorialLogic(&_uiTree, _controls);
+
+	//Add sound
+	_soundModule->AddSound("Assets/Sounds/in_game_1", 0.2f, 1.0f, true, true);
 }
 
 void PlacementState::EvaluateGoldCost()
@@ -123,6 +126,9 @@ void PlacementState::OnStateEnter()
 	{
 		_uiTree.GetNode("Tutorial")->SetHidden(true);
 	}
+
+	//Play music
+	_soundModule->Play("Assets/Sounds/in_game_1");
 }
 
 void PlacementState::OnStateExit()
@@ -134,6 +140,9 @@ void PlacementState::OnStateExit()
 	{
 		_uiTree.GetNode("Tutorial")->SetHidden(true);
 	}
+
+	//Pause music
+	_soundModule->Pause("Assets/Sounds/in_game_1");
 }
 
 void PlacementState::HandleInput()

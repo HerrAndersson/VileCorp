@@ -2,7 +2,7 @@
 #include <DirectXMath.h>
 #include "InputDevice.h"
 
-GameLogic::GameLogic(ObjectHandler* objectHandler, System::Camera* camera, System::Controls* controls, PickingDevice* pickingDevice, GUI::UITree* uiTree, AssetManager* assetManager, System::SettingsReader* settingsReader)
+GameLogic::GameLogic(ObjectHandler* objectHandler, System::Camera* camera, System::Controls* controls, PickingDevice* pickingDevice, GUI::UITree* uiTree, AssetManager* assetManager, System::SettingsReader* settingsReader , System::SoundModule* soundModule)
 {
 	_objectHandler = objectHandler;
 	_camera = camera;
@@ -20,6 +20,10 @@ GameLogic::GameLogic(ObjectHandler* objectHandler, System::Camera* camera, Syste
 	_gameOver = false;
 	_buttonReady = 3999.0f;
 	_returnToMenu = false;
+
+	_soundModule = soundModule;
+	_soundModule->AddSound("Assets/Sounds/unit_select", 0.5f, 1.0f, true, false);
+	_soundModule->AddSound("Assets/Sounds/unit_move", 0.5f, 1.0f, true, false);
 }
 
 GameLogic::~GameLogic()
@@ -122,6 +126,9 @@ void GameLogic::HandleUnitSelect()
 					}
 				}
 			}
+
+			//Play "hm" sound
+			_soundModule->Play("Assets/Sounds/unit_select");
 		}
 	}
 }
@@ -188,9 +195,10 @@ void GameLogic::HandleUnitMove()
 				//Change direction
 				units.at(0)->SetDirection(direction);
 		}
-		else
+		else if(units.size() > 0)
 		{
 			_player->MoveUnits(selectedTile);
+			_soundModule->Play("Assets/Sounds/unit_move");
 		}
 	}
 }

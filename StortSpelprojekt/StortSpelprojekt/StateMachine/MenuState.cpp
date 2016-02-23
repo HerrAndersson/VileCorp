@@ -59,6 +59,10 @@ void MenuState::Update(float deltaTime)
 void MenuState::OnStateEnter()
 {
 	_objectHandler->UnloadLevel();
+
+	//Restart all music
+	_soundModule->Stop("Assets/Sounds/in_game_1");
+	_soundModule->Stop("Assets/Sounds/in_game_2");
 }
 
 void MenuState::OnStateExit()

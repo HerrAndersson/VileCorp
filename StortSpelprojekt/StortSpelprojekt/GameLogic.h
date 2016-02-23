@@ -1,4 +1,5 @@
 #pragma once
+#include "..\System\SoundModule.h"
 #include "ObjectHandler.h"
 #include "Camera.h"
 #include "Controls.h"
@@ -24,6 +25,7 @@ private:
 	System::SettingsReader* _settingsReader;
 	float					_buttonReady;
 	bool					_gameOver;
+	System::SoundModule*	_soundModule;
 
 	void HandleInput(float deltaTime);
 	void HandleUnitSelect();
@@ -37,7 +39,7 @@ private:
 	void HandleWinLoseDialog(float deltaTime);
 	bool CheckGameStatus();
 public:
-	GameLogic(ObjectHandler* objectHandler, System::Camera* camera, System::Controls* controls, PickingDevice* pickingDevice, GUI::UITree* uiTree, AssetManager* assetManager, System::SettingsReader* settingsReader);
+	GameLogic(ObjectHandler* objectHandler, System::Camera* camera, System::Controls* controls, PickingDevice* pickingDevice, GUI::UITree* uiTree, AssetManager* assetManager, System::SettingsReader* settingsReader, System::SoundModule* soundModule);
 	~GameLogic();
 	void Update(float deltaTime);
 	bool GoToMenu()const;
