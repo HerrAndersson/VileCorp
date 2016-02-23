@@ -586,7 +586,7 @@ void ObjectHandler::Update(float deltaTime)
 				GameObject* heldObject = unit->GetHeldObject();
 				if (heldObject != nullptr && heldObject->GetPickUpState() == HELD)
 				{
-					heldObject->SetPosition(DirectX::XMFLOAT3(unit->GetPosition().x, unit->GetPosition().y + 2, unit->GetPosition().z));
+					heldObject->SetPosition(DirectX::XMFLOAT3(unit->GetPosition().x, unit->GetPosition().y + 2.0f, unit->GetPosition().z));
 					heldObject->SetTilePosition(AI::Vec2D(heldObject->GetPosition().x, heldObject->GetPosition().z));
 				}
 
@@ -598,7 +598,7 @@ void ObjectHandler::Update(float deltaTime)
 
 						for (uint k = 0; k < _gameObjects[SPAWN].size() && !lootRemoved; k++)
 						{
-							//If the enemy is at the despawn point with an objective, remove the objective and the enemy, Aron
+							//When the Enemy despawns with a Loot at hand at a spawn point, spawn them again as if they re-enter to get more Loot, Aron
 							if (_gameObjects[SPAWN][k]->InRange(unit->GetTilePosition()))
 							{
 								lootRemoved = Remove(heldObject);
@@ -630,12 +630,36 @@ void ObjectHandler::Update(float deltaTime)
 					g = nullptr;
 					unit = nullptr;
 					j--;
-					return;
 				}
 				else if (unit->IsSwitchingTile())
 				{
 					_tilemap->RemoveObjectFromTile(unit->GetTilePosition(), g);
 					_tilemap->AddObjectToTile(unit->GetNextTile(), g);
+
+					//If all the objectives are looted and the enemy is at a (de)spawn point, despawn them.
+					bool allLootIsCarried = true;
+					for (uint k = 0; k < _gameObjects[SPAWN].size(); k++)
+					{
+						for (uint l = 0; l < _gameObjects[LOOT].size() && allLootIsCarried; l++)
+						{
+							if (_gameObjects[LOOT][l]->GetPickUpState() == ONTILE || _gameObjects[LOOT][l]->GetPickUpState() == DROPPING)
+							{
+								allLootIsCarried = false;
+							}
+						}
+
+						if (unit->GetType() != GUARD &&
+							(_gameObjects[LOOT].size() == 0 || allLootIsCarried) &&
+							unit->InRange(_gameObjects[SPAWN][k]->GetTilePosition()))
+						{
+							unit->TakeDamage(10);
+						}
+					}
+					
+					if (allLootIsCarried)
+					{
+						static_cast<Enemy*>(unit)->CheckAllTiles();
+					}
 				}
 			}
 			else if (g->GetType() == SPAWN)															//Manage enemy spawning
