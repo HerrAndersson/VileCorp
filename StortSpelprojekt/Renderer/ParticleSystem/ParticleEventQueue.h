@@ -6,7 +6,7 @@
 namespace Renderer
 {
 	//Wrapper to hide std::vector-functionality from users who should not have access to everything
-	class RENDERER_EXPORT ParticleRequestQueue
+	class RENDERER_EXPORT ParticleEventQueue
 	{
 
 	private:
@@ -15,8 +15,8 @@ namespace Renderer
 
 	public:
 
-		ParticleRequestQueue(std::vector<ParticleMessage*>* queue);
-		virtual ~ParticleRequestQueue();
+		ParticleEventQueue(std::vector<ParticleMessage*>* queue);
+		virtual ~ParticleEventQueue();
 
 		void Insert(ParticleMessage* msg);
 	};
