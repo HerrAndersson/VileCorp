@@ -4,7 +4,7 @@ PlacementState::PlacementState(System::Controls* controls, ObjectHandler* object
 	: BaseState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settingsReader, soundModule)
 {
 	_playerProfile.resize(1);
-	_tutorialLogic = nullptr;
+	_tutorialLogic = new TutorialLogic(&_uiTree, _controls);
 	_baseEdit = nullptr;
 
 	//Money

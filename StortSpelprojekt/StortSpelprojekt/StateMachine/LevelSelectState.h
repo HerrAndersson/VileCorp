@@ -2,6 +2,8 @@
 #include "BaseState.h"
 #include "JsonParser.h"
 
+#define TUTORIAL 0
+
 class LevelSelectState :
 	public BaseState
 {

@@ -17,7 +17,7 @@ LevelSelectState::LevelSelectState(System::Controls* controls, ObjectHandler* ob
 	_campaignTabNode = _uiTree.GetNode("CampaignTab");
 	_skirmishTabNode = _uiTree.GetNode("SkirmishTab");
 
-	_campaignSelectionMin = 1;
+	_campaignSelectionMin = TUTORIAL;
 	_skirmishSelectedIndex = 1;
 
 	for (unsigned i = 0; i < _uiTree.GetNode("LevelSelectionTabs")->GetChildren()->size(); i++)
@@ -60,6 +60,14 @@ void LevelSelectState::Update(float deltaTime)
 				if (_isCampaignMode)
 				{
 					levelBinaryPath = CAMPAIGN_FOLDER_PATH;
+					//if we have selected the tutorial map
+					if (_campaignSelection == TUTORIAL)
+					{
+						_tutorialState = TutorialState::NEWTUTORIAL;
+					}
+					{
+						_tutorialState = TutorialState::NOTUTORIAL;
+					}
 				}
 				else
 				{
@@ -156,10 +164,15 @@ void LevelSelectState::OnStateEnter()
 		modeSelect->SetPosition(_tabPosition[i]);
 	}
 
+	//Load level information into respektive variables.
 	_skirmishHeaderFilenames.clear();
 	GetFilenamesInDirectory(const_cast<char*>(SKIRMISH_FOLDER_PATH.c_str()), ".json", _skirmishHeaderFilenames, false);
-
 	_campaignSelectionMax = _campaignSelection = _profile->_level;
+	//if player havent completed the tutorial before. Show tutorial first.
+	if (_profile->_firstTime && _campaignSelectionMin == TUTORIAL)
+	{
+		_campaignSelection = TUTORIAL;
+	}
 	LoadLevelHeader(_campaignSelection, &_selectedLevelHeader);
 	SelectedLevelHeaderToGUI();
 	UpdateButtonsNextPreviousVisability();
