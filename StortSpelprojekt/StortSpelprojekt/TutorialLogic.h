@@ -9,37 +9,33 @@
 #include "ToPlace.h"
 #include "CommonUtils.h"
 
-enum TutorialState
+enum TutorialStage
 {
+	NOTUTORIAL,
 	NEWTUTORIAL,
-	OLDTUTORIAL,
-	NOTUTORIAL
+	OBJECTIVE,
+	CONTROLS,
+	GUARDEXPLAINED,
+	GUARDPLACE,
+	ANVILEXPLAINED,
+	ANVILPLACE,
+	TESLAEXPLAINED,
+	TESLAPLACE,
+	SECURITYCAMERAEXPLAINED,
+	SECURITYCAMERAPLACE,
+	BUDGETEXPLAINED,
+	PLAYEXPLAINED
 };
 
 class TutorialLogic
 {
 private:
-	enum Stage
-	{
-		WELCOME,
-		OBJECTIVE,
-		CONTROLS,
-		GUARDEXPLAINED,
-		GUARDPLACE,
-		ANVILEXPLAINED,
-		ANVILPLACE,
-		TESLAEXPLAINED,
-		TESLAPLACE,
-		SECURITYCAMERAEXPLAINED,
-		SECURITYCAMERAPLACE,
-		BUDGETEXPLAINED,
-		PLAYEXPLAINED
-	};
+	
 
 private:
 	GUI::UITree* _uiTree;
 	System::Controls* _controls;
-	Stage _currentStage;
+	TutorialStage _currentStage;
 	int _gold;
 	bool _sCameraPlaced;
 	bool _tutorialCompleted;

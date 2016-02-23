@@ -37,12 +37,11 @@ void LevelSelectState::Update(float deltaTime)
 			//_soundModule->Play("Assets/Sounds/page.wav");
 			if (_levelSelection == 6)
 			{
-				_tutorial = true;
-				_pausedTutorial = false;
+				_tutorialStage = TutorialStage::NEWTUTORIAL;
 			}
 			else
 			{
-				_pausedTutorial = true;
+				_tutorialStage = TutorialStage::NOTUTORIAL;
 			}
 			_objectHandler->LoadLevel(_levelSelection);
 			_uiTree.GetNode(std::to_string(_levelSelection))->SetHidden(true);
@@ -73,7 +72,6 @@ void LevelSelectState::Update(float deltaTime)
 
 void LevelSelectState::OnStateEnter()
 {
-	_tutorial = false;
 	if (_settingsReader->GetProfile()->_firstTime)
 	{
 		_levelSelection = _levelSelection = 6;

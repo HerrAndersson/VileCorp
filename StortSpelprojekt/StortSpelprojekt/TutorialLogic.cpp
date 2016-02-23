@@ -29,7 +29,7 @@ TutorialLogic::~TutorialLogic()
 
 void TutorialLogic::ResetUiTree()
 {
-	_currentStage = WELCOME;
+	_currentStage = NEWTUTORIAL;
 	_uiTree->GetNode("welcome")->SetHidden(false);
 	_uiTree->GetNode("controls")->SetHidden(true);
 	_uiTree->GetNode("objective")->SetHidden(true);
@@ -55,7 +55,7 @@ bool TutorialLogic::Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace
 
 	switch (_currentStage)
 	{
-	case TutorialLogic::WELCOME:
+	case NEWTUTORIAL:
 	{
 		if (_controls->IsFunctionKeyDown("MENU:CONTINUE"))
 		{
@@ -65,7 +65,7 @@ bool TutorialLogic::Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace
 		}
 		break;
 	}
-	case TutorialLogic::CONTROLS:
+	case CONTROLS:
 	{
 		if (_controls->IsFunctionKeyDown("MENU:CONTINUE"))
 		{
@@ -75,7 +75,7 @@ bool TutorialLogic::Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace
 		}
 		break;
 	}
-	case TutorialLogic::OBJECTIVE:
+	case OBJECTIVE:
 	{
 		if (_controls->IsFunctionKeyDown("MENU:CONTINUE"))
 		{
@@ -85,7 +85,7 @@ bool TutorialLogic::Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace
 		}
 		break;
 	}
-	case TutorialLogic::GUARDEXPLAINED:
+	case GUARDEXPLAINED:
 	{
 		if (_controls->IsFunctionKeyDown("MENU:CONTINUE"))
 		{
@@ -95,7 +95,7 @@ bool TutorialLogic::Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace
 		}
 		break;
 	}
-	case TutorialLogic::GUARDPLACE:
+	case GUARDPLACE:
 	{
 		//Check mouse pos with button
 		System::MouseCoord coord = _controls->GetMouseCoord();
@@ -120,7 +120,7 @@ bool TutorialLogic::Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace
 		}
 		break;
 	}
-	case TutorialLogic::ANVILEXPLAINED:
+	case ANVILEXPLAINED:
 	{
 		if (_controls->IsFunctionKeyDown("MENU:CONTINUE"))
 		{
@@ -130,7 +130,7 @@ bool TutorialLogic::Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace
 		}
 		break;
 	}
-	case TutorialLogic::ANVILPLACE:
+	case ANVILPLACE:
 	{
 		//Check mouse pos with button
 		System::MouseCoord coord = _controls->GetMouseCoord();
@@ -156,7 +156,7 @@ bool TutorialLogic::Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace
 		}
 		break;
 	}
-	case TutorialLogic::TESLAEXPLAINED:
+	case TESLAEXPLAINED:
 	{
 		if (_controls->IsFunctionKeyDown("MENU:CONTINUE"))
 		{
@@ -166,7 +166,7 @@ bool TutorialLogic::Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace
 		}
 		break;
 	}
-	case TutorialLogic::TESLAPLACE:
+	case TESLAPLACE:
 	{
 		//Check mouse pos with button
 		System::MouseCoord coord = _controls->GetMouseCoord();
@@ -192,7 +192,7 @@ bool TutorialLogic::Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace
 		}
 		break;
 	}
-	case TutorialLogic::SECURITYCAMERAEXPLAINED:
+	case SECURITYCAMERAEXPLAINED:
 	{
 		if (_controls->IsFunctionKeyDown("MENU:CONTINUE"))
 		{
@@ -202,7 +202,7 @@ bool TutorialLogic::Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace
 		}
 		break;
 	}
-	case TutorialLogic::SECURITYCAMERAPLACE:
+	case SECURITYCAMERAPLACE:
 	{
 		//Check mouse pos with button
 		System::MouseCoord coord = _controls->GetMouseCoord();
@@ -230,7 +230,7 @@ bool TutorialLogic::Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace
 		}
 		break;
 	}
-	case TutorialLogic::BUDGETEXPLAINED:
+	case BUDGETEXPLAINED:
 	{
 		if (_controls->IsFunctionKeyDown("MENU:CONTINUE"))
 		{
@@ -242,7 +242,7 @@ bool TutorialLogic::Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace
 
 		break;
 	}
-	case TutorialLogic::PLAYEXPLAINED:
+	case PLAYEXPLAINED:
 	{
 		System::MouseCoord coord = _controls->GetMouseCoord();
 		if (_uiTree->IsButtonColliding("Play", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
