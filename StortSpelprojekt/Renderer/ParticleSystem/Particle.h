@@ -16,26 +16,32 @@ namespace Renderer
 
 		DirectX::XMFLOAT3 _position;
 		DirectX::XMFLOAT3 _direction;
-		DirectX::XMFLOAT4 _color;
+
+		float _speed;
+		float _timeLeft;
+
+		float _textureNumber; //Held as float because hlsl is better at handling floats than ints. In the shader this is cast to an int anyway.
 
 		bool _isActive;
 
 	public:
 
 		Particle();
-		Particle(const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& direction = DirectX::XMFLOAT3(0, 1, 0), const DirectX::XMFLOAT4& color = DirectX::XMFLOAT4(0.0f, 0.5f, 0.5f, 1.0f));
+		Particle(const DirectX::XMFLOAT3& position, float speed, float timeLeft, float textureNumber, const DirectX::XMFLOAT3& direction = DirectX::XMFLOAT3(0, 1, 0));
 		virtual ~Particle();
-		void Reset(const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& direction, const DirectX::XMFLOAT4& color);
-
-		void Update(double deltaTime, const ParticleType& type);
 
 		DirectX::XMFLOAT3 GetPosition() const;
 		DirectX::XMFLOAT3 GetDirection() const;
-		DirectX::XMFLOAT4 GetColor() const;
+		float GetSpeed() const;
+		float GetTimeLeft() const;
+		float GetTextureNumber() const;
 
 		void SetPosition(const DirectX::XMFLOAT3& position);
 		void SetDirection(const DirectX::XMFLOAT3& direction);
-		void SetColor(const DirectX::XMFLOAT4& color);
+		void SetSpeed(float speed);
+
+		void ResetTimeLeft(float time);
+		void DecreaseTimeLeft(float deltaTime);
 
 		bool IsActive() const;
 		void Activate();

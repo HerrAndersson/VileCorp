@@ -119,6 +119,9 @@ void QuadTree::GetObjects(std::vector<Vec2>* polygon, std::vector<std::vector<Ga
 					if (object != nullptr)
 					{
 						collectedObjects->at(j).push_back(object);
+
+						//TODO: remove when spotlights no longer shines through walls /Jonas
+						object->SetColorOffset(XMFLOAT3(1, 0, 1));
 					}
 				}
 			}

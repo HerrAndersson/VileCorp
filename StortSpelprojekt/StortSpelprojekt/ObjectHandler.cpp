@@ -1,7 +1,7 @@
 #include "ObjectHandler.h"
 #include "stdafx.h"
 
-ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data, System::Settings* settings)
+ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data, System::Settings* settings, Renderer::ParticleEventQueue* ParticleEventQueue)
 {
 	_settings = settings;
 	_idCount = 0;
@@ -11,6 +11,7 @@ ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, G
 	_gameObjectInfo = data;
 	_device = device;
 	_lightCulling = nullptr;
+	_ParticleEventQueue = ParticleEventQueue;
 
 	ActivateTileset("default2");
 }
@@ -334,9 +335,9 @@ GameObject* ObjectHandler::Find(Type type, short index)
 	return nullptr;
 }
 
-vector<GameObject*> ObjectHandler::GetAllByType(Type type)
+vector<GameObject*>* ObjectHandler::GetAllByType(Type type)
 {
-	return _gameObjects[type];
+	return &_gameObjects[type];
 }
 
 RenderList ObjectHandler::GetAllByType(int renderObjectID)
@@ -811,7 +812,7 @@ Trap * ObjectHandler::MakeTrap(GameObjectTrapInfo * data, const XMFLOAT3& positi
 		_assetManager->GetRenderObject(data->_renderObject),
 		_tilemap,
 		subIndex,
-		{ 1,0 },
+		{ -1,0 },
 		data->_cost);
 
 	// Read more data

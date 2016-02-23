@@ -1,5 +1,4 @@
 {
-
 	"Units": {
 		"position": [-0.7, -0.855],
 		"scale": [0.3, 0.2],
@@ -42,6 +41,21 @@
 				"position": [0.0, -0.173],
 				"scale": [0.068, 0.083],
 				"text": "Tesla Trap 100$",
+					"color": "FF000000",
+					"fontsize" : 18.0
+				}
+			},
+			"MachineGunTrap" :
+			{
+				"position": [0.1, 0.057],	
+				"scale": [0.037, 0.063],
+				"texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png",
+				
+				"TeslaText":
+				{
+					"position" : [0.952, -1.08],
+					"scale": [1.0, 1.0],
+					"text": "MachineGun\n       200$",
 				"color": "FF000000",
 				"fontsize": 18.0,
 				"centered": true
