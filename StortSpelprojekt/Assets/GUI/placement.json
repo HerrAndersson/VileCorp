@@ -166,10 +166,10 @@
 				"": {
 					"position": [0, -0.0],
 					"scale": [0.2, 0.6],
-					"text": "Welcome to VileCorp!\n\nIn this tutorial, we will go through the basic in how to play the game.",
+					"text": "\n\nHey there, boss!\n\nI know you're probably an expert, being in charge of Vilecorp and all...\n\nBut let's go over the basics,\nshall we?",
 					"color": "FF000000",
 					"centered": true,
-					"fontsize": 30.0
+					"fontsize": 26.0
 				},
 				"": {
 					"position": [0, -0.85],
@@ -177,7 +177,7 @@
 					"text": "Press Enter to Continue.",
 					"color": "FF000000",
 					"centered": true,
-					"fontsize": 30.0
+					"fontsize": 24.0
 				}
 			},
 			"controls": {
@@ -187,10 +187,10 @@
 				"": {
 					"position": [0, -0.15],
 					"scale": [0.15, 0.6],
-					"text": "You control the camera by using W,A,S,D.\n\n You can also rotate it by using Q and E.\n\n Use the scrollwheel to zoom in and out.",
+					"text": "\nYou control the camera with W A S D,\nand rotate it with Q and E.\n\n Use the scrollwheel to zoom in and out.",
 					"color": "FF000000",
 					"centered": true,
-					"fontsize": 30.0
+					"fontsize": 26.0
 				},
 				"": {
 					"position": [0, -1],
@@ -198,7 +198,7 @@
 					"text": "Press Enter to Continue.",
 					"color": "FF000000",
 					"centered": true,
-					"fontsize": 30.0
+					"fontsize": 24.0
 				}
 			},
 			"objective": {
@@ -208,10 +208,10 @@
 				"": {
 					"position": [0, -0.15],
 					"scale": [0.15, 0.6],
-					"text": "The objective is to protect the valuables that are lit up on the map from thieves. These thieves will come in through the windows. ",
+					"text": "\nWe've been hired to keep our employer's valuables safe from thieves. These valuables are lit up on the map!\n\nThe thieves will try to get in through windows and doors.",
 					"color": "FF000000",
 					"centered": true,
-					"fontsize": 30.0
+					"fontsize": 26.0
 				},
 				"": {
 					"position": [0, -1],
@@ -219,7 +219,7 @@
 					"text": "Press Enter to Continue.",
 					"color": "FF000000",
 					"centered": true,
-					"fontsize": 30.0
+					"fontsize": 24.0
 				},
 				"thief": {
 					"position": [0.0, -0.8],
@@ -239,10 +239,10 @@
 				"": {
 					"position": [0, -0.15],
 					"scale": [0.15, 0.6],
-					"text": "Guards\n\nGuards are controllable units that you can use to hunt these thieves down. Move the guards towards the thieves and he will kill them. But be wiery though. Unattended guards can get killed by thieves sneaking up from behind.",
+					"text": "Guards\n\nGuards are units that you can control! Make use of them to hunt the thieves down.\n\n You can direct your guard towards the thief, which will make your guard attack.\n However, be weary! Unattended guards might get hurt by thieves, sneaking up from behind them.",
 					"color": "FF000000",
 					"centered": true,
-					"fontsize": 30.0
+					"fontsize": 24.0
 				},
 				"": {
 					"position": [0, -1],
@@ -250,7 +250,7 @@
 					"text": "Press Enter to Continue.",
 					"color": "FF000000",
 					"centered": true,
-					"fontsize": 30.0
+					"fontsize": 24.0
 				}
 			},
 			"guardplace": {
@@ -260,10 +260,10 @@
 				"": {
 					"position": [0, -0.15],
 					"scale": [0.15, 0.6],
-					"text": "Click and drag the guard to the position you want place him. ",
+					"text": "Click and drag a guard\nto a position of your choice!",
 					"color": "FF000000",
 					"centered": true,
-					"fontsize": 30.0
+					"fontsize": 20.0
 				}
 			},
 			"anvilexplained": {
@@ -273,10 +273,10 @@
 				"": {
 					"position": [0, -0.15],
 					"scale": [0.15, 0.6],
-					"text": "The Anvil\n\nAvils is a one tile trap that will crush any thieves walking below it. But be aware, some thieves have a very particular set of skills. Acquired over a very long career. Skills that would be a nightmare for traps like this. ",
+					"text": "The Anvil\n\nAnvils are single tile traps, that will, as they do, fall upon thieves beneath it.\n\nBut be aware, some types of thieves have learned how to deal with simplistic traps such as these.",
 					"color": "FF000000",
 					"centered": true,
-					"fontsize": 30.0
+					"fontsize": 26.0
 				},
 				"": {
 					"position": [0, -1],
@@ -284,7 +284,7 @@
 					"text": "Press Enter to Continue.",
 					"color": "FF000000",
 					"centered": true,
-					"fontsize": 30.0
+					"fontsize": 24.0
 				}
 			},
 			"anvilplace": {
@@ -294,10 +294,10 @@
 				"": {
 					"position": [0, -0.15],
 					"scale": [0.15, 0.6],
-					"text": "Click and drag the anvil to the position of your desire.",
+					"text": "Click and drag an anvil\nto a position of your choice!",
 					"color": "FF000000",
 					"centered": true,
-					"fontsize": 30.0
+					"fontsize": 20.0
 				}
 			},
 			"teslaexplained": {
@@ -307,10 +307,10 @@
 				"": {
 					"position": [0, -0.15],
 					"scale": [0.15, 0.6],
-					"text": "The Tesla Trap\n\nUnlike the Anvil, the Tesla trap is an area of effect trap. That activates on the inner circle but affects units, both friend and foe, to the outer circle. ",
+					"text": "The Tesla Coil\n\nUnlike the Anvil, this trap affects an area around it.\nIt will be activated by entering the inner circle, but within the outer circle its effect will fall upon both friend or foe. ",
 					"color": "FF000000",
 					"centered": true,
-					"fontsize": 30.0
+					"fontsize": 26.0
 				},
 				"": {
 					"position": [0, -1],
@@ -318,7 +318,7 @@
 					"text": "Press Enter to Continue.",
 					"color": "FF000000",
 					"centered": true,
-					"fontsize": 30.0
+					"fontsize": 24.0
 				}
 			},
 			"teslaplace": {
@@ -328,10 +328,10 @@
 				"": {
 					"position": [0, -0.15],
 					"scale": [0.15, 0.6],
-					"text": "Click and drag the tesla trap to the position you find suitable.",
+					"text": "Click and drag a Tesla Coil Trap\nto a position of your choice!",
 					"color": "FF000000",
 					"centered": true,
-					"fontsize": 30.0
+					"fontsize": 20.0
 				}
 			},
 			"securitycameraexplained": {
@@ -341,10 +341,10 @@
 				"": {
 					"position": [0, -0.15],
 					"scale": [0.15, 0.6],
-					"text": "The Security Camera\n\nSecurity Cameras provide vision for any thieves in its sights. They are cheap but unlike a guard, they cant actually harm anyone.",
+					"text": "The Security Camera\n\nSecurity Cameras provide visibility of any thieves within their range. They are cheap but unlike a guard or trap, they do not cause any harm.",
 					"color": "FF000000",
 					"centered": true,
-					"fontsize": 30.0
+					"fontsize": 26.0
 				},
 				"": {
 					"position": [0, -1],
@@ -352,7 +352,7 @@
 					"text": "Press Enter to Continue.",
 					"color": "FF000000",
 					"centered": true,
-					"fontsize": 30.0
+					"fontsize": 24.0
 				}
 			},
 			"securitycameraplace": {
