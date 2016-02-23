@@ -335,13 +335,12 @@ namespace Renderer
 		SAFE_RELEASE(_particlePointsBuffer);
 		unsigned int particleCount = _particles.size();
 
-		//Update the _shaderData vector
-		for (Particle& p : _particles)
+		for (unsigned int i = 0; i < particleCount; i++)
 		{
 			ParticleVertex v;
-			XMFLOAT3 pos = p.GetPosition();
-			v._position = XMFLOAT4(pos.x, pos.y, pos.z, p.GetTextureNumber());
-			_shaderData.push_back(v);
+			XMFLOAT3 pos = _particles[i].GetPosition();
+			v._position = XMFLOAT4(pos.x, pos.y, pos.z, _particles[i].GetTextureNumber());
+			_shaderData[i] = v;
 		}
 
 		_vertexSize = sizeof(ParticleVertex);
@@ -366,15 +365,12 @@ namespace Renderer
 	void ParticleEmitter::UpdateVertexBuffer()
 	{
 		unsigned int particleCount = _particles.size();
-		std::vector<ParticleVertex> points;
-		points.reserve(particleCount);
-
-		for (Particle& p : _particles)
+		for (unsigned int i = 0; i < particleCount; i++)
 		{
 			ParticleVertex v;
-			XMFLOAT3 pos = p.GetPosition();
-			v._position = XMFLOAT4(pos.x, pos.y, pos.z, p.GetTextureNumber());
-			points.push_back(v);
+			XMFLOAT3 pos = _particles[i].GetPosition();
+			v._position = XMFLOAT4(pos.x, pos.y, pos.z, _particles[i].GetTextureNumber());
+			_shaderData[i] = v;
 		}
 
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -385,7 +381,7 @@ namespace Renderer
 			throw std::runtime_error("ParticleEmitter::UpdateVertexBuffer: Failed to Map _particlePointsBuffer");
 		}
 
-		memcpy(mappedResource.pData, points.data(), sizeof(ParticleVertex) * particleCount);
+		memcpy(mappedResource.pData, _shaderData.data(), sizeof(ParticleVertex) * particleCount);
 		_deviceContext->Unmap(_particlePointsBuffer, 0);
 	}
 
