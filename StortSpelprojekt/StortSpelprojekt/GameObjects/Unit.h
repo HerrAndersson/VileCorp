@@ -4,6 +4,8 @@
 #include "AStar.h"
 #include "../VisionCone.h"
 #include <DirectXMath.h>
+#include <stdlib.h>
+#include <time.h> 
 class Unit : public GameObject
 {
 public:

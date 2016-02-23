@@ -363,31 +363,49 @@ void Unit::SwitchingNode()
 	//{
 	//	_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,4});
 	//}
-	if (_objective != nullptr && _objective->GetPickUpState() == ONTILE)
+	if (_status == StatusEffect::CONFUSED)
 	{
-		if (_objective->InRange(_tilePosition))
+		srand((int)time(NULL));
+		int randDir = rand() % 8;
+		_direction = AI::NEIGHBOUR_OFFSETS[randDir];
+		_nextTile = _tilePosition + _direction;
+		while (!_tileMap->IsWallOnTile(_nextTile))			//Will loop endlessly if surrounded by walls. That really shouldn't happen though
 		{
-			_moveState = MoveState::AT_OBJECTIVE;
+			randDir = (randDir + 1) % 8;
+			_direction = AI::NEIGHBOUR_OFFSETS[randDir];
+			_nextTile = _tilePosition + _direction;
 		}
-		else if (_pathLength > 0 /*&& !_tileMap->IsGuardOnTile(_path[_pathLength - 1])*/)
+		Rotate();
+		_moveState = MoveState::MOVING;
+	}
+	else
+	{
+		if (_objective != nullptr && _objective->GetPickUpState() == ONTILE)
 		{
-			_nextTile = _path[--_pathLength];
-			_direction = _nextTile - _tilePosition;
-			Rotate();
-			_moveState = MoveState::MOVING;
+			if (_objective->InRange(_tilePosition))
+			{
+				_moveState = MoveState::AT_OBJECTIVE;
+			}
+			else if (_pathLength > 0 /*&& !_tileMap->IsGuardOnTile(_path[_pathLength - 1])*/)
+			{
+				_nextTile = _path[--_pathLength];
+				_direction = _nextTile - _tilePosition;
+				Rotate();
+				_moveState = MoveState::MOVING;
+			}
+			else			// TODO: else find unblocked path to goal --Victor
+			{
+				ClearObjective();
+				_moveState = MoveState::IDLE;
+			}
+			_isSwitchingTile = false;
+			CheckVisibleTiles();
 		}
-		else			// TODO: else find unblocked path to goal --Victor
+		else
 		{
 			ClearObjective();
 			_moveState = MoveState::IDLE;
 		}
-		_isSwitchingTile = false;
-		CheckVisibleTiles();
-	}
-	else
-	{
-		ClearObjective();
-		_moveState = MoveState::IDLE;
 	}
 }
 
@@ -438,7 +456,8 @@ void Unit::DeactivateStatus()
 		break;
 	case StatusEffect::SCARED:								//Reset movement state
 	case StatusEffect::CONFUSED:
-		_moveState = MoveState::IDLE;
+		ClearObjective();
+		_moveState = MoveState::MOVING;
 		break;
 	default:
 		break;

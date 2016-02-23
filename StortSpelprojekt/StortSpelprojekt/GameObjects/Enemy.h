@@ -1,8 +1,7 @@
 #pragma once
 #include "Trap.h"
 #include "Unit.h"
-#include <stdlib.h>
-#include <time.h> 
+
 
 const int TIME_TO_HIDE = 60;		//frames needed to stop being visible
 class Enemy : public Unit
