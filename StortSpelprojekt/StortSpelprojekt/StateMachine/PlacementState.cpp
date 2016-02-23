@@ -115,9 +115,13 @@ void PlacementState::OnStateEnter()
 		_tutorialLogic->ResetUiTree();
 	}
 	//Coming back from pause state
-	if (_tutorialState == TutorialState::OLDTUTORIAL)
+	else if (_tutorialState == TutorialState::OLDTUTORIAL)
 	{
 		_uiTree.GetNode("Tutorial")->SetHidden(false);
+	}
+	else if (_tutorialState == TutorialState::NOTUTORIAL)
+	{
+		_uiTree.GetNode("Tutorial")->SetHidden(true);
 	}
 }
 
