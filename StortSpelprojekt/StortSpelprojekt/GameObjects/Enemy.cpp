@@ -73,6 +73,7 @@ Enemy::Enemy(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 ro
 	_detectionSkill = 50;
 	_disarmSkill = 50;
 	_pursuer = nullptr;
+	_moveSpeed = 0.025;
 }
 
 Enemy::~Enemy()
@@ -236,39 +237,38 @@ void Enemy::Release()
 
 void Enemy::Update(float deltaTime)
 {
-	//Unit::Update(deltaTime);
-	if (_renderObject->_isSkinned)
-	{
-		_animation->Update(deltaTime);
-	}
+	Unit::Update(deltaTime);
 
-	switch (_moveState)
+	if (_status != StatusEffect::STUNNED)
 	{
-	case MoveState::IDLE:
-		CheckAllTiles();
-		Animate(IDLEANIM);
-		break;
-	case MoveState::FINDING_PATH:
-		if (_objective != nullptr)
+		switch (_moveState)
 		{
-			SetGoal(_objective);
+		case MoveState::IDLE:
+			CheckAllTiles();
+			Animate(IDLEANIM);
+			break;
+		case MoveState::FINDING_PATH:
+			if (_objective != nullptr)
+			{
+				SetGoal(_objective);
+			}
+			break;
+		case MoveState::MOVING:
+			Moving();
+			Animate(WALKANIM);
+			break;
+		case MoveState::SWITCHING_NODE:
+			SwitchingNode();
+			break;
+		case MoveState::AT_OBJECTIVE:
+			Act(_objective);
+			break;
+		case MoveState::FLEEING:
+			Flee();
+			break;
+		default:
+			break;
 		}
-		break;
-	case MoveState::MOVING:
-		Moving();
-		Animate(WALKANIM);
-		break;
-	case MoveState::SWITCHING_NODE:
-		SwitchingNode();
-		break;
-	case MoveState::AT_OBJECTIVE:
-		Act(_objective);
-		break;
-	case MoveState::FLEEING:
-		Flee();
-		break;
-	default:
-		break;
 	}
 
 	_visibilityTimer--;

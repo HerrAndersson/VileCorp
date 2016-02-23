@@ -12,6 +12,7 @@ Guard::Guard(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 ro
 {
 	_isSelected = false;
 	_currentPatrolGoal = 0;
+	_moveSpeed = 0.03;
 }
 
 Guard::~Guard()
@@ -108,10 +109,8 @@ void Guard::Release()
 
 void Guard::Update(float deltaTime) 
 {
-	if (_renderObject->_isSkinned)
-	{
-		_animation->Update(deltaTime);
-	}
+	Unit::Update(deltaTime);
+
 	switch( _moveState ) {
 	case MoveState::IDLE:
 		Animate(IDLEANIM);
