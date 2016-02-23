@@ -17,8 +17,8 @@
 #include "Pointlight.h"
 #include "GameObjectDataLoader.h"
 #include "ShadowMap.h"
-#include "Particle system\ParticleHandler.h"
-#include "Particle system\ParticleUtils.h"
+#include "ParticleSystem\ParticleHandler.h"
+#include "ParticleSystem\ParticleUtils.h"
 #include "SettingsReader.h"
 
 class Game
@@ -49,11 +49,14 @@ private:
 
 	//Resizing window, directx resources, camera
 	void ResizeResources(System::Settings* settings);
+
 	bool Update(double deltaTime);
 	void Render();
 
 	std::vector<GameObject*> _enemies;
 	std::vector<GameObject*> _loot;
+
+	void LoadParticleSystemData(ParticleTextures& particleTextures, ParticleModifierOffsets& modifiers);
 
 public:
 

@@ -59,7 +59,7 @@ namespace Renderer
 		void SetShadowGenerationStage();
 		int SetLightStage();
 		void SetHUDStage();
-		void SetGridStage();
+		void SetLinestripStage();
 
 		void SetCullingState(CullingState state);
 		void SetBlendState(BlendState state);

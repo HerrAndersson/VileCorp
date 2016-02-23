@@ -2,6 +2,7 @@
 
 State BaseState::_newStateRequest;
 State BaseState::_oldState;
+TutorialState BaseState::_tutorialState;
 
 BaseState::BaseState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule)
 	: _uiTree(filename, assetManager, fontWrapper, settingsReader)
@@ -226,6 +227,18 @@ void BaseState::HandleCamMove(float deltaTime)
 				_camera->GetPosition().y,
 				min(_camera->GetPosition().z, LIMIT_UPPER)));
 		}
+	}
+}
+
+void BaseState::HandleHoverColorOffset(const std::string& button, const std::string& node, System::MouseCoord coord, XMFLOAT4 rgba)
+{
+	if (_uiTree.IsButtonColliding(button, coord._pos.x, coord._pos.y))
+	{
+		_uiTree.GetNode(node)->SetColorOffset(rgba);
+	}
+	else
+	{
+		_uiTree.GetNode(node)->SetColorOffset(XMFLOAT4(0, 0, 0, 1));
 	}
 }
 
