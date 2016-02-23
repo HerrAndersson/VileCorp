@@ -45,20 +45,19 @@
 					"fontsize" : 18.0
 				}
 			},
-			"MachineGunTrap" :
+		"MachineGunTrap" :{
+			"position": [0.1, 0.057],	
+			"scale": [0.037, 0.063],
+			"texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png",
+			
+			"TeslaText":
 			{
-				"position": [0.1, 0.057],	
-				"scale": [0.037, 0.063],
-				"texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png",
-				
-				"TeslaText":
-				{
-					"position" : [0.952, -1.08],
-					"scale": [1.0, 1.0],
-					"text": "MachineGun\n       200$",
-				"color": "FF000000",
-				"fontsize": 18.0,
-				"centered": true
+				"position" : [0.952, -1.08],
+				"scale": [1.0, 1.0],
+				"text": "MachineGun\n       200$",
+			"color": "FF000000",
+			"fontsize": 18.0,
+			"centered": true
 			}
 		},
 		"Camera": {
