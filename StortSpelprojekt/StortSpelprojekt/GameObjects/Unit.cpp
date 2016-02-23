@@ -410,9 +410,9 @@ bool Unit::GetAnimisFinished()
 }
 void Unit::Animate(Anim anim)
 {
-	if (_animation != nullptr && _animation->GetisFinished())
+	if (_animation != nullptr)
 	{
-		if (_renderObject->_type == GUARD)
+		if (_type == GUARD)
 		{
 			switch (anim)
 			{
@@ -432,7 +432,7 @@ void Unit::Animate(Anim anim)
 				break;
 			}
 		}
-		if (_renderObject->_type == ENEMY)
+		if (_type == ENEMY)
 		{
 			switch (anim)
 			{

@@ -177,7 +177,7 @@
 				"../Menues/PlacementStateGUI/units/Anvilbutton1.png"
 			]
 		}, {
-			"_mesh": "guard-24.bin",
+			"_mesh": "ErikBaseman-27.bin",
 			"_name": "Guard",
 			"_type": "GUARD",
 			"_subType": 0,
@@ -205,7 +205,7 @@
 				"../Menues/PlacementStateGUI/units/Camerabutton1.png"
 			]
 		}, {
-			"_mesh": "enemy-24.bin",
+			"_mesh": "ErikEnemy-27.bin",
 			"_name": "Enemy",
 			"_type": "ENEMY",
 			"_subType": 0,

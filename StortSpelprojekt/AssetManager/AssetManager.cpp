@@ -188,13 +188,13 @@ Mesh* AssetManager::ScanModel(string name)
 	{
 		renderObject->_specularTexture = ScanTexture(specFile);
 	}
+	*/
 
-
-	if (renderObject->_isSkinned)
+	if (mesh->_isSkinned)
 	{
-		renderObject->_skeleton = LoadSkeleton(renderObject->_skeletonName);
+		mesh->_skeleton = LoadSkeleton(mesh->_skeletonName);
 	}
-*/
+
 	mesh->_meshLoaded = false;
 	_meshes->push_back(mesh);
 	return mesh;
@@ -244,11 +244,10 @@ Mesh* AssetManager::ScanModel27()
 	Mesh* mesh = new Mesh;
 	int skeletonStringLength;
 	_infile->read((char*)&skeletonStringLength, 4);
-	string skeletonName;
-	skeletonName.resize(skeletonStringLength);
-	_infile->read((char*)skeletonName.data(), skeletonStringLength);
+	mesh->_skeletonName.resize(skeletonStringLength);
+	_infile->read((char*)mesh->_skeletonName.data(), skeletonStringLength);
 
-	mesh->_isSkinned = strcmp(skeletonName.data(), "Unrigged") != 0;
+	mesh->_isSkinned = strcmp(mesh->_skeletonName.data(), "Unrigged") != 0;
 
 	_infile->read((char*)&mesh->_toMesh, 4);
 
