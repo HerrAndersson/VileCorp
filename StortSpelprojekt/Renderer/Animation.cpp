@@ -122,6 +122,20 @@ void Animation::Update(float time)
 	}
 }
 
+XMMATRIX* Animation::GetTransforms()
+{
+	return finalTransforms;
+}
+
+std::vector<XMFLOAT4X4>* Animation::GetFloats()
+{
+	return &finalFloats;
+}
+int Animation::GetBoneCount() const
+{
+	return _boneCount;
+}
+
 void Animation::SetActionAsCycle(int action, float speed, bool reset)
 {
 	if (reset)

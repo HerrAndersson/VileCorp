@@ -69,18 +69,39 @@ float4 main(VS_OUT input) : SV_TARGET
 		float4 diffuse = float4(diffuseTex.Sample(samplerWrap, uv).xyz, 0.0f);
 		float4 finalColor = float4(((diffuse.xyz + lightColor) * lightIntensity), 0.5f);
 
-		if (len > lightRangeDiv2 * 0.85)
-		{
-			finalColor.a = 0.05f;
-		}
-		else if (len > lightRangeDiv2 * 0.75)
-		{
-			finalColor.a = 0.15f;
-		}
-		else if (len > lightRangeDiv2 * 0.65)
-		{
-			finalColor.a = 0.35f;
-		}
+		//float attenuation = 1 + 0.7f * len + 1.8f * pow(len, 2);
+		//float attenuation = lightIntensity + 2/lightRange * len + 2/lightRange * pow(len, 2);
+		//float4 finalColor = float4(((diffuse.xyz + lightColor) * lightIntensity), howMuchLight * (1.0f / attenuation));
+
+
+		//calculate normalized light vector and distance to sphere light surface
+		float r = lightRange/4;
+		float3 L = lightPosition - worldPos;
+		float d = max(len - r, 0);
+		L /= len;
+
+		//calculate basic attenuation
+		float denom = d / r + 1;
+		float attenuation = 1 / (denom*denom*denom);
+
+		attenuation = (attenuation - 0.005f) / (1 - 0.005f);
+		attenuation = max(attenuation, 0);
+
+		return finalColor * max(howMuchLight, 0) * attenuation;
+
+
+		//if (len > lightRangeDiv2 * 0.72f)
+		//{
+		//	finalColor.a = 0.05f;
+		//}
+		//else if (len > lightRangeDiv2 * 0.63f)
+		//{
+		//	finalColor.a = 0.15f;
+		//}
+		//else if (len > lightRangeDiv2 * 0.58f)
+		//{
+		//	finalColor.a = 0.35f;
+		//}
 
 		return finalColor;
 	}

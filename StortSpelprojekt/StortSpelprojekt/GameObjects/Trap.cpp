@@ -247,7 +247,7 @@ void Trap::SetTiles()
 	switch (_trapType)
 	{
 	case SPIKE:
-		_occupiedTiles[0] = _tilePosition;
+		_occupiedTiles[_tileSize++] = _tilePosition;
 		_areaOfEffect[_nrOfAOETiles++] = _tilePosition;
 		break;
 	case TESLACOIL:

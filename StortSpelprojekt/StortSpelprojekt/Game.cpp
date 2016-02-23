@@ -2,7 +2,6 @@
 #include <stdexcept>
 #include <DirectXMath.h>
 #include <sstream>
-#include <random>
 
 Game::Game(HINSTANCE hInstance, int nCmdShow):
 	_settingsReader("Assets/settings.xml", "Assets/profile.xml")
@@ -17,7 +16,6 @@ Game::Game(HINSTANCE hInstance, int nCmdShow):
 	_timer = System::Timer();
 
 	_renderModule = new Renderer::RenderModule(_window->GetHWND(), settings);
-	_particleHandler = new Renderer::ParticleHandler(_renderModule->GetDevice(), _renderModule->GetDeviceContext());
 	
 	_assetManager = new AssetManager(_renderModule->GetDevice());
 	_controls = new System::Controls(_window->GetHWND());
@@ -31,7 +29,13 @@ Game::Game(HINSTANCE hInstance, int nCmdShow):
 	gameObjectDataLoader.WriteSampleGameObjects();
 	gameObjectDataLoader.LoadGameObjectInfo(&_data);
 
-	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager, &_data, settings);
+	ParticleTextures particleTextures;
+	ParticleModifierOffsets modifiers;
+	LoadParticleSystemData(particleTextures, modifiers);
+
+	_particleHandler = new Renderer::ParticleHandler(_renderModule->GetDevice(), _renderModule->GetDeviceContext(), particleTextures, modifiers);
+
+	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager, &_data, _settingsReader.GetSettings(), _particleHandler->GetParticleEventQueue());
 	_pickingDevice = new PickingDevice(_camera, settings);
 	_SM = new StateMachine(_controls, _objectHandler, _camera, _pickingDevice, "Assets/gui.json", _assetManager, _fontWrapper, settings, &_settingsReader, &_soundModule);
 
@@ -66,6 +70,73 @@ void Game::ResizeResources(System::Settings* settings)
 	_renderModule->ResizeResources(settings);
 }
 
+void Game::LoadParticleSystemData(ParticleTextures& particleTextures, ParticleModifierOffsets& modifiers)
+{
+	ParticleSystemData data;
+	try
+	{
+		ifstream in("Assets/ParticleSystemData.json");
+		cereal::JSONInputArchive inArchive(in);
+		inArchive(data);
+		in.close();
+	}
+	catch (...)
+	{
+		throw std::runtime_error("Game::LoadParticleSystemData: Failed to load file");
+	}
+
+	for (unsigned int i = 0; i < data._subtypeTexturePaths.at(ParticleSubType::BLOOD_SUBTYPE).size(); i++)
+	{
+		particleTextures._bloodTextures[i] = _assetManager->GetTexture(data._subtypeTexturePaths.at(ParticleSubType::BLOOD_SUBTYPE).at(i));
+	}
+
+	for (unsigned int i = 0; i < data._subtypeTexturePaths.at(ParticleSubType::WATER_SUBTYPE).size(); i++)
+	{
+		particleTextures._waterTextures[i] = _assetManager->GetTexture(data._subtypeTexturePaths.at(ParticleSubType::WATER_SUBTYPE).at(i));
+	}
+
+	for (unsigned int i = 0; i < data._subtypeTexturePaths.at(ParticleSubType::SPARK_SUBTYPE).size(); i++)
+	{
+		particleTextures._sparkTextures[i] = _assetManager->GetTexture(data._subtypeTexturePaths.at(ParticleSubType::SPARK_SUBTYPE).at(i));
+	}
+
+	for (unsigned int i = 0; i < data._subtypeTexturePaths.at(ParticleSubType::SMOKE_SUBTYPE).size(); i++)
+	{
+		particleTextures._smokeTextures[i] = _assetManager->GetTexture(data._subtypeTexturePaths.at(ParticleSubType::SMOKE_SUBTYPE).at(i));
+	}
+
+	for (unsigned int i = 0; i < data._subtypeTexturePaths.at(ParticleSubType::FIRE_SUBTYPE).size(); i++)
+	{
+		particleTextures._fireTextures[i] = _assetManager->GetTexture(data._subtypeTexturePaths.at(ParticleSubType::FIRE_SUBTYPE).at(i));
+	}
+
+	for (unsigned int i = 0; i < data._subtypeTexturePaths.at(ParticleSubType::MUZZLE_FLASH_SUBTYPE).size(); i++)
+	{
+		particleTextures._muzzleFlashTextures[i] = _assetManager->GetTexture(data._subtypeTexturePaths.at(ParticleSubType::MUZZLE_FLASH_SUBTYPE).at(i));
+	}
+
+	for (unsigned int i = 0; i < data._iconTexturePaths.size(); i++)
+	{
+		particleTextures._iconTextures[i] = _assetManager->GetTexture(data._iconTexturePaths.at(i));
+	}
+
+	modifiers._splashPositionOffset = data._splashPositionOffset;
+	modifiers._smokePositionOffset = data._smokePositionOffset;
+	modifiers._firePositionOffset = data._firePositionOffset;
+
+	modifiers._splashDirectionOffset = data._splashDirectionOffset;
+	modifiers._smokeDirectionOffset = data._smokeDirectionOffset;
+	modifiers._fireDirectionOffset = data._fireDirectionOffset;
+
+	modifiers._splashSpeedRange = data._splashSpeedRange;
+	modifiers._smokeSpeedRange = data._smokeSpeedRange;
+	modifiers._fireSpeedRange = data._fireSpeedRange;
+
+	modifiers._smokeRepeatTime = data._smokeRepeatTime;
+	modifiers._fireRepeatTime = data._fireRepeatTime;
+	modifiers._lightningRepeatTime = data._lightningRepeatTime;
+}
+
 bool Game::Update(double deltaTime)
 {
 	if (_SM->GetState() == PLACEMENTSTATE)
@@ -86,45 +157,106 @@ bool Game::Update(double deltaTime)
 	_controls->Update();
 	run = _SM->Update(deltaTime);
 
-
-
-
-	//if (_controls->IsFunctionKeyDown("DEBUG:REQUEST_PARTICLE"))
-	//{
-	//	XMFLOAT3 pos = XMFLOAT3(rand() % 20 + 1, 0.0f, rand() % 20 + 1);
-	//	XMFLOAT4 col = XMFLOAT4((rand() % 10) / 10.0f, (rand() % 10) / 10.0f, (rand() % 10) / 10.0f, 1.0f);
-
-	//	ParticleRequestMessage msg = ParticleRequestMessage(ParticleType::SPLASH, pos, col, 10000.0f, 50, true);
-	//	_particleHandler->GetParticleRequestQueue()->Insert(msg);
-	//}
-	//int witefoijesdjgsoieg = 34874685;
-	//_particleHandler->Update(deltaTime);
-	//int ewersdgfsdgsdssdg = 435634;
-
-
-
-	if (_SM->GetState() == PLAYSTATE)
+	if (_controls->IsFunctionKeyDown("DEBUG:REQUEST_PARTICLE"))
 	{
-		_enemies = _objectHandler->GetAllByType(ENEMY);
-		_loot = _objectHandler->GetAllByType(LOOT);
+		//If the emitters shouldn't move
+		XMFLOAT3 pos = XMFLOAT3(11, 1.0f, 2);
+		XMFLOAT3 dir = XMFLOAT3(0, 1, 0);
+		ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::SPLASH, ParticleSubType::BLOOD_SUBTYPE, -1, pos, dir, 300.0f, 20, 0.1f, true);
+		_particleHandler->GetParticleEventQueue()->Insert(msg);
 
-		if (_enemies.size() > 0)
-		{
-			_enemiesHasSpawned = true;
-		}
+		pos = XMFLOAT3(16, 1.0f, 2);
+		dir = XMFLOAT3(0, 0, 1);
+		msg = new ParticleRequestMessage(ParticleType::MUZZLE_FLASH, ParticleSubType::MUZZLE_FLASH_SUBTYPE, -1, pos, dir, 50.0f, 1, 0.1f, true);
+		_particleHandler->GetParticleEventQueue()->Insert(msg);
 
-		if (_enemies.size() == 0 && _enemiesHasSpawned == true)
+		pos = XMFLOAT3(14, 1.0f, 2);
+		dir = XMFLOAT3(0, 1, 0);
+		msg = new ParticleRequestMessage(ParticleType::SMOKE, ParticleSubType::SMOKE_SUBTYPE, -1, pos, dir, 100000.0f, 50, 0.04f, true);
+		_particleHandler->GetParticleEventQueue()->Insert(msg);
+
+		pos = XMFLOAT3(7, 1.0f, 2);
+		dir = XMFLOAT3(0, 1, 0);
+		msg = new ParticleRequestMessage(ParticleType::SPLASH, ParticleSubType::WATER_SUBTYPE, -1, pos, dir, 400.0f, 20, 0.1f, true);
+		_particleHandler->GetParticleEventQueue()->Insert(msg);
+
+		pos = XMFLOAT3(14, 1.0f, 2);
+		dir = XMFLOAT3(0, 1, 0);
+		msg = new ParticleRequestMessage(ParticleType::FIRE, ParticleSubType::FIRE_SUBTYPE, -1, pos, dir, 100000.0f, 50, 0.1f, true); //Follows owner and is timed
+		_particleHandler->GetParticleEventQueue()->Insert(msg);
+
+		pos = XMFLOAT3(11, 1.0f, 4);
+		msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::EXCLAMATIONMARK_SUBTYPE, -1, pos, XMFLOAT3(0, 0, 0), 1000.0f, 1, 0.25f, true);
+		_particleHandler->GetParticleEventQueue()->Insert(msg);
+
+		//If the emitters should change, for example move, connect them to an ID of a game object
+		pos = XMFLOAT3(13, 1.0f, 4);
+		msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::QUESTIONMARK_SUBTYPE, 5, pos, XMFLOAT3(0, 0, 0), 100000.0f, 1, 0.25f, true, false); //Follows owner and is not timed
+		_particleHandler->GetParticleEventQueue()->Insert(msg);
+
+		pos = XMFLOAT3(9, 1.0f, 2);
+		dir = XMFLOAT3(0, 0, 1);
+		msg = new ParticleRequestMessage(ParticleType::FIRE, ParticleSubType::FIRE_SUBTYPE, 5, pos, dir, 10000.0f, 100, 0.04f, true, true); //Follows owner and is timed
+		_particleHandler->GetParticleEventQueue()->Insert(msg);
+
+		//Electricity should never move. One bolt of lightning is created each request, and updated the given time
+		pos = XMFLOAT3(5, 1.0f, 3);
+		msg = new ParticleRequestMessage(ParticleType::ELECTRICITY, ParticleSubType::SPARK_SUBTYPE, -1, pos, XMFLOAT3(0, 0, 0), 1000.0f, 20, 0.1f, true, true, XMFLOAT3(14.0f, 1.0f, 3));
+		_particleHandler->GetParticleEventQueue()->Insert(msg);
+	}
+
+	//If the emitter itself should be updated, for example if the icons move or if we have a spinning flamethrower.
+	//Set "isAlive" parameter to disable all emitters that are connected to the ID of the GameObject. This should be done when, for example a trap is fixed and should stop smoking
+	//It is possible to update only position
+	std::vector<std::vector<GameObject*>>* gameObjects = _objectHandler->GetGameObjects();
+	if (gameObjects->size() > 0)
+	{
+		for (unsigned int i = 0; i < gameObjects->at(GUARD).size(); i++)
 		{
-			if (_loot.size() >= 1)
+			GameObject* g = gameObjects->at(GUARD).at(i);
+			if (g)
 			{
-				//TODO: Add something to notify the player that they've beat the level
-			}
-			else
-			{
-				//TODO: Add something to notify the player that they've SUCK and they can replay the level
+				XMFLOAT3 pos = g->GetPosition();
+				AI::Vec2D dirv2d = ((Unit*)g)->GetDirection();
+				XMFLOAT3 dir = XMFLOAT3(dirv2d._x, 0, dirv2d._y);
+
+				pos.y = 2.5f;
+				ParticleUpdateMessage* msg = new ParticleUpdateMessage(5, true, pos, dir);
+				_particleHandler->GetParticleEventQueue()->Insert(msg);
 			}
 		}
 	}
+
+
+
+
+	_particleHandler->Update(deltaTime);
+
+
+
+	/*
+		{
+			_enemies = _objectHandler->GetAllByType(ENEMY);
+			_loot = _objectHandler->GetAllByType(LOOT);
+
+			if (_enemies.size() > 0)
+			{
+				_enemiesHasSpawned = true;
+			}
+
+			if (_enemies.size() == 0 && _enemiesHasSpawned == true)
+			{
+				if (_loot.size() >= 1)
+				{
+					//TODO: Add something to notify the player that they've beat the level
+				}
+				else
+				{
+					//TODO: Add something to notify the player that they've SUCK and they can replay the level
+				}
+			}
+		}
+		*/
 	return run;
 }
 
@@ -135,7 +267,6 @@ void Game::Render()
 
 	/*///////////////////////////////////////////////////////  Geometry pass  ////////////////////////////////////////////////////////////
 	Render the objects to the diffuse and normal resource views. Camera depth is also generated here.									*/
-
 	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::GEO_PASS);
 
 	std::vector<std::vector<GameObject*>>* gameObjects = _objectHandler->GetGameObjects();
@@ -178,6 +309,7 @@ void Game::Render()
 
 	/*--------------------------------------------------  Render skinned objects  -----------------------------------------------------*/
 	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::ANIM_STAGE);
+	
 	// Now every gameobject can be animated
 	for (auto i : *gameObjects)
 	{
@@ -216,41 +348,87 @@ void Game::Render()
 	}
 
 	/*------------------------------------------------  Render billboarded objects  ---------------------------------------------------*/
+	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::BILLBOARDING_STAGE);
+	int count = _particleHandler->GetEmitterCount();
 
-	//_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::BILLBOARDING_STAGE);
+	//Render all particle emitter except for electricity, as thsoe use linestrip instead of pointlist
+	for (int i = 0; i < count; i++)
+	{
+		Renderer::ParticleEmitter* emitter = _particleHandler->GetEmitter(i);
 
-	//int count = _particleHandler->GetEmitterCount();
-	//for (int i = 0; i < count; i++)
-	//{
-	//    Renderer::ParticleEmitter* emitter = _particleHandler->GetEmitter(i);
+		if (emitter)
+		{
+			ID3D11Buffer* vertexBuffer = emitter->GetParticleBuffer();
 
-	//	if (emitter)
-	//	{
-	//		ID3D11Buffer* vertexBuffer = emitter->GetParticleBuffer();
+			if (vertexBuffer)
+			{
+				ParticleType type = emitter->GetType();
+				if (type != ParticleType::ELECTRICITY)
+				{
+					_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::BILLBOARDING_STAGE);
 
-	//		if (vertexBuffer)
-	//		{
-	//			XMFLOAT3 color(0.1f, 0.6f, 0.25f);
-	//			XMFLOAT3 pos(12, 1, 12);
-	//			_renderModule->RenderParticles(vertexBuffer, emitter->GetBufferSize(), emitter->GetParticleCount(), pos, color);
+					int textureCount = PARTICLE_TEXTURE_COUNT;
+					if (type == ParticleType::ICON)
+					{
+						textureCount = 1;
+						ID3D11ShaderResourceView* textures[1];
+						textures[0] = _particleHandler->GetIconTexture(emitter->GetSubType());
 
-	//			//_renderModule->RenderParticles(vertexBuffer, emitter->GetBufferSize(), emitter->GetParticleCount(), emitter->GetPosition(), color, emitter->GetTextures(), emitter->GetTextureCount());
-	//		}
-	//	}
-	//}
+						_renderModule->SetDataPerParticleEmitter(emitter->GetPosition(), _camera->GetViewMatrix(), _camera->GetProjectionMatrix(), _camera->GetPosition(), emitter->GetParticleScale(), textures, textureCount, 1);
+						_renderModule->RenderParticles(vertexBuffer, emitter->GetParticleCount(), emitter->GetVertexSize());
+					}
+					else
+					{
+						ID3D11ShaderResourceView** textures = _particleHandler->GetTextures(textureCount, emitter->GetSubType());
+						_renderModule->SetDataPerParticleEmitter(emitter->GetPosition(), _camera->GetViewMatrix(), _camera->GetProjectionMatrix(), _camera->GetPosition(), emitter->GetParticleScale(), textures, textureCount, 0);
+
+						_renderModule->RenderParticles(vertexBuffer, emitter->GetParticleCount(), emitter->GetVertexSize());
+					}
+				}
+			}
+		}
+	}
+
+	//Render all electricity "particles"
+	_renderModule->SetShaderStage(Renderer::RenderModule::RENDER_LINESTRIP);
+
+	for (int i = 0; i < count; i++)
+	{
+		Renderer::ParticleEmitter* emitter = _particleHandler->GetEmitter(i);
+
+		if (emitter)
+		{
+			ID3D11Buffer* vertexBuffer = emitter->GetParticleBuffer();
+
+			if (vertexBuffer)
+			{
+				XMFLOAT4 color(0.9f, 0.6f, 0.25f, 1.0f);
+				if (emitter->GetType() == ParticleType::ELECTRICITY)
+				{
+					_renderModule->SetShaderStage(Renderer::RenderModule::RENDER_LINESTRIP);
+					XMFLOAT3 pos = emitter->GetPosition();
+
+					XMMATRIX m = XMMatrixTranslation(pos.x, pos.y, pos.z);
+
+					_renderModule->SetDataPerLineList(emitter->GetParticleBuffer(), emitter->GetVertexSize());
+					_renderModule->RenderLineStrip(&m, emitter->GetParticleCount(), XMFLOAT3(0.3f, 0.6f, 0.95f));
+				}
+			}
+		}
+	}
 
 	/*-------------------------------------------------------  Render grid  -----------------------------------------------------------*/
 	if (_SM->GetState() == LEVELEDITSTATE)
 	{
-		Grid* gr = _objectHandler->GetBuildingGrid();
+		_renderModule->SetShaderStage(Renderer::RenderModule::RENDER_LINESTRIP);
 
-		_renderModule->SetShaderStage(Renderer::RenderModule::GRID_STAGE);
+		Grid* gr = _objectHandler->GetBuildingGrid();
 		_renderModule->SetDataPerLineList(gr->GetLineBuffer(), gr->GetVertexSize());
 
 		std::vector<DirectX::XMMATRIX>* gridMatrices = gr->GetGridMatrices();
 		for (auto &matrix : *gridMatrices)
 		{
-			_renderModule->RenderLineList(&matrix, gr->GetNrOfPoints(), gr->GetColorOffset());
+			_renderModule->RenderLineStrip(&matrix, gr->GetNrOfPoints(), gr->GetColorOffset());
 		}
 	}
 	
@@ -340,7 +518,6 @@ void Game::Render()
 	}
 
 	/*-----------------------------------------------------------  FXAA  -----------------------------------------------------------------*/
-
 	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::AA_STAGE);
 	_renderModule->RenderScreenQuad();
 

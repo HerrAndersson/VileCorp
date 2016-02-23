@@ -160,7 +160,7 @@ void Enemy::Act(GameObject* obj)
 			{
 				if (_interactionTime < 0)
 				{
-					UseCountdown(_animation->GetLength(3, 1.0f * speedMultiplyer));
+					UseCountdown(_animation->GetLength(3, 1.0f * _speedMultiplier));
 					obj->SetPickUpState(PICKINGUP);
 					Animate(PICKUPOBJECTANIM);
 				}
@@ -203,7 +203,7 @@ void Enemy::Act(GameObject* obj)
 		case GUARD:
 			if (_interactionTime != 0)
 			{
-				UseCountdown(_animation->GetLength(1, 1.0f * speedMultiplyer));
+				UseCountdown(_animation->GetLength(1, 1.0f * _speedMultiplier));
 				Animate(FIGHTANIM);
 			}
 			else if (_interactionTime == 0)

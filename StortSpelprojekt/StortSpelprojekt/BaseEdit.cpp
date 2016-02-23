@@ -636,4 +636,17 @@ void BaseEdit::HandleCamMove(float deltaTime)
 void BaseEdit::Update(float deltaTime)
 {
 	HandleInput(deltaTime);
+	/*
+	//Toggle free camera mode
+	HandleCamMode();
+
+	//Camera scroll
+	HandleCamZoom(deltaTime);
+
+	//Camera rotation
+	HandleCamRot();
+
+	//Camera move
+	HandleCamMove(deltaTime);
+	*/
 }
