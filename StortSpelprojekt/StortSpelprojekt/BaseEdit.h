@@ -78,7 +78,6 @@ private:
 
 	void CreateMarker();	// Used for Drag&Drop and Click
 	void CreateMarkers(); 	// Used for Drag&Place
-	void ReleaseMarkers();
 
 public:
 
@@ -87,6 +86,7 @@ public:
 
 	GameObject* GetMarkedObject();
 	bool DeleteMarkedObject();
+	void ReleaseMarkers();
 
 	void HandleBlueprint(SpecificBlueprint* sB);
 

@@ -126,11 +126,13 @@ void LevelEditState::OnStateEnter()
 
 void LevelEditState::OnStateExit()
 {
+	// Needs to be deallocated first because BaseEdit has GameObject pointers
+	delete _baseEdit;
+	_baseEdit = nullptr;
+
 	_objectHandler->MinimizeTileMap();
 	//TODO: Remove this function to LevelSelection when that state is created. /Alex
 	_objectHandler->UnloadLevel();
-	delete _baseEdit;
-	_baseEdit = nullptr;
 }
 
 void LevelEditState::HandleInput()
@@ -710,6 +712,8 @@ bool LevelEditState::HandleButtons()
 
 void LevelEditState::ExportLevel()
 {
+	_baseEdit->ReleaseMarkers();
+
 	_currentLevelFileName = "exported level";
 
 	////Fill Level Header:

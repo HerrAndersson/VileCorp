@@ -57,21 +57,6 @@ void BaseEdit::CreateMarkers()
 	CreateMarker();
 }
 
-void BaseEdit::ReleaseMarkers()
-{
-	// Delete ghosts/blueprints
-	if (_marker._g != nullptr)
-	{
-		_objectHandler->Remove(_marker._g);
-		_marker._g = nullptr;
-	}
-	if (_baseMarker._g != nullptr)
-	{
-		_objectHandler->Remove(_baseMarker._g);
-		_baseMarker._g = nullptr;
-	}
-}
-
 void BaseEdit::CreateMarker()
 {
 	AI::Vec2D pickedTile = _pickingDevice->PickTile(_controls->GetMouseCoord()._pos);
@@ -97,7 +82,20 @@ bool BaseEdit::DeleteMarkedObject()
 	return removed;
 }
 
-
+void BaseEdit::ReleaseMarkers()
+{
+	// Delete ghosts/blueprints
+	if (_marker._g != nullptr)
+	{
+		_objectHandler->Remove(_marker._g);
+		_marker._g = nullptr;
+	}
+	if (_baseMarker._g != nullptr)
+	{
+		_objectHandler->Remove(_baseMarker._g);
+		_baseMarker._g = nullptr;
+	}
+}
 
 // Key events
 
