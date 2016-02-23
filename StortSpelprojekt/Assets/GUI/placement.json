@@ -154,27 +154,6 @@
 			}
 		}
 	},
-	"UnitInformation":
-	{
-		"position": [-0.5, -0.48],
-		"scale": [0.1, 0.18],
-		"texture": "../Menues/Pause Menu/pause1-nocup.png",
-
-		"UnitText": {
-			"position": [0.03, -0.01],
-			"scale": [0.1, 0.18],
-			"text": "Unit Information",
-			"color": "FF000000",
-			"fontsize": 20.0
-		},
-			"UnitText": {
-			"position": [0.0075, -0.05],
-			"scale": [0.1, 0.18],
-			"text": "Write Unit info here!\nShould be activated\nupon hover over unit.\nShould be above\nhovered over unit.",
-			"color": "FF000000",
-			"fontsize": 18.0
-		}
-	},
 	"Play": {
 		"position": [0.87, 0.91],
 		"scale": [0.12, 0.08],
