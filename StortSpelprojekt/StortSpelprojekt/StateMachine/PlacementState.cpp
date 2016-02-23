@@ -196,6 +196,19 @@ void PlacementState::HandleButtons()
 			create = true;
 		}
 	}
+
+	if (_uiTree.IsButtonColliding("MachineGunTrap", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
+	{
+		_toPlace._type = TRAP;
+		_toPlace._name = "gun_trap";
+
+		if (_baseEdit->IsSelection() && !_baseEdit->IsPlace())
+		{
+			_toPlace._subType = GUN;
+			create = true;
+		}
+	}
+
 	if (_uiTree.IsButtonColliding("Camera", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
 		_toPlace._type = CAMERA;

@@ -8,7 +8,6 @@ class SecurityCamera : public GameObject
 {
 private:
 	const Tilemap* _tileMap;
-	AI::Vec2D _direction;
 	int _visionRadius;
 	VisionCone* _visionCone;
 	void Rotate();
