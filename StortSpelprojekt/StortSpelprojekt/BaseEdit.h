@@ -39,12 +39,6 @@ private:
 	bool _isDragAndPlaceMode;
 	bool _isPlace;
 	bool _modeLock;
-
-	void HandleInput(double deltaTime);
-	void HandleCamMode();
-	void HandleCamZoom(float deltaTime);
-	void HandleCamRot();
-	void HandleCamMove(float deltaTime);
 	
 	bool CheckValidity(AI::Vec2D tile, Type type);
 	void SetValidity(Marker* m, Type type);
@@ -52,8 +46,6 @@ private:
 	void DragAndDropEvent(Type type);
 
 	void CreateBlueprints(Type type, const std::string& objectName);
-
-
 	void ReleaseBlueprints();
 
 public:
