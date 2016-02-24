@@ -471,10 +471,10 @@
 			"": {
 				"position": [0, -0.15],
 				"scale": [0.15, 0.6],
-				"text": "Click and drag the security camera to a neat place. You can rotate the camera by using R and T once on the position you find suitable.",
+				"text": "Click and drag the security camera\nto a position of your choice!\nYou can also rotate objects like these with R and T.",
 				"color": "FF000000",
 				"centered": true,
-				"fontsize": 30.0
+				"fontsize": 20.0
 			},
 			"": {
 				"position": [0, -1],
@@ -482,7 +482,7 @@
 				"text": "Press Enter to Continue.",
 				"color": "FF000000",
 				"centered": true,
-				"fontsize": 30.0
+				"fontsize": 24.0
 			}
 		},
 		"budgetexplained": {
@@ -492,10 +492,10 @@
 			"": {
 				"position": [0, -0.15],
 				"scale": [0.15, 0.6],
-				"text": "If you havent noticed already. You have a budget at the top left that deducts money for each item you place. In case you change your mind, you can refund items by selecting them and pressing delete on your keyboard.",
+				"text": "You probably noticed already, but in the top left the budget allowed for this job is visible. As you buy items, their cost will be deducted from it.\n\n You can refund units to increase your budget again, by selecting them and pressing DELETE.",
 				"color": "FF000000",
 				"centered": true,
-				"fontsize": 30.0
+				"fontsize": 26.0
 			},
 			"": {
 				"position": [0, -1],
@@ -503,7 +503,7 @@
 				"text": "Press Enter to Continue.",
 				"color": "FF000000",
 				"centered": true,
-				"fontsize": 30.0
+				"fontsize": 24.0
 			}
 		},
 		"playexplained": {
@@ -513,10 +513,10 @@
 			"": {
 				"position": [0, -0.15],
 				"scale": [0.15, 0.6],
-				"text": "Once you done placing objects. Hit Play at the top right corner to start the game.",
+				"text": "Once you feel ready, press Play in the top right to start.",
 				"color": "FF000000",
 				"centered": true,
-				"fontsize": 30.0
+				"fontsize": 26.0
 			},
 			"": {
 				"position": [0, -1],
