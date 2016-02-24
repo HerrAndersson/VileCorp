@@ -312,10 +312,28 @@ namespace Renderer
 		SetDataPerMesh(renderObject->_mesh->_vertexBuffer, vertexSize);
 	}
 
-	void RenderModule::RenderShadowMap(DirectX::XMMATRIX* world, int vertexBufferSize)
+	void RenderModule::RenderShadowMap(DirectX::XMMATRIX* world, int vertexBufferSize, std::vector<DirectX::XMFLOAT4X4>* animTransformData)
 	{
 		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
+
 		_shadowMap->SetDataPerObject(_d3d->GetDeviceContext(), world);
+
+		if (animTransformData)
+		{
+			HRESULT result;
+			D3D11_MAPPED_SUBRESOURCE mappedResource;
+			ZeroMemory(&mappedResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
+			result = deviceContext->Map(_matrixBufferPerSkinnedObject, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+			if (FAILED(result))
+			{
+				throw std::runtime_error("RenderModule::SetResourcesPerObject: Failed to Map _matrixBufferPerSkinnedObject");
+			}
+
+			MatrixBufferPerSkinnedObject* dataPtr = static_cast<MatrixBufferPerSkinnedObject*>(mappedResource.pData);
+			memcpy(&dataPtr->_bones, animTransformData->data(), sizeof(DirectX::XMFLOAT4X4) * animTransformData->size());
+			deviceContext->Unmap(_matrixBufferPerSkinnedObject, 0);
+			deviceContext->VSSetConstantBuffers(5, 1, &_matrixBufferPerSkinnedObject);
+		}
 
 		deviceContext->Draw(vertexBufferSize, 0);
 	}
@@ -436,6 +454,7 @@ namespace Renderer
 			_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::FRONT);
 
 			_shaderHandler->SetAnimaShadowGenerationShaders(deviceContext);
+			_shadowMap->SetShadowGenerationStage(deviceContext);
 
 			break;
 		}
