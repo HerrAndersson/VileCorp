@@ -369,7 +369,7 @@ void Unit::SwitchingNode()
 		int randDir = rand() % 8;
 		_direction = AI::NEIGHBOUR_OFFSETS[randDir];
 		_nextTile = _tilePosition + _direction;
-		while (!_tileMap->IsWallOnTile(_nextTile))			//Will loop endlessly if surrounded by walls. That really shouldn't happen though
+		while (_tileMap->IsWallOnTile(_nextTile))			//Will loop endlessly if surrounded by walls. That really shouldn't happen though
 		{
 			randDir = (randDir + 1) % 8;
 			_direction = AI::NEIGHBOUR_OFFSETS[randDir];

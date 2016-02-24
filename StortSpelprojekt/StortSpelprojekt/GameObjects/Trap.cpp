@@ -321,7 +321,7 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 		break;
 	case TESLACOIL:	
 	{
-		Initialize(0, 9, 37, 150, 50, Unit::StatusEffect::STUNNED, 120, 120);
+		Initialize(0, 9, 37, 80, 80, Unit::StatusEffect::STUNNED, 120, 120);
 		break;
 	}
 	case SHARK:			//Trigger area is currently the same as the trap's physical area. Might be awkward since the shark trap is larger than its AOE.
