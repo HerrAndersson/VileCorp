@@ -5,7 +5,7 @@ PlacementState::PlacementState(System::Controls* controls, ObjectHandler* object
 {
 	_playerProfile.resize(1);
 	_tutorialLogic = new TutorialLogic(&_uiTree, _controls);
-	_baseEdit = nullptr;
+	_player = new Player();
 
 	//Money
 	_costOfAnvilTrap	= 50;
@@ -46,8 +46,8 @@ void PlacementState::EvaluateGoldCost()
 
 PlacementState::~PlacementState()
 {
-	delete _baseEdit;
-	_baseEdit = nullptr;
+	delete _player;
+	_player = nullptr;
 	delete _tutorialLogic;
 	_tutorialLogic = nullptr;
 }
@@ -59,7 +59,7 @@ void PlacementState::Update(float deltaTime)
 	if (_tutorialState != TutorialState::NOTUTORIAL)
 	{
 		//bypass the normal UI interface to interface the tutorial elements into it.
-		_tutorialLogic->Update(deltaTime, _baseEdit, _toPlace, _playerProfile.at(_currentPlayer));
+		//_tutorialLogic->Update(deltaTime, _baseEdit, _toPlace, _playerProfile.at(_currentPlayer));
 		if (_tutorialLogic->IsTutorialCompleted())
 		{
 			ChangeState(State::PLAYSTATE);
@@ -69,7 +69,6 @@ void PlacementState::Update(float deltaTime)
 	else
 	{
 		//Handle the buttons normally
-		HandleButtons();
 		HandleHoverColorOffset("Guard", "Guard", coord, XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f));
 		HandleHoverColorOffset("AnvilTrap", "AnvilTrap", coord, XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f));
 		HandleHoverColorOffset("TeslaTrap", "TeslaTrap", coord, XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f));
@@ -79,9 +78,6 @@ void PlacementState::Update(float deltaTime)
 	HandleDescriptions();
 	HandleInput();
 	HandleCam(deltaTime);
-
-	//baseEdit update handles basic controls.
-	_baseEdit->Update(deltaTime, false);
 }
 
 void PlacementState::OnStateEnter()
@@ -147,8 +143,7 @@ void PlacementState::OnStateEnter()
 
 void PlacementState::OnStateExit()
 {
-	delete _baseEdit;
-	_baseEdit = nullptr;
+	_player->DeselectUnits();
 	//if the tutorialstage is anything other than no tutorial. Hide it. We want to reset on entry, not exit.
 	if (_tutorialState != NOTUTORIAL)
 	{
@@ -158,9 +153,116 @@ void PlacementState::OnStateExit()
 
 void PlacementState::HandleInput()
 {
+	System::MouseCoord coord = _controls->GetMouseCoord();
+
+	//Menu
 	if (_controls->IsFunctionKeyDown("MENU:MENU"))
 	{
 		ChangeState(PAUSESTATE);
+	}
+	//Play
+	if (_uiTree.IsButtonColliding("Play", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
+	{
+		ChangeState(PLAYSTATE);
+	}
+	
+	//Left click - placing units - Blueprint specific - i.e. click button and placing object.
+	if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
+	{
+		//Button interaction. Select a blueprint
+		std::vector<GUI::Node*>* units = _uiTree.GetNode("UnitList")->GetChildren();
+		for (unsigned y = 0; y < units->size(); y++)
+		{
+			GUI::Node* currentButton = units->at(y);
+			// if we click a button. Load itemspecifics into _selectedBlueprint
+			if (_uiTree.IsButtonColliding(currentButton, coord._pos.x, coord._pos.y))
+			{
+				GUI::BlueprintNode* currentBlueprintButton = static_cast<GUI::BlueprintNode*>(currentButton);
+				_selectedBlueprint._blueprint = currentBlueprintButton->GetBlueprint();
+				_selectedBlueprint._textureId = currentBlueprintButton->GetTextureId();
+				break;
+			}
+		}
+
+		//If we already have a blueprint selected
+		if (_selectedBlueprint._blueprint != nullptr)
+		{
+			//Try if/and then place item
+			AI::Vec2D pickedTile = _pickingDevice->PickTile(coord._pos);
+			DirectX::XMFLOAT3 pos = XMFLOAT3(pickedTile._x, 0, pickedTile._y);
+			if (_objectHandler->Add(_selectedBlueprint._blueprint, _selectedBlueprint._textureId, pos, DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), true))
+			{
+				//Object Added. Calculate money and deselect object TODO: Look over where money is stored and use from correct path /Alex
+				int temp = _budget;// -_selectedBlueprint._blueprint->_money;
+				if (temp > 0)
+				{
+					_budget = temp;
+					_selectedBlueprint.Reset();
+				}
+			}
+		}
+	}
+	
+	
+	//Selecting placed units
+	//If left click to select units(drag box)
+	if (_controls->IsFunctionKeyDown("MOUSE:SELECT") && _selectedBlueprint._blueprint == nullptr)
+	{
+		_pickingDevice->SetFirstBoxPoint(_controls->GetMouseCoord()._pos);
+	}
+
+	//Left click up
+	if (_controls->IsFunctionKeyUp("MOUSE:SELECT") && _selectedBlueprint._blueprint == nullptr)
+	{
+		//deselect everything first.
+		vector<Unit*> units = _player->GetSelectedUnits();
+
+		//Decolourize everything
+		for (unsigned int i = 0; i < units.size(); i++)
+		{
+			units[i]->SetColorOffset(DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f));
+		}
+		_player->DeselectUnits();
+
+		//Check if we picked anything
+		vector<vector<GameObject*>> pickedUnits;
+		pickedUnits.push_back(_pickingDevice->PickObjects(_controls->GetMouseCoord()._pos, *_objectHandler->GetAllByType(GUARD)));
+		pickedUnits.push_back(_pickingDevice->PickObjects(_controls->GetMouseCoord()._pos, *_objectHandler->GetAllByType(TRAP)));
+		pickedUnits.push_back(_pickingDevice->PickObjects(_controls->GetMouseCoord()._pos, *_objectHandler->GetAllByType(CAMERA)));
+
+		//if units selected
+		if (pickedUnits.size() > 0)
+		{
+			//select
+			for (unsigned int i = 0; i < pickedUnits.size(); i++)
+			{
+				_player->SelectUnit((Unit*)pickedUnits[i]);
+				pickedUnits[i]->SetColorOffset(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));
+				if (pickedUnits[i]->GetType() == GUARD)
+				{
+					for (auto p : ((Guard*)pickedUnits[i])->GetPatrolRoute())
+					{
+						_objectHandler->GetTileMap()->GetObjectOnTile(p, FLOOR)->SetColorOffset(XMFLOAT3(0.0f, 0.0f, 1.0f));
+					}
+				}
+			}
+		}
+	}
+
+	//Deselect blueprint
+	if (_controls->IsFunctionKeyDown("MOUSE:DESELECT"))
+	{
+		//If we have a selected unit and want to deselect
+		if (_selectedBlueprint._blueprint != nullptr)
+		{
+			_selectedBlueprint.Reset();
+		}
+	}
+
+	//Delete object
+	if (_controls->IsFunctionKeyDown("MAP_EDIT:DELETE"))
+	{
+		
 	}
 
 	/*
@@ -208,57 +310,7 @@ void PlacementState::HandleInput()
 	//}
 }
 
-void PlacementState::HandleButtons()
-{
-	bool create = false;
-
-	System::MouseCoord coord = _controls->GetMouseCoord();
-
 	/*
-	//Tutorial image
-	if (_uiTree.IsButtonColliding("Tutorial", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
-	{
-		//Hide how to screen when clicked
-		_uiTree.GetNode("Tutorial")->SetHidden(true);
-	}
-	*/
-
-	//Play
-	if (_uiTree.IsButtonColliding("Play", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
-	{
-		ChangeState(PLAYSTATE);
-	}
-
-	//Item UI
-	//if (_uiTree.IsButtonColliding("Guard", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
-	//{
-	//	// Temp, should be replaced with blueprint
-	//	_toPlace._type = GUARD;
-	//	_toPlace._name = "guard_proto";
-
-	//	if (_baseEdit->IsSelection() && !_baseEdit->IsPlace())
-	//	{
-	//		create = true;
-	//	}
-	//}
-
-	if(_controls->IsFunctionKeyDown("MOUSE:SELECT"))
-	{
-		std::vector<GUI::Node*>* units = _uiTree.GetNode("UnitList")->GetChildren();
-		for (unsigned y = 0; y < units->size(); y++)
-		{
-			GUI::Node* currentButton = units->at(y);
-			if (_uiTree.IsButtonColliding(currentButton, coord._pos.x, coord._pos.y))
-			{
-				GUI::BlueprintNode* currentBlueprintButton = static_cast<GUI::BlueprintNode*>(currentButton);
-				_toPlace._sB._blueprint = currentBlueprintButton->GetBlueprint();
-				_toPlace._sB._textureId = currentBlueprintButton->GetTextureId();
-				create = true;
-				break;
-			}
-		}
-	}
-
 	if (create)
 	{
 		EvaluateGoldCost();
@@ -277,7 +329,20 @@ void PlacementState::HandleButtons()
 		//	_toPlace._goldCost = -1;
 		//}
 	}
-}
+	*/
+
+	//Item UI
+	//if (_uiTree.IsButtonColliding("Guard", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
+	//{
+	//	// Temp, should be replaced with blueprint
+	//	_toPlace._type = GUARD;
+	//	_toPlace._name = "guard_proto";
+
+	//	if (_baseEdit->IsSelection() && !_baseEdit->IsPlace())
+	//	{
+	//		create = true;
+	//	}
+	//}
 
 void PlacementState::HandleDescriptions()
 {
