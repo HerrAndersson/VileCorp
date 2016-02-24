@@ -15,6 +15,9 @@ Sound device has to be conected to computer when program starts,
 else SoundModule is muted to avoid crashes.
 
 Using a map of sounds to quickly find a desired sound to play.
+
+Lower OFFSET to make sound "travel" less. 
+Increase OFFSET to make sound "travel" further.
 */
 
 namespace System
@@ -22,6 +25,8 @@ namespace System
 	class SYSTEM_EXPORT SoundModule
 	{
 	private:
+		const float OFFSET = 2.0f;
+
 		std::map<std::string, YSE::sound*>* _allSounds;
 		const std::string soundExtension = ".ogg";
 

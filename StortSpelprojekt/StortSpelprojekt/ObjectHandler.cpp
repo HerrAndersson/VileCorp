@@ -1,7 +1,7 @@
 #include "ObjectHandler.h"
 #include "stdafx.h"
 
-ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data, System::Settings* settings, Renderer::ParticleEventQueue* ParticleEventQueue)
+ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data, System::Settings* settings, Renderer::ParticleEventQueue* ParticleEventQueue, System::SoundModule*	soundModule)
 {
 	_settings = settings;
 	_idCount = 0;
@@ -13,6 +13,11 @@ ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, G
 	_lightCulling = nullptr;
 	_gameObjects.resize(NR_OF_TYPES);
 	_ParticleEventQueue = ParticleEventQueue;
+	_soundModule = soundModule;
+
+	//Init sounds
+	_soundModule->AddSound("Assets/Sounds/guard_death", 1.0f, 0.6f, false, false);
+	_soundModule->AddSound("Assets/Sounds/enemy_death", 0.7f, 1.0f, false, false);
 }
 
 ObjectHandler::~ObjectHandler()
@@ -598,6 +603,22 @@ void ObjectHandler::Update(float deltaTime)
 							heldObject->SetPosition(XMFLOAT3(heldObject->GetPosition().x, 0.0f, heldObject->GetPosition().z));
 						}
 					}
+
+					//Play death sound
+					float x = g->GetPosition().x;
+					float z = g->GetPosition().z;
+					if (g->GetType() == ENEMY)
+					{
+						_soundModule->SetSoundPosition("Assets/Sounds/enemy_death", x, 0.0f, z);
+						_soundModule->Play("Assets/Sounds/enemy_death");
+					}
+					else if (g->GetType() == GUARD)
+					{
+						_soundModule->SetSoundPosition("Assets/Sounds/guard_death", x, 0.0f, z);
+						_soundModule->Play("Assets/Sounds/guard_death");
+					}
+
+					//Remove object
 					Remove(g);
 					g = nullptr;
 					unit = nullptr;

@@ -78,7 +78,7 @@ namespace System
 		/*
 		Updates the position of the listener to keep it synced with camera position
 		*/
-		YSE::Listener().setPosition(YSE::Vec(listenerX, listenerY, listenerZ));
+		YSE::Listener().setPosition(YSE::Vec(listenerX / OFFSET, listenerY / OFFSET, listenerZ / OFFSET));
 		YSE::System().update();
 	}
 
@@ -138,7 +138,7 @@ namespace System
 
 		if (_allSounds->find(pathName) != _allSounds->end())
 		{
-			(*_allSounds)[pathName]->setPosition(YSE::Vec(x, y, z));
+			(*_allSounds)[pathName]->setPosition(YSE::Vec(x / OFFSET, y / OFFSET, z / OFFSET));
 		}
 		else
 		{
