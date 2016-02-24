@@ -14,7 +14,7 @@ If the object doesn't need a _renderObject, set it to nullptr.
 If the object has a renderObject but is out of sight _visibility will be false.
 */
 
-enum PickUpState{ONTILE, HELD, PICKINGUP, DROPPING};
+enum PickUpState{ONTILE, HELD, PICKINGUP, PICKEDUP, DROPPING};
 const float TILE_EPSILON = 0.05f;			//Maximum offset for a position to be considered centered on a tile
 class GameObject
 {
@@ -27,6 +27,7 @@ protected:
 	DirectX::XMFLOAT3 _scale;
 	DirectX::XMFLOAT3 _colorOffset;
 	AI::Vec2D _tilePosition;
+	AI::Vec2D _direction;
 	Type _type;
 	unsigned int _subType;
 	bool _visible;
@@ -65,7 +66,10 @@ public:
 	void Rotate(const DirectX::XMFLOAT3& rotate);
 
 	AI::Vec2D GetTilePosition()const;
-	virtual void SetTilePosition(AI::Vec2D pos);
+	AI::Vec2D GetDirection()const;
+
+	virtual void SetTilePosition(AI::Vec2D dir);
+	virtual void SetDirection(const AI::Vec2D pos);
 	Type GetType() const;
 	unsigned int GetSubType() const;
 

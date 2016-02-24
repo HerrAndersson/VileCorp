@@ -1,15 +1,13 @@
 #pragma once
 #include "Trap.h"
 #include "Unit.h"
-#include <stdlib.h>
-#include <time.h> 
+
 
 const int TIME_TO_HIDE = 60;		//frames needed to stop being visible
 enum EnemyType{BASICENEMY, DISABLER, ASSASSIN};
 class Enemy : public Unit
 {
 private:
-	EnemyType _enemyType;
 	int _visibilityTimer;			//becomes hidden if staying out of sight long enough
 	int _detectionSkill;			//Chance to detect traps
 	int _disarmSkill;				//Chance to deactivate traps without getting caught by them.

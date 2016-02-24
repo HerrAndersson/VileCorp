@@ -49,6 +49,36 @@ int Unit::GetApproxDistance(AI::Vec2D target) const
 	return (int)_aStar->GetHeuristicDistance(_tilePosition, target);
 }
 
+/*
+Moves the goal and finds the path to the new goal
+*/
+void Unit::SetGoal(AI::Vec2D goal)
+{
+	if (_tileMap->IsTrapOnTile(goal))
+	{
+		SetGoal(_tileMap->GetObjectOnTile(goal, TRAP));
+	}
+	else if (_tileMap->IsFloorOnTile(goal))
+	{
+		SetGoal(_tileMap->GetObjectOnTile(goal, FLOOR));
+	}
+	else
+	{
+		_moveState = MoveState::MOVING;
+	}
+}
+
+void Unit::SetGoal(GameObject * objective)
+{
+
+	_goalTilePosition = objective->GetTilePosition();
+	_objective = objective;
+	_aStar->CleanMap();
+	_aStar->SetStartPosition(_nextTile);
+	_aStar->SetGoalPosition(_goalTilePosition);
+	CalculatePath();
+}
+
 Unit::Unit()
 	: GameObject()
 {
@@ -67,6 +97,9 @@ Unit::Unit()
 	_nextTile = _tilePosition;
 	_interactionTime = -1;
 	_isSwitchingTile = false;
+	_status = NO_EFFECT;
+	_statusTimer = 0;
+	_statusInterval = 0;
 	Rotate();
 }
 
@@ -84,10 +117,10 @@ Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	_waiting = -1;
 	_pathLength = 0;
 	_path = nullptr;
-	_stop = false;
 	_direction = {0, 1};
 	_nextTile = _tilePosition;
 	_isSwitchingTile = false;
+	_speedMultiplier = 2.0f;
 	Rotate();
 	if (_renderObject->_isSkinned)
 	{
@@ -96,6 +129,9 @@ Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	}
 	_moveState = MoveState::IDLE;
 	_interactionTime = -1;
+	_status = NO_EFFECT;
+	_statusTimer = 0;
+	_statusInterval = 0;
 }
 
 Unit::~Unit()
@@ -119,23 +155,9 @@ AI::Vec2D Unit::GetGoalTilePosition()
 	return _goalTilePosition;
 }
 
-void Unit::SetGoalTilePosition(AI::Vec2D goal)
-{
-	ClearObjective();
-	_goalTilePosition = goal;
-	_moveState = MoveState::FINDING_PATH;
-}
-
 AI::Vec2D Unit::GetDirection()
 {
 	return _direction;
-}
-
-void Unit::SetDirection(const AI::Vec2D direction)
-{
-	_direction = direction;
-	Rotate();
-	//_visionCone->FindVisibleTiles(_tilePosition, _direction);
 }
 
 AI::Vec2D Unit::GetNextTile() const
@@ -158,9 +180,28 @@ Unit::MoveState Unit::GetMoveState() const
 	return _moveState;
 }
 
-bool Unit::IsSwitchingTile() const
+int Unit::GetVisionRadius() const
 {
-	return _isSwitchingTile;
+	return _visionRadius;
+}
+
+bool Unit::GetAnimisFinished()
+{
+	return _animation->GetisFinished();
+}
+
+void Unit::SetGoalTilePosition(AI::Vec2D goal)
+{
+	ClearObjective();
+	_goalTilePosition = goal;
+	_moveState = MoveState::FINDING_PATH;
+}
+
+void Unit::SetDirection(const AI::Vec2D direction)
+{
+	_direction = direction;
+	Rotate();
+	//_visionCone->FindVisibleTiles(_tilePosition, _direction);
 }
 
 void Unit::SetSwitchingTile(const bool switchTile)
@@ -168,9 +209,39 @@ void Unit::SetSwitchingTile(const bool switchTile)
 	_isSwitchingTile = switchTile;
 }
 
-/*
-Checks tiles that are visible to the unit
-*/
+void Unit::SetVisibility(bool visible)
+{
+	GameObject::SetVisibility(visible);
+	if (_heldObject != nullptr)
+	{
+		_heldObject->SetVisibility(visible);
+	}
+}
+
+void Unit::SetTilePosition(AI::Vec2D pos)
+{
+	GameObject::SetTilePosition(pos);
+	//_visionCone->ColorVisibleTiles({0,0,0});
+	_visionCone->FindVisibleTiles(_tilePosition, _direction);
+	//_visionCone->ColorVisibleTiles({0,0,3});
+	if (_moveState == MoveState::IDLE)
+	{
+		_nextTile = pos;
+	}
+}
+
+void Unit::SetStatusEffect(StatusEffect effect, int intervalTime, int totalTime)
+{
+	_status = effect;
+	_statusTimer = totalTime;
+	_statusInterval = intervalTime;
+}
+
+bool Unit::IsSwitchingTile() const
+{
+	return _isSwitchingTile;
+}
+
 void Unit::CheckVisibleTiles()
 {
 	AI::Vec2D* visibleTiles = _visionCone->GetVisibleTiles();
@@ -236,78 +307,23 @@ void Unit::InitializePathFinding()
 	}
 }
 
-/*
-Moves the goal and finds the path to the new goal
-*/
-void Unit::SetGoal(AI::Vec2D goal)
-{
-	if (_tileMap->IsTrapOnTile(goal))
-	{
-		SetGoal(_tileMap->GetObjectOnTile(goal, TRAP));
-	}
- 	else if (_tileMap->IsFloorOnTile(goal))
-	{
-		SetGoal(_tileMap->GetObjectOnTile(goal, FLOOR));
-	}
-	else
-	{
-		_moveState = MoveState::MOVING;
-	}
-}
-
-void Unit::SetGoal(GameObject * objective)
-{
-
-	_goalTilePosition = objective->GetTilePosition();
-	_objective = objective;
-	_aStar->CleanMap();
-	_aStar->SetStartPosition(_nextTile);
-	_aStar->SetGoalPosition(_goalTilePosition);
-	CalculatePath();
-}
-
 void Unit::Update(float deltaTime)
 {
-}
-
-void Unit::Release()
-{}
-
-void Unit::Wait()
-{
-}
-
-void Unit::ClearObjective()
-{
-	_objective = nullptr;
-	_path = nullptr;
-	_pathLength = 0;
-}
-
-void Unit::TakeDamage(int damage)
-{
-	_health -= damage;
-}
-
-void Unit::SetVisibility(bool visible)
-{
-	GameObject::SetVisibility(visible);
-	if (_heldObject != nullptr)
+	if (_renderObject->_isSkinned)
 	{
-		_heldObject->SetVisibility(visible);
+		_animation->Update(deltaTime);
 	}
-}
 
-void Unit::SetTilePosition(AI::Vec2D pos)
-{
-	GameObject::SetTilePosition(pos);
-	//_visionCone->ColorVisibleTiles({0,0,0});
-	_visionCone->FindVisibleTiles(_tilePosition, _direction);
-	//_visionCone->ColorVisibleTiles({0,0,3});
-	if (_moveState == MoveState::IDLE)
+	if (_statusTimer == 0)
 	{
-		_nextTile = pos;
+		DeactivateStatus();
 	}
+	else if (StatusCountdown())
+	{
+		ActivateStatus();
+	}
+	
+
 }
 
 void Unit::Moving()
@@ -323,13 +339,13 @@ void Unit::Moving()
 	{
 		if (_direction._x == 0 || _direction._y == 0)		//Right angle movement
 		{
-			_position.x += MOVE_SPEED * _direction._x;
-			_position.z += MOVE_SPEED * _direction._y;
+			_position.x += _moveSpeed * _direction._x;
+			_position.z += _moveSpeed * _direction._y;
 		}
 		else												//Diagonal movement
 		{
-			_position.x += AI::SQRT2 * 0.5f * MOVE_SPEED * _direction._x;
-			_position.z += AI::SQRT2 * 0.5f *MOVE_SPEED * _direction._y;
+			_position.x += AI::SQRT2 * 0.5f * _moveSpeed * _direction._x;
+			_position.z += AI::SQRT2 * 0.5f * _moveSpeed * _direction._y;
 		}
 		CalculateMatrix();
 	}
@@ -346,34 +362,113 @@ void Unit::SwitchingNode()
 	//{
 	//	_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,4});
 	//}
-	if (_objective != nullptr && _objective->GetPickUpState() == ONTILE)
+	if (_status == StatusEffect::CONFUSED)
 	{
-		if (_objective->InRange(_tilePosition))
+		srand((int)time(NULL));
+		int randDir = rand() % 8;
+		_direction = AI::NEIGHBOUR_OFFSETS[randDir];
+		_nextTile = _tilePosition + _direction;
+		while (_tileMap->IsWallOnTile(_nextTile))			//Will loop endlessly if surrounded by walls. That really shouldn't happen though
 		{
-			_moveState = MoveState::AT_OBJECTIVE;
+			randDir = (randDir + 1) % 8;
+			_direction = AI::NEIGHBOUR_OFFSETS[randDir];
+			_nextTile = _tilePosition + _direction;
 		}
-		else if (_pathLength > 0 /*&& !_tileMap->IsGuardOnTile(_path[_pathLength - 1])*/)
+		Rotate();
+		_moveState = MoveState::MOVING;
+	}
+	else
+	{
+		if (_objective != nullptr && _objective->GetPickUpState() == ONTILE)
 		{
-			_nextTile = _path[--_pathLength];
-			_direction = _nextTile - _tilePosition;
-			Rotate();
-			_moveState = MoveState::MOVING;
+			if (_objective->InRange(_tilePosition))
+			{
+				_moveState = MoveState::AT_OBJECTIVE;
+			}
+			else if (_pathLength > 0 /*&& !_tileMap->IsGuardOnTile(_path[_pathLength - 1])*/)
+			{
+				_nextTile = _path[--_pathLength];
+				_direction = _nextTile - _tilePosition;
+				Rotate();
+				_moveState = MoveState::MOVING;
+			}
+			else			// TODO: else find unblocked path to goal --Victor
+			{
+				ClearObjective();
+				_moveState = MoveState::IDLE;
+			}
+			_isSwitchingTile = false;
+			CheckVisibleTiles();
 		}
-		else			// TODO: Check for units in the way --Victor
+		else
 		{
 			ClearObjective();
 			_moveState = MoveState::IDLE;
 		}
-		_isSwitchingTile = false;
-		CheckVisibleTiles();
-	}
-	else
-	{
-		ClearObjective();
-		_moveState = MoveState::IDLE;
 	}
 }
 
+void Unit::ClearObjective()
+{
+	_objective = nullptr;
+	_path = nullptr;
+	_pathLength = 0;
+}
+
+void Unit::Release()
+{}
+
+
+void Unit::ActivateStatus()
+{
+	switch (_status)
+	{
+	case StatusEffect::NO_EFFECT:
+		break;
+	case StatusEffect::BURNING:
+		TakeDamage(5);
+		break;
+	case StatusEffect::SLOWED:
+		_moveSpeed /= 2.0f;
+		break;
+	case StatusEffect::STUNNED:					//No active effect. Instead units are prevented from updating while this is in effect.
+		break;
+	case StatusEffect::SCARED:					//TODO: Either allow pursuer to be a non-unit, or make a specific movement state
+		break;
+	case StatusEffect::CONFUSED:				//TODO: Pick random nearby tile when switching node --Victor
+		break;
+	default:
+		break;
+	}
+}
+
+void Unit::DeactivateStatus()
+{
+	switch (_status)
+	{
+	case StatusEffect::NO_EFFECT:
+	case StatusEffect::BURNING:
+	case StatusEffect::STUNNED:								//Nothing in particular to reset
+		break;
+	case StatusEffect::SLOWED:
+		_moveSpeed *= 2.0f;
+		break;
+	case StatusEffect::SCARED:								//Reset movement state
+	case StatusEffect::CONFUSED:
+		ClearObjective();
+		_moveState = MoveState::MOVING;
+		break;
+	default:
+		break;
+	}
+	_statusTimer = -1;
+	_status = StatusEffect::NO_EFFECT;
+}
+
+void Unit::TakeDamage(int damage)
+{
+	_health -= damage;
+}
 
 /*
 	Time is set to -1 when not active
@@ -400,36 +495,37 @@ void Unit::UseCountdown(int frames)
 	}
 }
 
-int Unit::GetVisionRadius() const
+//Returns true when the counter reaches 0
+bool Unit::StatusCountdown()
 {
-	return _visionRadius;
-}
-bool Unit::GetAnimisFinished()
-{
-	if (_renderObject->_isSkinned)
+	bool result = false;
+	if (_statusTimer > 0)
 	{
-		return _animation->GetisFinished();
+		result = _statusTimer % _statusInterval == 0;
+		_statusTimer--;
 	}
+	return result;
 }
+
 void Unit::Animate(Anim anim)
 {
-	if (_renderObject->_isSkinned)
+	if (_renderObject->_isSkinned && _animation->GetisFinished())
 	{
 		if (_renderObject->_type == GUARD)
 		{
 			switch (anim)
 			{
 			case IDLEANIM:
-				_animation->SetActionAsCycle(0, 1.0f, false);
+				_animation->SetActionAsCycle(0, 1.0f * _speedMultiplier);
 				break;
 			case WALKANIM:
-				_animation->SetActionAsCycle(1, 1.0f, false);
+				_animation->SetActionAsCycle(1, 1.0f * _speedMultiplier);
 				break;
 			case FIXTRAPANIM:
-				_animation->SetActionAsCycle(2, 1.0f, false);
+				_animation->SetActionAsCycle(2, 1.0f * _speedMultiplier);
 				break;
 			case FIGHTANIM:
-				_animation->PlayAction(4, 3.5f, false, false);
+				_animation->PlayAction(4, 4.5f * _speedMultiplier);
 				break;
 			default:
 				break;
@@ -440,16 +536,16 @@ void Unit::Animate(Anim anim)
 			switch (anim)
 			{
 			case IDLEANIM:
-				_animation->SetActionAsCycle(0, 1.0f, false);
+				_animation->SetActionAsCycle(0, 1.0f * _speedMultiplier);
 				break;
 			case WALKANIM:
-				_animation->SetActionAsCycle(1, 1.0f, false);
+				_animation->SetActionAsCycle(1, 1.0f * _speedMultiplier);
 				break;
 			case FIGHTANIM:
-				_animation->PlayAction(1, 1.0f, false, false);
+				_animation->PlayAction(1, 1.0f * _speedMultiplier);
 				break;
 			case PICKUPOBJECTANIM:
-				_animation->PlayAction(3, 1.0f, false, false);
+				_animation->PlayAction(3, 1.0f * _speedMultiplier);
 				break;
 			default:
 				break;

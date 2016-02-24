@@ -123,7 +123,7 @@ void Enemy::DisarmTrap(Trap * trap)
 Enemy::Enemy()
 	: Unit()
 {
-	_enemyType = BASICENEMY;
+	_subType = BASICENEMY;
 	SetVisibility(false);
 	_visibilityTimer = TIME_TO_HIDE;
 	_detectionSkill = 50;
@@ -135,12 +135,10 @@ Enemy::Enemy(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 ro
 	: Unit(ID, position, rotation, tilePosition, type, renderObject, tileMap)
 {
 	_subType = enemyType;
-	_enemyType = (EnemyType)enemyType;
-	SetVisibility(false);
 	_visibilityTimer = TIME_TO_HIDE;
 	_pursuer = nullptr;
-
-	switch (_enemyType)
+	_moveSpeed = 0.025;
+	switch (_subType)
 	{
 	case BASICENEMY:
 		_health = 80;
@@ -252,11 +250,23 @@ void Enemy::Act(GameObject* obj)
 		case LOOT:
 			if (_heldObject == nullptr)
 			{
-				obj->SetPickUpState(PICKINGUP);
-				Animate(PICKUPOBJECTANIM);
-				_heldObject = obj;
-				obj->SetVisibility(_visible);
-				ClearObjective();
+				if (_interactionTime < 0)
+				{
+					UseCountdown(_animation->GetLength(3, 1.0f * _speedMultiplier));
+					obj->SetPickUpState(PICKINGUP);
+					Animate(PICKUPOBJECTANIM);
+				}
+				else if(_interactionTime == 0)
+				{
+					obj->SetPickUpState(PICKEDUP);
+					_heldObject = obj;
+					obj->SetVisibility(_visible);
+					ClearObjective();
+				}
+				else
+				{
+					UseCountdown();
+				}
 			}
 			break;
 		case SPAWN:
@@ -283,13 +293,22 @@ void Enemy::Act(GameObject* obj)
 		}
 		break;
 		case GUARD:
-			static_cast<Unit*>(obj)->TakeDamage(1);
-			_stop = true;
-			Animate(FIGHTANIM);
-
-			if (static_cast<Unit*>(obj)->GetHealth() <= 0)
+			if (_interactionTime != 0)
 			{
-				ClearObjective();
+				UseCountdown(_animation->GetLength(1, 1.0f * _speedMultiplier));
+				Animate(FIGHTANIM);
+			}
+			else if (_interactionTime == 0)
+			{
+				static_cast<Unit*>(obj)->TakeDamage(1);
+				if (static_cast<Unit*>(obj)->GetHealth() <= 0)
+				{
+					ClearObjective();
+				}
+			}
+			else
+			{
+				UseCountdown();
 			}
 			break;
 		case ENEMY:
@@ -309,43 +328,48 @@ void Enemy::Release()
 
 void Enemy::Update(float deltaTime)
 {
-	//Unit::Update(deltaTime);
+	Unit::Update(deltaTime);
 
-	switch (_moveState)
+	if (_status != StatusEffect::STUNNED)
 	{
-	case MoveState::IDLE:
-		CheckAllTiles();
-		break;
-	case MoveState::FINDING_PATH:
-		if (_objective != nullptr)
+		switch (_moveState)
 		{
-			SetGoal(_objective);
+		case MoveState::IDLE:
+			CheckAllTiles();
+			Animate(IDLEANIM);
+			break;
+		case MoveState::FINDING_PATH:
+			if (_objective != nullptr)
+			{
+				SetGoal(_objective);
+			}
+			break;
+		case MoveState::MOVING:
+			Moving();
+			Animate(WALKANIM);
+			break;
+		case MoveState::SWITCHING_NODE:
+			SwitchingNode();
+			break;
+		case MoveState::AT_OBJECTIVE:
+			Act(_objective);
+			break;
+		case MoveState::FLEEING:
+			Flee();
+			break;
+		default:
+			break;
 		}
-		break;
-	case MoveState::MOVING:
-		Moving();
-		break;
-	case MoveState::SWITCHING_NODE:
-		SwitchingNode();
-		break;
-	case MoveState::AT_OBJECTIVE:
-		Act(_objective);
-		break;
-	case MoveState::FLEEING:
-		Flee();
-		break;
-	default:
-		break;
-	}
 
-	_visibilityTimer--;
-	if (_visibilityTimer <= 0)
-	{
-		_visible = false;
-		_visibilityTimer = TIME_TO_HIDE;
-		if (_heldObject != nullptr)
+		_visibilityTimer--;
+		if (_visibilityTimer <= 0)
 		{
-			_heldObject->SetVisibility(false);
+			_visible = false;
+			_visibilityTimer = TIME_TO_HIDE;
+			if (_heldObject != nullptr)
+			{
+				_heldObject->SetVisibility(false);
+			}
 		}
 	}
 }

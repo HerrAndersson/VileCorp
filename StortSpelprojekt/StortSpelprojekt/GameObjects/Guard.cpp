@@ -14,13 +14,13 @@ Guard::Guard(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 ro
 	: Unit(ID, position, rotation, tilePosition, type, renderObject, tileMap)
 {
 	_subType = guardType;
-	_guardType = (GuardType)guardType;
 	_isSelected = false;
 	_currentPatrolGoal = 0;
 	_health = 100;
+	_moveSpeed = 0.03;
 	_baseDamage = 30;
 
-	switch (_guardType)				//TODO: Repair time, vision radius, etc --Victor
+	switch (_subType)				//TODO: Repair time, vision radius, etc --Victor
 	{
 	case BASICGUARD:
 		_health = 100;
@@ -107,7 +107,10 @@ void Guard::RemovePatrol()
 	_currentPatrolGoal = 0;
 }
 
-
+std::vector<AI::Vec2D> Guard::GetPatrolRoute()
+{
+	return _patrolRoute;
+}
 
 void Guard::Wait()
 {
@@ -131,8 +134,11 @@ void Guard::Release()
 
 void Guard::Update(float deltaTime) 
 {
+	Unit::Update(deltaTime);
+
 	switch( _moveState ) {
 	case MoveState::IDLE:
+		Animate(IDLEANIM);
 		Wait();
 		break;
 	case MoveState::FINDING_PATH:
@@ -147,6 +153,7 @@ void Guard::Update(float deltaTime)
 		break;
 	case MoveState::MOVING:
 		Moving();
+		Animate(WALKANIM);
 		break;
 	case MoveState::SWITCHING_NODE:
 		SwitchingNode();
@@ -174,24 +181,38 @@ void Guard::Act(GameObject* obj)
 			{
 				if (_interactionTime != 0)
 				{
-					UseCountdown(60);
+					UseCountdown(_animation->GetLength(2, 1.0f * _speedMultiplier));
 					Animate(FIXTRAPANIM);
 				}
-				else
+				else if (_interactionTime == 0)
 				{
 					static_cast<Trap*>(obj)->SetTrapActive(true);
 					//	obj->SetColorOffset({0,0,0});
 					ClearObjective();
 				}
+				else
+				{
+					UseCountdown();
+				}
 			}
 			break;
 		case ENEMY:											//The guard hits the enemy
-			static_cast<Unit*>(obj)->TakeDamage(1);
-			_stop = true;
-			Animate(FIGHTANIM);
-			if (static_cast<Unit*>(obj)->GetHealth() <= 0)
+			if (_interactionTime != 0)
 			{
-				ClearObjective();
+				UseCountdown(_animation->GetLength(4, 4.5f * _speedMultiplier));
+				Animate(FIGHTANIM);
+			}
+			else if (_interactionTime == 0)
+			{
+				static_cast<Unit*>(obj)->TakeDamage(1);
+				if (static_cast<Unit*>(obj)->GetHealth() <= 0)
+				{
+					ClearObjective();
+				}
+			}
+			else
+			{
+				UseCountdown();
 			}
 			break;
 		case FLOOR:
@@ -226,12 +247,6 @@ void Guard::Act(GameObject* obj)
 		_moveState = MoveState::MOVING;
 	}
 }
-
-std::vector<AI::Vec2D> Guard::GetPatrolRoute()
-{
-	return _patrolRoute;
-}
-
 void Guard::SwitchingNode()
 {
 	Unit::SwitchingNode();

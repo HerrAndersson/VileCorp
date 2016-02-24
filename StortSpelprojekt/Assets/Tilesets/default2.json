@@ -20,7 +20,9 @@
   "traps": [
     "AnvilAnimation-27.bin",
     "AnvilAnimation-27.bin",
-    "TeslaAnimation-27.bin"
+    "TeslaAnimation-27.bin",
+	"SharkTrap-27.bin",
+	"Gun-28.bin"
 
   ],
   "triggers": [
@@ -42,7 +44,7 @@
 
   ],
   "cameras": [
-    "SecurityCamera-27.bin"
+    "securitycamera-27.bin"
 
   ],
   "furnitures": [

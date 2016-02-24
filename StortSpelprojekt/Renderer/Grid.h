@@ -4,6 +4,9 @@
 #include <vector>
 #include <stdexcept>
 
+//Disable warning about dll-interface
+#pragma warning( disable: 4251 )
+
 class __declspec(dllexport) Grid
 {
 private:

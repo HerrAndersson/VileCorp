@@ -13,13 +13,22 @@ MenuState::~MenuState()
 
 void MenuState::Update(float deltaTime)
 {
+
+	//ChangeState(State::PLACEMENTSTATE);
+
 	if (_controls->IsFunctionKeyDown("DEBUG:RELOAD_GUI"))
 	{
-		_uiTree.ReloadTree("../../../../StortSpelprojekt/Assets/gui.json", "MENU");
+		_uiTree.ReloadTree("../../../../StortSpelprojekt/Assets/GUI/menu.json");
 	}
+
+	System::MouseCoord coord = _controls->GetMouseCoord();
+	HandleHoverColorOffset("playbutton", "play", coord, XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f));
+	HandleHoverColorOffset("leveleditbutton", "leveledit", coord, XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f));
+	HandleHoverColorOffset("optionsbutton", "options", coord, XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f));
+	HandleHoverColorOffset("exitbutton", "exit", coord, XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f));
+
 	if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
-		System::MouseCoord coord = _controls->GetMouseCoord();
 		if (_uiTree.IsButtonColliding("playbutton", coord._pos.x, coord._pos.y))
 		{
 			_soundModule->Stop("Assets/Sounds/theme");

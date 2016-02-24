@@ -63,14 +63,20 @@ void SecurityCamera::SetDirection(AI::Vec2D direction)
 
 void SecurityCamera::CheckVisibleTiles()
 {
-//	_visionCone->ColorVisibleTiles({0,0,3});
+	Enemy* test = nullptr;
+	//_visionCone->ColorVisibleTiles({0,0,3});
 	AI::Vec2D tile = {0,0};
-	for (size_t i = 0; i < _visionCone->GetNrOfVisibleTiles(); i++)
+	for (int i = 0; i < _visionCone->GetNrOfVisibleTiles(); i++)
 	{
 		tile = _visionCone->GetVisibleTile(i);
 		if (_tileMap->IsEnemyOnTile(tile))
 		{
-			static_cast<Enemy*>(_tileMap->GetObjectOnTile(tile, ENEMY))->ResetVisibilityTimer();
+			Enemy* enemy;
+			enemy = static_cast<Enemy*>(_tileMap->GetObjectOnTile(tile, ENEMY));
+			if (enemy != nullptr)
+			{
+				enemy->ResetVisibilityTimer();
+			}
 		}
 	}
 }

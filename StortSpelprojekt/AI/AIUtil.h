@@ -11,7 +11,7 @@ namespace AI
 			_x = 0;
 			_y = 0;
 		}
-		Vec2D(int x, int y)
+ 		Vec2D(int x, int y)
 		{
 			_x = x;
 			_y = y;
@@ -33,6 +33,10 @@ namespace AI
 		Vec2D operator-(const Vec2D& comp)
 		{
 			return {_x - comp._x, _y - comp._y};
+		}
+		Vec2D operator*(const int mult)
+		{
+			return{_x * mult, _y * mult};
 		}
 		void operator=(const Vec2D& comp)
 		{

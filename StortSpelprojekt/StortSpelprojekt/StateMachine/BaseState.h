@@ -8,15 +8,17 @@
 #include "../PickingDevice.h"
 #include "../UITree.h"
 #include "../../System/SettingsReader.h"
+#include "../TutorialLogic.h"
 
 
 class BaseState
 {
 private:
-	static State BaseState::_newStateRequest;
-	static State BaseState::_oldState; //To make us able to return from pause state back to correct state.
+	static State _newStateRequest;
+	static State _oldState; //To make us able to return from pause state back to correct state.
 
 protected:
+	static TutorialState	_tutorialState;
 	System::Controls*		_controls;
 	ObjectHandler*			_objectHandler;
 	GUI::UITree				_uiTree;
@@ -29,6 +31,14 @@ protected:
 	void ChangeState(State newState);
 	void ResetMouse();
 	State GetOldState() const;
+
+	void HandleCam(float deltaTime);
+	void HandleCamMode();
+	void HandleCamZoom();
+	void HandleCamRot();
+	void HandleCamMove(float deltaTime);
+
+	void HandleHoverColorOffset(const std::string& button, const std::string& node, System::MouseCoord coord, XMFLOAT4 rgba);
 
 public:
 	BaseState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule);

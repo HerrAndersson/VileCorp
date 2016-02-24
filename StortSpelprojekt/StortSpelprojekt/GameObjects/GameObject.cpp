@@ -108,9 +108,19 @@ AI::Vec2D GameObject::GetTilePosition() const
 	return _tilePosition;
 }
 
+AI::Vec2D GameObject::GetDirection() const
+{
+	return _direction;
+}
+
 void GameObject::SetTilePosition(AI::Vec2D pos)
 {
 	_tilePosition = pos;
+}
+
+void GameObject::SetDirection(AI::Vec2D dir)
+{
+	_direction = dir;
 }
 
 Type GameObject::GetType() const

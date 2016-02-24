@@ -7,7 +7,6 @@ enum GuardType{BASICGUARD, ENGINEER, MARKSMAN};
 class Guard : public Unit
 {
 private:
-	GuardType _guardType;
 	bool _isSelected;
 	std::vector<AI::Vec2D> _patrolRoute;
 	unsigned int _currentPatrolGoal;
