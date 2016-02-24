@@ -322,8 +322,6 @@ void Unit::Update(float deltaTime)
 	{
 		ActivateStatus();
 	}
-	
-
 }
 
 void Unit::Moving()

@@ -204,7 +204,11 @@ void Enemy::EvaluateTile(GameObject* obj)
 			}
 			else
 			{
-				//TODO: Avoid trap --Victor
+				for (int i = 0; i < trap->GetTileSize(); i++)
+				{
+					_aStar->SetTileCost(trap->GetTiles()[i], 15);
+					SetGoalTilePosition(_goalTilePosition);					//resets pathfinding to goal
+				}
 			}
 		}
 			break;	

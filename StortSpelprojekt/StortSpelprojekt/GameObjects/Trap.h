@@ -3,7 +3,8 @@
 #include "Unit.h"
 #include <memory>
 
-enum TrapType{ SPIKE, TESLACOIL, SHARK, GUN};
+enum TrapType{ SPIKE, TESLACOIL, SHARK, GUN, SAW, CAKEBOMB, BEAR, FLAMETHROWER};
+enum Anim{IDLE, ACTIVATE, NR_OF_ANIM/*Has to be last*/};
 
 
 class Trap : public GameObject
@@ -62,8 +63,6 @@ public:
 	void SetTilePosition(AI::Vec2D pos);
 	AI::Vec2D GetDirection();
 	void SetDirection(const AI::Vec2D direction);
-
-	enum Anim { IDLE, ACTIVATE, NR_OF_ANIM/*Has to be last*/ };
 	void Animate(Anim anim);
 };
 

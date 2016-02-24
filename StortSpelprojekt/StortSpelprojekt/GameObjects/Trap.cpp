@@ -260,11 +260,21 @@ void Trap::SetTiles()
 		_nrOfAOETiles = CalculateCircle(3, _tilePosition, _areaOfEffect);
 		break;
 	case SHARK:
-		_tileSize = CalculateRectangle(6, 3, _tilePosition - AI::Vec2D(-_direction._y, _direction._x), _occupiedTiles);
-		_nrOfAOETiles = CalculateRectangle(1, 3, _tilePosition, _areaOfEffect);
+		_tileSize = CalculateRectangle(5, 2, _tilePosition, _occupiedTiles);
+		_nrOfAOETiles = CalculateRectangle(1, 2, _tilePosition, _areaOfEffect);
 	case GUN:
 		_tileSize = CalculateLine(10, _tilePosition, _occupiedTiles);
 		_nrOfAOETiles = CalculateLine(10, _tilePosition, _areaOfEffect);
+		break;
+	case SAW:
+		_tileSize = CalculateRectangle(3, 1, _tilePosition, _occupiedTiles);
+		_areaOfEffect[_nrOfAOETiles++] = _tilePosition;
+		break;
+	case CAKEBOMB:
+		break;
+	case BEAR:
+		break;
+	case FLAMETHROWER:
 		break;
 	default:
 		_areaOfEffect = nullptr;
@@ -332,6 +342,15 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 		Initialize(300, 10, 10, 100, 50, Unit::StatusEffect::NO_EFFECT, 0, 0);
 		break;
 	}
+	case SAW:
+		Initialize(80, 3, 1, 50, 70, Unit::StatusEffect::NO_EFFECT, 0, 0);
+		break;
+	case CAKEBOMB:
+		break;
+	case BEAR:
+		break;
+	case FLAMETHROWER:
+		break;
 	default:
 		_areaOfEffect = nullptr;
 		break;
