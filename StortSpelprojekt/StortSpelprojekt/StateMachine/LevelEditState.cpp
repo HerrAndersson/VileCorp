@@ -47,7 +47,7 @@ void LevelEditState::OnStateEnter()
 		vector<Blueprint>* blueprints = _objectHandler->GetBlueprints();
 		for (unsigned b = 0; b < blueprints->size(); b++)
 		{
-			if (blueprints->at(b)._type == i)
+			if (_typeLists[blueprints->at(b)._type] == _typeLists[(Type)i])
 			{
 				index += _uiTree.CreateTilesetObject(&blueprints->at(b), _uiTree.GetNode(_typeLists[(Type)blueprints->at(b)._type]), index);
 			}
