@@ -78,7 +78,7 @@ bool ObjectHandler::Add(Blueprint* blueprint, int textureId, const XMFLOAT3& pos
 		AI::Vec2D* arr = trap->GetTiles();
 		for (int i = 0; i < trap->GetTileSize() && addedObject; i++)
 		{
-			if (!_tilemap->CanPlaceObject(arr[i]))
+			if (!_tilemap->IsPlaceable(arr[i], blueprint->_type))
 			{
 				addedObject = false;
 			}

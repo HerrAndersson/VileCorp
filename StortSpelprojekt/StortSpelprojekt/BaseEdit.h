@@ -58,6 +58,7 @@ private:
 	bool _isDragAndPlaceMode;
 	bool _isPlace;
 	bool _modeLock;
+	bool _isInvalidateFloor;
 	
 	void MarkerMoveEvent();
 	void DragEvent(Type type);

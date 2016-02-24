@@ -3,12 +3,12 @@
 #include <DirectXMath.h>
 #include <sstream>
 
+
 // local function
 bool compareFloat3(XMFLOAT3 a, XMFLOAT3 b)
 {
 	return (a.x == b.x && a.z == b.z);
 }
-
 
 
 // Instancing
@@ -26,6 +26,7 @@ BaseEdit::BaseEdit(ObjectHandler* objectHandler, System::Controls* controls, Pic
 
 	_isPlace = false;
 	_modeLock = false;
+	_isInvalidateFloor = false;
 
 	_sB = nullptr;
 	_marker._g = nullptr;
@@ -37,6 +38,7 @@ BaseEdit::~BaseEdit()
 {
 	ReleaseMarkers();
 }
+
 
 // Marker functions
 
@@ -96,6 +98,7 @@ void BaseEdit::ReleaseMarkers()
 		_baseMarker._g = nullptr;
 	}
 }
+
 
 // Key events
 
@@ -290,59 +293,80 @@ void BaseEdit::HandleMouseInput()
 {
 	if (_extendedMode)
 	{
-		if (_controls->IsFunctionKeyDown("MOUSE:BOX_PLACE") || _controls->IsFunctionKeyDown("MOUSE:BOX_DELETE"))
+		if (_controls->IsFunctionKeyDown("MAP_EDIT:UNDO"))
 		{
-			if (!_modeLock && _isSelectionMode)
-			{
-				_isSelectionMode = false;
-				_isDragAndPlaceMode = true;
-
-				_isDragAndDropMode = false;
-				_isPlace = false;
-			}
+			_isInvalidateFloor = !_isInvalidateFloor;
 		}
-
-		if (_isSelectionMode)
+		if (_isInvalidateFloor)
 		{
-			if (_marker._g == nullptr)
+			AI::Vec2D pickedTile = _pickingDevice->PickTile(_controls->GetMouseCoord()._pos);
+			if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
 			{
-				// Drag in world
-				bool found = false;
-				for (int i = Type::NR_OF_TYPES - 1; i > -1 && !found; i--)
-				{
-					DragEvent((Type)i);
-					if (_marker._g != nullptr)
-					{
-						found = true;
-					}
-				}
+				_tileMap->LockTile(pickedTile);
+
 			}
-			//else
-			//{
-			//	// For buttons
-			//	DragEvent(_marker._g->GetType());
-			//}
+			if (_controls->IsFunctionKeyDown("MOUSE:DESELECT"))
+			{
+				_tileMap->UnlockTile(pickedTile);
+			}
+
 		}
 		else
 		{
-			if (_sB != nullptr)
+			if (_controls->IsFunctionKeyDown("MOUSE:BOX_PLACE") || _controls->IsFunctionKeyDown("MOUSE:BOX_DELETE"))
 			{
-				if (!_modeLock)
+				if (!_modeLock && _isSelectionMode)
 				{
-					if (_controls->IsFunctionKeyDown("MOUSE:BOX_PLACE"))
-					{
-						CreateMarkers();
-						_isPlace = true;
-					}
+					_isSelectionMode = false;
+					_isDragAndPlaceMode = true;
 
-					// Not really diselect but activates remove mode (temp)
-					if (_controls->IsFunctionKeyDown("MOUSE:BOX_DELETE"))
+					_isDragAndDropMode = false;
+					_isPlace = false;
+				}
+			}
+
+			if (_isSelectionMode)
+			{
+				if (_marker._g == nullptr)
+				{
+					// Drag in world
+					bool found = false;
+					for (int i = Type::NR_OF_TYPES - 1; i > -1 && !found; i--)
 					{
-						CreateMarkers();
-						_isPlace = false;
+						DragEvent((Type)i);
+						if (_marker._g != nullptr)
+						{
+							found = true;
+						}
 					}
 				}
-				BoxEvent();
+				//else
+				//{
+				//	// For buttons
+				//	DragEvent(_marker._g->GetType());
+				//}
+			}
+			else
+			{
+				if (_sB != nullptr)
+				{
+					if (!_modeLock)
+					{
+						if (_controls->IsFunctionKeyDown("MOUSE:BOX_PLACE"))
+						{
+							CreateMarkers();
+							_isPlace = true;
+						}
+
+						// Not really diselect but activates remove mode (temp)
+						if (_controls->IsFunctionKeyDown("MOUSE:BOX_DELETE"))
+						{
+							CreateMarkers();
+							_isPlace = false;
+						}
+					}
+					BoxEvent();
+				}
 			}
 		}
 	}
@@ -428,9 +452,6 @@ void BaseEdit::HandleKeyInput(double deltaTime)
 		}
 	}
 }
-
-
-// Camera handling
 
 
 // Other functions
