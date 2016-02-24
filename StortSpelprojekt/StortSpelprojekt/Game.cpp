@@ -274,54 +274,12 @@ void Game::Render()
 	/*--------------------------------------------------  Render skinned objects  -----------------------------------------------------*/
 	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::ANIM_STAGE);
 	RenderGameObjects(Renderer::RenderModule::ShaderStage::ANIM_STAGE, gameObjects);
-	
-	/*for (auto i : *gameObjects)
-	{
-		if (i.size() > 0)
-		{
-			RenderObject* renderObject = i.at(0)->GetRenderObject();
-			if (!renderObject->_mesh->_isSkinned)
-			if (renderObject->_isSkinned)
-			{
-				continue;
-			}
-			else
-			{
-				_renderModule->SetDataPerObjectType(renderObject);
-				int vertexBufferSize = renderObject->_mesh->_vertexBufferSize;
-				if (i.at(0)->IsVisible())
-				{
-					_renderModule->RenderAnimation(i.at(0)->GetMatrix(), vertexBufferSize, i.at(0)->GetAnimation()->GetFloats(), i.at(0)->GetColorOffset());
-				}
-			}
-
-			for (int j = 1; j < i.size(); j++)
-			{
-				renderObject = i.at(j)->GetRenderObject();
-				if (renderObject->_isSkinned)
-				{
-					if (i.at(j)->GetSubType() != i.at(j - 1)->GetSubType())
-					{
-						renderObject = i.at(j)->GetRenderObject();
-						_renderModule->SetDataPerObjectType(renderObject);
-						int vertexBufferSize = renderObject->_mesh->_vertexBufferSize;
-					}
-					if (i.at(j)->IsVisible())
-					{
-						_renderModule->RenderAnimation(i.at(j)->GetMatrix(), vertexBufferSize, i.at(j)->GetAnimation()->GetFloats(), i.at(j)->GetColorOffset());
-					}
-
-				}
-
-			}
-		}
-	}*/
 
 	/*------------------------------------------------  Render billboarded objects  ---------------------------------------------------*/
 	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::BILLBOARDING_STAGE);
 	int count = _particleHandler->GetEmitterCount();
 
-	//Render all particle emitter except for electricity, as thsoe use linestrip instead of pointlist
+	//Render all particle emitter except for electricity, as those use linestrip instead of pointlist
 	for (int i = 0; i < count; i++)
 	{
 		Renderer::ParticleEmitter* emitter = _particleHandler->GetEmitter(i);
@@ -415,57 +373,7 @@ void Game::Render()
 		{
 			if (spot.second != nullptr && spot.second->IsActive() && spot.first->IsActive())
 			{
-				// Non skinned
-				_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::SHADOW_GENERATION);
-				_renderModule->SetShadowMapDataPerSpotlight(spot.second->GetViewMatrix(), spot.second->GetProjectionMatrix());
-
-				vector<vector<GameObject*>>* inLight = _objectHandler->GetObjectsInLight(spot.second);
-				for (auto j : *inLight)
-				{
-					if (j.size() > 0)
-					{
-						RenderObject* renderObject = j.at(0)->GetRenderObject();
-						if (!renderObject->_mesh->_isSkinned)
-						{
-							_renderModule->SetShadowMapDataPerObjectType(renderObject);
-							int vertexBufferSize = renderObject->_mesh->_vertexBufferSize;
-
-							for (GameObject* g : j)
-							{
-								if (g->IsVisible() && g->GetID() != spot.first->GetID())
-								{
-									_renderModule->RenderShadowMap(g->GetMatrix(), vertexBufferSize);
-								}
-							}
-						}
-					}
-				}
-
-				// Skinned
-				_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::ANIM_SHADOW_GENERATION);
-				_renderModule->SetShadowMapDataPerSpotlight(spot.second->GetViewMatrix(), spot.second->GetProjectionMatrix());
-
-				inLight = _objectHandler->GetObjectsInLight(spot.second);
-				for (auto j : *inLight)
-				{
-					if (j.size() > 0)
-					{
-						RenderObject* renderObject = j.at(0)->GetRenderObject();
-						if (renderObject->_mesh->_isSkinned)
-						{
-							_renderModule->SetShadowMapDataPerObjectType(renderObject);
-							int vertexBufferSize = renderObject->_mesh->_vertexBufferSize;
-
-							for (GameObject* g : j)
-							{
-								if (g->IsVisible() && g->GetID() != spot.first->GetID())
-								{
-									_renderModule->RenderShadowMap(g->GetMatrix(), vertexBufferSize);
-								}
-							}
-						}
-					}
-				}
+				GenerateShadowMap(spot.second, spot.first->GetID());
 
 				_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::LIGHT_APPLICATION_SPOTLIGHT);
 				_renderModule->SetLightDataPerSpotlight(spot.second);
@@ -537,6 +445,88 @@ void Game::RenderGameObjects(int forShaderStage, std::vector<std::vector<GameObj
 					}
 					lastGameObject = gameObject;
 					lastRenderObject = renderObject;
+				}
+			}
+		}
+	}
+}
+
+void Game::GenerateShadowMap(Renderer::Spotlight* spotlight, unsigned short ownerID)
+{
+	//Non skinned objects
+	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::SHADOW_GENERATION);
+	_renderModule->SetShadowMapDataPerSpotlight(spotlight->GetViewMatrix(), spotlight->GetProjectionMatrix());
+
+	vector<vector<GameObject*>>* inLight = _objectHandler->GetObjectsInLight(spotlight);
+	unsigned int prevSubType = -1;
+	int vertexBufferSize = 0;
+
+	for (auto j : *inLight)
+	{
+		if (j.size() > 0)
+		{
+			prevSubType = -1;
+			vertexBufferSize = 0;
+
+			for (int i = 0; i < j.size(); i++)
+			{
+				GameObject* obj = j.at(i);
+				RenderObject* renderObject = obj->GetRenderObject();
+
+				if (!renderObject->_mesh->_isSkinned)
+				{
+					//If the current object and the previous object are different, set the new data
+					unsigned int thisSubType = obj->GetSubType();
+					if (thisSubType != prevSubType)
+					{
+						_renderModule->SetShadowMapDataPerObjectType(renderObject);
+						vertexBufferSize = renderObject->_mesh->_vertexBufferSize;
+						prevSubType = obj->GetSubType();
+					}
+
+					//Render the visible objects, but skip the owner itself
+					if (obj->IsVisible() && obj->GetID() != ownerID)
+					{
+						_renderModule->RenderShadowMap(obj->GetMatrix(), vertexBufferSize);
+					}
+				}
+			}
+		}
+	}
+
+	//Animated/skinned objects
+	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::ANIM_SHADOW_GENERATION);
+	_renderModule->SetShadowMapDataPerSpotlight(spotlight->GetViewMatrix(), spotlight->GetProjectionMatrix());
+
+	for (auto j : *inLight)
+	{
+		if (j.size() > 0)
+		{
+			prevSubType = -1;
+			vertexBufferSize = 0;
+
+			for (int i = 0; i < j.size(); i++)
+			{
+				GameObject* obj = j.at(i);
+				RenderObject* renderObject = obj->GetRenderObject();
+				Animation* anim = obj->GetAnimation();
+
+				if (renderObject->_mesh->_isSkinned && anim)
+				{
+					//If the current object and the previous object are different, set the new data
+					unsigned int thisSubType = obj->GetSubType();
+					if (thisSubType != prevSubType)
+					{
+						_renderModule->SetShadowMapDataPerObjectType(renderObject);
+						vertexBufferSize = renderObject->_mesh->_vertexBufferSize;
+						prevSubType = obj->GetSubType();
+					}
+
+					//Render the visible objects, but skip the owner itself
+					if (obj->IsVisible() && obj->GetID() != ownerID)
+					{
+						_renderModule->RenderShadowMap(obj->GetMatrix(), vertexBufferSize, anim->GetFloats());
+					}
 				}
 			}
 		}
