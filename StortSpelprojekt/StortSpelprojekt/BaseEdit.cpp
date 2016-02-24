@@ -160,7 +160,6 @@ void BaseEdit::DropEvent()
 	_modeLock = false;
 	_marker._g->SetColorOffset(XMFLOAT3(0.0f, 0.0f, 0.0f));
 	XMFLOAT3 p = XMFLOAT3(_marker._g->GetPosition());
-
 	
 	if (!_marker._placeable)
 	{
@@ -169,6 +168,19 @@ void BaseEdit::DropEvent()
 		p.z = _marker._origPos._y;
 		_marker._g->SetPosition(p);
 	}
+
+	// Special camera non floating fix
+	if (_marker._g->GetType() == CAMERA)
+	{
+		if (_marker._g->GetDirection()._x != 0 && _marker._g->GetDirection()._y != 0)
+		{
+			XMFLOAT3 cameraDiagonal = _marker._g->GetPosition();
+			cameraDiagonal.x -= (float)_marker._g->GetDirection()._x*0.2;
+			cameraDiagonal.z -= (float)_marker._g->GetDirection()._y*0.2;
+			_marker._g->SetPosition(cameraDiagonal);
+		}
+	}
+
 	// Bind position logically
 	_tileMap->AddObjectToTile(p.x, p.z, _marker._g);
 
@@ -455,6 +467,11 @@ bool BaseEdit::CheckValidity(AI::Vec2D tile, Type type)
 				}
 				else if (type == CAMERA)
 				{
+					if (!_tileMap->IsWallOnTile(tile - _marker._g->GetDirection()))
+					{
+						valid = false;
+					}
+
 					if (_tileMap->UnitsOnTile(tile) || _tileMap->IsTrapOnTile(tile))
 					{
 						valid = false;
