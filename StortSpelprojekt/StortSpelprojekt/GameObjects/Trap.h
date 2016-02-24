@@ -21,11 +21,13 @@ private:
 	int _detectDifficulty;
 	int _disarmDifficulty;
 
-	AI::Vec2D* _occupiedTiles;
-	int _tileSize;
-
 	const Tilemap* _tileMap;
-	AI::Vec2D* _areaOfEffect;
+
+	AI::Vec2D* _occupiedTiles;			//Physical area taken up by the trap
+	int _nrOfOccupiedTiles;
+	AI::Vec2D* _triggerTiles;			//Tiles that when walked on by an enemy, will activate the trap. Do not place on tile that is not also included in _occupiedTiles
+	int _nrOfTriggers;
+	AI::Vec2D* _areaOfEffect;			//Tiles that will be affected by the activated trap
 	int _nrOfAOETiles;
 	int _areaOfEffectArrayCapacity;
 
@@ -35,7 +37,7 @@ private:
 	bool IsUnblocked(AI::Vec2D pos);
 	AI::Vec2D ConvertOctant(int octant, AI::Vec2D pos, bool in = true);
 
-	void Initialize(int damage, int tileSize, int AOESize, int detectDifficulty, int disarmDifficulty,
+	void Initialize(int damage, int tileSize, int triggerSize, int AOESize, int detectDifficulty, int disarmDifficulty,
 					Unit::StatusEffect statusEffect, int statusTimer, int statusInterval);							/*Initialize adds any characteristics specific to the subtype*/
 	void SetTiles();
 public:
@@ -45,7 +47,7 @@ public:
 	virtual ~Trap();
 
 	AI::Vec2D* GetTiles()const;
-	int GetTileSize()const;
+	int GetNrOfOccupiedTiles()const;
 	int GetDetectionDifficulty()const;
 	int GetDisarmDifficulty()const;
 	bool InRange(AI::Vec2D pos) const;

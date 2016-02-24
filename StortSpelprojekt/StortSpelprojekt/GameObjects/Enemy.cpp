@@ -204,10 +204,21 @@ void Enemy::EvaluateTile(GameObject* obj)
 			}
 			else
 			{
-				for (int i = 0; i < trap->GetTileSize(); i++)
+				bool changeRoute = false;
+				for (int i = 0; i < trap->GetNrOfOccupiedTiles(); i++)
 				{
-					_aStar->SetTileCost(trap->GetTiles()[i], 15);
+					AI::Vec2D pos = trap->GetTiles()[i];
+					if (_aStar->GetTileCost(pos) != 15)
+					{
+						_aStar->SetTileCost(trap->GetTiles()[i], 15);
+						changeRoute = true;
+					}
+				}
+				if (changeRoute)
+				{
+					GameObject* temp = _objective;
 					SetGoalTilePosition(_goalTilePosition);					//resets pathfinding to goal
+					_objective = temp;
 				}
 			}
 		}

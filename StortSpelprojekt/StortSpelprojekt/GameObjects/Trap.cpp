@@ -213,13 +213,13 @@ AI::Vec2D Trap::ConvertOctant(int octant, AI::Vec2D pos, bool in)
 	return convertedPos;
 }
 
-void Trap::Initialize(int damage, int tileSize, int AOESize, int detectDifficulty, int disarmDifficulty, Unit::StatusEffect statusEffect, int statusTimer, int statusInterval)
+void Trap::Initialize(int damage, int tileSize, int triggerSize, int AOESize, int detectDifficulty, int disarmDifficulty, Unit::StatusEffect statusEffect, int statusTimer, int statusInterval)
 {
 	delete[] _areaOfEffect;
 	delete[] _occupiedTiles;
 	_damage = damage;
-	_tileSize = tileSize;
-	_occupiedTiles = new AI::Vec2D[_tileSize];
+	_occupiedTiles = new AI::Vec2D[tileSize];
+	_triggerTiles = new AI::Vec2D[triggerSize];
 	_areaOfEffectArrayCapacity = AOESize;
 	_areaOfEffect = new AI::Vec2D[_areaOfEffectArrayCapacity];
 	_detectDifficulty = detectDifficulty;
@@ -239,7 +239,7 @@ void Trap::SetTiles()
 			_tileMap->GetObjectOnTile(_areaOfEffect[i], FLOOR)->SetColorOffset({0.0f,0.0f,0.0f});
 		}
 	}
-	for (int i = 0; i < _tileSize; i++)
+	for (int i = 0; i < _nrOfOccupiedTiles; i++)
 	{
 		if (_tileMap->IsFloorOnTile(_occupiedTiles[i]))
 		{
@@ -247,27 +247,30 @@ void Trap::SetTiles()
 		}
 	}
 
+	_nrOfOccupiedTiles = 0;
+	_nrOfTriggers = 0;
 	_nrOfAOETiles = 0;
-	_tileSize = 0;
 	switch (_subType)
 	{
 	case SPIKE:
-		_occupiedTiles[_tileSize++] = _tilePosition;
+		_occupiedTiles[_nrOfOccupiedTiles++] = _tilePosition;
+		_triggerTiles[_nrOfTriggers++] = _tilePosition;
 		_areaOfEffect[_nrOfAOETiles++] = _tilePosition;
 		break;
 	case TESLACOIL:
-		_tileSize = CalculateRectangle(3, 3, (_tilePosition - _direction - AI::Vec2D(-_direction._y, _direction._x)), _occupiedTiles);
+		_nrOfOccupiedTiles = CalculateRectangle(3, 3, (_tilePosition - _direction - AI::Vec2D(-_direction._y, _direction._x)), _occupiedTiles);
+		_nrOfTriggers = CalculateRectangle(3, 3, (_tilePosition - _direction - AI::Vec2D(-_direction._y, _direction._x)), _triggerTiles);
 		_nrOfAOETiles = CalculateCircle(3, _tilePosition, _areaOfEffect);
 		break;
 	case SHARK:
-		_tileSize = CalculateRectangle(5, 2, _tilePosition, _occupiedTiles);
+		_nrOfOccupiedTiles = CalculateRectangle(5, 2, _tilePosition, _occupiedTiles);
 		_nrOfAOETiles = CalculateRectangle(1, 2, _tilePosition, _areaOfEffect);
 	case GUN:
-		_tileSize = CalculateLine(10, _tilePosition, _occupiedTiles);
+		_nrOfOccupiedTiles = CalculateLine(10, _tilePosition, _occupiedTiles);
 		_nrOfAOETiles = CalculateLine(10, _tilePosition, _areaOfEffect);
 		break;
 	case SAW:
-		_tileSize = CalculateRectangle(3, 1, _tilePosition, _occupiedTiles);
+		_nrOfOccupiedTiles = CalculateRectangle(3, 1, _tilePosition, _occupiedTiles);
 		_areaOfEffect[_nrOfAOETiles++] = _tilePosition;
 		break;
 	case CAKEBOMB:
@@ -288,7 +291,7 @@ void Trap::SetTiles()
 			_tileMap->GetObjectOnTile(_areaOfEffect[i], FLOOR)->SetColorOffset({3.0f,1.0f,0.0f});
 		}
 	}
-	for (int i = 0; i < _tileSize; i++)
+	for (int i = 0; i < _nrOfOccupiedTiles; i++)
 	{
 		if (_tileMap->IsFloorOnTile(_occupiedTiles[i]))
 		{
@@ -302,6 +305,7 @@ Trap::Trap()
 {
 	_areaOfEffect = nullptr;
 	_occupiedTiles = nullptr;
+	_triggerTiles = nullptr;
 }
 
 Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject * renderObject, 
@@ -316,6 +320,7 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	_isVisibleToEnemies = false;
 	_areaOfEffect = nullptr;
 	_occupiedTiles = nullptr;
+	_triggerTiles = nullptr;
 	_subType = trapType;
 
 	int radius = 0;
@@ -324,26 +329,20 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	switch (_subType)
 	{
 	case SPIKE:
-		Initialize(3, 1, 1, 50, 50, Unit::StatusEffect::NO_EFFECT, 0, 0);
+		Initialize(3, 1, 1, 1, 50, 50, Unit::StatusEffect::NO_EFFECT, 0, 0);
 		firstFrame = true;
 		break;
 	case TESLACOIL:	
-	{
-		Initialize(0, 9, 37, 80, 80, Unit::StatusEffect::STUNNED, 120, 120);
+		Initialize(0, 9, 9, 37, 80, 80, Unit::StatusEffect::STUNNED, 120, 120);
 		break;
-	}
-	case SHARK:			//Trigger area is currently the same as the trap's physical area. Might be awkward since the shark trap is larger than its AOE.
-	{
-		Initialize(100, 18, 3, 50, 50, Unit::StatusEffect::NO_EFFECT, 0, 0);
+	case SHARK:
+		Initialize(100, 12, 2, 2, 50, 50, Unit::StatusEffect::NO_EFFECT, 0, 0);
 		break;
-	}
 	case GUN:
-	{
-		Initialize(300, 10, 10, 100, 50, Unit::StatusEffect::NO_EFFECT, 0, 0);
+		Initialize(300, 10, 10, 10, 100, 50, Unit::StatusEffect::NO_EFFECT, 0, 0);
 		break;
-	}
 	case SAW:
-		Initialize(80, 3, 1, 50, 70, Unit::StatusEffect::NO_EFFECT, 0, 0);
+		Initialize(80, 3, 1, 1, 50, 70, Unit::StatusEffect::NO_EFFECT, 0, 0);
 		break;
 	case CAKEBOMB:
 		break;
@@ -381,6 +380,8 @@ Trap::~Trap()
 	_areaOfEffect = nullptr;
 	delete[] _occupiedTiles;
 	_occupiedTiles = nullptr;
+	delete[] _triggerTiles;
+	_triggerTiles = nullptr;
 	if (_animation != nullptr)
 	{
 		delete _animation;
@@ -392,9 +393,9 @@ AI::Vec2D * Trap::GetTiles() const
 	return _occupiedTiles;
 }
 
-int Trap::GetTileSize() const
+int Trap::GetNrOfOccupiedTiles() const
 {
-	return _tileSize;
+	return _nrOfOccupiedTiles;
 }
 
 int Trap::GetDetectionDifficulty() const
@@ -410,7 +411,7 @@ int Trap::GetDisarmDifficulty() const
 bool Trap::InRange(AI::Vec2D pos) const
 {
 	bool result = false;
-	for (int i = 0; i < _tileSize && !result; i++)
+	for (int i = 0; i < _nrOfOccupiedTiles && !result; i++)
 	{
 		for (int j = 0; j < 8 && !result; j++)
 		{
@@ -463,9 +464,9 @@ void Trap::Update(float deltaTime)
 		_animation->Update(deltaTime);
 	}
 	bool triggered = false;
-	for (int i = 0; i < _tileSize && !triggered; i++)
+	for (int i = 0; i < _nrOfTriggers && !triggered; i++)
 	{
-		if (_tileMap->IsEnemyOnTile(_occupiedTiles[i]))
+		if (_tileMap->IsEnemyOnTile(_triggerTiles[i]))
 		{
 			triggered = true;
 		}

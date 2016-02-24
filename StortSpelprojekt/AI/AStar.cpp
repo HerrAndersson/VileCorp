@@ -144,6 +144,11 @@ namespace AI
 		_goal = pos;
 	}
 
+	int AStar::GetTileCost(Vec2D pos) const
+	{
+		return _grid[pos._x][pos._y]._tileCost;
+	}
+
 	Vec2D * AStar::GetPath() const
 	{
 		return _path;

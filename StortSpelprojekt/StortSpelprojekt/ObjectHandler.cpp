@@ -144,7 +144,7 @@ bool ObjectHandler::Add(Type type, int index, const XMFLOAT3& position, const XM
 		Trap* trap = static_cast<Trap*>(object);
 		int i = 0;
 		AI::Vec2D* arr = trap->GetTiles();
-		for (int i = 0; i < trap->GetTileSize() && addedObject; i++)
+		for (int i = 0; i < trap->GetNrOfOccupiedTiles() && addedObject; i++)
 		{
 			if (!_tilemap->CanPlaceObject(arr[i]))
 			{
@@ -153,7 +153,7 @@ bool ObjectHandler::Add(Type type, int index, const XMFLOAT3& position, const XM
 		}
 		if (addedObject)
 		{
-			for (int i = 0; i < trap->GetTileSize() && addedObject; i++)
+			for (int i = 0; i < trap->GetNrOfOccupiedTiles() && addedObject; i++)
 			{
 				_tilemap->AddObjectToTile(arr[i], object);
 			//	_tilemap->GetObjectOnTile(arr[i], FLOOR)->AddColorOffset({2,0,0});
