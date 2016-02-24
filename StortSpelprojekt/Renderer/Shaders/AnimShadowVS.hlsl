@@ -16,7 +16,7 @@ cbuffer matrixBufferPerObject : register(b1)
 
 cbuffer matrixBufferPerObjectObject : register(b5)
 {
-	matrix bones[30];
+	matrix bones[50];
 };
 
 struct VertexInputType

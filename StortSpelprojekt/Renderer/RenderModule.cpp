@@ -454,7 +454,6 @@ namespace Renderer
 			_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::FRONT);
 
 			_shaderHandler->SetAnimaShadowGenerationShaders(deviceContext);
-			_shadowMap->SetShadowGenerationStage(deviceContext);
 
 			break;
 		}

@@ -77,7 +77,7 @@ namespace Renderer
 		
 		struct MatrixBufferPerSkinnedObject
 		{
-			DirectX::XMFLOAT4X4 _bones[30];
+			DirectX::XMFLOAT4X4 _bones[50];
 		};
 
 		struct MatrixBufferPerFrame
