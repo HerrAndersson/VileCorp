@@ -129,28 +129,16 @@
 				"../Menues/LevelEdit/Loot/diamond3.png"
 			]
 		}, {
-			"_mesh": "entry-24.bin",
-			"_name": "Entry",
+			"_mesh": "WindowDouble-27.bin",
+			"_name": "WindowSpawn",
 			"_type": "SPAWN",
 			"_subType": 0,
 			"_tooltip": "SampleText",
 			"_textures": [
-				"Entry window.png"
+				"windowdouble1.png"
 			],
 			"_thumbnails": [
 				"../Menues/LevelEdit/Entry/entry1.png"
-			]
-		}, {
-			"_mesh": "trap-24.bin",
-			"_name": "Spike Trap",
-			"_type": "TRAP",
-			"_subType": 0,
-			"_tooltip": "SampleText",
-			"_textures": [
-				"spiketrap.png"
-			],
-			"_thumbnails": [
-				"../Menues/LevelEdit/Traps/spiketrap.png"
 			]
 		}, {
 			"_mesh": "TeslaTrap-26.bin",
@@ -175,6 +163,30 @@
 			],
 			"_thumbnails": [
 				"../Menues/PlacementStateGUI/units/Anvilbutton1.png"
+			]
+		}, {
+			"_mesh": "SharkTrap-27.bin",
+			"_name": "SharkTrap",
+			"_type": "TRAP",
+			"_subType": 2,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"SharkTrap.png"
+			],
+			"_thumbnails": [
+				"../Menues/PlacementStateGUI/units/Sharkbutton1.png"
+			]
+		}, {
+			"_mesh": "Gun-28.bin",
+			"_name": "MachineGunTrap",
+			"_type": "TRAP",
+			"_subType": 3,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"GunText.png"
+			],
+			"_thumbnails": [
+				"../Menues/PlacementStateGUI/units/Gunbutton1.png"
 			]
 		}, {
 			"_mesh": "ErikBaseman-27.bin",

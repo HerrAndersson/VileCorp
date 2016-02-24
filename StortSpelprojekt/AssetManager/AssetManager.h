@@ -103,8 +103,8 @@ private:
 	Mesh* ScanModel24();
 	Mesh* ScanModel26();
 	Mesh* ScanModel27();
+	Mesh* ScanModel28();
 	Mesh* ScanModel(string name);
-	RenderObject* ScanModel28();
 	Texture* ScanTexture(string name);
 	Mesh* GetModel(string name);
 	Skeleton* LoadSkeleton(string name);
