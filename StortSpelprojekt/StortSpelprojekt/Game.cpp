@@ -38,8 +38,6 @@ Game::Game(HINSTANCE hInstance, int nCmdShow):
 	_SM->Update(_timer.GetFrameTime());
 
 	_enemiesHasSpawned = false;
-	_soundModule.AddSound("Assets/Sounds/theme", 0.15f, 1.0f, true, true);
-	_soundModule.Play("Assets/Sounds/theme");
 
 	_ambientLight = _renderModule->GetAmbientLight();	
 	ResizeResources(settings);//This fixes a bug which offsets mousepicking, do not touch! //Markus
@@ -140,7 +138,7 @@ bool Game::Update(double deltaTime)
 	{
 		_objectHandler->UpdateLights();
 	}
-	_soundModule.Update();
+	_soundModule.Update(_camera->GetPosition().x/5.0f, 2.0f, _camera->GetPosition().z / 5.0f);
 
 	bool run = true;
 

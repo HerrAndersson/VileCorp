@@ -73,12 +73,12 @@ namespace System
 		return answer;
 	}
 
-	void SoundModule::Update()
+	void SoundModule::Update(float listenerX, float listenerY, float listenerZ)
 	{
 		/*
 		Updates the position of the listener to keep it synced with camera position
 		*/
-		YSE::Listener().setPosition(YSE::Vec(0.0f, 0.0f, 0.0f));
+		YSE::Listener().setPosition(YSE::Vec(listenerX, listenerY, listenerZ));
 		YSE::System().update();
 	}
 
@@ -100,6 +100,24 @@ namespace System
 		return answer;
 	}
 
+	bool SoundModule::Pause(std::string pathName)
+	{
+		pathName.append(soundExtension);
+		bool answer = false;
+
+		if (_allSounds->find(pathName) != _allSounds->end())
+		{
+			(*_allSounds)[pathName]->pause();
+			answer = true;
+		}
+		else
+		{
+			throw std::runtime_error("Could not pause audio: " + pathName);
+		}
+
+		return answer;
+	}
+
 	bool SoundModule::Stop(std::string pathName)
 	{
 		pathName.append(soundExtension);
@@ -112,5 +130,20 @@ namespace System
 		}
 
 		return answer;
+	}
+
+	void SoundModule::SetSoundPosition(std::string pathName ,float x, float y, float z)
+	{
+		pathName.append(soundExtension);
+
+		if (_allSounds->find(pathName) != _allSounds->end())
+		{
+			(*_allSounds)[pathName]->setPosition(YSE::Vec(x, y, z));
+		}
+		else
+		{
+			throw std::runtime_error("Could not set audio position for: " + pathName);
+		}
+
 	}
 }
