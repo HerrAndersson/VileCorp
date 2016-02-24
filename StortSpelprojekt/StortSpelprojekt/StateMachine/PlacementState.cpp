@@ -94,7 +94,6 @@ void PlacementState::OnStateEnter()
 	
 	//Fix so that budgetvalue won't get read if we go into pause state! We don't want the players to cheat themselves back to their budget money by pressing pause, resume, pause etc.. Enbom
 	_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_budget));
-	_baseEdit = new BaseEdit(_objectHandler, _controls, _pickingDevice, _camera, false);
 	_objectHandler->DisableSpawnPoints();
 
 	XMFLOAT3 campos;
@@ -230,21 +229,12 @@ void PlacementState::HandleInput()
 		pickedUnits.push_back(_pickingDevice->PickObjects(_controls->GetMouseCoord()._pos, *_objectHandler->GetAllByType(TRAP)));
 		pickedUnits.push_back(_pickingDevice->PickObjects(_controls->GetMouseCoord()._pos, *_objectHandler->GetAllByType(CAMERA)));
 
-		//if units selected
-		if (pickedUnits.size() > 0)
+		for (int i = 0; pickedUnits.size(); i++)
 		{
-			//select
-			for (unsigned int i = 0; i < pickedUnits.size(); i++)
+			for (int j = 0; j < pickedUnits[i].size(); j++)
 			{
-				_player->SelectUnit((Unit*)pickedUnits[i]);
-				pickedUnits[i]->SetColorOffset(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));
-				if (pickedUnits[i]->GetType() == GUARD)
-				{
-					for (auto p : ((Guard*)pickedUnits[i])->GetPatrolRoute())
-					{
-						_objectHandler->GetTileMap()->GetObjectOnTile(p, FLOOR)->SetColorOffset(XMFLOAT3(0.0f, 0.0f, 1.0f));
-					}
-				}
+				_player->SelectUnit((Unit*)pickedUnits[i][j]);
+				pickedUnits[i][j]->SetColorOffset(DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f));
 			}
 		}
 	}
@@ -281,6 +271,7 @@ void PlacementState::HandleInput()
 			}
 		}
 	*/
+	/*
 	if (_baseEdit->DroppedObject())
 	{
 		if (_budget >= _toPlace._goldCost && _baseEdit->CreatedObject() != nullptr)
@@ -301,6 +292,7 @@ void PlacementState::HandleInput()
 		_budget += _toPlace._goldCost;
 		_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_budget));
 	}
+	*/
 	// placement invalid
 	//if (_toPlace._goldCost != -1 && !_objectHandler->Find(_toPlace._sB._blueprint->_type, _toPlace._markerID) && !_baseEdit->IsPlace())
 	//{

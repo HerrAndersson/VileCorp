@@ -6,22 +6,7 @@
 #include "Assetmanager.h"
 #include "../Player.h"
 #include "../TutorialLogic.h"
-
-struct SpecificBlueprint
-{
-	SpecificBlueprint()
-	{
-		_blueprint = nullptr;
-		_textureId = -1;
-	}
-	void Reset()
-	{
-		_blueprint = nullptr;
-		_textureId = -1;
-	}
-	Blueprint* _blueprint = nullptr;
-	int _textureId = -1;
-};
+#include "CommonUtils.h"
 
 class PlacementState : public BaseState
 {

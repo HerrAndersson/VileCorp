@@ -9,17 +9,7 @@
 #include "../Controls.h"
 #include "../PickingDevice.h"
 #include "../System/Camera.h"
-
-struct SpecificBlueprint
-{
-	SpecificBlueprint()
-	{
-		_blueprint = nullptr;
-		_textureId = -1;
-	}
-	Blueprint* _blueprint = nullptr;
-	int _textureId = -1;
-};
+#include "CommonUtils.h"
 
 class BaseEdit
 {

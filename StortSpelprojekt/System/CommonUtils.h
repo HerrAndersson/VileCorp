@@ -24,6 +24,22 @@ struct Blueprint
 	std::vector<std::string> _textures, _thumbnails;
 };
 
+struct SpecificBlueprint
+{
+	SpecificBlueprint()
+	{
+		_blueprint = nullptr;
+		_textureId = -1;
+	}
+	void Reset()
+	{
+		_blueprint = nullptr;
+		_textureId = -1;
+	}
+	Blueprint* _blueprint = nullptr;
+	int _textureId = -1;
+};
+
 struct Hitbox
 {
 	float _center[3], _height, _width, _depth;
