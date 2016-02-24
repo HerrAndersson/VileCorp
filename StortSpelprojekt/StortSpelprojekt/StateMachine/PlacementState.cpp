@@ -75,10 +75,8 @@ void PlacementState::Update(float deltaTime)
 		HandleHoverColorOffset("TeslaTrap", "TeslaTrap", coord, XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f));
 		HandleHoverColorOffset("Camera", "Camera", coord, XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f));
 		HandleHoverColorOffset("Play", "Play", coord, XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f));
-
-	HandleDescriptions();
 	}
-	
+	HandleDescriptions();
 	HandleInput();
 	HandleCam(deltaTime);
 
