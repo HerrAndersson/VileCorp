@@ -4,6 +4,7 @@
 #include "CommonUtils.h"
 #include "AIUtil.h"
 #include "Animation.h"
+#include "ParticleSystem\ParticleEventQueue.h"
 
 /*
 GameObject class
@@ -34,12 +35,14 @@ protected:
 	bool _active;
 	RenderObject* _renderObject;
 	Animation* _animation = nullptr;
+	bool _hasParticleEffect;
 
 	PickUpState _pickUpState;
 
 	void CalculateMatrix();
 
 public:
+	static Renderer::ParticleEventQueue* _particleEventQueue;
 
 	GameObject();
 	//Type might not be necessary, depending on whether subclasses can correspond to one type or many.
