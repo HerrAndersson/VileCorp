@@ -183,6 +183,11 @@ namespace Renderer
 				icon = _textures._iconTextures[ICON_QUESTIONMARK];
 				break;
 			}
+			case ParticleSubType::WRENCH_SUBTYPE:
+			{
+				icon = _textures._iconTextures[ICON_WRENCH];
+				break;
+			}
 			default:
 			{
 				break;

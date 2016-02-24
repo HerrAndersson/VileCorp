@@ -56,7 +56,8 @@
     "_iconTexturePaths": 
     [
       "Particles/icon_exclamationmark.png",
-      "Particles/icon_questionmark.png"
+      "Particles/icon_questionmark.png",
+	  "Particles/icon_wrench.png"
     ]
   }
 }
