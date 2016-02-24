@@ -141,7 +141,7 @@
 				"../Menues/LevelEdit/Entry/entry1.png"
 			]
 		}, {
-			"_mesh": "TeslaTrap-26.bin",
+			"_mesh": "TeslaAnimation-27.bin",
 			"_name": "TeslaTrap",
 			"_type": "TRAP",
 			"_subType": 1,
