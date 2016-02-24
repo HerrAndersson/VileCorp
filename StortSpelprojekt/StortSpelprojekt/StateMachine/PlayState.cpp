@@ -5,6 +5,7 @@ PlayState::PlayState(System::Controls* controls, ObjectHandler* objectHandler, S
 {
 	_gameLogic = nullptr;
 	_ambientLight = ambientLight;
+	_soundModule->AddSound("Assets/Sounds/in_game_2", 0.2f, 1.0f, true, true);
 }
 
 PlayState::~PlayState()
@@ -39,11 +40,15 @@ void PlayState::OnStateEnter()
 	_ambientLight->y = AMBIENT_LIGHT_NIGHT.y;
 	_ambientLight->z = AMBIENT_LIGHT_NIGHT.z;
 	_uiTree.GetNode("Tutorial")->SetHidden(false);
-	_gameLogic = new GameLogic(_objectHandler, _camera, _controls, _pickingDevice, &_uiTree, _assetManager, _settingsReader);
+	_gameLogic = new GameLogic(_objectHandler, _camera, _controls, _pickingDevice, &_uiTree, _assetManager, _settingsReader, _soundModule);
+
+	//Play music
+	_soundModule->Play("Assets/Sounds/in_game_2");
 }
 
 void PlayState::OnStateExit()
 {
 	delete _gameLogic;
 	_gameLogic = nullptr;
+	_soundModule->Pause("Assets/Sounds/in_game_2");
 }

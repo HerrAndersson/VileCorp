@@ -334,7 +334,7 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 
 	SetTiles();
 
-	if (_animation != nullptr)
+	if (_renderObject->_mesh->_isSkinned)
 	{
 		_animation = new Animation(_renderObject->_mesh->_skeleton, firstFrame);
 		_animation->Freeze(false);

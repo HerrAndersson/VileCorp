@@ -200,7 +200,6 @@ void LevelSelectState::LoadLevelHeader(std::string levelFilename, Level::LevelHe
 	}
 	System::loadJSON(headerToLoad, levelPath);
 }
-
 void LevelSelectState::SelectedLevelHeaderToGUI()
 {
 	if (_isCampaignMode)
