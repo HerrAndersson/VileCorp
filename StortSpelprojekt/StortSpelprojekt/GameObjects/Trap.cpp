@@ -283,8 +283,14 @@ void Trap::SetTiles()
 		_areaOfEffect[_nrOfAOETiles++] = _tilePosition;
 		break;
 	case CAKEBOMB:
+		_occupiedTiles[_nrOfOccupiedTiles++] = _tilePosition;
+		_triggerTiles[_nrOfTriggers++] = _tilePosition;
+		_areaOfEffect[_nrOfAOETiles++] = _tilePosition;
 		break;
 	case BEAR:
+		_occupiedTiles[_nrOfOccupiedTiles++] = _tilePosition;
+		_triggerTiles[_nrOfTriggers++] = _tilePosition;
+		_areaOfEffect[_nrOfAOETiles++] = _tilePosition;
 		break;
 	case FLAMETHROWER:
 		_nrOfOccupiedTiles = CalculateLine(7, _tilePosition, _occupiedTiles);
@@ -356,8 +362,10 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 		Initialize(80, 3, 1, 1, 50, 70, Unit::StatusEffect::NO_EFFECT, 0, 0, 60, -1);
 		break;
 	case CAKEBOMB:
+		Initialize(90, 1, 1, 1, 90, 60, Unit::StatusEffect::NO_EFFECT, 0, 0);
 		break;
 	case BEAR:
+		Initialize(40, 1, 1, 1, 20, 20, Unit::StatusEffect::NO_EFFECT, 0, 0);
 		break;
 	case FLAMETHROWER:
 		Initialize(20, 7, 7, 7, 60, 60, Unit::StatusEffect::BURNING, 300, 60, 60, 3);
