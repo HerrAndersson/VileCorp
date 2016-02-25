@@ -368,7 +368,7 @@ void ObjectHandler::MinimizeTileMap()
 				pos._x = x + minX;
 				pos._y = y + minY;
 
-				std::vector<GameObject*> temp = _tilemap->GetAllObjectsOnTile(pos);
+				std::vector<GameObject*> temp = *_tilemap->GetAllObjectsOnTile(pos);
 
 				for (GameObject* g : temp)
 				{
@@ -410,7 +410,7 @@ void ObjectHandler::EnlargeTilemap(int offset)
 				AI::Vec2D pos;
 				pos._x = x - offset;
 				pos._y = y - offset;
-				std::vector<GameObject*> temp = _tilemap->GetAllObjectsOnTile(pos);
+				std::vector<GameObject*> temp = *_tilemap->GetAllObjectsOnTile(pos);
 
 				for (GameObject* g : temp)
 				{
