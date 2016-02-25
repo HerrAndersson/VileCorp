@@ -37,6 +37,8 @@ void Guard::EvaluateTile(GameObject * obj)
 		case CAMERA:				//Guards don't react to these
 			break;
 		case ENEMY:
+			_soundModule->SetSoundPosition("guard_react", _position.x, 0.0f, _position.z);
+			_soundModule->Play("guard_react");
 			static_cast<Enemy*>(obj)->ResetVisibilityTimer();
 			tempPriority = 10;
 			break;

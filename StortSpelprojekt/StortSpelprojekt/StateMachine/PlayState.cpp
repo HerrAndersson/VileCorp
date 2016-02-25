@@ -10,6 +10,11 @@ PlayState::PlayState(System::Controls* controls, ObjectHandler* objectHandler, S
 	Add all sounds used in playstate (even though they might not be played in this class)
 	*/
 	_soundModule->AddSound("in_game_2", 0.2f, 1.0f, true, true);
+	_soundModule->AddSound("unit_select", 0.5f, 1.0f, true, false);
+	_soundModule->AddSound("unit_move", 0.5f, 1.0f, true, false);
+	_soundModule->AddSound("enemy_death", 0.7f, 1.0f, false, false);
+	_soundModule->AddSound("guard_death", 1.0f, 0.6f, false, false);
+	_soundModule->AddSound("guard_react", 1.0f, 1.0f, false, false);
 	_soundModule->AddSound("bear_activate", 0.8f, 1.0f, false, false);
 	_soundModule->AddSound("anvil_activate", 1.0f, 1.0f, false, false);
 	_soundModule->AddSound("tesla_activate", 0.8f, 1.0f, false, false);
