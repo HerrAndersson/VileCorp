@@ -436,7 +436,7 @@ void BaseEdit::HandleKeyInput(double deltaTime)
 		{
 			_marker._g->SetDirection(AI::GetNextDirection(static_cast<Unit*>(_marker._g)->GetDirection(), clockwise));
 
-			if (_marker._g->GetType() == TRAP)			//Traps need to be right angles
+			if (_marker._g->GetType() != CAMERA && _marker._g->GetType() != GUARD)			//Traps need to be right angles
 			{
 				XMFLOAT3 tempRot = _marker._g->GetRotation();
 				_marker._g->SetDirection(AI::GetNextDirection(static_cast<Unit*>(_marker._g)->GetDirection(), clockwise));
