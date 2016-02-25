@@ -17,8 +17,8 @@ namespace System
 		if (nrOfDevices > 0)
 		{
 			YSE::System().init();
+			SetVolume(settings->_volume / 100.0f, CHMASTER);
 		}
-		SetVolume(settings->_volume / 100.0f, CHMASTER);
 	}
 
 	SoundModule::~SoundModule()

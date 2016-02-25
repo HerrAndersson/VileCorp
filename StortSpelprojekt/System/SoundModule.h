@@ -12,6 +12,8 @@
 
 #pragma comment(lib, "libyse32.lib")
 
+#pragma warning( disable: 4251 )
+
 /*
 Sound device has to be conected to computer when program starts, 
 else SoundModule is muted to avoid crashes.
