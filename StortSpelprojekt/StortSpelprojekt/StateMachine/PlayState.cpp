@@ -5,7 +5,14 @@ PlayState::PlayState(System::Controls* controls, ObjectHandler* objectHandler, S
 {
 	_gameLogic = nullptr;
 	_ambientLight = ambientLight;
+
+	/*
+	Add all sounds used in playstate (even though they might not be played in this class)
+	*/
 	_soundModule->AddSound("in_game_2", 0.2f, 1.0f, true, true);
+	_soundModule->AddSound("bear_activate", 0.8f, 1.0f, false, false);
+	_soundModule->AddSound("anvil_activate", 1.0f, 1.0f, false, false);
+	_soundModule->AddSound("tesla_activate", 0.8f, 1.0f, false, false);
 }
 
 PlayState::~PlayState()

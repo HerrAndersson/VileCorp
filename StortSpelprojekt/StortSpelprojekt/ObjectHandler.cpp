@@ -40,22 +40,22 @@ bool ObjectHandler::Add(Blueprint* blueprint, int textureId, const XMFLOAT3& pos
 	case FLOOR:
 	case FURNITURE:
 	case LOOT:
-		object = new Architecture(_idCount, position, rotation, tilepos, type, renderObject);
+		object = new Architecture(_idCount, position, rotation, tilepos, type, renderObject, _soundModule);
 		break;
 	case SPAWN:
-		object = new SpawnPoint(_idCount, position, rotation, tilepos, type, renderObject, 66, 6);
+		object = new SpawnPoint(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, 66, 6);
 		break;
 	case TRAP:
-		object = new Trap(_idCount, position, rotation, tilepos, type, renderObject, _tilemap, blueprint->_subType);
+		object = new Trap(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, _tilemap, blueprint->_subType);
 		break;
 	case CAMERA:
-		object = new SecurityCamera(_idCount, position, rotation, tilepos, type, renderObject, _tilemap);
+		object = new SecurityCamera(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, _tilemap);
 		break;
 	case ENEMY:
-		object = new Enemy(_idCount, position, rotation, tilepos, type, renderObject, _tilemap);
+		object = new Enemy(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, _tilemap);
 		break;
 	case GUARD:
-		object = new Guard(_idCount, position, rotation, tilepos, type, renderObject, _tilemap);
+		object = new Guard(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, _tilemap);
 		break;
 	default:
 		break;

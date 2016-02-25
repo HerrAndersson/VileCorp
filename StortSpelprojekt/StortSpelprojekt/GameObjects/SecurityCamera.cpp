@@ -33,8 +33,8 @@ SecurityCamera::SecurityCamera()
 	_visionCone = nullptr;
 }
 
-SecurityCamera::SecurityCamera(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject * renderObject, const Tilemap * tileMap)
-	: GameObject(ID, position, rotation, tilePosition, type, renderObject)
+SecurityCamera::SecurityCamera(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject * renderObject, System::SoundModule* soundModule, const Tilemap * tileMap)
+	: GameObject(ID, position, rotation, tilePosition, type, renderObject, soundModule)
 {
 	_tileMap = tileMap;
 	_direction = {0,-1};				//TODO this should be setable --Victor
