@@ -1,6 +1,8 @@
 #include "CombinedMeshGenerator.h"
 #include "stdafx.h"
 
+using namespace DirectX;
+
 CombinedMeshGenerator::CombinedMeshGenerator(ID3D11Device* device, ID3D11DeviceContext* deviceContext)
 {
 	_device = device;
@@ -10,12 +12,18 @@ CombinedMeshGenerator::CombinedMeshGenerator(ID3D11Device* device, ID3D11DeviceC
 
 CombinedMeshGenerator::~CombinedMeshGenerator()
 {
-	for (auto& meshVector : _combinedMeshes)
+	//for (auto& meshVector : _combinedMeshes)
+	//{
+	//	for (auto& mesh: meshVector)
+	//	{
+	//		delete mesh._combinedObject->_mesh;
+	//	}
+	//}
+
+
+	for (auto& mesh : _combinedMeshes)
 	{
-		for (auto& mesh: meshVector)
-		{
-			delete mesh._combinedObject->_mesh;
-		}
+		delete mesh._combinedObject->_mesh;
 	}
 
 	SAFE_RELEASE(_bufferCopy);
@@ -39,7 +47,7 @@ void CombinedMeshGenerator::LoadVertexBufferData(std::vector<Vertex>* dataVector
 	result = _device->CreateBuffer(&bufferDesc, NULL, &_bufferCopy);
 	if (FAILED(result))
 	{
-		throw std::runtime_error("CombinedMeshGenerator::CombineMeshes: Failed to create _bufferCopy");
+		throw std::runtime_error("CombinedMeshGenerator::LoadVertexBufferData: Failed to create _bufferCopy");
 	}
 
 	if (mesh->_vertexBuffer)
@@ -53,7 +61,7 @@ void CombinedMeshGenerator::LoadVertexBufferData(std::vector<Vertex>* dataVector
 
 		if (FAILED(result))
 		{
-			throw std::runtime_error("CombinedMeshGenerator::CombineMeshes: Failed to Map _bufferCopy");
+			throw std::runtime_error("CombinedMeshGenerator::LoadVertexBufferData: Failed to Map _bufferCopy");
 		}
 		int size = sizeof(Vertex) * mesh->_vertexBufferSize;
 		memcpy(dataVector->data(), mappedResource.pData, size);
@@ -71,9 +79,14 @@ void CombinedMeshGenerator::CombineMeshes(Tilemap* tilemap, const Type& typeToCo
 	int width = tilemap->GetWidth();
 	int height = tilemap->GetHeight();
 
-	int subType = -1;
 	RenderObject* prevRenderObject = nullptr;
+	RenderObject* currentRenderObject = nullptr;
 
+	std::vector<RenderObject*> renderObjects;
+	std::vector<int> numberPerRenderObject; //Holds how many objects that share a single render object. The indexes are directly mapped between renderObjects and numberPerRenderObject
+	int index = -1;
+
+	//Scan the tilemap to find how many different versions we should look for, and which these versions are. For example Type == FLOOR, and there are two different floors with different textures.
 	for (int x = 0; x < width; x++)
 	{
 		for (int y = 0; y < height; y++)
@@ -87,19 +100,84 @@ void CombinedMeshGenerator::CombineMeshes(Tilemap* tilemap, const Type& typeToCo
 					if (thisRenderObject != prevRenderObject)
 					{
 						prevRenderObject = thisRenderObject;
+						renderObjects.push_back(thisRenderObject);
+						numberPerRenderObject.push_back(0);
+						index++;
 					}
+					numberPerRenderObject.at(index)++;
 				}
 			}
 		}
 	}
 
-	std::vector<Vertex> dataVector;
-	LoadVertexBufferData(&dataVector, prevRenderObject->_mesh);
+	//Scan the tilemap to find all objects of the given "subtype"
+	for (auto& renderObject : renderObjects)
+	{
+		//the combined object should copy everything but the vertex buffer
+		RenderObject* combinedRenderObject = renderObject;
+		combinedRenderObject->_mesh->_vertexBuffer = nullptr;
+
+		std::vector<Vertex> singleObjectDataVector;
+		LoadVertexBufferData(&singleObjectDataVector, prevRenderObject->_mesh);
+
+		std::vector<Vertex> combinedMeshDataVector;
+
+		for (int x = 0; x < width; x++)
+		{
+			for (int y = 0; y < height; y++)
+			{
+				std::vector<GameObject*>* objectsOnTile = tilemap->GetAllObjectsOnTile(x, y);
+				for (auto& object : *objectsOnTile)
+				{
+					if (object && object->GetType() == typeToCombine)
+					{
+						XMFLOAT3 pos = object->GetPosition();
+						XMMATRIX translation = XMMatrixTranslation(pos.x, pos.y, pos.z);
+
+						//Translating the mesh data by the object translation
+						for (auto& vertex : singleObjectDataVector)
+						{
+							Vertex vert = singleObjectDataVector.at(0);
+							XMVECTOR posV = XMLoadFloat3(&pos);
+							XMVector3TransformCoord(posV, translation);
+							XMStoreFloat3(&vert._position, posV);
+							combinedMeshDataVector.push_back(vert);
+						}
+					}	
+				}
+			}
+		}
+
+		D3D11_BUFFER_DESC bufferDesc;
+		ZeroMemory(&bufferDesc, sizeof(bufferDesc));
+		bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+		bufferDesc.ByteWidth = sizeof(Vertex)* combinedMeshDataVector.size();
+		bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+
+		D3D11_SUBRESOURCE_DATA vertexData;
+		ZeroMemory(&vertexData, sizeof(vertexData));
+		vertexData.pSysMem = combinedMeshDataVector.data();
+
+		ID3D11Buffer* vertexBuffer;
+
+		HRESULT result = _device->CreateBuffer(&bufferDesc, &vertexData, &vertexBuffer);
+		if(FAILED(result))
+		{
+			throw std::runtime_error("CombinedMeshGenerator::CombineMeshes: Failed to create combined vertex buffer");
+		}
+		combinedRenderObject->_mesh->_vertexBuffer = vertexBuffer;
+
+
+		CombinedMesh combinedMesh;
+		combinedMesh.world = XMMatrixIdentity();
+		combinedMesh._combinedObject = combinedRenderObject;
+		_combinedMeshes.push_back(combinedMesh);
+	}
 
 	_combinedTypes++;
 }
 
-std::vector<std::vector<CombinedMesh>>* CombinedMeshGenerator::GetCombinedMeshes()
+std::vector<CombinedMesh>* CombinedMeshGenerator::GetCombinedMeshes()
 {
 	return &_combinedMeshes;
 }
