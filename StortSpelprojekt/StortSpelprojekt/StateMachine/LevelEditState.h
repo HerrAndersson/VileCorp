@@ -18,8 +18,9 @@ private:
 	int _moveCheck;
 	bool _pageCheck;
 	bool _isPressed[5];
-	bool _isLocked[7];
-	XMFLOAT4 _OrginLockColor[7];
+	bool _isLocked[11];
+	int _mapChangeSelected;
+	XMFLOAT4 _OrginLockColor[11];
 	int _leaveCheck;
 	XMFLOAT2 _buttonPositions[12];
 	GUI::Node* _currentList = nullptr;
@@ -43,6 +44,7 @@ private:
 
 	GUI::TextBox* _currentlySelectedTextBox;
 	std::vector<GUI::TextBox> _textBoxes;
+	std::vector<std::string> _levelHeaderFilenames;
 
 	bool _floorChosen = false;
 	bool _wallChosen = false;

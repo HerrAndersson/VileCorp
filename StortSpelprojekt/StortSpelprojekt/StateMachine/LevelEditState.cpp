@@ -8,6 +8,7 @@ LevelEditState::LevelEditState(System::Controls* controls, ObjectHandler* object
 	_baseEdit = nullptr;
 	_pageCheck = false;
 	_leaveCheck = -1;
+	_mapChangeSelected = -1;
 
 	_ambientLight = ambientLight;
 }
@@ -40,6 +41,7 @@ void LevelEditState::OnStateEnter()
 	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("UnitAmmountText"), 2, false, true));
 	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("UnitStartingTimeText"), 3, false, true));
 	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("UnitSpawnFrequencyText"), 3, false, true));
+	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("SaveLevelText"), 25, false, false, true));
 
 	for (unsigned i = 0; i < NR_OF_TYPES; i++)
 	{
@@ -63,7 +65,7 @@ void LevelEditState::OnStateEnter()
 		_buttonPositions[i + _objectTabs->size()] = _uiTree.GetNode("Otherbuttons")->GetChildren()->at(i)->GetLocalPosition();
 		_isPressed[i] = false;
 	}
-	for (unsigned i = 0; i < 7; i++)
+	for (unsigned i = 0; i < 11; i++)
 	{
 		_OrginLockColor[i] = _uiTree.GetNode("UnitLockButtons")->GetChildren()->at(i)->GetColorOffset();
 	}
@@ -84,6 +86,8 @@ void LevelEditState::OnStateEnter()
 	_uiTree.GetNode("NoPlacementButton")->SetHidden(true);
 	_uiTree.GetNode("LeaveMap")->SetHidden(true);
 	_uiTree.GetNode("listbuttons")->SetHidden(true);
+	_uiTree.GetNode("ImportMapList")->SetHidden(true);
+	_uiTree.GetNode("ExportMapList")->SetHidden(true);
 
 	_levelHeader = Level::LevelHeader();
 	_currentLevelFileName = "";
@@ -118,10 +122,16 @@ void LevelEditState::OnStateEnter()
 			_isPressed[i - 7] = false;
 		}
 	}
-	for (unsigned i = 0; i < 7; i++)
+	for (unsigned i = 0; i < 11; i++)
 	{
 		_isLocked[i] = false;
 	}
+
+	////Load level information into respektive variables.
+	//_levelHeaderFilenames.clear();
+	//GetFilenamesInDirectory(const_cast<char*>(SKIRMISH_FOLDER_PATH.c_str()), ".json", _levelHeaderFilenames, false);
+	//_levelSelectState->LoadLevelHeader(0, &_levelHeaderFilenames);
+	//_levelSelectState->SelectedLevelHeaderToGUI();
 }
 
 void LevelEditState::OnStateExit()
@@ -282,7 +292,7 @@ bool LevelEditState::HandleButtons()
 			//Lock Units for this level
 			if (_settingsId == 1)
 			{
-				for (unsigned i = 0; i < _uiTree.GetNode("UnitLockButtons")->GetChildren()->size(); i++)
+				for (unsigned i = 0; i < _uiTree.GetNode("UnitLockButtons")->GetChildren()->size() && !clickedOnGUI; i++)
 				{
 					if (_uiTree.IsButtonColliding(_uiTree.GetNode("UnitLockButtons")->GetChildren()->at(i), coord._pos.x, coord._pos.y))
 					{
@@ -517,23 +527,72 @@ bool LevelEditState::HandleButtons()
 					_levelHeader._gameMode = Level::GameModes::KILL_THEM_ALL;
 				}
 			}
-			else if (_uiTree.IsButtonColliding("ExportMap", coord._pos.x, coord._pos.y))
+			//Export, Import or make a new Map
+			else if (_uiTree.IsButtonColliding("ExportMap", coord._pos.x, coord._pos.y) && _mapChangeSelected == -1)
 			{
 				clickedOnGUI = true;
-				//TODO: ExportMap GUI stuff and functions Julia and Enbom
+				_uiTree.GetNode("ExportMapList")->SetHidden(false);
+				_mapChangeSelected = 0;
 			}
-			else if (_uiTree.IsButtonColliding("ImportMap", coord._pos.x, coord._pos.y))
+			else if (_uiTree.IsButtonColliding("ImportMap", coord._pos.x, coord._pos.y) && _mapChangeSelected == -1)
 			{
 				clickedOnGUI = true;
+				//Is only supposed to bring up the Import GUI
+				_uiTree.GetNode("ImportMapList")->SetHidden(false);
+				_mapChangeSelected = 1;
 				//TODO: ImportMap GUI stuff and functions Julia and Enbom
 			}
-			else if (_uiTree.IsButtonColliding("NewMap", coord._pos.x, coord._pos.y))
+			else if (_uiTree.IsButtonColliding("NewMap", coord._pos.x, coord._pos.y) && _mapChangeSelected == -1)
 			{
 				clickedOnGUI = true;
-				//Is only supposed to bring up the confirmation button
+				//Is only supposed to bring up the confirmation GUI
 				_uiTree.GetNode("LeaveMap")->SetHidden(false);
 				_leaveCheck = 0;
+				_mapChangeSelected = 2;
 			}
+			//Export Map Functions
+			else if (_uiTree.IsButtonColliding("ExportYes", coord._pos.x, coord._pos.y) && _mapChangeSelected == 0)
+			{
+				clickedOnGUI = true;
+				_uiTree.GetNode("ExportMapList")->SetHidden(true);
+				ExportLevel();
+
+				_mapChangeSelected = -1;
+			}
+			else if (_uiTree.IsButtonColliding("ExportNo", coord._pos.x, coord._pos.y) && _mapChangeSelected == 0)
+			{
+				//Only close down Export GUI
+				clickedOnGUI = true;
+				_uiTree.GetNode("ExportMapList")->SetHidden(true);
+				_mapChangeSelected = -1;
+			}
+			//Import Map Functions
+			else if (_uiTree.IsButtonColliding("ImportYes", coord._pos.x, coord._pos.y) && _mapChangeSelected == 1)
+			{
+				clickedOnGUI = true;
+				_uiTree.GetNode("ImportMapList")->SetHidden(true);
+				//TODO: Load Level name and then level Enbom
+
+				_mapChangeSelected = -1;
+			}
+			else if (_uiTree.IsButtonColliding("ImportNo", coord._pos.x, coord._pos.y) && _mapChangeSelected == 1)
+			{
+				//Only close down Import GUI
+				clickedOnGUI = true;
+				_uiTree.GetNode("ImportMapList")->SetHidden(true);
+				_mapChangeSelected = -1;
+			}
+			else if (_uiTree.IsButtonColliding("LevelUp", coord._pos.x, coord._pos.y) && _mapChangeSelected == 1)
+			{
+				clickedOnGUI = true;
+				//TODO: Switch between levels going up Enbom
+			}
+			else if (_uiTree.IsButtonColliding("LevelDown", coord._pos.x, coord._pos.y) && _mapChangeSelected == 1)
+			{
+				clickedOnGUI = true;
+				//TODO: Switch between levels going down Enbom
+			}
+			//New Map Functions
 			else if (_uiTree.IsButtonColliding("LeaveMapYes", coord._pos.x, coord._pos.y) && _leaveCheck > -1)
 			{
 				clickedOnGUI = true;
@@ -549,12 +608,14 @@ bool LevelEditState::HandleButtons()
 					_leaveCheck = -1;
 					ChangeState(MENUSTATE);
 				}
+				_mapChangeSelected = -1;
 			}
-			else if (_uiTree.IsButtonColliding("LeaveMapNo", coord._pos.x, coord._pos.y) && _leaveCheck > -1)
+			else if (_uiTree.IsButtonColliding("LeaveMapNo", coord._pos.x, coord._pos.y))
 			{
 				clickedOnGUI = true;
 				_uiTree.GetNode("LeaveMap")->SetHidden(true);
 				_leaveCheck = -1;
+				_mapChangeSelected = -1;
 			}
 			else
 			{
@@ -714,7 +775,7 @@ void LevelEditState::ExportLevel()
 {
 	_baseEdit->ReleaseMarkers();
 
-	_currentLevelFileName = "exported level";
+	_currentLevelFileName = WStringToString(_textBoxes.at(8).GetText());
 
 	////Fill Level Header:
 
@@ -808,9 +869,9 @@ void LevelEditState::ExportLevel()
 	SHGetFolderPathA(NULL, CSIDL_PROFILE, NULL, 0, userPath);
 
 	levelPath = userPath;
-	levelPath += "\\Google Drive\\Stort spelprojekt\\" + LEVEL_FOLDER_PATH;
+	levelPath += "\\Google Drive\\Stort spelprojekt\\" + SKIRMISH_FOLDER_PATH;
 #else
-	levelPath = LEVEL_FOLDER_PATH;
+	levelPath = LEVEL_FOLDER_PATH;							//TODO: Put Files in SKIRMISH FOLDER PATH, WHERE EVERYTHING IS SUPPOSED TO GO (We will move Campaign missions by hand - Enbom
 #endif
 	CreateDirectory(levelPath.c_str(), NULL);
 

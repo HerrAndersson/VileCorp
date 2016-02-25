@@ -1,7 +1,7 @@
 {
 	"Units": {
 		"position": [-0.5, -0.855],
-		"scale": [0.8, 0.2],
+		"scale": [1.0, 0.2],
 		"texture": "../Menues/PlacementStateGUI/placementUnits1.png",
 
 		"UnitList":
@@ -181,37 +181,37 @@
 				"centered": true
 				}
 			},
-			"XTrap" :{
+			"FlameThrowerTrap" :{
 				"position": [0.66, 0.057],
 				"scale": [0.048, 0.083],
-				"texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png",
+				"texture": "../Menues/PlacementStateGUI/units/FlameThrowerbutton1.png",
 				
 				"TeslaText":
 				{
 					"position": [0.0, -0.173],
 					"scale": [0.068, 0.083],
-					"text": "Future Trap\n  X$",
+					"text": "Flame Thrower\n  150$",
 				"color": "FF000000",
 				"fontsize": 18.0,
 				"centered": true
 				}
 			},
-			"XTrap" :{
+			"BearTrap" :{
 				"position": [0.78, 0.057],
 				"scale": [0.048, 0.083],
-				"texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png",
+				"texture": "../Menues/PlacementStateGUI/units/Bearbutton.png",
 				
 				"TeslaText":
 				{
 					"position": [0.0, -0.173],
 					"scale": [0.068, 0.083],
-					"text": "Future Trap\n  X$",
+					"text": "Bear Trap\n  300$",
 				"color": "FF000000",
 				"fontsize": 18.0,
 				"centered": true
 				}
 			},
-			"XTrap" :{
+			"ConfusionTrap" :{
 				"position": [0.90, 0.057],
 				"scale": [0.048, 0.083],
 				"texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png",
@@ -220,7 +220,37 @@
 				{
 					"position": [0.0, -0.173],
 					"scale": [0.068, 0.083],
-					"text": "Future Trap\n  X$",
+					"text": "Confusion Trap\n  75$",
+				"color": "FF000000",
+				"fontsize": 18.0,
+				"centered": true
+				}
+			},
+			"CupCakeTrap" :{
+				"position": [1.02, 0.057],
+				"scale": [0.048, 0.083],
+				"texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png",
+				
+				"TeslaText":
+				{
+					"position": [0.0, -0.173],
+					"scale": [0.068, 0.083],
+					"text": "Cupcake Trap\n  150$",
+				"color": "FF000000",
+				"fontsize": 18.0,
+				"centered": true
+				}
+			},
+			"SawTrap" :{
+				"position": [1.14, 0.057],
+				"scale": [0.048, 0.083],
+				"texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png",
+				
+				"TeslaText":
+				{
+					"position": [0.0, -0.173],
+					"scale": [0.068, 0.083],
+					"text": "Saw Trap\n  175$",
 				"color": "FF000000",
 				"fontsize": 18.0,
 				"centered": true
