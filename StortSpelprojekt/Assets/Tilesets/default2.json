@@ -18,11 +18,11 @@
 
   ],
   "traps": [
-    "AnvilAnimation-27.bin",
-    "AnvilAnimation-27.bin",
-    "TeslaAnimation-27.bin",
-	"SharkTrap-27.bin",
-	"Gun-28.bin"
+    "anvilTrap-28.bin",
+    "anvilTrap-28.bin",
+    "teslaTrap-28.bin",
+	"sharkTrap-28.bin",
+	"gunTrap-28.bin"
 
   ],
   "triggers": [

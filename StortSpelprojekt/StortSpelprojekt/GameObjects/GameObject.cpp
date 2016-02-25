@@ -225,3 +225,15 @@ void GameObject::operator delete(void* p)
 {
 	_mm_free(p);
 }
+
+int GameObject::GetAnimLength(int layer)
+{
+	if (_animation != nullptr)
+	{
+		return _animation->GetLength(layer);
+	}
+	else
+	{
+		return 0;
+	}
+}

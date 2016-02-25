@@ -343,6 +343,7 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	{
 		_animation = new Animation(_renderObject->_skeleton, firstFrame);
 		_animation->Freeze(false);
+		Animate(IDLEANIM);
 	}
 
 	//Floor gets colored for debugging. Note that the tiles won't get decolored if the trap is removed
@@ -412,10 +413,12 @@ void Trap::SetTrapActive(bool active)
 	if (active)
 	{
 		SetColorOffset({0,0,0});
+		Animate(FIXANIM);
 	}
 	else
 	{
 		SetColorOffset({4,0,0});
+		Animate(DISABLEANIM);
 	}
 }
 
@@ -433,13 +436,13 @@ void Trap::Activate()
 			static_cast<Unit*>(_tileMap->GetObjectOnTile(_areaOfEffect[i], GUARD))->TakeDamage(_damage);
 		}
 	}
-	Animate(ACTIVATE);
+	Animate(ACTIVATEANIM);
 	SetTrapActive(false);
 }
 
 void Trap::Update(float deltaTime)
 {	
-	if (_animation != nullptr && !_isActive)
+	if (_animation != nullptr)
 	{
 		_animation->Update(deltaTime);
 	}
@@ -503,35 +506,24 @@ void Trap::SetDirection(const AI::Vec2D direction)
 
 void Trap::Animate(Anim anim)
 {
-	if (_renderObject->_isSkinned && _animation->GetisFinished())
+	if (_renderObject->_isSkinned)
 	{
-		if (_subType == SPIKE)
+		switch (anim)
 		{
-			switch (anim)
-			{
-			case IDLE:
-				_animation->SetActionAsCycle(0, 2.0f);
-				break;
-			case ACTIVATE:
-				_animation->PlayAction(0, 1.0f, true, true);
-				break;
-			default:
-				break;
-			}
-		}
-		else if (_subType == TESLACOIL)
-		{
-			switch (anim)
-			{
-			case IDLE:
-				_animation->SetActionAsCycle(0, 2.0f);
-				break;
-			case ACTIVATE:
-				_animation->PlayAction(1, 1.0f);
-				break;
-			default:
-				break;
-			}
+		case IDLEANIM:
+			_animation->SetActionAsCycle(IDLEANIM, 1.0f);
+			break;
+		case ACTIVATEANIM:
+			_animation->PlayAction(ACTIVATEANIM, 1.0f, true);
+			break;
+		case DISABLEANIM:
+			_animation->PlayAction(DISABLEANIM, 1.0f, true);
+			break;
+		case FIXANIM:
+			_animation->PlayAction(FIXANIM, 1.0f);
+			break;
+		default:
+			break;
 		}
 	}
 }

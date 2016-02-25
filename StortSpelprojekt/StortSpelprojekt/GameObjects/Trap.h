@@ -28,6 +28,8 @@ private:
 	int _nrOfAOETiles;
 	int _areaOfEffectArrayCapacity;
 
+	int _animLength[4];
+
 	int CalculateCircle(int radius, AI::Vec2D basePosition, AI::Vec2D* arr);
 	int CalculateLine(int length, AI::Vec2D basePosition, AI::Vec2D* arr);
 	int CalculateRectangle(int length, int width, AI::Vec2D basePosition, AI::Vec2D* arr);
@@ -63,7 +65,7 @@ public:
 	AI::Vec2D GetDirection();
 	void SetDirection(const AI::Vec2D direction);
 
-	enum Anim { IDLE, ACTIVATE, NR_OF_ANIM/*Has to be last*/ };
+	enum Anim { IDLEANIM, ACTIVATEANIM, DISABLEANIM, FIXANIM, NR_OF_ANIM/*Has to be last*/ };
 	void Animate(Anim anim);
 };
 
