@@ -216,7 +216,7 @@ std::vector<GameObject*>* Tilemap::GetAllObjectsOnTile(AI::Vec2D tileCoords) con
 
 std::vector<GameObject*>* Tilemap::GetAllObjectsOnTile(int xCoord, int yCoord) const
 {
-	return GetAllObjectsOnTile(AI::Vec2D(xCoord, yCoord));
+	return &_map[xCoord][yCoord]._objectsOnTile;
 }
 
 GameObject * Tilemap::GetObjectOnTile(AI::Vec2D pos, Type type) const

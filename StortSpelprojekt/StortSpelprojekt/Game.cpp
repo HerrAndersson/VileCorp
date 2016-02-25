@@ -11,13 +11,11 @@ Game::Game(HINSTANCE hInstance, int nCmdShow):
 
 	_gameHandle = this;
 	_window = new System::Window("Amazing game", hInstance, settings, WndProc);
-
-
 	_timer = System::Timer();
-
 	_renderModule = new Renderer::RenderModule(_window->GetHWND(), settings);
 	
 	_assetManager = new AssetManager(_renderModule->GetDevice());
+	_combinedMeshGenerator = new CombinedMeshGenerator(_renderModule->GetDevice(), _renderModule->GetDeviceContext());
 	_controls = new System::Controls(_window->GetHWND());
 	_fontWrapper = new FontWrapper(_renderModule->GetDevice(), L"Assets/Fonts/Calibri.ttf", L"Calibri");
 
@@ -28,19 +26,27 @@ Game::Game(HINSTANCE hInstance, int nCmdShow):
 	ParticleTextures particleTextures;
 	ParticleModifierOffsets modifiers;
 	LoadParticleSystemData(particleTextures, modifiers);
-
 	_particleHandler = new Renderer::ParticleHandler(_renderModule->GetDevice(), _renderModule->GetDeviceContext(), particleTextures, modifiers);
 
 	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager, &_data, _settingsReader.GetSettings(), _particleHandler->GetParticleEventQueue());
 	_pickingDevice = new PickingDevice(_camera, settings);
-	_SM = new StateMachine(_controls, _objectHandler, _camera, _pickingDevice, "Assets/gui.json", _assetManager, _fontWrapper, settings, &_settingsReader, &_soundModule, &_ambientLight);
 
+	_SM = new StateMachine(_controls, _objectHandler, _camera, _pickingDevice, "Assets/gui.json", _assetManager, _fontWrapper, settings, &_settingsReader, &_soundModule, &_ambientLight);
 	_SM->Update(_timer.GetFrameTime());
 
 	_enemiesHasSpawned = false;
 
 	_ambientLight = _renderModule->GetAmbientLight();	
 	ResizeResources(settings);//This fixes a bug which offsets mousepicking, do not touch! //Markus
+
+
+
+
+
+
+
+
+
 }
 
 Game::~Game()
@@ -55,6 +61,7 @@ Game::~Game()
 	SAFE_DELETE(_pickingDevice);
 	SAFE_DELETE(_fontWrapper);
 	SAFE_DELETE(_particleHandler);
+	SAFE_DELETE(_combinedMeshGenerator);
 }
 
 void Game::ResizeResources(System::Settings* settings)
@@ -154,80 +161,10 @@ bool Game::Update(double deltaTime)
 
 	if (_controls->IsFunctionKeyDown("DEBUG:REQUEST_PARTICLE"))
 	{
-		//If the emitters shouldn't move
-		XMFLOAT3 pos = XMFLOAT3(11, 1.0f, 2);
-		XMFLOAT3 dir = XMFLOAT3(0, 1, 0);
-		ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::SPLASH, ParticleSubType::BLOOD_SUBTYPE, -1, pos, dir, 300.0f, 20, 0.1f, true);
-		_particleHandler->GetParticleEventQueue()->Insert(msg);
-
-		pos = XMFLOAT3(16, 1.0f, 2);
-		dir = XMFLOAT3(0, 0, 1);
-		msg = new ParticleRequestMessage(ParticleType::MUZZLE_FLASH, ParticleSubType::MUZZLE_FLASH_SUBTYPE, -1, pos, dir, 50.0f, 1, 0.1f, true);
-		_particleHandler->GetParticleEventQueue()->Insert(msg);
-
-		pos = XMFLOAT3(14, 1.0f, 2);
-		dir = XMFLOAT3(0, 1, 0);
-		msg = new ParticleRequestMessage(ParticleType::SMOKE, ParticleSubType::SMOKE_SUBTYPE, -1, pos, dir, 100000.0f, 50, 0.04f, true);
-		_particleHandler->GetParticleEventQueue()->Insert(msg);
-
-		pos = XMFLOAT3(7, 1.0f, 2);
-		dir = XMFLOAT3(0, 1, 0);
-		msg = new ParticleRequestMessage(ParticleType::SPLASH, ParticleSubType::WATER_SUBTYPE, -1, pos, dir, 400.0f, 20, 0.1f, true);
-		_particleHandler->GetParticleEventQueue()->Insert(msg);
-
-		pos = XMFLOAT3(14, 1.0f, 2);
-		dir = XMFLOAT3(0, 1, 0);
-		msg = new ParticleRequestMessage(ParticleType::FIRE, ParticleSubType::FIRE_SUBTYPE, -1, pos, dir, 100000.0f, 50, 0.1f, true); //Follows owner and is timed
-		_particleHandler->GetParticleEventQueue()->Insert(msg);
-
-		pos = XMFLOAT3(11, 1.0f, 4);
-		msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::EXCLAMATIONMARK_SUBTYPE, -1, pos, XMFLOAT3(0, 0, 0), 1000.0f, 1, 0.25f, true);
-		_particleHandler->GetParticleEventQueue()->Insert(msg);
-
-		//If the emitters should change, for example move, connect them to an ID of a game object
-		pos = XMFLOAT3(13, 1.0f, 4);
-		msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::QUESTIONMARK_SUBTYPE, 5, pos, XMFLOAT3(0, 0, 0), 100000.0f, 1, 0.25f, true, false); //Follows owner and is not timed
-		_particleHandler->GetParticleEventQueue()->Insert(msg);
-
-		pos = XMFLOAT3(9, 1.0f, 2);
-		dir = XMFLOAT3(0, 0, 1);
-		msg = new ParticleRequestMessage(ParticleType::FIRE, ParticleSubType::FIRE_SUBTYPE, 5, pos, dir, 10000.0f, 100, 0.04f, true, true); //Follows owner and is timed
-		_particleHandler->GetParticleEventQueue()->Insert(msg);
-
-		//Electricity should never move. One bolt of lightning is created each request, and updated the given time
-		pos = XMFLOAT3(5, 1.0f, 3);
-		msg = new ParticleRequestMessage(ParticleType::ELECTRICITY, ParticleSubType::SPARK_SUBTYPE, -1, pos, XMFLOAT3(0, 0, 0), 1000.0f, 20, 0.1f, true, true, XMFLOAT3(14.0f, 1.0f, 3));
-		_particleHandler->GetParticleEventQueue()->Insert(msg);
+		_combinedMeshGenerator->CombineMeshes(_objectHandler->GetTileMap(), FLOOR);
 	}
-
-	//If the emitter itself should be updated, for example if the icons move or if we have a spinning flamethrower.
-	//Set "isAlive" parameter to disable all emitters that are connected to the ID of the GameObject. This should be done when, for example a trap is fixed and should stop smoking
-	//It is possible to update only position
-	std::vector<std::vector<GameObject*>>* gameObjects = _objectHandler->GetGameObjects();
-	if (gameObjects->size() > 0)
-	{
-		for (unsigned int i = 0; i < gameObjects->at(GUARD).size(); i++)
-		{
-			GameObject* g = gameObjects->at(GUARD).at(i);
-			if (g)
-			{
-				XMFLOAT3 pos = g->GetPosition();
-				AI::Vec2D dirv2d = ((Unit*)g)->GetDirection();
-				XMFLOAT3 dir = XMFLOAT3(dirv2d._x, 0, dirv2d._y);
-
-				pos.y = 2.5f;
-				ParticleUpdateMessage* msg = new ParticleUpdateMessage(5, true, pos, dir);
-				_particleHandler->GetParticleEventQueue()->Insert(msg);
-			}
-		}
-	}
-
-
-
 
 	_particleHandler->Update(deltaTime);
-
-
 
 	/*
 		{
@@ -265,85 +202,19 @@ void Game::Render()
 	Render the objects to the diffuse and normal resource views. Camera depth is also generated here.									*/
 	std::vector<std::vector<GameObject*>>* gameObjects = _objectHandler->GetGameObjects();
 	
-	/*------------------------------------------------  Render non-skinned objects  ---------------------------------------------------*/
+	/*-------------------------------------------------  Render non-skinned objects  ---------------------------------------------------*/
 	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::GEO_PASS);
 	RenderGameObjects(Renderer::RenderModule::ShaderStage::GEO_PASS, gameObjects);
 
-	/*--------------------------------------------------  Render skinned objects  -----------------------------------------------------*/
+	/*---------------------------------------------------  Render skinned objects  -----------------------------------------------------*/
 	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::ANIM_STAGE);
 	RenderGameObjects(Renderer::RenderModule::ShaderStage::ANIM_STAGE, gameObjects);
 
-	/*------------------------------------------------  Render billboarded objects  ---------------------------------------------------*/
+	/*-------------------------------------------------  Render billboarded objects  ---------------------------------------------------*/
 	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::BILLBOARDING_STAGE);
-	int count = _particleHandler->GetEmitterCount();
+	RenderParticles();
 
-	//Render all particle emitter except for electricity, as those use linestrip instead of pointlist
-	for (int i = 0; i < count; i++)
-	{
-		Renderer::ParticleEmitter* emitter = _particleHandler->GetEmitter(i);
-
-		if (emitter)
-		{
-			ID3D11Buffer* vertexBuffer = emitter->GetParticleBuffer();
-
-			if (vertexBuffer)
-			{
-				ParticleType type = emitter->GetType();
-				if (type != ParticleType::ELECTRICITY)
-				{
-					_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::BILLBOARDING_STAGE);
-
-					int textureCount = PARTICLE_TEXTURE_COUNT;
-					if (type == ParticleType::ICON)
-					{
-						textureCount = 1;
-						ID3D11ShaderResourceView* textures[1];
-						textures[0] = _particleHandler->GetIconTexture(emitter->GetSubType());
-
-						_renderModule->SetDataPerParticleEmitter(emitter->GetPosition(), _camera->GetViewMatrix(), _camera->GetProjectionMatrix(), _camera->GetPosition(), emitter->GetParticleScale(), textures, textureCount, 1);
-						_renderModule->RenderParticles(vertexBuffer, emitter->GetParticleCount(), emitter->GetVertexSize());
-					}
-					else
-					{
-						ID3D11ShaderResourceView** textures = _particleHandler->GetTextures(textureCount, emitter->GetSubType());
-						_renderModule->SetDataPerParticleEmitter(emitter->GetPosition(), _camera->GetViewMatrix(), _camera->GetProjectionMatrix(), _camera->GetPosition(), emitter->GetParticleScale(), textures, textureCount, 0);
-
-						_renderModule->RenderParticles(vertexBuffer, emitter->GetParticleCount(), emitter->GetVertexSize());
-					}
-				}
-			}
-		}
-	}
-
-	//Render all electricity "particles"
-	_renderModule->SetShaderStage(Renderer::RenderModule::RENDER_LINESTRIP);
-
-	for (int i = 0; i < count; i++)
-	{
-		Renderer::ParticleEmitter* emitter = _particleHandler->GetEmitter(i);
-
-		if (emitter)
-		{
-			ID3D11Buffer* vertexBuffer = emitter->GetParticleBuffer();
-
-			if (vertexBuffer)
-			{
-				XMFLOAT4 color(0.9f, 0.6f, 0.25f, 1.0f);
-				if (emitter->GetType() == ParticleType::ELECTRICITY)
-				{
-					_renderModule->SetShaderStage(Renderer::RenderModule::RENDER_LINESTRIP);
-					XMFLOAT3 pos = emitter->GetPosition();
-
-					XMMATRIX m = XMMatrixTranslation(pos.x, pos.y, pos.z);
-
-					_renderModule->SetDataPerLineList(emitter->GetParticleBuffer(), emitter->GetVertexSize());
-					_renderModule->RenderLineStrip(&m, emitter->GetParticleCount(), XMFLOAT3(0.3f, 0.6f, 0.95f));
-				}
-			}
-		}
-	}
-
-	/*-------------------------------------------------------  Render grid  -----------------------------------------------------------*/
+	/*-------------------------------------------------------  Render grid  ------------------------------------------------------------*/
 	if (_SM->GetState() == LEVELEDITSTATE)
 	{
 		_renderModule->SetShaderStage(Renderer::RenderModule::RENDER_LINESTRIP);
@@ -361,8 +232,8 @@ void Game::Render()
 	////////////////////////////////////////////////////////////  Light pass  //////////////////////////////////////////////////////////////
 	if (_SM->GetState() == PLAYSTATE || _SM->GetState() == PLACEMENTSTATE)
 	{
-		//----------------------------------------------------------  Spotlights  -------------------------------------------------------------
-		//Generate the shadow map for each spotlight, then apply the lighting/shadowing to the render target with additive blending.           
+		/*------------------------------------------------------  Spotlights  --------------------------------------------------------------
+		Generate the shadow map for each spotlight, then apply the lighting/shadowing to the render target with additive blending.        */ 
 
 		_renderModule->SetLightDataPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
 
@@ -379,7 +250,7 @@ void Game::Render()
 				_renderModule->RenderLightVolume(spot.second->GetVolumeBuffer(), spot.second->GetWorldMatrix(), spot.second->GetVertexCount(), spot.second->GetVertexSize());
 			}
 		}
-		/*---------------------------------------------------------  Pointlights  ------------------------------------------------------------*/
+		/*------------------------------------------------------  Pointlights  -----------------------------------------------------------*/
 		_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::LIGHT_APPLICATION_POINTLIGHT);
 
 		map<GameObject*, Renderer::Pointlight*>* pointlights = _objectHandler->GetPointlights();
@@ -397,7 +268,7 @@ void Game::Render()
 	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::AA_STAGE);
 	_renderModule->RenderScreenQuad();
 
-	/////////////////////////////////////////////////////////  HUD and other 2D   ////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////  HUD and other 2D   ////////////////////////////////////////////////////////////
 	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::HUD_STAGE);
 	_renderModule->Render(_SM->GetCurrentStatePointer()->GetUITree()->GetRootNode(), _fontWrapper);
 
@@ -456,14 +327,14 @@ void Game::GenerateShadowMap(Renderer::Spotlight* spotlight, unsigned short owne
 	_renderModule->SetShadowMapDataPerSpotlight(spotlight->GetViewMatrix(), spotlight->GetProjectionMatrix());
 
 	vector<vector<GameObject*>>* inLight = _objectHandler->GetObjectsInLight(spotlight);
-	unsigned int prevSubType = -1;
+	GameObject* lastGameObject = nullptr;
+	RenderObject* lastRenderObject = nullptr;
 	int vertexBufferSize = 0;
 
 	for (auto j : *inLight)
 	{
 		if (j.size() > 0)
 		{
-			prevSubType = -1;
 			vertexBufferSize = 0;
 
 			for (int i = 0; i < j.size(); i++)
@@ -475,11 +346,12 @@ void Game::GenerateShadowMap(Renderer::Spotlight* spotlight, unsigned short owne
 				{
 					//If the current object and the previous object are different, set the new data
 					unsigned int thisSubType = obj->GetSubType();
-					if (thisSubType != prevSubType)
+					if (lastGameObject == nullptr || *lastRenderObject != *renderObject || lastGameObject->GetSubType() != obj->GetSubType())
 					{
 						_renderModule->SetShadowMapDataPerObjectType(renderObject);
 						vertexBufferSize = renderObject->_mesh->_vertexBufferSize;
-						prevSubType = obj->GetSubType();
+						lastRenderObject = renderObject;
+						lastGameObject = obj;
 					}
 
 					//Render the visible objects, but skip the owner itself
@@ -500,7 +372,6 @@ void Game::GenerateShadowMap(Renderer::Spotlight* spotlight, unsigned short owne
 	{
 		if (j.size() > 0)
 		{
-			prevSubType = -1;
 			vertexBufferSize = 0;
 
 			for (int i = 0; i < j.size(); i++)
@@ -513,11 +384,12 @@ void Game::GenerateShadowMap(Renderer::Spotlight* spotlight, unsigned short owne
 				{
 					//If the current object and the previous object are different, set the new data
 					unsigned int thisSubType = obj->GetSubType();
-					if (thisSubType != prevSubType)
+					if (lastGameObject == nullptr || *lastRenderObject != *renderObject || lastGameObject->GetSubType() != obj->GetSubType())
 					{
 						_renderModule->SetShadowMapDataPerObjectType(renderObject);
 						vertexBufferSize = renderObject->_mesh->_vertexBufferSize;
-						prevSubType = obj->GetSubType();
+						lastRenderObject = renderObject;
+						lastGameObject = obj;
 					}
 
 					//Render the visible objects, but skip the owner itself
@@ -525,6 +397,75 @@ void Game::GenerateShadowMap(Renderer::Spotlight* spotlight, unsigned short owne
 					{
 						_renderModule->RenderShadowMap(obj->GetMatrix(), vertexBufferSize, anim->GetFloats());
 					}
+				}
+			}
+		}
+	}
+}
+
+void Game::RenderParticles()
+{
+	int count = _particleHandler->GetEmitterCount();
+
+	//Render all particle emitter except for electricity, as those use linestrip instead of pointlist
+	for (int i = 0; i < count; i++)
+	{
+		Renderer::ParticleEmitter* emitter = _particleHandler->GetEmitter(i);
+
+		if (emitter)
+		{
+			ID3D11Buffer* vertexBuffer = emitter->GetParticleBuffer();
+
+			if (vertexBuffer)
+			{
+				ParticleType type = emitter->GetType();
+				if (type != ParticleType::ELECTRICITY)
+				{
+					int textureCount = PARTICLE_TEXTURE_COUNT;
+					if (type == ParticleType::ICON)
+					{
+						textureCount = 1;
+						ID3D11ShaderResourceView* textures[1];
+						textures[0] = _particleHandler->GetIconTexture(emitter->GetSubType());
+
+						_renderModule->SetDataPerParticleEmitter(emitter->GetPosition(), _camera->GetViewMatrix(), _camera->GetProjectionMatrix(), _camera->GetPosition(), emitter->GetParticleScale(), textures, textureCount, 1);
+						_renderModule->RenderParticles(vertexBuffer, emitter->GetParticleCount(), emitter->GetVertexSize());
+					}
+					else
+					{
+						ID3D11ShaderResourceView** textures = _particleHandler->GetTextures(textureCount, emitter->GetSubType());
+						_renderModule->SetDataPerParticleEmitter(emitter->GetPosition(), _camera->GetViewMatrix(), _camera->GetProjectionMatrix(), _camera->GetPosition(), emitter->GetParticleScale(), textures, textureCount, 0);
+
+						_renderModule->RenderParticles(vertexBuffer, emitter->GetParticleCount(), emitter->GetVertexSize());
+					}
+				}
+			}
+		}
+	}
+
+	//Render all electricity "particles"
+	_renderModule->SetShaderStage(Renderer::RenderModule::RENDER_LINESTRIP);
+
+	for (int i = 0; i < count; i++)
+	{
+		Renderer::ParticleEmitter* emitter = _particleHandler->GetEmitter(i);
+
+		if (emitter)
+		{
+			ID3D11Buffer* vertexBuffer = emitter->GetParticleBuffer();
+
+			if (vertexBuffer)
+			{
+				XMFLOAT4 color(0.9f, 0.6f, 0.25f, 1.0f);
+				if (emitter->GetType() == ParticleType::ELECTRICITY)
+				{
+					_renderModule->SetShaderStage(Renderer::RenderModule::RENDER_LINESTRIP);
+					XMFLOAT3 pos = emitter->GetPosition();
+
+					XMMATRIX m = XMMatrixTranslation(pos.x, pos.y, pos.z);
+
+					_renderModule->SetDataPerLineList(emitter->GetParticleBuffer(), emitter->GetVertexSize());
+					_renderModule->RenderLineStrip(&m, emitter->GetParticleCount(), XMFLOAT3(0.3f, 0.6f, 0.95f));
 				}
 			}
 		}
