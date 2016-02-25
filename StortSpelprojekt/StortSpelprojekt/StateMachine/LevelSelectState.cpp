@@ -59,7 +59,7 @@ void LevelSelectState::Update(float deltaTime)
 				std::string levelBinaryPath;
 				if (_isCampaignMode)
 				{
-					levelBinaryPath = CAMPAIGN_FOLDER_PATH;
+					levelBinaryPath = System::CAMPAIGN_FOLDER_PATH;
 					//if we have selected the tutorial map
 					if (_campaignSelection == TUTORIAL)
 					{
@@ -71,7 +71,7 @@ void LevelSelectState::Update(float deltaTime)
 				}
 				else
 				{
-					levelBinaryPath = SKIRMISH_FOLDER_PATH;
+					levelBinaryPath = System::SKIRMISH_FOLDER_PATH;
 				}
 				levelBinaryPath += _selectedLevelHeader._levelBinaryFilename;
 
@@ -166,7 +166,7 @@ void LevelSelectState::OnStateEnter()
 
 	//Load level information into respektive variables.
 	_skirmishHeaderFilenames.clear();
-	GetFilenamesInDirectory(const_cast<char*>(SKIRMISH_FOLDER_PATH.c_str()), ".json", _skirmishHeaderFilenames, false);
+	GetFilenamesInDirectory(const_cast<char*>(System::SKIRMISH_FOLDER_PATH.c_str()), ".json", _skirmishHeaderFilenames, false);
 	_campaignSelectionMax = _campaignSelection = _profile->_level;
 	//if player havent completed the tutorial before. Show tutorial first.
 	if (_profile->_firstTime && _campaignSelectionMin == TUTORIAL)
@@ -192,11 +192,11 @@ void LevelSelectState::LoadLevelHeader(std::string levelFilename, Level::LevelHe
 	std::string levelPath;
 	if (_isCampaignMode)
 	{
-		levelPath = CAMPAIGN_FOLDER_PATH + levelFilename + ".json";
+		levelPath = System::CAMPAIGN_FOLDER_PATH + levelFilename + ".json";
 	}
 	else
 	{
-		levelPath = SKIRMISH_FOLDER_PATH + levelFilename;
+		levelPath = System::SKIRMISH_FOLDER_PATH + levelFilename;
 	}
 	System::loadJSON(headerToLoad, levelPath);
 }
@@ -209,17 +209,17 @@ void LevelSelectState::SelectedLevelHeaderToGUI()
 	else
 	{
 		_levelNameNode->SetHidden(false);
-		_levelNameNode->SetText(StringToWstring(_selectedLevelHeader._levelBinaryFilename));
+		_levelNameNode->SetText(System::StringToWstring(_selectedLevelHeader._levelBinaryFilename));
 	}
-	_storyTitleNode->SetText(StringToWstring(_selectedLevelHeader._storyTitle));
-	_storyBodyNode->SetText(StringToWstring(_selectedLevelHeader._storyBody));
+	_storyTitleNode->SetText(System::StringToWstring(_selectedLevelHeader._storyTitle));
+	_storyBodyNode->SetText(System::StringToWstring(_selectedLevelHeader._storyBody));
 
 	std::stringstream ss;
 	ss << _selectedLevelHeader._gameMode;
 	int gameModeIndex;
 	ss >> gameModeIndex;
 	std::string gameModeName = Level::GameModeNames[gameModeIndex];
-	_gameModeNode->SetText(StringToWstring(gameModeName));
+	_gameModeNode->SetText(System::StringToWstring(gameModeName));
 }
 
 void LevelSelectState::UpdateButtonsNextPreviousVisability()

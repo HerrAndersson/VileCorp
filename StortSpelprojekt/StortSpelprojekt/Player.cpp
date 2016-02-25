@@ -15,7 +15,7 @@ void Player::AddPatrolIcons(Guard* guard)
 	//Show patrolroute
 	for (auto p : ((Guard*)guard)->GetPatrolRoute())
 	{
-		GameObject* patrolFloor = _objectHandler->GetTileMap()->GetObjectOnTile(p, FLOOR);
+		GameObject* patrolFloor = _objectHandler->GetTileMap()->GetObjectOnTile(p, System::FLOOR);
 		if (patrolFloor != nullptr)
 		{
 			ParticleRequestMessage* msg;
@@ -39,7 +39,7 @@ void Player::RemovePatrolIcons(Guard* guard)
 	//Remove Icon
 	for (auto p : guard->GetPatrolRoute())
 	{
-		GameObject* patrolFloor = _objectHandler->GetTileMap()->GetObjectOnTile(p, FLOOR);
+		GameObject* patrolFloor = _objectHandler->GetTileMap()->GetObjectOnTile(p, System::FLOOR);
 		if (patrolFloor != nullptr)
 		{
 			ParticleUpdateMessage* msg = new ParticleUpdateMessage(patrolFloor->GetID(), false);
@@ -129,7 +129,7 @@ void Player::MoveUnits(AI::Vec2D movePoint)
 		if (unit != nullptr)
 		{
 			//If a patrolling unit is told to move it will break its patrolroute
-			if (unit->GetType() == GUARD)
+			if (unit->GetType() == System::GUARD)
 			{
 				RemovePatrolIcons((Guard*)unit);
 				((Guard*)unit)->RemovePatrol();
@@ -147,7 +147,7 @@ void Player::PatrolUnits(AI::Vec2D patrolPoint)
 
 		if (unit != nullptr)
 		{
-			if (unit->GetType() == GUARD)
+			if (unit->GetType() == System::GUARD)
 			{
 				RemovePatrolIcons((Guard*)unit);
 				((Guard*)unit)->SetPatrolPoint(patrolPoint);

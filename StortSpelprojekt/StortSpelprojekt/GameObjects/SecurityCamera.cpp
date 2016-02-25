@@ -33,11 +33,11 @@ SecurityCamera::SecurityCamera()
 	_visionCone = nullptr;
 }
 
-SecurityCamera::SecurityCamera(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject * renderObject, System::SoundModule* soundModule, const Tilemap * tileMap)
+SecurityCamera::SecurityCamera(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject * renderObject, System::SoundModule* soundModule, const Tilemap * tileMap)
 	: GameObject(ID, position, rotation, tilePosition, type, renderObject, soundModule)
 {
 	_tileMap = tileMap;
-	_direction = {0,-1};				//TODO this should be setable --Victor
+	_direction = {0,-1};
 	_visionRadius = 4;
 	_visionCone = new VisionCone(_visionRadius, _tileMap);
 	_visionCone->FindVisibleTiles(_tilePosition, _direction);
@@ -66,13 +66,13 @@ void SecurityCamera::CheckVisibleTiles()
 	Enemy* test = nullptr;
 	//_visionCone->ColorVisibleTiles({0,0,3});
 	AI::Vec2D tile = {0,0};
-	for (size_t i = 0; i < _visionCone->GetNrOfVisibleTiles(); i++)
+	for (int i = 0; i < _visionCone->GetNrOfVisibleTiles(); i++)
 	{
 		tile = _visionCone->GetVisibleTile(i);
 		if (_tileMap->IsEnemyOnTile(tile))
 		{
 			Enemy* enemy;
-			enemy = static_cast<Enemy*>(_tileMap->GetObjectOnTile(tile, ENEMY));
+			enemy = static_cast<Enemy*>(_tileMap->GetObjectOnTile(tile, System::ENEMY));
 			if (enemy != nullptr)
 			{
 				enemy->ResetVisibilityTimer();

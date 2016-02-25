@@ -136,7 +136,7 @@ void BaseEdit::MarkerMoveEvent()
 	}
 }
 
-void BaseEdit::DragEvent(Type type)
+void BaseEdit::DragEvent(System::Type type)
 {
 	if (_controls->IsFunctionKeyDown("MOUSE:SELECT") && !_isPlace)
 	{
@@ -173,7 +173,7 @@ void BaseEdit::DropEvent()
 	}
 
 	// Special camera non floating fix
-	if (_marker._g->GetType() == CAMERA)
+	if (_marker._g->GetType() == System::CAMERA)
 	{
 		if (_marker._g->GetDirection()._x != 0 && _marker._g->GetDirection()._y != 0)
 		{
@@ -331,9 +331,9 @@ void BaseEdit::HandleMouseInput()
 				{
 					// Drag in world
 					bool found = false;
-					for (int i = Type::NR_OF_TYPES - 1; i > -1 && !found; i--)
+					for (int i = System::Type::NR_OF_TYPES - 1; i > -1 && !found; i--)
 					{
-						DragEvent((Type)i);
+						DragEvent((System::Type)i);
 						if (_marker._g != nullptr)
 						{
 							found = true;
@@ -375,9 +375,9 @@ void BaseEdit::HandleMouseInput()
 
 		if (_isSelectionMode && _marker._g == nullptr)
 		{
-			DragEvent(TRAP);
-			DragEvent(GUARD);
-			DragEvent(CAMERA);
+			DragEvent(System::TRAP);
+			DragEvent(System::GUARD);
+			DragEvent(System::CAMERA);
 		}
 	}
 
@@ -436,7 +436,7 @@ void BaseEdit::HandleKeyInput(double deltaTime)
 		{
 			_marker._g->SetDirection(AI::GetNextDirection(static_cast<Unit*>(_marker._g)->GetDirection(), clockwise));
 
-			if (_marker._g->GetType() != CAMERA && _marker._g->GetType() != GUARD)			//Traps need to be right angles
+			if (_marker._g->GetType() != System::CAMERA && _marker._g->GetType() != System::GUARD)			//Traps need to be right angles
 			{
 				XMFLOAT3 tempRot = _marker._g->GetRotation();
 				_marker._g->SetDirection(AI::GetNextDirection(static_cast<Unit*>(_marker._g)->GetDirection(), clockwise));
@@ -456,7 +456,7 @@ void BaseEdit::HandleKeyInput(double deltaTime)
 
 // Other functions
 
-bool BaseEdit::CheckValidity(AI::Vec2D tile, Type type)
+bool BaseEdit::CheckValidity(AI::Vec2D tile, System::Type type)
 {
 	GameObject* objectOnTile = _tileMap->GetObjectOnTile(tile._x, tile._y, type);
 
@@ -464,7 +464,7 @@ bool BaseEdit::CheckValidity(AI::Vec2D tile, Type type)
 
 	if (objectOnTile == nullptr && _tileMap->IsPlaceable(tile, type))
 	{
-		if (type == WALL && !_tileMap->IsTileEmpty(tile))
+		if (type == System::WALL && !_tileMap->IsTileEmpty(tile))
 		{
 			valid = false;
 		}
@@ -472,21 +472,21 @@ bool BaseEdit::CheckValidity(AI::Vec2D tile, Type type)
 		{
 			if (_tileMap->IsFloorOnTile(tile))
 			{
-				if (type == GUARD || type == ENEMY)
+				if (type == System::GUARD || type == System::ENEMY)
 				{
-					if (_tileMap->UnitsOnTile(tile) || _tileMap->IsTrapOnTile(tile) || _tileMap->IsTypeOnTile(tile, CAMERA))
+					if (_tileMap->UnitsOnTile(tile) || _tileMap->IsTrapOnTile(tile) || _tileMap->IsTypeOnTile(tile, System::CAMERA))
 					{
 						valid = false;
 					}
 				}
-				else if (type == TRAP)
+				else if (type == System::TRAP)
 				{
-					if (_tileMap->UnitsOnTile(tile) || _tileMap->IsTypeOnTile(tile, CAMERA))
+					if (_tileMap->UnitsOnTile(tile) || _tileMap->IsTypeOnTile(tile, System::CAMERA))
 					{
 						valid = false;
 					}
 				}
-				else if (type == CAMERA)
+				else if (type == System::CAMERA)
 				{
 					if (!_tileMap->IsWallOnTile(tile - _marker._g->GetDirection()))
 					{
@@ -501,7 +501,7 @@ bool BaseEdit::CheckValidity(AI::Vec2D tile, Type type)
 			}
 			else
 			{
-				if (type != FLOOR && type != WALL)
+				if (type != System::FLOOR && type != System::WALL)
 				{
 					valid = false;
 				}
@@ -562,7 +562,7 @@ GameObject * BaseEdit::CreatedObject()
 	return _createdObject;
 }
 
-Blueprint * BaseEdit::DeletedObjectBlueprint()
+System::Blueprint * BaseEdit::DeletedObjectBlueprint()
 {
 	return _deletedObjectBlueprint;
 }

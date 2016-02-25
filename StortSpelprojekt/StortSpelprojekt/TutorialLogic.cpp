@@ -123,7 +123,7 @@ bool TutorialLogic::Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace
 		if (_uiTree->IsButtonColliding("Guard", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
 		{
 			// Temp, should be replaced with blueprint
-			toPlace._type = Type::GUARD;
+			toPlace._type = System::Type::GUARD;
 			toPlace._name = "guard_proto";
 
 			//If we placed a guard.
@@ -167,7 +167,7 @@ bool TutorialLogic::Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace
 		if (_uiTree->IsButtonColliding("AnvilTrap", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
 		{
 			// Temp, should be replaced with blueprint
-			toPlace._type = Type::TRAP;
+			toPlace._type = System::Type::TRAP;
 			toPlace._name = "trap_proto";
 
 			//If we placed an anvil.
@@ -212,7 +212,7 @@ bool TutorialLogic::Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace
 		if (_uiTree->IsButtonColliding("TeslaTrap", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
 		{
 			// Temp, should be replaced with blueprint
-			toPlace._type = Type::TRAP;
+			toPlace._type = System::Type::TRAP;
 			toPlace._name = "tesla_trap";
 			toPlace._subType = TrapType::TESLACOIL;
 
@@ -224,7 +224,7 @@ bool TutorialLogic::Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace
 				_uiTree->GetNode("BudgetValue")->SetText(to_wstring(_gold));
 				toPlace._blueprintID = baseEdit->GetSelectedObject()->GetID();
 
-				_currentStage = SECURITYCAMERAEXPLAINED;
+				_currentStage = SECURITY(System::TypeEXPLAINED;
 				_uiTree->GetNode("teslaplace")->SetHidden(true);
 				_uiTree->GetNode("securitycameraexplained")->SetHidden(false);
 				_uiTree->GetNode("TeslaTrap")->SetColorOffset(DirectX::XMFLOAT4(0, 0, 0, 1.0f));
@@ -236,7 +236,7 @@ bool TutorialLogic::Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace
 	{
 		if (_controls->IsFunctionKeyDown("MENU:CONTINUE"))
 		{
-			_currentStage = SECURITYCAMERAPLACE;
+			_currentStage = SECURITYCAMERAEXPLAINED;
 			_uiTree->GetNode("securitycameraexplained")->SetHidden(true);
 			_uiTree->GetNode("securitycameraplace")->SetHidden(false);
 		}
@@ -258,7 +258,7 @@ bool TutorialLogic::Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace
 		if (_uiTree->IsButtonColliding("Camera", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
 		{
 			// Temp, should be replaced with blueprint
-			toPlace._type = Type::CAMERA;
+			toPlace._type = System::CAMERA;
 			toPlace._name = "camera_proto";
 
 			//If we placed an anvil.
@@ -358,7 +358,7 @@ bool TutorialLogic::Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace
 		}
 		if (_uiTree->IsButtonColliding("Camera", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
 		{
-			toPlace._type = Type::CAMERA;
+			toPlace._type = Type::(System::Type;
 			toPlace._name = "camera_proto";
 
 			if (baseEdit->IsSelection() && !baseEdit->IsPlace())

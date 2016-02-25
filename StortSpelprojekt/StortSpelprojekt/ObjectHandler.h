@@ -78,19 +78,19 @@ public:
 	~ObjectHandler();
 
 	//Add a gameobject
-	bool Add(XMFLOAT3 position, XMFLOAT3 rotation, Type type, int subType, string textureReference);
-	bool Add(Blueprint* blueprint, int textureId, const XMFLOAT3& position, const XMFLOAT3& rotation, const bool placeOnTilemap = true);
+	bool Add(XMFLOAT3 position, XMFLOAT3 rotation, System::Type type, int subType, string textureReference);
+	bool Add(System::Blueprint* blueprint, int textureId, const XMFLOAT3& position, const XMFLOAT3& rotation, const bool placeOnTilemap = true);
 	
 	bool Remove(int ID);
-	bool Remove(Type type, int ID);
+	bool Remove(System::Type type, int ID);
 	bool Remove(GameObject* gameObject);
 
 	GameObject* Find(int ID);
-	GameObject* Find(Type type, int ID);
-	GameObject* Find(Type type, short index);
+	GameObject* Find(System::Type type, int ID);
+	GameObject* Find(System::Type type, short index);
 
 	//Returns a vector containing all gameobjects with the same type
-	vector<GameObject*>* GetAllByType(Type type);
+	vector<GameObject*>* GetAllByType(System::Type type);
 	//Returns a list of a renderobject and matrices for all objects using the renderobject
 	RenderList GetAllByType(int renderObjectID);
 	vector<vector<GameObject*>>* GetGameObjects();
@@ -123,8 +123,8 @@ public:
 	void Update(float deltaTime);
 	void UpdateLights();
 
-	vector<Blueprint>* GetBlueprints();
-	Blueprint* GetBlueprintByName(string name);
-	Blueprint* GetBlueprintByType(int type, int subType = 0);
+	vector<System::Blueprint>* GetBlueprints();
+	System::Blueprint* GetBlueprintByName(string name);
+	System::Blueprint* GetBlueprintByType(int type, int subType = 0);
 };
 

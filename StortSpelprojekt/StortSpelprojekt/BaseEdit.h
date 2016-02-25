@@ -17,7 +17,7 @@ struct SpecificBlueprint
 		_blueprint = nullptr;
 		_textureId = -1;
 	}
-	Blueprint* _blueprint = nullptr;
+	System::Blueprint* _blueprint = nullptr;
 	int _textureId = -1;
 };
 
@@ -49,7 +49,7 @@ private:
 
 	bool _droppedObject;
 	GameObject* _createdObject = nullptr;
-	Blueprint* _deletedObjectBlueprint = nullptr;
+	System::Blueprint* _deletedObjectBlueprint = nullptr;
 
 	// FLAGS
 	bool _extendedMode;
@@ -61,7 +61,7 @@ private:
 	bool _isInvalidateFloor;
 	
 	void MarkerMoveEvent();
-	void DragEvent(Type type);
+	void DragEvent(System::Type type);
 	void DropEvent();
 	void BoxEvent();
 
@@ -70,7 +70,7 @@ private:
 	void HandleKeyInput(double deltaTime);
 
 
-	bool CheckValidity(AI::Vec2D tile, Type type);
+	bool CheckValidity(AI::Vec2D tile, System::Type type);
 	void CreateMarker();	// Used for Drag&Drop and Click
 	void CreateMarkers(); 	// Used for Drag&Place
 
@@ -91,7 +91,7 @@ public:
 
 	bool DroppedObject();
 	GameObject* CreatedObject();
-	Blueprint* DeletedObjectBlueprint();
+	System::Blueprint* DeletedObjectBlueprint();
 
 	void Update(float deltaTime, bool clickedOnGUI);
 };

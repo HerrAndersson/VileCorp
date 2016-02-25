@@ -55,7 +55,7 @@ namespace GUI
 		current->UpdateFont();
 	}
 
-	int UITree::CreateTilesetObject(Blueprint* object, Node* list, int index)
+	int UITree::CreateTilesetObject(System::Blueprint* object, Node* list, int index)
 	{
 		int createdThumbnails = 0;
 		if (list == nullptr)

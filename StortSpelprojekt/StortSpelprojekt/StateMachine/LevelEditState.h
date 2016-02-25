@@ -28,17 +28,17 @@ private:
 	DirectX::XMFLOAT3* _ambientLight;
 	std::vector<GUI::Node*>* _settingsTabs;
 
-	std::map<Type, std::string> _typeLists =
+	std::map<System::Type, std::string> _typeLists =
 	{
-		{ FLOOR, "floorlist" },
-		{ WALL, "walllist" },
-		{ LOOT, "objectivelist" },
-		{ SPAWN, "entrylist" },
-		{ TRAP, "traplist" },
-		{ CAMERA, "traplist" },
-		{ GUARD, "unitlist" },
-		{ ENEMY, "unitlist" },
-		{ FURNITURE, "decorationlist" }
+		{ System::FLOOR, "floorlist" },
+		{ System::WALL, "walllist" },
+		{ System::LOOT, "objectivelist" },
+		{ System::SPAWN, "entrylist" },
+		{ System::TRAP, "traplist" },
+		{ System::CAMERA, "traplist" },
+		{ System::GUARD, "unitlist" },
+		{ System::ENEMY, "unitlist" },
+		{ System::FURNITURE, "decorationlist" }
 	};
 
 	GUI::TextBox* _currentlySelectedTextBox;

@@ -3,6 +3,7 @@
 #include "Unit.h"
 #include "Enemy.h"
 
+enum GuardType{BASICGUARD, ENGINEER, MARKSMAN};
 class Guard : public Unit
 {
 private:
@@ -11,9 +12,9 @@ private:
 	unsigned int _currentPatrolGoal;
 public:
 	Guard();
-	Guard(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject* renderObject, System::SoundModule* soundModule, const Tilemap* tileMap);
+	Guard(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject* renderObject, System::SoundModule* soundModule, const Tilemap* tileMap, const int GuardType = 0);
 	virtual ~Guard();
-	void EvaluateTile(Type objective, AI::Vec2D tile);
+	void EvaluateTile(System::Type objective, AI::Vec2D tile);
 	void EvaluateTile(GameObject* obj);
 	void SetPatrolPoint(AI::Vec2D patrolPoint);
 	std::vector<AI::Vec2D> GetPatrolRoute();

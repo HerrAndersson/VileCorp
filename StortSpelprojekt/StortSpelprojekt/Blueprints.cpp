@@ -2,20 +2,20 @@
 
 Blueprints::Blueprints()
 {
-	std::map<std::string, Type> stringTypes =
+	std::map<std::string, System::Type> stringTypes =
 	{
-		{ "FLOOR", FLOOR },
-		{ "WALL", WALL },
-		{ "LOOT", LOOT },
-		{ "SPAWN", SPAWN },
-		{ "TRAP", TRAP },
-		{ "CAMERA", CAMERA },
-		{ "GUARD", GUARD },
-		{ "ENEMY", ENEMY },
-		{ "FURNITURE", FURNITURE }
+		{ "FLOOR", System::FLOOR },
+		{ "WALL", System::WALL },
+		{ "LOOT", System::LOOT },
+		{ "SPAWN", System::SPAWN },
+		{ "TRAP", System::TRAP },
+		{ "CAMERA", System::CAMERA },
+		{ "GUARD", System::GUARD },
+		{ "ENEMY", System::ENEMY },
+		{ "FURNITURE", System::FURNITURE }
 	};
 	std::ifstream infile;
-	infile.open(BLUEPRINTS_PATH);
+	infile.open(System::BLUEPRINTS_PATH);
 	cereal::JSONInputArchive blueprintsIn(infile);
 	BlueprintList blueprintList;
 	blueprintsIn(blueprintList);
@@ -23,7 +23,7 @@ Blueprints::Blueprints()
 
 	for (BlueprintData indata : blueprintList._blueprints)
 	{
-		Blueprint blueprint;
+		System::Blueprint blueprint;
 		blueprint._mesh = indata._mesh;
 		blueprint._name = indata._name;
 		blueprint._subType = indata._subType;
@@ -34,11 +34,11 @@ Blueprints::Blueprints()
 		_blueprintsByName.push_back(blueprint);
 	}
 
-	_blueprintsByType.resize(NR_OF_TYPES);
+	_blueprintsByType.resize(System::NR_OF_TYPES);
 
 	for (int i = 0; i < _blueprintsByName.size(); i++)
 	{
-		Blueprint* blueprint = &_blueprintsByName[i];
+		System::Blueprint* blueprint = &_blueprintsByName[i];
 		_blueprintsByType[blueprint->_type].push_back(blueprint);
 	}
 }
@@ -48,12 +48,12 @@ Blueprints::~Blueprints()
 
 }
 
-std::vector<Blueprint>* Blueprints::GetBlueprints()
+std::vector<System::Blueprint>* Blueprints::GetBlueprints()
 {
 	return &_blueprintsByName;
 }
 
-Blueprint* Blueprints::GetBlueprintByName(std::string name)
+System::Blueprint* Blueprints::GetBlueprintByName(std::string name)
 {
 	for (int i = 0; i < _blueprintsByName.size(); i++)
 	{
@@ -65,7 +65,7 @@ Blueprint* Blueprints::GetBlueprintByName(std::string name)
 	return nullptr;
 }
 
-Blueprint* Blueprints::GetBlueprintByType(int type, int subType /*= 0*/)
+System::Blueprint* Blueprints::GetBlueprintByType(int type, int subType /*= 0*/)
 {
 	if (type <= _blueprintsByType.size() - 1 && type >= 0)
 	{

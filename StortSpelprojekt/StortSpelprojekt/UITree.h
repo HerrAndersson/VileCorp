@@ -36,7 +36,7 @@ namespace GUI
 		void Resize(System::Settings* settings);
 		void Resize(Node* current);
 
-		int CreateTilesetObject(Blueprint* object, Node* list, int index);
+		int CreateTilesetObject(System::Blueprint* object, Node* list, int index);
 		bool IsButtonColliding(const std::string& id, int x, int y);
 		bool IsButtonColliding(const std::string& id, System::MouseCoord coord);
 		bool IsButtonColliding(Node* current, int x, int y);

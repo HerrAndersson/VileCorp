@@ -206,9 +206,9 @@ bool Game::Update(double deltaTime)
 	std::vector<std::vector<GameObject*>>* gameObjects = _objectHandler->GetGameObjects();
 	if (gameObjects->size() > 0)
 	{
-		for (unsigned int i = 0; i < gameObjects->at(GUARD).size(); i++)
+		for (unsigned int i = 0; i < gameObjects->at(System::GUARD).size(); i++)
 		{
-			GameObject* g = gameObjects->at(GUARD).at(i);
+			GameObject* g = gameObjects->at(System::GUARD).at(i);
 			if (g)
 			{
 				XMFLOAT3 pos = g->GetPosition();
@@ -237,18 +237,6 @@ bool Game::Update(double deltaTime)
 			if (_enemies.size() > 0)
 			{
 				_enemiesHasSpawned = true;
-			}
-
-			if (_enemies.size() == 0 && _enemiesHasSpawned == true)
-			{
-				if (_loot.size() >= 1)
-				{
-					//TODO: Add something to notify the player that they've beat the level
-				}
-				else
-				{
-					//TODO: Add something to notify the player that they've SUCK and they can replay the level
-				}
 			}
 		}
 		*/
