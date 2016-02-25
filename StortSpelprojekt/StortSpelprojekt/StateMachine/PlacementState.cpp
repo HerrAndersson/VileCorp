@@ -5,7 +5,7 @@ PlacementState::PlacementState(System::Controls* controls, ObjectHandler* object
 {
 	_playerProfile.resize(1);
 	_tutorialLogic = new TutorialLogic(&_uiTree, _controls);
-	_player = new Player();
+	_player = new Player(_objectHandler);
 
 	//Money
 	_costOfAnvilTrap	= 50;
@@ -111,6 +111,7 @@ void PlacementState::OnStateEnter()
 	}
 
 	//TODO: Move hardcoded costs and description to logical location /Rikhard
+
 	_uiTree.GetNode("GuardDescription")->SetHidden(true);
 	_uiTree.GetNode("GuardCost")->SetText(L"Cost: " + to_wstring(200) + L"$");
 	_uiTree.GetNode("AnvilDescription")->SetHidden(true);
@@ -168,23 +169,26 @@ void PlacementState::HandleInput()
 	//Left click - placing units - Blueprint specific - i.e. click button and placing object.
 	if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
-		//Button interaction. Select a blueprint
-		std::vector<GUI::Node*>* units = _uiTree.GetNode("UnitList")->GetChildren();
-		for (unsigned y = 0; y < units->size(); y++)
+		//If we dont have a blue print selected
+		if (_selectedBlueprint._blueprint == nullptr)
 		{
-			GUI::Node* currentButton = units->at(y);
-			// if we click a button. Load itemspecifics into _selectedBlueprint
-			if (_uiTree.IsButtonColliding(currentButton, coord._pos.x, coord._pos.y))
+			//Button interaction. Select a blueprint
+			std::vector<GUI::Node*>* units = _uiTree.GetNode("UnitList")->GetChildren();
+			for (int i = 0; i < units->size(); i++)
 			{
-				GUI::BlueprintNode* currentBlueprintButton = static_cast<GUI::BlueprintNode*>(currentButton);
-				_selectedBlueprint._blueprint = currentBlueprintButton->GetBlueprint();
-				_selectedBlueprint._textureId = currentBlueprintButton->GetTextureId();
-				break;
+				GUI::Node* currentButton = units->at(i);
+				// if we click a button. Load itemspecifics into _selectedBlueprint
+				if (_uiTree.IsButtonColliding(currentButton, coord._pos.x, coord._pos.y))
+				{
+					GUI::BlueprintNode* currentBlueprintButton = static_cast<GUI::BlueprintNode*>(currentButton);
+					_selectedBlueprint._blueprint = currentBlueprintButton->GetBlueprint();
+					_selectedBlueprint._textureId = currentBlueprintButton->GetTextureId();
+					break;
+				}
 			}
 		}
-
-		//If we already have a blueprint selected
-		if (_selectedBlueprint._blueprint != nullptr)
+		//else we already have a blueprint selected
+		else
 		{
 			//Try if/and then place item
 			AI::Vec2D pickedTile = _pickingDevice->PickTile(coord._pos);
@@ -213,15 +217,15 @@ void PlacementState::HandleInput()
 	//Left click up
 	if (_controls->IsFunctionKeyUp("MOUSE:SELECT") && _selectedBlueprint._blueprint == nullptr)
 	{
-		//deselect everything first.
-		vector<Unit*> units = _player->GetSelectedUnits();
+		//Deselect everything first by first remove the color of the objects and then deselecting it.
+		vector<GameObject*> deselectObjects = _player->GetSelectedObjects();
 
 		//Decolourize everything
-		for (unsigned int i = 0; i < units.size(); i++)
+		for (auto i : deselectObjects)
 		{
-			units[i]->SetColorOffset(DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f));
+			i->SetColorOffset(DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f));
 		}
-		_player->DeselectUnits();
+		_player->DeselectObjects();
 
 		//Check if we picked anything
 		vector<vector<GameObject*>> pickedUnits;
@@ -229,13 +233,14 @@ void PlacementState::HandleInput()
 		pickedUnits.push_back(_pickingDevice->PickObjects(_controls->GetMouseCoord()._pos, *_objectHandler->GetAllByType(TRAP)));
 		pickedUnits.push_back(_pickingDevice->PickObjects(_controls->GetMouseCoord()._pos, *_objectHandler->GetAllByType(CAMERA)));
 
-		for (int i = 0; pickedUnits.size(); i++)
+		//Then Select it
+		_player->SelectObjects(pickedUnits);
+
+		//Retrieve the objects in an actual container and mark them with colour
+		vector<GameObject*> objects = _player->GetSelectedObjects();
+		for (auto i : objects)
 		{
-			for (int j = 0; j < pickedUnits[i].size(); j++)
-			{
-				_player->SelectUnit((Unit*)pickedUnits[i][j]);
-				pickedUnits[i][j]->SetColorOffset(DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f));
-			}
+			i->SetColorOffset(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));
 		}
 	}
 
@@ -247,6 +252,7 @@ void PlacementState::HandleInput()
 		{
 			_selectedBlueprint.Reset();
 		}
+		_player->DeselectObjects();
 	}
 
 	//Delete object

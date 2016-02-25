@@ -32,7 +32,6 @@ void Player::SelectUnit(Unit* pickedUnit)
 	{
 		_selectedUnits.push_back(pickedUnit->GetID());
 	}
-	
 }
 
 void Player::DeselectUnits()
@@ -100,4 +99,62 @@ void Player::PatrolUnits(AI::Vec2D patrolPoint)
 int Player::GetNumberOfSelectedUnits()
 {
 	return _selectedUnits.size();
+}
+
+void Player::SelectObjects(GameObject* pickedObject)
+{
+	bool exists = false;
+	for (auto v : _selectedObjects)
+	{
+		if (v == pickedObject->GetID())
+		{
+			exists = true;
+		}
+	}
+	if (!exists)
+	{
+		_selectedObjects.push_back(pickedObject->GetID());
+	}
+}
+
+void Player::SelectObjects(vector<vector<GameObject*>> pickedObjects)
+{
+	bool exists = false;
+	for (auto x : pickedObjects)
+	{
+		for (auto object : x)
+		{
+			exists = false;
+			for (auto v : _selectedObjects)
+			{
+				if (v == object->GetID())
+				{
+					exists = true;
+				}
+			}
+			if (!exists)
+			{
+				_selectedObjects.push_back(object->GetID());
+			}
+		}
+	}
+}
+
+void Player::DeselectObjects()
+{
+	_selectedObjects.clear();
+}
+
+vector<GameObject*> Player::GetSelectedObjects()
+{
+	vector<GameObject*> objects;
+	for (auto i : _selectedObjects)
+	{
+		GameObject* ob = _objectHandler->Find(i);
+		if (ob != nullptr)
+		{
+			objects.push_back(ob);
+		}
+	}
+	return objects;
 }

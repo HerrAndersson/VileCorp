@@ -9,6 +9,7 @@ class Player
 private:
 	ObjectHandler* _objectHandler;
 	vector<short> _selectedUnits;
+	vector<unsigned short> _selectedObjects;
 
 public:
 	Player();
@@ -23,5 +24,11 @@ public:
 	void MoveUnits(AI::Vec2D movePoint);
 	void PatrolUnits(AI::Vec2D patrolPoint);
 	int GetNumberOfSelectedUnits();
+
+	//Object Control
+	void SelectObjects(GameObject* pickedObject);
+	void SelectObjects(vector<vector<GameObject*>> pickedObjects);
+	void DeselectObjects();
+	vector<GameObject*> GetSelectedObjects();
 };
 
