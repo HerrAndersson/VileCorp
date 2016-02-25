@@ -1,4 +1,6 @@
 #pragma once
+
+#include "../System/SoundModule.h"
 #include <vector>
 #include "stdafx.h"
 #include "GameObject.h"
@@ -54,6 +56,7 @@ private:
 	Tilemap* _tilemap;
 	Grid* _buildingGrid;
 	Level::LevelHeader _currentLevelHeader;
+	System::SoundModule*	_soundModule;
 
 	int _idCount = 0;
 	int _objectCount = 0;
@@ -66,12 +69,12 @@ private:
 	map<GameObject*, Renderer::Pointlight*> _pointligths;
 	LightCulling* _lightCulling;
 
-	Renderer::ParticleEventQueue* _ParticleEventQueue;
+	Renderer::ParticleEventQueue* _particleEventQueue;
 
 	void ReleaseGameObjects();
 
 public:
-	ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data, System::Settings* settings, Renderer::ParticleEventQueue* particleReque);	
+	ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data, System::Settings* settings, Renderer::ParticleEventQueue* particleReque, System::SoundModule*	soundModule);
 	~ObjectHandler();
 
 	//Add a gameobject
@@ -113,6 +116,8 @@ public:
 	void EnableSpawnPoints();
 	void DisableSpawnPoints();
 	int GetRemainingToSpawn()const;
+
+	Renderer::ParticleEventQueue* GetParticleEventQueue();
 
 	//Update gamelogic of all objects
 	void Update(float deltaTime);

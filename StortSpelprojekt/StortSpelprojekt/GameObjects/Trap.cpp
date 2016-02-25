@@ -289,9 +289,9 @@ Trap::Trap()
 	_occupiedTiles = nullptr;
 }
 
-Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject * renderObject, 
+Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject * renderObject, System::SoundModule* soundModule, 
 		  const Tilemap* tileMap, int trapType, AI::Vec2D direction)
-	: GameObject(ID, position, rotation, tilePosition, type, renderObject)
+	: GameObject(ID, position, rotation, tilePosition, type, renderObject, soundModule)
 {
 	_isActive = true;
 	_direction = direction;
@@ -430,6 +430,8 @@ void Trap::Activate()
 		}
 	}
 	Animate(ACTIVATE);
+	PlayActivateSound();
+
 	SetTrapActive(false);
 }
 
@@ -530,5 +532,28 @@ void Trap::Animate(Anim anim)
 				break;
 			}
 		}
+	}
+}
+
+//Sound
+void Trap::PlayActivateSound()
+{
+	switch (_subType)
+	{
+	case SPIKE:
+		_soundModule->SetSoundPosition("anvil_activate", _position.x, 0.0f, _position.z);
+		_soundModule->Play("anvil_activate");
+		break;
+		
+	case TESLACOIL:
+		_soundModule->SetSoundPosition("tesla_activate", _position.x, 0.0f, _position.z);
+		_soundModule->Play("tesla_activate");
+		break;
+
+	case SHARK:
+		break;
+
+	case GUN:
+		break;
 	}
 }

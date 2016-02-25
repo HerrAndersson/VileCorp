@@ -14,7 +14,7 @@ private:
 
 public:
 	SecurityCamera();
-	SecurityCamera(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject* renderObject, const Tilemap* tileMap);
+	SecurityCamera(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject* renderObject, System::SoundModule* soundModule, const Tilemap* tileMap);
 	virtual ~SecurityCamera();
 	AI::Vec2D GetDirection() const;
 	void SetDirection(AI::Vec2D direction);

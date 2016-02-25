@@ -1,7 +1,7 @@
 #include "ObjectHandler.h"
 #include "stdafx.h"
 
-ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data, System::Settings* settings, Renderer::ParticleEventQueue* ParticleEventQueue)
+ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data, System::Settings* settings, Renderer::ParticleEventQueue* particleEventQueue, System::SoundModule*	soundModule)
 {
 	_settings = settings;
 	_idCount = 0;
@@ -12,7 +12,12 @@ ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, G
 	_device = device;
 	_lightCulling = nullptr;
 	_gameObjects.resize(NR_OF_TYPES);
-	_ParticleEventQueue = ParticleEventQueue;
+	_particleEventQueue = particleEventQueue;
+	_soundModule = soundModule;
+
+	//Init sounds
+	_soundModule->AddSound("enemy_death", 0.7f, 1.0f, false, false);
+	_soundModule->AddSound("guard_death", 1.0f, 0.6f, false, false);
 }
 
 ObjectHandler::~ObjectHandler()
@@ -35,22 +40,22 @@ bool ObjectHandler::Add(Blueprint* blueprint, int textureId, const XMFLOAT3& pos
 	case FLOOR:
 	case FURNITURE:
 	case LOOT:
-		object = new Architecture(_idCount, position, rotation, tilepos, type, renderObject);
+		object = new Architecture(_idCount, position, rotation, tilepos, type, renderObject, _soundModule);
 		break;
 	case SPAWN:
-		object = new SpawnPoint(_idCount, position, rotation, tilepos, type, renderObject, 66, 6);
+		object = new SpawnPoint(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, 66, 6);
 		break;
 	case TRAP:
-		object = new Trap(_idCount, position, rotation, tilepos, type, renderObject, _tilemap, blueprint->_subType);
+		object = new Trap(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, _tilemap, blueprint->_subType);
 		break;
 	case CAMERA:
-		object = new SecurityCamera(_idCount, position, rotation, tilepos, type, renderObject, _tilemap);
+		object = new SecurityCamera(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, _tilemap);
 		break;
 	case ENEMY:
-		object = new Enemy(_idCount, position, rotation, tilepos, type, renderObject, _tilemap);
+		object = new Enemy(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, _tilemap);
 		break;
 	case GUARD:
-		object = new Guard(_idCount, position, rotation, tilepos, type, renderObject, _tilemap);
+		object = new Guard(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, _tilemap);
 		break;
 	default:
 		break;
@@ -78,7 +83,7 @@ bool ObjectHandler::Add(Blueprint* blueprint, int textureId, const XMFLOAT3& pos
 		AI::Vec2D* arr = trap->GetTiles();
 		for (int i = 0; i < trap->GetTileSize() && addedObject; i++)
 		{
-			if (!_tilemap->CanPlaceObject(arr[i]))
+			if (!_tilemap->IsPlaceable(arr[i], blueprint->_type))
 			{
 				addedObject = false;
 			}
@@ -598,6 +603,27 @@ void ObjectHandler::Update(float deltaTime)
 							heldObject->SetPosition(XMFLOAT3(heldObject->GetPosition().x, 0.0f, heldObject->GetPosition().z));
 						}
 					}
+
+					//Bloodparticles on death
+					ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::SPLASH, ParticleSubType::BLOOD_SUBTYPE, -1, unit->GetPosition(), XMFLOAT3(0, 1, 0), 300.0f, 200, 0.1f, true);
+					GetParticleEventQueue()->Insert(msg);
+
+
+					//Play death sound
+					float x = g->GetPosition().x;
+					float z = g->GetPosition().z;
+					if (g->GetType() == ENEMY)
+					{
+						_soundModule->SetSoundPosition("enemy_death", x, 0.0f, z);
+						_soundModule->Play("enemy_death");
+					}
+					else if (g->GetType() == GUARD)
+					{
+						_soundModule->SetSoundPosition("guard_death", x, 0.0f, z);
+						_soundModule->Play("guard_death");
+					}
+
+					//Remove object
 					Remove(g);
 					g = nullptr;
 					unit = nullptr;
@@ -721,4 +747,10 @@ void ObjectHandler::ReleaseGameObjects()
 	}
 	_idCount = 0;
 	_objectCount = 0;
+}
+
+
+Renderer::ParticleEventQueue* ObjectHandler::GetParticleEventQueue()
+{
+	return _particleEventQueue;
 }

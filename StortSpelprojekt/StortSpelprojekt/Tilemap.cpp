@@ -189,6 +189,24 @@ void Tilemap::ClearTile(AI::Vec2D pos)
 	}
 }
 
+void Tilemap::LockTile(AI::Vec2D pos)
+{
+	if (_map[pos._x][pos._y]._objectsOnTile[0] != nullptr)
+	{
+		_map[pos._x][pos._y]._lock = true;
+		_map[pos._x][pos._y]._objectsOnTile[0]->SetColorOffset(XMFLOAT3(0.8f, 0, 0));
+	}
+}
+
+void Tilemap::UnlockTile(AI::Vec2D pos)
+{
+	if (_map[pos._x][pos._y]._objectsOnTile[0] != nullptr)
+	{
+		_map[pos._x][pos._y]._lock = false;
+		_map[pos._x][pos._y]._objectsOnTile[0]->SetColorOffset(XMFLOAT3(0.8f, 0.8f, 0));
+	}
+}
+
 int Tilemap::GetNrOfTiles() const
 {
 	return _height*_width;
@@ -323,6 +341,10 @@ bool Tilemap::IsPlaceable(int x, int z, Type type) const
 			{
 				placable = true;
 			}
+			if (_map[x][z]._lock)
+			{
+				placable = false;
+			}
 		}
 	}
 
@@ -332,19 +354,6 @@ bool Tilemap::IsPlaceable(int x, int z, Type type) const
 bool Tilemap::IsPlaceable(AI::Vec2D pos, Type type) const
 {
 	return IsPlaceable(pos._x, pos._y, type);
-}
-/*
-To place an object, the tile should be empty besides a floor
-*/
-bool Tilemap::CanPlaceObject(AI::Vec2D pos) const
-{
-	return IsFloorOnTile(pos) && _map[pos._x][pos._y]._objectsOnTile[1] == nullptr && _map[pos._x][pos._y]._objectsOnTile[2] == nullptr &&
-		_map[pos._x][pos._y]._objectsOnTile[3] == nullptr && _map[pos._x][pos._y]._objectsOnTile[5] == nullptr;
-}
-
-bool Tilemap::CanPlaceObject(int x, int z) const
-{
-	return CanPlaceObject(AI::Vec2D( x, z ));
 }
 
 bool Tilemap::IsArchitectureOnTile(int x, int z) const
