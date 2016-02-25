@@ -95,20 +95,7 @@ void GameLogic::HandleUnitSelect()
 
 	if (_controls->IsFunctionKeyUp("MOUSE:SELECT"))
 	{
-		//deselect everything first.
-		vector<Unit*> units = _player->GetSelectedUnits();
-
-		for (unsigned int i = 0; i < units.size(); i++)
-		{
-			units[i]->SetColorOffset(DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f));
-			if (units[i]->GetType() == GUARD)
-			{
-				for (auto p : ((Guard*)units[i])->GetPatrolRoute())
-				{
-					_objectHandler->GetTileMap()->GetObjectOnTile(p, FLOOR)->SetColorOffset(XMFLOAT3(0.0f, 0.0f, 0.0f));
-				}
-			}
-		}
+		//Deselect everything first.
 		_player->DeselectUnits();
 
 		//Check if we picked anything
@@ -121,19 +108,20 @@ void GameLogic::HandleUnitSelect()
 			for (unsigned int i = 0; i < pickedUnits.size(); i++)
 			{
 				_player->SelectUnit((Unit*)pickedUnits[i]);
-				pickedUnits[i]->SetColorOffset(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));
-				if (pickedUnits[i]->GetType() == GUARD)
-				{
-					for (auto p : ((Guard*)pickedUnits[i])->GetPatrolRoute())
-					{
-						_objectHandler->GetTileMap()->GetObjectOnTile(p, FLOOR)->SetColorOffset(XMFLOAT3(0.0f, 0.0f, 1.0f));
-					}
-				}
 			}
 
 			//Play "hm" sound
 			_soundModule->Play("Assets/Sounds/unit_select");
 		}
+	}
+
+	//Update Icon over Selected Guards
+	for (auto u : _player->GetSelectedUnits())
+	{
+		XMFLOAT3 pos = u->GetPosition();
+		pos.y += 2.5f;
+		ParticleUpdateMessage* msg = new ParticleUpdateMessage(u->GetID(), true, pos);
+		_objectHandler->GetParticleEventQueue()->Insert(msg);
 	}
 }
 
@@ -149,23 +137,7 @@ void GameLogic::HandlePatrol()
 			if (_objectHandler->GetTileMap()->IsFloorOnTile(tilePos))
 			{
 				_player->PatrolUnits(tilePos);
-			}
-
-			for (auto u : _player->GetSelectedUnits())
-			{
-				if (u->GetType() == GUARD)
-				{
-					for (auto p : ((Guard*)u)->GetPatrolRoute())
-					{
-						GameObject* patrolFloor = _objectHandler->GetTileMap()->GetObjectOnTile(p, FLOOR);
-						if (patrolFloor != nullptr)
-						{
-
-							patrolFloor->SetColorOffset(XMFLOAT3(0.0f, 0.0f, 1.0f));
-						}
-					}
-				}
-			}
+			}	
 		}
 	}
 }
@@ -175,18 +147,6 @@ void GameLogic::HandleUnitMove()
 	//Move units
 	if (_controls->IsFunctionKeyDown("MOUSE:DESELECT"))
 	{
-		//Remove colour from patrolroute
-		for (auto u : _player->GetSelectedUnits())
-		{
-			if (u->GetType() == GUARD)
-			{
-				for (auto p : ((Guard*)u)->GetPatrolRoute())
-				{
-					_objectHandler->GetTileMap()->GetObjectOnTile(p, FLOOR)->SetColorOffset(XMFLOAT3(0.0f, 0.0f, 0.0f));
-				}
-			}
-		}
-
 		AI::Vec2D selectedTile = _pickingDevice->PickTile(_controls->GetMouseCoord()._pos);
 		vector<Unit*> units = _player->GetSelectedUnits();
 

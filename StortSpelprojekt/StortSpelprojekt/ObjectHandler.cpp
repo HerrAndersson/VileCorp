@@ -1,7 +1,7 @@
 #include "ObjectHandler.h"
 #include "stdafx.h"
 
-ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data, System::Settings* settings, Renderer::ParticleEventQueue* ParticleEventQueue)
+ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data, System::Settings* settings, Renderer::ParticleEventQueue* particleEventQueue)
 {
 	_settings = settings;
 	_idCount = 0;
@@ -12,7 +12,7 @@ ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, G
 	_device = device;
 	_lightCulling = nullptr;
 	_gameObjects.resize(NR_OF_TYPES);
-	_ParticleEventQueue = ParticleEventQueue;
+	_particleEventQueue = particleEventQueue;
 }
 
 ObjectHandler::~ObjectHandler()
@@ -598,6 +598,12 @@ void ObjectHandler::Update(float deltaTime)
 							heldObject->SetPosition(XMFLOAT3(heldObject->GetPosition().x, 0.0f, heldObject->GetPosition().z));
 						}
 					}
+
+					//Bloodparticles on death
+					ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::SPLASH, ParticleSubType::BLOOD_SUBTYPE, -1, unit->GetPosition(), XMFLOAT3(0, 1, 0), 300.0f, 200, 0.1f, true);
+					GetParticleEventQueue()->Insert(msg);
+
+
 					Remove(g);
 					g = nullptr;
 					unit = nullptr;
@@ -721,4 +727,10 @@ void ObjectHandler::ReleaseGameObjects()
 	}
 	_idCount = 0;
 	_objectCount = 0;
+}
+
+
+Renderer::ParticleEventQueue* ObjectHandler::GetParticleEventQueue()
+{
+	return _particleEventQueue;
 }
