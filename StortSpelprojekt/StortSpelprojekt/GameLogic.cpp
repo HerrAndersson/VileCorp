@@ -26,8 +26,8 @@ GameLogic::GameLogic(ObjectHandler* objectHandler, System::Camera* camera, Syste
 	_surviveForSeconds = currentLevelHeader->_surviveForSeconds;
 	
 	_soundModule = soundModule;
-	_soundModule->AddSound("Assets/Sounds/unit_select", 0.5f, 1.0f, true, false);
-	_soundModule->AddSound("Assets/Sounds/unit_move", 0.5f, 1.0f, true, false);
+	_soundModule->AddSound("unit_select", 0.5f, 1.0f, true, false);
+	_soundModule->AddSound("unit_move", 0.5f, 1.0f, true, false);
 }
 
 GameLogic::~GameLogic()
@@ -132,7 +132,7 @@ void GameLogic::HandleUnitSelect()
 			}
 
 			//Play "hm" sound
-			_soundModule->Play("Assets/Sounds/unit_select");
+			_soundModule->Play("unit_select");
 		}
 	}
 }
@@ -202,7 +202,7 @@ void GameLogic::HandleUnitMove()
 		else if(units.size() > 0)
 		{
 			_player->MoveUnits(selectedTile);
-			_soundModule->Play("Assets/Sounds/unit_move");
+			_soundModule->Play("unit_move");
 		}
 	}
 }

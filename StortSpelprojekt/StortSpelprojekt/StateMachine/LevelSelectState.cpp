@@ -54,7 +54,7 @@ void LevelSelectState::Update(float deltaTime)
 		{
 			if (_uiTree.IsButtonColliding("playbutton", coord._pos.x, coord._pos.y))
 			{
-				_soundModule->Play("Assets/Sounds/page");
+				_soundModule->Play("page");
 
 				std::string levelBinaryPath;
 				if (_isCampaignMode)
@@ -81,7 +81,7 @@ void LevelSelectState::Update(float deltaTime)
 			}
 			if (_uiTree.IsButtonColliding("prevlevel", coord._pos.x, coord._pos.y))
 			{
-				_soundModule->Play("Assets/Sounds/page");
+				_soundModule->Play("page");
 				if (_isCampaignMode && _campaignSelection != _campaignSelectionMin)
 				{
 					_campaignSelection--;
@@ -99,7 +99,7 @@ void LevelSelectState::Update(float deltaTime)
 			}
 			if (_uiTree.IsButtonColliding("nextlevel", coord._pos.x, coord._pos.y))
 			{
-				_soundModule->Play("Assets/Sounds/page");
+				_soundModule->Play("page");
 				if (_isCampaignMode && _campaignSelection != _campaignSelectionMax)
 				{
 					_campaignSelection++;

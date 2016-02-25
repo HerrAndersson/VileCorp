@@ -35,13 +35,13 @@ namespace System
 		SoundModule();
 		~SoundModule();
 
-		bool AddSound(const std::string &pathName, float volume = 1.0f, float speed = 1.0f, bool relative = true, bool looping = false);
-		bool RemoveSound(const std::string &pathName);   //Not needed but good to have
+		bool AddSound(const std::string &fileName, float volume = 1.0f, float speed = 1.0f, bool relative = true, bool looping = false);
+		bool RemoveSound(const std::string &fileName);   //Not needed but good to have
 
 		void Update(float listenerX, float listenerY, float listenerZ);
-		bool Play(std::string pathName);
-		bool Pause(std::string pathName);
-		bool Stop(std::string pathName);
-		void SetSoundPosition(std::string pathName,float x, float y, float z);  //Sets position of a sound
+		bool Play(std::string fileName);
+		bool Pause(std::string fileName);
+		bool Stop(std::string fileName);
+		void SetSoundPosition(std::string fileName,float x, float y, float z);  //Sets position of a sound
 	};
 }

@@ -5,7 +5,7 @@ PlayState::PlayState(System::Controls* controls, ObjectHandler* objectHandler, S
 {
 	_gameLogic = nullptr;
 	_ambientLight = ambientLight;
-	_soundModule->AddSound("Assets/Sounds/in_game_2", 0.2f, 1.0f, true, true);
+	_soundModule->AddSound("in_game_2", 0.2f, 1.0f, true, true);
 }
 
 PlayState::~PlayState()
@@ -43,12 +43,12 @@ void PlayState::OnStateEnter()
 	_gameLogic = new GameLogic(_objectHandler, _camera, _controls, _pickingDevice, &_uiTree, _assetManager, _settingsReader, _soundModule);
 
 	//Play music
-	_soundModule->Play("Assets/Sounds/in_game_2");
+	_soundModule->Play("in_game_2");
 }
 
 void PlayState::OnStateExit()
 {
 	delete _gameLogic;
 	_gameLogic = nullptr;
-	_soundModule->Pause("Assets/Sounds/in_game_2");
+	_soundModule->Pause("in_game_2");
 }

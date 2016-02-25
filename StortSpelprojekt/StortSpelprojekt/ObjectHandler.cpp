@@ -16,8 +16,8 @@ ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, G
 	_soundModule = soundModule;
 
 	//Init sounds
-	_soundModule->AddSound("Assets/Sounds/guard_death", 1.0f, 0.6f, false, false);
-	_soundModule->AddSound("Assets/Sounds/enemy_death", 0.7f, 1.0f, false, false);
+	_soundModule->AddSound("enemy_death", 0.7f, 1.0f, false, false);
+	_soundModule->AddSound("guard_death", 1.0f, 0.6f, false, false);
 }
 
 ObjectHandler::~ObjectHandler()
@@ -609,13 +609,13 @@ void ObjectHandler::Update(float deltaTime)
 					float z = g->GetPosition().z;
 					if (g->GetType() == ENEMY)
 					{
-						_soundModule->SetSoundPosition("Assets/Sounds/enemy_death", x, 0.0f, z);
-						_soundModule->Play("Assets/Sounds/enemy_death");
+						_soundModule->SetSoundPosition("enemy_death", x, 0.0f, z);
+						_soundModule->Play("enemy_death");
 					}
 					else if (g->GetType() == GUARD)
 					{
-						_soundModule->SetSoundPosition("Assets/Sounds/guard_death", x, 0.0f, z);
-						_soundModule->Play("Assets/Sounds/guard_death");
+						_soundModule->SetSoundPosition("guard_death", x, 0.0f, z);
+						_soundModule->Play("guard_death");
 					}
 
 					//Remove object

@@ -31,13 +31,24 @@ namespace System
 		delete _allSounds;
 	}
 
-	bool SoundModule::AddSound(const std::string &pathName, float volume, float speed, bool relative, bool looping)
+	/*
+	AddSound: Builds its own path using fileName
+	*/
+	bool SoundModule::AddSound(const std::string &fileName, float volume, float speed, bool relative, bool looping)
 	{
-		std::string name = pathName;
-		name.append(soundExtension);
+		/*
+		stdPath set "Assets/Sounds/<name>.ogg
+		name is set to pathName
+		*/
+		std::string name = fileName;
+		std::string stdPath = "Assets/Sounds/";
+		stdPath.append(name);
+		stdPath.append(soundExtension);
+
 		bool answer = true;
 		(*_allSounds)[name] = new YSE::sound();
-		(*_allSounds)[name]->create(name.c_str());
+		(*_allSounds)[name]->create(stdPath.c_str());
+
 		//Check if file could be loaded
 		if (!(*_allSounds)[name]->isValid())
 		{
@@ -58,10 +69,10 @@ namespace System
 		return answer;
 	}
 
-	bool SoundModule::RemoveSound(const std::string &pathName)
+	bool SoundModule::RemoveSound(const std::string &fileName)
 	{
-		std::string name = pathName;
-		name.append(soundExtension);
+		std::string name = fileName;
+
 		bool answer = false;
 		auto it = _allSounds->find(name);
 		if (it != _allSounds->end())
@@ -82,67 +93,63 @@ namespace System
 		YSE::System().update();
 	}
 
-	bool SoundModule::Play(std::string pathName)
+	bool SoundModule::Play(std::string fileName)
 	{
-		pathName.append(soundExtension);
 		bool answer = false;
 
-		if (_allSounds->find(pathName) != _allSounds->end())
+		if (_allSounds->find(fileName) != _allSounds->end())
 		{
-			(*_allSounds)[pathName]->play();
+			(*_allSounds)[fileName]->play();
 			answer = true;
 		}
 		else
 		{
-			throw std::runtime_error("Could not play audio: " + pathName);
+			throw std::runtime_error("Could not play audio: " + fileName);
 		}
 
 		return answer;
 	}
 
-	bool SoundModule::Pause(std::string pathName)
+	bool SoundModule::Pause(std::string fileName)
 	{
-		pathName.append(soundExtension);
 		bool answer = false;
 
-		if (_allSounds->find(pathName) != _allSounds->end())
+		if (_allSounds->find(fileName) != _allSounds->end())
 		{
-			(*_allSounds)[pathName]->pause();
+			(*_allSounds)[fileName]->pause();
 			answer = true;
 		}
 		else
 		{
-			throw std::runtime_error("Could not pause audio: " + pathName);
+			throw std::runtime_error("Could not pause audio: " + fileName);
 		}
 
 		return answer;
 	}
 
-	bool SoundModule::Stop(std::string pathName)
+	bool SoundModule::Stop(std::string fileName)
 	{
-		pathName.append(soundExtension);
 		bool answer = false;
 
-		if (_allSounds->find(pathName) != _allSounds->end())
+		if (_allSounds->find(fileName) != _allSounds->end())
 		{
-			(*_allSounds)[pathName]->stop();
+			(*_allSounds)[fileName]->stop();
 			answer = true;
 		}
 
 		return answer;
 	}
 
-	void SoundModule::SetSoundPosition(std::string pathName ,float x, float y, float z)
+	void SoundModule::SetSoundPosition(std::string fileName ,float x, float y, float z)
 	{
-		pathName.append(soundExtension);
 
-		if (_allSounds->find(pathName) != _allSounds->end())
+		if (_allSounds->find(fileName) != _allSounds->end())
 		{
-			(*_allSounds)[pathName]->setPosition(YSE::Vec(x / OFFSET, y / OFFSET, z / OFFSET));
+			(*_allSounds)[fileName]->setPosition(YSE::Vec(x / OFFSET, y / OFFSET, z / OFFSET));
 		}
 		else
 		{
-			throw std::runtime_error("Could not set audio position for: " + pathName);
+			throw std::runtime_error("Could not set audio position for: " + fileName);
 		}
 
 	}
