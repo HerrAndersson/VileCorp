@@ -229,7 +229,8 @@ void Trap::Initialize(int damage, int tileSize, int triggerSize, int AOESize, in
 	_statusTimer = statusTimer;
 	_statusInterval = statusInterval;
 	_maxTimeToTrigger = triggerTimer;
-	_ammunition = ammunition;
+	_maxAmmunition = ammunition;
+	_currentAmmunition = ammunition;
 }
 
 /*
@@ -341,7 +342,7 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 		firstFrame = true;
 		break;
 	case TESLACOIL:	
-		Initialize(0, 9, 9, 37, 80, 80, Unit::StatusEffect::STUNNED, 120, 120);
+		Initialize(0, 9, 9, 37, 80, 80, Unit::StatusEffect::STUNNED, 120, 120, 60, 2);
 		break;
 	case SHARK:
 		Initialize(100, 12, 2, 2, 50, 50, Unit::StatusEffect::NO_EFFECT, 0, 0);
@@ -430,6 +431,7 @@ void Trap::SetTrapActive(bool active)
 	if (active)
 	{
 		SetColorOffset({0,0,0});
+		_currentAmmunition = _maxAmmunition;
 	}
 	else
 	{
@@ -452,7 +454,16 @@ void Trap::Activate()
 		}
 	}
 	Animate(ACTIVATE);
-	SetTrapActive(false);
+
+	_currentAmmunition--;
+	if (_currentAmmunition <= 0)
+	{
+		SetTrapActive(false);
+	}
+	else
+	{
+		_triggerTimer = _maxTimeToTrigger;
+	}
 }
 
 void Trap::Update(float deltaTime)
@@ -462,17 +473,45 @@ void Trap::Update(float deltaTime)
 		_animation->Update(deltaTime);
 	}
 	bool triggered = false;
-	for (int i = 0; i < _nrOfTriggers && !triggered; i++)
+
+	if (_subType == TrapType::SAW )
 	{
-		if (_tileMap->IsEnemyOnTile(_triggerTiles[i]))
+		if (System::FrameCountdown(_triggerTimer, _maxTimeToTrigger, 0))
+		{
+			int i = 0;
+			while (_occupiedTiles[i++] != _triggerTiles[0] && i < _nrOfOccupiedTiles)			//find which index matches to the current trigger
+			{}
+			_triggerTiles[0] = _occupiedTiles[i%_nrOfOccupiedTiles];
+			_areaOfEffect[0] = _triggerTiles[0];
+		}
+		if (_tileMap->IsEnemyOnTile(_triggerTiles[0]))
 		{
 			triggered = true;
 		}
 	}
+	else
+	{
+		if (_triggerTimer <= 0)
+		{
+			for (int i = 0; i < _nrOfTriggers && !triggered; i++)
+			{
+				if (_tileMap->IsEnemyOnTile(_triggerTiles[i]))
+				{
+					triggered = true;
+				}
+			}
+		}
+		else
+		{
+			_triggerTimer--;
+		}
+	}
+
 	if (triggered && _isActive)
 	{
 		Activate();
 	}
+
 	if (_isActive)
 	{
 		SetColorOffset({0,3,0});

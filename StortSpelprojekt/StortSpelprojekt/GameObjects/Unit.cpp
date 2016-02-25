@@ -318,7 +318,7 @@ void Unit::Update(float deltaTime)
 	{
 		DeactivateStatus();
 	}
-	else if (System::FrameCountdown(_statusTimer, 0, _statusInterval * (_statusTimer / _statusInterval)))
+	else if (_status != StatusEffect::NO_EFFECT && System::FrameCountdown(_statusTimer, 0, _statusInterval * (_statusTimer / _statusInterval)))
 	{
 		ActivateStatus();
 	}

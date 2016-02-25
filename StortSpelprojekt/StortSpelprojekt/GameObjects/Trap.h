@@ -23,7 +23,8 @@ private:
 
 	int _triggerTimer;					//Used either for moving triggers around (e.g. spinning sawblade) or time between automatic reloads (e.g. firearms)
 	int	_maxTimeToTrigger;				//What _triggerTime resets to
-	int _ammunition;					//Number of times the traps can trigger before needing a guard to reset it. -1 = infinite
+	int _maxAmmunition;
+	int _currentAmmunition;					//Number of times the traps can trigger before needing a guard to reset it. -1 = infinite
 
 	const Tilemap* _tileMap;
 
