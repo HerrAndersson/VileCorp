@@ -5,6 +5,12 @@ MenuState::MenuState(System::Controls* controls, ObjectHandler* objectHandler, S
 {
 	_soundModule->AddSound("Assets/Sounds/theme", 0.15f, 1.0f, true, true);
 	_soundModule->AddSound("Assets/Sounds/page", 1.0f, 1.0f, true, false);
+
+	XMFLOAT4 color(0.1f, 0.1f, 0.1f, 1.0f);
+	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("playbutton"), color, _uiTree.GetNode("play")));
+	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("leveleditbutton"), color, _uiTree.GetNode("leveledit")));
+	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("optionsbutton"), color, _uiTree.GetNode("options")));
+	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("exitbutton"), color, _uiTree.GetNode("exit")));
 }
 
 MenuState::~MenuState()
@@ -14,19 +20,14 @@ MenuState::~MenuState()
 
 void MenuState::Update(float deltaTime)
 {
-
-	//ChangeState(State::PLACEMENTSTATE);
-
 	if (_controls->IsFunctionKeyDown("DEBUG:RELOAD_GUI"))
 	{
 		_uiTree.ReloadTree("../../../../StortSpelprojekt/Assets/GUI/menu.json");
 	}
 
 	System::MouseCoord coord = _controls->GetMouseCoord();
-	HandleHoverColorOffset("playbutton", "play", coord, XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f));
-	HandleHoverColorOffset("leveleditbutton", "leveledit", coord, XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f));
-	HandleHoverColorOffset("optionsbutton", "options", coord, XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f));
-	HandleHoverColorOffset("exitbutton", "exit", coord, XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f));
+
+	HandleButtonHighlight(coord);
 
 	if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{

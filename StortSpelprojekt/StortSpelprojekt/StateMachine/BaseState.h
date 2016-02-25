@@ -9,6 +9,7 @@
 #include "../UITree.h"
 #include "../../System/SettingsReader.h"
 #include "../TutorialLogic.h"
+#include "GUI elements/HighlightNode.h"
 
 
 class BaseState
@@ -27,6 +28,8 @@ protected:
 	PickingDevice*			_pickingDevice;
 	System::SoundModule*	_soundModule;
 	System::SettingsReader* _settingsReader;
+
+	std::vector<GUI::HighlightNode> _buttonHighlights;
 	
 	void ChangeState(State newState);
 	void ResetMouse();
@@ -38,8 +41,7 @@ protected:
 	void HandleCamRot();
 	void HandleCamMove(float deltaTime);
 
-	void HandleHoverColorOffset(const std::string& button, const std::string& node, System::MouseCoord coord, XMFLOAT4 rgba);
-
+	void HandleButtonHighlight(System::MouseCoord coord);
 public:
 	BaseState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule);
 	virtual ~BaseState();

@@ -25,6 +25,9 @@ PlacementState::PlacementState(System::Controls* controls, ObjectHandler* object
 
 	//Add sound
 	_soundModule->AddSound("Assets/Sounds/in_game_1", 0.2f, 1.0f, true, true);
+
+	//Add buttons to be highlighted on hover
+	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("Play")));
 }
 
 void PlacementState::EvaluateGoldCost()
@@ -73,15 +76,9 @@ void PlacementState::Update(float deltaTime)
 	{
 		//Handle the buttons normally
 		HandleButtons();
-		HandleHoverColorOffset("Guard", "Guard", coord, XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f));
-		HandleHoverColorOffset("AnvilTrap", "AnvilTrap", coord, XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f));
-		HandleHoverColorOffset("TeslaTrap", "TeslaTrap", coord, XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f));
-		HandleHoverColorOffset("Camera", "Camera", coord, XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f));
-		HandleHoverColorOffset("Play", "Play", coord, XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f));
-
-	HandleDescriptions();
+		HandleDescriptions();
 	}
-	
+	HandleButtonHighlight(coord);
 	HandleInput();
 	HandleCam(deltaTime);
 
@@ -118,6 +115,7 @@ void PlacementState::OnStateEnter()
 		GUI::BlueprintNode* newUnit = new GUI::BlueprintNode(*units->at(i), _objectHandler->GetBlueprintByName(units->at(i)->GetId()), 0);
 		delete units->at(i);
 		units->at(i) = (GUI::Node*)newUnit;
+		_buttonHighlights.push_back(GUI::HighlightNode(units->at(i), XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f)));
 	}
 
 	//TODO: Move hardcoded costs and description to logical location /Rikhard

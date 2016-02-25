@@ -32,6 +32,22 @@ OptionsState::OptionsState(System::Controls* controls, ObjectHandler* objectHand
 
 	//TODO: Volume setting //Mattias
 	_volumeOption = 100.0f;
+
+	XMFLOAT4 color(0.3f, 0.3f, 0.3f, 1.0f);
+	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("apply"), color));
+	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("cancel"), color));
+
+	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("res_left"), color));
+	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("win_left"), color));
+	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("aa_left"), color));
+	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("shadow_left"), color));
+	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("sound_left"), color));
+
+	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("res_right"), color));
+	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("win_right"), color));
+	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("aa_right"), color));
+	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("shadow_right"), color));
+	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("sound_right"), color));
 }
 
 OptionsState::~OptionsState()
@@ -97,19 +113,7 @@ void OptionsState::Update(float deltaTime)
 		_uiTree.ReloadTree("../../../../StortSpelprojekt/Assets/GUI/options.json");
 	}
 	System::MouseCoord coord = _controls->GetMouseCoord();
-	XMFLOAT4 color(0.3f, 0.3f, 0.3f, 1.0f);
-	HandleHoverColorOffset("apply", "apply", coord, color);
-	HandleHoverColorOffset("cancel", "cancel", coord, color);
-
-	HandleHoverColorOffset("res_left", "res_left", coord, color);
-	HandleHoverColorOffset("win_left", "win_left", coord, color);
-	HandleHoverColorOffset("aa_left", "aa_left", coord, color);
-	HandleHoverColorOffset("shadow_left", "shadow_left", coord, color);
-
-	HandleHoverColorOffset("res_right", "res_right", coord, color);
-	HandleHoverColorOffset("win_right", "win_right", coord, color);
-	HandleHoverColorOffset("aa_right", "aa_right", coord, color);
-	HandleHoverColorOffset("shadow_right", "shadow_right", coord, color);
+	HandleButtonHighlight(coord);
 
 	if (_controls->IsFunctionKeyDown("MENU:MENU"))
 	{
