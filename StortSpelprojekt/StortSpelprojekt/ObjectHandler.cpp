@@ -12,7 +12,7 @@ ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, G
 	_device = device;
 	_lightCulling = nullptr;
 	_gameObjects.resize(NR_OF_TYPES);
-	_ParticleEventQueue = ParticleEventQueue;
+	_particleEventQueue = particleEventQueue;
 	_soundModule = soundModule;
 
 	//Init sounds
@@ -604,6 +604,11 @@ void ObjectHandler::Update(float deltaTime)
 						}
 					}
 
+					//Bloodparticles on death
+					ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::SPLASH, ParticleSubType::BLOOD_SUBTYPE, -1, unit->GetPosition(), XMFLOAT3(0, 1, 0), 300.0f, 200, 0.1f, true);
+					GetParticleEventQueue()->Insert(msg);
+
+
 					//Play death sound
 					float x = g->GetPosition().x;
 					float z = g->GetPosition().z;
@@ -742,4 +747,10 @@ void ObjectHandler::ReleaseGameObjects()
 	}
 	_idCount = 0;
 	_objectCount = 0;
+}
+
+
+Renderer::ParticleEventQueue* ObjectHandler::GetParticleEventQueue()
+{
+	return _particleEventQueue;
 }

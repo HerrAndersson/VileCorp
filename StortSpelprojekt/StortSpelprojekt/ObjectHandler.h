@@ -69,7 +69,7 @@ private:
 	map<GameObject*, Renderer::Pointlight*> _pointligths;
 	LightCulling* _lightCulling;
 
-	Renderer::ParticleEventQueue* _ParticleEventQueue;
+	Renderer::ParticleEventQueue* _particleEventQueue;
 
 	void ReleaseGameObjects();
 
@@ -116,6 +116,8 @@ public:
 	void EnableSpawnPoints();
 	void DisableSpawnPoints();
 	int GetRemainingToSpawn()const;
+
+	Renderer::ParticleEventQueue* GetParticleEventQueue();
 
 	//Update gamelogic of all objects
 	void Update(float deltaTime);
