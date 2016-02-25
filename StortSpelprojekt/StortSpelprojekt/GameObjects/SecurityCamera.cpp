@@ -33,7 +33,7 @@ SecurityCamera::SecurityCamera()
 	_visionCone = nullptr;
 }
 
-SecurityCamera::SecurityCamera(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject * renderObject, const Tilemap * tileMap)
+SecurityCamera::SecurityCamera(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject * renderObject, const Tilemap * tileMap)
 	: GameObject(ID, position, rotation, tilePosition, type, renderObject)
 {
 	_tileMap = tileMap;
@@ -72,7 +72,7 @@ void SecurityCamera::CheckVisibleTiles()
 		if (_tileMap->IsEnemyOnTile(tile))
 		{
 			Enemy* enemy;
-			enemy = static_cast<Enemy*>(_tileMap->GetObjectOnTile(tile, ENEMY));
+			enemy = static_cast<Enemy*>(_tileMap->GetObjectOnTile(tile, System::ENEMY));
 			if (enemy != nullptr)
 			{
 				enemy->ResetVisibilityTimer();

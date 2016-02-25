@@ -69,7 +69,7 @@ void Player::MoveUnits(AI::Vec2D movePoint)
 		if (unit != nullptr)
 		{
 			//If a patrolling unit is told to move it will break its patrolroute
-			if (unit->GetType() == GUARD)
+			if (unit->GetType() == System::GUARD)
 			{
 				((Guard*)unit)->RemovePatrol();
 			}
@@ -88,7 +88,7 @@ void Player::PatrolUnits(AI::Vec2D patrolPoint)
 
 		if (unit != nullptr)
 		{
-			if (unit->GetType() == GUARD)
+			if (unit->GetType() == System::GUARD)
 			{
 				((Guard*)unit)->SetPatrolPoint(patrolPoint);
 			}

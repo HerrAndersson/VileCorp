@@ -4,7 +4,7 @@ struct ToPlace
 {
 	ToPlace()
 	{
-		_type = TRAP;
+		_type = System::TRAP;
 		_subType = 0;
 		_name = "trap_proto";
 		ResetTemps();
@@ -14,7 +14,7 @@ struct ToPlace
 		_goldCost = -1;
 		_blueprintID = 1;
 	}
-	Type _type;
+	System::Type _type;
 	int _subType;
 	std::string _name;
 	int _goldCost;

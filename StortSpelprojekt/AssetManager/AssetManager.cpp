@@ -57,7 +57,7 @@ AssetManager::~AssetManager()
 bool AssetManager::SetupRenderObjectList(Tileset* tileset)
 {
 	_modelFiles->clear();
-	for (int i = 0; i < NR_OF_TYPES; i++)
+	for (int i = 0; i < System::NR_OF_TYPES; i++)
 	{
 		for (string str : tileset->_objects[i])
 		{
@@ -67,7 +67,7 @@ bool AssetManager::SetupRenderObjectList(Tileset* tileset)
 			{
 				return false;
 			}
-			renderObject->_type = (Type)i;
+			renderObject->_type = (System::Type)i;
 			_renderObjects->push_back(renderObject);
 		}
 	}
@@ -419,8 +419,8 @@ RenderObject* AssetManager::ScanModel28()
 
 	renderObject->_mesh._vertexBufferSize = meshHeader._numberOfVertices;
 
-	renderObject->_mesh._hitbox = new Hitbox();
-	_infile->read((char*)renderObject->_mesh._hitbox, sizeof(Hitbox));
+	renderObject->_mesh._hitbox = new System::Hitbox();
+	_infile->read((char*)renderObject->_mesh._hitbox, sizeof(System::Hitbox));
 
 	return renderObject;
 }
@@ -648,7 +648,7 @@ RenderObject* AssetManager::GetRenderObject(int index)
 	return renderObject;
 }
 
-uint AssetManager::GetRenderObjectByType(Type type, uint index)
+uint AssetManager::GetRenderObjectByType(System::Type type, uint index)
 {
 	uint i = 0;
 	uint returnIndex = 0;

@@ -51,7 +51,7 @@ protected:
 	void SetGoal(GameObject* objective);
 public:
 	Unit();
-	Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject* renderObject, const Tilemap* tileMap);
+	Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject* renderObject, const Tilemap* tileMap);
 	virtual ~Unit();
 
 	int GetPathLength()const;
@@ -77,7 +77,7 @@ public:
 	void CheckVisibleTiles();
 	void CheckAllTiles();
 	void InitializePathFinding();
-	virtual void EvaluateTile(Type objective, AI::Vec2D tile) = 0;
+	virtual void EvaluateTile(System::Type objective, AI::Vec2D tile) = 0;
 	virtual void EvaluateTile(GameObject* obj) = 0;
 	virtual void Act(GameObject* obj) = 0;
 
@@ -92,9 +92,6 @@ public:
 	void ActivateStatus();
 	void DeactivateStatus();
 	void TakeDamage(int damage);
-
-	void UseCountdown(int frames = 0);
-	bool StatusCountdown();
 
 	void Animate(Anim anim);
 };

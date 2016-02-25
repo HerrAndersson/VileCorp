@@ -49,12 +49,12 @@ bool BaseEdit::DeleteSelectedObject()
 	return removed;
 }
 
-bool BaseEdit::Add(Type type, const std::string& name)
+bool BaseEdit::Add(System::Type type, const std::string& name)
 {
 	return _objectHandler->Add(type, name, _marker._g->GetPosition(), XMFLOAT3(0.0f, 0.0f, 0.0f));
 }
 
-bool BaseEdit::Delete(Type type)
+bool BaseEdit::Delete(System::Type type)
 {
 	vector<GameObject*>* vec = &_objectHandler->GetGameObjects()->at(type);
 	for (GameObject* g : *vec)
@@ -69,7 +69,7 @@ bool BaseEdit::Delete(Type type)
 	return false;
 }
 
-bool BaseEdit::TypeOn(Type type)
+bool BaseEdit::TypeOn(System::Type type)
 {
 	vector<GameObject*>* vec = &_objectHandler->GetGameObjects()->at(type);
 	for (GameObject* g : *vec)
@@ -83,7 +83,7 @@ bool BaseEdit::TypeOn(Type type)
 	return false;
 }
 
-bool BaseEdit::CheckValidity(AI::Vec2D tile, Type type)
+bool BaseEdit::CheckValidity(AI::Vec2D tile, System::Type type)
 {
 	GameObject* objectOnTile = _tileMap->GetObjectOnTile(tile._x, tile._y, type);
 
@@ -91,27 +91,27 @@ bool BaseEdit::CheckValidity(AI::Vec2D tile, Type type)
 
 	if (objectOnTile == nullptr && _tileMap->IsPlaceable(tile, type))
 	{
-		if (type == WALL && !_tileMap->IsTileEmpty(tile))
+		if (type == System::WALL && !_tileMap->IsTileEmpty(tile))
 		{
 			valid = false;
 		}
 		else
 		{
-			if (type == GUARD || type == ENEMY)
+			if (type == System::GUARD || type == System::ENEMY)
 			{
-				if (_tileMap->UnitsOnTile(tile) || _tileMap->IsTrapOnTile(tile) || _tileMap->IsTypeOnTile(tile, CAMERA))
+				if (_tileMap->UnitsOnTile(tile) || _tileMap->IsTrapOnTile(tile) || _tileMap->IsTypeOnTile(tile, System::CAMERA))
 				{
 					valid = false;
 				}
 			}
-			else if (type == TRAP)
+			else if (type == System::TRAP)
 			{
-				if (_tileMap->UnitsOnTile(tile) || _tileMap->IsTypeOnTile(tile, CAMERA))
+				if (_tileMap->UnitsOnTile(tile) || _tileMap->IsTypeOnTile(tile, System::CAMERA))
 				{
 					valid = false;
 				}
 			}
-			else if (type == CAMERA)
+			else if (type == System::CAMERA)
 			{
 				if (_tileMap->UnitsOnTile(tile) || _tileMap->IsTrapOnTile(tile))
 				{
@@ -129,7 +129,7 @@ bool BaseEdit::CheckValidity(AI::Vec2D tile, Type type)
 	return valid;
 }
 
-void BaseEdit::SetValidity(Marker* m, Type type)
+void BaseEdit::SetValidity(Marker* m, System::Type type)
 {
 	AI::Vec2D pickedTile = _pickingDevice->PickTile(_controls->GetMouseCoord()._pos);
 
@@ -163,7 +163,7 @@ void BaseEdit::SetValidity(Marker* m, Type type)
 	}
 }
 
-void BaseEdit::MarkerMoveEvent(Type type)
+void BaseEdit::MarkerMoveEvent(System::Type type)
 {
 	if (_marker._g != nullptr && _marker._g->GetType() == type && 
 		(_controls->IsFunctionKeyDown("MOUSE:DRAG") ||(_isDragAndPlaceMode && _modeLock)))
@@ -172,7 +172,7 @@ void BaseEdit::MarkerMoveEvent(Type type)
 	}
 }
 
-void BaseEdit::DragAndDropEvent(Type type)
+void BaseEdit::DragAndDropEvent(System::Type type)
 {
 	if (_controls->IsFunctionKeyDown("MOUSE:SELECT") && !_isPlace)
 	{
@@ -192,7 +192,7 @@ void BaseEdit::DragAndDropEvent(Type type)
 	}
 }
 
-void BaseEdit::CreateBlueprints(Type type, const std::string & objectName)
+void BaseEdit::CreateBlueprints(System::Type type, const std::string & objectName)
 {
 	_modeLock = true;
 
@@ -215,7 +215,7 @@ void BaseEdit::ReleaseBlueprints()
 	_baseMarker._g = nullptr;
 }
 
-void BaseEdit::DragAndDrop(Type type)
+void BaseEdit::DragAndDrop(System::Type type)
 {
 	if (_isSelectionMode)
 	{
@@ -263,9 +263,9 @@ void BaseEdit::DragAndDrop()
 	{
 		// Drag in world
 		bool found = false;
-		for (int i = Type::NR_OF_TYPES - 1; i > -1 && !found; i--)
+		for (int i = System::Type::NR_OF_TYPES - 1; i > -1 && !found; i--)
 		{
-			DragAndDrop((Type)i);
+			DragAndDrop((System::Type)i);
 			if (_marker._g != nullptr)
 			{
 				found = true;
@@ -279,7 +279,7 @@ void BaseEdit::DragAndDrop()
 	}
 }
 
-void BaseEdit::DragAndPlace(Type type, const std::string& objectName)
+void BaseEdit::DragAndPlace(System::Type type, const std::string& objectName)
 {
 	if (_isDragAndPlaceMode)
 	{
@@ -377,7 +377,7 @@ void BaseEdit::DragAndPlace(Type type, const std::string& objectName)
 	}
 }
 
-void BaseEdit::DragActivate(Type type, const std::string& objectName, int subType)
+void BaseEdit::DragActivate(System::Type type, const std::string& objectName, int subType)
 {
 	AI::Vec2D pickedTile = _pickingDevice->PickTile(_controls->GetMouseCoord()._pos);
 	XMFLOAT3 pos = XMFLOAT3(pickedTile._x, 0, pickedTile._y);
@@ -452,7 +452,7 @@ void BaseEdit::HandleInput(double deltaTime)
 		{
 			_marker._g->SetDirection(AI::GetNextDirection(static_cast<Unit*>(_marker._g)->GetDirection(), clockwise));
 
-			if (_marker._g->GetType() == TRAP)			//Traps need to be right angles
+			if (_marker._g->GetType() == System::TRAP)			//Traps need to be right angles
 			{
 				XMFLOAT3 tempRot = _marker._g->GetRotation();
 				_marker._g->SetDirection(AI::GetNextDirection(static_cast<Unit*>(_marker._g)->GetDirection(), clockwise));

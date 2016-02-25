@@ -211,9 +211,9 @@ bool Game::Update(double deltaTime)
 	std::vector<std::vector<GameObject*>>* gameObjects = _objectHandler->GetGameObjects();
 	if (gameObjects->size() > 0)
 	{
-		for (unsigned int i = 0; i < gameObjects->at(GUARD).size(); i++)
+		for (unsigned int i = 0; i < gameObjects->at(System::GUARD).size(); i++)
 		{
-			GameObject* g = gameObjects->at(GUARD).at(i);
+			GameObject* g = gameObjects->at(System::GUARD).at(i);
 			if (g)
 			{
 				XMFLOAT3 pos = g->GetPosition();

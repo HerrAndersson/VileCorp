@@ -10,16 +10,16 @@ public:
 
 	bool LoadGameObjectInfo(GameObjectInfo* data);
 	void WriteSampleGameObjects();
-	std::map<Type, std::string> typeStrings =
+	std::map< System::Type, std::string> typeStrings =
 	{
-		{ FLOOR, "Floors/" },
-		{ WALL, "Walls/" },
-		{ LOOT, "Loot/" },
-		{ SPAWN, "Spawns/" },
-		{ TRAP, "Traps/" },
-		{ GUARD, "Guards/" },
-		{ ENEMY, "Enemies/" },
-		{ CAMERA, "Cameras/" },
+		{System::FLOOR, "Floors/" },
+		{System::WALL, "Walls/" },
+		{System::LOOT, "Loot/" },
+		{System::SPAWN, "Spawns/" },
+		{System::TRAP, "Traps/" },
+		{System::GUARD, "Guards/" },
+		{System::ENEMY, "Enemies/" },
+		{System::CAMERA, "Cameras/" },
 	};
 };
 
@@ -34,37 +34,37 @@ inline GameObjectDataLoader::~GameObjectDataLoader()
 inline bool GameObjectDataLoader::LoadGameObjectInfo(GameObjectInfo* data)
 {
 	vector<string> filenames;
-	for (uint a = 0; a < Type::NR_OF_TYPES; a++)
+	for (uint a = 0; a <  System::Type::NR_OF_TYPES; a++)
 	{
 		string folder = "Assets/Gameobjects/";
-		folder.append(typeStrings[(Type)a]);
+		folder.append(typeStrings[(System::Type)a]);
 		GetFilenamesInDirectory((char*)folder.c_str(), ".json", filenames);
 		for (uint i = 0; i < filenames.size(); i++)
 		{
 			switch (a)
 			{
-			case FLOOR:
+			case  System::FLOOR:
 				System::loadJSON(data->Floors(i), filenames[i]);
 				break;
-			case WALL:
+			case  System::WALL:
 				System::loadJSON(data->Walls(i), filenames[i]);
 				break;
-			case LOOT:
+			case  System::LOOT:
 				System::loadJSON(data->Loot(i), filenames[i]);
 				break;
-			case SPAWN:
+			case  System::SPAWN:
 				System::loadJSON(data->Spawns(i), filenames[i]);
 				break;
-			case TRAP:
+			case  System::TRAP:
 				System::loadJSON(data->Traps(i), filenames[i]);
 				break;
-			case CAMERA:
+			case  System::CAMERA:
 				System::loadJSON(data->Cameras(i), filenames[i]);
 				break;
-			case GUARD:
+			case  System::GUARD:
 				System::loadJSON(data->Guards(i), filenames[i]);
 				break;
-			case ENEMY:
+			case  System::ENEMY:
 				System::loadJSON(data->Enemies(i), filenames[i]);
 				break;
 			}

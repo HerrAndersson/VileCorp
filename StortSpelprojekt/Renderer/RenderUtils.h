@@ -93,7 +93,7 @@ struct Point
 struct Mesh
 {
 	ID3D11Buffer* _vertexBuffer;
-	Hitbox* _hitbox = nullptr;
+	System::Hitbox* _hitbox = nullptr;
 	int _vertexBufferSize, _toMesh;
 	std::vector<PointlightData> _pointLights;
 	std::vector<SpotlightData> _spotLights;
@@ -120,7 +120,7 @@ struct Texture
 
 struct RenderObject
 {
-	Type _type = Type::FLOOR;
+	System::Type _type = System::Type::FLOOR;
 	bool _meshLoaded, _toUnload;
 	bool _isSkinned = false;
 	std::string _name;

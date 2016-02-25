@@ -36,10 +36,10 @@ private:
 	{
 		ToPlace()
 		{
-			_type = TRAP;
+			_type = System::TRAP;
 			_name = "trap_proto";
 		}
-		Type _type;
+		System::Type _type;
 		std::string _name;
 	} _toPlace;
 	

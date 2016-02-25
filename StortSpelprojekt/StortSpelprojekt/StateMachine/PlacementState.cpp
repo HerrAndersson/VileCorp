@@ -40,11 +40,11 @@ void PlacementState::EvaluateGoldCost()
 		_toPlace._goldCost = _costOfTeslaCoil;
 	}
 
-	if (_toPlace._type == CAMERA)
+	if (_toPlace._type == System::CAMERA)
 	{
 		_toPlace._goldCost = _costOfCamera;
 	}
-	else if (_toPlace._type == GUARD)
+	else if (_toPlace._type == System::GUARD)
 	{
 		_toPlace._goldCost = _costOfGuard;
 	}
@@ -143,9 +143,9 @@ void PlacementState::HandleInput()
 		ChangeState(PAUSESTATE);
 	}
 
-	_baseEdit->DragAndDrop(TRAP);
-	_baseEdit->DragAndDrop(GUARD);
-	_baseEdit->DragAndDrop(CAMERA);
+	_baseEdit->DragAndDrop(System::TRAP);
+	_baseEdit->DragAndDrop(System::GUARD);
+	_baseEdit->DragAndDrop(System::CAMERA);
 
 	if (_baseEdit->GetSelectedObject() != nullptr)
 	{
@@ -198,7 +198,7 @@ void PlacementState::HandleButtons()
 	if (_uiTree.IsButtonColliding("Guard", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
 		// Temp, should be replaced with blueprint
-		_toPlace._type = GUARD;
+		_toPlace._type = System::GUARD;
 		_toPlace._name = "guard_proto";
 
 		if (_baseEdit->IsSelection() && !_baseEdit->IsPlace())
@@ -210,7 +210,7 @@ void PlacementState::HandleButtons()
 	if (_uiTree.IsButtonColliding("AnvilTrap", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
 		// Temp, should be replaced with blueprint
-		_toPlace._type = TRAP;
+		_toPlace._type = System::TRAP;
 		_toPlace._name = "trap_proto";
 
 		if (_baseEdit->IsSelection() && !_baseEdit->IsPlace())
@@ -221,7 +221,7 @@ void PlacementState::HandleButtons()
 	}
 	if (_uiTree.IsButtonColliding("TeslaTrap", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
-		_toPlace._type = TRAP;
+		_toPlace._type = System::TRAP;
 		_toPlace._name = "tesla_trap";
 
 		if (_baseEdit->IsSelection() && !_baseEdit->IsPlace())
@@ -232,7 +232,7 @@ void PlacementState::HandleButtons()
 	}
 	if (_uiTree.IsButtonColliding("SharkTrap", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
-		_toPlace._type = TRAP;
+		_toPlace._type = System::TRAP;
 		_toPlace._name = "shark_trap";
 
 		if (_baseEdit->IsSelection() && !_baseEdit->IsPlace())
@@ -244,7 +244,7 @@ void PlacementState::HandleButtons()
 
 	if (_uiTree.IsButtonColliding("MachineGunTrap", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
-		_toPlace._type = TRAP;
+		_toPlace._type = System::TRAP;
 		_toPlace._name = "gun_trap";
 
 		if (_baseEdit->IsSelection() && !_baseEdit->IsPlace())
@@ -256,7 +256,7 @@ void PlacementState::HandleButtons()
 
 	if (_uiTree.IsButtonColliding("Camera", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
-		_toPlace._type = CAMERA;
+		_toPlace._type = System::CAMERA;
 		_toPlace._name = "camera_proto";
 
 		if (_baseEdit->IsSelection() && !_baseEdit->IsPlace())
@@ -269,7 +269,7 @@ void PlacementState::HandleButtons()
 	if (_uiTree.IsButtonColliding("Guard2", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
 		// Temp, should be replaced with blueprint
-		_toPlace._type = GUARD;
+		_toPlace._type = System::GUARD;
 		_toPlace._name = "engineer";
 
 		if (_baseEdit->IsSelection() && !_baseEdit->IsPlace())
@@ -282,7 +282,7 @@ void PlacementState::HandleButtons()
 	if (_uiTree.IsButtonColliding("Guard3", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
 		// Temp, should be replaced with blueprint
-		_toPlace._type = GUARD;
+		_toPlace._type = System::GUARD;
 		_toPlace._name = "marksman";
 
 		if (_baseEdit->IsSelection() && !_baseEdit->IsPlace())

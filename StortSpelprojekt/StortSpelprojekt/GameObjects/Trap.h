@@ -21,6 +21,10 @@ private:
 	int _detectDifficulty;
 	int _disarmDifficulty;
 
+	int _triggerTimer;					//Used either for moving triggers around (e.g. spinning sawblade) or time between automatic reloads (e.g. firearms)
+	int	_maxTimeToTrigger;				//What _triggerTime resets to
+	int _ammunition;					//Number of times the traps can trigger before needing a guard to reset it. -1 = infinite
+
 	const Tilemap* _tileMap;
 
 	AI::Vec2D* _occupiedTiles;			//Physical area taken up by the trap
@@ -38,11 +42,11 @@ private:
 	AI::Vec2D ConvertOctant(int octant, AI::Vec2D pos, bool in = true);
 
 	void Initialize(int damage, int tileSize, int triggerSize, int AOESize, int detectDifficulty, int disarmDifficulty,
-					Unit::StatusEffect statusEffect, int statusTimer, int statusInterval);							/*Initialize adds any characteristics specific to the subtype*/
+					Unit::StatusEffect statusEffect, int statusTimer, int statusInterval, int triggerTimer = 0, int ammunition = 1);							/*Initialize adds any characteristics specific to the subtype*/
 	void SetTiles();
 public:
 	Trap();
-	Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject * renderObject, 
+	Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject * renderObject, 
 		 const Tilemap* tileMap, int trapType = SPIKE, AI::Vec2D direction = {-1,0}, int cost = 0);
 	virtual ~Trap();
 

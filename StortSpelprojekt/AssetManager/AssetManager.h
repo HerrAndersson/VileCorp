@@ -22,7 +22,7 @@ struct Tileset
 {
 	Tileset()
 	{
-		for (int i = 0; i < NR_OF_TYPES; i++)
+		for (int i = 0; i <  System::NR_OF_TYPES; i++)
 		{
 			vector<string> type;
 			_objects.push_back(type);
@@ -52,7 +52,7 @@ struct TilesetHandler
 		{
 			_tileset->_name = str;
 			_nameNext = false;
-			_cur = &_tileset->_objects[FLOOR];
+			_cur = &_tileset->_objects[System::FLOOR];
 		}
 		else
 		{
@@ -75,39 +75,39 @@ struct TilesetHandler
 		}
 		else if (!strcmp("floors", str))
 		{
-			_cur = &_tileset->_objects[FLOOR];
+			_cur = &_tileset->_objects[System::FLOOR];
 		}
 		else if (!strcmp("walls", str))
 		{
-			_cur = &_tileset->_objects[WALL];
+			_cur = &_tileset->_objects[System::WALL];
 		}
 		else if (!strcmp("loot", str))
 		{
-			_cur = &_tileset->_objects[LOOT];
+			_cur = &_tileset->_objects[System::LOOT];
 		}
 		else if (!strcmp("spawns", str))
 		{
-			_cur = &_tileset->_objects[SPAWN];
+			_cur = &_tileset->_objects[System::SPAWN];
 		}
 		else if (!strcmp("traps", str))
 		{
-			_cur = &_tileset->_objects[TRAP];
+			_cur = &_tileset->_objects[System::TRAP];
 		}
 		else if (!strcmp("guards", str))
 		{
-			_cur = &_tileset->_objects[GUARD];
+			_cur = &_tileset->_objects[System::GUARD];
 		}
 		else if (!strcmp("enemies", str))
 		{
-			_cur = &_tileset->_objects[ENEMY];
+			_cur = &_tileset->_objects[System::ENEMY];
 		}
 		else if (!strcmp("cameras", str))
 		{
-			_cur = &_tileset->_objects[CAMERA];
+			_cur = &_tileset->_objects[System::CAMERA];
 		}
 		else if (!strcmp("furnitures", str))
 		{
-			_cur = &_tileset->_objects[FURNITURE];
+			_cur = &_tileset->_objects[System::FURNITURE];
 		}
 		return true;
 	}
@@ -226,7 +226,7 @@ public:
 	~AssetManager();
 
 	RenderObject* GetRenderObject(int index);
-	uint GetRenderObjectByType(Type type, uint index);
+	uint GetRenderObjectByType(System::Type type, uint index);
 	ID3D11ShaderResourceView* GetTexture(const string& filename);
 
 	void UnloadModel(int index, bool force);

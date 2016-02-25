@@ -213,7 +213,8 @@ AI::Vec2D Trap::ConvertOctant(int octant, AI::Vec2D pos, bool in)
 	return convertedPos;
 }
 
-void Trap::Initialize(int damage, int tileSize, int triggerSize, int AOESize, int detectDifficulty, int disarmDifficulty, Unit::StatusEffect statusEffect, int statusTimer, int statusInterval)
+void Trap::Initialize(int damage, int tileSize, int triggerSize, int AOESize, int detectDifficulty, int disarmDifficulty, 
+					  Unit::StatusEffect statusEffect, int statusTimer, int statusInterval, int triggerTimer, int ammunition)
 {
 	delete[] _areaOfEffect;
 	delete[] _occupiedTiles;
@@ -227,8 +228,15 @@ void Trap::Initialize(int damage, int tileSize, int triggerSize, int AOESize, in
 	_statusEffect = statusEffect;
 	_statusTimer = statusTimer;
 	_statusInterval = statusInterval;
+	_maxTimeToTrigger = triggerTimer;
+	_ammunition = ammunition;
 }
 
+/*
+	Sets the various areas associated with the trap. Used in the constructor as well as when setting a new position.
+	TODO: Move functionality to construct if placement gets reworked to no longer necessitate a position change.
+	--Victor
+*/
 void Trap::SetTiles()
 {
 	//Coloring
@@ -236,14 +244,14 @@ void Trap::SetTiles()
 	{
 		if (_tileMap->IsFloorOnTile(_areaOfEffect[i]))
 		{
-			_tileMap->GetObjectOnTile(_areaOfEffect[i], FLOOR)->SetColorOffset({0.0f,0.0f,0.0f});
+			_tileMap->GetObjectOnTile(_areaOfEffect[i], System::FLOOR)->SetColorOffset({0.0f,0.0f,0.0f});
 		}
 	}
 	for (int i = 0; i < _nrOfOccupiedTiles; i++)
 	{
 		if (_tileMap->IsFloorOnTile(_occupiedTiles[i]))
 		{
-			_tileMap->GetObjectOnTile(_occupiedTiles[i], FLOOR)->SetColorOffset({0,0,0});
+			_tileMap->GetObjectOnTile(_occupiedTiles[i], System::FLOOR)->SetColorOffset({0,0,0});
 		}
 	}
 
@@ -288,14 +296,14 @@ void Trap::SetTiles()
 	{
 		if (_tileMap->IsFloorOnTile(_areaOfEffect[i]))
 		{
-			_tileMap->GetObjectOnTile(_areaOfEffect[i], FLOOR)->SetColorOffset({3.0f,1.0f,0.0f});
+			_tileMap->GetObjectOnTile(_areaOfEffect[i], System::FLOOR)->SetColorOffset({3.0f,1.0f,0.0f});
 		}
 	}
 	for (int i = 0; i < _nrOfOccupiedTiles; i++)
 	{
 		if (_tileMap->IsFloorOnTile(_occupiedTiles[i]))
 		{
-			_tileMap->GetObjectOnTile(_occupiedTiles[i], FLOOR)->SetColorOffset({2,2,0});
+			_tileMap->GetObjectOnTile(_occupiedTiles[i], System::FLOOR)->SetColorOffset({2,2,0});
 		}
 	}
 }
@@ -308,7 +316,7 @@ Trap::Trap()
 	_triggerTiles = nullptr;
 }
 
-Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject * renderObject, 
+Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject * renderObject,
 		  const Tilemap* tileMap, int trapType, AI::Vec2D direction, int cost)
 	: GameObject(ID, position, rotation, tilePosition, type, renderObject)
 {
@@ -316,7 +324,7 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	_cost = cost;
 	_direction = direction;
 	_tileMap = tileMap;
-	_nrOfAOETiles = 0;
+	_triggerTimer = -1;
 	_isVisibleToEnemies = false;
 	_areaOfEffect = nullptr;
 	_occupiedTiles = nullptr;
@@ -339,10 +347,10 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 		Initialize(100, 12, 2, 2, 50, 50, Unit::StatusEffect::NO_EFFECT, 0, 0);
 		break;
 	case GUN:
-		Initialize(300, 10, 10, 10, 100, 50, Unit::StatusEffect::NO_EFFECT, 0, 0);
+		Initialize(300, 10, 10, 10, 100, 50, Unit::StatusEffect::NO_EFFECT, 0, 0, 60, 5);
 		break;
 	case SAW:
-		Initialize(80, 3, 1, 1, 50, 70, Unit::StatusEffect::NO_EFFECT, 0, 0);
+		Initialize(80, 3, 1, 1, 50, 70, Unit::StatusEffect::NO_EFFECT, 0, 0, 60, -1);
 		break;
 	case CAKEBOMB:
 		break;
@@ -362,16 +370,6 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 		_animation = new Animation(_renderObject->_skeleton, firstFrame);
 		_animation->Freeze(false);
 	}
-
-	//Floor gets colored for debugging. Note that the tiles won't get decolored if the trap is removed
-	/*for (int i = 0; i < _nrOfAOETiles; i++)
-	{
-		AI::Vec2D pos = _areaOfEffect[i];
-		if (_tileMap->IsFloorOnTile(_areaOfEffect[i]))
-		{
-			_tileMap->GetObjectOnTile(_areaOfEffect[i], FLOOR)->AddColorOffset({0,0,1});
-		}
-	}*/
 }
 
 Trap::~Trap()
@@ -445,12 +443,12 @@ void Trap::Activate()
 	{
 		if (_tileMap->IsEnemyOnTile(_areaOfEffect[i]))
 		{
-			static_cast<Unit*>(_tileMap->GetObjectOnTile(_areaOfEffect[i], ENEMY))->TakeDamage(_damage);
-			static_cast<Unit*>(_tileMap->GetObjectOnTile(_areaOfEffect[i], ENEMY))->SetStatusEffect(_statusEffect, _statusInterval, _statusTimer);
+			static_cast<Unit*>(_tileMap->GetObjectOnTile(_areaOfEffect[i], System::ENEMY))->TakeDamage(_damage);
+			static_cast<Unit*>(_tileMap->GetObjectOnTile(_areaOfEffect[i], System::ENEMY))->SetStatusEffect(_statusEffect, _statusInterval, _statusTimer);
 		}
 		if (_tileMap->IsGuardOnTile(_areaOfEffect[i]))
 		{
-			static_cast<Unit*>(_tileMap->GetObjectOnTile(_areaOfEffect[i], GUARD))->TakeDamage(_damage);
+			static_cast<Unit*>(_tileMap->GetObjectOnTile(_areaOfEffect[i], System::GUARD))->TakeDamage(_damage);
 		}
 	}
 	Animate(ACTIVATE);

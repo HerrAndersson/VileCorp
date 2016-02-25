@@ -88,7 +88,7 @@ vector<GameObject*> PickingDevice::SinglePickObjects(POINT mousePoint, vector<Ga
 		//Sphere pickObject = Sphere(Vec3(pickableObjects[i]->GetPosition()), 2.0f);
 		Box pickObject;
 
-		Hitbox* hitbox = pickableObjects.at(i)->GetRenderObject()->_mesh._hitbox;
+		System::Hitbox* hitbox = pickableObjects.at(i)->GetRenderObject()->_mesh._hitbox;
 		if (hitbox != nullptr)
 		{
 			pickObject = Box(hitbox->_depth, hitbox->_height, hitbox->_width, Vec3(pickableObjects[i]->GetPosition()) + Vec3(hitbox->_center[0], hitbox->_center[1], hitbox->_center[2]), pickableObjects[i]->GetRotation());

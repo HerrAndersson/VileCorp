@@ -46,12 +46,12 @@ private:
 	void HandleCamRot();
 	void HandleCamMove(float deltaTime);
 	
-	bool CheckValidity(AI::Vec2D tile, Type type);
-	void SetValidity(Marker* m, Type type);
-	void MarkerMoveEvent(Type type);
-	void DragAndDropEvent(Type type);
+	bool CheckValidity(AI::Vec2D tile, System::Type type);
+	void SetValidity(Marker* m, System::Type type);
+	void MarkerMoveEvent(System::Type type);
+	void DragAndDropEvent(System::Type type);
 
-	void CreateBlueprints(Type type, const std::string& objectName);
+	void CreateBlueprints(System::Type type, const std::string& objectName);
 
 
 	void ReleaseBlueprints();
@@ -63,14 +63,14 @@ public:
 	GameObject* GetSelectedObject();
 	bool DeleteSelectedObject();
 
-	bool Add(Type type, const std::string& name);
-	bool Delete(Type type);
-	bool TypeOn(Type type);
+	bool Add(System::Type type, const std::string& name);
+	bool Delete(System::Type type);
+	bool TypeOn(System::Type type);
 
-	void DragAndDrop(Type type);
+	void DragAndDrop(System::Type type);
 	void DragAndDrop();
-	void DragAndPlace(Type type, const std::string& objectName);
-	void DragActivate(Type type, const std::string& objectName, int subType = 0);
+	void DragAndPlace(System::Type type, const std::string& objectName);
+	void DragActivate(System::Type type, const std::string& objectName, int subType = 0);
 
 
 	void ChangePlaceState();

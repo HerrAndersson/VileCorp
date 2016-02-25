@@ -96,9 +96,9 @@ void QuadTree::GetObjects(std::vector<Vec2>* polygon, std::vector<std::vector<Ga
 				int y = _tiles.at(i)._y;
 
 				//Start on 1 to skip the floor
-				for (unsigned int j = 0; j < NR_OF_TYPES; j++)
+				for (unsigned int j = 0; j <  System::NR_OF_TYPES; j++)
 				{
-					GameObject* object = tilemap->GetObjectOnTile(x, y, Type(j));
+					GameObject* object = tilemap->GetObjectOnTile(x, y, System::Type(j));
 					if (object != nullptr)
 					{
 						collectedObjects->at(j).push_back(object);

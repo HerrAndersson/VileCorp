@@ -56,11 +56,11 @@ void Unit::SetGoal(AI::Vec2D goal)
 {
 	if (_tileMap->IsTrapOnTile(goal))
 	{
-		SetGoal(_tileMap->GetObjectOnTile(goal, TRAP));
+		SetGoal(_tileMap->GetObjectOnTile(goal, System::TRAP));
 	}
 	else if (_tileMap->IsFloorOnTile(goal))
 	{
-		SetGoal(_tileMap->GetObjectOnTile(goal, FLOOR));
+		SetGoal(_tileMap->GetObjectOnTile(goal, System::FLOOR));
 	}
 	else
 	{
@@ -103,7 +103,7 @@ Unit::Unit()
 	Rotate();
 }
 
-Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject* renderObject, const Tilemap* tileMap)
+Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject* renderObject, const Tilemap* tileMap)
 	: GameObject(ID, position, rotation, tilePosition, type, renderObject)
 {
 	_goalPriority = -1;
@@ -250,19 +250,19 @@ void Unit::CheckVisibleTiles()
 	{
 		if (_tileMap->IsTrapOnTile(visibleTiles[i]._x, visibleTiles[i]._y))
 		{
-			EvaluateTile(_tileMap->GetObjectOnTile(visibleTiles[i], TRAP));
+			EvaluateTile(_tileMap->GetObjectOnTile(visibleTiles[i], System::TRAP));
 		}
-		if (_type != ENEMY && _tileMap->IsEnemyOnTile(visibleTiles[i]))
+		if (_type != System::ENEMY && _tileMap->IsEnemyOnTile(visibleTiles[i]))
 		{
-			EvaluateTile(_tileMap->GetObjectOnTile(visibleTiles[i], ENEMY));
+			EvaluateTile(_tileMap->GetObjectOnTile(visibleTiles[i], System::ENEMY));
 		}
-		if (_type != GUARD && _tileMap->IsGuardOnTile(visibleTiles[i]))
+		if (_type != System::GUARD && _tileMap->IsGuardOnTile(visibleTiles[i]))
 		{
-			EvaluateTile(_tileMap->GetObjectOnTile(visibleTiles[i], GUARD));
+			EvaluateTile(_tileMap->GetObjectOnTile(visibleTiles[i], System::GUARD));
 		}
 		if (_tileMap->IsObjectiveOnTile(visibleTiles[i]))
 		{
-			EvaluateTile(_tileMap->GetObjectOnTile(visibleTiles[i], LOOT));
+			EvaluateTile(_tileMap->GetObjectOnTile(visibleTiles[i], System::LOOT));
 		}
 	}
 }
@@ -277,11 +277,11 @@ void Unit::CheckAllTiles()
 			if (_tileMap->IsObjectiveOnTile(AI::Vec2D(i, j)))
 			{
 				_aStar->SetTileCost({ i, j }, 1);
-				EvaluateTile(_tileMap->GetObjectOnTile(AI::Vec2D(i, j), LOOT));
+				EvaluateTile(_tileMap->GetObjectOnTile(AI::Vec2D(i, j), System::LOOT));
 			}
-			else if (_tileMap->IsTypeOnTile(AI::Vec2D(i, j), SPAWN))
+			else if (_tileMap->IsTypeOnTile(AI::Vec2D(i, j), System::SPAWN))
 			{
-				EvaluateTile(_tileMap->GetObjectOnTile(AI::Vec2D(i, j), SPAWN));
+				EvaluateTile(_tileMap->GetObjectOnTile(AI::Vec2D(i, j), System::SPAWN));
 			}
 		}
 	}
@@ -318,10 +318,18 @@ void Unit::Update(float deltaTime)
 	{
 		DeactivateStatus();
 	}
-	else if (StatusCountdown())
+	else if (System::FrameCountdown(_statusTimer, 0, _statusInterval * (_statusTimer / _statusInterval)))
 	{
 		ActivateStatus();
 	}
+
+	//bool result = false;
+	//if (_statusTimer > 0)
+	//{
+	//	result = _statusTimer % _statusInterval == 0;
+	//	_statusTimer--;
+	//}
+	//return result;
 }
 
 void Unit::Moving()
@@ -468,48 +476,11 @@ void Unit::TakeDamage(int damage)
 	_health -= damage;
 }
 
-/*
-	Time is set to -1 when not active
-	It gets set to 60 (temporary) when a disarm/repair attempt begins
-	It ticks down one per frame until 0 at which the action resumes.
-*/
-void Unit::UseCountdown(int frames)
-{
-
-	if (_interactionTime < 0)
-	{
-		//Start
-		_interactionTime = frames;
-	}
-	else if (_interactionTime > 0)
-	{
-		_interactionTime--;
-	}
-	else
-	{
-		//Finish
-		Act(_objective);
-		_interactionTime--;
-	}
-}
-
-//Returns true when the counter reaches 0
-bool Unit::StatusCountdown()
-{
-	bool result = false;
-	if (_statusTimer > 0)
-	{
-		result = _statusTimer % _statusInterval == 0;
-		_statusTimer--;
-	}
-	return result;
-}
-
 void Unit::Animate(Anim anim)
 {
 	if (_renderObject->_isSkinned && _animation->GetisFinished())
 	{
-		if (_renderObject->_type == GUARD)
+		if (_renderObject->_type == System::GUARD)
 		{
 			switch (anim)
 			{
@@ -529,7 +500,7 @@ void Unit::Animate(Anim anim)
 				break;
 			}
 		}
-		if (_renderObject->_type == ENEMY)
+		if (_renderObject->_type == System::ENEMY)
 		{
 			switch (anim)
 			{
