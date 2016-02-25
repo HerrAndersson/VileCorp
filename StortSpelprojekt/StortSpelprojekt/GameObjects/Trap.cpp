@@ -467,7 +467,7 @@ void Trap::Activate()
 	Animate(ACTIVATE);
 
 	_currentAmmunition--;
-	if (_currentAmmunition <= 0)
+	if (_currentAmmunition == 0)
 	{
 		SetTrapActive(false);
 	}
