@@ -25,9 +25,6 @@ PlacementState::PlacementState(System::Controls* controls, ObjectHandler* object
 
 	//Add sound
 	_soundModule->AddSound("in_game_1", 0.2f, 1.0f, true, true);
-
-	//Add buttons to be highlighted on hover
-	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("Play")));
 }
 
 void PlacementState::EvaluateGoldCost()
@@ -108,6 +105,9 @@ void PlacementState::OnStateEnter()
 	campos.y = 15;
 	campos.z = _objectHandler->GetTileMap()->GetHeight() / 2 - 10;
 	_camera->SetPosition(campos);
+
+	_buttonHighlights.clear();
+	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("Play")));
 
 	std::vector<GUI::Node*>* units = _uiTree.GetNode("UnitList")->GetChildren();
 	for (int i = 0; i < units->size(); i++)
