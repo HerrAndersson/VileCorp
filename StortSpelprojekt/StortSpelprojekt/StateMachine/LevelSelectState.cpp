@@ -30,6 +30,8 @@ LevelSelectState::LevelSelectState(System::Controls* controls, ObjectHandler* ob
 	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("nextlevel")));
 	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("prevlevel")));
 	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("playbutton")));
+	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("CampaignTab")));
+	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("SkirmishTab")));
 }
 
 LevelSelectState::~LevelSelectState()
