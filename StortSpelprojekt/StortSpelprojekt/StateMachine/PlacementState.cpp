@@ -165,7 +165,7 @@ void PlacementState::HandleInput()
 	{
 		ChangeState(PLAYSTATE);
 	}
-	
+
 	//Left click - placing units - Blueprint specific - i.e. click button and placing object.
 	if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
@@ -221,7 +221,7 @@ void PlacementState::HandleInput()
 		vector<GameObject*> deselectObjects = _player->GetSelectedObjects();
 
 		//Decolourize everything
-		for (auto i : deselectObjects)
+		for (auto& i : deselectObjects)
 		{
 			i->SetColorOffset(DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f));
 		}
@@ -238,7 +238,7 @@ void PlacementState::HandleInput()
 
 		//Retrieve the objects in an actual container and mark them with colour
 		vector<GameObject*> objects = _player->GetSelectedObjects();
-		for (auto i : objects)
+		for (auto& i : objects)
 		{
 			i->SetColorOffset(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));
 		}
