@@ -30,7 +30,8 @@ public:
 		FontWrapper* fontWrapper,
 		System::Settings* settings,
 		System::SettingsReader* settingsReader,
-		System::SoundModule* soundModule);
+		System::SoundModule* soundModule,
+		DirectX::XMFLOAT3 *ambientLight);
 	~StateMachine();
 
 	bool Update(float deltaTime);

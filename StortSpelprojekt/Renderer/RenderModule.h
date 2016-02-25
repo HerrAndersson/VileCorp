@@ -9,7 +9,7 @@
 #include "ShadowMap.h"
 #include "Spotlight.h"
 #include "Pointlight.h"
-#include "Node.h"
+#include "GUI elements/Node.h"
 #include "FontWrapper.h"
 #include "../System/Settings/settings.h"
 
@@ -48,6 +48,13 @@ Before rendering to shadow map:
 ~ Set vertex buffer before the Draw/DrawIndexed call
 ~ Set topology
 
+Billboarding:
+~ When rendering billboarded objects, make sure that the TEXTURE_COUNT and the hard-coded length of the texture array in BillboardingPS match.
+  A "dynamic" amount of textures can be used, as long as the number is lower than the hard-coded number in BillboardingPS, and the actual number is sent to the shader so it know which ones to sample from.
+~ The billboarded objects should use textures with alpha channel to determine what parts of the texture to render. Alpha-blending has to be activated before this can be used.
+~ The scaling of particles is doubled, so if 0.5f is sent to it, the final quad will have 1.0f as scale. That is because the data that is sent to the shader contains the center points of all particles.
+  Therefore it will offset the scale from the middle, in all four directions.
+
 */
 
 namespace Renderer
@@ -70,7 +77,7 @@ namespace Renderer
 		
 		struct MatrixBufferPerSkinnedObject
 		{
-			DirectX::XMFLOAT4X4 _bones[30];
+			DirectX::XMFLOAT4X4 _bones[50];
 		};
 
 		struct MatrixBufferPerFrame
@@ -115,6 +122,16 @@ namespace Renderer
 			float			  _range;
 		};
 
+		struct MatrixBufferPerParticleEmitter
+		{
+			DirectX::XMMATRIX _world;
+			DirectX::XMMATRIX _camView;
+			DirectX::XMMATRIX _camProjection;
+			DirectX::XMFLOAT3 _camPosition;
+			float _scale;
+			int _isIcon;
+		};
+
 		ID3D11Buffer*		_matrixBufferPerObject;
 		ID3D11Buffer* 		_matrixBufferPerSkinnedObject;
 		ID3D11Buffer*		_matrixBufferPerFrame;
@@ -123,11 +140,14 @@ namespace Renderer
 		ID3D11Buffer*		_matrixBufferLightPassPerPointlight;
 		ID3D11Buffer*		_screenQuad;
 		ID3D11Buffer*		_matrixBufferHUD;
+		ID3D11Buffer*		_matrixBufferParticles;
 
 		DirectXHandler*		_d3d;
 		ShaderHandler*		_shaderHandler;
 
-		System::Settings* _settings;
+		System::Settings*	_settings;
+
+		DirectX::XMFLOAT3	_ambientLight;
 
 		void InitializeConstantBuffers();
 		void InitializeScreenQuadBuffer();
@@ -142,9 +162,7 @@ namespace Renderer
 		ShadowMap* _shadowMap;
 
 	public:
-
-		const DirectX::XMFLOAT3 AMBIENT_LIGHT = DirectX::XMFLOAT3(0.14f, 0.15f, 0.2f);
-		enum ShaderStage { GEO_PASS, SHADOW_GENERATION, LIGHT_APPLICATION_SPOTLIGHT, LIGHT_APPLICATION_POINTLIGHT, GRID_STAGE, ANIM_STAGE, HUD_STAGE, AA_STAGE, BILLBOARDING_STAGE, ANIM_SHADOW_GENERATION };
+		enum ShaderStage { GEO_PASS, SHADOW_GENERATION, LIGHT_APPLICATION_SPOTLIGHT, LIGHT_APPLICATION_POINTLIGHT, RENDER_LINESTRIP, ANIM_STAGE, HUD_STAGE, AA_STAGE, BILLBOARDING_STAGE, ANIM_SHADOW_GENERATION };
 
 		RenderModule(HWND hwnd, System::Settings* settings);
 		~RenderModule();
@@ -154,6 +172,8 @@ namespace Renderer
 		void SetDataPerFrame(DirectX::XMMATRIX* view, DirectX::XMMATRIX* projection);
 		void SetDataPerObjectType(RenderObject* renderObject);
 		void SetDataPerLineList(ID3D11Buffer* lineList, int vertexSize);
+		void SetDataPerParticleEmitter(const DirectX::XMFLOAT3& position, DirectX::XMMATRIX* camView, DirectX::XMMATRIX* camProjection, 
+									   const DirectX::XMFLOAT3& camPos, float scale, ID3D11ShaderResourceView** textures, int textureCount, int isIcon);
 
 		void SetShadowMapDataPerObjectType(RenderObject* renderObject);
 		void SetShadowMapDataPerSpotlight(DirectX::XMMATRIX* lightView, DirectX::XMMATRIX* lightProjection);
@@ -164,14 +184,17 @@ namespace Renderer
 
 		void SetShaderStage(ShaderStage stage);
 
+		DirectX::XMFLOAT3 GetAmbientLight() const;
+		void SetAmbientLight(const DirectX::XMFLOAT3 &ambientLight);
+
 		void BeginScene(float red, float green, float blue, float alpha);
 		void Render(DirectX::XMMATRIX* world, int vertexBufferSize, const DirectX::XMFLOAT3& colorOffset = DirectX::XMFLOAT3(0, 0, 0));
 		void RenderAnimation(DirectX::XMMATRIX* world, int vertexBufferSize, std::vector<DirectX::XMFLOAT4X4>* extra = nullptr, const DirectX::XMFLOAT3& colorOffset = DirectX::XMFLOAT3(0, 0, 0));
 		void Render(GUI::Node* root, FontWrapper* fontWrapper);
-		void RenderLineList(DirectX::XMMATRIX* world, int nrOfPoints, const DirectX::XMFLOAT3& colorOffset = DirectX::XMFLOAT3(0,0,0));
-		void RenderShadowMap(DirectX::XMMATRIX* world, int vertexBufferSize);
+		void RenderLineStrip(DirectX::XMMATRIX* world, int nrOfPoints, const DirectX::XMFLOAT3& colorOffset = DirectX::XMFLOAT3(0,0,0));
+		void RenderShadowMap(DirectX::XMMATRIX* world, int vertexBufferSize, std::vector<DirectX::XMFLOAT4X4>* animTransformData = nullptr);
 		void RenderScreenQuad();
-		void RenderParticles(ID3D11Buffer* particlePointsBuffer, int vertexBufferSize, int vertexCount, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& color, ID3D11ShaderResourceView** textures = nullptr, int textureCount = 0);
+		void RenderParticles(ID3D11Buffer* particlePointsBuffer, int vertexCount, int vertexSize);
 		void RenderLightVolume(ID3D11Buffer* volume, DirectX::XMMATRIX* world, int vertexCount, int vertexSize);
 		void EndScene();
 

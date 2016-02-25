@@ -244,10 +244,10 @@ void Trap::SetTiles()
 	}
 	_nrOfAOETiles = 0;
 	_tileSize = 0;
-	switch (_trapType)
+	switch (_subType)
 	{
 	case SPIKE:
-		_occupiedTiles[0] = _tilePosition;
+		_occupiedTiles[_tileSize++] = _tilePosition;
 		_areaOfEffect[_nrOfAOETiles++] = _tilePosition;
 		break;
 	case TESLACOIL:
@@ -289,14 +289,12 @@ Trap::Trap()
 	_occupiedTiles = nullptr;
 }
 
-Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject * renderObject, 
-		  const Tilemap* tileMap, int trapType, AI::Vec2D direction, int cost)
-	: GameObject(ID, position, rotation, tilePosition, type, renderObject)
+Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject * renderObject, System::SoundModule* soundModule, 
+		  const Tilemap* tileMap, int trapType, AI::Vec2D direction)
+	: GameObject(ID, position, rotation, tilePosition, type, renderObject, soundModule)
 {
 	_isActive = true;
-	_cost = cost;
 	_direction = direction;
-	_trapType = (TrapType)trapType;
 	//_trapType = SHARK;
 	_tileMap = tileMap;
 	_nrOfAOETiles = 0;
@@ -308,7 +306,7 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	int radius = 0;
 
 	bool firstFrame = false;
-	switch (_trapType)
+	switch (_subType)
 	{
 	case SPIKE:
 		Initialize(3, 1, 1, 50, 50);
@@ -336,9 +334,9 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 
 	SetTiles();
 
-	if (_renderObject->_isSkinned)
+	if (_renderObject->_mesh->_isSkinned)
 	{
-		_animation = new Animation(_renderObject->_skeleton, firstFrame);
+		_animation = new Animation(_renderObject->_mesh->_skeleton, firstFrame);
 		_animation->Freeze(false);
 	}
 
@@ -379,6 +377,8 @@ int Trap::GetDetectionDifficulty() const
 {
 	return _detectDifficulty;
 }
+
+
 
 int Trap::GetDisarmDifficulty() const
 {
@@ -430,6 +430,8 @@ void Trap::Activate()
 		}
 	}
 	Animate(ACTIVATE);
+	PlayActivateSound();
+
 	SetTrapActive(false);
 }
 
@@ -500,9 +502,9 @@ void Trap::SetDirection(const AI::Vec2D direction)
 
 void Trap::Animate(Anim anim)
 {
-	if (_renderObject->_isSkinned && _animation->GetisFinished())
+	if (_animation != nullptr && _animation->GetisFinished())
 	{
-		if (_trapType == SPIKE)
+		if (_subType == SPIKE)
 		{
 			switch (anim)
 			{
@@ -516,7 +518,7 @@ void Trap::Animate(Anim anim)
 				break;
 			}
 		}
-		else if (_trapType == TESLACOIL)
+		else if (_subType == TESLACOIL)
 		{
 			switch (anim)
 			{
@@ -530,5 +532,28 @@ void Trap::Animate(Anim anim)
 				break;
 			}
 		}
+	}
+}
+
+//Sound
+void Trap::PlayActivateSound()
+{
+	switch (_subType)
+	{
+	case SPIKE:
+		_soundModule->SetSoundPosition("anvil_activate", _position.x, 0.0f, _position.z);
+		_soundModule->Play("anvil_activate");
+		break;
+		
+	case TESLACOIL:
+		_soundModule->SetSoundPosition("tesla_activate", _position.x, 0.0f, _position.z);
+		_soundModule->Play("tesla_activate");
+		break;
+
+	case SHARK:
+		break;
+
+	case GUN:
+		break;
 	}
 }

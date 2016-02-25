@@ -1,18 +1,23 @@
 #include "ObjectHandler.h"
 #include "stdafx.h"
 
-ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data, System::Settings* settings)
+ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data, System::Settings* settings, Renderer::ParticleEventQueue* particleEventQueue, System::SoundModule*	soundModule)
 {
 	_settings = settings;
 	_idCount = 0;
 	_assetManager = assetManager;
-	_tilemap = nullptr;
+	_tilemap = new Tilemap();
 	_buildingGrid = new Grid(device, 1, 1, 1, XMFLOAT3(1.0f, 1.0f, 0.7f));
 	_gameObjectInfo = data;
 	_device = device;
 	_lightCulling = nullptr;
+	_gameObjects.resize(NR_OF_TYPES);
+	_particleEventQueue = particleEventQueue;
+	_soundModule = soundModule;
 
-	ActivateTileset("default2");
+	//Init sounds
+	_soundModule->AddSound("enemy_death", 0.7f, 1.0f, false, false);
+	_soundModule->AddSound("guard_death", 1.0f, 0.6f, false, false);
 }
 
 ObjectHandler::~ObjectHandler()
@@ -21,109 +26,42 @@ ObjectHandler::~ObjectHandler()
 	SAFE_DELETE(_buildingGrid);
 }
 
-bool ObjectHandler::LoadLevel(int lvlIndex)
-{
-	int dimX, dimY;
-	vector<GameObjectData> gameObjectData;
-	bool result = _assetManager->ParseLevel(lvlIndex, gameObjectData, dimX, dimY);
-	if (result)
-	{
-		if (_gameObjects.size() < 1)
-		{
-			for (int i = 0; i < NR_OF_TYPES; i++)
-			{
-				_gameObjects.push_back(std::vector<GameObject*>());
-			}
-		}
-
-		delete _tilemap;
-		_tilemap = new Tilemap(AI::Vec2D(dimX, dimY));
-
-		for (auto i : gameObjectData)
-		{
-			Add((Type)i._tileType, 0, DirectX::XMFLOAT3(i._posX, 0, i._posZ), DirectX::XMFLOAT3(0, i._rotY, 0));
-		}
-	}
-
-	_lightCulling = new LightCulling(_tilemap);
-
-	return result;
-}
-
-void ObjectHandler::UnloadLevel()
-{
-	for (pair<GameObject*, Renderer::Spotlight*> spot : _spotlights)
-	{
-		SAFE_DELETE(spot.second);
-		spot.second = nullptr;
-		spot.first = nullptr;
-	}
-	_spotlights.clear();
-	for (pair<GameObject*, Renderer::Pointlight*> point : _pointligths)
-	{
-		SAFE_DELETE(point.second);
-		point.second = nullptr;
-		point.first = nullptr;
-	}
-	_pointligths.clear();
-
-	ReleaseGameObjects();
-	SAFE_DELETE(_tilemap);
-	SAFE_DELETE(_lightCulling);
-}
-
-void ObjectHandler::ActivateTileset(const string& name)
-{
-	ReleaseGameObjects();
-	_assetManager->ActivateTileset(name);
-
-	for (uint a = 0; a < Type::NR_OF_TYPES; a++)
-	{
-		for (uint i = 0; i < _gameObjectInfo->_objects[a]->size(); i++)
-		{
-			_gameObjectInfo->_objects[a]->at(i)->_renderObject = _assetManager->GetRenderObjectByType((Type)a, i);
-		}
-	}
-}
-
-bool ObjectHandler::Add(Type type, int index, const XMFLOAT3& position, const XMFLOAT3& rotation, const int subIndex, const bool blueprint)
+bool ObjectHandler::Add(Blueprint* blueprint, int textureId, const XMFLOAT3& position, const XMFLOAT3& rotation, const bool placeOnTilemap)
 {
 	GameObject* object = nullptr;
+	Type type = (Type)blueprint->_type;
+	RenderObject* renderObject = _assetManager->GetRenderObject(blueprint->_mesh, blueprint->_textures[textureId]);
+
+	AI::Vec2D tilepos(position.x, position.z);
 
 	switch (type)
 	{
-	case FLOOR:
-		object = MakeFloor(_gameObjectInfo->Floors(index), position, rotation);
-		break;
 	case WALL:
-		object = MakeWall(_gameObjectInfo->Walls(index), position, rotation);
-		break;
+	case FLOOR:
+	case FURNITURE:
 	case LOOT:
-		object = MakeLoot(_gameObjectInfo->Loot(index), position, rotation);
+		object = new Architecture(_idCount, position, rotation, tilepos, type, renderObject, _soundModule);
 		break;
 	case SPAWN:
-		object = MakeSpawn(_gameObjectInfo->Spawns(index), position, rotation);
+		object = new SpawnPoint(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, 66, 6);
 		break;
 	case TRAP:
-		object = MakeTrap(_gameObjectInfo->Traps(index), position, rotation, subIndex);
+		object = new Trap(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, _tilemap, blueprint->_subType);
 		break;
 	case CAMERA:
-		object = MakeSecurityCamera(_gameObjectInfo->Cameras(index), position, rotation);
+		object = new SecurityCamera(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, _tilemap);
 		break;
 	case ENEMY:
-		object = MakeEnemy(_gameObjectInfo->Enemies(index), position, rotation);
+		object = new Enemy(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, _tilemap);
 		break;
 	case GUARD:
-		object = MakeGuard(_gameObjectInfo->Guards(index), position, rotation);
+		object = new Guard(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, _tilemap);
 		break;
-	case FURNITURE:
-		object = MakeFurniture(_gameObjectInfo->Furnitures(index), position, rotation);
-		break;
-	default:	
+	default:
 		break;
 	}
 
-	if (!blueprint)
+	if (placeOnTilemap)
 	{
 		if (!_tilemap->AddObjectToTile((int)position.x, (int)position.z, object))
 		{
@@ -138,14 +76,14 @@ bool ObjectHandler::Add(Type type, int index, const XMFLOAT3& position, const XM
 	{
 		addedObject = true;
 	}
-	if (type == TRAP && addedObject && !blueprint)
+	if (type == TRAP && addedObject && !placeOnTilemap)
 	{
 		Trap* trap = static_cast<Trap*>(object);
 		int i = 0;
 		AI::Vec2D* arr = trap->GetTiles();
 		for (int i = 0; i < trap->GetTileSize() && addedObject; i++)
 		{
-			if (!_tilemap->CanPlaceObject(arr[i]))
+			if (!_tilemap->IsPlaceable(arr[i], blueprint->_type))
 			{
 				addedObject = false;
 			}
@@ -207,19 +145,6 @@ bool ObjectHandler::Add(Type type, int index, const XMFLOAT3& position, const XM
 		//}
 		_objectCount++;
 		return true;
-	}
-
-	return false;
-}
-
-bool ObjectHandler::Add(Type type, const std::string& name, const XMFLOAT3& position = XMFLOAT3(0.0f, 0.0f, 0.0f), const XMFLOAT3& rotation = XMFLOAT3(0.0f, 0.0f, 0.0f), const int subIndex, const bool blueprint)
-{
-	for (unsigned int i = 0; i < _gameObjectInfo->_objects[type]->size(); i++)
-	{
-		if (_gameObjectInfo->_objects[type]->at(i)->_name == name)
-		{
-			return Add(type, i, position, rotation, subIndex, blueprint);
-		}
 	}
 	return false;
 }
@@ -334,9 +259,9 @@ GameObject* ObjectHandler::Find(Type type, short index)
 	return nullptr;
 }
 
-vector<GameObject*> ObjectHandler::GetAllByType(Type type)
+vector<GameObject*>* ObjectHandler::GetAllByType(Type type)
 {
-	return _gameObjects[type];
+	return &_gameObjects[type];
 }
 
 RenderList ObjectHandler::GetAllByType(int renderObjectID)
@@ -366,11 +291,6 @@ RenderList ObjectHandler::GetAllByType(int renderObjectID)
 vector<vector<GameObject*>>* ObjectHandler::GetGameObjects()
 {
 	return &_gameObjects;
-}
-
-GameObjectInfo * ObjectHandler::GetBlueprints()
-{
-	return _gameObjectInfo;
 }
 
 int ObjectHandler::GetObjectCount() const
@@ -479,6 +399,10 @@ void ObjectHandler::MinimizeTileMap()
 
 void ObjectHandler::EnlargeTilemap(int offset)
 {
+	if (!_tilemap)
+	{
+		_tilemap = new Tilemap();
+	}
 	if (offset > 0)
 	{
 		int o = 2 * offset;
@@ -516,7 +440,73 @@ Grid * ObjectHandler::GetBuildingGrid()
 	return _buildingGrid;
 }
 
+Level::LevelHeader * ObjectHandler::GetCurrentLevelHeader()
+{
+	return &_currentLevelHeader;
+}
 
+void ObjectHandler::SetCurrentLevelHeader(Level::LevelHeader levelheader)
+{
+	_currentLevelHeader = levelheader;
+}
+
+bool ObjectHandler::LoadLevel(std::string levelBinaryFilePath)
+{
+	bool result = false;
+	Level::LevelBinary levelData;
+	HRESULT success = _assetManager->ParseLevelBinary(&levelData, levelBinaryFilePath);
+
+	if (success == S_OK)
+	{
+		result = true;
+		delete _tilemap;
+		_tilemap = new Tilemap(AI::Vec2D(levelData._tileMapSizeX, levelData._tileMapSizeZ));
+
+		for (int i = 0; i < levelData._gameObjectData.size() && result; i++)
+		{
+			std::vector<int>* formattedGameObject = &levelData._gameObjectData[i]; //Structure: { type, subType, textureID, posX, posZ, rot }
+			Blueprint* blueprint = GetBlueprintByType(formattedGameObject->at(0), formattedGameObject->at(1));
+
+			//Position
+			float posX = static_cast<float>(formattedGameObject->at(3));
+			float posZ = static_cast<float>(formattedGameObject->at(4));
+
+			//Rotation
+			float rotY = (formattedGameObject->at(5) * DirectX::XM_PI) / 180.0f;
+
+			Add(blueprint, formattedGameObject->at(2), DirectX::XMFLOAT3(posX, 0, posZ), DirectX::XMFLOAT3(0, rotY, 0), true);
+		}
+
+		_lightCulling = new LightCulling(_tilemap);
+	}
+	else
+	{
+		_tilemap = new Tilemap();
+	}
+	return result;
+}
+
+void ObjectHandler::UnloadLevel()
+{
+	for (pair<GameObject*, Renderer::Spotlight*> spot : _spotlights)
+	{
+		SAFE_DELETE(spot.second);
+		spot.second = nullptr;
+		spot.first = nullptr;
+	}
+	_spotlights.clear();
+	for (pair<GameObject*, Renderer::Pointlight*> point : _pointligths)
+	{
+		SAFE_DELETE(point.second);
+		point.second = nullptr;
+		point.first = nullptr;
+	}
+	_pointligths.clear();
+
+	ReleaseGameObjects();
+	SAFE_DELETE(_tilemap);
+	SAFE_DELETE(_lightCulling);
+}
 
 void ObjectHandler::InitPathfinding()
 {
@@ -613,6 +603,27 @@ void ObjectHandler::Update(float deltaTime)
 							heldObject->SetPosition(XMFLOAT3(heldObject->GetPosition().x, 0.0f, heldObject->GetPosition().z));
 						}
 					}
+
+					//Bloodparticles on death
+					ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::SPLASH, ParticleSubType::BLOOD_SUBTYPE, -1, unit->GetPosition(), XMFLOAT3(0, 1, 0), 300.0f, 200, 0.1f, true);
+					GetParticleEventQueue()->Insert(msg);
+
+
+					//Play death sound
+					float x = g->GetPosition().x;
+					float z = g->GetPosition().z;
+					if (g->GetType() == ENEMY)
+					{
+						_soundModule->SetSoundPosition("enemy_death", x, 0.0f, z);
+						_soundModule->Play("enemy_death");
+					}
+					else if (g->GetType() == GUARD)
+					{
+						_soundModule->SetSoundPosition("guard_death", x, 0.0f, z);
+						_soundModule->Play("guard_death");
+					}
+
+					//Remove object
 					Remove(g);
 					g = nullptr;
 					unit = nullptr;
@@ -628,7 +639,7 @@ void ObjectHandler::Update(float deltaTime)
 			{
 				if (static_cast<SpawnPoint*>(g)->isSpawning() && _tilemap->GetNrOfLoot() > 0)
 				{
-					if (Add(ENEMY, "enemy_proto", g->GetPosition(), g->GetRotation()))
+					if (Add(_blueprints.GetBlueprintByType(ENEMY,0), 0, g->GetPosition(), g->GetRotation())) //TODO blueprints of spawned enemies should be kept in spawnpoints - Fredrik
 					{
 						((Unit*)_gameObjects[ENEMY].back())->InitializePathFinding();
 					}
@@ -693,6 +704,21 @@ void ObjectHandler::UpdateLights()
 	}
 }
 
+vector<Blueprint>* ObjectHandler::GetBlueprints()
+{
+	return _blueprints.GetBlueprints();
+}
+
+Blueprint* ObjectHandler::GetBlueprintByName(string name)
+{
+	return _blueprints.GetBlueprintByName(name);
+}
+
+Blueprint* ObjectHandler::GetBlueprintByType(int type, int subType)
+{
+	return _blueprints.GetBlueprintByType(type, subType);
+}
+
 map<GameObject*, Renderer::Spotlight*>* ObjectHandler::GetSpotlights()
 {
 	return &_spotlights;
@@ -710,159 +736,21 @@ vector<vector<GameObject*>>* ObjectHandler::GetObjectsInLight(Renderer::Spotligh
 
 void ObjectHandler::ReleaseGameObjects()
 {
-	if (_gameObjects.size() > 0)
+	for (int i = 0; i < NR_OF_TYPES; i++)
 	{
-		for (int i = 0; i < NR_OF_TYPES; i++)
+		for (GameObject* g : _gameObjects[i])
 		{
-			for (GameObject* g : _gameObjects[i])
-			{
-				g->Release();
-				delete g;
-			}
-			_gameObjects[i].clear();
+			g->Release();
+			delete g;
 		}
-		_gameObjects.clear();
+		_gameObjects[i].clear();
 	}
 	_idCount = 0;
 	_objectCount = 0;
 }
 
 
-/*Make object*/
-
-Architecture * ObjectHandler::MakeFloor(GameObjectFloorInfo * data, const XMFLOAT3& position, const XMFLOAT3& rotation)
+Renderer::ParticleEventQueue* ObjectHandler::GetParticleEventQueue()
 {
-	Architecture* obj = new Architecture(
-		_idCount,
-		position,
-		rotation,
-		AI::Vec2D((int)position.x, (int)position.z),
-		FLOOR,
-		_assetManager->GetRenderObject(data->_renderObject));
-
-	return obj;
-}
-
-Architecture * ObjectHandler::MakeWall(GameObjectWallInfo * data, const XMFLOAT3& position, const XMFLOAT3& rotation)
-{
-	Architecture* obj = new Architecture(
-		_idCount,
-		position,
-		rotation,
-		AI::Vec2D((int)position.x, (int)position.z),
-		WALL,
-		_assetManager->GetRenderObject(data->_renderObject));
-
-	return obj;
-}
-
-Architecture * ObjectHandler::MakeFurniture(GameObjectFurnitureInfo * data, const XMFLOAT3& position, const XMFLOAT3& rotation)
-{
-	Architecture* obj = new Architecture(
-		_idCount,
-		position,
-		rotation,
-		AI::Vec2D((int)position.x, (int)position.z),
-		FURNITURE,
-		_assetManager->GetRenderObject(13));
-
-	return obj;
-}
-
-Architecture * ObjectHandler::MakeLoot(GameObjectLootInfo * data, const XMFLOAT3& position, const XMFLOAT3& rotation)
-{
-	Architecture* obj = new Architecture(
-		_idCount,
-		position,
-		rotation,
-		AI::Vec2D((int)position.x, (int)position.z),
-		LOOT,
-		_assetManager->GetRenderObject(data->_renderObject));
-
-	// read more data
-
-	return obj;
-}
-
-SpawnPoint * ObjectHandler::MakeSpawn(GameObjectSpawnInfo * data, const XMFLOAT3& position, const XMFLOAT3& rotation)
-{
-	SpawnPoint* obj = new SpawnPoint(
-		_idCount,
-		position,
-		rotation,
-		AI::Vec2D((int)position.x, (int)position.z),
-		SPAWN,
-		_assetManager->GetRenderObject(4),
-		180, 2);
-
-	// read more data
-
-	return obj;
-}
-
-Trap * ObjectHandler::MakeTrap(GameObjectTrapInfo * data, const XMFLOAT3& position, const XMFLOAT3& rotation, const int subIndex)
-{
-	Trap* obj = new Trap(
-		_idCount,
-		position,
-		rotation,
-		AI::Vec2D((int)position.x, (int)position.z),
-		TRAP,
-		_assetManager->GetRenderObject(data->_renderObject),
-		_tilemap,
-		subIndex,
-		{ -1,0 },
-		data->_cost);
-
-	// Read more data
-
-	return obj;
-}
-
-SecurityCamera*	ObjectHandler::MakeSecurityCamera(GameObjectCameraInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation)
-{
-	SecurityCamera* obj = new SecurityCamera(
-		_idCount,
-		position,
-		rotation,
-		AI::Vec2D((int)position.x, (int)position.z),
-		CAMERA,
-		_assetManager->GetRenderObject(data->_renderObject),
-		_tilemap);
-
-	// Read more data
-
-	return obj;
-}
-
-Guard * ObjectHandler::MakeGuard(GameObjectGuardInfo * data, const XMFLOAT3& position, const XMFLOAT3& rotation)
-{
-	Guard* obj = new Guard(
-		_idCount,
-		position,
-		rotation,
-		AI::Vec2D((int)position.x, (int)position.z),
-		GUARD,
-		_assetManager->GetRenderObject(data->_renderObject),
-		_tilemap);
-
-	// read more data
-
-	return obj;
-}
-
-Enemy * ObjectHandler::MakeEnemy(GameObjectEnemyInfo * data, const XMFLOAT3& position, const XMFLOAT3& rotation)
-{
-	Enemy* obj = new Enemy(
-		_idCount,
-		position,
-		rotation,
-		AI::Vec2D((int)position.x, (int)position.z),
-		ENEMY,
-		_assetManager->GetRenderObject(data->_renderObject),
-		_tilemap);
-
-	// read more data
-
-	return obj;
+	return _particleEventQueue;
 }

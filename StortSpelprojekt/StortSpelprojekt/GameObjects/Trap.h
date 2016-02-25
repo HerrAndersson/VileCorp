@@ -3,14 +3,11 @@
 #include "Unit.h"
 #include <memory>
 
-enum TrapType{ SPIKE, TESLACOIL, SHARK, GUN};
-
+enum TrapType{ SPIKE, TESLACOIL, SHARK, GUN };
 
 class Trap : public GameObject
 {
 private:
-	int _cost;
-	TrapType _trapType;
 	bool _isActive;
 	bool _isVisibleToEnemies;
 	int _damage;
@@ -35,8 +32,8 @@ private:
 	void SetTiles();
 public:
 	Trap();
-	Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject * renderObject, 
-		 const Tilemap* tileMap, int trapType = SPIKE, AI::Vec2D direction = {-1,0}, int cost = 0);
+	Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject * renderObject, System::SoundModule* soundModule,
+		 const Tilemap* tileMap, int trapType = SPIKE, AI::Vec2D direction = {-1,0});
 	virtual ~Trap();
 
 	AI::Vec2D* GetTiles()const;
@@ -61,5 +58,8 @@ public:
 
 	enum Anim { IDLE, ACTIVATE, NR_OF_ANIM/*Has to be last*/ };
 	void Animate(Anim anim);
+
+	//Sound
+	void PlayActivateSound();
 };
 

@@ -1,4 +1,10 @@
 {
+	"backbg":
+	{
+		"position": [0.0, 0.0],
+		"scale": [1.0, 1.05],
+		"texture" : "../Menues/General/desk_bkg.png"
+	},
 	"bg" :
 	{
 		"position": [0.0, 0.0],
@@ -25,13 +31,13 @@
 			"res_left" :
 			{
 				"position": [-0.32, 0.0],
-				"scale": [0.08, 0.08],
+				"scale": [0.07, 0.07],
 				"texture" : "../Menues/settings/settings6-arrow2.png"
 			},
 			"res_right" :
 			{
 				"position": [0.32, 0.0],
-				"scale": [0.08, 0.08],
+				"scale": [0.07, 0.07],
 				"texture" : "../Menues/settings/settings6-arrow.png"
 			},
 			"":
@@ -57,13 +63,13 @@
 			"win_left" :
 			{
 				"position": [-0.32, 0.0],
-				"scale": [0.08, 0.08],
+				"scale": [0.07, 0.07],
 				"texture" : "../Menues/settings/settings6-arrow2.png"
 			},
 			"win_right" :
 			{
 				"position": [0.32, 0.0],
-				"scale": [0.08, 0.08],
+				"scale": [0.07, 0.07],
 				"texture" : "../Menues/settings/settings6-arrow.png"
 			},
 			"":
@@ -89,13 +95,13 @@
 			"shadow_left" :
 			{
 				"position": [-0.32, 0.0],
-				"scale": [0.08, 0.08],
+				"scale": [0.07, 0.07],
 				"texture" : "../Menues/settings/settings6-arrow2.png"
 			},
 			"shadow_right" :
 			{
 				"position": [0.32, 0.0],
-				"scale": [0.08, 0.08],
+				"scale": [0.07, 0.07],
 				"texture" : "../Menues/settings/settings6-arrow.png"
 			},
 			"":
@@ -121,13 +127,13 @@
 			"aa_left" :
 			{
 				"position": [-0.32, 0.0],
-				"scale": [0.08, 0.08],
+				"scale": [0.07, 0.07],
 				"texture" : "../Menues/settings/settings6-arrow2.png"
 			},
 			"aa_right" :
 			{
 				"position": [0.32, 0.0],
-				"scale": [0.08, 0.08],
+				"scale": [0.07, 0.07],
 				"texture" : "../Menues/settings/settings6-arrow.png"
 			},
 			"":
@@ -153,13 +159,13 @@
 			"sound_left" :
 			{
 				"position": [-0.32, 0.0],
-				"scale": [0.08, 0.08],
+				"scale": [0.07, 0.07],
 				"texture" : "../Menues/settings/settings6-arrow2.png"
 			},
 			"sound_right" :
 			{
 				"position": [0.32, 0.0],
-				"scale": [0.08, 0.08],
+				"scale": [0.07, 0.07],
 				"texture" : "../Menues/settings/settings6-arrow.png"
 			},
 			"":
@@ -181,8 +187,8 @@
 		"apply" :
 		{
 			"position": [-0.2, -1.1],
-			"scale": [0.1, 0.07],
-			"texture": "../Menues/General/button.png",
+			"scale": [0.1, 0.065],
+			"texture": "../Menues/General/wide-button.png",
 			"hidden" : true,
 			"":
 			{
@@ -196,16 +202,16 @@
 		"cancel" :
 		{
 			"position": [0.2, -1.1],
-			"scale": [0.1, 0.07],
-			"texture": "../Menues/General/button.png",
+			"scale": [0.1, 0.065],
+			"texture": "../Menues/General/wide-button.png",
 			"":
 			{
 				"position" : [0.0, -0.03],
 				"scale": [0.1, 0.07],
-				"text" : "Cancel",
+				"text" : "Return",
 				"centered" : true,
 				"color" : "FF000000"
 			}
 		}
 	}
-  }
+}

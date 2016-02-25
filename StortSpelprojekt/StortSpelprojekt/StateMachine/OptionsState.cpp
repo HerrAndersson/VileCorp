@@ -5,8 +5,6 @@
 OptionsState::OptionsState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule)
 	: BaseState (controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settingsReader, soundModule)
 {
-	_settingsReader = settingsReader;
-
 	//Resolution options
 	_resolution[0] = { L"1280x720", 1280, 720 };
 	_resolution[1] = { L"1366x768", 1366, 768 };
@@ -38,6 +36,18 @@ OptionsState::OptionsState(System::Controls* controls, ObjectHandler* objectHand
 		_sound[i] = { to_wstring(i+1), i, 0 };
 	}
 	_soundOption = 9;
+
+	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("res_left"), color));
+	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("win_left"), color));
+	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("aa_left"), color));
+	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("shadow_left"), color));
+	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("sound_left"), color));
+
+	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("res_right"), color));
+	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("win_right"), color));
+	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("aa_right"), color));
+	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("shadow_right"), color));
+	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("sound_right"), color));
 }
 
 OptionsState::~OptionsState()
@@ -97,26 +107,14 @@ void OptionsState::Update(float deltaTime)
 {
 	if (_controls->IsFunctionKeyDown("DEBUG:RELOAD_GUI"))
 	{
-		_uiTree.ReloadTree("../../../../StortSpelprojekt/Assets/gui.json", "OPTIONS");
+		_uiTree.ReloadTree("../../../../StortSpelprojekt/Assets/GUI/options.json");
 	}
 	System::MouseCoord coord = _controls->GetMouseCoord();
-	XMFLOAT4 color(0.3f, 0.3f, 0.3f, 1.0f);
-	HandleHoverColorOffset("apply", "apply", coord, color);
-	HandleHoverColorOffset("cancel", "cancel", coord, color);
-
-	HandleHoverColorOffset("res_left", "res_left", coord, color);
-	HandleHoverColorOffset("win_left", "win_left", coord, color);
-	HandleHoverColorOffset("aa_left", "aa_left", coord, color);
-	HandleHoverColorOffset("shadow_left", "shadow_left", coord, color);
-
-	HandleHoverColorOffset("res_right", "res_right", coord, color);
-	HandleHoverColorOffset("win_right", "win_right", coord, color);
-	HandleHoverColorOffset("aa_right", "aa_right", coord, color);
-	HandleHoverColorOffset("shadow_right", "shadow_right", coord, color);
+	HandleButtonHighlight(coord);
 
 	if (_controls->IsFunctionKeyDown("MENU:MENU"))
 	{
-		_soundModule->Play("Assets/Sounds/page");
+		_soundModule->Play("page");
 		ChangeState(State::MENUSTATE);
 	}
 	if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
@@ -175,7 +173,7 @@ void OptionsState::Update(float deltaTime)
 		}
 		if (_uiTree.IsButtonColliding("cancel", coord._pos.x, coord._pos.y))
 		{
-			_soundModule->Play("Assets/Sounds/page");
+			_soundModule->Play("page");
 			_uiTree.GetNode("apply")->SetHidden(true);
 			ChangeState(State::MENUSTATE);
 		}

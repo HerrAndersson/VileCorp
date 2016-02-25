@@ -10,6 +10,7 @@ public:
 	const float MOVE_SPEED = 0.025f;				//Movement per frame
 
 	enum MoveState {IDLE, FINDING_PATH, MOVING, SWITCHING_NODE, AT_OBJECTIVE, FLEEING};
+	enum StatusEffect{NO_EFFECT, BURNING, SLOWED, STUNNED, SCARED, CONFUSED};
 protected:
 	AI::Vec2D _nextTile;
 	AI::AStar* _aStar;
@@ -28,6 +29,7 @@ protected:
 
 	int _health;
 	bool _isSwitchingTile;
+	float _speedMultiplier;
 
 	int _interactionTime;
 	GameObject* _heldObject;
@@ -41,7 +43,7 @@ protected:
 	void SetGoal(GameObject* objective);
 public:
 	Unit();
-	Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject* renderObject, const Tilemap* tileMap);
+	Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject* renderObject, System::SoundModule* soundModule, const Tilemap* tileMap);
 	virtual ~Unit();
 	int GetPathLength()const;
 	AI::Vec2D GetGoalTilePosition();
@@ -65,9 +67,10 @@ public:
 	virtual void Update(float deltaTime);
 	virtual void Release();
 	virtual void Act(GameObject* obj) = 0;									//context specific action on the unit's objective
-	virtual void Wait();
 	void ClearObjective();
+
 	void TakeDamage(int damage);
+
 	void SetVisibility(bool visible);
 	void UseCountdown(int frames = 0);
 	int GetVisionRadius()const;
@@ -79,6 +82,6 @@ public:
 	enum Anim { IDLEANIM, WALKANIM, FIXTRAPANIM, FIGHTANIM, PICKUPOBJECTANIM, NR_OF_ANIM/*Has to be last*/ };
 	void Animate(Anim anim);
 	bool GetAnimisFinished();
-	float speedMultiplyer;
+
 };
 
