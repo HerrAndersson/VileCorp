@@ -161,7 +161,14 @@ void PlacementState::HandleInput()
 	//Menu
 	if (_controls->IsFunctionKeyDown("MENU:MENU"))
 	{
-		ChangeState(PAUSESTATE);
+		if (_ghostImage.IsGhostImageActive())
+		{
+			_ghostImage.RemoveGhostImage();
+		}
+		else
+		{
+			ChangeState(PAUSESTATE);
+		}
 	}
 	//Play
 	if (_uiTree.IsButtonColliding("Play", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
@@ -202,7 +209,7 @@ void PlacementState::HandleInput()
 				DirectX::XMFLOAT3 pos = XMFLOAT3(pickedTile._x, 0, pickedTile._y);
 				if (_objectHandler->Add(_selectedBlueprint._blueprint, _selectedBlueprint._textureId, pos, DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), true))
 				{
-					_ghostImage.RemoveGhostImages();
+					_ghostImage.RemoveGhostImage();
 					//Object Added. Calculate money and deselect object TODO: Look over where money is stored and use from correct path /Alex
 					int temp = _budget;// -_selectedBlueprint._blueprint->_money;
 					if (temp > 0)

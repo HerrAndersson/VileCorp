@@ -19,5 +19,6 @@ public:
 	
 	void AddGhostImage(SpecificBlueprint blueprint, System::MouseCoord coord);
 	void Update(System::MouseCoord coord);
-	void RemoveGhostImages();
+	void RemoveGhostImage();
+	bool IsGhostImageActive();
 };

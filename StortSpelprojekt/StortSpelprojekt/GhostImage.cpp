@@ -20,18 +20,60 @@ void GhostImage::AddGhostImage(SpecificBlueprint blueprint, System::MouseCoord c
 void GhostImage::Update(System::MouseCoord coord)
 {
 	AI::Vec2D pos = _pickingDevice->PickTile(coord._pos);
+	GameObject* object;
+	bool placeable = true;
 
+	//if active ghostimage
 	if (_gameObjectId != -1)
 	{
-		_objectHandler->Find(_gameObjectId)->SetPosition(XMFLOAT3(pos._x, 0, pos._y));
+		//find it
+		object = _objectHandler->Find(_gameObjectId);
+		//update position
+		object->SetPosition(XMFLOAT3(pos._x, 0, pos._y));
+		//update color
+		vector<GameObject*> tileObjects = _objectHandler->GetTileMap()->GetAllObjectsOnTile(pos);
+		if (tileObjects.size() > 0)
+		{
+			for (GameObject* i : tileObjects)
+			{
+				if (i->GetType() != Type::FLOOR)
+				{
+					placeable = false;
+				}
+			}
+		}
+		else
+		{
+			placeable = false;
+		}
+		if (placeable)
+		{
+			object->SetColorOffset(XMFLOAT3(0.0f, 1.0f, 0.0f));
+		}
+		else
+		{
+			object->SetColorOffset(XMFLOAT3(1.0f, 0.0f, 0.0f));
+		}
 	}
 }
 
-void GhostImage::RemoveGhostImages()
+void GhostImage::RemoveGhostImage()
 {
 	if (_gameObjectId != -1)
 	{
 		_objectHandler->Remove(_gameObjectId);
 	}
 	_gameObjectId = -1;
+}
+
+bool GhostImage::IsGhostImageActive()
+{
+	if (_gameObjectId == -1)
+	{
+		return false;
+	}
+	else
+	{
+		return true;
+	}
 }
