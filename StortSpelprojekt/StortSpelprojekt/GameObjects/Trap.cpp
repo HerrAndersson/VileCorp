@@ -287,6 +287,8 @@ void Trap::SetTiles()
 	case BEAR:
 		break;
 	case FLAMETHROWER:
+		_nrOfOccupiedTiles = CalculateLine(7, _tilePosition, _occupiedTiles);
+		_nrOfAOETiles = CalculateLine(7, _tilePosition, _areaOfEffect);
 		break;
 	default:
 		_areaOfEffect = nullptr;
@@ -338,17 +340,17 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	switch (_subType)
 	{
 	case SPIKE:
-		Initialize(3, 1, 1, 1, 50, 50, Unit::StatusEffect::NO_EFFECT, 0, 0);
+		Initialize(30, 1, 1, 1, 50, 50, Unit::StatusEffect::NO_EFFECT, 0, 0);
 		firstFrame = true;
 		break;
 	case TESLACOIL:	
 		Initialize(0, 9, 9, 37, 80, 80, Unit::StatusEffect::STUNNED, 120, 120, 60, 2);
 		break;
 	case SHARK:
-		Initialize(100, 12, 2, 2, 50, 50, Unit::StatusEffect::NO_EFFECT, 0, 0);
+		Initialize(120, 12, 2, 2, 50, 50, Unit::StatusEffect::NO_EFFECT, 0, 0);
 		break;
 	case GUN:
-		Initialize(300, 10, 10, 10, 100, 50, Unit::StatusEffect::NO_EFFECT, 0, 0, 60, 5);
+		Initialize(60, 10, 10, 10, 60, 60, Unit::StatusEffect::NO_EFFECT, 0, 0, 60, 5);
 		break;
 	case SAW:
 		Initialize(80, 3, 1, 1, 50, 70, Unit::StatusEffect::NO_EFFECT, 0, 0, 60, -1);
@@ -358,6 +360,7 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	case BEAR:
 		break;
 	case FLAMETHROWER:
+		Initialize(20, 7, 7, 7, 60, 60, Unit::StatusEffect::BURNING, 300, 60, 60, 3);
 		break;
 	default:
 		_areaOfEffect = nullptr;
