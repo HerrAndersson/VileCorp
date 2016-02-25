@@ -145,7 +145,9 @@ bool Game::Update(double deltaTime)
 	//Apply settings if they has changed
 	if (_settingsReader.GetSettingsChanged())
 	{
-		ResizeResources(_settingsReader.GetSettings());
+		System::Settings* settings = _settingsReader.GetSettings();
+		ResizeResources(settings);
+		_soundModule.SetVolume(settings->_volume / 100.0f, CHMASTER);
 		_settingsReader.SetSettingsChanged(false);
 	}
 

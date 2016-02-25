@@ -30,13 +30,9 @@ OptionsState::OptionsState(System::Controls* controls, ObjectHandler* objectHand
 	_aa[1] = { L"Off", 0, 0 };
 	_aaOption = 0;
 
-	//TODO: Volume setting //Mattias
-	for (int i = 0; i < SOUND_MAX; i++)
-	{
-		_sound[i] = { to_wstring(i+1), i, 0 };
-	}
-	_soundOption = 9;
+	_volume = 10;
 
+	XMFLOAT4 color(0.1f, 0.1f, 0.1f, 1.0f);
 	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("res_left"), color));
 	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("win_left"), color));
 	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("aa_left"), color));
@@ -75,7 +71,7 @@ void OptionsState::UpdateText(const std::string& contentId, int optionValue, Opt
 	text->SetText(options[optionValue]._text);
 }
 
-bool OptionsState::HandleOptionSwitch(const std::string& leftId, const std::string& rightId, const std::string& contentId, int& optionValue, Options* options, int optionsMax)
+bool OptionsState::HandleOptionSwitch(const std::string& leftId, const std::string& rightId, const std::string& contentId, int& optionValue, Options* options, int optionsMax, bool updateContent)
 {
 	System::MouseCoord coord = _controls->GetMouseCoord();
 	bool leftClicked = _uiTree.IsButtonColliding(leftId, coord._pos.x, coord._pos.y);
@@ -96,7 +92,7 @@ bool OptionsState::HandleOptionSwitch(const std::string& leftId, const std::stri
 	{
 		optionValue = 0;
 	}
-	if (leftClicked || rightClicked)
+	if (updateContent && (leftClicked || rightClicked))
 	{
 		UpdateText(contentId, optionValue, options);
 	}
@@ -124,12 +120,14 @@ void OptionsState::Update(float deltaTime)
 		showApplyButton = showApplyButton || HandleOptionSwitch("win_left", "win_right", "win_content", _windowOption, _window, WINDOW_MAX);
 		showApplyButton = showApplyButton || HandleOptionSwitch("aa_left", "aa_right", "aa_content", _aaOption, _aa, AA_MAX);
 		showApplyButton = showApplyButton || HandleOptionSwitch("shadow_left", "shadow_right", "shadow_content", _shadowmapOption, _shadowmap, SHADOWMAP_MAX);
-		showApplyButton = showApplyButton || HandleOptionSwitch("sound_left", "sound_right", "sound_content", _soundOption, _sound, SOUND_MAX);
 
-		if (showApplyButton)
-		{
-			_uiTree.GetNode("apply")->SetHidden(false);
-		}
+		//Handle volume option
+		showApplyButton = showApplyButton || HandleOptionSwitch("sound_left", "sound_right", "sound_content", _volume, nullptr, 11, false);
+		GUI::Node* text = _uiTree.GetNode("sound_content");
+		text->SetText(std::to_wstring(_volume * 10) + L"%");
+
+
+		_uiTree.GetNode("apply")->SetHidden(!showApplyButton);
 
 		//Check it the apply button was pressed and change settings file and update the window resolution if needed
 		if (_uiTree.IsButtonColliding("apply", coord._pos.x, coord._pos.y))
@@ -148,7 +146,7 @@ void OptionsState::Update(float deltaTime)
 			settings->_shadowMapSize = _shadowmap[_shadowmapOption]._value;
 
 			//Sound volume
-			_soundModule->SetVolume((_soundOption + 1.0f) / 10.0f, CHMASTER);
+			settings->_volume = _volume * 10;
 
 			//Window options
 			if (_window[_windowOption]._value == 1) //Fullscreen
@@ -215,6 +213,10 @@ void OptionsState::OnStateEnter()
 
 	_aaOption = ReadSetting(settings->_antialiasing, 0, _aa, AA_MAX);
 	UpdateText("aa_content", _aaOption, _aa);
+
+	_volume = settings->_volume / 10;
+	GUI::Node* text = _uiTree.GetNode("sound_content");
+	text->SetText(std::to_wstring(_volume * 10) + L"%");
 }
 
 void OptionsState::OnStateExit()

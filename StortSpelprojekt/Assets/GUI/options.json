@@ -178,7 +178,7 @@
 			"sound_content":
 			{
 				"scale": [0.25, 0.0],
-				"text" : "10",
+				"text" : "100%",
 				"centered" : true,
 				"color" : "FF888888",
 				"fontsize" : 25.0
