@@ -30,14 +30,14 @@
 
   ],
   "guards": [
-    "ErikBaseman-28.bin",
+    "guard-28.bin",
 	"BasewomanDress-27.bin",
 	"ArmlessStatue-27.bin",
     "ErikBaseman-28.bin"
 
   ],
   "enemies": [
-    "ErikEnemy-27.bin",
+    "enemy-28.bin",
 	"PillowPedestal-27.bin",
 	"GlassTable-27.bin",
 	"ErikEnemy-27.bin"

@@ -509,47 +509,37 @@ bool Unit::StatusCountdown()
 
 void Unit::Animate(Anim anim)
 {
+	enum Anim { IDLEANIM, WALKANIM, FIGHTANIM, PICKUPOBJECTANIM, FIXTRAPANIM, DISABLETRAPANIM, HURTANIM, DEATHANIM, NR_OF_ANIM/*Has to be last*/ };
 	if (_renderObject->_isSkinned && _animation->GetisFinished())
 	{
-		if (_renderObject->_type == GUARD)
+		switch (anim)
 		{
-			switch (anim)
-			{
-			case IDLEANIM:
-				_animation->SetActionAsCycle(0, 1.0f * _speedMultiplier);
-				break;
-			case WALKANIM:
-				_animation->SetActionAsCycle(1, 1.0f * _speedMultiplier);
-				break;
-			case FIXTRAPANIM:
-				_animation->SetActionAsCycle(2, 1.0f * _speedMultiplier);
-				break;
-			case FIGHTANIM:
-				_animation->PlayAction(4, 4.5f * _speedMultiplier);
-				break;
-			default:
-				break;
-			}
-		}
-		if (_renderObject->_type == ENEMY)
-		{
-			switch (anim)
-			{
-			case IDLEANIM:
-				_animation->SetActionAsCycle(0, 1.0f * _speedMultiplier);
-				break;
-			case WALKANIM:
-				_animation->SetActionAsCycle(1, 1.0f * _speedMultiplier);
-				break;
-			case FIGHTANIM:
-				_animation->PlayAction(1, 1.0f * _speedMultiplier);
-				break;
-			case PICKUPOBJECTANIM:
-				_animation->PlayAction(3, 1.0f * _speedMultiplier);
-				break;
-			default:
-				break;
-			}
+		case IDLEANIM:
+			_animation->SetActionAsCycle(IDLEANIM, 1.0f);
+			break;
+		case WALKANIM:
+			_animation->SetActionAsCycle(WALKANIM, 1.0f);
+			break;
+		case FIGHTANIM:
+			_animation->PlayAction(FIGHTANIM, 1.0f);
+			break;
+		case PICKUPOBJECTANIM:
+			_animation->PlayAction(PICKUPOBJECTANIM, 1.0f);
+			break;
+		case FIXTRAPANIM:
+			_animation->PlayAction(FIXTRAPANIM, 1.0f);
+			break;
+		case DISABLETRAPANIM:
+			_animation->PlayAction(DISABLETRAPANIM, 1.0f);
+			break;
+		case HURTANIM:
+			_animation->PlayAction(HURTANIM, 1.0f);
+			break;
+		case DEATHANIM:
+			_animation->PlayAction(DEATHANIM, 1.0f);
+			break;
+		default:
+			break;
 		}
 	}
 }
