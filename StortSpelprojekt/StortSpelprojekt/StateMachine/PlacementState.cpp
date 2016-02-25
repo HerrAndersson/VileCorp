@@ -24,7 +24,7 @@ PlacementState::PlacementState(System::Controls* controls, ObjectHandler* object
 	_ambientLight = ambientLight;
 
 	//Add sound
-	_soundModule->AddSound("Assets/Sounds/in_game_1", 0.2f, 1.0f, true, true);
+	_soundModule->AddSound("in_game_1", 0.2f, 1.0f, true, true);
 }
 
 void PlacementState::EvaluateGoldCost()
@@ -150,7 +150,7 @@ void PlacementState::OnStateEnter()
 	}
 
 	//Play music
-	_soundModule->Play("Assets/Sounds/in_game_1");
+	_soundModule->Play("in_game_1");
 }
 
 void PlacementState::OnStateExit()
@@ -164,7 +164,7 @@ void PlacementState::OnStateExit()
 	}
 
 	//Pause music
-	_soundModule->Pause("Assets/Sounds/in_game_1");
+	_soundModule->Pause("in_game_1");
 }
 
 void PlacementState::HandleInput()

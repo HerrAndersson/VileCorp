@@ -65,8 +65,8 @@ Enemy::Enemy()
 	SetVisibility(false);
 }
 
-Enemy::Enemy(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject * renderObject, const Tilemap * tileMap)
-	: Unit(ID, position, rotation, tilePosition, type, renderObject, tileMap)
+Enemy::Enemy(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject * renderObject, System::SoundModule* soundModule, const Tilemap * tileMap)
+	: Unit(ID, position, rotation, tilePosition, type, renderObject, soundModule, tileMap)
 {
 	SetVisibility(false);
 	_visibilityTimer = TIME_TO_HIDE;
@@ -182,6 +182,7 @@ void Enemy::Act(GameObject* obj)
 			break;
 		case SPAWN:
 			TakeDamage(_health);						//TODO: Right now despawn is done by killing the unit. This should be changed to reflect that it's escaping --Victor
+														//^ This will also make the guard_death sound not play if it's an escape -- Sebastian
 			break;
 		case TRAP:
 		{

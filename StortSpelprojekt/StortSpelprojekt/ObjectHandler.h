@@ -1,4 +1,6 @@
 #pragma once
+
+#include "../System/SoundModule.h"
 #include <vector>
 #include "stdafx.h"
 #include "GameObject.h"
@@ -54,6 +56,7 @@ private:
 	Tilemap* _tilemap;
 	Grid* _buildingGrid;
 	Level::LevelHeader _currentLevelHeader;
+	System::SoundModule*	_soundModule;
 
 	int _idCount = 0;
 	int _objectCount = 0;
@@ -71,7 +74,7 @@ private:
 	void ReleaseGameObjects();
 
 public:
-	ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data, System::Settings* settings, Renderer::ParticleEventQueue* particleReque);	
+	ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data, System::Settings* settings, Renderer::ParticleEventQueue* particleReque, System::SoundModule*	soundModule);
 	~ObjectHandler();
 
 	//Add a gameobject

@@ -4,6 +4,7 @@
 #include "CommonUtils.h"
 #include "AIUtil.h"
 #include "Animation.h"
+#include "../System/SoundModule.h"
 
 /*
 GameObject class
@@ -35,6 +36,8 @@ protected:
 	RenderObject* _renderObject;
 	Animation* _animation = nullptr;
 
+	System::SoundModule* _soundModule;
+
 	PickUpState _pickUpState;
 
 	void CalculateMatrix();
@@ -43,7 +46,7 @@ public:
 
 	GameObject();
 	//Type might not be necessary, depending on whether subclasses can correspond to one type or many.
-	GameObject(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject* renderObject, DirectX::XMFLOAT3 colorOffset = DirectX::XMFLOAT3(0,0,0));
+	GameObject(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject* renderObject, System::SoundModule* soundModule, DirectX::XMFLOAT3 colorOffset = DirectX::XMFLOAT3(0,0,0));
 	virtual ~GameObject();
 
 	unsigned short GetID() const;
