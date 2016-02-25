@@ -7,6 +7,7 @@
 #include "../Player.h"
 #include "../TutorialLogic.h"
 #include "CommonUtils.h"
+#include "../GhostImage.h"
 
 class PlacementState : public BaseState
 {
@@ -28,6 +29,8 @@ private:
 
 	Player* _player;
 	SpecificBlueprint _selectedBlueprint;
+	std::vector<GUI::Node*>* _buttons;
+	GhostImage _ghostImage;
 
 	void EvaluateGoldCost();
 	void HandleDescriptions();

@@ -293,6 +293,11 @@ int ObjectHandler::GetObjectCount() const
 	return _objectCount;
 }
 
+int ObjectHandler::GetIdCount()const
+{
+	return _idCount;
+}
+
 Tilemap * ObjectHandler::GetTileMap() const
 {
 	return _tilemap;
