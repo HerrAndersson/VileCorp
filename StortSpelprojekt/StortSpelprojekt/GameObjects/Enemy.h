@@ -22,7 +22,7 @@ private:
 	void DisarmTrap(Trap* trap);
 public:
 	Enemy();
-	Enemy(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject* renderObject, const Tilemap* tileMap, const int enemyType);
+	Enemy(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject* renderObject, const Tilemap* tileMap, const int enemyType = 0);
 	virtual ~Enemy();
 	void EvaluateTile(Type objective, AI::Vec2D tile);
 	void EvaluateTile(GameObject* obj);

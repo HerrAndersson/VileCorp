@@ -76,3 +76,7 @@ void SpawnPoint::AddUnitsToSpawn(int amount)
 {
 	_unitsToSpawn += amount;
 }
+bool SpawnPoint::InRange(AI::Vec2D pos) const
+{
+	return _tilePosition == pos;
+}

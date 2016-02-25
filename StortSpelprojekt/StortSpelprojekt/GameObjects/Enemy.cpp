@@ -180,64 +180,67 @@ void Enemy::EvaluateTile(Type objective, AI::Vec2D tile)
 void Enemy::EvaluateTile(GameObject* obj)
 {
 	int tempPriority = 0;
-	if (obj != nullptr && obj->GetPickUpState() == ONTILE)
+	if (obj != nullptr)
 	{
-		switch (obj->GetType())
+		if (obj->GetPickUpState() == ONTILE)
 		{
-		case LOOT:
-			if (_heldObject == nullptr)
+			switch (obj->GetType())
 			{
-				tempPriority = 2;
-			}
-			break;
-		case SPAWN:
-			if (_heldObject != nullptr || _tileMap->GetNrOfLoot() <= 0)
-			{
-				tempPriority = 2;
-			}
-			break;
-		case TRAP:
-		{
-			Trap* trap = static_cast<Trap*>(obj);
-			if (TryToDisarm(trap))
-			{
-				tempPriority = 1;
-			}
-			else
-			{
-				//TODO: Avoid trap --Victor
-			}
-		}
-			break;	
-		case GUARD:
-			if (static_cast<Unit*>(obj)->GetHealth() > 0)
-			{
-				if (SafeToAttack(static_cast<Unit*>(obj)->GetDirection()))
+			case LOOT:
+				if (_heldObject == nullptr)
 				{
-					tempPriority = 100 / _baseDamage;
+					tempPriority = 2;
 				}
-				else if (obj != _objective && _visible)
+				break;
+			case SPAWN:
+				if (_heldObject != nullptr || _tileMap->GetNrOfLoot() <= 0)
 				{
-					_pursuer = static_cast<Unit*>(obj);
-					ClearObjective();
-					_moveState = MoveState::MOVING;
+					tempPriority = 2;
+				}
+				break;
+			case TRAP:
+			{
+				Trap* trap = static_cast<Trap*>(obj);
+				if (TryToDisarm(trap))
+				{
+					tempPriority = 1;
+				}
+				else
+				{
+					//TODO: Avoid trap --Victor
 				}
 			}
 			break;
-		case ENEMY:
-			break;
-		default:
-			break;
-		}
+			case GUARD:
+				if (static_cast<Unit*>(obj)->GetHealth() > 0)
+				{
+					if (SafeToAttack(static_cast<Unit*>(obj)->GetDirection()))
+					{
+						tempPriority = 100 / _baseDamage;
+					}
+					else if (obj != _objective && _visible)
+					{
+						_pursuer = static_cast<Unit*>(obj);
+						ClearObjective();
+						_moveState = MoveState::MOVING;
+					}
+				}
+				break;
+			case ENEMY:
+				break;
+			default:
+				break;
+			}
 
-		//Head to the objective
-		if (tempPriority > 0 &&
- 			obj->GetTilePosition() != _tilePosition && 
-			(_objective == nullptr || tempPriority * GetApproxDistance(obj->GetTilePosition()) < _goalPriority * GetApproxDistance(GetGoalTilePosition())))
-		{
-			SetGoalTilePosition(obj->GetTilePosition());
-			_objective = obj;
-			_goalPriority = tempPriority;
+			//Head to the objective
+			if (tempPriority > 0 &&
+				obj->GetTilePosition() != _tilePosition &&
+				(_objective == nullptr || tempPriority * GetApproxDistance(obj->GetTilePosition()) < _goalPriority * GetApproxDistance(GetGoalTilePosition())))
+			{
+				SetGoalTilePosition(obj->GetTilePosition());
+				_objective = obj;
+				_goalPriority = tempPriority;
+			}
 		}
 	}
 }
@@ -254,7 +257,7 @@ void Enemy::Act(GameObject* obj)
 				if (_interactionTime < 0)
 				{
 					obj->SetPickUpState(PICKINGUP);
-					if (obj->GetAnimation() != nullptr)
+					if (_animation != nullptr)
 					{
 						UseCountdown(_animation->GetLength(3, 1.0f * _speedMultiplier));
 						Animate(PICKUPOBJECTANIM);
@@ -308,7 +311,7 @@ void Enemy::Act(GameObject* obj)
 			else if (_interactionTime == 0)
 			{
 				static_cast<Unit*>(obj)->TakeDamage(1);
-				if (static_cast<Unit*>(obj)->GetHealth() <= 0)
+				if (static_cast<Unit*>(obj)->GetHealth() <= 0 || !InRange(obj->GetTilePosition()))
 				{
 					ClearObjective();
 				}
@@ -344,8 +347,23 @@ void Enemy::Update(float deltaTime)
 	switch (_moveState)
 	{
 	case MoveState::IDLE:
-		CheckAllTiles();
+	{
+		if (_interactionTime < 0)
+		{
+			srand((int)time(NULL));
+			int temp = rand() % 20;
+			UseCountdown(30 + temp);
+		}
+		else if (_interactionTime == 0)
+		{
+			CheckAllTiles();
+		}
+		else
+		{
+			UseCountdown();
+		}
 		Animate(IDLEANIM);
+	}
 		break;
 	case MoveState::FINDING_PATH:
 		if (_objective != nullptr)
@@ -400,6 +418,7 @@ void Enemy::Moving()
 		_isSwitchingTile = true;
 		_position.x = _nextTile._x;
 		_position.z = _nextTile._y;
+		ClearObjective();
 	}
 	else
 	{

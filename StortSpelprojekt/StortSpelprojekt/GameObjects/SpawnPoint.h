@@ -27,4 +27,5 @@ public:
 	void Enable();
 	int GetUnitsToSpawn()const;
 	void AddUnitsToSpawn(int amount);
+	bool InRange(AI::Vec2D pos)const;
 };

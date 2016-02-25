@@ -513,7 +513,7 @@ void ObjectHandler::InitPathfinding()
 
 	for (GameObject* i : _gameObjects[GUARD])
 	{
-		Unit* unit = dynamic_cast<Unit*>(i);		unit->InitializePathFinding();
+		Unit* unit = dynamic_cast<Unit*>(i);
 		unit->InitializePathFinding();
 	}
 }
@@ -584,7 +584,7 @@ void ObjectHandler::Update(float deltaTime)
 						for (uint k = 0; k < _gameObjects[SPAWN].size() && !lootRemoved; k++)
 						{
 							//When the Enemy despawns with a Loot at hand at a spawn point, spawn them again as if they re-enter to get more Loot, Aron
-							if (_gameObjects[SPAWN][k]->InRange(unit->GetTilePosition()))
+							if(_gameObjects[SPAWN][k]->InRange(unit->GetTilePosition()))
 							{
 								lootRemoved = Remove(heldObject);
 								((SpawnPoint*)_gameObjects[SPAWN][k])->AddUnitsToSpawn(1);
@@ -641,7 +641,7 @@ void ObjectHandler::Update(float deltaTime)
 						}
 					}
 					
-					if (allLootIsCarried)
+					if (allLootIsCarried && unit->GetHeldObject() == nullptr)
 					{
 						static_cast<Enemy*>(unit)->CheckAllTiles();
 					}
@@ -760,7 +760,7 @@ void ObjectHandler::ReleaseGameObjects()
 	_idCount = 0;
 	_objectCount = 0;
 }
-
+/*
 Enemy * ObjectHandler::MakeEnemy(GameObjectEnemyInfo * data, const XMFLOAT3& position, const XMFLOAT3& rotation, const int subIndex)
 		_tilemap,
-		subIndex);						
+		subIndex);		*/				

@@ -16,8 +16,6 @@ Guard::Guard(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 ro
 	_guardType = (GuardType)guardType;
 	_isSelected = false;
 	_currentPatrolGoal = 0;
-	_health = 100;
-	_baseDamage = 30;
 
 	switch (_guardType)				//TODO: Repair time, vision radius, etc --Victor
 	{

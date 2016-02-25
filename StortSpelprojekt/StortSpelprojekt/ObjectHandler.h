@@ -55,7 +55,7 @@ private:
 	Grid* _buildingGrid;
 	Level::LevelHeader _currentLevelHeader;
 
-	int _idCount = 0;
+	unsigned short _idCount = 0;
 	int _objectCount = 0;
 	string _levelfolder;
 
