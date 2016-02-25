@@ -300,7 +300,7 @@
 				"tablechair2.png"
 			],
 			"_thumbnails": [
-				"tablechair2.png"
+				"../Menues/LevelEdit/Decorations/tablechairButton.png"
 			]
 		}, {
 			"_mesh": "pedestalDecoration-28.bin",
@@ -312,7 +312,7 @@
 				"pillowpedestal.png"
 			],
 			"_thumbnails": [
-				"pillowpedestal.png"
+				"../Menues/LevelEdit/Decorations/pedestalButton.png"
 			]
 		}, {
 			"_mesh": "paintingDecoration-28.bin",
@@ -324,7 +324,7 @@
 				"painting.png"
 			],
 			"_thumbnails": [
-				"painting.png"
+				"../Menues/LevelEdit/Decorations/paintingButton.png"
 			]
 		}, {
 			"_mesh": "lionStatueDecoration-28.bin",
@@ -336,7 +336,7 @@
 				"lionstatue.png"
 			],
 			"_thumbnails": [
-				"lionstatue.png"
+				"../Menues/LevelEdit/Decorations/lionstatueButton.png"
 			]
 		}, {
 			"_mesh": "grandfatherClockDecoration-28.bin",
@@ -348,7 +348,7 @@
 				"grandpaclock.png"
 			],
 			"_thumbnails": [
-				"grandpaclock.png"
+				"../Menues/LevelEdit/Decorations/grandfathersclockButton.png"
 			]
 		}, {
 			"_mesh": "glassTableDecoration-28.bin",
@@ -360,7 +360,7 @@
 				"glasstable.png"
 			],
 			"_thumbnails": [
-				"glasstable.png"
+				"../Menues/LevelEdit/Decorations/glasstableButton.png"
 			]
 		}, {
 			"_mesh": "generatorDecoration-28.bin",
@@ -408,7 +408,7 @@
 				"armlessstatue.png"
 			],
 			"_thumbnails": [
-				"armlessstatue.png"
+				"../Menues/LevelEdit/Decorations/armlesstatueButton.png"
 			]
 		}, {
 			"_mesh": "museumFenceDecoration-28.bin",
@@ -420,7 +420,19 @@
 				"fences.png"
 			],
 			"_thumbnails": [
+				"../Menues/LevelEdit/Decorations/fenceButton.png"
+			]
+		}, {
+			"_mesh": "museumFenceCornerDecoration-28.bin",
+			"_name": "Museum Fence",
+			"_type": "FURNITURE",
+			"_subType": 0,
+			"_tooltip": "SampleText",
+			"_textures": [
 				"fences.png"
+			],
+			"_thumbnails": [
+				"../Menues/LevelEdit/Decorations/cornerfenceButton.png"
 			]
 		}]
 	}
