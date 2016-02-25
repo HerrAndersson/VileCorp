@@ -8,6 +8,8 @@
 #include <vector>
 #include <mmdeviceapi.h>
 
+#include "Settings\Settings.h"
+
 #pragma comment(lib, "libyse32.lib")
 
 /*
@@ -35,7 +37,7 @@ namespace System
 
 	public:
 		/*Functions*/
-		SoundModule();
+		SoundModule(System::Settings* settings);
 		~SoundModule();
 
 		bool AddSound(const std::string &fileName, float volume = 1.0f, float speed = 1.0f, bool relative = true, bool looping = false);

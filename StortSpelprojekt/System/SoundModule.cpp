@@ -2,7 +2,7 @@
 
 namespace System
 {
-	SoundModule::SoundModule()
+	SoundModule::SoundModule(System::Settings* settings)
 	{
 		_allSounds = new std::map<std::string, YSE::sound*>;
 
@@ -18,6 +18,7 @@ namespace System
 		{
 			YSE::System().init();
 		}
+		SetVolume(settings->_volume / 100.0f, CHMASTER);
 	}
 
 	SoundModule::~SoundModule()
