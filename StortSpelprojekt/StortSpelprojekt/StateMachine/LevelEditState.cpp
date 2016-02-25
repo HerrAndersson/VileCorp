@@ -41,6 +41,8 @@ void LevelEditState::OnStateEnter()
 	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("UnitAmmountText"), 2, false, true));
 	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("UnitStartingTimeText"), 3, false, true));
 	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("UnitSpawnFrequencyText"), 3, false, true));
+	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("MinuteText"), 3, false, true));
+	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("SecondText"), 3, false, true));
 	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("SaveLevelText"), 25, false, false, true));
 
 	for (unsigned i = 0; i < NR_OF_TYPES; i++)
@@ -65,7 +67,7 @@ void LevelEditState::OnStateEnter()
 		_buttonPositions[i + _objectTabs->size()] = _uiTree.GetNode("Otherbuttons")->GetChildren()->at(i)->GetLocalPosition();
 		_isPressed[i] = false;
 	}
-	for (unsigned i = 0; i < 11; i++)
+	for (unsigned i = 0; i < _uiTree.GetNode("UnitLockButtons")->GetChildren()->size(); i++)
 	{
 		_OrginLockColor[i] = _uiTree.GetNode("UnitLockButtons")->GetChildren()->at(i)->GetColorOffset();
 	}
@@ -129,7 +131,7 @@ void LevelEditState::OnStateEnter()
 
 	////Load level information into respektive variables.
 	//_levelHeaderFilenames.clear();
-	//GetFilenamesInDirectory(const_cast<char*>(SKIRMISH_FOLDER_PATH.c_str()), ".json", _levelHeaderFilenames, false);
+	//GetFilenamesInDirectory(const_cast<char*>(SKIRMISH_FOLDER_PATH.c_str()), ".json", _levelHeaderFilenames, false);				//TODO: RIKHARD look here for LevelIMPORT!
 	//_levelSelectState->LoadLevelHeader(0, &_levelHeaderFilenames);
 	//_levelSelectState->SelectedLevelHeaderToGUI();
 }
