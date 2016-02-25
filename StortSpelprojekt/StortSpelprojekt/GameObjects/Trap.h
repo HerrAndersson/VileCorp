@@ -3,7 +3,7 @@
 #include "Unit.h"
 #include <memory>
 
-enum TrapType{ SPIKE, TESLACOIL, SHARK, GUN, SAW, CAKEBOMB, BEAR, FLAMETHROWER};
+enum TrapType{ SPIKE, TESLACOIL, SHARK, GUN, SAW, CAKEBOMB, BEAR, FLAMETHROWER, WATER_GUN, SPIN_TRAP};
 enum Anim{IDLE, ACTIVATE, NR_OF_ANIM/*Has to be last*/};
 
 

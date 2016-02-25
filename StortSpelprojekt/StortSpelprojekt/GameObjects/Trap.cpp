@@ -296,6 +296,10 @@ void Trap::SetTiles()
 		_nrOfOccupiedTiles = CalculateLine(7, _tilePosition, _occupiedTiles);
 		_nrOfAOETiles = CalculateLine(7, _tilePosition, _areaOfEffect);
 		break;
+	case WATER_GUN:
+		break;
+	case SPIN_TRAP:
+		break;
 	default:
 		_areaOfEffect = nullptr;
 		break;
@@ -369,6 +373,10 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 		break;
 	case FLAMETHROWER:
 		Initialize(20, 7, 7, 7, 60, 60, Unit::StatusEffect::BURNING, 300, 60, 60, 3);
+		break;
+	case WATER_GUN:
+		break;
+	case SPIN_TRAP:
 		break;
 	default:
 		_areaOfEffect = nullptr;
