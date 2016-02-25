@@ -41,9 +41,9 @@ void LevelEditState::OnStateEnter()
 	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("UnitAmmountText"), 2, false, true));
 	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("UnitStartingTimeText"), 3, false, true));
 	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("UnitSpawnFrequencyText"), 3, false, true));
+	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("SaveLevelText"), 25, false, false, true));
 	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("MinuteText"), 3, false, true));
 	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("SecondText"), 3, false, true));
-	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("SaveLevelText"), 25, false, false, true));
 
 	for (unsigned i = 0; i < NR_OF_TYPES; i++)
 	{
