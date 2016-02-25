@@ -26,6 +26,12 @@ LevelSelectState::LevelSelectState(System::Controls* controls, ObjectHandler* ob
 
 		_tabPosition[i] = modeSelect->GetLocalPosition();
 	}
+
+	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("nextlevel")));
+	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("prevlevel")));
+	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("playbutton")));
+	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("CampaignTab")));
+	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("SkirmishTab")));
 }
 
 LevelSelectState::~LevelSelectState()
@@ -39,10 +45,7 @@ void LevelSelectState::Update(float deltaTime)
 		_uiTree.ReloadTree("../../../../StortSpelprojekt/Assets/GUI/levelselect.json");
 	}
 	System::MouseCoord coord = _controls->GetMouseCoord();
-	XMFLOAT4 color(0.3f, 0.3f, 0.3f, 1.0f);
-	HandleHoverColorOffset("nextlevel", "nextlevel", coord, color);
-	HandleHoverColorOffset("prevlevel", "prevlevel", coord, color);
-	HandleHoverColorOffset("playbutton", "playbutton", coord, color);
+	HandleButtonHighlight(coord);
 
 	if (_controls->IsFunctionKeyDown("MENU:MENU"))
 	{

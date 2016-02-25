@@ -94,7 +94,6 @@ namespace GUI
 			{
 				if (i->value.IsArray())
 				{
-					//if(test == "Trap" || returnNode->GetId() == "Unit" || returnNode->GetId() == "Entry" || returnNode->GetId() == "Floor" || returnNode->GetId() == "Wall" || returnNode->GetId() == "Decoration" || returnNode->GetId() == "Objective")
 					returnNode->SetPosition(XMFLOAT2(
 						(float)i->value[0].GetDouble(),
 						(float)i->value[1].GetDouble()
@@ -160,7 +159,6 @@ namespace GUI
 
 	bool UITree::IsButtonColliding(Node* current, int x, int y)
 	{
-
 		XMFLOAT2 topLeft;
 		XMFLOAT2 size;
 		XMFLOAT2 pos = current->GetFinalPosition();
@@ -172,25 +170,22 @@ namespace GUI
 		topLeft.y = pos.y*-1.0f - scale.y;
 
 		//Convert coordinates to pixel coordinate system
-			topLeft.x = (topLeft.x + 1.0f) * 0.5f * _info._windowWidth;
-			topLeft.y = (topLeft.y + 1.0f) * 0.5f * _info._windowHeight;
+		topLeft.x = (topLeft.x + 1.0f) * 0.5f * _info._windowWidth;
+		topLeft.y = (topLeft.y + 1.0f) * 0.5f * _info._windowHeight;
 
-			size.x = scale.x * _info._windowWidth;
-			size.y = scale.y * _info._windowHeight;
+		size.x = scale.x * _info._windowWidth;
+		size.y = scale.y * _info._windowHeight;
 
 		//Check collision with mouse coord and return the result
 		return (
 			(y > topLeft.y && y < topLeft.y + size.y) &&
 			(x > topLeft.x && x < topLeft.x + size.x)
 			);
-
-		return false;
 	}
 
 	bool UITree::IsButtonColliding(const std::string& id, int x, int y)
 	{
 		return IsButtonColliding(UITree::GetNode(id), x, y);
-//		return IsButtonColliding(current->GetId(), x, y);
 	}
 
 	bool UITree::IsButtonColliding(const std::string& id, System::MouseCoord coord)

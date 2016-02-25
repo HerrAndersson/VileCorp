@@ -57,15 +57,9 @@ void PlacementState::Update(float deltaTime)
 	{
 		//Handle the buttons normally
 		HandleButtons();
-		HandleHoverColorOffset("Guard", "Guard", coord, XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f));
-		HandleHoverColorOffset("AnvilTrap", "AnvilTrap", coord, XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f));
-		HandleHoverColorOffset("TeslaTrap", "TeslaTrap", coord, XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f));
-		HandleHoverColorOffset("Camera", "Camera", coord, XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f));
-		HandleHoverColorOffset("Play", "Play", coord, XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f));
-
-	HandleDescriptions();
+		HandleDescriptions();
 	}
-	
+	HandleButtonHighlight(coord);
 	HandleInput();
 	HandleCam(deltaTime);
 
@@ -96,12 +90,16 @@ void PlacementState::OnStateEnter()
 	campos.z = _objectHandler->GetTileMap()->GetHeight() / 2 - 10;
 	_camera->SetPosition(campos);
 
+	_buttonHighlights.clear();
+	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("Play")));
+
 	std::vector<GUI::Node*>* units = _uiTree.GetNode("UnitList")->GetChildren();
 	for (int i = 0; i < units->size(); i++)
 	{
 		GUI::BlueprintNode* newUnit = new GUI::BlueprintNode(*units->at(i), _objectHandler->GetBlueprintByName(units->at(i)->GetId()), 0);
 		delete units->at(i);
 		units->at(i) = (GUI::Node*)newUnit;
+		_buttonHighlights.push_back(GUI::HighlightNode(units->at(i), XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f)));
 	}
 
 	//TODO: Move hardcoded costs and description to logical location /Rikhard
