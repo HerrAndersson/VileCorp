@@ -8,9 +8,7 @@ namespace System
 {
 	class SYSTEM_EXPORT Window
 	{
-
 	private:
-
 		LPCSTR			_applicationName;
 		HINSTANCE		_hinstance;
 		HWND			_hwnd;
@@ -21,18 +19,14 @@ namespace System
 		void InitializeWindow(WNDPROC wndProc);
 		void ShutdownWindow();
 
-
 	public:
-
 		Window(LPCSTR applicationName, HINSTANCE hinstance, System::Settings* settings, WNDPROC wndProc);
 		virtual ~Window();
 
 		bool Run();
 		void ResizeWindow(System::Settings* settings);
-
 		HWND GetHWND();
 	};
 
-	
 	static Window* _windowHandle = nullptr;
 }

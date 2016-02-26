@@ -87,8 +87,6 @@ namespace System
 		int windowHeight = _settings->_windowHeight;
 		bool borderless = _settings->_borderless;
 
-		int windowPositionX = (systemWidth - windowWidth) / 2;
-		int windowPositionY = (systemHeight - windowHeight) / 2;
 		LONG style = _defaultStyle;
 		LONG exStyle = _defaultExStyle;
 
@@ -106,6 +104,9 @@ namespace System
 			windowHeight = rect.bottom - rect.top;
 		}
 		
+		int windowPositionX = (systemWidth - windowWidth) / 2;
+		int windowPositionY = (systemHeight - windowHeight) / 2;
+
 		SetWindowLong(_hwnd, GWL_STYLE, style);
 		SetWindowLong(_hwnd, GWL_EXSTYLE, exStyle);
 

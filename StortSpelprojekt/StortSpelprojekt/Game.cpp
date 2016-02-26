@@ -60,10 +60,10 @@ Game::~Game()
 
 void Game::ResizeResources(System::Settings* settings)
 {
+	_renderModule->ResizeResources(settings);
 	_window->ResizeWindow(settings);
 	_SM->Resize(settings);
 	_camera->Resize(settings);
-	_renderModule->ResizeResources(settings);
 }
 
 void Game::LoadParticleSystemData(ParticleTextures& particleTextures, ParticleModifierOffsets& modifiers)
