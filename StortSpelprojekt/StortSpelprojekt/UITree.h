@@ -3,6 +3,7 @@
 #include "GUI elements/BlueprintNode.h"
 #include "GUI elements/TextBox.h"
 #include "GUI elements/ToggleButton.h"
+#include "GUI elements/NodeBar.h"
 #include "InputDevice.h"
 #include "AssetManager.h"
 #include "ObjectHandler.h"
@@ -48,6 +49,8 @@ namespace GUI
 		bool IsButtonColliding(Node* current, System::MouseCoord coord);
 		bool IsNodeHidden(const std::string& id);
 		bool IsNodeHidden(Node* node);
+		void HideNodeAndChildren(GUI::Node* node);
+		void ShowNodeAndParents(GUI::Node* node);
 		Node* GetNode(const std::string& id);
 		void ReloadTree(const std::string& filename);
 	};

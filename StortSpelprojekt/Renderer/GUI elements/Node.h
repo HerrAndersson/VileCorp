@@ -104,6 +104,7 @@ namespace GUI
 		bool GetCentered() const;
 		bool GetHidden() const;
 		Node* GetParent() const;
+		DirectX::XMFLOAT2 GetSize() const;
 
 		DirectX::XMMATRIX* Node::GetModelMatrix();
 		std::vector<GUI::Node*>* GetChildren();

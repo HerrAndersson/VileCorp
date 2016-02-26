@@ -2,7 +2,7 @@
 
 
 
-GUI::NodeBar::NodeBar(bool verticalOrientation, DirectX::XMFLOAT3 position, float nodeOffset)
+GUI::NodeBar::NodeBar(bool verticalOrientation, DirectX::XMFLOAT2 position, float nodeOffset)
 {
 	_verticalOrientation = verticalOrientation;
 	_position = position;
@@ -20,9 +20,21 @@ std::vector<GUI::Node*>* GUI::NodeBar::GetAttachedGUINodes()
 
 void GUI::NodeBar::OrganizeNodes()
 {
-	//DirectX::XMFLOAT2 
-	//if (_verticalOrientation)
-	//{
-	//	_attachedGUINodes.at(0)->GetLocalPosition();
-	//}
+	if (!_attachedGUINodes.empty())
+	{
+		DirectX::XMFLOAT2 iteratedPosition = _position;
+		for each (Node* node in _attachedGUINodes)
+		{
+			node->SetPosition(iteratedPosition);
+			DirectX::XMFLOAT2 nodeSize = node->GetSize();
+			if (_verticalOrientation)
+			{
+				iteratedPosition.y += nodeSize.y + _nodeOffset;
+			}
+			else
+			{
+				iteratedPosition.x += nodeSize.x + _nodeOffset;
+			}
+		}
+	}
 }

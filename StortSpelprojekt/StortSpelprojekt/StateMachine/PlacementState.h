@@ -6,7 +6,6 @@
 #include "jsonparser.h"
 #include "Assetmanager.h"
 #include "../TutorialLogic.h"
-
 #include "../ToPlace.h"
 
 class PlacementState : public BaseState
@@ -30,6 +29,8 @@ private:
 
 	// Temp, should be replaced with blueprint
 	ToPlace _toPlace;
+
+	GUI::NodeBar _unitBar;
 
 	void EvaluateGoldCost();
 	void HandleDescriptions();

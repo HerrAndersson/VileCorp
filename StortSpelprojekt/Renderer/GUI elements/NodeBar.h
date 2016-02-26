@@ -9,11 +9,11 @@ namespace GUI
 	private:
 		std::vector<Node*> _attachedGUINodes;
 		bool _verticalOrientation;
-		DirectX::XMFLOAT3 _position;
+		DirectX::XMFLOAT2 _position;
 		float _nodeOffset;
 
 	public:
-		NodeBar(bool verticalOrientation, DirectX::XMFLOAT3 position, float nodeOffset);
+		NodeBar(bool verticalOrientation = false, DirectX::XMFLOAT2 position = {0,0}, float nodeOffset = 0.2f);
 		~NodeBar();
 		std::vector<GUI::Node*>* GetAttachedGUINodes();
 		void OrganizeNodes();

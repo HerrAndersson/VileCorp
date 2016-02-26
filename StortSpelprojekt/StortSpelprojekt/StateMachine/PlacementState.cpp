@@ -93,15 +93,6 @@ void PlacementState::OnStateEnter()
 	_buttonHighlights.clear();
 	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("Play")));
 
-	//std::vector<GUI::Node*>* units = _uiTree.GetNode("UnitList")->GetChildren();
-	//for (int i = 0; i < units->size(); i++)
-	//{
-	//	GUI::BlueprintNode* newUnit = new GUI::BlueprintNode(*units->at(i), _objectHandler->GetBlueprintByName(units->at(i)->GetId()), 0);
-	//	delete units->at(i);
-	//	units->at(i) = (GUI::Node*)newUnit;
-	//	_buttonHighlights.push_back(GUI::HighlightNode(units->at(i), XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f)));
-	//}
-
 	//TODO: Move hardcoded costs and description to logical location /Rikhard
 	_uiTree.GetNode("GuardDescription")->SetHidden(true);
 	_uiTree.GetNode("GuardCost")->SetText(L"Cost: " + to_wstring(200) + L"$");
@@ -115,6 +106,37 @@ void PlacementState::OnStateEnter()
 	//_uiTree.GetNode("SharkCost")->SetText(L"Cost: " + to_wstring(150) + L"$");
 	_uiTree.GetNode("CameraDescription")->SetHidden(true);
 	_uiTree.GetNode("CameraCost")->SetText(L"Cost: " + to_wstring(80) + L"$");
+
+	std::vector<GUI::Node*>* availableUnitsGUINodes = _unitBar.GetAttachedGUINodes();
+	
+	//List of units that should be available in the placement bar
+	std::vector<std::string> availableUnitsList = _objectHandler->GetCurrentAvailableUnits();
+
+	//This node contains buttons for placing all the units in the game
+	GUI::Node* allUnitsParentNode = _uiTree.GetNode("UnitList");
+
+	std::vector<GUI::Node*>* allUnitGUINodes = allUnitsParentNode->GetChildren();
+
+	for (int i = 0; i < allUnitGUINodes->size(); i++)
+	{
+		GUI::Node* currentGUINode = allUnitGUINodes->at(i);
+		bool foundUnit = false;
+		for (int y = 0; y < availableUnitsList.size() && !foundUnit; y++)
+		{
+			if (currentGUINode->GetId() == availableUnitsList[y])
+			{
+				foundUnit = true;
+				availableUnitsGUINodes->push_back(currentGUINode);
+				availableUnitsList.erase(availableUnitsList.begin() + y);
+			}
+		}
+		if (!foundUnit)
+		{
+			_uiTree.HideNodeAndChildren(currentGUINode);
+		}
+	}
+
+	_unitBar.OrganizeNodes();
 
 	if (_tutorialState == TutorialState::NEWTUTORIAL)
 	{

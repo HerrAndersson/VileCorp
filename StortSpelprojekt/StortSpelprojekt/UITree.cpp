@@ -276,6 +276,26 @@ namespace GUI
 		return isHidden;
 	}
 
+	void UITree::HideNodeAndChildren(GUI::Node* node)
+	{
+		node->SetHidden(true);
+		std::vector<Node*>* children = node->GetChildren();
+		for (int i = 0; i < children->size(); i++)
+		{
+			HideNodeAndChildren(children->at(i));
+		}
+	}
+
+	void UITree::ShowNodeAndParents(GUI::Node* node)
+	{
+		node->SetHidden(false);
+		Node* parent = node->GetParent();
+		if (parent != nullptr)
+		{
+			ShowNodeAndParents(parent);
+		}
+	}
+
 	Node* UITree::FindNode(Node* current, const std::string& id)
 	{
 		if (current->GetId() == id)
