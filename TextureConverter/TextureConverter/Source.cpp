@@ -89,7 +89,7 @@ int main(int argc, char* argv[])
 		std::cout << "Directory: " << dirstr.back() << std::endl << "Files found: " << files.back().size() << std::endl;
 	}
 
-	std::string cmd = R"(texconv.exe -f BC7_UNORM -pow2 -bcmax -fl 11.1 ")";
+	std::string cmd = R"(..\..\TextureConverter\texconv.exe -f BC7_UNORM -pow2 -bcmax -fl 11.1 ")";
 	for(size_t d = 2; d < dirstr.size(); d++)
 	{
 		for (size_t i = 0; i < files[d].size(); i++)
