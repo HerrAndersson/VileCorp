@@ -213,53 +213,88 @@ AI::Vec2D Trap::ConvertOctant(int octant, AI::Vec2D pos, bool in)
 	return convertedPos;
 }
 
-void Trap::Initialize(int damage, int tileSize, int AOESize, int detectDifficulty, int disarmDifficulty)
+void Trap::Initialize(int damage, int tileSize, int triggerSize, int AOESize, int detectDifficulty, int disarmDifficulty, 
+					  Unit::StatusEffect statusEffect, int statusTimer, int statusInterval, int triggerTimer, int ammunition)
 {
 	delete[] _areaOfEffect;
 	delete[] _occupiedTiles;
 	_damage = damage;
-	_tileSize = tileSize;
-	_occupiedTiles = new AI::Vec2D[_tileSize];
+	_occupiedTiles = new AI::Vec2D[tileSize];
+	_triggerTiles = new AI::Vec2D[triggerSize];
 	_areaOfEffectArrayCapacity = AOESize;
 	_areaOfEffect = new AI::Vec2D[_areaOfEffectArrayCapacity];
 	_detectDifficulty = detectDifficulty;
 	_disarmDifficulty = disarmDifficulty;
+	_statusEffect = statusEffect;
+	_statusTimer = statusTimer;
+	_statusInterval = statusInterval;
+	_maxTimeToTrigger = triggerTimer;
+	_maxAmmunition = ammunition;
+	_currentAmmunition = ammunition;
 }
 
+/*
+	Sets the various areas associated with the trap. Used in the constructor as well as when setting a new position.
+	TODO: Move functionality to construct if placement gets reworked to no longer necessitate a position change.
+	--Victor
+*/
 void Trap::SetTiles()
 {
+	//Coloring
 	for (int i = 0; i < _nrOfAOETiles; i++)
 	{
 		if (_tileMap->IsFloorOnTile(_areaOfEffect[i]))
 		{
-			_tileMap->GetObjectOnTile(_areaOfEffect[i], FLOOR)->SetColorOffset({0.0f,0.0f,0.0f});
+			_tileMap->GetObjectOnTile(_areaOfEffect[i], System::FLOOR)->SetColorOffset({0.0f,0.0f,0.0f});
 		}
 	}
-	for (int i = 0; i < _tileSize; i++)
+	for (int i = 0; i < _nrOfOccupiedTiles; i++)
 	{
 		if (_tileMap->IsFloorOnTile(_occupiedTiles[i]))
 		{
-			_tileMap->GetObjectOnTile(_occupiedTiles[i], FLOOR)->SetColorOffset({0,0,0});
+			_tileMap->GetObjectOnTile(_occupiedTiles[i], System::FLOOR)->SetColorOffset({0,0,0});
 		}
 	}
+
+	_nrOfOccupiedTiles = 0;
+	_nrOfTriggers = 0;
 	_nrOfAOETiles = 0;
-	_tileSize = 0;
 	switch (_subType)
 	{
 	case SPIKE:
-		_occupiedTiles[_tileSize++] = _tilePosition;
+		_occupiedTiles[_nrOfOccupiedTiles++] = _tilePosition;
+		_triggerTiles[_nrOfTriggers++] = _tilePosition;
 		_areaOfEffect[_nrOfAOETiles++] = _tilePosition;
 		break;
 	case TESLACOIL:
-		_tileSize = CalculateRectangle(3, 3, (_tilePosition - _direction - AI::Vec2D(-_direction._y, _direction._x)), _occupiedTiles);
+		_nrOfOccupiedTiles = CalculateRectangle(3, 3, (_tilePosition - _direction - AI::Vec2D(-_direction._y, _direction._x)), _occupiedTiles);
+		_nrOfTriggers = CalculateRectangle(3, 3, (_tilePosition - _direction - AI::Vec2D(-_direction._y, _direction._x)), _triggerTiles);
 		_nrOfAOETiles = CalculateCircle(3, _tilePosition, _areaOfEffect);
 		break;
 	case SHARK:
-		_tileSize = CalculateRectangle(6, 3, _tilePosition - AI::Vec2D(-_direction._y, _direction._x), _occupiedTiles);
-		_nrOfAOETiles = CalculateRectangle(1, 3, _tilePosition, _areaOfEffect);
+		_nrOfOccupiedTiles = CalculateRectangle(5, 2, _tilePosition, _occupiedTiles);
+		_nrOfAOETiles = CalculateRectangle(1, 2, _tilePosition, _areaOfEffect);
 	case GUN:
-		_tileSize = CalculateLine(10, _tilePosition, _occupiedTiles);
+		_nrOfOccupiedTiles = CalculateLine(10, _tilePosition, _occupiedTiles);
 		_nrOfAOETiles = CalculateLine(10, _tilePosition, _areaOfEffect);
+		break;
+	case SAW:
+		_nrOfOccupiedTiles = CalculateRectangle(3, 1, _tilePosition, _occupiedTiles);
+		_areaOfEffect[_nrOfAOETiles++] = _tilePosition;
+		break;
+	case CAKEBOMB:
+		_occupiedTiles[_nrOfOccupiedTiles++] = _tilePosition;
+		_triggerTiles[_nrOfTriggers++] = _tilePosition;
+		_areaOfEffect[_nrOfAOETiles++] = _tilePosition;
+		break;
+	case BEAR:
+		_occupiedTiles[_nrOfOccupiedTiles++] = _tilePosition;
+		_triggerTiles[_nrOfTriggers++] = _tilePosition;
+		_areaOfEffect[_nrOfAOETiles++] = _tilePosition;
+		break;
+	case FLAMETHROWER:
+		_nrOfOccupiedTiles = CalculateLine(7, _tilePosition, _occupiedTiles);
+		_nrOfAOETiles = CalculateLine(7, _tilePosition, _areaOfEffect);
 		break;
 	default:
 		_areaOfEffect = nullptr;
@@ -270,14 +305,14 @@ void Trap::SetTiles()
 	{
 		if (_tileMap->IsFloorOnTile(_areaOfEffect[i]))
 		{
-			_tileMap->GetObjectOnTile(_areaOfEffect[i], FLOOR)->SetColorOffset({3.0f,1.0f,0.0f});
+			_tileMap->GetObjectOnTile(_areaOfEffect[i], System::FLOOR)->SetColorOffset({3.0f,1.0f,0.0f});
 		}
 	}
-	for (int i = 0; i < _tileSize; i++)
+	for (int i = 0; i < _nrOfOccupiedTiles; i++)
 	{
 		if (_tileMap->IsFloorOnTile(_occupiedTiles[i]))
 		{
-			_tileMap->GetObjectOnTile(_occupiedTiles[i], FLOOR)->SetColorOffset({2,2,0});
+			_tileMap->GetObjectOnTile(_occupiedTiles[i], System::FLOOR)->SetColorOffset({2,2,0});
 		}
 	}
 }
@@ -287,20 +322,21 @@ Trap::Trap()
 {
 	_areaOfEffect = nullptr;
 	_occupiedTiles = nullptr;
+	_triggerTiles = nullptr;
 }
 
-Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject * renderObject, 
+Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject * renderObject, System::SoundModule* soundModule, 
 		  const Tilemap* tileMap, int trapType, AI::Vec2D direction)
-	: GameObject(ID, position, rotation, tilePosition, type, renderObject)
+	: GameObject(ID, position, rotation, tilePosition, type, renderObject, soundModule)
 {
 	_isActive = true;
 	_direction = direction;
-	//_trapType = SHARK;
 	_tileMap = tileMap;
-	_nrOfAOETiles = 0;
+	_triggerTimer = -1;
 	_isVisibleToEnemies = false;
 	_areaOfEffect = nullptr;
 	_occupiedTiles = nullptr;
+	_triggerTiles = nullptr;
 	_subType = trapType;
 
 	int radius = 0;
@@ -309,24 +345,30 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	switch (_subType)
 	{
 	case SPIKE:
-		Initialize(3, 1, 1, 50, 50);
+		Initialize(30, 1, 1, 1, 50, 50, Unit::StatusEffect::NO_EFFECT, 0, 0);
 		firstFrame = true;
 		break;
 	case TESLACOIL:	
-	{
-		Initialize(2, 9, 37, 50, 50);
+		Initialize(0, 9, 9, 37, 80, 80, Unit::StatusEffect::STUNNED, 120, 120, 60, 2);
 		break;
-	}
-	case SHARK:			//Trigger area is currently the same as the trap's physical area. Might be awkward since the shark trap is larger than its AOE.
-	{
-		Initialize(100, 18, 3, 50, 50);
+	case SHARK:
+		Initialize(120, 12, 2, 2, 50, 50, Unit::StatusEffect::NO_EFFECT, 0, 0);
 		break;
-	}
 	case GUN:
-	{
-		Initialize(300, 10, 10, 100, 50);
+		Initialize(60, 10, 10, 10, 60, 60, Unit::StatusEffect::NO_EFFECT, 0, 0, 60, 5);
 		break;
-	}
+	case SAW:
+		Initialize(80, 3, 1, 1, 50, 70, Unit::StatusEffect::NO_EFFECT, 0, 0, 60, -1);
+		break;
+	case CAKEBOMB:
+		Initialize(90, 1, 1, 1, 90, 60, Unit::StatusEffect::NO_EFFECT, 0, 0);
+		break;
+	case BEAR:
+		Initialize(40, 1, 1, 1, 20, 20, Unit::StatusEffect::NO_EFFECT, 0, 0);
+		break;
+	case FLAMETHROWER:
+		Initialize(20, 7, 7, 7, 60, 60, Unit::StatusEffect::BURNING, 300, 60, 60, 3);
+		break;
 	default:
 		_areaOfEffect = nullptr;
 		break;
@@ -339,16 +381,6 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 		_animation = new Animation(_renderObject->_mesh->_skeleton, firstFrame);
 		_animation->Freeze(false);
 	}
-
-	//Floor gets colored for debugging. Note that the tiles won't get decolored if the trap is removed
-	/*for (int i = 0; i < _nrOfAOETiles; i++)
-	{
-		AI::Vec2D pos = _areaOfEffect[i];
-		if (_tileMap->IsFloorOnTile(_areaOfEffect[i]))
-		{
-			_tileMap->GetObjectOnTile(_areaOfEffect[i], FLOOR)->AddColorOffset({0,0,1});
-		}
-	}*/
 }
 
 Trap::~Trap()
@@ -357,6 +389,8 @@ Trap::~Trap()
 	_areaOfEffect = nullptr;
 	delete[] _occupiedTiles;
 	_occupiedTiles = nullptr;
+	delete[] _triggerTiles;
+	_triggerTiles = nullptr;
 	if (_animation != nullptr)
 	{
 		delete _animation;
@@ -368,16 +402,15 @@ AI::Vec2D * Trap::GetTiles() const
 	return _occupiedTiles;
 }
 
-int Trap::GetTileSize() const
+int Trap::GetNrOfOccupiedTiles() const
 {
-	return _tileSize;
+	return _nrOfOccupiedTiles;
 }
 
 int Trap::GetDetectionDifficulty() const
 {
 	return _detectDifficulty;
 }
-
 
 
 int Trap::GetDisarmDifficulty() const
@@ -388,7 +421,7 @@ int Trap::GetDisarmDifficulty() const
 bool Trap::InRange(AI::Vec2D pos) const
 {
 	bool result = false;
-	for (int i = 0; i < _tileSize && !result; i++)
+	for (int i = 0; i < _nrOfOccupiedTiles && !result; i++)
 	{
 		for (int j = 0; j < 8 && !result; j++)
 		{
@@ -409,6 +442,7 @@ void Trap::SetTrapActive(bool active)
 	if (active)
 	{
 		SetColorOffset({0,0,0});
+		_currentAmmunition = _maxAmmunition;
 	}
 	else
 	{
@@ -422,15 +456,25 @@ void Trap::Activate()
 	{
 		if (_tileMap->IsEnemyOnTile(_areaOfEffect[i]))
 		{
-			static_cast<Unit*>(_tileMap->GetObjectOnTile(_areaOfEffect[i], ENEMY))->TakeDamage(_damage);
+			static_cast<Unit*>(_tileMap->GetObjectOnTile(_areaOfEffect[i], System::ENEMY))->TakeDamage(_damage);
+			static_cast<Unit*>(_tileMap->GetObjectOnTile(_areaOfEffect[i], System::ENEMY))->SetStatusEffect(_statusEffect, _statusInterval, _statusTimer);
 		}
 		if (_tileMap->IsGuardOnTile(_areaOfEffect[i]))
 		{
-			static_cast<Unit*>(_tileMap->GetObjectOnTile(_areaOfEffect[i], GUARD))->TakeDamage(_damage);
+			static_cast<Unit*>(_tileMap->GetObjectOnTile(_areaOfEffect[i], System::GUARD))->TakeDamage(_damage);
 		}
 	}
 	Animate(ACTIVATE);
-	SetTrapActive(false);
+	PlayActivateSound();
+	_currentAmmunition--;
+	if (_currentAmmunition == 0)
+	{
+		SetTrapActive(false);
+	}
+	else
+	{
+		_triggerTimer = _maxTimeToTrigger;
+	}
 }
 
 void Trap::Update(float deltaTime)
@@ -440,17 +484,45 @@ void Trap::Update(float deltaTime)
 		_animation->Update(deltaTime);
 	}
 	bool triggered = false;
-	for (int i = 0; i < _tileSize && !triggered; i++)
+
+	if (_subType == TrapType::SAW )
 	{
-		if (_tileMap->IsEnemyOnTile(_occupiedTiles[i]))
+		if (System::FrameCountdown(_triggerTimer, _maxTimeToTrigger, 0))
+		{
+			int i = 0;
+			while (_occupiedTiles[i++] != _triggerTiles[0] && i < _nrOfOccupiedTiles)			//find which index matches to the current trigger
+			{}
+			_triggerTiles[0] = _occupiedTiles[i%_nrOfOccupiedTiles];
+			_areaOfEffect[0] = _triggerTiles[0];
+		}
+		if (_tileMap->IsEnemyOnTile(_triggerTiles[0]))
 		{
 			triggered = true;
 		}
 	}
+	else
+	{
+		if (_triggerTimer <= 0)
+		{
+			for (int i = 0; i < _nrOfTriggers && !triggered; i++)
+			{
+				if (_tileMap->IsEnemyOnTile(_triggerTiles[i]))
+				{
+					triggered = true;
+				}
+			}
+		}
+		else
+		{
+			_triggerTimer--;
+		}
+	}
+
 	if (triggered && _isActive)
 	{
 		Activate();
 	}
+
 	if (_isActive)
 	{
 		SetColorOffset({0,3,0});
@@ -497,7 +569,6 @@ void Trap::SetDirection(const AI::Vec2D direction)
 	_direction = direction;
 }
 
-
 void Trap::Animate(Anim anim)
 {
 	if (_animation != nullptr && _animation->GetisFinished())
@@ -530,5 +601,28 @@ void Trap::Animate(Anim anim)
 				break;
 			}
 		}
+	}
+}
+
+//Sound
+void Trap::PlayActivateSound()
+{
+	switch (_subType)
+	{
+	case SPIKE:
+		_soundModule->SetSoundPosition("anvil_activate", _position.x, 0.0f, _position.z);
+		_soundModule->Play("anvil_activate");
+		break;
+		
+	case TESLACOIL:
+		_soundModule->SetSoundPosition("tesla_activate", _position.x, 0.0f, _position.z);
+		_soundModule->Play("tesla_activate");
+		break;
+
+	case SHARK:
+		break;
+
+	case GUN:
+		break;
 	}
 }

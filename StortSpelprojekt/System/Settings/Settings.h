@@ -20,6 +20,7 @@ namespace System
 		float _farClip;
 		float _fov;
 		bool _antialiasing;
+		int _volume;
 	public:
 		Settings();
 		~Settings();
@@ -38,7 +39,8 @@ namespace System
 				CEREAL_NVP(_nearClip),
 				CEREAL_NVP(_farClip),
 				CEREAL_NVP(_fov),
-				CEREAL_NVP(_antialiasing)
+				CEREAL_NVP(_antialiasing),
+				CEREAL_NVP(_volume)
 				);
 		}
 	};
