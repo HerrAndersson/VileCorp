@@ -273,14 +273,17 @@ void Trap::SetTiles()
 		break;
 	case SHARK:
 		_nrOfOccupiedTiles = CalculateRectangle(5, 2, _tilePosition, _occupiedTiles);
+		_nrOfTriggers = CalculateRectangle(1, 2, _tilePosition, _triggerTiles);
 		_nrOfAOETiles = CalculateRectangle(1, 2, _tilePosition, _areaOfEffect);
 	case GUN:
 		_nrOfOccupiedTiles = CalculateLine(10, _tilePosition, _occupiedTiles);
 		_nrOfAOETiles = CalculateLine(10, _tilePosition, _areaOfEffect);
+		_nrOfTriggers = CalculateLine(10, _tilePosition, _triggerTiles);
 		break;
 	case SAW:
 		_nrOfOccupiedTiles = CalculateRectangle(3, 1, _tilePosition, _occupiedTiles);
 		_areaOfEffect[_nrOfAOETiles++] = _tilePosition;
+		_triggerTiles[_nrOfTriggers++] = _tilePosition;
 		break;
 	case CAKEBOMB:
 		_occupiedTiles[_nrOfOccupiedTiles++] = _tilePosition;
@@ -295,10 +298,14 @@ void Trap::SetTiles()
 	case FLAMETHROWER:
 		_nrOfOccupiedTiles = CalculateLine(7, _tilePosition, _occupiedTiles);
 		_nrOfAOETiles = CalculateLine(7, _tilePosition, _areaOfEffect);
+		_nrOfTriggers = CalculateLine(7, _tilePosition, _triggerTiles);
 		break;
 	case WATER_GUN:
 		break;
 	case SPIN_TRAP:
+		_occupiedTiles[_nrOfOccupiedTiles++] = _tilePosition;
+		_triggerTiles[_nrOfTriggers++] = _tilePosition;
+		_areaOfEffect[_nrOfAOETiles++] = _tilePosition;
 		break;
 	default:
 		_areaOfEffect = nullptr;
@@ -374,8 +381,10 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 		Initialize(20, 7, 7, 7, 60, 60, Unit::StatusEffect::BURNING, 300, 60, 60, 3);
 		break;
 	case WATER_GUN:
+		Initialize(0, 7, 7, 7, 60, 60, Unit::StatusEffect::SLOWED, 450, 450, 60, 5);
 		break;
 	case SPIN_TRAP:
+		Initialize(0, 1, 1, 1, 70, 90, Unit::StatusEffect::CONFUSED, 300, 300, 0, -1);
 		break;
 	default:
 		_areaOfEffect = nullptr;
