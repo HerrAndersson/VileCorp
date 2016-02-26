@@ -22,6 +22,8 @@ Using a map of sounds to quickly find a desired sound to play.
 
 Lower OFFSET to make sound "travel" less. 
 Increase OFFSET to make sound "travel" further.
+
+Currently can't play the same sound over itself. 
 */
 
 enum Channel{CHMASTER, CHAMBIENT, CHFX, CHGUI, CHMUSIC, CHVOICE, NR_OF_CHANNELS};
@@ -36,6 +38,7 @@ namespace System
 		std::map<std::string, YSE::sound*>* _allSounds;
 		const std::string soundExtension = ".ogg";
 		float _volume[NR_OF_CHANNELS];
+		bool _initiated;
 
 	public:
 		/*Functions*/
@@ -51,6 +54,7 @@ namespace System
 		void SetVolume(float volume, int channel);
 		float GetVolume(int channel);
 		bool Stop(std::string fileName);
+		bool Stop(std::string fileName, int fadeTime);
 		void SetSoundPosition(std::string fileName,float x, float y, float z);  //Sets position of a sound
 	};
 }
