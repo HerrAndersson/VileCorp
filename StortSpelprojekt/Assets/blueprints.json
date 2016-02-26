@@ -301,10 +301,10 @@
 			"_subType": 8,
 			"_tooltip": "SampleText",
 			"_textures": [
-				"sawRoofTrap.png"
+				"saw.png"
 			],
 			"_thumbnails": [
-				"sawRoofTrap.png"
+				"saw.png"
 			]
 		}, {
 			"_mesh": "confuseTrap-28.bin",
@@ -313,10 +313,10 @@
 			"_subType": 9,
 			"_tooltip": "SampleText",
 			"_textures": [
-				"confuseTrap.png"
+				"tilespin.png"
 			],
 			"_thumbnails": [
-				"confuseTrap.png"
+				"tilespin.png"
 			]
 		}, {
 			"_mesh": "SecurityCamera-27.bin",
@@ -568,7 +568,7 @@
 				"flatcounter.png"
 			],
 			"_thumbnails": [
-				"flatcounter.png"
+				"../Menues/LevelEdit/Decorations/flatcounter.png"
 			]
 		}, {
 			"_mesh": "counterRoundDecoration-28.bin",
@@ -580,7 +580,31 @@
 				"roundcounter.png"
 			],
 			"_thumbnails": [
-				"roundcounter.png"
+				"../Menues/LevelEdit/Decorations/roundcounter.png"
+			]
+		}, {
+			"_mesh": "vase1Decoration-28.bin",
+			"_name": "Vase",
+			"_type": 8,
+			"_subType": 0,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"vase1.png"
+			],
+			"_thumbnails": [
+				"../Menues/LevelEdit/Decorations/vase1Button.png"
+			]
+		}, {
+			"_mesh": "vase2Decoration-28.bin",
+			"_name": "Vase",
+			"_type": 8,
+			"_subType": 0,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"vase2.png"
+			],
+			"_thumbnails": [
+				"../Menues/LevelEdit/Decorations/vase2Button.png"
 			]
 		}]
 	}
