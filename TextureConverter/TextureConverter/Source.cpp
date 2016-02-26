@@ -1,17 +1,18 @@
 #include <Windows.h>
 #include <string>
 #include <vector>
+#include <map>
 #include <fstream>
 #include <iostream>
 
-bool GetFilenamesInDirectory(const wchar_t* wfolder, wchar_t* extension, std::vector<std::wstring> &listToFill)
+bool GetFilenamesInDirectory(const char* wfolder, std::vector<std::string> &listToFill)
 {
 	bool result = false;
-	std::wstring dot = L".", dotdot = L"..", ext = extension;
-	if (wfolder != nullptr && extension != nullptr)
+	std::wstring dot = L".", dotdot = L"..";
+	if (wfolder != nullptr)
 	{
-		std::ofstream testout;
-		std::wstring search_path = wfolder;
+		std::string folder = wfolder;
+		std::wstring search_path(folder.begin(),folder.end());
 		search_path.append(L"*");
 		WIN32_FIND_DATA fd;
 		HANDLE hFind = FindFirstFile(search_path.c_str(), &fd);
@@ -19,17 +20,17 @@ bool GetFilenamesInDirectory(const wchar_t* wfolder, wchar_t* extension, std::ve
 		{
 			result = true;
 			do {
-				std::wstring path = fd.cFileName;
+				std::wstring wpath = fd.cFileName;
+				std::string path = folder + std::string(wpath.begin(), wpath.end());
 				if (!(fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
 				{
-					if(path.substr(path.size()-ext.size())==ext)
-						listToFill.push_back(wfolder + path);
+					listToFill.push_back(path);
 				}
 				else
 				{
-					if (path != dot && path != dotdot)
+					if (wpath != dot && wpath != dotdot)
 					{
-						GetFilenamesInDirectory((wfolder + path + L"/").data(), extension, listToFill);
+						GetFilenamesInDirectory((path + "/").data(), listToFill);
 					}
 				}
 			} while (FindNextFile(hFind, &fd));
@@ -39,48 +40,106 @@ bool GetFilenamesInDirectory(const wchar_t* wfolder, wchar_t* extension, std::ve
 	return result;
 }
 
-//args = sourcefiles, destination
+//args = destinationfolder, ddsfolder, assetsfolders...-> -ToDDS filetypes
 int main(int argc, char* argv[])
 {
-	std::cout << "Texture Converter Running" << std::endl;
-	std::wstring wsrc;
-	std::wstring wdst;
-	std::string cmd = R"(texconv.exe -f BC7_UNORM -pow2 -bcmax -fl 11.1 )";
+	std::cout << "--------------Texture Converter Running--------------" << std::endl;
+	std::vector<std::string> dirstr;
+	std::map<std::string, int> convertTypes;
+	std::vector<std::vector<std::string>> files;
+	bool ignore = false;
+	for (int i = 1; i < argc; i++)
 	{
-		std::string src = argv[1];
-		std::string dst = argv[2];
-		wsrc = std::wstring(src.begin(), src.end());
-		wdst = std::wstring(dst.begin(), dst.end());
-		cmd += R"(")" + src;
-	}
-	std::vector<std::wstring> wfiles;
-	if (!GetFilenamesInDirectory(wsrc.data(), L".png", wfiles))
-		throw std::runtime_error("Searchpath was bad or empty");
-	std::vector<std::wstring> wfilesdds;
-	GetFilenamesInDirectory(wdst.data(), L".dds", wfilesdds);
-	for (int i = 0; i < wfiles.size(); i++)
-		wfiles[i] = wfiles[i].substr(wsrc.size());
-	for (int i = 0; i < wfilesdds.size(); i++)
-		wfilesdds[i] = wfilesdds[i].substr(wdst.size());
-	for (size_t i = 0; i < wfiles.size(); i++)
-	{
-		bool found = false;
-		for (std::wstring str : wfilesdds)
+		std::string src = argv[i];
+		for (int c = 0; c < src.size(); c++)
 		{
-			if (str.substr(0, str.size() - 4) == wfiles[i].substr(0, wfiles[i].size() - 4))
+			if (src[c] == '\\')
 			{
-				found = true;
-				break;
+				src[c] = '/';
 			}
 		}
-		if (!found)
+		if (argv[i] == std::string("-ToDDS"))
 		{
-			std::string out = cmd + std::string(wfiles[i].begin(), wfiles[i].end()) + R"(")";
-			system(out.data());
-			std::wstring test = ((wsrc + wfiles[i]).substr(0, wsrc.size() + wfiles[i].size() - 4) + L".dds");
-			test = ((wdst + wfiles[i]).substr(0, wdst.size() + wfiles[i].size() - 4) + L".dds");
-			MoveFile(((wsrc + wfiles[i]).substr(0, wsrc.size() + wfiles[i].size() - 4) + L".dds").data(),
-				((wdst + wfiles[i]).substr(0, wdst.size() + wfiles[i].size() - 4) + L".dds").data());
+			ignore = true;
+			std::cout << std::endl << "Types to convert" << std::endl;
+			continue;
+		}
+		if (ignore)
+		{
+			if (src[0] == '.')
+			{
+				src.erase(src.begin());
+			}
+			convertTypes[src] = src.size();
+			std::cout << '.' << src << std::endl;
+			continue;
+		}
+		dirstr.push_back(src);
+		files.push_back(std::vector<std::string>());
+		
+		if (!GetFilenamesInDirectory(dirstr.back().data(), files.back()))
+		{
+			std::cout << "TextureConverter stopped: Searchpath " << dirstr.back().data() << " was bad" << std::endl;
+			return 0;
+		}
+		for (unsigned f = 0; f < files.back().size(); f++)
+		{
+			files.back()[f] = files.back()[f].substr(dirstr.back().size());
+		}
+		std::cout << "Directory: " << dirstr.back() << std::endl << "Files found: " << files.back().size() << std::endl;
+	}
+
+	std::string cmd = R"(texconv.exe -f BC7_UNORM -pow2 -bcmax -fl 11.1 ")";
+	for(size_t d = 2; d < dirstr.size(); d++)
+	{
+		for (size_t i = 0; i < files[d].size(); i++)
+		{
+			bool found = false, toDDS = false;
+			unsigned extlength = 0, dds = 0;
+
+			for (auto types : convertTypes)
+			{
+				if (types.first == files[d][i].substr(files[d][i].size() - types.second))
+				{
+					toDDS = true;
+					extlength = types.second;
+				}
+			}
+
+			if (toDDS)
+			{
+				for (; dds < files[1].size(); dds++)
+				{
+					if (files[d][i].substr(0, files[d][i].size() - extlength) == files[1][dds].substr(0, files[1][dds].size() - 3))
+					{
+						found = true;
+						break;
+					}
+				}
+			}
+
+			std::string dest = dirstr[0], src;
+			if (toDDS && found)
+			{
+				dest += files[1][dds];
+				src = dirstr[1] + files[1][dds];
+				CopyFile(std::wstring(src.begin(), src.end()).data(), std::wstring(dest.begin(), dest.end()).data(), false);
+			}
+			else if (toDDS)
+			{
+				system((cmd + dirstr[d] + files[d][i] + R"(")").data());
+				std::string pos = dirstr[d] + files[d][i].substr(0, files[d][i].size() - extlength) + "dds";
+				dest += files[d][i].substr(0, files[d][i].size() - extlength) + "dds";
+				src = dirstr[1] + files[d][i].substr(0, files[d][i].size() - extlength) + "dds";
+				MoveFile(std::wstring(pos.begin(), pos.end()).data(), std::wstring(src.begin(), src.end()).data());
+				CopyFile(std::wstring(src.begin(), src.end()).data(), std::wstring(dest.begin(), dest.end()).data(), false);
+			}
+			else
+			{
+				dest += files[d][i];
+				src = dirstr[d] + files[d][i];
+				CopyFile(std::wstring(src.begin(), src.end()).data(), std::wstring(dest.begin(), dest.end()).data(), false);
+			}
 		}
 	}
 }

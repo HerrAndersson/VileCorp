@@ -73,8 +73,8 @@ HRESULT Texture::LoadTexture(ID3D11Device* device)
 		wstring _filePath = System::TEXTURE_FOLDER_PATH_W;
 		_filePath.append(_name.begin(), _name.end());
 //		res = DirectX::CreateWICTextureFromFile(device, _filePath.c_str(), nullptr, &_data, 0);
-		DirectX::CreateDDSTextureFromFile(device, (_filePath.substr(0,_filePath.size()-3) + L"dds").c_str(), nullptr, &_data, 0);
-//		res = DirectX::CreateDDSTextureFromFileEx(device, (_filePath.substr(0, _filePath.size() - 3) + L"dds").c_str(), 0, D3D11_USAGE_IMMUTABLE, D3D11_BIND_SHADER_RESOURCE, 0, 0, false, nullptr, &_data,0);
+//		DirectX::CreateDDSTextureFromFile(device, (_filePath.substr(0,_filePath.size()-3) + L"dds").c_str(), nullptr, &_data, 0);
+		res = DirectX::CreateDDSTextureFromFileEx(device, (_filePath.substr(0, _filePath.size() - 3) + L"dds").c_str(), 0, D3D11_USAGE_IMMUTABLE, D3D11_BIND_SHADER_RESOURCE, 0, 0, false, nullptr, &_data,0);
 
 		if (_data == nullptr)
 		{

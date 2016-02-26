@@ -98,8 +98,21 @@
       <AdditionalLibraryDirectories>../include/yse/dll;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <CustomBuildStep>
-      <Command>
-</Command>
+      <Command>robocopy "C:\%HOMEPATH%\Google Drive\Stort spelprojekt\Assets" "$(OutDir)Assets" /MIR /XF *.* /W:0 /R:0
+
+$(SolutionDir)..\TextureConverter\Debug\TextureConverter.exe "$(OutDir)Assets/" "C:%HOMEPATH%/Google Drive/Stort spelprojekt/Assetsdds/" "C:%HOMEPATH%/Google Drive/Stort spelprojekt/Assets/" -ToDDS png
+
+
+robocopy "$(SolutionDir)Renderer\Shaders" "$(OutDir)Assets\Shaders" *.hlsl /E /XA:H /W:0 /R:0
+
+
+
+robocopy "$(SolutionDir)Assets" "$(OutDir)Assets" *.json *.xml /E /XA:H /W:0 /R:0
+
+robocopy "$(SolutionDir)include\yse\dll" "$(OutDir)" /E /XA:H /W:0 /R:0
+
+
+if errorlevel 1 exit 0 else exit %errorlevel%</Command>
     </CustomBuildStep>
     <CustomBuildStep>
       <Outputs>a</Outputs>
