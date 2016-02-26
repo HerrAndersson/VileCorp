@@ -8,7 +8,7 @@
 #include <DirectXMath.h>
 #include <fstream>
 #include "WICTextureLoader.h"
-#include "DDSTextureLoader.h"
+//#include "DDSTextureLoader.h"
 #include "RenderUtils.h"
 #include "LevelFormat.h"
 #include "CommonUtils.h"
@@ -32,9 +32,7 @@ struct MeshHeader26
 
 struct MeshHeader29
 {
-	int _numberOfVertices;
-	bool _particles, _icon;
-	int _numberPointLights, _numberSpotLights;
+	int _numberOfVertices, _numberPointLights, _numberSpotLights;
 };
 
 struct MatHeader 

@@ -165,7 +165,7 @@
 				"../Menues/PlacementStateGUI/units/Anvilbutton1.png"
 			]
 		}, {
-			"_mesh": "SharkTrap-27.bin",
+			"_mesh": "sharkTrap-29.bin",
 			"_name": "SharkTrap",
 			"_type": "TRAP",
 			"_subType": 2,
@@ -217,7 +217,7 @@
 				"../Menues/PlacementStateGUI/units/Camerabutton1.png"
 			]
 		}, {
-			"_mesh": "ErikEnemy-27.bin",
+			"_mesh": "enemy1-29.bin",
 			"_name": "Enemy",
 			"_type": "ENEMY",
 			"_subType": 0,

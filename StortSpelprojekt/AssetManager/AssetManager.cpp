@@ -73,8 +73,8 @@ HRESULT Texture::LoadTexture(ID3D11Device* device)
 	{
 		wstring _filePath = TEXTURE_FOLDER_PATH_W;
 		_filePath.append(_name.begin(), _name.end());
-//		res = DirectX::CreateWICTextureFromFile(device, _filePath.c_str(), nullptr, &_data, 0);
-		DirectX::CreateDDSTextureFromFile(device, (_filePath.substr(0,_filePath.size()-3) + L"dds").c_str(), nullptr, &_data, 0);
+		res = DirectX::CreateWICTextureFromFile(device, _filePath.c_str(), nullptr, &_data, 0);
+//		DirectX::CreateDDSTextureFromFile(device, (_filePath.substr(0,_filePath.size()-3) + L"dds").c_str(), nullptr, &_data, 0);
 //		res = DirectX::CreateDDSTextureFromFileEx(device, (_filePath.substr(0, _filePath.size() - 3) + L"dds").c_str(), 0, D3D11_USAGE_IMMUTABLE, D3D11_BIND_SHADER_RESOURCE, 0, 0, false, nullptr, &_data,0);
 
 		if (_data == nullptr)
@@ -197,6 +197,11 @@ Mesh* AssetManager::ScanModel(string name)
 Mesh* AssetManager::ScanModel29()
 {
 	Mesh* mesh = new Mesh;
+	bool _particles, _icon;
+	_infile->read((char*)&_particles, 1);
+	_infile->read((char*)&_icon, 1);
+	_infile->seekg(2, std::ios::cur);
+
 	int skeletonStringLength;
 	_infile->read((char*)&skeletonStringLength, 4);
 	mesh->_skeletonName.resize(skeletonStringLength);
@@ -228,9 +233,9 @@ Mesh* AssetManager::ScanModel29()
 
 	mesh->_hitbox = new Hitbox();
 	_infile->read((char*)mesh->_hitbox, sizeof(Hitbox));
-	if (meshHeader._particles)
+	if (_particles)
 		_infile->read((char*)mesh->_particleSpawnerPos, 12);
-	if (meshHeader._icon)
+	if (_icon)
 		_infile->read((char*)mesh->_iconPos, 12);
 
 	return mesh;
