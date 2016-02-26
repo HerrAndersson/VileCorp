@@ -93,14 +93,14 @@ void PlacementState::OnStateEnter()
 	_buttonHighlights.clear();
 	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("Play")));
 
-	std::vector<GUI::Node*>* units = _uiTree.GetNode("UnitList")->GetChildren();
-	for (int i = 0; i < units->size(); i++)
-	{
-		GUI::BlueprintNode* newUnit = new GUI::BlueprintNode(*units->at(i), _objectHandler->GetBlueprintByName(units->at(i)->GetId()), 0);
-		delete units->at(i);
-		units->at(i) = (GUI::Node*)newUnit;
-		_buttonHighlights.push_back(GUI::HighlightNode(units->at(i), XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f)));
-	}
+	//std::vector<GUI::Node*>* units = _uiTree.GetNode("UnitList")->GetChildren();
+	//for (int i = 0; i < units->size(); i++)
+	//{
+	//	GUI::BlueprintNode* newUnit = new GUI::BlueprintNode(*units->at(i), _objectHandler->GetBlueprintByName(units->at(i)->GetId()), 0);
+	//	delete units->at(i);
+	//	units->at(i) = (GUI::Node*)newUnit;
+	//	_buttonHighlights.push_back(GUI::HighlightNode(units->at(i), XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f)));
+	//}
 
 	//TODO: Move hardcoded costs and description to logical location /Rikhard
 	_uiTree.GetNode("GuardDescription")->SetHidden(true);
@@ -244,7 +244,7 @@ void PlacementState::HandleButtons()
 			if (_uiTree.IsButtonColliding(currentButton, coord._pos.x, coord._pos.y))
 			{
 				GUI::BlueprintNode* currentBlueprintButton = static_cast<GUI::BlueprintNode*>(currentButton);
-				_toPlace._sB._blueprint = currentBlueprintButton->GetBlueprint();
+				_toPlace._sB._blueprint = _objectHandler->GetBlueprintByType(currentBlueprintButton->GetType(), currentBlueprintButton->GetSubType());
 				_toPlace._sB._textureId = currentBlueprintButton->GetTextureId();
 				create = true;
 				break;

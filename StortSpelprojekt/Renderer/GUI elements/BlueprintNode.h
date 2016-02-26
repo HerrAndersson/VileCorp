@@ -9,12 +9,14 @@ namespace GUI
 		friend class UITree;
 
 	private:
+		int _type;
+		int _subType;
 		int _textureId;
 		System::Blueprint* _blueprint;
 
 	public:
 		BlueprintNode(Node::NodeInfo* info,
-			System::Blueprint* blueprint,
+			System::Blueprint* blueprint = nullptr,
 			int textureId = 0,
 			DirectX::XMFLOAT2 position = DirectX::XMFLOAT2(0.0f, 0.0f),
 			DirectX::XMFLOAT2 scale = DirectX::XMFLOAT2(1.0f, 1.0f),
@@ -30,7 +32,15 @@ namespace GUI
 			System::Blueprint* blueprint,
 			int textureId = 0);
 		~BlueprintNode();
+		
+		int GetType()const;
+		void SetType(const int& type);
+		int GetSubType()const;
+		void SetSubType(const int& subType);
 		System::Blueprint* GetBlueprint() const;
+		void SetBlueprint(System::Blueprint* blueprint);
 		int GetTextureId() const;
+		void SetTextureId(const int& textureId);
+
 	};
 }

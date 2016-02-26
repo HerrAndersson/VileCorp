@@ -5,7 +5,7 @@
 		"_blueprints": [{
 			"_mesh": "floorFloor-28.bin",
 			"_name": "Floor",
-			"_type": "FLOOR",
+			"_type": 0,
 			"_subType": 0,
 			"_tooltip": "SampleText",
 			"_textures": [
@@ -99,7 +99,7 @@
 		}, {
 			"_mesh": "wallWall-28.bin",
 			"_name": "Wall",
-			"_type": "WALL",
+			"_type": 1,
 			"_subType": 0,
 			"_tooltip": "SampleText",
 			"_textures": [
@@ -121,7 +121,7 @@
 		}, {
 			"_mesh": "diamondLoot-28.bin",
 			"_name": "Diamond",
-			"_type": "LOOT",
+			"_type": 2,
 			"_subType": 0,
 			"_tooltip": "SampleText",
 			"_textures": [
@@ -149,7 +149,7 @@
 		}, {
 			"_mesh": "windowDoubleSpawn-28.bin",
 			"_name": "Window",
-			"_type": "SPAWN",
+			"_type": 3,
 			"_subType": 0,
 			"_tooltip": "SampleText",
 			"_textures": [
@@ -159,9 +159,37 @@
 				"../Menues/LevelEdit/Entry/WindowButton1.png"
 			]
 		}, {
+			"_mesh": "doubleDoorSide1Spawn-28.bin",
+			"_name": "Window",
+			"_type": 3,
+			"_subType": 1,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"doubledoors.png",
+				"doubledoorsopen.png"
+			],
+			"_thumbnails": [
+				"doubledoors.png",
+				"doubledoorsopen.png"
+			]
+		}, {
+			"_mesh": "doubleDoorSide2Spawn-28.bin",
+			"_name": "Window",
+			"_type": 3,
+			"_subType": 2,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"doubledoors.png",
+				"doubledoorsopen.png"
+			],
+			"_thumbnails": [
+				"doubledoors.png",
+				"doubledoorsopen.png"
+			]
+		}, {
 			"_mesh": "anvilTrap-28.bin",
 			"_name": "Anvil Trap",
-			"_type": "TRAP",
+			"_type": 4,
 			"_subType": 0,
 			"_tooltip": "SampleText",
 			"_textures": [
@@ -173,7 +201,7 @@
 		}, {
 			"_mesh": "teslaTrap-28.bin",
 			"_name": "Tesla Trap",
-			"_type": "TRAP",
+			"_type": 4,
 			"_subType": 1,
 			"_tooltip": "SampleText",
 			"_textures": [
@@ -185,7 +213,7 @@
 		}, {
 			"_mesh": "sharkTrap-28.bin",
 			"_name": "Shark Trap",
-			"_type": "TRAP",
+			"_type": 4,
 			"_subType": 2,
 			"_tooltip": "SampleText",
 			"_textures": [
@@ -197,7 +225,7 @@
 		}, {
 			"_mesh": "gunTrap-28.bin",
 			"_name": "Machine Gun Trap",
-			"_type": "TRAP",
+			"_type": 4,
 			"_subType": 3,
 			"_tooltip": "Fires in a line",
 			"_textures": [
@@ -209,7 +237,7 @@
 		}, {
 			"_mesh": "JuliaBear-27.bin",
 			"_name": "Bear Trap",
-			"_type": "TRAP",
+			"_type": 4,
 			"_subType": 4,
 			"_tooltip": "SampleText",
 			"_textures": [
@@ -221,7 +249,7 @@
 		}, {
 			"_mesh": "sawTrap-27.bin",
 			"_name": "Saw Trap",
-			"_type": "TRAP",
+			"_type": 4,
 			"_subType": 5,
 			"_tooltip": "SampleText",
 			"_textures": [
@@ -233,7 +261,7 @@
 		}, {
 			"_mesh": "Cupcake-27.bin",
 			"_name": "Cupcake Trap",
-			"_type": "TRAP",
+			"_type": 4,
 			"_subType": 6,
 			"_tooltip": "SampleText",
 			"_textures": [
@@ -243,9 +271,9 @@
 				"cuppycake.png"
 			]
 		}, {
-			"_mesh": "FlameThrowerTrap-27.bin",
+			"_mesh": "flamethrowerTrap-28.bin",
 			"_name": "Flame Trap",
-			"_type": "TRAP",
+			"_type": 4,
 			"_subType": 7,
 			"_tooltip": "SampleText",
 			"_textures": [
@@ -255,9 +283,33 @@
 				"../Menues/PlacementStateGUI/units/FlameThrowerbutton1.png"
 			]
 		}, {
+			"_mesh": "sawRoofTrap-28.bin",
+			"_name": "Roof Saw Trap",
+			"_type": 4,
+			"_subType": 8,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"sawRoofTrap.png"
+			],
+			"_thumbnails": [
+				"sawRoofTrap.png"
+			]
+		}, {
+			"_mesh": "confuseTrap-28.bin",
+			"_name": "Confusion Trap",
+			"_type": 4,
+			"_subType": 9,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"confuseTrap.png"
+			],
+			"_thumbnails": [
+				"confuseTrap.png"
+			]
+		}, {
 			"_mesh": "SecurityCamera-27.bin",
 			"_name": "Camera",
-			"_type": "CAMERA",
+			"_type": 5,
 			"_subType": 0,
 			"_tooltip": "SampleText",
 			"_textures": [
@@ -267,9 +319,9 @@
 				"../Menues/PlacementStateGUI/units/Camerabutton1.png"
 			]
 		}, {
-			"_mesh": "ErikBaseman-27.bin",
+			"_mesh": "guard-28.bin",
 			"_name": "Guard",
-			"_type": "GUARD",
+			"_type": 6,
 			"_subType": 0,
 			"_tooltip": "SampleText",
 			"_textures": [
@@ -279,9 +331,21 @@
 				"../Menues/PlacementStateGUI/units/Guardbutton1.png"
 			]
 		}, {
-			"_mesh": "ErikEnemy-27.bin",
+			"_mesh": "Basewoman-27.bin",
+			"_name": "Engineer",
+			"_type": 6,
+			"_subType": 1,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"basewomancolors.png"
+			],
+			"_thumbnails": [
+				"basewomancolors.png"
+			]
+		}, {
+			"_mesh": "enemy-28.bin",
 			"_name": "Enemy",
-			"_type": "ENEMY",
+			"_type": 7,
 			"_subType": 0,
 			"_tooltip": "SampleText",
 			"_textures": [
@@ -293,7 +357,7 @@
 		}, {
 			"_mesh": "chairDecoration-28.bin",
 			"_name": "Chair",
-			"_type": "FURNITURE",
+			"_type": 8,
 			"_subType": 0,
 			"_tooltip": "SampleText",
 			"_textures": [
@@ -305,7 +369,7 @@
 		}, {
 			"_mesh": "pedestalDecoration-28.bin",
 			"_name": "Pedistal",
-			"_type": "FURNITURE",
+			"_type": 8,
 			"_subType": 0,
 			"_tooltip": "SampleText",
 			"_textures": [
@@ -317,7 +381,7 @@
 		}, {
 			"_mesh": "paintingDecoration-28.bin",
 			"_name": "Painting",
-			"_type": "FURNITURE",
+			"_type": 8,
 			"_subType": 0,
 			"_tooltip": "SampleText",
 			"_textures": [
@@ -329,7 +393,7 @@
 		}, {
 			"_mesh": "lionStatueDecoration-28.bin",
 			"_name": "Lion Statue",
-			"_type": "FURNITURE",
+			"_type": 8,
 			"_subType": 0,
 			"_tooltip": "SampleText",
 			"_textures": [
@@ -341,7 +405,7 @@
 		}, {
 			"_mesh": "grandfatherClockDecoration-28.bin",
 			"_name": "Grand Father Clock",
-			"_type": "FURNITURE",
+			"_type": 8,
 			"_subType": 0,
 			"_tooltip": "SampleText",
 			"_textures": [
@@ -353,7 +417,7 @@
 		}, {
 			"_mesh": "glassTableDecoration-28.bin",
 			"_name": "Glass Table",
-			"_type": "FURNITURE",
+			"_type": 8,
 			"_subType": 0,
 			"_tooltip": "SampleText",
 			"_textures": [
@@ -365,7 +429,7 @@
 		}, {
 			"_mesh": "generatorDecoration-28.bin",
 			"_name": "Generator",
-			"_type": "FURNITURE",
+			"_type": 8,
 			"_subType": 0,
 			"_tooltip": "SampleText",
 			"_textures": [
@@ -377,7 +441,7 @@
 		}, {
 			"_mesh": "frontDeskDecoration-28.bin",
 			"_name": "Front Desk",
-			"_type": "FURNITURE",
+			"_type": 8,
 			"_subType": 0,
 			"_tooltip": "SampleText",
 			"_textures": [
@@ -389,7 +453,7 @@
 		}, {
 			"_mesh": "floorLampDecoration-28.bin",
 			"_name": "Floor Lamp",
-			"_type": "FURNITURE",
+			"_type": 8,
 			"_subType": 0,
 			"_tooltip": "SampleText",
 			"_textures": [
@@ -401,7 +465,7 @@
 		}, {
 			"_mesh": "armlesStatueDecoration-28.bin",
 			"_name": "Armless Statue",
-			"_type": "FURNITURE",
+			"_type": 8,
 			"_subType": 0,
 			"_tooltip": "SampleText",
 			"_textures": [
@@ -413,7 +477,7 @@
 		}, {
 			"_mesh": "museumFenceDecoration-28.bin",
 			"_name": "Museum Fence",
-			"_type": "FURNITURE",
+			"_type": 8,
 			"_subType": 0,
 			"_tooltip": "SampleText",
 			"_textures": [
@@ -425,7 +489,7 @@
 		}, {
 			"_mesh": "museumFenceCornerDecoration-28.bin",
 			"_name": "Museum Fence",
-			"_type": "FURNITURE",
+			"_type": 8,
 			"_subType": 0,
 			"_tooltip": "SampleText",
 			"_textures": [

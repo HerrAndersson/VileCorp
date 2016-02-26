@@ -14,8 +14,8 @@ class Blueprints
 private:
 	struct BlueprintData
 	{
-		std::string _name, _tooltip, _mesh, _type;
-		int _subType;
+		std::string _name, _tooltip, _mesh;
+		int _type, _subType;
 		std::vector<std::string> _textures, _thumbnails;
 		template<class Archive>
 		void serialize(Archive & archive)

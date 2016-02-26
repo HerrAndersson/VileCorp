@@ -2,18 +2,6 @@
 
 Blueprints::Blueprints()
 {
-	std::map<std::string, System::Type> stringTypes =
-	{
-		{ "FLOOR", System::FLOOR },
-		{ "WALL", System::WALL },
-		{ "LOOT", System::LOOT },
-		{ "SPAWN", System::SPAWN },
-		{ "TRAP", System::TRAP },
-		{ "CAMERA", System::CAMERA },
-		{ "GUARD", System::GUARD },
-		{ "ENEMY", System::ENEMY },
-		{ "FURNITURE", System::FURNITURE }
-	};
 	std::ifstream infile;
 	infile.open(System::BLUEPRINTS_PATH);
 	cereal::JSONInputArchive blueprintsIn(infile);
@@ -27,7 +15,7 @@ Blueprints::Blueprints()
 		blueprint._mesh = indata._mesh;
 		blueprint._name = indata._name;
 		blueprint._subType = indata._subType;
-		blueprint._type = stringTypes[indata._type];
+		blueprint._type = (System::Type)indata._type;
 		blueprint._textures = indata._textures;
 		blueprint._thumbnails = indata._thumbnails;
 		blueprint._tooltip = indata._tooltip;

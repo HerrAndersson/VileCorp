@@ -49,7 +49,7 @@ void LevelEditState::OnStateEnter()
 		{
 			if (_typeLists[blueprints->at(b)._type] == _typeLists[(System::Type)i])
 			{
-				index += _uiTree.CreateTilesetObject(&blueprints->at(b), _uiTree.GetNode(_typeLists[(System::Type)blueprints->at(b)._type]), index);
+				index += _uiTree.CreateBlueprintNodes(&blueprints->at(b), _uiTree.GetNode(_typeLists[(System::Type)blueprints->at(b)._type]), index);
 			}
 		}
 	}
