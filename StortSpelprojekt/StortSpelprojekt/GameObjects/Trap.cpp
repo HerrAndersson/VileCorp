@@ -623,6 +623,26 @@ void Trap::PlayActivateSound()
 		break;
 
 	case GUN:
+		_soundModule->SetSoundPosition("mg_activate", _position.x, 0.0f, _position.z);
+		_soundModule->Play("mg_activate");
+		break;
+
+	case SAW:
+		_soundModule->SetSoundPosition("saw_activate", _position.x, 0.0f, _position.z);
+		_soundModule->Play("saw_activate");
+		break;
+
+	case CAKEBOMB:
+		_soundModule->SetSoundPosition("bomb_activate", _position.x, 0.0f, _position.z);
+		_soundModule->Play("bomb_activate");
+		break;
+
+	case BEAR:
+		_soundModule->SetSoundPosition("bear_activate", _position.x, 0.0f, _position.z);
+		_soundModule->Play("bear_activate");
+		break;
+
+	case FLAMETHROWER:
 		break;
 	}
 }

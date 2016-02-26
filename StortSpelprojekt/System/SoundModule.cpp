@@ -167,6 +167,23 @@ namespace System
 		return answer;
 	}
 
+	//fadeTime is in milliseconds
+	bool SoundModule::Stop(std::string fileName, int fadeTime)
+	{
+		bool answer = false;
+
+		if (_initiated)
+		{
+			if (_allSounds->find(fileName) != _allSounds->end())
+			{
+				(*_allSounds)[fileName]->fadeAndStop(fadeTime);
+				answer = true;
+			}
+		}
+
+		return answer;
+	}
+
 	void SoundModule::SetSoundPosition(std::string fileName ,float x, float y, float z)
 	{
 		if (_initiated)
