@@ -6,6 +6,7 @@ namespace Renderer
 {
 	RenderModule::RenderModule(HWND hwnd, System::Settings* settings)
 	{
+		_ambientLight = DirectX::XMFLOAT3(0.14f, 0.15f, 0.2f);
 		_d3d = new DirectXHandler(hwnd, settings);
 		_settings = settings;
 		_shaderHandler = new ShaderHandler(_d3d->GetDevice());
@@ -154,7 +155,7 @@ namespace Renderer
 
 		dataPtr->_viewMatrix = viewMatrixC;
 		dataPtr->_projectionMatrix = projectionMatrixC;
-		dataPtr->_ambientLight = AMBIENT_LIGHT;
+		dataPtr->_ambientLight = _ambientLight;
 
 		deviceContext->Unmap(_matrixBufferPerFrame, 0);
 
@@ -207,12 +208,12 @@ namespace Renderer
 
 		UINT32 vertexSize = sizeof(Vertex);
 
-		if (renderObject->_isSkinned)
+		if (renderObject->_mesh->_isSkinned)
 		{
 			vertexSize = sizeof(WeightedVertex);
 		}
 
-		SetDataPerMesh(renderObject->_mesh._vertexBuffer, vertexSize);
+		SetDataPerMesh(renderObject->_mesh->_vertexBuffer, vertexSize);
 
 		deviceContext->PSSetShaderResources(0, 1, &diffuseData);
 		deviceContext->PSSetShaderResources(1, 1, &specularData);
@@ -303,18 +304,36 @@ namespace Renderer
 		UINT32 offset = 0;
 		UINT32 vertexSize = sizeof(Vertex);
 
-		if (renderObject->_isSkinned)
+		if (renderObject->_mesh->_isSkinned)
 		{
 			vertexSize = sizeof(WeightedVertex);
 		}
 
-		SetDataPerMesh(renderObject->_mesh._vertexBuffer, vertexSize);
+		SetDataPerMesh(renderObject->_mesh->_vertexBuffer, vertexSize);
 	}
 
-	void RenderModule::RenderShadowMap(DirectX::XMMATRIX* world, int vertexBufferSize)
+	void RenderModule::RenderShadowMap(DirectX::XMMATRIX* world, int vertexBufferSize, std::vector<DirectX::XMFLOAT4X4>* animTransformData)
 	{
 		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
+
 		_shadowMap->SetDataPerObject(_d3d->GetDeviceContext(), world);
+
+		if (animTransformData)
+		{
+			HRESULT result;
+			D3D11_MAPPED_SUBRESOURCE mappedResource;
+			ZeroMemory(&mappedResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
+			result = deviceContext->Map(_matrixBufferPerSkinnedObject, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+			if (FAILED(result))
+			{
+				throw std::runtime_error("RenderModule::SetResourcesPerObject: Failed to Map _matrixBufferPerSkinnedObject");
+			}
+
+			MatrixBufferPerSkinnedObject* dataPtr = static_cast<MatrixBufferPerSkinnedObject*>(mappedResource.pData);
+			memcpy(&dataPtr->_bones, animTransformData->data(), sizeof(DirectX::XMFLOAT4X4) * animTransformData->size());
+			deviceContext->Unmap(_matrixBufferPerSkinnedObject, 0);
+			deviceContext->VSSetConstantBuffers(5, 1, &_matrixBufferPerSkinnedObject);
+		}
 
 		deviceContext->Draw(vertexBufferSize, 0);
 	}
@@ -528,6 +547,16 @@ namespace Renderer
 			break;
 		}
 		};
+	}
+
+	DirectX::XMFLOAT3 RenderModule::GetAmbientLight() const
+	{
+		return _ambientLight;
+	}
+
+	void RenderModule::SetAmbientLight(const DirectX::XMFLOAT3 &ambientLight)
+	{
+		_ambientLight = ambientLight;
 	}
 
 	void RenderModule::BeginScene(float red, float green, float blue, float alpha)

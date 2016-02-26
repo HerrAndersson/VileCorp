@@ -131,8 +131,8 @@ Enemy::Enemy()
 	_pursuer = nullptr;
 }
 
-Enemy::Enemy(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject * renderObject, const Tilemap * tileMap, const int enemyType)
-	: Unit(ID, position, rotation, tilePosition, type, renderObject, tileMap)
+Enemy::Enemy(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject * renderObject, System::SoundModule* soundModule, const Tilemap * tileMap, int enemyType)
+	: Unit(ID, position, rotation, tilePosition, type, renderObject, soundModule, tileMap)
 {
 	_subType = enemyType;
 	_visibilityTimer = TIME_TO_HIDE;
@@ -267,9 +267,12 @@ void Enemy::Act(GameObject* obj)
 			{
 				if (_interactionTime < 0)
 				{
-					System::FrameCountdown(_interactionTime,_animation->GetLength(3, 1.0f * _speedMultiplier));
 					obj->SetPickUpState(PICKINGUP);
-					Animate(PICKUPOBJECTANIM);
+					if (_animation != nullptr)
+					{
+						System::FrameCountdown(_interactionTime, _animation->GetLength(3, 1.0f * _speedMultiplier));
+						Animate(PICKUPOBJECTANIM);
+					}
 				}
 				else if(_interactionTime == 0)
 				{
@@ -286,6 +289,7 @@ void Enemy::Act(GameObject* obj)
 			break;
 		case  System::SPAWN:
 			TakeDamage(_health);						//TODO: Right now despawn is done by killing the unit. This should be changed to reflect that it's escaping --Victor
+														//^ This will also make the guard_death sound not play if it's an escape -- Sebastian
 			break;
 		case  System::TRAP:
 		{
@@ -306,8 +310,10 @@ void Enemy::Act(GameObject* obj)
 		case  System::GUARD:
 			if (!System::FrameCountdown(_interactionTime, _animation->GetLength(1, 1.0f * _speedMultiplier)))
 			{
-				System::FrameCountdown(_interactionTime,_animation->GetLength(1, 1.0f * _speedMultiplier));
-				Animate(FIGHTANIM);
+				if (_animation != nullptr)
+				{
+					Animate(FIGHTANIM);
+				}
 			}
 			else
 			{
@@ -336,6 +342,10 @@ void Enemy::Release()
 void Enemy::Update(float deltaTime)
 {
 	Unit::Update(deltaTime);
+	if (_animation != nullptr)
+	{
+		_animation->Update(deltaTime);
+	}
 
 	if (_status != StatusEffect::STUNNED)
 	{

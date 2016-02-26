@@ -9,7 +9,7 @@ GameObject::GameObject()
 	_pickUpState = PickUpState::DROPPING;
 }
 
-GameObject::GameObject(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation,  AI::Vec2D tilePosition, System::Type type, RenderObject * renderObject, DirectX::XMFLOAT3 colorOffset)
+GameObject::GameObject(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation,  AI::Vec2D tilePosition, System::Type type, RenderObject * renderObject, System::SoundModule* soundModule, DirectX::XMFLOAT3 colorOffset)
 {
 	_ID = ID;
 	_position = position;
@@ -22,6 +22,8 @@ GameObject::GameObject(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::X
 	_pickUpState = ONTILE;
 	_visible = true;
 	_subType = 0;
+
+	_soundModule = soundModule;
 
 	CalculateMatrix();
 }
@@ -183,7 +185,7 @@ RenderObject * GameObject::GetRenderObject() const
 
 Animation * GameObject::GetAnimation() const
 {
-	if (_renderObject->_isSkinned)
+	if (_renderObject->_mesh->_isSkinned)
 	{
 		return _animation;
 	}

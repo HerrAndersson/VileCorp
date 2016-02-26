@@ -68,15 +68,6 @@ std::vector<std::vector<GameObject*>>* LightCulling::GetObjectsInSpotlight(Rende
 	std::vector<Vec2> triangle;
 	TransformSpotlight(spotlight, &triangle);
 	
-	//TODO: remove when spotlights no longer shines through walls /Jonas
-	for (int i = 0; i <  System::NR_OF_TYPES; i++)
-	{
-		for (auto* i : _objectsInLight->at(i))
-		{
-			i->SetColorOffset(XMFLOAT3(0, 0, 0));
-		}
-	}
-
 	for (int i = 0; i <  System::NR_OF_TYPES; i++)
 	{
 		_objectsInLight->at(i).clear();

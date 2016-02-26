@@ -13,6 +13,7 @@ private:
 		static const int OBJECT_CAPACITY = 6;
 		GameObject* _objectsOnTile[OBJECT_CAPACITY];					//0 = floor or wall, 1 = enemy, 2 = guard, 3 = trap or spawnpoint, 4 = furniture, 5 = thief objectives 
 		bool _isVisible;
+		bool _lock;
 		Tile()
 		{
 			for (int i = 0; i < OBJECT_CAPACITY; i++)
@@ -20,6 +21,7 @@ private:
 				_objectsOnTile[i] = nullptr;
 			}
 			_isVisible = false;
+			_lock = false;
 		}
 		~Tile(){}
 
@@ -52,6 +54,9 @@ public:
 	bool RemoveObjectFromTile(GameObject* obj);
 	void ClearTile(AI::Vec2D pos);
 
+	void LockTile(AI::Vec2D pos);
+	void UnlockTile(AI::Vec2D pos);
+
 	int GetNrOfTiles() const;
 	int GetHeight() const;
 	int GetWidth() const;
@@ -67,8 +72,6 @@ public:
 
 	bool IsPlaceable(int x, int z, System::Type type) const;
 	bool IsPlaceable(AI::Vec2D pos, System::Type type) const;
-	bool CanPlaceObject(AI::Vec2D pos) const;
-	bool CanPlaceObject(int x, int z) const;
 
 	bool IsArchitectureOnTile(int x, int z)const;
 	bool IsArchitectureOnTile(AI::Vec2D pos)const;

@@ -1,0 +1,503 @@
+{
+	"default": {
+		"_name": "default",
+		"_levelformatversion": 12,
+		"_blueprints": [{
+			"_mesh": "floorFloor-28.bin",
+			"_name": "Floor",
+			"_type": 0,
+			"_subType": 0,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"floor.png",
+				"floor2.png",
+				"floor3.png",
+				"floor4.png",
+				"floor5.png",
+				"floor6.png",
+				"floor7.png",
+				"floor8.png",
+				"floor9.png",
+				"floor10.png",
+				"floor11.png",
+				"floor12.png",
+				"floor13.png",
+				"floor14.png",
+				"floor15.png",
+				"floor16.png",
+				"floor17.png",
+				"floor18.png",
+				"floor19.png",
+				"floor20.png",
+				"floor21.png",
+				"floor22.png",
+				"floor23.png",
+				"floor24.png",
+				"floor25.png",
+				"floor26.png",
+				"floor27.png",
+				"floor28.png",
+				"floor29.png",
+				"floor30.png",
+				"floor31.png",
+				"floor32.png",
+				"floor33.png",
+				"floor34.png",
+				"floor35.png",
+				"floor36.png",
+				"floor37.png",
+				"floor38.png",
+				"floor39.png",
+				"floor40.png",
+				"floor41.png",
+				"floor42.png"
+			],
+			"_thumbnails": [
+				"floor.png",
+				"floor2.png",
+				"floor3.png",
+				"floor4.png",
+				"floor5.png",
+				"floor6.png",
+				"floor7.png",
+				"floor8.png",
+				"floor9.png",
+				"floor10.png",
+				"floor11.png",
+				"floor12.png",
+				"floor13.png",
+				"floor14.png",
+				"floor15.png",
+				"floor16.png",
+				"floor17.png",
+				"floor18.png",
+				"floor19.png",
+				"floor20.png",
+				"floor21.png",
+				"floor22.png",
+				"floor23.png",
+				"floor24.png",
+				"floor25.png",
+				"floor26.png",
+				"floor27.png",
+				"floor28.png",
+				"floor29.png",
+				"floor30.png",
+				"floor31.png",
+				"floor32.png",
+				"floor33.png",
+				"floor34.png",
+				"floor35.png",
+				"floor36.png",
+				"floor37.png",
+				"floor38.png",
+				"floor39.png",
+				"floor40.png",
+				"floor41.png",
+				"floor42.png"
+			]
+		}, {
+			"_mesh": "wallWall-28.bin",
+			"_name": "Wall",
+			"_type": 1,
+			"_subType": 0,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"wall.png",
+				"wall2.png",
+				"wall3.png",
+				"wall4.png",
+				"wall5.png",
+				"wall6.png"
+			],
+			"_thumbnails": [
+				"../Menues/LevelEdit/Walls/wall1.png",
+				"../Menues/LevelEdit/Walls/wall2.png",
+				"../Menues/LevelEdit/Walls/wall3.png",
+				"../Menues/LevelEdit/Walls/wall4.png",
+				"../Menues/LevelEdit/Walls/wall5.png",
+				"../Menues/LevelEdit/Walls/wall6.png"
+			]
+		}, {
+			"_mesh": "diamondLoot-28.bin",
+			"_name": "Diamond",
+			"_type": 2,
+			"_subType": 0,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"diamond.png",
+				"diamond2.png",
+				"diamond3.png",
+				"diamond4.png",
+				"diamond5.png",
+				"diamond6.png",
+				"diamond7.png",
+				"diamond8.png",
+				"diamond9.png"
+			],
+			"_thumbnails": [
+				"../Menues/LevelEdit/Loot/diamond1.png",
+				"../Menues/LevelEdit/Loot/diamond2.png",
+				"../Menues/LevelEdit/Loot/diamond3.png",
+				"../Menues/LevelEdit/Loot/diamond4.png",
+				"../Menues/LevelEdit/Loot/diamond5.png",
+				"../Menues/LevelEdit/Loot/diamond6.png",
+				"../Menues/LevelEdit/Loot/diamond7.png",
+				"../Menues/LevelEdit/Loot/diamond8.png",
+				"../Menues/LevelEdit/Loot/diamond9.png"
+			]
+		}, {
+			"_mesh": "windowDoubleSpawn-28.bin",
+			"_name": "Window",
+			"_type": 3,
+			"_subType": 0,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"windowdouble1.png"
+			],
+			"_thumbnails": [
+				"../Menues/LevelEdit/Entry/WindowButton1.png"
+			]
+		}, {
+			"_mesh": "doubleDoorSide1Spawn-28.bin",
+			"_name": "Window",
+			"_type": 3,
+			"_subType": 1,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"doubledoors.png",
+				"doubledoorsopen.png"
+			],
+			"_thumbnails": [
+				"doubledoors.png",
+				"doubledoorsopen.png"
+			]
+		}, {
+			"_mesh": "doubleDoorSide2Spawn-28.bin",
+			"_name": "Window",
+			"_type": 3,
+			"_subType": 2,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"doubledoors.png",
+				"doubledoorsopen.png"
+			],
+			"_thumbnails": [
+				"doubledoors.png",
+				"doubledoorsopen.png"
+			]
+		}, {
+			"_mesh": "anvilTrap-28.bin",
+			"_name": "Anvil Trap",
+			"_type": 4,
+			"_subType": 0,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"Anvil.png"
+			],
+			"_thumbnails": [
+				"../Menues/PlacementStateGUI/units/Anvilbutton1.png"
+			]
+		}, {
+			"_mesh": "teslaTrap-28.bin",
+			"_name": "Tesla Trap",
+			"_type": 4,
+			"_subType": 1,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"Tesla.png"
+			],
+			"_thumbnails": [
+				"../Menues/PlacementStateGUI/units/Teslabutton1.png"
+			]
+		}, {
+			"_mesh": "sharkTrap-28.bin",
+			"_name": "Shark Trap",
+			"_type": 4,
+			"_subType": 2,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"SharkTrap.png"
+			],
+			"_thumbnails": [
+				"../Menues/PlacementStateGUI/units/Sharkbutton1.png"
+			]
+		}, {
+			"_mesh": "gunTrap-28.bin",
+			"_name": "Machine Gun Trap",
+			"_type": 4,
+			"_subType": 3,
+			"_tooltip": "Fires in a line",
+			"_textures": [
+				"GunText.png"
+			],
+			"_thumbnails": [
+				"../Menues/PlacementStateGUI/units/Gunbutton1.png"
+			]
+		}, {
+			"_mesh": "JuliaBear-27.bin",
+			"_name": "Bear Trap",
+			"_type": 4,
+			"_subType": 4,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"bear.png"
+			],
+			"_thumbnails": [
+				"../Menues/PlacementStateGUI/units/Bearbutton.png"
+			]
+		}, {
+			"_mesh": "sawTrap-27.bin",
+			"_name": "Saw Trap",
+			"_type": 4,
+			"_subType": 5,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"saw.png"
+			],
+			"_thumbnails": [
+				"saw.png"
+			]
+		}, {
+			"_mesh": "Cupcake-27.bin",
+			"_name": "Cupcake Trap",
+			"_type": 4,
+			"_subType": 6,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"cuppycake.png"
+			],
+			"_thumbnails": [
+				"cuppycake.png"
+			]
+		}, {
+			"_mesh": "flamethrowerTrap-28.bin",
+			"_name": "Flame Trap",
+			"_type": 4,
+			"_subType": 7,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"GunText.png"
+			],
+			"_thumbnails": [
+				"../Menues/PlacementStateGUI/units/FlameThrowerbutton1.png"
+			]
+		}, {
+			"_mesh": "sawRoofTrap-28.bin",
+			"_name": "Roof Saw Trap",
+			"_type": 4,
+			"_subType": 8,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"sawRoofTrap.png"
+			],
+			"_thumbnails": [
+				"sawRoofTrap.png"
+			]
+		}, {
+			"_mesh": "confuseTrap-28.bin",
+			"_name": "Confusion Trap",
+			"_type": 4,
+			"_subType": 9,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"confuseTrap.png"
+			],
+			"_thumbnails": [
+				"confuseTrap.png"
+			]
+		}, {
+			"_mesh": "SecurityCamera-27.bin",
+			"_name": "Camera",
+			"_type": 5,
+			"_subType": 0,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"cameraFin.png"
+			],
+			"_thumbnails": [
+				"../Menues/PlacementStateGUI/units/Camerabutton1.png"
+			]
+		}, {
+			"_mesh": "guard-28.bin",
+			"_name": "Guard",
+			"_type": 6,
+			"_subType": 0,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"textureblue.png"
+			],
+			"_thumbnails": [
+				"../Menues/PlacementStateGUI/units/Guardbutton1.png"
+			]
+		}, {
+			"_mesh": "Basewoman-27.bin",
+			"_name": "Engineer",
+			"_type": 6,
+			"_subType": 1,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"basewomancolors.png"
+			],
+			"_thumbnails": [
+				"basewomancolors.png"
+			]
+		}, {
+			"_mesh": "enemy-28.bin",
+			"_name": "Enemy",
+			"_type": 7,
+			"_subType": 0,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"Enemy.png"
+			],
+			"_thumbnails": [
+				"Enemy.png"
+			]
+		}, {
+			"_mesh": "chairDecoration-28.bin",
+			"_name": "Chair",
+			"_type": 8,
+			"_subType": 0,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"tablechair2.png"
+			],
+			"_thumbnails": [
+				"../Menues/LevelEdit/Decorations/tablechairButton.png"
+			]
+		}, {
+			"_mesh": "pedestalDecoration-28.bin",
+			"_name": "Pedistal",
+			"_type": 8,
+			"_subType": 0,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"pillowpedestal.png"
+			],
+			"_thumbnails": [
+				"../Menues/LevelEdit/Decorations/pedestalButton.png"
+			]
+		}, {
+			"_mesh": "paintingDecoration-28.bin",
+			"_name": "Painting",
+			"_type": 8,
+			"_subType": 0,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"painting.png"
+			],
+			"_thumbnails": [
+				"../Menues/LevelEdit/Decorations/paintingButton.png"
+			]
+		}, {
+			"_mesh": "lionStatueDecoration-28.bin",
+			"_name": "Lion Statue",
+			"_type": 8,
+			"_subType": 0,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"lionstatue.png"
+			],
+			"_thumbnails": [
+				"../Menues/LevelEdit/Decorations/lionstatueButton.png"
+			]
+		}, {
+			"_mesh": "grandfatherClockDecoration-28.bin",
+			"_name": "Grand Father Clock",
+			"_type": 8,
+			"_subType": 0,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"grandpaclock.png"
+			],
+			"_thumbnails": [
+				"../Menues/LevelEdit/Decorations/grandfathersclockButton.png"
+			]
+		}, {
+			"_mesh": "glassTableDecoration-28.bin",
+			"_name": "Glass Table",
+			"_type": 8,
+			"_subType": 0,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"glasstable.png"
+			],
+			"_thumbnails": [
+				"../Menues/LevelEdit/Decorations/glasstableButton.png"
+			]
+		}, {
+			"_mesh": "generatorDecoration-28.bin",
+			"_name": "Generator",
+			"_type": 8,
+			"_subType": 0,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"generator.png"
+			],
+			"_thumbnails": [
+				"generator.png"
+			]
+		}, {
+			"_mesh": "frontDeskDecoration-28.bin",
+			"_name": "Front Desk",
+			"_type": 8,
+			"_subType": 0,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"frontdesk.png"
+			],
+			"_thumbnails": [
+				"frontdesk.png"
+			]
+		}, {
+			"_mesh": "floorLampDecoration-28.bin",
+			"_name": "Floor Lamp",
+			"_type": 8,
+			"_subType": 0,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"floorlamp.png"
+			],
+			"_thumbnails": [
+				"floorlamp.png"
+			]
+		}, {
+			"_mesh": "armlesStatueDecoration-28.bin",
+			"_name": "Armless Statue",
+			"_type": 8,
+			"_subType": 0,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"armlessstatue.png"
+			],
+			"_thumbnails": [
+				"../Menues/LevelEdit/Decorations/armlesstatueButton.png"
+			]
+		}, {
+			"_mesh": "museumFenceDecoration-28.bin",
+			"_name": "Museum Fence",
+			"_type": 8,
+			"_subType": 0,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"fences.png"
+			],
+			"_thumbnails": [
+				"../Menues/LevelEdit/Decorations/fenceButton.png"
+			]
+		}, {
+			"_mesh": "museumFenceCornerDecoration-28.bin",
+			"_name": "Museum Fence",
+			"_type": 8,
+			"_subType": 0,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"fences.png"
+			],
+			"_thumbnails": [
+				"../Menues/LevelEdit/Decorations/cornerfenceButton.png"
+			]
+		}]
+	}
+}

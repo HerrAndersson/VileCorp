@@ -12,6 +12,7 @@
 		<_farClip>1000</_farClip>
 		<_fov>1.5707900524139404</_fov>
 		<_antialiasing>true</_antialiasing>
+		<_volume>100</_volume>
 	</value0>
 </cereal>
 

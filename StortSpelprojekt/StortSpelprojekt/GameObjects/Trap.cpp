@@ -329,12 +329,11 @@ Trap::Trap()
 	_triggerTiles = nullptr;
 }
 
-Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject * renderObject,
-		  const Tilemap* tileMap, int trapType, AI::Vec2D direction, int cost)
-	: GameObject(ID, position, rotation, tilePosition, type, renderObject)
+Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject * renderObject, System::SoundModule* soundModule, 
+		  const Tilemap* tileMap, int trapType, AI::Vec2D direction)
+	: GameObject(ID, position, rotation, tilePosition, type, renderObject, soundModule)
 {
 	_isActive = true;
-	_cost = cost;
 	_direction = direction;
 	_tileMap = tileMap;
 	_triggerTimer = -1;
@@ -385,9 +384,9 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 
 	SetTiles();
 
-	if (_renderObject->_isSkinned)
+	if (_renderObject->_mesh->_isSkinned)
 	{
-		_animation = new Animation(_renderObject->_skeleton, firstFrame);
+		_animation = new Animation(_renderObject->_mesh->_skeleton, firstFrame);
 		_animation->Freeze(false);
 	}
 }
@@ -420,6 +419,7 @@ int Trap::GetDetectionDifficulty() const
 {
 	return _detectDifficulty;
 }
+
 
 int Trap::GetDisarmDifficulty() const
 {
@@ -473,7 +473,7 @@ void Trap::Activate()
 		}
 	}
 	Animate(ACTIVATE);
-
+	PlayActivateSound();
 	_currentAmmunition--;
 	if (_currentAmmunition == 0)
 	{
@@ -579,7 +579,7 @@ void Trap::SetDirection(const AI::Vec2D direction)
 
 void Trap::Animate(Anim anim)
 {
-	if (_renderObject->_isSkinned && _animation->GetisFinished())
+	if (_animation != nullptr && _animation->GetisFinished())
 	{
 		if (_subType == SPIKE)
 		{
@@ -609,5 +609,28 @@ void Trap::Animate(Anim anim)
 				break;
 			}
 		}
+	}
+}
+
+//Sound
+void Trap::PlayActivateSound()
+{
+	switch (_subType)
+	{
+	case SPIKE:
+		_soundModule->SetSoundPosition("anvil_activate", _position.x, 0.0f, _position.z);
+		_soundModule->Play("anvil_activate");
+		break;
+		
+	case TESLACOIL:
+		_soundModule->SetSoundPosition("tesla_activate", _position.x, 0.0f, _position.z);
+		_soundModule->Play("tesla_activate");
+		break;
+
+	case SHARK:
+		break;
+
+	case GUN:
+		break;
 	}
 }

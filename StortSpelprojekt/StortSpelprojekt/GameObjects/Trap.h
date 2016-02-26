@@ -6,11 +6,9 @@
 enum TrapType{ SPIKE, TESLACOIL, SHARK, GUN, SAW, CAKEBOMB, BEAR, FLAMETHROWER, WATER_GUN, SPIN_TRAP};
 enum Anim{IDLE, ACTIVATE, NR_OF_ANIM/*Has to be last*/};
 
-
 class Trap : public GameObject
 {
 private:
-	int _cost;
 	bool _isActive;
 	bool _isVisibleToEnemies;
 	int _damage;
@@ -47,8 +45,8 @@ private:
 	void SetTiles();
 public:
 	Trap();
-	Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject * renderObject, 
-		 const Tilemap* tileMap, int trapType = SPIKE, AI::Vec2D direction = {-1,0}, int cost = 0);
+	Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject * renderObject, System::SoundModule* soundModule,
+		 const Tilemap* tileMap, int trapType = SPIKE, AI::Vec2D direction = {-1,0});
 	virtual ~Trap();
 
 	AI::Vec2D* GetTiles()const;
@@ -71,5 +69,8 @@ public:
 	AI::Vec2D GetDirection();
 	void SetDirection(const AI::Vec2D direction);
 	void Animate(Anim anim);
+
+	//Sound
+	void PlayActivateSound();
 };
 

@@ -10,6 +10,17 @@
 #include "../PickingDevice.h"
 #include "../System/Camera.h"
 
+struct SpecificBlueprint
+{
+	SpecificBlueprint()
+	{
+		_blueprint = nullptr;
+		_textureId = -1;
+	}
+	System::Blueprint* _blueprint = nullptr;
+	int _textureId = -1;
+};
+
 class BaseEdit
 {
 private:
@@ -18,6 +29,8 @@ private:
 	Tilemap*				_tileMap;
 	ObjectHandler*			_objectHandler;
 	PickingDevice*			_pickingDevice;
+
+	SpecificBlueprint* _sB;
 
 	struct Marker
 	{
@@ -34,49 +47,51 @@ private:
 		}
 	} _marker, _baseMarker;
 
+	bool _droppedObject;
+	GameObject* _createdObject = nullptr;
+	System::Blueprint* _deletedObjectBlueprint = nullptr;
+
 	// FLAGS
+	bool _extendedMode;
 	bool _isSelectionMode;
+	bool _isDragAndDropMode;
 	bool _isDragAndPlaceMode;
 	bool _isPlace;
 	bool _modeLock;
-
-	void HandleInput(double deltaTime);
-	void HandleCamMode();
-	void HandleCamZoom(float deltaTime);
-	void HandleCamRot();
-	void HandleCamMove(float deltaTime);
+	bool _isInvalidateFloor;
 	
+	void MarkerMoveEvent();
+	void DragEvent(System::Type type);
+	void DropEvent();
+	void BoxEvent();
+
+	void HandleMouseInput();
+
+	void HandleKeyInput(double deltaTime);
+
+
 	bool CheckValidity(AI::Vec2D tile, System::Type type);
-	void SetValidity(Marker* m, System::Type type);
-	void MarkerMoveEvent(System::Type type);
-	void DragAndDropEvent(System::Type type);
-
-	void CreateBlueprints(System::Type type, const std::string& objectName);
-
-
-	void ReleaseBlueprints();
+	void CreateMarker();	// Used for Drag&Drop and Click
+	void CreateMarkers(); 	// Used for Drag&Place
 
 public:
-	BaseEdit(ObjectHandler* objectHandler, System::Controls* controls, PickingDevice* pickingDevice, System::Camera* camera);
+
+	BaseEdit(ObjectHandler* objectHandler, System::Controls* controls, PickingDevice* pickingDevice, System::Camera* camera, bool extendedMode);
 	~BaseEdit();
 
-	GameObject* GetSelectedObject();
-	bool DeleteSelectedObject();
+	GameObject* GetMarkedObject();
+	bool DeleteMarkedObject();
+	void ReleaseMarkers();
 
-	bool Add(System::Type type, const std::string& name);
-	bool Delete(System::Type type);
-	bool TypeOn(System::Type type);
+	void HandleBlueprint(SpecificBlueprint* sB);
 
-	void DragAndDrop(System::Type type);
-	void DragAndDrop();
-	void DragAndPlace(System::Type type, const std::string& objectName);
-	void DragActivate(System::Type type, const std::string& objectName, int subType = 0);
-
-
-	void ChangePlaceState();
 	bool IsSelection() const;
 	bool IsDragAndPlace() const;
 	bool IsPlace() const;
 
-	void Update(float deltaTime);
+	bool DroppedObject();
+	GameObject* CreatedObject();
+	System::Blueprint* DeletedObjectBlueprint();
+
+	void Update(float deltaTime, bool clickedOnGUI);
 };

@@ -1,4 +1,6 @@
 #pragma once
+
+#include "../System/SoundModule.h"
 #include <vector>
 #include "stdafx.h"
 #include "GameObject.h"
@@ -18,6 +20,7 @@
 #include "Grid.h"
 #include "Settings/Settings.h"
 #include "LightCulling.h"
+#include "Blueprints.h"
 #include "ParticleSystem\ParticleUtils.h"
 #include "ParticleSystem\ParticleEventQueue.h"
 
@@ -48,13 +51,16 @@ class ObjectHandler
 private:
 	System::Settings* _settings;
 	vector<vector<GameObject*>> _gameObjects;
+	Blueprints _blueprints;
 	GameObjectInfo* _gameObjectInfo;
-	void ActivateTileset(const string& name);
 	Tilemap* _tilemap;
 	Grid* _buildingGrid;
+	Level::LevelHeader _currentLevelHeader;
+	System::SoundModule*	_soundModule;
 
 	int _idCount = 0;
 	int _objectCount = 0;
+	string _levelfolder;
 
 	AssetManager* _assetManager;
 	ID3D11Device* _device;
@@ -63,27 +69,17 @@ private:
 	map<GameObject*, Renderer::Pointlight*> _pointligths;
 	LightCulling* _lightCulling;
 
-	Renderer::ParticleEventQueue* _ParticleEventQueue;
-
-	Architecture*	MakeFloor(GameObjectFloorInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation);
-	Architecture*	MakeWall(GameObjectWallInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation);
-	Architecture*	MakeFurniture(GameObjectFurnitureInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation);
-	Architecture*	MakeLoot(GameObjectLootInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation);
-	SpawnPoint*		MakeSpawn(GameObjectSpawnInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation);
-	Trap*			MakeTrap(GameObjectTrapInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation, const int subIndex = 0);
-	SecurityCamera*	MakeSecurityCamera(GameObjectCameraInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation);
-	Guard*			MakeGuard(GameObjectGuardInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation, const int subIndex = 0);
-	Enemy*			MakeEnemy(GameObjectEnemyInfo* data, const XMFLOAT3& position, const XMFLOAT3& rotation, const int subIndex = 0);
+	Renderer::ParticleEventQueue* _particleEventQueue;
 
 	void ReleaseGameObjects();
 
 public:
-	ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data, System::Settings* settings, Renderer::ParticleEventQueue* particleReque);	
+	ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data, System::Settings* settings, Renderer::ParticleEventQueue* particleReque, System::SoundModule*	soundModule);
 	~ObjectHandler();
 
 	//Add a gameobject
-	bool Add(System::Type type, int index, const XMFLOAT3& position, const XMFLOAT3& rotation, const int subIndex = 0, const bool blueprint = false);
-	bool Add(System::Type type, const std::string& name, const XMFLOAT3& position, const XMFLOAT3& rotation, const int subIndex = 0, const bool blueprint = false);
+	bool Add(XMFLOAT3 position, XMFLOAT3 rotation, System::Type type, int subType, string textureReference);
+	bool Add(System::Blueprint* blueprint, int textureId, const XMFLOAT3& position, const XMFLOAT3& rotation, const bool placeOnTilemap = true);
 	
 	bool Remove(int ID);
 	bool Remove(System::Type type, int ID);
@@ -103,8 +99,6 @@ public:
 	map<GameObject*, Renderer::Pointlight*>* GetPointlights();
 	vector<vector<GameObject*>>* GetObjectsInLight(Renderer::Spotlight* spotlight);
 
-	GameObjectInfo* GetBlueprints();
-
 	int GetObjectCount() const;
 
 	Tilemap* GetTileMap() const;
@@ -113,7 +107,9 @@ public:
 	void EnlargeTilemap(int offset);
 	Grid* GetBuildingGrid();
 
-	bool LoadLevel(int lvlIndex);
+	Level::LevelHeader* GetCurrentLevelHeader();
+	void SetCurrentLevelHeader(Level::LevelHeader levelheader);
+	bool LoadLevel(std::string levelBinaryFilePath);
 	void UnloadLevel();
 
 	void InitPathfinding();
@@ -121,8 +117,14 @@ public:
 	void DisableSpawnPoints();
 	int GetRemainingToSpawn()const;
 
+	Renderer::ParticleEventQueue* GetParticleEventQueue();
+
 	//Update gamelogic of all objects
 	void Update(float deltaTime);
 	void UpdateLights();
+
+	vector<System::Blueprint>* GetBlueprints();
+	System::Blueprint* GetBlueprintByName(string name);
+	System::Blueprint* GetBlueprintByType(int type, int subType = 0);
 };
 

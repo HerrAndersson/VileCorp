@@ -10,8 +10,8 @@ Guard::Guard()
 	_currentPatrolGoal = -1;
 }
 
-Guard::Guard(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject * renderObject, const Tilemap * tileMap, const int guardType)
-	: Unit(ID, position, rotation, tilePosition, type, renderObject, tileMap)
+Guard::Guard(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject * renderObject, System::SoundModule* soundModule, const Tilemap * tileMap, int guardType)
+	: Unit(ID, position, rotation, tilePosition, type, renderObject, soundModule, tileMap)
 {
 	_subType = guardType;
 	_isSelected = false;
@@ -97,7 +97,7 @@ void Guard::SetPatrolPoint(AI::Vec2D patrolPoint)
 		_goalTilePosition = _patrolRoute[_currentPatrolGoal % _patrolRoute.size()];
 		_moveState = MoveState::FINDING_PATH;
 		//SetGoal(_goalTilePosition);
-		
+
 	}
 }
 
@@ -132,11 +132,12 @@ void Guard::Release()
 {}
 
 
-void Guard::Update(float deltaTime) 
+void Guard::Update(float deltaTime)
 {
 	Unit::Update(deltaTime);
 
-	switch( _moveState ) {
+	switch (_moveState)
+	{
 	case MoveState::IDLE:
 		Animate(IDLEANIM);
 		Wait();
@@ -181,7 +182,10 @@ void Guard::Act(GameObject* obj)
 			{
 				if (!System::FrameCountdown(_interactionTime, _animation->GetLength(2, 1.0f * _speedMultiplier)))
 				{
-					Animate(FIXTRAPANIM);
+					if (_animation != nullptr)
+					{
+						Animate(FIXTRAPANIM);
+					}
 				}
 				else
 				{
@@ -192,7 +196,7 @@ void Guard::Act(GameObject* obj)
 			}
 			break;
 		case  System::ENEMY:											//The guard hits the enemy
-			if (!System::FrameCountdown(_interactionTime, _animation->GetLength(4, 4.5f * _speedMultiplier)))
+			if (_animation != nullptr && !System::FrameCountdown(_interactionTime, _animation->GetLength(4, 4.5f * _speedMultiplier)))
 			{
 				Animate(FIGHTANIM);
 			}

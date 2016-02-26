@@ -51,7 +51,7 @@ protected:
 	void SetGoal(GameObject* objective);
 public:
 	Unit();
-	Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject* renderObject, const Tilemap* tileMap);
+	Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject* renderObject, System::SoundModule* soundModule, const Tilemap* tileMap);
 	virtual ~Unit();
 
 	int GetPathLength()const;

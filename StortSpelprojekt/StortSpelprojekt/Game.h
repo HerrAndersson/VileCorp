@@ -15,7 +15,6 @@
 #include "PickingDevice.h"
 #include "Spotlight.h"
 #include "Pointlight.h"
-#include "GameObjectDataLoader.h"
 #include "ShadowMap.h"
 #include "ParticleSystem\ParticleHandler.h"
 #include "ParticleSystem\ParticleUtils.h"
@@ -33,7 +32,6 @@ private:
 	System::Camera*				_camera;
 	ObjectHandler*				_objectHandler;
 	System::Timer				_timer;
-//	Animation*					_animation;
 	System::Controls*			_controls;
 	AssetManager*				_assetManager;
 	FontWrapper*				_fontWrapper;
@@ -47,11 +45,16 @@ private:
 	bool						_hasFocus;
 	bool						_enemiesHasSpawned;
 
+	DirectX::XMFLOAT3			_ambientLight;
+
 	//Resizing window, directx resources, camera
 	void ResizeResources(System::Settings* settings);
 
 	bool Update(double deltaTime);
 	void Render();
+
+	void RenderGameObjects(int forShaderStage, std::vector<std::vector<GameObject*>>* gameObjects);
+	void GenerateShadowMap(Renderer::Spotlight* spotlight, unsigned short ownerID);
 
 	std::vector<GameObject*> _enemies;
 	std::vector<GameObject*> _loot;

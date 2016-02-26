@@ -103,8 +103,8 @@ Unit::Unit()
 	Rotate();
 }
 
-Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject* renderObject, const Tilemap* tileMap)
-	: GameObject(ID, position, rotation, tilePosition, type, renderObject)
+Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject* renderObject, System::SoundModule* soundModule, const Tilemap* tileMap)
+	: GameObject(ID, position, rotation, tilePosition, type, renderObject, soundModule)
 {
 	_goalPriority = -1;
 	_visionRadius = 6;
@@ -122,9 +122,9 @@ Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	_isSwitchingTile = false;
 	_speedMultiplier = 2.0f;
 	Rotate();
-	if (_renderObject->_isSkinned)
+	if (_renderObject->_mesh->_isSkinned)
 	{
-		_animation = new Animation(_renderObject->_skeleton, true);
+		_animation = new Animation(_renderObject->_mesh->_skeleton, true);
 		_animation->Freeze(false);
 	}
 	_moveState = MoveState::IDLE;
@@ -187,7 +187,10 @@ int Unit::GetVisionRadius() const
 
 bool Unit::GetAnimisFinished()
 {
-	return _animation->GetisFinished();
+	if(_animation != nullptr)
+	{
+		return _animation->GetisFinished();
+	}
 }
 
 void Unit::SetGoalTilePosition(AI::Vec2D goal)
@@ -309,7 +312,7 @@ void Unit::InitializePathFinding()
 
 void Unit::Update(float deltaTime)
 {
-	if (_renderObject->_isSkinned)
+	if (_renderObject->_mesh->_isSkinned)
 	{
 		_animation->Update(deltaTime);
 	}
@@ -478,9 +481,9 @@ void Unit::TakeDamage(int damage)
 
 void Unit::Animate(Anim anim)
 {
-	if (_renderObject->_isSkinned && _animation->GetisFinished())
+	if (_animation != nullptr)
 	{
-		if (_renderObject->_type == System::GUARD)
+		if (_type == System::GUARD)
 		{
 			switch (anim)
 			{
@@ -500,7 +503,7 @@ void Unit::Animate(Anim anim)
 				break;
 			}
 		}
-		if (_renderObject->_type == System::ENEMY)
+		if (_type == System::ENEMY)
 		{
 			switch (anim)
 			{

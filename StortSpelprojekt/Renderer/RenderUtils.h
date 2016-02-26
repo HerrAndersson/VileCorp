@@ -6,6 +6,9 @@
 #include <map>
 #include "CommonUtils.h"
 
+static const DirectX::XMFLOAT3 AMBIENT_LIGHT_NIGHT = DirectX::XMFLOAT3(0.14f, 0.15f, 0.2f);
+static const DirectX::XMFLOAT3 AMBIENT_LIGHT_DAY = DirectX::XMFLOAT3(0.5f, 0.5f, 0.5f);
+
 struct Bone
 {
 	int _parent;
@@ -93,14 +96,25 @@ struct Point
 struct Mesh
 {
 	ID3D11Buffer* _vertexBuffer;
+	bool _meshLoaded;
 	System::Hitbox* _hitbox = nullptr;
+	bool _isSkinned = false;
+	bool DecrementUsers();
+	short _activeUsers = 0;
+	std::string _skeletonName;
+	Skeleton* _skeleton;
 	int _vertexBufferSize, _toMesh;
+	std::string _name;
 	std::vector<PointlightData> _pointLights;
 	std::vector<SpotlightData> _spotLights;
 	~Mesh()
 	{
 		_pointLights.clear();
 		_spotLights.clear();
+		if (_meshLoaded && _vertexBuffer != nullptr)
+		{
+			_vertexBuffer->Release();
+		}
 		if (_hitbox != nullptr)
 		{
 			delete _hitbox;
@@ -112,24 +126,18 @@ struct Texture
 {
 	HRESULT LoadTexture(ID3D11Device* device);
 	bool DecrementUsers();
-	bool _loaded = false;
 	short _activeUsers = 0;
-	std::wstring _filename;
+	bool _loaded = false;
+	std::string _name;
 	ID3D11ShaderResourceView* _data = nullptr;
 };
 
 struct RenderObject
 {
 	System::Type _type = System::Type::FLOOR;
-	bool _meshLoaded, _toUnload;
-	bool _isSkinned = false;
-	std::string _name;
-	std::string _skeletonName;
-	Skeleton* _skeleton;
-	float _diffuse[4], _specular[4];
 	Texture* _diffuseTexture = nullptr;
 	Texture* _specularTexture = nullptr;
-	Mesh _mesh;
+	Mesh* _mesh = nullptr;
 	~RenderObject()
 	{
 		if (_diffuseTexture != nullptr)
@@ -140,9 +148,43 @@ struct RenderObject
 		{
 			_specularTexture->DecrementUsers();
 		}
-		if (_meshLoaded && _mesh._vertexBuffer != nullptr)
+		if (_mesh->DecrementUsers())
 		{
-			_mesh._vertexBuffer->Release();
+			delete _mesh;
 		}
+	}
+	bool operator==(const RenderObject& other) 
+	{
+		if (this->_type != other._type)
+		{
+			return false;
+		}
+		if (this->_diffuseTexture != nullptr && other._diffuseTexture != nullptr)
+		{
+			if (this->_diffuseTexture->_name != other._diffuseTexture->_name)
+			{
+				return false;
+			}
+		}
+		else if (this->_diffuseTexture != other._diffuseTexture)
+		{
+			return false;
+		}
+		if (this->_mesh != nullptr && other._mesh != nullptr)
+		{
+			if (this->_mesh->_name != other._mesh->_name)
+			{
+				return false;
+			}
+		}
+		else if (this->_mesh != other._mesh)
+		{
+			return false;
+		}
+		return true;
+	}
+	bool operator!=(const RenderObject& other) 
+	{
+		return !(*this == other);
 	}
 };

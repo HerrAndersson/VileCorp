@@ -29,13 +29,11 @@ private:
 	Options _aa[WINDOW_MAX];
 	int _aaOption;
 
-	float _volumeOption;
-
-	System::SettingsReader* _settingsReader;
+	int _volume;
 private:
 	int ReadSetting(int setting, int setting2, Options* arr, int max);
 	void UpdateText(const std::string& contentId, int optionValue, Options* options);
-	bool HandleOptionSwitch(const std::string& leftId, const std::string& rightId, const std::string& contentId, int& optionValue, Options* options, int optionsMax);
+	bool HandleOptionSwitch(const std::string& leftId, const std::string& rightId, const std::string& contentId, int& optionValue, Options* options, int optionsMax, bool updateContent = true);
 
 public:
 	OptionsState(System::Controls * controls, ObjectHandler * objectHandler, System::Camera * camera, PickingDevice * pickingDevice, const std::string & filename, AssetManager * assetManager, FontWrapper * fontWrapper, System::SettingsReader * settingsReader, System::SoundModule * soundModule);
