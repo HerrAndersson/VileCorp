@@ -14,10 +14,6 @@ ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, G
 	_gameObjects.resize(System::NR_OF_TYPES);
 	_particleEventQueue = particleEventQueue;
 	_soundModule = soundModule;
-
-	//Init sounds
-	_soundModule->AddSound("enemy_death", 0.7f, 1.0f, false, false);
-	_soundModule->AddSound("guard_death", 1.0f, 0.6f, false, false);
 }
 
 ObjectHandler::~ObjectHandler()

@@ -26,8 +26,6 @@ GameLogic::GameLogic(ObjectHandler* objectHandler, System::Camera* camera, Syste
 	_surviveForSeconds = currentLevelHeader->_surviveForSeconds;
 	
 	_soundModule = soundModule;
-	_soundModule->AddSound("unit_select", 0.5f, 1.0f, true, false);
-	_soundModule->AddSound("unit_move", 0.5f, 1.0f, true, false);
 }
 
 GameLogic::~GameLogic()
