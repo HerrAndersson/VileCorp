@@ -15,23 +15,21 @@ AssetManager::AssetManager(ID3D11Device* device)
 	_meshFormatVersion[26] = &AssetManager::ScanModel26;
 	_meshFormatVersion[27] = &AssetManager::ScanModel27;
 	_meshFormatVersion[28] = &AssetManager::ScanModel28;
+	_meshFormatVersion[29] = &AssetManager::ScanModel29;
 
 	GetFilenamesInDirectory((char*)LEVEL_FOLDER_PATH.c_str(), ".lvl", *_levelFileNames);
 }
 
 AssetManager::~AssetManager()
 {
-	for (Texture* texture : *_textures)
-	{
-		if (texture->_loaded)
-		{
-			texture->_data->Release();
-		}
-		delete texture;
-	}
 	for (uint i = 0; i < _renderObjects->size(); i++)
 	{
 		delete _renderObjects->at(i);
+	}
+//	Clean();
+	for (Texture* texture : *_textures)
+	{
+		delete texture;
 	}
 	for (uint i = 0; i < _skeletons->size(); i++)
 	{
@@ -75,7 +73,9 @@ HRESULT Texture::LoadTexture(ID3D11Device* device)
 	{
 		wstring _filePath = TEXTURE_FOLDER_PATH_W;
 		_filePath.append(_name.begin(), _name.end());
-		res = DirectX::CreateWICTextureFromFile(device, _filePath.c_str(), nullptr, &_data, 0);
+//		res = DirectX::CreateWICTextureFromFile(device, _filePath.c_str(), nullptr, &_data, 0);
+		DirectX::CreateDDSTextureFromFile(device, (_filePath.substr(0,_filePath.size()-3) + L"dds").c_str(), nullptr, &_data, 0);
+//		res = DirectX::CreateDDSTextureFromFileEx(device, (_filePath.substr(0, _filePath.size() - 3) + L"dds").c_str(), 0, D3D11_USAGE_IMMUTABLE, D3D11_BIND_SHADER_RESOURCE, 0, 0, false, nullptr, &_data,0);
 
 		if (_data == nullptr)
 		{
@@ -86,12 +86,6 @@ HRESULT Texture::LoadTexture(ID3D11Device* device)
 	}
 	_activeUsers++;
 	return res;
-}
-
-bool Texture::DecrementUsers()
-{
-	_activeUsers--;
-	return (!_activeUsers);
 }
 
 bool Mesh::DecrementUsers()
@@ -159,7 +153,7 @@ Mesh* AssetManager::ScanModel(string name)
 	int version;
 	_infile->read((char*)&version, 4);
 
-	if (version != 24 && version != 26 && version != 27 && version != 28)
+	if (!_meshFormatVersion.count(version))
 	{
 		throw std::runtime_error("Failed to load " + file_path + ":\nIncorrect fileversion");
 	}
@@ -197,6 +191,48 @@ Mesh* AssetManager::ScanModel(string name)
 
 	mesh->_meshLoaded = false;
 	_meshes->push_back(mesh);
+	return mesh;
+}
+
+Mesh* AssetManager::ScanModel29()
+{
+	Mesh* mesh = new Mesh;
+	int skeletonStringLength;
+	_infile->read((char*)&skeletonStringLength, 4);
+	mesh->_skeletonName.resize(skeletonStringLength);
+	_infile->read((char*)mesh->_skeletonName.data(), skeletonStringLength);
+
+	mesh->_isSkinned = strcmp(mesh->_skeletonName.data(), "Unrigged") != 0;
+
+	_infile->read((char*)&mesh->_toMesh, 4);
+
+	MeshHeader29 meshHeader;
+	_infile->read((char*)&meshHeader, sizeof(MeshHeader26));
+
+	if (mesh->_isSkinned)
+	{
+		_infile->seekg(meshHeader._numberOfVertices * sizeof(WeightedVertex), ios::cur);
+	}
+	else
+	{
+		_infile->seekg(meshHeader._numberOfVertices * sizeof(Vertex), ios::cur);
+	}
+
+	mesh->_pointLights.resize(meshHeader._numberPointLights);
+	_infile->read((char*)mesh->_pointLights.data(), sizeof(PointlightData) * meshHeader._numberPointLights);
+
+	mesh->_spotLights.resize(meshHeader._numberSpotLights);
+	_infile->read((char*)mesh->_spotLights.data(), sizeof(SpotlightData) * meshHeader._numberSpotLights);
+
+	mesh->_vertexBufferSize = meshHeader._numberOfVertices;
+
+	mesh->_hitbox = new Hitbox();
+	_infile->read((char*)mesh->_hitbox, sizeof(Hitbox));
+	if (meshHeader._particles)
+		_infile->read((char*)mesh->_particleSpawnerPos, 12);
+	if (meshHeader._icon)
+		_infile->read((char*)mesh->_iconPos, 12);
+
 	return mesh;
 }
 
@@ -511,6 +547,10 @@ Texture* AssetManager::GetTexture(string name)
 	{
 		if (texture->_name == name)
 		{
+			if (!texture->_activeUsers)
+			{
+				texture->LoadTexture(_device);
+			}
 			texture->_activeUsers++;
 			return texture;
 		}
@@ -518,6 +558,18 @@ Texture* AssetManager::GetTexture(string name)
 	Texture* texture = ScanTexture(name);
 	texture->LoadTexture(_device);
 	return texture;
+}
+
+void AssetManager::Clean()
+{
+	for (int i = 0; i < _textures->size(); i++)
+	{
+		if (!_textures->at(i)->_activeUsers)
+		{
+			delete _textures->at(i);
+			_textures->erase(_textures->begin() + i);
+		}
+	}
 }
 
 Mesh* AssetManager::GetModel(string name)
