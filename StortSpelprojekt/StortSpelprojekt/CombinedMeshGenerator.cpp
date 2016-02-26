@@ -19,8 +19,11 @@ CombinedMeshGenerator::~CombinedMeshGenerator()
 		//Need to delete "obj" as well, but this gives unresolved externals as it deletes the texture
 		for (auto& obj : objVector)
 		{
-			delete obj._combinedObject->_mesh;
-			delete obj._combinedObject;
+			SAFE_DELETE(obj._combinedObject->_mesh);
+			obj._combinedObject->_diffuseTexture = nullptr;
+			obj._combinedObject->_specularTexture = nullptr;
+			obj._combinedObject->_mesh = nullptr;
+			SAFE_DELETE(obj._combinedObject);
 		}
 	}
 

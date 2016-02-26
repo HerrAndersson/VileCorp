@@ -5,6 +5,7 @@
 #include <DirectXMath.h>
 #include <map>
 #include "CommonUtils.h"
+#include "stdafx.h"
 
 static const DirectX::XMFLOAT3 AMBIENT_LIGHT_NIGHT = DirectX::XMFLOAT3(0.14f, 0.15f, 0.2f);
 static const DirectX::XMFLOAT3 AMBIENT_LIGHT_DAY = DirectX::XMFLOAT3(0.5f, 0.5f, 0.5f);
@@ -158,9 +159,9 @@ struct RenderObject
 		{
 			_specularTexture->DecrementUsers();
 		}
-		if (_mesh->DecrementUsers())
+		if (_mesh && _mesh->DecrementUsers())
 		{
-			delete _mesh;
+			SAFE_DELETE(_mesh);
 		}
 	}
 	bool operator==(const RenderObject& other) 

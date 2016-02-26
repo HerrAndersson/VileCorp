@@ -156,8 +156,14 @@ bool Game::Update(double deltaTime)
 
 	if (_controls->IsFunctionKeyDown("DEBUG:REQUEST_PARTICLE"))
 	{
-		_combinedMeshGenerator->CombineMeshes(_objectHandler->GetTileMap(), System::FLOOR);
-		_combinedMeshGenerator->CombineMeshes(_objectHandler->GetTileMap(), System::WALL, 2);
+		//_combinedMeshGenerator->CombineMeshes(_objectHandler->GetTileMap(), System::FLOOR);
+		//_combinedMeshGenerator->CombineMeshes(_objectHandler->GetTileMap(), System::WALL, 2);
+
+
+		XMFLOAT3 pos = XMFLOAT3(50, 1.0f, 50);
+		ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::QUESTIONMARK_SUBTYPE, -1, pos, XMFLOAT3(0, 0, 0), 100000.0f, 1, 10.5f, true, false); //Follows owner and is not timed
+		_particleHandler->GetParticleEventQueue()->Insert(msg);
+
 	}
 
 	_particleHandler->Update(deltaTime);
@@ -427,11 +433,20 @@ void Game::RenderParticles()
 					int textureCount = PARTICLE_TEXTURE_COUNT;
 					if (type == ParticleType::ICON)
 					{
+						ParticleSubType subType = emitter->GetSubType();
+						XMFLOAT3 campos = _camera->GetPosition();
+						XMFLOAT3 emitterPosition = emitter->GetPosition();
+						bool isMarker = (subType == ParticleSubType::QUESTIONMARK_SUBTYPE);
+						if (isMarker)
+						{	
+							campos = emitterPosition;
+							campos.y += 1.0f;
+						}
 						textureCount = 1;
 						ID3D11ShaderResourceView* textures[1];
 						textures[0] = _particleHandler->GetIconTexture(emitter->GetSubType());
 
-						_renderModule->SetDataPerParticleEmitter(emitter->GetPosition(), _camera->GetViewMatrix(), _camera->GetProjectionMatrix(), _camera->GetPosition(), emitter->GetParticleScale(), textures, textureCount, 1);
+						_renderModule->SetDataPerParticleEmitter(emitterPosition, _camera->GetViewMatrix(), _camera->GetProjectionMatrix(), campos, emitter->GetParticleScale(), textures, textureCount, (int)!isMarker);
 						_renderModule->RenderParticles(vertexBuffer, emitter->GetParticleCount(), emitter->GetVertexSize());
 					}
 					else
