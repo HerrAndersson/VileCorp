@@ -99,7 +99,6 @@ struct Mesh
 	bool _meshLoaded;
 	Hitbox* _hitbox = nullptr;
 	bool _isSkinned = false;
-	bool DecrementUsers();
 	short _activeUsers = 0;
 	std::string _skeletonName;
 	Skeleton* _skeleton;
@@ -120,16 +119,27 @@ struct Mesh
 			delete _hitbox;
 		}
 	}
+
+	bool DecrementUsers()
+	{
+		_activeUsers--;
+		return (!_activeUsers);
+	}
 };
 
 struct Texture
 {
 	HRESULT LoadTexture(ID3D11Device* device);
-	bool DecrementUsers();
 	short _activeUsers = 0;
 	bool _loaded = false;
 	std::string _name;
 	ID3D11ShaderResourceView* _data = nullptr;
+
+	bool DecrementUsers()
+	{
+		_activeUsers--;
+		return (!_activeUsers);
+	}
 };
 
 struct RenderObject

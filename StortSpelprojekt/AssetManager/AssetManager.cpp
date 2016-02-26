@@ -88,18 +88,6 @@ HRESULT Texture::LoadTexture(ID3D11Device* device)
 	return res;
 }
 
-bool Texture::DecrementUsers()
-{
-	_activeUsers--;
-	return (!_activeUsers);
-}
-
-bool Mesh::DecrementUsers()
-{
-	_activeUsers--;
-	return (!_activeUsers);
-}
-
 //Loads a model to the GPU
 bool AssetManager::LoadModel(string name, Mesh* mesh) {
 
