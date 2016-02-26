@@ -36,6 +36,7 @@ namespace System
 		std::map<std::string, YSE::sound*>* _allSounds;
 		const std::string soundExtension = ".ogg";
 		float _volume[NR_OF_CHANNELS];
+		bool _initiated;
 
 	public:
 		/*Functions*/
