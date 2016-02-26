@@ -97,7 +97,7 @@ struct Mesh
 {
 	ID3D11Buffer* _vertexBuffer;
 	bool _meshLoaded;
-	Hitbox* _hitbox = nullptr;
+	System::Hitbox* _hitbox = nullptr;
 	bool _isSkinned = false;
 	short _activeUsers = 0;
 	std::string _skeletonName;
@@ -144,7 +144,7 @@ struct Texture
 
 struct RenderObject
 {
-	Type _type = Type::FLOOR;
+	System::Type _type = System::Type::FLOOR;
 	Texture* _diffuseTexture = nullptr;
 	Texture* _specularTexture = nullptr;
 	Mesh* _mesh = nullptr;

@@ -4,7 +4,8 @@
 #include <sstream>
 
 Game::Game(HINSTANCE hInstance, int nCmdShow):
-	_settingsReader("Assets/settings.xml", "Assets/profile.xml")
+	_settingsReader("Assets/settings.xml", "Assets/profile.xml"),
+	_soundModule(_settingsReader.GetSettings())
 {
 	srand(time(NULL));
 	System::Settings* settings = _settingsReader.GetSettings();
@@ -28,7 +29,7 @@ Game::Game(HINSTANCE hInstance, int nCmdShow):
 	LoadParticleSystemData(particleTextures, modifiers);
 	_particleHandler = new Renderer::ParticleHandler(_renderModule->GetDevice(), _renderModule->GetDeviceContext(), particleTextures, modifiers);
 
-	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager, &_data, _settingsReader.GetSettings(), _particleHandler->GetParticleEventQueue());
+	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager, &_data, _settingsReader.GetSettings(), _particleHandler->GetParticleEventQueue(), &_soundModule);
 	_pickingDevice = new PickingDevice(_camera, settings);
 
 	_SM = new StateMachine(_controls, _objectHandler, _camera, _pickingDevice, "Assets/gui.json", _assetManager, _fontWrapper, settings, &_settingsReader, &_soundModule, &_ambientLight, _combinedMeshGenerator);
@@ -57,10 +58,10 @@ Game::~Game()
 
 void Game::ResizeResources(System::Settings* settings)
 {
+	_renderModule->ResizeResources(settings);
 	_window->ResizeWindow(settings);
 	_SM->Resize(settings);
 	_camera->Resize(settings);
-	_renderModule->ResizeResources(settings);
 }
 
 void Game::LoadParticleSystemData(ParticleTextures& particleTextures, ParticleModifierOffsets& modifiers)
@@ -132,18 +133,21 @@ void Game::LoadParticleSystemData(ParticleTextures& particleTextures, ParticleMo
 
 bool Game::Update(double deltaTime)
 {
+	_soundModule.Update(_camera->GetPosition().x, _camera->GetPosition().y, _camera->GetPosition().z);
+
 	if (_SM->GetState() == PLACEMENTSTATE)
 	{
 		_objectHandler->UpdateLights();
 	}
-	_soundModule.Update(_camera->GetPosition().x/5.0f, 2.0f, _camera->GetPosition().z / 5.0f);
 
 	bool run = true;
 
 	//Apply settings if they has changed
 	if (_settingsReader.GetSettingsChanged())
 	{
-		ResizeResources(_settingsReader.GetSettings());
+		System::Settings* settings = _settingsReader.GetSettings();
+		ResizeResources(settings);
+		_soundModule.SetVolume(settings->_volume / 100.0f, CHMASTER);
 		_settingsReader.SetSettingsChanged(false);
 	}
 
@@ -152,8 +156,8 @@ bool Game::Update(double deltaTime)
 
 	if (_controls->IsFunctionKeyDown("DEBUG:REQUEST_PARTICLE"))
 	{
-		_combinedMeshGenerator->CombineMeshes(_objectHandler->GetTileMap(), FLOOR);
-		_combinedMeshGenerator->CombineMeshes(_objectHandler->GetTileMap(), WALL, 2);
+		_combinedMeshGenerator->CombineMeshes(_objectHandler->GetTileMap(), System::FLOOR);
+		_combinedMeshGenerator->CombineMeshes(_objectHandler->GetTileMap(), System::WALL, 2);
 	}
 
 	_particleHandler->Update(deltaTime);
@@ -166,18 +170,6 @@ bool Game::Update(double deltaTime)
 			if (_enemies.size() > 0)
 			{
 				_enemiesHasSpawned = true;
-			}
-
-			if (_enemies.size() == 0 && _enemiesHasSpawned == true)
-			{
-				if (_loot.size() >= 1)
-				{
-					//TODO: Add something to notify the player that they've beat the level
-				}
-				else
-				{
-					//TODO: Add something to notify the player that they've SUCK and they can replay the level
-				}
 			}
 		}
 		*/
@@ -287,7 +279,7 @@ void Game::RenderGameObjects(int forShaderStage, std::vector<std::vector<GameObj
 		if (i.size() > 0)
 		{
 			//The floors in the gameObjects vector should not be rendered, as these are combined in a single mesh to reduce draw calls
-			if ((_SM->GetState() == PLACEMENTSTATE || _SM->GetState() == PLAYSTATE) && (i.at(0)->GetType() == FLOOR || i.at(0)->GetType() == WALL))
+			if ((_SM->GetState() == PLACEMENTSTATE || _SM->GetState() == PLAYSTATE) && (i.at(0)->GetType() == System::FLOOR || i.at(0)->GetType() == System::WALL))
 			{
 				continue;
 			}

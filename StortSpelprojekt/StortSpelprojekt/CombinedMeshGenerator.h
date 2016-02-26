@@ -46,7 +46,7 @@ public:
 	CombinedMeshGenerator(ID3D11Device* device, ID3D11DeviceContext* deviceContext);
 	~CombinedMeshGenerator();
 
-	void CombineMeshes(Tilemap* tilemap, const Type& typeToCombine, int countPerCombine = -1);
+	void CombineMeshes(Tilemap* tilemap, const System::Type& typeToCombine, int countPerCombine = -1);
 
 	std::vector<std::vector<CombinedMesh>>* GetCombinedMeshes();
 };

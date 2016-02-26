@@ -28,6 +28,12 @@ LevelSelectState::LevelSelectState(System::Controls* controls, ObjectHandler* ob
 	}
 
 	_combinedMeshGenerator = combinedMeshGenerator;
+	
+	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("nextlevel")));
+	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("prevlevel")));
+	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("playbutton")));
+	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("CampaignTab")));
+	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("SkirmishTab")));
 }
 
 LevelSelectState::~LevelSelectState()
@@ -41,10 +47,7 @@ void LevelSelectState::Update(float deltaTime)
 		_uiTree.ReloadTree("../../../../StortSpelprojekt/Assets/GUI/levelselect.json");
 	}
 	System::MouseCoord coord = _controls->GetMouseCoord();
-	XMFLOAT4 color(0.3f, 0.3f, 0.3f, 1.0f);
-	HandleHoverColorOffset("nextlevel", "nextlevel", coord, color);
-	HandleHoverColorOffset("prevlevel", "prevlevel", coord, color);
-	HandleHoverColorOffset("playbutton", "playbutton", coord, color);
+	HandleButtonHighlight(coord);
 
 	if (_controls->IsFunctionKeyDown("MENU:MENU"))
 	{
@@ -56,12 +59,12 @@ void LevelSelectState::Update(float deltaTime)
 		{
 			if (_uiTree.IsButtonColliding("playbutton", coord._pos.x, coord._pos.y))
 			{
-				_soundModule->Play("Assets/Sounds/page");
+				_soundModule->Play("page");
 
 				std::string levelBinaryPath;
 				if (_isCampaignMode)
 				{
-					levelBinaryPath = CAMPAIGN_FOLDER_PATH;
+					levelBinaryPath = System::CAMPAIGN_FOLDER_PATH;
 					//if we have selected the tutorial map
 					if (_campaignSelection == TUTORIAL)
 					{
@@ -73,7 +76,7 @@ void LevelSelectState::Update(float deltaTime)
 				}
 				else
 				{
-					levelBinaryPath = SKIRMISH_FOLDER_PATH;
+					levelBinaryPath = System::SKIRMISH_FOLDER_PATH;
 				}
 				levelBinaryPath += _selectedLevelHeader._levelBinaryFilename;
 
@@ -82,14 +85,15 @@ void LevelSelectState::Update(float deltaTime)
 
 
 				//Combining objects into bigger meshes used for rendering to reduce draw calls
-				_combinedMeshGenerator->CombineMeshes(_objectHandler->GetTileMap(), Type::FLOOR);
-				_combinedMeshGenerator->CombineMeshes(_objectHandler->GetTileMap(), Type::WALL, 2);
+				_combinedMeshGenerator->CombineMeshes(_objectHandler->GetTileMap(), System::Type::FLOOR);
+				_combinedMeshGenerator->CombineMeshes(_objectHandler->GetTileMap(), System::Type::WALL, 2);
+
 
 				ChangeState(State::PLACEMENTSTATE);
 			}
 			if (_uiTree.IsButtonColliding("prevlevel", coord._pos.x, coord._pos.y))
 			{
-				_soundModule->Play("Assets/Sounds/page");
+				_soundModule->Play("page");
 				if (_isCampaignMode && _campaignSelection != _campaignSelectionMin)
 				{
 					_campaignSelection--;
@@ -107,7 +111,7 @@ void LevelSelectState::Update(float deltaTime)
 			}
 			if (_uiTree.IsButtonColliding("nextlevel", coord._pos.x, coord._pos.y))
 			{
-				_soundModule->Play("Assets/Sounds/page");
+				_soundModule->Play("page");
 				if (_isCampaignMode && _campaignSelection != _campaignSelectionMax)
 				{
 					_campaignSelection++;
@@ -174,7 +178,7 @@ void LevelSelectState::OnStateEnter()
 
 	//Load level information into respektive variables.
 	_skirmishHeaderFilenames.clear();
-	GetFilenamesInDirectory(const_cast<char*>(SKIRMISH_FOLDER_PATH.c_str()), ".json", _skirmishHeaderFilenames, false);
+	GetFilenamesInDirectory(const_cast<char*>(System::SKIRMISH_FOLDER_PATH.c_str()), ".json", _skirmishHeaderFilenames, false);
 	_campaignSelectionMax = _campaignSelection = _profile->_level;
 	//if player havent completed the tutorial before. Show tutorial first.
 	if (_profile->_firstTime && _campaignSelectionMin == TUTORIAL)
@@ -200,11 +204,11 @@ void LevelSelectState::LoadLevelHeader(std::string levelFilename, Level::LevelHe
 	std::string levelPath;
 	if (_isCampaignMode)
 	{
-		levelPath = CAMPAIGN_FOLDER_PATH + levelFilename + ".json";
+		levelPath = System::CAMPAIGN_FOLDER_PATH + levelFilename + ".json";
 	}
 	else
 	{
-		levelPath = SKIRMISH_FOLDER_PATH + levelFilename;
+		levelPath = System::SKIRMISH_FOLDER_PATH + levelFilename;
 	}
 	System::loadJSON(headerToLoad, levelPath);
 }
@@ -217,17 +221,17 @@ void LevelSelectState::SelectedLevelHeaderToGUI()
 	else
 	{
 		_levelNameNode->SetHidden(false);
-		_levelNameNode->SetText(StringToWstring(_selectedLevelHeader._levelBinaryFilename));
+		_levelNameNode->SetText(System::StringToWstring(_selectedLevelHeader._levelBinaryFilename));
 	}
-	_storyTitleNode->SetText(StringToWstring(_selectedLevelHeader._storyTitle));
-	_storyBodyNode->SetText(StringToWstring(_selectedLevelHeader._storyBody));
+	_storyTitleNode->SetText(System::StringToWstring(_selectedLevelHeader._storyTitle));
+	_storyBodyNode->SetText(System::StringToWstring(_selectedLevelHeader._storyBody));
 
 	std::stringstream ss;
 	ss << _selectedLevelHeader._gameMode;
 	int gameModeIndex;
 	ss >> gameModeIndex;
 	std::string gameModeName = Level::GameModeNames[gameModeIndex];
-	_gameModeNode->SetText(StringToWstring(gameModeName));
+	_gameModeNode->SetText(System::StringToWstring(gameModeName));
 }
 
 void LevelSelectState::UpdateButtonsNextPreviousVisability()

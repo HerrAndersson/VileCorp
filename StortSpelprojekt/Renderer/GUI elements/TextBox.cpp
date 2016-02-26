@@ -48,7 +48,7 @@ void GUI::TextBox::SelectTextBox()
 
 	if (_clearDefaultTextOnFirstEnter && _firstTimeEditingText)
 	{
-		SetText(StringToWstring(""));
+		SetText(System::StringToWstring(""));
 		_firstTimeEditingText = false;
 	}
 }

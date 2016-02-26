@@ -33,9 +33,11 @@ private:
 
 	void HandleInput(float deltaTime);
 	void HandleUnitSelect();
+	void PlaySelectSound(GuardType guardType);
 	void ShowSelectedInfo();
 	void HandlePatrol();
 	void HandleUnitMove();
+	void PlayMoveSound(GuardType guardType);
 	void HandleCamMode();
 	void HandleCamZoom();
 	void HandleCamRot();

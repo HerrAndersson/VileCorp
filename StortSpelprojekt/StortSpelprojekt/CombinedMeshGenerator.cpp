@@ -1,6 +1,7 @@
 #include "CombinedMeshGenerator.h"
 #include "stdafx.h"
 
+using namespace System;
 using namespace DirectX;
 
 CombinedMeshGenerator::CombinedMeshGenerator(ID3D11Device* device, ID3D11DeviceContext* deviceContext)
