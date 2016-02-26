@@ -195,7 +195,7 @@ namespace Renderer
 		void RenderShadowMap(DirectX::XMMATRIX* world, int vertexBufferSize, std::vector<DirectX::XMFLOAT4X4>* animTransformData = nullptr);
 		void RenderScreenQuad();
 		void RenderParticles(ID3D11Buffer* particlePointsBuffer, int vertexCount, int vertexSize);
-		void RenderLightVolume(ID3D11Buffer* volume, DirectX::XMMATRIX* world, int vertexCount, int vertexSize);
+		void RenderVertexBuffer(ID3D11Buffer* vertexBuffer, DirectX::XMMATRIX* world, int vertexCount, int vertexSize);
 		void EndScene();
 
 		ID3D11Device* GetDevice() const;
