@@ -45,7 +45,7 @@ namespace System
 		SoundModule(System::Settings* settings);
 		~SoundModule();
 
-		bool AddSound(const std::string &fileName, float volume = 1.0f, float speed = 1.0f, bool relative = true, bool looping = false);
+		bool AddSound(const std::string &fileName, float volume = 1.0f, float speed = 1.0f, bool relative = true, bool looping = false, bool streaming = false);
 		bool RemoveSound(const std::string &fileName);   //Not needed but good to have
 
 		void Update(float listenerX, float listenerY, float listenerZ);

@@ -24,7 +24,7 @@ PlacementState::PlacementState(System::Controls* controls, ObjectHandler* object
 	_ambientLight = ambientLight;
 
 	//Add sound
-	_soundModule->AddSound("in_game_1", 0.2f, 1.0f, true, true);
+	_soundModule->AddSound("in_game_1", 0.2f, 1.0f, true, true, true);
 }
 
 void PlacementState::EvaluateGoldCost()

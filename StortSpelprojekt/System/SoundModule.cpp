@@ -40,7 +40,7 @@ namespace System
 	/*
 	AddSound: Builds its own path using fileName
 	*/
-	bool SoundModule::AddSound(const std::string &fileName, float volume, float speed, bool relative, bool looping)
+	bool SoundModule::AddSound(const std::string &fileName, float volume, float speed, bool relative, bool looping, bool streaming)
 	{
 		bool answer = false;
 		if (_initiated)

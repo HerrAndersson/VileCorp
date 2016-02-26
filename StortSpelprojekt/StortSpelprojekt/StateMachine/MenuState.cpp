@@ -3,7 +3,7 @@
 MenuState::MenuState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule)
 	: BaseState (controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settingsReader, soundModule)
 {
-	_soundModule->AddSound("theme", 0.15f, 1.0f, true, true);
+	_soundModule->AddSound("theme", 0.15f, 1.0f, true, true, true);
 	_soundModule->AddSound("page", 1.0f, 1.0f, true, false);
 
 	XMFLOAT4 color(0.1f, 0.1f, 0.1f, 1.0f);
