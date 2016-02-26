@@ -14,7 +14,7 @@ GameLogic::GameLogic(ObjectHandler* objectHandler, System::Camera* camera, Syste
 	_objectHandler->InitPathfinding();
 	_uiTree = uiTree;
 	_assetManager = assetManager;
-	_guardTexture = _assetManager->GetTexture("../Menues/PlacementStateGUI/units/Guardbutton1.png")->_data;
+	_guardTexture = _assetManager->GetTexture("../Menues/PlacementStateGUI/units/Guardbutton1.png");
 	_uiTree->GetNode("winscreen")->SetHidden(true);
 	_uiTree->GetNode("losescreen")->SetHidden(true);
 	_gameOver = false;
@@ -31,6 +31,7 @@ GameLogic::GameLogic(ObjectHandler* objectHandler, System::Camera* camera, Syste
 GameLogic::~GameLogic()
 {
 	delete _player;
+	_guardTexture->DecrementUsers();
 	_player = nullptr;
 }
 
@@ -180,7 +181,7 @@ void GameLogic::ShowSelectedInfo()
 
 		//TODO: Actually check if the units are guards //Mattias
 		_uiTree->GetNode("unitinfotext")->SetText(L"Guard");
-		_uiTree->GetNode("unitpicture")->SetTexture(_guardTexture);
+		_uiTree->GetNode("unitpicture")->SetTexture(_assetManager->GetTexture(_guardTexture->_name));
 
 		//Calculate health sum
 		for (auto& i : units)
