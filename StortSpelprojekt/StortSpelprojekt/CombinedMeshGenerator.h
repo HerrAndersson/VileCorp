@@ -18,8 +18,10 @@ The vector<vector<>> holds all combined meshes. For example, floors will be the 
 
 struct CombinedMesh
 {
-	XMMATRIX world;
+	XMMATRIX _world;
 	RenderObject* _combinedObject; //Should be created as a new render object, but with all data copied except the vertex buffer
+	int _vertexSize;
+	int _vertexCount;
 };
 
 class CombinedMeshGenerator
@@ -31,10 +33,11 @@ private:
 	ID3D11DeviceContext* _deviceContext;
 	ID3D11Buffer* _bufferCopy;
 
-	std::vector<CombinedMesh> _combinedMeshes;
+	std::vector<std::vector<CombinedMesh>> _combinedMeshes;
 	int _combinedTypes;
 
 	void LoadVertexBufferData(std::vector<Vertex>* dataVector, Mesh* mesh);
+	void CreateRenderObject(RenderObject* copy, RenderObject* orig);
 
 public:
 
@@ -43,10 +46,6 @@ public:
 
 	void CombineMeshes(Tilemap* tilemap, const Type& typeToCombine, int countPerCombine = -1);
 
-	std::vector<CombinedMesh>* GetCombinedMeshes();
-
-	/*Should be handled this way if we combine both floors and walls (not with each other of course)
-	std::vector<std::vector<CombinedMesh>> _combinedMeshes; 
-	std::vector<std::vector<CombinedMesh>>* GetCombinedMeshes();*/
+	std::vector<std::vector<CombinedMesh>>* GetCombinedMeshes();
 };
 

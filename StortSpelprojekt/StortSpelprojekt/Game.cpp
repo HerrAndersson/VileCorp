@@ -38,15 +38,6 @@ Game::Game(HINSTANCE hInstance, int nCmdShow):
 
 	_ambientLight = _renderModule->GetAmbientLight();	
 	ResizeResources(settings);//This fixes a bug which offsets mousepicking, do not touch! //Markus
-
-
-
-
-
-
-
-
-
 }
 
 Game::~Game()
@@ -162,6 +153,7 @@ bool Game::Update(double deltaTime)
 	if (_controls->IsFunctionKeyDown("DEBUG:REQUEST_PARTICLE"))
 	{
 		_combinedMeshGenerator->CombineMeshes(_objectHandler->GetTileMap(), FLOOR);
+		_combinedMeshGenerator->CombineMeshes(_objectHandler->GetTileMap(), WALL, 2);
 	}
 
 	_particleHandler->Update(deltaTime);
@@ -247,7 +239,7 @@ void Game::Render()
 				_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::LIGHT_APPLICATION_SPOTLIGHT);
 				_renderModule->SetLightDataPerSpotlight(spot.second);
 
-				_renderModule->RenderLightVolume(spot.second->GetVolumeBuffer(), spot.second->GetWorldMatrix(), spot.second->GetVertexCount(), spot.second->GetVertexSize());
+				_renderModule->RenderVertexBuffer(spot.second->GetVolumeBuffer(), spot.second->GetWorldMatrix(), spot.second->GetVertexCount(), spot.second->GetVertexSize());
 			}
 		}
 		/*------------------------------------------------------  Pointlights  -----------------------------------------------------------*/
@@ -259,7 +251,7 @@ void Game::Render()
 			if (pointlight.second != nullptr && pointlight.second->IsActive() && pointlight.first->IsActive())
 			{
 				_renderModule->SetLightDataPerPointlight(pointlight.second);
-				_renderModule->RenderLightVolume(pointlight.second->GetVolumeBuffer(), pointlight.second->GetWorldMatrix(), pointlight.second->GetVertexCount(), pointlight.second->GetVertexSize());
+				_renderModule->RenderVertexBuffer(pointlight.second->GetVolumeBuffer(), pointlight.second->GetWorldMatrix(), pointlight.second->GetVertexCount(), pointlight.second->GetVertexSize());
 			}
 		}
 	}
@@ -277,10 +269,29 @@ void Game::Render()
 
 void Game::RenderGameObjects(int forShaderStage, std::vector<std::vector<GameObject*>>* gameObjects)
 {
-	for (auto i : *gameObjects)
+	if (forShaderStage == Renderer::RenderModule::ShaderStage::GEO_PASS)
+	{
+		std::vector<std::vector<CombinedMesh>>* combinedMeshes = _combinedMeshGenerator->GetCombinedMeshes();
+		for (auto& objVector : *combinedMeshes)
+		{
+			for (auto& obj : objVector)
+			{
+				_renderModule->SetDataPerObjectType(obj._combinedObject);
+				_renderModule->Render(&obj._world, obj._vertexCount);
+			}
+		}
+	}
+
+	for (auto& i : *gameObjects)
 	{
 		if (i.size() > 0)
 		{
+			//The floors in the gameObjects vector should not be rendered, as these are combined into a single mesh
+			if (i.at(0)->GetType() == FLOOR || i.at(0)->GetType() == WALL)
+			{
+				continue;
+			}
+
 			GameObject* lastGameObject = nullptr;
 			RenderObject* lastRenderObject = nullptr;
 			int vertexBufferSize = 0;
@@ -288,7 +299,7 @@ void Game::RenderGameObjects(int forShaderStage, std::vector<std::vector<GameObj
 			{
 				GameObject* gameObject = i.at(j);
 				RenderObject* renderObject = gameObject->GetRenderObject();
-				
+
 				if ((forShaderStage == Renderer::RenderModule::ShaderStage::GEO_PASS && renderObject->_mesh->_isSkinned)
 					|| (forShaderStage == Renderer::RenderModule::ShaderStage::ANIM_STAGE && !renderObject->_mesh->_isSkinned))
 				{
