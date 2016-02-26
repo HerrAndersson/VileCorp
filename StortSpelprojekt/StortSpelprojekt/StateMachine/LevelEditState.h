@@ -44,6 +44,7 @@ private:
 
 	GUI::TextBox* _currentlySelectedTextBox;
 	std::vector<GUI::TextBox> _textBoxes;
+	std::vector<GUI::ToggleButton> _toggleButtons;
 	std::vector<std::string> _levelHeaderFilenames;
 
 	bool _floorChosen = false;

@@ -28,7 +28,7 @@ void LevelEditState::Update(float deltaTime)
 
 void LevelEditState::OnStateEnter()
 {
-	_uiTree.ReloadTree(LEVELEDIT_GUI_PATH);
+	_uiTree.ReloadTree(System::LEVELEDIT_GUI_PATH);
 	_objectTabs = _uiTree.GetNode("Buttons")->GetChildren();
 	_settingsTabs = _uiTree.GetNode("Otherbuttons")->GetChildren();
 
@@ -45,15 +45,15 @@ void LevelEditState::OnStateEnter()
 	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("MinuteText"), 3, false, true));
 	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("SecondText"), 3, false, true));
 
-	for (unsigned i = 0; i < NR_OF_TYPES; i++)
+	for (unsigned i = 0; i < System::NR_OF_TYPES; i++)
 	{
 		int index = 0;
-		vector<Blueprint>* blueprints = _objectHandler->GetBlueprints();
+		vector<System::Blueprint>* blueprints = _objectHandler->GetBlueprints();
 		for (unsigned b = 0; b < blueprints->size(); b++)
 		{
-			if (_typeLists[blueprints->at(b)._type] == _typeLists[(Type)i])
+			if (_typeLists[blueprints->at(b)._type] == _typeLists[(System::Type)i])
 			{
-				index += _uiTree.CreateTilesetObject(&blueprints->at(b), _uiTree.GetNode(_typeLists[(Type)blueprints->at(b)._type]), index);
+				index += _uiTree.CreateBlueprintNodes(&blueprints->at(b), _uiTree.GetNode(_typeLists[(System::Type)blueprints->at(b)._type]), index);
 			}
 		}
 	}
@@ -67,9 +67,11 @@ void LevelEditState::OnStateEnter()
 		_buttonPositions[i + _objectTabs->size()] = _uiTree.GetNode("Otherbuttons")->GetChildren()->at(i)->GetLocalPosition();
 		_isPressed[i] = false;
 	}
-	for (unsigned i = 0; i < _uiTree.GetNode("UnitLockButtons")->GetChildren()->size(); i++)
+
+	std::vector<GUI::Node*>* _unitLockButtons = _uiTree.GetNode("UnitLockButtons")->GetChildren();
+	for (unsigned i = 0; i < _unitLockButtons->size(); i++)
 	{
-		_OrginLockColor[i] = _uiTree.GetNode("UnitLockButtons")->GetChildren()->at(i)->GetColorOffset();
+		_toggleButtons.push_back(GUI::ToggleButton(_unitLockButtons->at(i)));
 	}
 	_uiTree.GetRootNode()->SetPosition(_uiTree.GetRootNode()->GetFinalPosition());
 
@@ -292,25 +294,16 @@ bool LevelEditState::HandleButtons()
 				}
 			}
 			//Lock Units for this level
-			if (_settingsId == 1)
+			if (_settingsId == 1 && !clickedOnGUI)
 			{
-				for (unsigned i = 0; i < _uiTree.GetNode("UnitLockButtons")->GetChildren()->size() && !clickedOnGUI; i++)
+				for (unsigned i = 0; i < _toggleButtons.size() && !clickedOnGUI; i++)
 				{
-					if (_uiTree.IsButtonColliding(_uiTree.GetNode("UnitLockButtons")->GetChildren()->at(i), coord._pos.x, coord._pos.y))
+					GUI::ToggleButton* currentToggleButton = &_toggleButtons[i];
+					GUI::Node* currentToggleButtonNode = currentToggleButton->GetAttachedGUINode();
+					if (!_uiTree.IsNodeHidden(currentToggleButtonNode) && _uiTree.IsButtonColliding(currentToggleButtonNode, coord))
 					{
 						clickedOnGUI = true;
-						if (_isLocked[i] == false)
-						{
-							_uiTree.GetNode("UnitLockButtons")->GetChildren()->at(i)->SetColorOffset(XMFLOAT4{ 0.4f, 0.4f, 0.4f, 1.0f });
-							_isLocked[i] = true;
-							//TODO: Lock Unit Enbom
-						}
-						else
-						{
-							_uiTree.GetNode("UnitLockButtons")->GetChildren()->at(i)->SetColorOffset(_OrginLockColor[i]);
-							_isLocked[i] = false;
-							//TODO: Unlock Unit Enbom
-						}
+						currentToggleButton->Toggle();
 					}
 				}
 			}
@@ -777,13 +770,13 @@ void LevelEditState::ExportLevel()
 {
 	_baseEdit->ReleaseMarkers();
 
-	_currentLevelFileName = WStringToString(_textBoxes.at(8).GetText());
+	_currentLevelFileName = System::WStringToString(_textBoxes.at(8).GetText());
 
 	////Fill Level Header:
 
 	//Getting Story Information
-	_levelHeader._storyTitle = WStringToString(_uiTree.GetNode("StoryTitleText")->GetText());
-	_levelHeader._storyBody = WStringToString(_uiTree.GetNode("StoryText")->GetText());
+	_levelHeader._storyTitle = System::WStringToString(_uiTree.GetNode("StoryTitleText")->GetText());
+	_levelHeader._storyBody = System::WStringToString(_uiTree.GetNode("StoryText")->GetText());
 
 	//Get Budget Information
 	std::wstringstream wss = std::wstringstream();
@@ -832,7 +825,7 @@ void LevelEditState::ExportLevel()
 			int subType = formattedGameObject->at(1) = gameObject->GetSubType();
 
 			//Texture ID
-			Blueprint* blueprint = _objectHandler->GetBlueprintByType(type, subType);
+			System::Blueprint* blueprint = _objectHandler->GetBlueprintByType(type, subType);
 			std::string textureName = gameObject->GetRenderObject()->_diffuseTexture->_name;
 			formattedGameObject->at(2) = 0;
 			bool foundTexture = false;
@@ -871,9 +864,9 @@ void LevelEditState::ExportLevel()
 	SHGetFolderPathA(NULL, CSIDL_PROFILE, NULL, 0, userPath);
 
 	levelPath = userPath;
-	levelPath += "\\Google Drive\\Stort spelprojekt\\" + SKIRMISH_FOLDER_PATH;
+	levelPath += "\\Google Drive\\Stort spelprojekt\\" + System::SKIRMISH_FOLDER_PATH;
 #else
-	levelPath = LEVEL_FOLDER_PATH;							//TODO: Put Files in SKIRMISH FOLDER PATH, WHERE EVERYTHING IS SUPPOSED TO GO (We will move Campaign missions by hand - Enbom
+	levelPath = System::LEVEL_FOLDER_PATH;
 #endif
 	CreateDirectory(levelPath.c_str(), NULL);
 

@@ -392,62 +392,75 @@
 					"text": "Saw Trap",
 					"color": "FF000000",
 					"fontsize": 20.0
+				},
+				"": {
+					"position": [0.0, -0.015],
+					"scale": [0.05, 0.05],
+					"centered": true,
+					"text": "Roof Saw Trap",
+					"color": "FF000000",
+					"fontsize": 20.0
 				}
 			},
 			"UnitLockButtons": {
 				"position": [0.055, 0.0],
-				"GuardButton": {
+				"Guard": {
 					"position": [-0.1175, 0.18],
 					"scale": [0.032, 0.051],
 					"texture": "../Menues/PlacementStateGUI/units/Guardbutton1.png"
 				},
-				"EngineerButton": {
+				"Engineer": {
 					"position": [-0.044, 0.18],
 					"scale": [0.032, 0.051],
 					"texture": "../Menues/PlacementStateGUI/units/Guardbutton1.png"
 				},
-				"AnvilButton": {
+				"AnvilTrap": {
 					"position": [0.03, 0.18],
 					"scale": [0.032, 0.051],
 					"texture": "../Menues/PlacementStateGUI/units/Anvilbutton1.png"
 				},
-				"TeslaButton": {
+				"TeslaTrap": {
 					"position": [-0.1175, 0.055],
 					"scale": [0.032, 0.051],
 					"texture": "../Menues/PlacementStateGUI/units/Teslabutton1.png"
 				},
-				"SharkButton": {
+				"SharkTrap": {
 					"position": [-0.044, 0.055],
 					"scale": [0.032, 0.051],
 					"texture": "../Menues/PlacementStateGUI/units/Sharkbutton1.png"
 				},
-				"MachineGunButton": {
+				"MachineGunTrap": {
 					"position": [0.03, 0.055],
 					"scale": [0.032, 0.051],
 					"texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png"
 				},
-				"FlameThrowerButton": {
+				"FlameThrowerTrap": {
 					"position": [-0.1175, -0.07],
 					"scale": [0.032, 0.051],
 					"texture": "../Menues/PlacementStateGUI/units/FlameThrowerbutton1.png"
 				},
-				"BearButton": {
+				"BearTrap": {
 					"position": [-0.044, -0.07],
 					"scale": [0.032, 0.051],
 					"texture": "../Menues/PlacementStateGUI/units/Bearbutton.png"
 				},
-				"ConfusionButton": {
+				"ConfusionTrap": {
 					"position": [0.03, -0.07],
 					"scale": [0.032, 0.051],
-					"texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png"
+					"texture": "../Menues/PlacementStateGUI/units/confusetrapButton.png"
 				},
-				"CupCakeButton": {
+				"CupCakeTrap": {
 					"position": [-0.1175, -0.195],
 					"scale": [0.032, 0.051],
 					"texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png"
 				},
-				"SawButton": {
+				"RoofSawTrap": {
 					"position": [-0.044, -0.195],
+					"scale": [0.032, 0.051],
+					"texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png"
+				},
+				"SawTrap": {
+					"position": [0.03, -0.195],
 					"scale": [0.032, 0.051],
 					"texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png"
 				}
@@ -773,7 +786,7 @@
 			"position": [0.06, 0.025],
 			"scale": [0.105, 0.025],
 			"texture": "../Menues/LevelEdit/GUI/leveledit4-newloadsave-button2.png",
-			
+
 			"SaveLevelText": {
 				"position": [0.0, 0.0],
 				"scale": [0.1, 0.025],
@@ -826,7 +839,7 @@
 			"position": [0.06, 0.025],
 			"scale": [0.105, 0.025],
 			"texture": "../Menues/LevelEdit/GUI/leveledit4-newloadsave-button2.png",
-			
+
 			"LoadedLevelText": {
 				"position": [0.0, 0.0],
 				"scale": [0.1, 0.025],

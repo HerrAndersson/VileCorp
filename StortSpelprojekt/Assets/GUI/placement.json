@@ -7,12 +7,13 @@
 		"UnitList":
 		{
 		"position": [-0.25, 0.0],
-		
 			"Guard": {
 				"position": [-0.18, 0.057],
 				"scale": [0.048, 0.083],
 				"texture": "../Menues/PlacementStateGUI/units/Guardbutton1.png",
-		
+				"type" : 6,
+				"subType": 0,
+				"textureId" : 0,
 				"GuardText": {
 					"position": [0.0, -0.173],
 					"scale": [0.068, 0.083],
@@ -41,8 +42,10 @@
 				"position": [-0.06, 0.057],
 				"scale": [0.048, 0.083],
 				"texture": "../Menues/PlacementStateGUI/units/Guardbutton1.png",
-		
-				"GuardText": {
+				"type" : 6,
+				"subType": 1,
+				"textureId" : 0,
+				"EngineerText": {
 					"position": [0.0, -0.173],
 					"scale": [0.068, 0.083],
 					"text": "Engineer\n  200$",
@@ -55,7 +58,9 @@
 				"position": [0.06, 0.057],
 				"scale": [0.048, 0.083],
 				"texture": "../Menues/PlacementStateGUI/units/Camerabutton1.png",
-		
+				"type" : 5,
+				"subType": 0,
+				"textureId" : 0,
 				"CameraText": {
 					"position": [0.0, -0.173],
 					"scale": [0.068, 0.083],
@@ -83,7 +88,9 @@
 				"position": [0.18, 0.057],
 				"scale": [0.048, 0.083],
 				"texture": "../Menues/PlacementStateGUI/units/Anvilbutton1.png",
-		
+				"type" : 4,
+				"subType": 0,
+				"textureId" : 0,
 				"AnvilText": {
 					"position": [0.0, -0.173],
 					"scale": [0.068, 0.083],
@@ -112,7 +119,9 @@
 				"position": [0.30, 0.057],
 				"scale": [0.048, 0.083],
 				"texture": "../Menues/PlacementStateGUI/units/Teslabutton1.png",
-		
+				"type" : 4,
+				"subType": 1,
+				"textureId" : 0,
 				"TeslaText": {
 					"position": [0.03, -0.173],
 					"scale": [0.068, 0.083],
@@ -135,13 +144,15 @@
 						"fontsize" : 18.0
 					}
 				}
-				},
+			},
 			"MachineGunTrap" :{
 				"position": [0.42, 0.057],
 				"scale": [0.048, 0.083],
 				"texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png",
-				
-				"TeslaText":
+				"type" : 4,
+				"subType": 3,
+				"textureId" : 0,
+				"MachineGunTrapText":
 				{
 					"position": [0.0, -0.173],
 					"scale": [0.068, 0.083],
@@ -170,8 +181,10 @@
 				"position": [0.54, 0.057],
 				"scale": [0.048, 0.083],
 				"texture": "../Menues/PlacementStateGUI/units/Sharkbutton1.png",
-				
-				"TeslaText":
+				"type" : 4,
+				"subType": 2,
+				"textureId" : 0,
+				"SharkTrapText":
 				{
 					"position": [0.0, -0.173],
 					"scale": [0.068, 0.083],
@@ -185,8 +198,10 @@
 				"position": [0.66, 0.057],
 				"scale": [0.048, 0.083],
 				"texture": "../Menues/PlacementStateGUI/units/FlameThrowerbutton1.png",
-				
-				"TeslaText":
+				"type" : 4,
+				"subType": 7,
+				"textureId" : 0,
+				"FlameThrowerTrapText":
 				{
 					"position": [0.0, -0.173],
 					"scale": [0.068, 0.083],
@@ -200,8 +215,10 @@
 				"position": [0.78, 0.057],
 				"scale": [0.048, 0.083],
 				"texture": "../Menues/PlacementStateGUI/units/Bearbutton.png",
-				
-				"TeslaText":
+				"type" : 4,
+				"subType": 4,
+				"textureId" : 0,
+				"BearTrapText":
 				{
 					"position": [0.0, -0.173],
 					"scale": [0.068, 0.083],
@@ -214,9 +231,11 @@
 			"ConfusionTrap" :{
 				"position": [0.90, 0.057],
 				"scale": [0.048, 0.083],
-				"texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png",
-				
-				"TeslaText":
+				"texture": "../Menues/PlacementStateGUI/units/confusetrapButton.png",
+				"type" : 4,
+				"subType": 9,
+				"textureId" : 0,
+				"ConfusionTrapText":
 				{
 					"position": [0.0, -0.173],
 					"scale": [0.068, 0.083],
@@ -230,8 +249,10 @@
 				"position": [1.02, 0.057],
 				"scale": [0.048, 0.083],
 				"texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png",
-				
-				"TeslaText":
+				"type" : 4,
+				"subType": 6,
+				"textureId" : 0,
+				"CupCakeTrapText":
 				{
 					"position": [0.0, -0.173],
 					"scale": [0.068, 0.083],
@@ -241,12 +262,31 @@
 				"centered": true
 				}
 			},
+			"RoofSawTrap" :{
+				"position": [1.02, 0.057],
+				"scale": [0.048, 0.083],
+				"texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png",
+				"type" : 4,
+				"subType": 8,
+				"textureId" : 0,
+				"RoofSawTrapText":
+				{
+					"position": [0.0, -0.173],
+					"scale": [0.068, 0.083],
+					"text": "Roof Saw Trap\n  150$",
+				"color": "FF000000",
+				"fontsize": 18.0,
+				"centered": true
+				}
+			},
 			"SawTrap" :{
 				"position": [1.14, 0.057],
 				"scale": [0.048, 0.083],
 				"texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png",
-				
-				"TeslaText":
+				"type" : 4,
+				"subType": 5,
+				"textureId" : 0,
+				"SawTrapText":
 				{
 					"position": [0.0, -0.173],
 					"scale": [0.068, 0.083],
