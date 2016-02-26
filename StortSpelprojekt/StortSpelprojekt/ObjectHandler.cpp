@@ -26,7 +26,7 @@ ObjectHandler::~ObjectHandler()
 	SAFE_DELETE(_buildingGrid);
 }
 
-bool ObjectHandler::Add(System::Blueprint* blueprint, int textureId, const XMFLOAT3& position, const XMFLOAT3& rotation, const bool placeOnTilemap)
+int ObjectHandler::Add(System::Blueprint* blueprint, int textureId, const XMFLOAT3& position, const XMFLOAT3& rotation, const bool placeOnTilemap)
 {
 	GameObject* object = nullptr;
 	System::Type type = (System::Type)blueprint->_type;
@@ -101,7 +101,6 @@ bool ObjectHandler::Add(System::Blueprint* blueprint, int textureId, const XMFLO
 
 	if (object != nullptr)
 	{
-		_idCount++;
 		_gameObjects[type].push_back(object);
 
 		//TODO: remove when proper loading can be done /Jonas
@@ -144,9 +143,9 @@ bool ObjectHandler::Add(System::Blueprint* blueprint, int textureId, const XMFLO
 		//	_spotlights[object] = new Renderer::Spotlight(_device, i, 0.1f, 1000.0f);
 		//}
 		_objectCount++;
-		return true;
+		return _idCount++;
 	}
-	return false;
+	return -1;
 }
 
 bool ObjectHandler::Remove(int ID)

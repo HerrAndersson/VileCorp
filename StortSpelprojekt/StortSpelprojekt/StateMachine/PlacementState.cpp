@@ -206,7 +206,7 @@ void PlacementState::HandleInput()
 						_budget = temp;
 						_selectedBlueprint.Reset();
 					}
-					goto afterLeftClickUp;
+					//goto afterLeftClickUp;
 				}
 			}
 			//Selecting/Deselecting objects in the scene
@@ -248,7 +248,7 @@ void PlacementState::HandleInput()
 			i->SetColorOffset(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));
 		}
 	}
-afterLeftClickUp:
+//afterLeftClickUp:
 
 
 	/*

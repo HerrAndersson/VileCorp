@@ -79,7 +79,7 @@ public:
 
 	//Add a gameobject
 	bool Add(XMFLOAT3 position, XMFLOAT3 rotation, System::Type type, int subType, string textureReference);
-	bool Add(System::Blueprint* blueprint, int textureId, const XMFLOAT3& position, const XMFLOAT3& rotation, const bool placeOnTilemap = true);
+	int Add(System::Blueprint* blueprint, int textureId, const XMFLOAT3& position, const XMFLOAT3& rotation, const bool placeOnTilemap = true);
 
 	bool Remove(int ID);
 	bool Remove(System::Type type, int ID);
