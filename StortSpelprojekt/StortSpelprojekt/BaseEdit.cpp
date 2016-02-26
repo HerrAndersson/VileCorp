@@ -162,14 +162,17 @@ void BaseEdit::DropEvent()
 {
 	_modeLock = false;
 	_marker._g->SetColorOffset(XMFLOAT3(0.0f, 0.0f, 0.0f));
-	XMFLOAT3 p = XMFLOAT3(_marker._g->GetPosition());
+
 	
 	if (!_marker._placeable)
 	{
-		//Redirect position to old pos
+		XMFLOAT3 p = _marker._g->GetPosition();
 		p.x = _marker._origPos._x;
 		p.z = _marker._origPos._y;
+
+		//Redirect position to old pos
 		_marker._g->SetPosition(p);
+		_marker._g->SetTilePosition(_marker._origPos);
 	}
 
 	// Special camera non floating fix
@@ -185,7 +188,7 @@ void BaseEdit::DropEvent()
 	}
 
 	// Bind position logically
-	_tileMap->AddObjectToTile(p.x, p.z, _marker._g);
+	_tileMap->AddObjectToTile(_marker._g->GetTilePosition(), _marker._g);
 
 	if (_marker._g != nullptr && _isPlace)
 	{
