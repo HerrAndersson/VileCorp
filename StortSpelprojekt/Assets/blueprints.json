@@ -146,6 +146,18 @@
 				"../Menues/LevelEdit/Loot/diamond8.png",
 				"../Menues/LevelEdit/Loot/diamond9.png"
 			]
+			}, {
+			"_mesh": "moneyBriefcaseLoot-28.bin",
+			"_name": "MoneyBriefcase",
+			"_type": 2,
+			"_subType": 0,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"moneyBriefcase.png"
+			],
+			"_thumbnails": [
+				"moneyBriefcase.png"
+			]
 		}, {
 			"_mesh": "windowDoubleSpawn-28.bin",
 			"_name": "Window",
@@ -497,6 +509,78 @@
 			],
 			"_thumbnails": [
 				"../Menues/LevelEdit/Decorations/cornerfenceButton.png"
+			]
+		}, {
+			"_mesh": "cupboardDecoration-28.bin",
+			"_name": "Cupboard",
+			"_type": 8,
+			"_subType": 0,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"cupboardtexture.png"
+			],
+			"_thumbnails": [
+				"cupboardtexture.png"
+			]
+		}, {
+			"_mesh": "tableEndsectionDecoration-28.bin",
+			"_name": "Table",
+			"_type": 8,
+			"_subType": 0,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"table2leg.png"
+			],
+			"_thumbnails": [
+				"table2leg.png"
+			]
+		}, {
+			"_mesh": "tableEndsectionSingleLegDecoration-28.bin",
+			"_name": "Table",
+			"_type": 8,
+			"_subType": 0,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"table1leg.png"
+			],
+			"_thumbnails": [
+				"table1leg.png"
+			]
+		}, {
+			"_mesh": "tableMidsectionDecoration-28.bin",
+			"_name": "Table",
+			"_type": 8,
+			"_subType": 0,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"tablemid.png"
+			],
+			"_thumbnails": [
+				"tablemid.png"
+			]
+		}, {
+			"_mesh": "counterFlatDecoration-28.bin",
+			"_name": "Counter",
+			"_type": 8,
+			"_subType": 0,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"flatcounter.png"
+			],
+			"_thumbnails": [
+				"flatcounter.png"
+			]
+		}, {
+			"_mesh": "counterRoundDecoration-28.bin",
+			"_name": "Counter",
+			"_type": 8,
+			"_subType": 0,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"roundcounter.png"
+			],
+			"_thumbnails": [
+				"roundcounter.png"
 			]
 		}]
 	}
