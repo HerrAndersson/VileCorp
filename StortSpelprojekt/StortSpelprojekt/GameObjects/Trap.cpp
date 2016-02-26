@@ -643,6 +643,8 @@ void Trap::PlayActivateSound()
 		break;
 
 	case FLAMETHROWER:
+		_soundModule->SetSoundPosition("flame_activate", _position.x, 0.0f, _position.z);
+		_soundModule->Play("flame_activate");
 		break;
 	}
 }

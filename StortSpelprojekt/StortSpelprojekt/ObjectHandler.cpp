@@ -51,7 +51,7 @@ bool ObjectHandler::Add(System::Blueprint* blueprint, int textureId, const XMFLO
 		object = new Enemy(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, _tilemap, blueprint->_subType);
 		break;
 	case  System::GUARD:
-		object = new Guard(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, _tilemap);
+		object = new Guard(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, _tilemap, blueprint->_subType);
 		break;
 	default:
 		break;
