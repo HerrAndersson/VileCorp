@@ -26,7 +26,7 @@ BaseEdit::BaseEdit(ObjectHandler* objectHandler, System::Controls* controls, Pic
 
 	_isPlace = false;
 	_modeLock = false;
-	_isInvalidateFloor = false;
+	_noPlacementZoning = false;
 
 	_sB = nullptr;
 	_marker._g = nullptr;
@@ -293,23 +293,22 @@ void BaseEdit::HandleMouseInput()
 {
 	if (_extendedMode)
 	{
-		if (_controls->IsFunctionKeyDown("MAP_EDIT:UNDO"))
-		{
-			_isInvalidateFloor = !_isInvalidateFloor;
-		}
-		if (_isInvalidateFloor)
+		if (_noPlacementZoning)
 		{
 			AI::Vec2D pickedTile = _pickingDevice->PickTile(_controls->GetMouseCoord()._pos);
-			if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
+			Architecture* floor = static_cast<Architecture*>(_tileMap->GetObjectOnTile(pickedTile, System::Type::FLOOR));
+			if (floor != nullptr)
 			{
-				_tileMap->LockTile(pickedTile);
-
+				//TODO: Eventually remake control scheme for this. /Zache, Rikhard
+				if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
+				{
+					floor->SetNoPlacementZone(true);
+				}
+				if (_controls->IsFunctionKeyDown("MOUSE:DESELECT"))
+				{
+					floor->SetNoPlacementZone(false);
+				}
 			}
-			if (_controls->IsFunctionKeyDown("MOUSE:DESELECT"))
-			{
-				_tileMap->UnlockTile(pickedTile);
-			}
-
 		}
 		else
 		{
@@ -519,6 +518,7 @@ bool BaseEdit::CheckValidity(AI::Vec2D tile, System::Type type)
 
 void BaseEdit::HandleBlueprint(SpecificBlueprint* sB)
 {
+	_noPlacementZoning = false;
 	_sB = sB;
 	if (_isSelectionMode)
 	{
@@ -565,6 +565,12 @@ GameObject * BaseEdit::CreatedObject()
 System::Blueprint * BaseEdit::DeletedObjectBlueprint()
 {
 	return _deletedObjectBlueprint;
+}
+
+void BaseEdit::EnableNoPlacementZoning()
+{
+	ReleaseMarkers();
+	_noPlacementZoning = true;
 }
 
 void BaseEdit::Update(float deltaTime, bool clickedOnGUI)

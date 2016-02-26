@@ -26,7 +26,7 @@ ObjectHandler::~ObjectHandler()
 	SAFE_DELETE(_buildingGrid);
 }
 
-bool ObjectHandler::Add(System::Blueprint* blueprint, int textureId, const XMFLOAT3& position, const XMFLOAT3& rotation, const bool placeOnTilemap)
+bool ObjectHandler::Add(System::Blueprint* blueprint, int textureId, const XMFLOAT3& position, const XMFLOAT3& rotation, const bool placeOnTilemap /*= true*/, const vector<int>& additionalData /*= vector<int>()*/)
 {
 	GameObject* object = nullptr;
 	System::Type type = (System::Type)blueprint->_type;
@@ -36,8 +36,17 @@ bool ObjectHandler::Add(System::Blueprint* blueprint, int textureId, const XMFLO
 
 	switch (type)
 	{
-	case System::WALL:
 	case System::FLOOR:
+		if (additionalData.empty())
+		{
+			object = new Architecture(_idCount, position, rotation, tilepos, type, renderObject, _soundModule);
+		}
+		else
+		{
+			object = new Architecture(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, additionalData[0]);
+		}
+		break;
+	case System::WALL:
 	case System::FURNITURE:
 	case System::LOOT:
 		object = new Architecture(_idCount, position, rotation, tilepos, type, renderObject, _soundModule);
@@ -474,7 +483,18 @@ bool ObjectHandler::LoadLevel(std::string levelBinaryFilePath)
 			//Rotation
 			float rotY = (formattedGameObject->at(5) * DirectX::XM_PI) / 180.0f;
 
-			Add(blueprint, formattedGameObject->at(2), DirectX::XMFLOAT3(posX, 0, posZ), DirectX::XMFLOAT3(0, rotY, 0), true);
+			//Contains additional data
+			if (formattedGameObject->size() > 6)
+			{
+				vector<int>::const_iterator first = formattedGameObject->begin() + 6;
+				vector<int>::const_iterator last = formattedGameObject->end();
+				std::vector<int> addtionalData(first, last);
+				Add(blueprint, formattedGameObject->at(2), DirectX::XMFLOAT3(posX, 0, posZ), DirectX::XMFLOAT3(0, rotY, 0), true, addtionalData);
+			}
+			else
+			{
+				Add(blueprint, formattedGameObject->at(2), DirectX::XMFLOAT3(posX, 0, posZ), DirectX::XMFLOAT3(0, rotY, 0), true);
+			}
 		}
 
 		_lightCulling = new LightCulling(_tilemap);

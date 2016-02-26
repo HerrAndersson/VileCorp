@@ -78,8 +78,7 @@ public:
 	~ObjectHandler();
 
 	//Add a gameobject
-	bool Add(XMFLOAT3 position, XMFLOAT3 rotation, System::Type type, int subType, string textureReference);
-	bool Add(System::Blueprint* blueprint, int textureId, const XMFLOAT3& position, const XMFLOAT3& rotation, const bool placeOnTilemap = true);
+	bool Add(System::Blueprint* blueprint, int textureId, const XMFLOAT3& position, const XMFLOAT3& rotation, const bool placeOnTilemap = true, const vector<int>& additionalData = vector<int>());
 	
 	bool Remove(int ID);
 	bool Remove(System::Type type, int ID);

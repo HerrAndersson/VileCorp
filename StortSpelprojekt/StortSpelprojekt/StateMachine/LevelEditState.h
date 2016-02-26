@@ -49,6 +49,9 @@ private:
 
 	SpecificBlueprint _toPlace;
 
+	void ParseGeneralGameObjectData(std::vector<int>* formattedGameObject, GameObject* gameObject);
+	void ParseFloorGameObjectData(std::vector<int>* formattedGameObject, Architecture* floor);
+
 public:
 	LevelEditState(System::Controls * controls, ObjectHandler * objectHandler, System::Camera * camera, PickingDevice * pickingDevice, const std::string & filename, AssetManager * assetManager, FontWrapper * fontWrapper, System::SettingsReader * settingsReader, System::SoundModule * soundModule, DirectX::XMFLOAT3* ambientLight);
 	virtual ~LevelEditState();

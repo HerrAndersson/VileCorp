@@ -27,7 +27,12 @@ Blueprints::Blueprints()
 	for (int i = 0; i < _blueprintsByName.size(); i++)
 	{
 		System::Blueprint* blueprint = &_blueprintsByName[i];
-		_blueprintsByType[blueprint->_type].push_back(blueprint);
+		int subvectorSize = _blueprintsByType[blueprint->_type].size();
+		if (subvectorSize - 1 < blueprint->_subType)
+		{
+			_blueprintsByType[blueprint->_type].resize(blueprint->_subType + 1);
+		}
+		_blueprintsByType[blueprint->_type][blueprint->_subType] = blueprint;
 	}
 }
 

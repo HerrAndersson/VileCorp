@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "GameObject.h"
+#include "Architecture.h"
 
 class Tilemap
 {
@@ -13,7 +13,6 @@ private:
 		static const int OBJECT_CAPACITY = 6;
 		GameObject* _objectsOnTile[OBJECT_CAPACITY];					//0 = floor or wall, 1 = enemy, 2 = guard, 3 = trap or spawnpoint, 4 = furniture, 5 = thief objectives 
 		bool _isVisible;
-		bool _lock;
 		Tile()
 		{
 			for (int i = 0; i < OBJECT_CAPACITY; i++)
@@ -21,7 +20,6 @@ private:
 				_objectsOnTile[i] = nullptr;
 			}
 			_isVisible = false;
-			_lock = false;
 		}
 		~Tile(){}
 
@@ -53,9 +51,6 @@ public:
 	bool RemoveObjectFromTile(AI::Vec2D pos, GameObject* obj);
 	bool RemoveObjectFromTile(GameObject* obj);
 	void ClearTile(AI::Vec2D pos);
-
-	void LockTile(AI::Vec2D pos);
-	void UnlockTile(AI::Vec2D pos);
 
 	int GetNrOfTiles() const;
 	int GetHeight() const;

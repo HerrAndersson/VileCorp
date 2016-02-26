@@ -237,7 +237,7 @@ bool LevelEditState::HandleButtons()
 				else if (_uiTree.IsButtonColliding("NoPlacementButton", coord._pos.x, coord._pos.y))
 				{
 					clickedOnGUI = true;
-					//TODO Paint No Placement Zones! Julia and Enbom
+					_baseEdit->EnableNoPlacementZoning();
 				}
 
 				//Need to go through "" json group to get to object buttons
@@ -760,38 +760,11 @@ void LevelEditState::ExportLevel()
 		for (GameObject* gameObject : gameObjects->at(i))
 		{
 			std::vector<int>* formattedGameObject = &levelBinary._gameObjectData[gameObjectIndex];
-			formattedGameObject->resize(6);
-
-			//Type
-			int type = formattedGameObject->at(0) = gameObject->GetType();
-
-			//Sub type 
-			int subType = formattedGameObject->at(1) = gameObject->GetSubType();
-
-			//Texture ID
-			System::Blueprint* blueprint = _objectHandler->GetBlueprintByType(type, subType);
-			std::string textureName = gameObject->GetRenderObject()->_diffuseTexture->_name;
-			formattedGameObject->at(2) = 0;
-			bool foundTexture = false;
-			for (int i = 0; !foundTexture && i < blueprint->_textures.size(); i++)
+			ParseGeneralGameObjectData(formattedGameObject, gameObject);
+			if (gameObject->GetType() == System::Type::FLOOR)
 			{
-				if (blueprint->_textures[i] == textureName)
-				{
-					formattedGameObject->at(2) = i;
-					foundTexture = true;
-				}
+				ParseFloorGameObjectData(formattedGameObject, static_cast<Architecture*>(gameObject));
 			}
-
-			//Position
-			AI::Vec2D position = gameObject->GetTilePosition();
-			formattedGameObject->at(3) = static_cast<int>(position._x);
-			formattedGameObject->at(4) = static_cast<int>(position._y);
-
-			//Rotation
-			float rotYRadians = gameObject->GetRotation().y;
-			int rotYDegrees = static_cast<int>((rotYRadians / DirectX::XM_PI) * 180.0);
-			formattedGameObject->at(5) = rotYDegrees;
-
 			gameObjectIndex++;
 		}
 	}
@@ -835,4 +808,47 @@ void LevelEditState::ExportLevel()
 	cereal::BinaryOutputArchive binOut(outStream);
 	binOut(levelBinary);
 	outStream.close();
+}
+
+void LevelEditState::ParseGeneralGameObjectData(std::vector<int>* formattedGameObject, GameObject* gameObject)
+{
+	formattedGameObject->resize(6);
+
+	//Type
+	int type = formattedGameObject->at(0) = gameObject->GetType();
+
+	//Sub type 
+	int subType = formattedGameObject->at(1) = gameObject->GetSubType();
+
+	//Texture ID
+	System::Blueprint* blueprint = _objectHandler->GetBlueprintByType(type, subType);
+	std::string textureName = gameObject->GetRenderObject()->_diffuseTexture->_name;
+	formattedGameObject->at(2) = 0;
+	bool foundTexture = false;
+	for (int i = 0; !foundTexture && i < blueprint->_textures.size(); i++)
+	{
+		if (blueprint->_textures[i] == textureName)
+		{
+			formattedGameObject->at(2) = i;
+			foundTexture = true;
+		}
+	}
+
+	//Position
+	AI::Vec2D position = gameObject->GetTilePosition();
+	formattedGameObject->at(3) = static_cast<int>(position._x);
+	formattedGameObject->at(4) = static_cast<int>(position._y);
+
+	//Rotation
+	float rotYRadians = gameObject->GetRotation().y;
+	int rotYDegrees = static_cast<int>((rotYRadians / DirectX::XM_PI) * 180.0);
+	formattedGameObject->at(5) = rotYDegrees;
+}
+
+void LevelEditState::ParseFloorGameObjectData(std::vector<int>* formattedGameObject, Architecture* floor)
+{
+	formattedGameObject->resize(7);
+
+	//No placement zone
+	formattedGameObject->at(6) = floor->IsNoPlacementZone();
 }

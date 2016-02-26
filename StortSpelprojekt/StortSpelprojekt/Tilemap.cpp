@@ -189,24 +189,6 @@ void Tilemap::ClearTile(AI::Vec2D pos)
 	}
 }
 
-void Tilemap::LockTile(AI::Vec2D pos)
-{
-	if (_map[pos._x][pos._y]._objectsOnTile[0] != nullptr)
-	{
-		_map[pos._x][pos._y]._lock = true;
-		_map[pos._x][pos._y]._objectsOnTile[0]->SetColorOffset(XMFLOAT3(0.8f, 0, 0));
-	}
-}
-
-void Tilemap::UnlockTile(AI::Vec2D pos)
-{
-	if (_map[pos._x][pos._y]._objectsOnTile[0] != nullptr)
-	{
-		_map[pos._x][pos._y]._lock = false;
-		_map[pos._x][pos._y]._objectsOnTile[0]->SetColorOffset(XMFLOAT3(0.8f, 0.8f, 0));
-	}
-}
-
 int Tilemap::GetNrOfTiles() const
 {
 	return _height*_width;
@@ -306,6 +288,7 @@ bool Tilemap::IsValid(int x, int z) const
 bool Tilemap::IsPlaceable(int x, int z, System::Type type) const
 {
 	bool placable = false;
+	bool checkIfNoPlacementZone = false;
 	if (IsValid(x, z))
 	{
 		if (!IsWallOnTile(x, z))
@@ -319,13 +302,18 @@ bool Tilemap::IsPlaceable(int x, int z, System::Type type) const
 				break;
 			case  System::ENEMY:
 				result = _map[x][z]._objectsOnTile[1];
+				checkIfNoPlacementZone = true;
 				break;
 			case  System::GUARD:
 				result = _map[x][z]._objectsOnTile[2];
+				checkIfNoPlacementZone = true;
 				break;
 			case  System::SPAWN:
-			case  System::TRAP:
-			case  System::CAMERA:
+				result = _map[x][z]._objectsOnTile[3];
+				break;
+			case System::TRAP:
+			case System::CAMERA:
+				checkIfNoPlacementZone = true;
 				result = _map[x][z]._objectsOnTile[3];
 				break;
 			case  System::FURNITURE:
@@ -341,9 +329,13 @@ bool Tilemap::IsPlaceable(int x, int z, System::Type type) const
 			{
 				placable = true;
 			}
-			if (_map[x][z]._lock)
+			if (checkIfNoPlacementZone)
 			{
-				placable = false;
+				GameObject* floor = _map[x][z]._objectsOnTile[0];
+				if (floor != nullptr)
+				{
+					placable = !static_cast<Architecture*>(floor)->IsNoPlacementZone();
+				}
 			}
 		}
 	}

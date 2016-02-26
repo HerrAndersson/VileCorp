@@ -58,7 +58,7 @@ private:
 	bool _isDragAndPlaceMode;
 	bool _isPlace;
 	bool _modeLock;
-	bool _isInvalidateFloor;
+	bool _noPlacementZoning;
 	
 	void MarkerMoveEvent();
 	void DragEvent(System::Type type);
@@ -93,5 +93,6 @@ public:
 	GameObject* CreatedObject();
 	System::Blueprint* DeletedObjectBlueprint();
 
+	void EnableNoPlacementZoning();
 	void Update(float deltaTime, bool clickedOnGUI);
 };
