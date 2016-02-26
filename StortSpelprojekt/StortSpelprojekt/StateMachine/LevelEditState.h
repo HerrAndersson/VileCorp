@@ -47,7 +47,7 @@ private:
 	bool _floorChosen = false;
 	bool _wallChosen = false;
 
-	SpecificBlueprint _toPlace;
+	System::SpecificBlueprint _toPlace;
 
 public:
 	LevelEditState(System::Controls * controls, ObjectHandler * objectHandler, System::Camera * camera, PickingDevice * pickingDevice, const std::string & filename, AssetManager * assetManager, FontWrapper * fontWrapper, System::SettingsReader * settingsReader, System::SoundModule * soundModule, DirectX::XMFLOAT3* ambientLight);

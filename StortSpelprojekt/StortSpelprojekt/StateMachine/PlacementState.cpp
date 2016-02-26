@@ -179,7 +179,7 @@ void PlacementState::HandleInput()
 			if (_uiTree.IsButtonColliding(currentButton, coord._pos.x, coord._pos.y))
 			{
 				GUI::BlueprintNode* currentBlueprintButton = static_cast<GUI::BlueprintNode*>(currentButton);
-				_selectedBlueprint._blueprint = currentBlueprintButton->GetBlueprint();
+				_selectedBlueprint._blueprint = _objectHandler->GetBlueprintByType(currentBlueprintButton->GetType(), currentBlueprintButton->GetSubType());
 				_selectedBlueprint._textureId = currentBlueprintButton->GetTextureId();
 				//TODO Add ghostimage /Alex
 				_ghostImage.AddGhostImage(_selectedBlueprint, coord);
@@ -206,6 +206,7 @@ void PlacementState::HandleInput()
 						_budget = temp;
 						_selectedBlueprint.Reset();
 					}
+					goto afterLeftClickUp;
 				}
 			}
 			//Selecting/Deselecting objects in the scene
@@ -231,10 +232,11 @@ void PlacementState::HandleInput()
 		_player->DeselectObjects();
 
 		//Check if we picked anything
+		
 		vector<vector<GameObject*>> pickedUnits;
-		pickedUnits.push_back(_pickingDevice->PickObjects(_controls->GetMouseCoord()._pos, *_objectHandler->GetAllByType(GUARD)));
-		pickedUnits.push_back(_pickingDevice->PickObjects(_controls->GetMouseCoord()._pos, *_objectHandler->GetAllByType(TRAP)));
-		pickedUnits.push_back(_pickingDevice->PickObjects(_controls->GetMouseCoord()._pos, *_objectHandler->GetAllByType(CAMERA)));
+		pickedUnits.push_back(_pickingDevice->PickObjects(_controls->GetMouseCoord()._pos, *_objectHandler->GetAllByType(System::GUARD)));
+		pickedUnits.push_back(_pickingDevice->PickObjects(_controls->GetMouseCoord()._pos, *_objectHandler->GetAllByType(System::TRAP)));
+		pickedUnits.push_back(_pickingDevice->PickObjects(_controls->GetMouseCoord()._pos, *_objectHandler->GetAllByType(System::CAMERA)));
 
 		//Then Select it
 		_player->SelectObjects(pickedUnits);
@@ -246,6 +248,8 @@ void PlacementState::HandleInput()
 			i->SetColorOffset(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));
 		}
 	}
+afterLeftClickUp:
+
 
 	/*
 	//Left click up

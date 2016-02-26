@@ -517,7 +517,7 @@ bool BaseEdit::CheckValidity(AI::Vec2D tile, System::Type type)
 	return valid;
 }
 
-void BaseEdit::HandleBlueprint(SpecificBlueprint* sB)
+void BaseEdit::HandleBlueprint(System::SpecificBlueprint* sB)
 {
 	_sB = sB;
 	if (_isSelectionMode)

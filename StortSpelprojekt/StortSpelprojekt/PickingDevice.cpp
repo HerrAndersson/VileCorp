@@ -266,14 +266,16 @@ XMFLOAT3 PickingDevice::PickPoint(POINT mousePoint)
 vector<GameObject*> PickingDevice::PickObjects(POINT mousePoint, vector<GameObject*> pickableObjects)
 {
 	vector<GameObject*> pickedObjects;
-
-	if ((_firstBoxPoint.x == mousePoint.x) && (_firstBoxPoint.y == mousePoint.y))
+	if (_firstBoxPoint.x != 0 && _firstBoxPoint.y != 0)
 	{
-		pickedObjects = SinglePickObjects(mousePoint, pickableObjects);
-	}
-	else
-	{
-		pickedObjects = BoxPickObjects(mousePoint, pickableObjects);
+		if ((_firstBoxPoint.x == mousePoint.x) && (_firstBoxPoint.y == mousePoint.y))
+		{
+			pickedObjects = SinglePickObjects(mousePoint, pickableObjects);
+		}
+		else
+		{
+			pickedObjects = BoxPickObjects(mousePoint, pickableObjects);
+		}
 	}
 
 	return pickedObjects;

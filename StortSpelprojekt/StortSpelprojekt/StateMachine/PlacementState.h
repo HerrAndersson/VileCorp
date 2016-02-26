@@ -28,7 +28,7 @@ private:
 	std::vector<string> _playerProfilesPath;
 
 	Player* _player;
-	SpecificBlueprint _selectedBlueprint;
+	System::SpecificBlueprint _selectedBlueprint;
 	std::vector<GUI::Node*>* _buttons;
 	GhostImage _ghostImage;
 
