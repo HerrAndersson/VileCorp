@@ -39,6 +39,8 @@ private:
 	void LoadVertexBufferData(std::vector<Vertex>* dataVector, Mesh* mesh);
 	void CreateRenderObject(RenderObject* copy, RenderObject* orig);
 
+	void CreateCombinedMesh(std::vector<Vertex>& combinedMeshDataVector, RenderObject* objectToCopy, int index);
+
 public:
 
 	CombinedMeshGenerator(ID3D11Device* device, ID3D11DeviceContext* deviceContext);

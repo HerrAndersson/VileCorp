@@ -1,6 +1,8 @@
 #include "StateMachine.h"
 
-StateMachine::StateMachine(System::Controls* controls,
+StateMachine::StateMachine
+(
+	System::Controls* controls,
 	ObjectHandler* objectHandler,
 	System::Camera* camera,
 	PickingDevice* pickingDevice,
@@ -10,7 +12,9 @@ StateMachine::StateMachine(System::Controls* controls,
 	System::Settings* settings,
 	System::SettingsReader* settingsReader,
 	System::SoundModule* soundModule,
-	DirectX::XMFLOAT3* ambientLight)
+	DirectX::XMFLOAT3* ambientLight, 
+	CombinedMeshGenerator* combinedMeshGenerator
+	)
 {
 	_currentState = State::SPLASHSTATE;
 
@@ -19,7 +23,7 @@ StateMachine::StateMachine(System::Controls* controls,
 	_baseStates.push_back(new PlayState(controls, objectHandler, camera, pickingDevice, "Assets/GUI/play.json", assetManager, fontWrapper, settingsReader, soundModule, ambientLight));
 	_baseStates.push_back(new PlacementState(controls, objectHandler, camera, pickingDevice, "Assets/GUI/placement.json", assetManager, fontWrapper, settingsReader, soundModule, ambientLight));
 	_baseStates.push_back(new LevelEditState(controls, objectHandler, camera, pickingDevice, LEVELEDIT_GUI_PATH, assetManager, fontWrapper, settingsReader, soundModule, ambientLight));
-	_baseStates.push_back(new LevelSelectState(controls, objectHandler, camera, pickingDevice, "Assets/GUI/levelselect.json", assetManager, fontWrapper, settingsReader, soundModule));
+	_baseStates.push_back(new LevelSelectState(controls, objectHandler, camera, pickingDevice, "Assets/GUI/levelselect.json", assetManager, fontWrapper, settingsReader, soundModule, combinedMeshGenerator));
 	_baseStates.push_back(new OptionsState(controls, objectHandler, camera, pickingDevice, "Assets/GUI/options.json", assetManager, fontWrapper, settingsReader, soundModule));
 	_baseStates.push_back(new PauseState(controls, objectHandler, camera, pickingDevice, "Assets/GUI/pause.json", assetManager, fontWrapper, settingsReader, soundModule));
 }

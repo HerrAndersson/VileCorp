@@ -11,6 +11,7 @@
 #include "PauseState.h"
 #include <vector>
 #include "stdafx.h"
+#include "../CombinedMeshGenerator.h"
 
 class StateMachine
 {
@@ -20,7 +21,9 @@ private:
 	void ProcessStateRequest();
 
 public:
-	StateMachine(
+
+	StateMachine
+	(
 		System::Controls* controls,
 		ObjectHandler* objectHandler,
 		System::Camera* camera,
@@ -31,7 +34,10 @@ public:
 		System::Settings* settings,
 		System::SettingsReader* settingsReader,
 		System::SoundModule* soundModule,
-		DirectX::XMFLOAT3 *ambientLight);
+		DirectX::XMFLOAT3 *ambientLight,
+		CombinedMeshGenerator* combinedMeshGenerator
+	);
+
 	~StateMachine();
 
 	bool Update(float deltaTime);

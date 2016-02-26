@@ -31,7 +31,7 @@ Game::Game(HINSTANCE hInstance, int nCmdShow):
 	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager, &_data, _settingsReader.GetSettings(), _particleHandler->GetParticleEventQueue());
 	_pickingDevice = new PickingDevice(_camera, settings);
 
-	_SM = new StateMachine(_controls, _objectHandler, _camera, _pickingDevice, "Assets/gui.json", _assetManager, _fontWrapper, settings, &_settingsReader, &_soundModule, &_ambientLight);
+	_SM = new StateMachine(_controls, _objectHandler, _camera, _pickingDevice, "Assets/gui.json", _assetManager, _fontWrapper, settings, &_settingsReader, &_soundModule, &_ambientLight, _combinedMeshGenerator);
 	_SM->Update(_timer.GetFrameTime());
 
 	_enemiesHasSpawned = false;
@@ -286,8 +286,8 @@ void Game::RenderGameObjects(int forShaderStage, std::vector<std::vector<GameObj
 	{
 		if (i.size() > 0)
 		{
-			//The floors in the gameObjects vector should not be rendered, as these are combined into a single mesh
-			if (i.at(0)->GetType() == FLOOR || i.at(0)->GetType() == WALL)
+			//The floors in the gameObjects vector should not be rendered, as these are combined in a single mesh to reduce draw calls
+			if ((_SM->GetState() == PLACEMENTSTATE || _SM->GetState() == PLAYSTATE) && (i.at(0)->GetType() == FLOOR || i.at(0)->GetType() == WALL))
 			{
 				continue;
 			}

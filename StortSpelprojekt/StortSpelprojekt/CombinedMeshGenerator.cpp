@@ -99,6 +99,38 @@ void CombinedMeshGenerator::CreateRenderObject(RenderObject* copy, RenderObject*
 	}
 }
 
+void CombinedMeshGenerator::CreateCombinedMesh(std::vector<Vertex>& combinedMeshDataVector, RenderObject* objectToCopy, int index)
+{
+	//The combined object should copy everything but the vertex buffer
+	RenderObject* combinedRenderObject = new RenderObject();
+	CreateRenderObject(combinedRenderObject, objectToCopy);
+
+	D3D11_BUFFER_DESC bufferDesc;
+	ZeroMemory(&bufferDesc, sizeof(bufferDesc));
+	bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	bufferDesc.ByteWidth = sizeof(Vertex) * combinedMeshDataVector.size();
+	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+
+	D3D11_SUBRESOURCE_DATA vertexData;
+	ZeroMemory(&vertexData, sizeof(vertexData));
+	vertexData.pSysMem = combinedMeshDataVector.data();
+	combinedRenderObject->_mesh->_vertexBufferSize = combinedMeshDataVector.size();
+
+	HRESULT result = _device->CreateBuffer(&bufferDesc, &vertexData, &combinedRenderObject->_mesh->_vertexBuffer);
+	if (FAILED(result))
+	{
+		throw std::runtime_error("CombinedMeshGenerator::CombineMeshes: Failed to create combined vertex buffer");
+	}
+
+	CombinedMesh combinedMesh;
+	combinedMesh._world = XMMatrixIdentity();
+	combinedMesh._combinedObject = combinedRenderObject;
+	combinedMesh._vertexCount = combinedRenderObject->_mesh->_vertexBufferSize;
+	combinedMesh._vertexSize = sizeof(Vertex);
+
+	_combinedMeshes.at(_combinedTypes).push_back(combinedMesh);
+}
+
 /* CombineMeshes parameters explained:
 Tilemap - Holds all objects in the entire map. Should be scanned for the Type which should be combined.
 Type - The type of object to combine. This type can be, for example, FLOOR.
@@ -143,12 +175,9 @@ void CombinedMeshGenerator::CombineMeshes(Tilemap* tilemap, const Type& typeToCo
 	}
 
 	//Scan the tilemap to find all objects of the given "subtypes" that was found above
+	int combinedCount = 0;
 	for (auto& renderObject : renderObjects)
 	{
-		//The combined object should copy everything but the vertex buffer
-		RenderObject* combinedRenderObject = new RenderObject();
-		CreateRenderObject(combinedRenderObject, renderObject);
-
 		std::vector<Vertex> singleObjectDataVector;
 		LoadVertexBufferData(&singleObjectDataVector, prevRenderObject->_mesh);
 
@@ -175,35 +204,26 @@ void CombinedMeshGenerator::CombineMeshes(Tilemap* tilemap, const Type& typeToCo
 							XMStoreFloat3(&vert._position, posV);
 							combinedMeshDataVector.push_back(vert);
 						}
+
+						combinedCount++;
+
+						if (countPerCombine != -1 && combinedCount % countPerCombine == 0)
+						{
+							//Create a combination of a given number of meshes
+							CreateCombinedMesh(combinedMeshDataVector, renderObject, _combinedTypes);
+							combinedMeshDataVector.clear();
+						}
 					}
 				}
 			}
 		}
 
-		D3D11_BUFFER_DESC bufferDesc;
-		ZeroMemory(&bufferDesc, sizeof(bufferDesc));
-		bufferDesc.Usage = D3D11_USAGE_DEFAULT;
-		bufferDesc.ByteWidth = sizeof(Vertex) * combinedMeshDataVector.size();
-		bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-
-		D3D11_SUBRESOURCE_DATA vertexData;
-		ZeroMemory(&vertexData, sizeof(vertexData));
-		vertexData.pSysMem = combinedMeshDataVector.data();
-		combinedRenderObject->_mesh->_vertexBufferSize = combinedMeshDataVector.size();
-
-		HRESULT result = _device->CreateBuffer(&bufferDesc, &vertexData, &combinedRenderObject->_mesh->_vertexBuffer);
-		if (FAILED(result))
+		if (countPerCombine == -1)
 		{
-			throw std::runtime_error("CombinedMeshGenerator::CombineMeshes: Failed to create combined vertex buffer");
+			//Combine all meshes of the give type
+			CreateCombinedMesh(combinedMeshDataVector, renderObject, _combinedTypes);
+			combinedMeshDataVector.clear();
 		}
-
-		CombinedMesh combinedMesh;
-		combinedMesh._world = XMMatrixIdentity();
-		combinedMesh._combinedObject = combinedRenderObject;
-		combinedMesh._vertexCount = combinedRenderObject->_mesh->_vertexBufferSize;
-		combinedMesh._vertexSize = sizeof(Vertex);
-
-		_combinedMeshes.at(_combinedTypes).push_back(combinedMesh);
 	}
 	_combinedTypes++;
 }

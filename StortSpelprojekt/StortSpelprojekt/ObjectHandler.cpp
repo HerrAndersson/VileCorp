@@ -414,11 +414,14 @@ void ObjectHandler::EnlargeTilemap(int offset)
 
 				for (GameObject* g : temp)
 				{
-					// Update real pos
-					g->SetPosition(XMFLOAT3(x, g->GetPosition().y, y));
+					if (g)
+					{
+						// Update real pos
+						g->SetPosition(XMFLOAT3(x, g->GetPosition().y, y));
 
-					// Update tile
-					large->AddObjectToTile(x, y, g);
+						// Update tile
+						large->AddObjectToTile(x, y, g);
+					}
 				}
 			}
 		}
