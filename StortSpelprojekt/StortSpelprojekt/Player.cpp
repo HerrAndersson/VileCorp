@@ -9,6 +9,7 @@ void Player::AddGuardIcon(Unit* unit)
 	pos.y += 2.5f;
 	msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::QUESTIONMARK_SUBTYPE, unit->GetID(), pos, XMFLOAT3(0, 0, 0), 1000.0f, 1, 0.25f, true, false);
 	_objectHandler->GetParticleEventQueue()->Insert(msg);
+	_drag = false;
 }
 void Player::AddPatrolIcons(Guard* guard)
 {
@@ -203,6 +204,12 @@ void Player::SelectObjects(vector<vector<GameObject*>> pickedObjects)
 
 void Player::DeselectObjects()
 {
+	//Decolourize everything
+	vector<GameObject*> deselectObjects = GetSelectedObjects();
+	for (GameObject* i : deselectObjects)
+	{
+		i->SetColorOffset(DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f));
+	}
 	_selectedObjects.clear();
 }
 
@@ -218,4 +225,26 @@ vector<GameObject*> Player::GetSelectedObjects()
 		}
 	}
 	return objects;
+}
+
+bool Player::IsDragging()const
+{
+	return _drag;
+}
+
+void Player::SetDragging(bool drag)
+{
+	_drag = drag;
+}
+
+bool Player::IsSelectedObjects()
+{
+	if (_selectedObjects.size() > 0)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }

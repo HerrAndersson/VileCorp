@@ -10,6 +10,7 @@ private:
 	ObjectHandler* _objectHandler;
 	vector<short> _selectedUnits;
 	vector<unsigned short> _selectedObjects;
+	bool _drag;
 	
 	void AddGuardIcon(Unit* unit);
 	void AddPatrolIcons(Guard* guard);
@@ -35,5 +36,8 @@ public:
 	void SelectObjects(vector<vector<GameObject*>> pickedObjects);
 	void DeselectObjects();
 	vector<GameObject*> GetSelectedObjects();
+	bool IsDragging()const;
+	void SetDragging(bool drag);
+	bool IsSelectedObjects();
 };
 
