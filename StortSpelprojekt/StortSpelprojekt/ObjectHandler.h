@@ -55,7 +55,6 @@ private:
 	GameObjectInfo* _gameObjectInfo;
 	Tilemap* _tilemap;
 	Grid* _buildingGrid;
-	Level::LevelHeader _currentLevelHeader;
 	System::SoundModule*	_soundModule;
 
 	int _idCount = 0;
@@ -68,6 +67,10 @@ private:
 	map<GameObject*, Renderer::Spotlight*> _spotlights;
 	map<GameObject*, Renderer::Pointlight*> _pointligths;
 	LightCulling* _lightCulling;
+
+	//Currently loaded level information
+	Level::LevelHeader _currentLevelHeader;
+	std::vector<std::string> _currentAvailableUnits;
 
 	Renderer::ParticleEventQueue* _particleEventQueue;
 
@@ -126,5 +129,6 @@ public:
 	vector<System::Blueprint>* GetBlueprints();
 	System::Blueprint* GetBlueprintByName(string name);
 	System::Blueprint* GetBlueprintByType(int type, int subType = 0);
+	std::vector<std::string> GetCurrentAvailableUnits() const;
 };
 

@@ -473,6 +473,8 @@ bool ObjectHandler::LoadLevel(std::string levelBinaryFilePath)
 			Add(blueprint, formattedGameObject->at(2), DirectX::XMFLOAT3(posX, 0, posZ), DirectX::XMFLOAT3(0, rotY, 0), true);
 		}
 
+		_currentAvailableUnits = levelData._availableUnits;
+
 		_lightCulling = new LightCulling(_tilemap);
 	}
 	else
@@ -713,6 +715,11 @@ System::Blueprint* ObjectHandler::GetBlueprintByName(string name)
 System::Blueprint* ObjectHandler::GetBlueprintByType(int type, int subType)
 {
 	return _blueprints.GetBlueprintByType(type, subType);
+}
+
+std::vector<std::string> ObjectHandler::GetCurrentAvailableUnits() const
+{
+	return _currentAvailableUnits;
 }
 
 map<GameObject*, Renderer::Spotlight*>* ObjectHandler::GetSpotlights()

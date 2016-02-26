@@ -44,6 +44,7 @@ namespace Level
 		std::vector<std::vector<int>> _gameObjectData = std::vector<std::vector<int>>();
 		std::vector<std::vector<int>> _enemyWavesData = std::vector<std::vector<int>>();
 		std::map<int, int> _enemySpawnMap = std::map<int, int>();
+		std::vector<std::string> _availableUnits = std::vector<std::string>();
 
 		template<class A>
 		void serialize(A& a)
@@ -53,7 +54,8 @@ namespace Level
 				CEREAL_NVP(_tileMapSizeZ),
 				CEREAL_NVP(_gameObjectData),
 				CEREAL_NVP(_enemyWavesData),
-				CEREAL_NVP(_enemySpawnMap)
+				CEREAL_NVP(_enemySpawnMap),
+				CEREAL_NVP(_availableUnits)
 				);
 		}
 	};

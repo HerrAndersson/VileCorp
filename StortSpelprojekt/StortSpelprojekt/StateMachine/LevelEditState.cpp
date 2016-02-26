@@ -855,6 +855,20 @@ void LevelEditState::ExportLevel()
 	//TODO: Fill _enemyWavesData /Rikhard
 	//TODO: Fill _enemySpawnMap /Rikhard
 
+	//Save available units
+	GUI::ToggleButton* currentToggleButton;
+	GUI::Node* currentToggleNode;
+	for (unsigned i = 0; i < _toggleButtons.size(); i++)
+	{
+		currentToggleButton = &_toggleButtons.at(i);
+		if (!currentToggleButton->GetIsToggled())
+		{
+			currentToggleNode = currentToggleButton->GetAttachedGUINode();
+
+			levelBinary._availableUnits.push_back(currentToggleNode->GetId());
+		}
+	}
+
 	////Write the files
 
 	//Construct a suitable path for the level
@@ -887,8 +901,10 @@ void LevelEditState::ExportLevel()
 	outStream.close();
 
 	//Write the binary
-	outStream.open(binaryPath);
-	cereal::BinaryOutputArchive binOut(outStream);
-	binOut(levelBinary);
+	outStream.open(binaryPath, std::ios::binary);
+	{
+		cereal::BinaryOutputArchive binOut(outStream);
+		binOut(levelBinary);
+	}
 	outStream.close();
 }
