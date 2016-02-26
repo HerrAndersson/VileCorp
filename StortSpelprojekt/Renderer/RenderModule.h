@@ -77,7 +77,7 @@ namespace Renderer
 		
 		struct MatrixBufferPerSkinnedObject
 		{
-			DirectX::XMFLOAT4X4 _bones[30];
+			DirectX::XMFLOAT4X4 _bones[50];
 		};
 
 		struct MatrixBufferPerFrame
@@ -192,7 +192,7 @@ namespace Renderer
 		void RenderAnimation(DirectX::XMMATRIX* world, int vertexBufferSize, std::vector<DirectX::XMFLOAT4X4>* extra = nullptr, const DirectX::XMFLOAT3& colorOffset = DirectX::XMFLOAT3(0, 0, 0));
 		void Render(GUI::Node* root, FontWrapper* fontWrapper);
 		void RenderLineStrip(DirectX::XMMATRIX* world, int nrOfPoints, const DirectX::XMFLOAT3& colorOffset = DirectX::XMFLOAT3(0,0,0));
-		void RenderShadowMap(DirectX::XMMATRIX* world, int vertexBufferSize);
+		void RenderShadowMap(DirectX::XMMATRIX* world, int vertexBufferSize, std::vector<DirectX::XMFLOAT4X4>* animTransformData = nullptr);
 		void RenderScreenQuad();
 		void RenderParticles(ID3D11Buffer* particlePointsBuffer, int vertexCount, int vertexSize);
 		void RenderLightVolume(ID3D11Buffer* volume, DirectX::XMMATRIX* world, int vertexCount, int vertexSize);

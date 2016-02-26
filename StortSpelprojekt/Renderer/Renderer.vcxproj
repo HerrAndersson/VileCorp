@@ -25,6 +25,7 @@
     <ClCompile Include="FontWrapper.cpp" />
     <ClCompile Include="Grid.cpp" />
     <ClCompile Include="GUI elements\BlueprintNode.cpp" />
+    <ClCompile Include="GUI elements\HighlightNode.cpp" />
     <ClCompile Include="GUI elements\Node.cpp" />
     <ClCompile Include="GUI elements\TextBox.cpp" />
     <ClCompile Include="ParticleSystem\Particle.cpp" />
@@ -46,6 +47,7 @@
     <ClInclude Include="FW\FW1FontWrapper.h" />
     <ClInclude Include="Grid.h" />
     <ClInclude Include="GUI elements\BlueprintNode.h" />
+    <ClInclude Include="GUI elements\HighlightNode.h" />
     <ClInclude Include="GUI elements\Node.h" />
     <ClInclude Include="GUI elements\TextBox.h" />
     <ClInclude Include="ParticleSystem\Particle.h" />

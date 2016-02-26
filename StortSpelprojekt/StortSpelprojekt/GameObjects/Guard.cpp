@@ -3,21 +3,46 @@
 Guard::Guard()
 	: Unit()
 {
+	_health = 100;
+	_baseDamage = 30;
+
 	_isSelected = false;
 	_currentPatrolGoal = -1;
 }
 
-Guard::Guard(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject * renderObject, const Tilemap * tileMap)
-	: Unit(ID, position, rotation, tilePosition, type, renderObject, tileMap)
+Guard::Guard(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject * renderObject, System::SoundModule* soundModule, const Tilemap * tileMap, int guardType)
+	: Unit(ID, position, rotation, tilePosition, type, renderObject, soundModule, tileMap)
 {
+	_subType = guardType;
 	_isSelected = false;
 	_currentPatrolGoal = 0;
+	_health = 100;
+	_moveSpeed = 0.03;
+	_baseDamage = 30;
+
+	switch (_subType)				//TODO: Repair time, vision radius, etc --Victor
+	{
+	case BASICGUARD:
+		_health = 100;
+		_baseDamage = 30;
+		break;
+	case ENGINEER:
+		_health = 100;
+		_baseDamage = 30;
+		break;
+	case MARKSMAN:
+		_health = 100;
+		_baseDamage = 30;
+		break;
+	default:
+		break;
+	}
 }
 
 Guard::~Guard()
 {}
 
-void Guard::EvaluateTile(Type objective, AI::Vec2D tile)
+void Guard::EvaluateTile(System::Type objective, AI::Vec2D tile)
 {
 	EvaluateTile(_tileMap->GetObjectOnTile(tile, objective));
 }
@@ -29,14 +54,14 @@ void Guard::EvaluateTile(GameObject * obj)
 		int tempPriority = 0;
 		switch (obj->GetType())
 		{
-		case LOOT:
+		case System::LOOT:
 			obj->SetVisibility(true);
 			break;
-		case GUARD:
-		case TRAP:
-		case CAMERA:				//Guards don't react to these
+		case System::GUARD:
+		case System::TRAP:
+		case System::CAMERA:				//Guards don't react to these
 			break;
-		case ENEMY:
+		case System::ENEMY:
 			static_cast<Enemy*>(obj)->ResetVisibilityTimer();
 			tempPriority = 10;
 			break;
@@ -44,7 +69,8 @@ void Guard::EvaluateTile(GameObject * obj)
 			break;
 		}
 		tempPriority;
-		if (tempPriority > 0 && obj->GetTilePosition() != _tilePosition && (_pathLength <= 0 || tempPriority * GetApproxDistance(obj->GetTilePosition()) < _goalPriority * GetApproxDistance(GetGoalTilePosition())))			//TODO Either optimize properly or check path properly --Victor
+		if (tempPriority > 0 && obj->GetTilePosition() != _tilePosition && 
+			(_pathLength <= 0 || tempPriority * GetApproxDistance(obj->GetTilePosition()) < _goalPriority * GetApproxDistance(GetGoalTilePosition())))			//TODO Either optimize properly or check path properly --Victor
 		{
 			SetGoalTilePosition(obj->GetTilePosition());
 			_goalPriority = tempPriority;
@@ -108,10 +134,8 @@ void Guard::Release()
 
 void Guard::Update(float deltaTime)
 {
-	if (_animation != nullptr)
-	{
-		_animation->Update(deltaTime);
-	}
+	Unit::Update(deltaTime);
+
 	switch (_moveState)
 	{
 	case MoveState::IDLE:
@@ -150,40 +174,33 @@ void Guard::Act(GameObject* obj)
 	{
 		switch (obj->GetType())
 		{
-		case LOOT:
-		case GUARD:
+		case  System::LOOT:
+		case  System::GUARD:
 			break;
-		case TRAP:
+		case  System::TRAP:
 			if (!static_cast<Trap*>(obj)->IsTrapActive())
 			{
-				if (_interactionTime != 0)
+				if (!System::FrameCountdown(_interactionTime, _animation->GetLength(2, 1.0f * _speedMultiplier)))
 				{
 					if (_animation != nullptr)
 					{
-						UseCountdown(_animation->GetLength(2, 1.0f * _speedMultiplier));
 						Animate(FIXTRAPANIM);
 					}
-
 				}
-				else if (_interactionTime == 0)
+				else
 				{
 					static_cast<Trap*>(obj)->SetTrapActive(true);
 					//	obj->SetColorOffset({0,0,0});
 					ClearObjective();
 				}
-				else
-				{
-					UseCountdown();
-				}
 			}
 			break;
-		case ENEMY:											//The guard hits the enemy
-			if (_animation != nullptr && _interactionTime != 0)
+		case  System::ENEMY:											//The guard hits the enemy
+			if (_animation != nullptr && !System::FrameCountdown(_interactionTime, _animation->GetLength(4, 4.5f * _speedMultiplier)))
 			{
-				UseCountdown(_animation->GetLength(4, 4.5f * _speedMultiplier));
 				Animate(FIGHTANIM);
 			}
-			else if (_interactionTime == 0)
+			else
 			{
 				static_cast<Unit*>(obj)->TakeDamage(1);
 				if (static_cast<Unit*>(obj)->GetHealth() <= 0)
@@ -191,12 +208,8 @@ void Guard::Act(GameObject* obj)
 					ClearObjective();
 				}
 			}
-			else
-			{
-				UseCountdown();
-			}
 			break;
-		case FLOOR:
+		case  System::FLOOR:
 			if (!_patrolRoute.empty())
 			{
 				if (_tilePosition == _patrolRoute[_currentPatrolGoal % _patrolRoute.size()])
@@ -205,7 +218,7 @@ void Guard::Act(GameObject* obj)
 					SetGoalTilePosition(_patrolRoute[_currentPatrolGoal % _patrolRoute.size()]);
 					if (_tileMap->IsFloorOnTile(_goalTilePosition))
 					{
-						_objective = _tileMap->GetObjectOnTile(_goalTilePosition, FLOOR);
+						_objective = _tileMap->GetObjectOnTile(_goalTilePosition, System::FLOOR);
 					}
 				}
 			}
@@ -233,7 +246,7 @@ void Guard::SwitchingNode()
 	Unit::SwitchingNode();
 	if (_tileMap->IsEnemyOnTile(_nextTile))
 	{
-		_objective = _tileMap->GetObjectOnTile(_nextTile, ENEMY);
+		_objective = _tileMap->GetObjectOnTile(_nextTile, System::ENEMY);
 		_moveState = MoveState::AT_OBJECTIVE;
 	}
 }

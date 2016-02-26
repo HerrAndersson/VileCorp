@@ -10,6 +10,11 @@ private:
 	ObjectHandler* _objectHandler;
 	vector<short> _selectedUnits;
 	vector<unsigned short> _selectedObjects;
+	
+	void AddGuardIcon(Unit* unit);
+	void AddPatrolIcons(Guard* guard);
+	void RemoveGuardIcon(short guardID);
+	void RemovePatrolIcons(Guard* guard);
 
 public:
 	Player();

@@ -2,7 +2,7 @@
 #include <DirectXMath.h>
 #include "InputDevice.h"
 
-GameLogic::GameLogic(ObjectHandler* objectHandler, System::Camera* camera, System::Controls* controls, PickingDevice* pickingDevice, GUI::UITree* uiTree, AssetManager* assetManager, System::SettingsReader* settingsReader)
+GameLogic::GameLogic(ObjectHandler* objectHandler, System::Camera* camera, System::Controls* controls, PickingDevice* pickingDevice, GUI::UITree* uiTree, AssetManager* assetManager, System::SettingsReader* settingsReader , System::SoundModule* soundModule)
 {
 	_objectHandler = objectHandler;
 	_camera = camera;
@@ -24,6 +24,10 @@ GameLogic::GameLogic(ObjectHandler* objectHandler, System::Camera* camera, Syste
 	Level::LevelHeader* currentLevelHeader = _objectHandler->GetCurrentLevelHeader();
 	_gameMode = currentLevelHeader->_gameMode;
 	_surviveForSeconds = currentLevelHeader->_surviveForSeconds;
+	
+	_soundModule = soundModule;
+	_soundModule->AddSound("unit_select", 0.5f, 1.0f, true, false);
+	_soundModule->AddSound("unit_move", 0.5f, 1.0f, true, false);
 }
 
 GameLogic::~GameLogic()
@@ -44,7 +48,7 @@ void GameLogic::Update(float deltaTime)
 	{
 		HandleWinLoseDialog(deltaTime);
 	}
-	_uiTree->GetNode("objectivetext")->SetText(L"Defeat the intruders! \n" + std::to_wstring(_objectHandler->GetAllByType(ENEMY)->size()) + L" enemies still remain.");
+	_uiTree->GetNode("objectivetext")->SetText(L"Defeat the intruders! \n" + std::to_wstring(_objectHandler->GetAllByType(System::ENEMY)->size()) + L" enemies still remain.");
 }
 
 bool GameLogic::GoToMenu() const
@@ -91,24 +95,11 @@ void GameLogic::HandleUnitSelect()
 
 	if (_controls->IsFunctionKeyUp("MOUSE:SELECT"))
 	{
-		//deselect everything first.
-		vector<Unit*> units = _player->GetSelectedUnits();
-
-		for (unsigned int i = 0; i < units.size(); i++)
-		{
-			units[i]->SetColorOffset(DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f));
-			if (units[i]->GetType() == GUARD)
-			{
-				for (auto p : ((Guard*)units[i])->GetPatrolRoute())
-				{
-					_objectHandler->GetTileMap()->GetObjectOnTile(p, FLOOR)->SetColorOffset(XMFLOAT3(0.0f, 0.0f, 0.0f));
-				}
-			}
-		}
+		//Deselect everything first.
 		_player->DeselectUnits();
 
 		//Check if we picked anything
-		vector<GameObject*> pickedUnits = _pickingDevice->PickObjects(_controls->GetMouseCoord()._pos, *_objectHandler->GetAllByType(GUARD));
+		vector<GameObject*> pickedUnits = _pickingDevice->PickObjects(_controls->GetMouseCoord()._pos, *_objectHandler->GetAllByType(System::GUARD));
 
 		//if units selected
 		if (pickedUnits.size() > 0)
@@ -117,16 +108,20 @@ void GameLogic::HandleUnitSelect()
 			for (unsigned int i = 0; i < pickedUnits.size(); i++)
 			{
 				_player->SelectUnit((Unit*)pickedUnits[i]);
-				pickedUnits[i]->SetColorOffset(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));
-				if (pickedUnits[i]->GetType() == GUARD)
-				{
-					for (auto p : ((Guard*)pickedUnits[i])->GetPatrolRoute())
-					{
-						_objectHandler->GetTileMap()->GetObjectOnTile(p, FLOOR)->SetColorOffset(XMFLOAT3(0.0f, 0.0f, 1.0f));
-					}
-				}
 			}
+
+			//Play "hm" sound
+			_soundModule->Play("unit_select");
 		}
+	}
+
+	//Update Icon over Selected Guards
+	for (auto u : _player->GetSelectedUnits())
+	{
+		XMFLOAT3 pos = u->GetPosition();
+		pos.y += 2.5f;
+		ParticleUpdateMessage* msg = new ParticleUpdateMessage(u->GetID(), true, pos);
+		_objectHandler->GetParticleEventQueue()->Insert(msg);
 	}
 }
 
@@ -142,23 +137,7 @@ void GameLogic::HandlePatrol()
 			if (_objectHandler->GetTileMap()->IsFloorOnTile(tilePos))
 			{
 				_player->PatrolUnits(tilePos);
-			}
-
-			for (auto u : _player->GetSelectedUnits())
-			{
-				if (u->GetType() == GUARD)
-				{
-					for (auto p : ((Guard*)u)->GetPatrolRoute())
-					{
-						GameObject* patrolFloor = _objectHandler->GetTileMap()->GetObjectOnTile(p, FLOOR);
-						if (patrolFloor != nullptr)
-						{
-
-							patrolFloor->SetColorOffset(XMFLOAT3(0.0f, 0.0f, 1.0f));
-						}
-					}
-				}
-			}
+			}	
 		}
 	}
 }
@@ -168,18 +147,6 @@ void GameLogic::HandleUnitMove()
 	//Move units
 	if (_controls->IsFunctionKeyDown("MOUSE:DESELECT"))
 	{
-		//Remove colour from patrolroute
-		for (auto u : _player->GetSelectedUnits())
-		{
-			if (u->GetType() == GUARD)
-			{
-				for (auto p : ((Guard*)u)->GetPatrolRoute())
-				{
-					_objectHandler->GetTileMap()->GetObjectOnTile(p, FLOOR)->SetColorOffset(XMFLOAT3(0.0f, 0.0f, 0.0f));
-				}
-			}
-		}
-
 		AI::Vec2D selectedTile = _pickingDevice->PickTile(_controls->GetMouseCoord()._pos);
 		vector<Unit*> units = _player->GetSelectedUnits();
 
@@ -192,9 +159,10 @@ void GameLogic::HandleUnitMove()
 				//Change direction
 				units.at(0)->SetDirection(direction);
 		}
-		else
+		else if(units.size() > 0)
 		{
 			_player->MoveUnits(selectedTile);
+			_soundModule->Play("unit_move");
 		}
 	}
 }
@@ -221,8 +189,7 @@ void GameLogic::ShowSelectedInfo()
 		{
 			healthSum += i->GetHealth();
 		}
-		//TODO: Health is always 1? //Mattias
-		_uiTree->GetNode("unithealth")->SetText(std::to_wstring(healthSum * 100) + L"%");
+		_uiTree->GetNode("unithealth")->SetText(L"HP: " + std::to_wstring(healthSum));
 
 		//Show the number of units selected
 		if (nrOfUnits > 1)
@@ -243,7 +210,7 @@ void GameLogic::ShowSelectedInfo()
 
 void GameLogic::HandleWinLoseDialog(float deltaTime)
 {
-	if (_objectHandler->GetAllByType(LOOT)->size() <= 0)				//You lost
+	if (_objectHandler->GetAllByType(System::LOOT)->size() <= 0)				//You lost
 	{
 		_uiTree->GetNode("losescreen")->SetHidden(false);
 		System::MouseCoord coord = _controls->GetMouseCoord();
@@ -262,7 +229,7 @@ void GameLogic::HandleWinLoseDialog(float deltaTime)
 		}
 		_buttonReady -= deltaTime;
 	}
-	else if (_objectHandler->GetAllByType(ENEMY)->size() <= 0)		//You won
+	else if (_objectHandler->GetAllByType(System::ENEMY)->size() <= 0)		//You won
 	{
 		System::MouseCoord coord = _controls->GetMouseCoord();
 		_uiTree->GetNode("winscreen")->SetHidden(false);
@@ -287,8 +254,8 @@ void GameLogic::HandleWinLoseDialog(float deltaTime)
 
 bool GameLogic::CheckGameStatus()
 {
-	if (_objectHandler->GetAllByType(LOOT)->size() <= 0 && _objectHandler->GetRemainingToSpawn() <= 0 
-		|| _objectHandler->GetAllByType(ENEMY)->size() <= 0 && _objectHandler->GetRemainingToSpawn() <= 0)
+	if (_objectHandler->GetAllByType(System::LOOT)->size() <= 0 && _objectHandler->GetRemainingToSpawn() <= 0
+		|| _objectHandler->GetAllByType(System::ENEMY)->size() <= 0 && _objectHandler->GetRemainingToSpawn() <= 0)
 	{
 		_gameOver = true;
 	}

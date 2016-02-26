@@ -43,9 +43,9 @@ LightCulling::LightCulling(Tilemap* tilemap)
 	_quadTreeRoot = new QuadTree(Vec2(-0.5f,-0.5f), Vec2((float)_tilemap->GetWidth()+0.5f, (float)_tilemap->GetHeight()+0.5f));
 
 	_objectsInLight = new std::vector<std::vector<GameObject*>>();
-	_objectsInLight->reserve(NR_OF_TYPES);
+	_objectsInLight->reserve(System::NR_OF_TYPES);
 
-	for (int i = 0; i < NR_OF_TYPES; i++)
+	for (int i = 0; i <  System::NR_OF_TYPES; i++)
 	{
 		_objectsInLight->push_back(std::vector<GameObject*>());
 	}
@@ -68,7 +68,7 @@ std::vector<std::vector<GameObject*>>* LightCulling::GetObjectsInSpotlight(Rende
 	std::vector<Vec2> triangle;
 	TransformSpotlight(spotlight, &triangle);
 	
-	for (int i = 0; i < NR_OF_TYPES; i++)
+	for (int i = 0; i <  System::NR_OF_TYPES; i++)
 	{
 		_objectsInLight->at(i).clear();
 	}

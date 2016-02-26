@@ -3,6 +3,9 @@
 PauseState::PauseState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule)
 	: BaseState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settingsReader, soundModule)
 {
+	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("resume")));
+	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("mainmenu")));
+	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("quit")));
 }
 
 PauseState::~PauseState()
@@ -12,11 +15,7 @@ PauseState::~PauseState()
 void PauseState::Update(float deltaTime)
 {
 	System::MouseCoord coord = _controls->GetMouseCoord();
-	XMFLOAT4 color(0.3f, 0.3f, 0.3f, 1.0f);
-	HandleHoverColorOffset("resume", "resume", coord, color);
-	HandleHoverColorOffset("mainmenu", "mainmenu", coord, color);
-	HandleHoverColorOffset("quit", "quit", coord, color);
-
+	HandleButtonHighlight(coord);
 
 	if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{

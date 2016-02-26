@@ -54,6 +54,7 @@ private:
 	void Render();
 
 	void RenderGameObjects(int forShaderStage, std::vector<std::vector<GameObject*>>* gameObjects);
+	void GenerateShadowMap(Renderer::Spotlight* spotlight, unsigned short ownerID);
 
 	std::vector<GameObject*> _enemies;
 	std::vector<GameObject*> _loot;

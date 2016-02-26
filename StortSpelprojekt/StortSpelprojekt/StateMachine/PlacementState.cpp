@@ -24,26 +24,13 @@ PlacementState::PlacementState(System::Controls* controls, ObjectHandler* object
 	_camera = camera;
 	_pickingDevice = pickingDevice;
 	_ambientLight = ambientLight;
+
+	//Add sound
+	_soundModule->AddSound("in_game_1", 0.2f, 1.0f, true, true);
 }
 
 void PlacementState::EvaluateGoldCost()
 {
-	//if (_toPlace._sB._blueprint->_subType == SPIKE)
-	//{
-	//	_toPlace._goldCost = _costOfAnvilTrap;
-	//}
-	//else if (_toPlace._sB._blueprint->_subType == TESLACOIL)
-	//{
-	//	_toPlace._goldCost = _costOfTeslaCoil;
-	//}
-	//if (_toPlace._sB._blueprint->_type == CAMERA)
-	//{
-	//	_toPlace._goldCost = _costOfCamera;
-	//}
-	//else if (_toPlace._sB._blueprint->_type == GUARD)
-	//{
-	//	_toPlace._goldCost = _costOfGuard;
-	//}
 }
 
 PlacementState::~PlacementState()
@@ -68,16 +55,8 @@ void PlacementState::Update(float deltaTime)
 			_tutorialState = TutorialState::NOTUTORIAL;
 		}
 	}
-	else
-	{
-		//Handle the buttons normally
-		HandleHoverColorOffset("Guard", "Guard", coord, XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f));
-		HandleHoverColorOffset("AnvilTrap", "AnvilTrap", coord, XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f));
-		HandleHoverColorOffset("TeslaTrap", "TeslaTrap", coord, XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f));
-		HandleHoverColorOffset("Camera", "Camera", coord, XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f));
-		HandleHoverColorOffset("Play", "Play", coord, XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f));
-	}
 	HandleDescriptions();
+	HandleButtonHighlight(coord);
 	HandleInput();
 	HandleCam(deltaTime);
 }
@@ -104,13 +83,17 @@ void PlacementState::OnStateEnter()
 	campos.z = _objectHandler->GetTileMap()->GetHeight() / 2 - 10;
 	_camera->SetPosition(campos);
 
-	std::vector<GUI::Node*>* units = _uiTree.GetNode("UnitList")->GetChildren();
-	for (int i = 0; i < units->size(); i++)
-	{
-		GUI::BlueprintNode* newUnit = new GUI::BlueprintNode(*units->at(i), _objectHandler->GetBlueprintByName(units->at(i)->GetId()), 0);
-		delete units->at(i);
-		units->at(i) = (GUI::Node*)newUnit;
-	}
+	_buttonHighlights.clear();
+	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("Play")));
+
+	//std::vector<GUI::Node*>* units = _uiTree.GetNode("UnitList")->GetChildren();
+	//for (int i = 0; i < units->size(); i++)
+	//{
+	//	GUI::BlueprintNode* newUnit = new GUI::BlueprintNode(*units->at(i), _objectHandler->GetBlueprintByName(units->at(i)->GetId()), 0);
+	//	delete units->at(i);
+	//	units->at(i) = (GUI::Node*)newUnit;
+	//	_buttonHighlights.push_back(GUI::HighlightNode(units->at(i), XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f)));
+	//}
 
 	//TODO: Move hardcoded costs and description to logical location /Rikhard
 
@@ -141,6 +124,9 @@ void PlacementState::OnStateEnter()
 	{
 		_uiTree.GetNode("Tutorial")->SetHidden(true);
 	}
+
+	//Play music
+	_soundModule->Play("in_game_1");
 }
 
 void PlacementState::OnStateExit()
@@ -151,6 +137,9 @@ void PlacementState::OnStateExit()
 	{
 		_uiTree.GetNode("Tutorial")->SetHidden(true);
 	}
+
+	//Pause music
+	_soundModule->Pause("in_game_1");
 }
 
 void PlacementState::HandleInput()

@@ -27,7 +27,7 @@ void LevelEditState::Update(float deltaTime)
 
 void LevelEditState::OnStateEnter()
 {
-	_uiTree.ReloadTree(LEVELEDIT_GUI_PATH);
+	_uiTree.ReloadTree(System::LEVELEDIT_GUI_PATH);
 	_objectTabs = _uiTree.GetNode("Buttons")->GetChildren();
 	_settingsTabs = _uiTree.GetNode("Otherbuttons")->GetChildren();
 
@@ -41,15 +41,15 @@ void LevelEditState::OnStateEnter()
 	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("UnitStartingTimeText"), 3, false, true));
 	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("UnitSpawnFrequencyText"), 3, false, true));
 
-	for (unsigned i = 0; i < NR_OF_TYPES; i++)
+	for (unsigned i = 0; i < System::NR_OF_TYPES; i++)
 	{
 		int index = 0;
-		vector<Blueprint>* blueprints = _objectHandler->GetBlueprints();
+		vector<System::Blueprint>* blueprints = _objectHandler->GetBlueprints();
 		for (unsigned b = 0; b < blueprints->size(); b++)
 		{
-			if (blueprints->at(b)._type == i)
+			if (_typeLists[blueprints->at(b)._type] == _typeLists[(System::Type)i])
 			{
-				index += _uiTree.CreateTilesetObject(&blueprints->at(b), _uiTree.GetNode(_typeLists[(Type)blueprints->at(b)._type]), index);
+				index += _uiTree.CreateBlueprintNodes(&blueprints->at(b), _uiTree.GetNode(_typeLists[(System::Type)blueprints->at(b)._type]), index);
 			}
 		}
 	}
@@ -719,8 +719,8 @@ void LevelEditState::ExportLevel()
 	////Fill Level Header:
 
 	//Getting Story Information
-	_levelHeader._storyTitle = WStringToString(_uiTree.GetNode("StoryTitleText")->GetText());
-	_levelHeader._storyBody = WStringToString(_uiTree.GetNode("StoryText")->GetText());
+	_levelHeader._storyTitle = System::WStringToString(_uiTree.GetNode("StoryTitleText")->GetText());
+	_levelHeader._storyBody = System::WStringToString(_uiTree.GetNode("StoryText")->GetText());
 
 	//Get Budget Information
 	std::wstringstream wss = std::wstringstream();
@@ -769,7 +769,7 @@ void LevelEditState::ExportLevel()
 			int subType = formattedGameObject->at(1) = gameObject->GetSubType();
 
 			//Texture ID
-			Blueprint* blueprint = _objectHandler->GetBlueprintByType(type, subType);
+			System::Blueprint* blueprint = _objectHandler->GetBlueprintByType(type, subType);
 			std::string textureName = gameObject->GetRenderObject()->_diffuseTexture->_name;
 			formattedGameObject->at(2) = 0;
 			bool foundTexture = false;
@@ -808,9 +808,9 @@ void LevelEditState::ExportLevel()
 	SHGetFolderPathA(NULL, CSIDL_PROFILE, NULL, 0, userPath);
 
 	levelPath = userPath;
-	levelPath += "\\Google Drive\\Stort spelprojekt\\" + LEVEL_FOLDER_PATH;
+	levelPath += "\\Google Drive\\Stort spelprojekt\\" + System::LEVEL_FOLDER_PATH;
 #else
-	levelPath = LEVEL_FOLDER_PATH;
+	levelPath = System::LEVEL_FOLDER_PATH;
 #endif
 	CreateDirectory(levelPath.c_str(), NULL);
 

@@ -2,7 +2,7 @@
 
 namespace System
 {
-	SoundModule::SoundModule()
+	SoundModule::SoundModule(System::Settings* settings)
 	{
 		_allSounds = new std::map<std::string, YSE::sound*>;
 
@@ -17,6 +17,7 @@ namespace System
 		if (nrOfDevices > 0)
 		{
 			YSE::System().init();
+			SetVolume(settings->_volume / 100.0f, CHMASTER);
 		}
 	}
 
@@ -31,13 +32,24 @@ namespace System
 		delete _allSounds;
 	}
 
-	bool SoundModule::AddSound(const std::string &pathName, float volume, float speed, bool relative, bool looping)
+	/*
+	AddSound: Builds its own path using fileName
+	*/
+	bool SoundModule::AddSound(const std::string &fileName, float volume, float speed, bool relative, bool looping)
 	{
-		std::string name = pathName;
-		name.append(soundExtension);
+		/*
+		stdPath set "Assets/Sounds/<name>.ogg
+		name is set to pathName
+		*/
+		std::string name = fileName;
+		std::string stdPath = "Assets/Sounds/";
+		stdPath.append(name);
+		stdPath.append(soundExtension);
+
 		bool answer = true;
 		(*_allSounds)[name] = new YSE::sound();
-		(*_allSounds)[name]->create(name.c_str());
+		(*_allSounds)[name]->create(stdPath.c_str());
+
 		//Check if file could be loaded
 		if (!(*_allSounds)[name]->isValid())
 		{
@@ -58,10 +70,10 @@ namespace System
 		return answer;
 	}
 
-	bool SoundModule::RemoveSound(const std::string &pathName)
+	bool SoundModule::RemoveSound(const std::string &fileName)
 	{
-		std::string name = pathName;
-		name.append(soundExtension);
+		std::string name = fileName;
+
 		bool answer = false;
 		auto it = _allSounds->find(name);
 		if (it != _allSounds->end())
@@ -73,44 +85,111 @@ namespace System
 		return answer;
 	}
 
-	void SoundModule::Update()
+	void SoundModule::Update(float listenerX, float listenerY, float listenerZ)
 	{
 		/*
 		Updates the position of the listener to keep it synced with camera position
 		*/
-		YSE::Listener().setPosition(YSE::Vec(0.0f, 0.0f, 0.0f));
+		YSE::Listener().setPosition(YSE::Vec(listenerX / OFFSET, listenerY / OFFSET, listenerZ / OFFSET));
 		YSE::System().update();
 	}
 
-	bool SoundModule::Play(std::string pathName)
+	bool SoundModule::Play(std::string fileName)
 	{
-		pathName.append(soundExtension);
 		bool answer = false;
 
-		if (_allSounds->find(pathName) != _allSounds->end())
+		if (_allSounds->find(fileName) != _allSounds->end())
 		{
-			(*_allSounds)[pathName]->play();
+			(*_allSounds)[fileName]->play();
 			answer = true;
 		}
 		else
 		{
-			throw std::runtime_error("Could not play audio: " + pathName);
+			throw std::runtime_error("Could not play audio: " + fileName);
 		}
 
 		return answer;
 	}
 
-	bool SoundModule::Stop(std::string pathName)
+	bool SoundModule::Pause(std::string fileName)
 	{
-		pathName.append(soundExtension);
 		bool answer = false;
 
-		if (_allSounds->find(pathName) != _allSounds->end())
+		if (_allSounds->find(fileName) != _allSounds->end())
 		{
-			(*_allSounds)[pathName]->stop();
+			(*_allSounds)[fileName]->pause();
+			answer = true;
+		}
+		else
+		{
+			throw std::runtime_error("Could not pause audio: " + fileName);
+		}
+
+		return answer;
+	}
+
+	bool SoundModule::Stop(std::string fileName)
+	{
+		bool answer = false;
+
+		if (_allSounds->find(fileName) != _allSounds->end())
+		{
+			(*_allSounds)[fileName]->stop();
 			answer = true;
 		}
 
 		return answer;
+	}
+
+	void SoundModule::SetSoundPosition(std::string fileName ,float x, float y, float z)
+	{
+
+		if (_allSounds->find(fileName) != _allSounds->end())
+		{
+			(*_allSounds)[fileName]->setPosition(YSE::Vec(x / OFFSET, y / OFFSET, z / OFFSET));
+		}
+		else
+		{
+			throw std::runtime_error("Could not set audio position for: " + fileName);
+		}
+
+	}
+
+	void SoundModule::SetVolume(float volume, int channel)
+	{
+		switch (channel)
+		{
+		case CHMASTER:
+			_volume[CHMASTER] = volume;
+			YSE::ChannelMaster().setVolume(_volume[CHMASTER]);
+			break;
+		case CHAMBIENT:
+			_volume[CHAMBIENT] = volume;
+			YSE::ChannelAmbient().setVolume(_volume[CHAMBIENT]);
+			break;
+		case CHFX:
+			_volume[CHFX] = volume;
+			YSE::ChannelFX().setVolume(_volume[CHFX]);
+			break;
+		case CHGUI:
+			_volume[CHGUI] = volume;
+			YSE::ChannelGui().setVolume(_volume[CHGUI]);
+			break;
+		case CHMUSIC:
+			_volume[CHMUSIC] = volume;
+			YSE::ChannelMusic().setVolume(_volume[CHMUSIC]);
+			break;
+		case CHVOICE:
+			_volume[CHVOICE] = volume;
+			YSE::ChannelVoice().setVolume(_volume[CHVOICE]);
+			break;
+		default:
+			break;
+		}
+	}
+
+	float SoundModule::GetVolume(int channel)
+	{
+		return _volume[channel];
 	}
 }
