@@ -4,7 +4,8 @@
 #include <sstream>
 
 Game::Game(HINSTANCE hInstance, int nCmdShow):
-	_settingsReader("Assets/settings.xml", "Assets/profile.xml")
+	_settingsReader("Assets/settings.xml", "Assets/profile.xml"),
+	_soundModule(_settingsReader.GetSettings())
 {
 	srand(time(NULL));
 	System::Settings* settings = _settingsReader.GetSettings();
@@ -31,7 +32,7 @@ Game::Game(HINSTANCE hInstance, int nCmdShow):
 
 	_particleHandler = new Renderer::ParticleHandler(_renderModule->GetDevice(), _renderModule->GetDeviceContext(), particleTextures, modifiers);
 
-	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager, &_data, _settingsReader.GetSettings(), _particleHandler->GetParticleEventQueue());
+	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager, &_data, _settingsReader.GetSettings(), _particleHandler->GetParticleEventQueue(), &_soundModule);
 	_pickingDevice = new PickingDevice(_camera, settings);
 	_SM = new StateMachine(_controls, _objectHandler, _camera, _pickingDevice, "Assets/gui.json", _assetManager, _fontWrapper, settings, &_settingsReader, &_soundModule, &_ambientLight);
 
@@ -59,10 +60,10 @@ Game::~Game()
 
 void Game::ResizeResources(System::Settings* settings)
 {
+	_renderModule->ResizeResources(settings);
 	_window->ResizeWindow(settings);
 	_SM->Resize(settings);
 	_camera->Resize(settings);
-	_renderModule->ResizeResources(settings);
 }
 
 void Game::LoadParticleSystemData(ParticleTextures& particleTextures, ParticleModifierOffsets& modifiers)
@@ -134,18 +135,21 @@ void Game::LoadParticleSystemData(ParticleTextures& particleTextures, ParticleMo
 
 bool Game::Update(double deltaTime)
 {
+	_soundModule.Update(_camera->GetPosition().x, _camera->GetPosition().y, _camera->GetPosition().z);
+
 	if (_SM->GetState() == PLACEMENTSTATE)
 	{
 		_objectHandler->UpdateLights();
 	}
-	_soundModule.Update(_camera->GetPosition().x/5.0f, 2.0f, _camera->GetPosition().z / 5.0f);
 
 	bool run = true;
 
 	//Apply settings if they has changed
 	if (_settingsReader.GetSettingsChanged())
 	{
-		ResizeResources(_settingsReader.GetSettings());
+		System::Settings* settings = _settingsReader.GetSettings();
+		ResizeResources(settings);
+		_soundModule.SetVolume(settings->_volume / 100.0f, CHMASTER);
 		_settingsReader.SetSettingsChanged(false);
 	}
 
@@ -206,9 +210,9 @@ bool Game::Update(double deltaTime)
 	std::vector<std::vector<GameObject*>>* gameObjects = _objectHandler->GetGameObjects();
 	if (gameObjects->size() > 0)
 	{
-		for (unsigned int i = 0; i < gameObjects->at(GUARD).size(); i++)
+		for (unsigned int i = 0; i < gameObjects->at(System::GUARD).size(); i++)
 		{
-			GameObject* g = gameObjects->at(GUARD).at(i);
+			GameObject* g = gameObjects->at(System::GUARD).at(i);
 			if (g)
 			{
 				XMFLOAT3 pos = g->GetPosition();

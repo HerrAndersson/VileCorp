@@ -14,8 +14,8 @@ class Blueprints
 private:
 	struct BlueprintData
 	{
-		std::string _name, _tooltip, _mesh, _type;
-		int _subType;
+		std::string _name, _tooltip, _mesh;
+		int _type, _subType;
 		std::vector<std::string> _textures, _thumbnails;
 		template<class Archive>
 		void serialize(Archive & archive)
@@ -44,15 +44,15 @@ private:
 		}
 	};
 
-	std::vector<Blueprint> _blueprintsByName;
-	std::vector<std::vector<Blueprint*>> _blueprintsByType;
+	std::vector<System::Blueprint> _blueprintsByName;
+	std::vector<std::vector<System::Blueprint*>> _blueprintsByType;
 
 public:
 	Blueprints();
 	~Blueprints();
 
-	std::vector<Blueprint>* GetBlueprints();
-	Blueprint* GetBlueprintByName(std::string name);
-	Blueprint* GetBlueprintByType(int type, int subType = 0);
+	std::vector<System::Blueprint>* GetBlueprints();
+	System::Blueprint* GetBlueprintByName(std::string name);
+	System::Blueprint* GetBlueprintByType(int type, int subType = 0);
 
 };

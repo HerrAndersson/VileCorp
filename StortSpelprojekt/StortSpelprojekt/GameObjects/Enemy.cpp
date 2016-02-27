@@ -131,8 +131,8 @@ Enemy::Enemy()
 	_pursuer = nullptr;
 }
 
-Enemy::Enemy(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject * renderObject, const Tilemap * tileMap, const int enemyType)
-	: Unit(ID, position, rotation, tilePosition, type, renderObject, tileMap)
+Enemy::Enemy(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject * renderObject, System::SoundModule* soundModule, const Tilemap * tileMap, int enemyType)
+	: Unit(ID, position, rotation, tilePosition, type, renderObject, soundModule, tileMap)
 {
 	_subType = enemyType;
 	_visibilityTimer = TIME_TO_HIDE;
@@ -168,7 +168,7 @@ Enemy::~Enemy()
 
 }
 
-void Enemy::EvaluateTile(Type objective, AI::Vec2D tile)
+void Enemy::EvaluateTile(System::Type objective, AI::Vec2D tile)
 {
 	if (_tileMap->IsTypeOnTile(tile, objective))
 	{
@@ -183,19 +183,19 @@ void Enemy::EvaluateTile(GameObject* obj)
 	{
 		switch (obj->GetType())
 		{
-		case LOOT:
+		case  System::LOOT:
 			if (_heldObject == nullptr)
 			{
 				tempPriority = 2;
 			}
 			break;
-		case SPAWN:
+		case  System::SPAWN:
 			if (_heldObject != nullptr || _tileMap->GetNrOfLoot() <= 0)
 			{
 				tempPriority = 2;
 			}
 			break;
-		case TRAP:
+		case  System::TRAP:
 		{
 			Trap* trap = static_cast<Trap*>(obj);
 			if (TryToDisarm(trap))
@@ -204,11 +204,26 @@ void Enemy::EvaluateTile(GameObject* obj)
 			}
 			else
 			{
-				//TODO: Avoid trap --Victor
+				bool changeRoute = false;
+				for (int i = 0; i < trap->GetNrOfOccupiedTiles(); i++)
+				{
+					AI::Vec2D pos = trap->GetTiles()[i];
+					if (_aStar->GetTileCost(pos) != 15)					//Arbitrary cost. Just make sure the getter and setter use the same number
+					{
+						_aStar->SetTileCost(trap->GetTiles()[i], 15);
+						changeRoute = true;
+					}
+				}
+				if (changeRoute)
+				{
+					GameObject* temp = _objective;
+					SetGoalTilePosition(_goalTilePosition);					//resets pathfinding to goal
+					_objective = temp;
+				}
 			}
 		}
 			break;	
-		case GUARD:
+		case  System::GUARD:
 			if (static_cast<Unit*>(obj)->GetHealth() > 0)
 			{
 				if (SafeToAttack(static_cast<Unit*>(obj)->GetDirection()))
@@ -223,7 +238,7 @@ void Enemy::EvaluateTile(GameObject* obj)
 				}
 			}
 			break;
-		case ENEMY:
+		case  System::ENEMY:
 			break;
 		default:
 			break;
@@ -247,15 +262,15 @@ void Enemy::Act(GameObject* obj)
 	{
 		switch (obj->GetType())
 		{
-		case LOOT:
+		case  System::LOOT:
 			if (_heldObject == nullptr)
 			{
 				if (_interactionTime < 0)
 				{
 					obj->SetPickUpState(PICKINGUP);
-					if (obj->GetAnimation() != nullptr)
+					if (_animation != nullptr)
 					{
-						UseCountdown(_animation->GetLength(3, 1.0f * _speedMultiplier));
+						System::FrameCountdown(_interactionTime, _animation->GetLength(3, 1.0f * _speedMultiplier));
 						Animate(PICKUPOBJECTANIM);
 					}
 				}
@@ -268,22 +283,19 @@ void Enemy::Act(GameObject* obj)
 				}
 				else
 				{
-					UseCountdown();
+					System::FrameCountdown(_interactionTime);
 				}
 			}
 			break;
-		case SPAWN:
+		case  System::SPAWN:
 			TakeDamage(_health);						//TODO: Right now despawn is done by killing the unit. This should be changed to reflect that it's escaping --Victor
+														//^ This will also make the guard_death sound not play if it's an escape -- Sebastian
 			break;
-		case TRAP:
+		case  System::TRAP:
 		{
 			if (static_cast<Trap*>(obj)->IsTrapActive())
 			{
-				if (_interactionTime != 0)
-				{
-					UseCountdown(60);
-				}
-				else
+				if (System::FrameCountdown(_interactionTime, 60))
 				{
 					DisarmTrap(static_cast<Trap*>(obj));
 					ClearObjective();
@@ -295,29 +307,24 @@ void Enemy::Act(GameObject* obj)
 			}
 		}
 		break;
-		case GUARD:
-			if (_interactionTime != 0)
+		case  System::GUARD:
+			if (!System::FrameCountdown(_interactionTime, _animation->GetLength(1, 1.0f * _speedMultiplier)))
 			{
 				if (_animation != nullptr)
 				{
-					UseCountdown(_animation->GetLength(1, 1.0f * _speedMultiplier));
+					Animate(FIGHTANIM);
 				}
-				Animate(FIGHTANIM);
 			}
-			else if (_interactionTime == 0)
+			else
 			{
-				static_cast<Unit*>(obj)->TakeDamage(1);
+				static_cast<Unit*>(obj)->TakeDamage(_baseDamage);
 				if (static_cast<Unit*>(obj)->GetHealth() <= 0)
 				{
 					ClearObjective();
 				}
 			}
-			else
-			{
-				UseCountdown();
-			}
 			break;
-		case ENEMY:
+		case  System::ENEMY:
 			break;
 		default:
 			break;

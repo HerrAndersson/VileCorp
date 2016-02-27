@@ -3,13 +3,13 @@
 GameObject::GameObject()
 {
 	_ID = -1;
-	_type = FLOOR;
+	_type = System::FLOOR;
 	_visible = true;
 	_renderObject = nullptr;
 	_pickUpState = PickUpState::DROPPING;
 }
 
-GameObject::GameObject(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation,  AI::Vec2D tilePosition, Type type, RenderObject * renderObject, DirectX::XMFLOAT3 colorOffset)
+GameObject::GameObject(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation,  AI::Vec2D tilePosition, System::Type type, RenderObject * renderObject, System::SoundModule* soundModule, DirectX::XMFLOAT3 colorOffset)
 {
 	_ID = ID;
 	_position = position;
@@ -22,6 +22,8 @@ GameObject::GameObject(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::X
 	_pickUpState = ONTILE;
 	_visible = true;
 	_subType = 0;
+
+	_soundModule = soundModule;
 
 	CalculateMatrix();
 }
@@ -123,7 +125,7 @@ void GameObject::SetDirection(AI::Vec2D dir)
 	_direction = dir;
 }
 
-Type GameObject::GetType() const
+System::Type GameObject::GetType() const
 {
 	return _type;
 }

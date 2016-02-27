@@ -94,6 +94,7 @@ namespace AI
 		void SetTileCost(Vec2D pos, int cost = 1);
 		void SetStartPosition(Vec2D pos);
 		void SetGoalPosition(Vec2D pos);
+		int GetTileCost(Vec2D pos)const;
 		Vec2D* GetPath() const;
 		int GetPathLength() const;
 		float GetHeuristicDistance(Vec2D start, Vec2D goal) const;

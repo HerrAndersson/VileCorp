@@ -14,6 +14,7 @@ namespace System
 		_farClip = 1000.0f;
 		_fov = 1.57079f; //almost PI/2;
 		_antialiasing = true;
+		_volume = 100;
 	}
 
 	Settings::~Settings()

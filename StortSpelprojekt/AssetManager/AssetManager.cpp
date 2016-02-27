@@ -17,7 +17,7 @@ AssetManager::AssetManager(ID3D11Device* device)
 	_meshFormatVersion[28] = &AssetManager::ScanModel28;
 	_meshFormatVersion[29] = &AssetManager::ScanModel29;
 
-	GetFilenamesInDirectory((char*)LEVEL_FOLDER_PATH.c_str(), ".lvl", *_levelFileNames);
+	GetFilenamesInDirectory((char*)System::LEVEL_FOLDER_PATH.c_str(), ".lvl", *_levelFileNames);
 }
 
 AssetManager::~AssetManager()
@@ -71,7 +71,7 @@ HRESULT Texture::LoadTexture(ID3D11Device* device)
 	HRESULT res = S_OK;
 	if (!_loaded)
 	{
-		wstring _filePath = TEXTURE_FOLDER_PATH_W;
+		wstring _filePath = System::TEXTURE_FOLDER_PATH_W;
 		_filePath.append(_name.begin(), _name.end());
 		res = DirectX::CreateWICTextureFromFile(device, _filePath.c_str(), nullptr, &_data, 0);
 //		DirectX::CreateDDSTextureFromFile(device, (_filePath.substr(0,_filePath.size()-3) + L"dds").c_str(), nullptr, &_data, 0);
@@ -97,7 +97,7 @@ bool Mesh::DecrementUsers()
 //Loads a model to the GPU
 bool AssetManager::LoadModel(string name, Mesh* mesh) {
 
-	string file_path = MODEL_FOLDER_PATH;
+	string file_path = System::MODEL_FOLDER_PATH;
 
 	file_path.append(name);
 	_infile->open(file_path.c_str(), ifstream::binary);
@@ -140,7 +140,7 @@ Texture* AssetManager::ScanTexture(string name)
 Mesh* AssetManager::ScanModel(string name)
 {
 
-	string file_path = MODEL_FOLDER_PATH;
+	string file_path = System::MODEL_FOLDER_PATH;
 
 	file_path.append(name);
 	_infile->open(file_path.c_str(), ifstream::binary);
@@ -231,8 +231,8 @@ Mesh* AssetManager::ScanModel29()
 
 	mesh->_vertexBufferSize = meshHeader._numberOfVertices;
 
-	mesh->_hitbox = new Hitbox();
-	_infile->read((char*)mesh->_hitbox, sizeof(Hitbox));
+	mesh->_hitbox = new System::Hitbox();
+	_infile->read((char*)mesh->_hitbox, sizeof(System::Hitbox));
 	if (_particles)
 		_infile->read((char*)mesh->_particleSpawnerPos, 12);
 	if (_icon)
@@ -273,8 +273,8 @@ Mesh* AssetManager::ScanModel28()
 
 	mesh->_vertexBufferSize = meshHeader._numberOfVertices;
 
-	mesh->_hitbox = new Hitbox();
-	_infile->read((char*)mesh->_hitbox, sizeof(Hitbox));
+	mesh->_hitbox = new System::Hitbox();
+	_infile->read((char*)mesh->_hitbox, sizeof(System::Hitbox));
 
 	return mesh;
 }
@@ -603,7 +603,7 @@ Skeleton* AssetManager::LoadSkeleton(string name)
 		}
 	}
 
-	string file_path = ANIMATION_FOLDER_PATH;
+	string file_path = System::ANIMATION_FOLDER_PATH;
 
 	file_path.append(name);
 	_infile->open(file_path.c_str(), ifstream::binary);
