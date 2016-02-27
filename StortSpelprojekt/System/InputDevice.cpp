@@ -273,6 +273,10 @@ namespace System
 				{
 					ResetTextInputMode();
 				}
+				else
+				{
+					_currentText += wparam;
+				}
 				break;
 			}
 			case 0x0D: //Process a carriage return
@@ -280,6 +284,10 @@ namespace System
 				if (_breakOnCarriageReturn)
 				{
 					ResetTextInputMode();
+				}
+				else
+				{
+					_currentText += wparam;
 				}
 				break;
 			}

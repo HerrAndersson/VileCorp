@@ -21,12 +21,12 @@ protected:
 	static TutorialState	_tutorialState;
 	System::Controls*		_controls;
 	ObjectHandler*			_objectHandler;
+	AssetManager*			_assetManager;
 	GUI::UITree				_uiTree;
 	System::Camera*			_camera;
 	PickingDevice*			_pickingDevice;
 	System::SoundModule*	_soundModule;
 	System::SettingsReader* _settingsReader;
-	AssetManager*			_assetManager;
 	
 	void ChangeState(State newState);
 	void ResetMouse();

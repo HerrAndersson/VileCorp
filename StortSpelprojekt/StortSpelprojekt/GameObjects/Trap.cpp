@@ -295,11 +295,10 @@ Trap::Trap()
 }
 
 Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject * renderObject, 
-		  const Tilemap* tileMap, int trapType, AI::Vec2D direction, int cost)
+		  const Tilemap* tileMap, int trapType, AI::Vec2D direction)
 	: GameObject(ID, position, rotation, tilePosition, type, renderObject)
 {
 	_isActive = true;
-	_cost = cost;
 	_direction = direction;
 	_tileMap = tileMap;
 	_nrOfAOETiles = 0;
@@ -339,9 +338,9 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 
 	SetTiles();
 
-	if (_renderObject->_isSkinned)
+	if (_renderObject->_mesh->_isSkinned)
 	{
-		_animation = new Animation(_renderObject->_skeleton, firstFrame);
+		_animation = new Animation(_renderObject->_mesh->_skeleton, firstFrame);
 		_animation->Freeze(false);
 		Animate(IDLEANIM);
 	}
@@ -383,6 +382,8 @@ int Trap::GetDetectionDifficulty() const
 {
 	return _detectDifficulty;
 }
+
+
 
 int Trap::GetDisarmDifficulty() const
 {
@@ -506,7 +507,7 @@ void Trap::SetDirection(const AI::Vec2D direction)
 
 void Trap::Animate(Anim anim)
 {
-	if (_renderObject->_isSkinned)
+	if (_animation != nullptr)
 	{
 		switch (anim)
 		{
@@ -518,12 +519,7 @@ void Trap::Animate(Anim anim)
 			break;
 		case DISABLEANIM:
 			_animation->PlayAction(DISABLEANIM, 1.0f, true);
-			break;
-		case FIXANIM:
-			_animation->PlayAction(FIXANIM, 1.0f);
-			break;
-		default:
-			break;
 		}
 	}
+
 }

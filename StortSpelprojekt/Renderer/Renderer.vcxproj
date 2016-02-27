@@ -24,7 +24,9 @@
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="FontWrapper.cpp" />
     <ClCompile Include="Grid.cpp" />
-    <ClCompile Include="Node.cpp" />
+    <ClCompile Include="GUI elements\BlueprintNode.cpp" />
+    <ClCompile Include="GUI elements\Node.cpp" />
+    <ClCompile Include="GUI elements\TextBox.cpp" />
     <ClCompile Include="ParticleSystem\Particle.cpp" />
     <ClCompile Include="ParticleSystem\ParticleEmitter.cpp" />
     <ClCompile Include="ParticleSystem\ParticleHandler.cpp" />
@@ -43,7 +45,9 @@
     <ClInclude Include="FontWrapper.h" />
     <ClInclude Include="FW\FW1FontWrapper.h" />
     <ClInclude Include="Grid.h" />
-    <ClInclude Include="Node.h" />
+    <ClInclude Include="GUI elements\BlueprintNode.h" />
+    <ClInclude Include="GUI elements\Node.h" />
+    <ClInclude Include="GUI elements\TextBox.h" />
     <ClInclude Include="ParticleSystem\Particle.h" />
     <ClInclude Include="ParticleSystem\ParticleEmitter.h" />
     <ClInclude Include="ParticleSystem\ParticleHandler.h" />
@@ -263,7 +267,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>FW/;../include;../System</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>FW/;../include;../System;GUI elements</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -292,7 +296,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>FW/;../include;../System</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>FW/;../include;../System;GUI elements</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

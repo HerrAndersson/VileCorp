@@ -1,0 +1,233 @@
+{
+	"default": {
+		"_name": "default",
+		"_levelformatversion": 12,
+		"_blueprints": [{
+			"_mesh": "floor-24.bin",
+			"_name": "Floor",
+			"_type": "FLOOR",
+			"_subType": 0,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"floor.png",
+				"floor2.png",
+				"floor3.png",
+				"floor4.png",
+				"floor5.png",
+				"floor6.png",
+				"floor7.png",
+				"floor8.png",
+				"floor9.png",
+				"floor10.png",
+				"floor11.png",
+				"floor12.png",
+				"floor13.png",
+				"floor14.png",
+				"floor15.png",
+				"floor16.png",
+				"floor17.png",
+				"floor18.png",
+				"floor19.png",
+				"floor20.png",
+				"floor21.png",
+				"floor22.png",
+				"floor23.png",
+				"floor24.png",
+				"floor25.png",
+				"floor26.png",
+				"floor27.png",
+				"floor28.png",
+				"floor29.png",
+				"floor30.png",
+				"floor31.png",
+				"floor32.png",
+				"floor33.png",
+				"floor34.png",
+				"floor35.png",
+				"floor36.png",
+				"floor37.png",
+				"floor38.png",
+				"floor39.png",
+				"floor40.png",
+				"floor41.png",
+				"floor42.png"
+			],
+			"_thumbnails": [
+				"floor.png",
+				"floor2.png",
+				"floor3.png",
+				"floor4.png",
+				"floor5.png",
+				"floor6.png",
+				"floor7.png",
+				"floor8.png",
+				"floor9.png",
+				"floor10.png",
+				"floor11.png",
+				"floor12.png",
+				"floor13.png",
+				"floor14.png",
+				"floor15.png",
+				"floor16.png",
+				"floor17.png",
+				"floor18.png",
+				"floor19.png",
+				"floor20.png",
+				"floor21.png",
+				"floor22.png",
+				"floor23.png",
+				"floor24.png",
+				"floor25.png",
+				"floor26.png",
+				"floor27.png",
+				"floor28.png",
+				"floor29.png",
+				"floor30.png",
+				"floor31.png",
+				"floor32.png",
+				"floor33.png",
+				"floor34.png",
+				"floor35.png",
+				"floor36.png",
+				"floor37.png",
+				"floor38.png",
+				"floor39.png",
+				"floor40.png",
+				"floor41.png",
+				"floor42.png"
+			]
+		}, {
+			"_mesh": "wall-27.bin",
+			"_name": "Wall",
+			"_type": "WALL",
+			"_subType": 0,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"wall.png",
+				"wall2.png",
+				"wall3.png"
+			],
+			"_thumbnails": [
+				"../Menues/LevelEdit/Walls/wall1.png",
+				"../Menues/LevelEdit/Walls/wall2.png",
+				"../Menues/LevelEdit/Walls/wall3.png"
+			]
+		}, {
+			"_mesh": "diamond-24.bin",
+			"_name": "Diamond",
+			"_type": "LOOT",
+			"_subType": 0,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"diamond.png",
+				"diamond2.png",
+				"diamond3.png"
+			],
+			"_thumbnails": [
+				"../Menues/LevelEdit/Loot/diamond1.png",
+				"../Menues/LevelEdit/Loot/diamond2.png",
+				"../Menues/LevelEdit/Loot/diamond3.png"
+			]
+		}, {
+			"_mesh": "WindowDouble-27.bin",
+			"_name": "WindowSpawn",
+			"_type": "SPAWN",
+			"_subType": 0,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"windowdouble1.png"
+			],
+			"_thumbnails": [
+				"../Menues/LevelEdit/Entry/WindowButton1.png"
+			]
+		}, {
+			"_mesh": "teslaTrap-29.bin",
+			"_name": "TeslaTrap",
+			"_type": "TRAP",
+			"_subType": 1,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"Tesla.png"
+			],
+			"_thumbnails": [
+				"../Menues/PlacementStateGUI/units/Teslabutton1.png"
+			]
+		}, {
+			"_mesh": "anvilTrap-29.bin",
+			"_name": "AnvilTrap",
+			"_type": "TRAP",
+			"_subType": 0,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"Anvil.png"
+			],
+			"_thumbnails": [
+				"../Menues/PlacementStateGUI/units/Anvilbutton1.png"
+			]
+		}, {
+			"_mesh": "sharkTrap-29.bin",
+			"_name": "SharkTrap",
+			"_type": "TRAP",
+			"_subType": 2,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"SharkTrap.png"
+			],
+			"_thumbnails": [
+				"../Menues/PlacementStateGUI/units/Sharkbutton1.png"
+			]
+		}, {
+			"_mesh": "gunTrap-29.bin",
+			"_name": "MachineGunTrap",
+			"_type": "TRAP",
+			"_subType": 3,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"GunText.png"
+			],
+			"_thumbnails": [
+				"../Menues/PlacementStateGUI/units/Gunbutton1.png"
+			]
+		}, {
+			"_mesh": "guard1-29.bin",
+			"_name": "Guard",
+			"_type": "GUARD",
+			"_subType": 0,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"textureblue.png",
+				"textureblue2.png",
+				"texturebrown.png"
+			],
+			"_thumbnails": [
+				"../Menues/PlacementStateGUI/units/Guardbutton1.png",
+				"../Menues/PlacementStateGUI/units/Guardbutton1.png",
+				"../Menues/PlacementStateGUI/units/Guardbutton1.png"
+			]
+		}, {
+			"_mesh": "SecurityCamera-27.bin",
+			"_name": "Camera",
+			"_type": "CAMERA",
+			"_subType": 0,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"cameraFin.png"
+			],
+			"_thumbnails": [
+				"../Menues/PlacementStateGUI/units/Camerabutton1.png"
+			]
+		}, {
+			"_mesh": "enemy1-29.bin",
+			"_name": "Enemy",
+			"_type": "ENEMY",
+			"_subType": 0,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"Enemy.png"
+			],
+			"_thumbnails": [
+				"Enemy.png"
+			]
+		}]
+	}
+}

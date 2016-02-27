@@ -183,7 +183,7 @@ RenderObject * GameObject::GetRenderObject() const
 
 Animation * GameObject::GetAnimation() const
 {
-	if (_renderObject->_isSkinned)
+	if (_animation != nullptr)
 	{
 		return _animation;
 	}

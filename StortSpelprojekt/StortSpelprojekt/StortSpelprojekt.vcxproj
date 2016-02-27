@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BaseEdit.cpp" />
+    <ClCompile Include="Blueprints.cpp" />
     <ClCompile Include="Controls.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameLogic.cpp" />
@@ -54,10 +55,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BaseEdit.h" />
+    <ClInclude Include="Blueprints.h" />
     <ClInclude Include="Controls.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameLogic.h" />
-    <ClInclude Include="GameObjectDataLoader.h" />
     <ClInclude Include="GameObjects\Architecture.h" />
     <ClInclude Include="GameObjects\Enemy.h" />
     <ClInclude Include="GameObjects\GameObject.h" />

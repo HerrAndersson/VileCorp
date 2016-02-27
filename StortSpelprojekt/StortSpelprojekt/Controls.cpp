@@ -1,5 +1,5 @@
 #include "Controls.h"
-#include "rapidjson/writer.h"
+#include "rapidjson\writer.h"
 #include "rapidjson\prettywriter.h"
 
 using namespace std;
@@ -87,7 +87,7 @@ namespace System
 
 		Document d;
 
-		d.Parse<0>(str.c_str());
+		d.Parse(str.c_str());
 
 		//Loop through all the states
 		for (Value::ConstMemberIterator it = d.MemberBegin(); it != d.MemberEnd(); ++it)
@@ -338,18 +338,6 @@ namespace System
 	{
 		bool ret = false;
 		unsigned char modifersActivated = NONE;
-		if (_inputDevice->IsDown(Input::Shift))
-		{
-			modifersActivated |= SHIFT;
-		}
-		if (_inputDevice->IsDown(Input::Control))
-		{
-			modifersActivated |= CTRL;
-		}
-		if (_inputDevice->IsDown(Input::Alt))
-		{
-			modifersActivated |= ALT;
-		}
 		if ((*_keymap)[key].keyModifier & REPEAT)
 		{
 			ret = _inputDevice->IsUp((*_keymap)[key].mainKey);

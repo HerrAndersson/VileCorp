@@ -41,7 +41,7 @@ SecurityCamera::SecurityCamera(unsigned short ID, DirectX::XMFLOAT3 position, Di
 	_visionRadius = 4;
 	_visionCone = new VisionCone(_visionRadius, _tileMap);
 	_visionCone->FindVisibleTiles(_tilePosition, _direction);
-	_subType = 1;
+	_subType = 0;
 }
 
 SecurityCamera::~SecurityCamera()

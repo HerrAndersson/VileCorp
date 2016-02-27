@@ -30,8 +30,6 @@ private:
 	int _aaOption;
 
 	float _volumeOption;
-
-	System::SettingsReader* _settingsReader;
 private:
 	int ReadSetting(int setting, int setting2, Options* arr, int max);
 	void UpdateText(const std::string& contentId, int optionValue, Options* options);

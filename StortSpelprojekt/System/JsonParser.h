@@ -11,6 +11,7 @@ namespace System
 		{
 			cereal::JSONInputArchive inArchive(inStream);
 			inArchive(*data);
+			inStream.close();
 		}
 	}
 
@@ -18,8 +19,11 @@ namespace System
 	template<class T> void saveJSON(T data, std::string path, std::string title)
 	{
 		std::ofstream outStream(path);
-		cereal::JSONOutputArchive outArchive(outStream);
-		outArchive.setNextName(title.c_str());
-		outArchive(*data);
+		{
+			cereal::JSONOutputArchive outArchive(outStream);
+			outArchive.setNextName(title.c_str());
+			outArchive(*data);
+		}
+		outStream.close();
 	}
 }

@@ -97,7 +97,7 @@ void Guard::SetPatrolPoint(AI::Vec2D patrolPoint)
 		_goalTilePosition = _patrolRoute[_currentPatrolGoal % _patrolRoute.size()];
 		_moveState = MoveState::FINDING_PATH;
 		//SetGoal(_goalTilePosition);
-		
+
 	}
 }
 
@@ -132,11 +132,14 @@ void Guard::Release()
 {}
 
 
-void Guard::Update(float deltaTime) 
+void Guard::Update(float deltaTime)
 {
-	Unit::Update(deltaTime);
-
-	switch( _moveState ) {
+	if (_animation != nullptr)
+	{
+		_animation->Update(deltaTime);
+	}
+	switch (_moveState)
+	{
 	case MoveState::IDLE:
 		Animate(IDLEANIM);
 		Wait();
@@ -181,8 +184,12 @@ void Guard::Act(GameObject* obj)
 			{
 				if (_interactionTime != 0)
 				{
-					UseCountdown(_animation->GetLength(2, 1.0f * _speedMultiplier));
-					Animate(FIXTRAPANIM);
+					if (_animation != nullptr)
+					{
+						UseCountdown(_animation->GetLength(2, 1.0f * _speedMultiplier));
+						Animate(FIXTRAPANIM);
+					}
+
 				}
 				else if (_interactionTime == 0)
 				{
@@ -197,7 +204,7 @@ void Guard::Act(GameObject* obj)
 			}
 			break;
 		case ENEMY:											//The guard hits the enemy
-			if (_interactionTime != 0)
+			if (_animation != nullptr && _interactionTime != 0)
 			{
 				UseCountdown(_animation->GetLength(4, 4.5f * _speedMultiplier));
 				Animate(FIGHTANIM);

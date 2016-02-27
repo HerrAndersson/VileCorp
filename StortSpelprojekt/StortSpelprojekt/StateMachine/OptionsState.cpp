@@ -5,8 +5,6 @@
 OptionsState::OptionsState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule)
 	: BaseState (controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settingsReader, soundModule)
 {
-	_settingsReader = settingsReader;
-
 	//Resolution options
 	_resolution[0] = { L"1280x720", 1280, 720 };
 	_resolution[1] = { L"1366x768", 1366, 768 };

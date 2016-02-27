@@ -9,7 +9,7 @@
 #include "ShadowMap.h"
 #include "Spotlight.h"
 #include "Pointlight.h"
-#include "Node.h"
+#include "GUI elements/Node.h"
 #include "FontWrapper.h"
 #include "../System/Settings/settings.h"
 
@@ -77,7 +77,7 @@ namespace Renderer
 		
 		struct MatrixBufferPerSkinnedObject
 		{
-			DirectX::XMFLOAT4X4 _bones[30];
+			DirectX::XMFLOAT4X4 _bones[50];
 		};
 
 		struct MatrixBufferPerFrame
@@ -145,7 +145,9 @@ namespace Renderer
 		DirectXHandler*		_d3d;
 		ShaderHandler*		_shaderHandler;
 
-		System::Settings* _settings;
+		System::Settings*	_settings;
+
+		DirectX::XMFLOAT3	_ambientLight;
 
 		void InitializeConstantBuffers();
 		void InitializeScreenQuadBuffer();
@@ -160,8 +162,6 @@ namespace Renderer
 		ShadowMap* _shadowMap;
 
 	public:
-
-		const DirectX::XMFLOAT3 AMBIENT_LIGHT = DirectX::XMFLOAT3(0.14f,0.15f,0.2f);
 		enum ShaderStage { GEO_PASS, SHADOW_GENERATION, LIGHT_APPLICATION_SPOTLIGHT, LIGHT_APPLICATION_POINTLIGHT, RENDER_LINESTRIP, ANIM_STAGE, HUD_STAGE, AA_STAGE, BILLBOARDING_STAGE, ANIM_SHADOW_GENERATION };
 
 		RenderModule(HWND hwnd, System::Settings* settings);
@@ -184,12 +184,15 @@ namespace Renderer
 
 		void SetShaderStage(ShaderStage stage);
 
+		DirectX::XMFLOAT3 GetAmbientLight() const;
+		void SetAmbientLight(const DirectX::XMFLOAT3 &ambientLight);
+
 		void BeginScene(float red, float green, float blue, float alpha);
 		void Render(DirectX::XMMATRIX* world, int vertexBufferSize, const DirectX::XMFLOAT3& colorOffset = DirectX::XMFLOAT3(0, 0, 0));
 		void RenderAnimation(DirectX::XMMATRIX* world, int vertexBufferSize, std::vector<DirectX::XMFLOAT4X4>* extra = nullptr, const DirectX::XMFLOAT3& colorOffset = DirectX::XMFLOAT3(0, 0, 0));
 		void Render(GUI::Node* root, FontWrapper* fontWrapper);
 		void RenderLineStrip(DirectX::XMMATRIX* world, int nrOfPoints, const DirectX::XMFLOAT3& colorOffset = DirectX::XMFLOAT3(0,0,0));
-		void RenderShadowMap(DirectX::XMMATRIX* world, int vertexBufferSize);
+		void RenderShadowMap(DirectX::XMMATRIX* world, int vertexBufferSize, std::vector<DirectX::XMFLOAT4X4>* animTransformData = nullptr);
 		void RenderScreenQuad();
 		void RenderParticles(ID3D11Buffer* particlePointsBuffer, int vertexCount, int vertexSize);
 		void RenderLightVolume(ID3D11Buffer* volume, DirectX::XMMATRIX* world, int vertexCount, int vertexSize);

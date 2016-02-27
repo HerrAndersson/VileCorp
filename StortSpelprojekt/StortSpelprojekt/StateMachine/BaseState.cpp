@@ -9,6 +9,7 @@ BaseState::BaseState(System::Controls* controls, ObjectHandler* objectHandler, S
 {
 	_controls			= controls;
 	_objectHandler		= objectHandler;
+	_assetManager		= assetManager;
 	_camera				= camera;
 	_pickingDevice		= pickingDevice;
 	_newStateRequest	= SPLASHSTATE;

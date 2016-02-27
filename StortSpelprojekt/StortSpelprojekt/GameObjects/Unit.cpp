@@ -122,9 +122,9 @@ Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	_isSwitchingTile = false;
 	_speedMultiplier = 2.0f;
 	Rotate();
-	if (_renderObject->_isSkinned)
+	if (_renderObject->_mesh->_isSkinned)
 	{
-		_animation = new Animation(_renderObject->_skeleton, true);
+		_animation = new Animation(_renderObject->_mesh->_skeleton, true);
 		_animation->Freeze(false);
 	}
 	_moveState = MoveState::IDLE;
@@ -309,7 +309,7 @@ void Unit::InitializePathFinding()
 
 void Unit::Update(float deltaTime)
 {
-	if (_renderObject->_isSkinned)
+	if (_animation != nullptr)
 	{
 		_animation->Update(deltaTime);
 	}
@@ -503,14 +503,17 @@ bool Unit::StatusCountdown()
 	{
 		result = _statusTimer % _statusInterval == 0;
 		_statusTimer--;
+		return result;
+	}			_statusTimer--;
+	if (_animation != nullptr)
+	{
+		return _animation->GetisFinished();
 	}
-	return result;
 }
 
 void Unit::Animate(Anim anim)
 {
-	enum Anim { IDLEANIM, WALKANIM, FIGHTANIM, PICKUPOBJECTANIM, FIXTRAPANIM, DISABLETRAPANIM, HURTANIM, DEATHANIM, NR_OF_ANIM/*Has to be last*/ };
-	if (_renderObject->_isSkinned && _animation->GetisFinished())
+	if (_animation != nullptr)
 	{
 		switch (anim)
 		{
@@ -528,18 +531,7 @@ void Unit::Animate(Anim anim)
 			break;
 		case FIXTRAPANIM:
 			_animation->PlayAction(FIXTRAPANIM, 1.0f);
-			break;
-		case DISABLETRAPANIM:
-			_animation->PlayAction(DISABLETRAPANIM, 1.0f);
-			break;
-		case HURTANIM:
-			_animation->PlayAction(HURTANIM, 1.0f);
-			break;
-		case DEATHANIM:
-			_animation->PlayAction(DEATHANIM, 1.0f);
-			break;
-		default:
-			break;
+
 		}
 	}
 }

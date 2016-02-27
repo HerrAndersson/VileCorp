@@ -2,7 +2,7 @@
 #include <DirectXMath.h>
 #include "InputDevice.h"
 
-GameLogic::GameLogic(ObjectHandler* objectHandler, System::Camera* camera, System::Controls* controls, PickingDevice* pickingDevice, GUI::UITree* uiTree, AssetManager* assetManager, System::SettingsReader* settingsReader)
+GameLogic::GameLogic(ObjectHandler* objectHandler, System::Camera* camera, System::Controls* controls, PickingDevice* pickingDevice, GUI::UITree* uiTree, AssetManager* assetManager, System::SettingsReader* settingsReader , System::SoundModule* soundModule)
 {
 	_objectHandler = objectHandler;
 	_camera = camera;
@@ -14,12 +14,20 @@ GameLogic::GameLogic(ObjectHandler* objectHandler, System::Camera* camera, Syste
 	_objectHandler->InitPathfinding();
 	_uiTree = uiTree;
 	_assetManager = assetManager;
-	_guardTexture = _assetManager->GetTexture("../Menues/PlacementStateGUI/units/Guardbutton1.png");
+	_guardTexture = _assetManager->GetTexture("../Menues/PlacementStateGUI/units/Guardbutton1.png")->_data;
 	_uiTree->GetNode("winscreen")->SetHidden(true);
 	_uiTree->GetNode("losescreen")->SetHidden(true);
 	_gameOver = false;
-	_buttonReady = 3999.0f;
+	_buttonReady = 3999.0f; //TODO: Replace with timer /Rikhard
 	_returnToMenu = false;
+
+	Level::LevelHeader* currentLevelHeader = _objectHandler->GetCurrentLevelHeader();
+	_gameMode = currentLevelHeader->_gameMode;
+	_surviveForSeconds = currentLevelHeader->_surviveForSeconds;
+	
+	_soundModule = soundModule;
+	_soundModule->AddSound("Assets/Sounds/unit_select", 0.5f, 1.0f, true, false);
+	_soundModule->AddSound("Assets/Sounds/unit_move", 0.5f, 1.0f, true, false);
 }
 
 GameLogic::~GameLogic()
@@ -122,6 +130,9 @@ void GameLogic::HandleUnitSelect()
 					}
 				}
 			}
+
+			//Play "hm" sound
+			_soundModule->Play("Assets/Sounds/unit_select");
 		}
 	}
 }
@@ -188,9 +199,10 @@ void GameLogic::HandleUnitMove()
 				//Change direction
 				units.at(0)->SetDirection(direction);
 		}
-		else
+		else if(units.size() > 0)
 		{
 			_player->MoveUnits(selectedTile);
+			_soundModule->Play("Assets/Sounds/unit_move");
 		}
 	}
 }
