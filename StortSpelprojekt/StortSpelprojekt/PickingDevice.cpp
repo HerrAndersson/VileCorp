@@ -238,6 +238,84 @@ AI::Vec2D PickingDevice::PickDirection(POINT mousePoint, Tilemap* tilemap)
 
 	return returnValue;
 }
+
+AI::Vec2D PickingDevice::PickDirection(POINT mousePoint, AI::Vec2D origin, Tilemap* tilemap)
+{
+	AI::Vec2D returnValue = AI::Vec2D(0, 0);
+	//Get picked tile
+	AI::Vec2D pickedTile = PickTile(mousePoint);
+	
+	//compare it to ray point as point
+	DirectX::XMFLOAT3 point = PickPoint(mousePoint);
+	Vec2 v2Point = Vec2(point.x - origin._x, point.z - origin._y);
+
+	//We want to create 4 vectors that represent the directions we are taking
+	Vec2 vectors[4];
+	//left side
+	vectors[0] = Vec2(-1, 1);
+	vectors[1] = Vec2(-1, 0);
+	vectors[2] = Vec2(-1, -1);
+	//bottom center
+	vectors[3] = Vec2(0, -1);
+
+	Vec2 nearestPoint[4];
+	float tempLength;
+	float nearestLength = FLT_MAX;
+	int nearestVector;
+	float x, y;
+
+
+	for (int i = 0; i < 4; i++)
+	{
+		nearestPoint[i] = FindClosestPointOnVector(v2Point, vectors[i]);
+		x = (nearestPoint[i]._x - v2Point._x);
+		y = (nearestPoint[i]._y - v2Point._y);
+		tempLength = sqrt(x*x + y*y);
+		if (tempLength < nearestLength)
+		{
+			nearestLength = tempLength;
+			nearestVector = i;
+		}
+	}
+
+	//if horizontal/vertical lines
+	if ((nearestPoint[nearestVector]._x < 0 && nearestPoint[nearestVector]._y == 0))
+	{
+		returnValue = AI::Vec2D(-1, 0);
+	}
+	else if ((nearestPoint[nearestVector]._x > 0 && nearestPoint[nearestVector]._y == 0))
+	{
+		returnValue = AI::Vec2D(1, 0);
+	}
+	else if ((nearestPoint[nearestVector]._x == 0 && nearestPoint[nearestVector]._y < 0))
+	{
+		returnValue = AI::Vec2D(0, -1);
+	}
+	else if ((nearestPoint[nearestVector]._x == 0 && nearestPoint[nearestVector]._y > 0))
+	{
+		returnValue = AI::Vec2D(0, 1);
+	}
+	//if diagonal lines
+	else if ((nearestPoint[nearestVector]._x < 0 && nearestPoint[nearestVector]._y < 0))
+	{
+		returnValue = AI::Vec2D(-1, -1);
+	}
+	else if ((nearestPoint[nearestVector]._x > 0 && nearestPoint[nearestVector]._y > 0))
+	{
+		returnValue = AI::Vec2D(1, 1);
+	}
+	else if ((nearestPoint[nearestVector]._x > 0 && nearestPoint[nearestVector]._y < 0))
+	{
+		returnValue = AI::Vec2D(1, -1);
+	}
+	else if ((nearestPoint[nearestVector]._x < 0 && nearestPoint[nearestVector]._y > 0))
+	{
+		returnValue = AI::Vec2D(-1, 1);
+	}
+
+	return returnValue;
+}
+
 AI::Vec2D PickingDevice::PickTile(POINT mousePoint)
 {
 	Vec3 pickedPoint;

@@ -6,7 +6,7 @@ PlacementState::PlacementState(System::Controls* controls, ObjectHandler* object
 {
 	_playerProfile.resize(1);
 	_tutorialLogic = new TutorialLogic(&_uiTree, _controls);
-	_player = new Player(_objectHandler);
+	_player = new Player(_objectHandler, pickingDevice);
 	_buttons = _uiTree.GetNode("UnitList")->GetChildren();
 
 	//Money
@@ -190,8 +190,8 @@ void PlacementState::HandleInput()
 		//if we dont hit the buttons - Clicking on the rest of the scene
 		if (!hitButtons)
 		{
-			//if we already hit the button. We use the blueprint
 			AI::Vec2D pickedTile = _pickingDevice->PickTile(coord._pos);
+			//if we already hit the button. We use the blueprint
 			if (_selectedBlueprint._blueprint != nullptr)
 			{
 				//Try if/and then place item
@@ -211,61 +211,39 @@ void PlacementState::HandleInput()
 			//else we are Selecting objects in the scene or dragging
 			else
 			{
-				vector<GameObject*> sObj = _player->GetSelectedObjects();
+				//Selecting placed units
+				_pickingDevice->SetFirstBoxPoint(_controls->GetMouseCoord()._pos);
 
 				//Do we have anything selected if so. We will check if we want to drag or deselect. Else Make box marker.
-				if (sObj.size() > 0)
+				if (_player->GetNumSelectedObjects() > 0)
 				{
-					vector<GameObject*> hitObjects = _pickingDevice->PickObjects(coord._pos, sObj);
+					vector<GameObject*> hitObjects = _pickingDevice->PickObjects(coord._pos, _player->GetSelectedObjects());
 
 					//Check if we are clicking on objects or the tile of the objects. If we are, we will drag the object. Otherwise we will do nothing and eventually deselect
-					for (GameObject* i : sObj)
+					for (GameObject* i : _player->GetSelectedObjects())
 					{
 						if (i->GetTilePosition() == pickedTile || hitObjects.size() > 0)
 						{
-							//_player->SetDragging(true);
+							_player->ActivateDragging(i);
+							break;
 						}
 					}
 				}
-				else
-				{
-					//Selecting placed units
-					_pickingDevice->SetFirstBoxPoint(_controls->GetMouseCoord()._pos);
-				}
 			}
 		}
 	}
 
-	//Drag
-	if (_player->IsDragging())
-	{
-		vector<GameObject*> dragObjects = _player->GetSelectedObjects();
-		if (dragObjects.size() > 0)
-		{
-			XMFLOAT3 objPos = dragObjects.at(0)->GetPosition();
-			AI::Vec2D pickedTile = _pickingDevice->PickTile(coord._pos);
-			DirectX::XMFLOAT3 clickedPos = XMFLOAT3(pickedTile._x, 0, pickedTile._y);
-			XMFLOAT3 deltaPos;
-			deltaPos.x = clickedPos.x - objPos.x;
-			deltaPos.z = clickedPos.z - objPos.z;
-
-			for (GameObject* mo : dragObjects)
-			{
-				XMFLOAT3 currentPos = mo->GetPosition();
-				mo->SetPosition(XMFLOAT3(deltaPos.x + currentPos.x, 0, deltaPos.z + currentPos.z));
-			}
-		}
-	}
+	//Drag update
+	_player->UpdateDragPositions(coord);
 
 	//Left click up
 	if (_controls->IsFunctionKeyUp("MOUSE:SELECT") && _selectedBlueprint._blueprint == nullptr)
 	{
 		//Deselect everything first by first remove the color of the objects and then deselecting it.
-		_player->SetDragging(false);		
+		_player->DeactivateDragging();
 		_player->DeselectObjects();
 
 		//Check if we picked anything
-		
 		vector<vector<GameObject*>> pickedUnits;
 		pickedUnits.push_back(_pickingDevice->PickObjects(_controls->GetMouseCoord()._pos, *_objectHandler->GetAllByType(System::GUARD)));
 		pickedUnits.push_back(_pickingDevice->PickObjects(_controls->GetMouseCoord()._pos, *_objectHandler->GetAllByType(System::TRAP)));
@@ -273,13 +251,6 @@ void PlacementState::HandleInput()
 
 		//Then Select it
 		_player->SelectObjects(pickedUnits);
-
-		//Retrieve the objects in an actual container and mark them with colour
-		vector<GameObject*> objects = _player->GetSelectedObjects();
-		for (GameObject* i : objects)
-		{
-			i->SetColorOffset(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));
-		}
 	}
 
 	//Rotation
@@ -306,128 +277,14 @@ void PlacementState::HandleInput()
 		}
 	}
 
-	
-
-
-	/*
-	//Left click up
-	if (_controls->IsFunctionKeyUp("MOUSE:SELECT") && _selectedBlueprint._blueprint == nullptr)
-	{
-		//Deselect everything first by first remove the color of the objects and then deselecting it.
-		vector<GameObject*> deselectObjects = _player->GetSelectedObjects();
-
-		//Decolourize everything
-		for (GameObject* i : deselectObjects)
-		{
-			i->SetColorOffset(DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f));
-		}
-		_player->DeselectObjects();
-
-		//Check if we picked anything
-		vector<vector<GameObject*>> pickedUnits;
-		pickedUnits.push_back(_pickingDevice->PickObjects(_controls->GetMouseCoord()._pos, *_objectHandler->GetAllByType(GUARD)));
-		pickedUnits.push_back(_pickingDevice->PickObjects(_controls->GetMouseCoord()._pos, *_objectHandler->GetAllByType(TRAP)));
-		pickedUnits.push_back(_pickingDevice->PickObjects(_controls->GetMouseCoord()._pos, *_objectHandler->GetAllByType(CAMERA)));
-
-		//Then Select it
-		_player->SelectObjects(pickedUnits);
-
-		//Retrieve the objects in an actual container and mark them with colour
-		vector<GameObject*> objects = _player->GetSelectedObjects();
-		for (GameObject* i : objects)
-		{
-			i->SetColorOffset(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));
-		}
-	}*/
-
-	/*
-	//Left click - placing units - Blueprint specific - i.e. click button and placing object.
-	if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
-	{
-		//If we dont have a blue print selected
-		if (_selectedBlueprint._blueprint == nullptr)
-		{
-			//Button interaction. Select a blueprint
-			std::vector<GUI::Node*>* units = _uiTree.GetNode("UnitList")->GetChildren();
-			for (int i = 0; i < units->size(); i++)
-			{
-				GUI::Node* currentButton = units->at(i);
-				// if we click a button. Load itemspecifics into _selectedBlueprint
-				if (_uiTree.IsButtonColliding(currentButton, coord._pos.x, coord._pos.y))
-				{
-					GUI::BlueprintNode* currentBlueprintButton = static_cast<GUI::BlueprintNode*>(currentButton);
-					_selectedBlueprint._blueprint = currentBlueprintButton->GetBlueprint();
-					_selectedBlueprint._textureId = currentBlueprintButton->GetTextureId();
-					//TODO Add ghostimage /Alex
-					break;
-				}
-			}
-		}
-		//else we already have a blueprint selected
-		else
-		{
-			//Try if/and then place item
-			AI::Vec2D pickedTile = _pickingDevice->PickTile(coord._pos);
-			DirectX::XMFLOAT3 pos = XMFLOAT3(pickedTile._x, 0, pickedTile._y);
-			if (_objectHandler->Add(_selectedBlueprint._blueprint, _selectedBlueprint._textureId, pos, DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), true))
-			{
-				//Object Added. Calculate money and deselect object TODO: Look over where money is stored and use from correct path /Alex
-				int temp = _budget;// -_selectedBlueprint._blueprint->_money;
-				if (temp > 0)
-				{
-					_budget = temp;
-					_selectedBlueprint.Reset();
-				}
-			}
-		}
-	}*/
-	/*
-	//Selecting placed units
-	//If left click to select units(drag box)
-	if (_controls->IsFunctionKeyDown("MOUSE:SELECT") && _selectedBlueprint._blueprint == nullptr)
-	{
-		_pickingDevice->SetFirstBoxPoint(_controls->GetMouseCoord()._pos);
-	}
-	*/
-	/*
-	//Left click up
-	if (_controls->IsFunctionKeyUp("MOUSE:SELECT") && _selectedBlueprint._blueprint == nullptr)
-	{
-		//Deselect everything first by first remove the color of the objects and then deselecting it.
-		vector<GameObject*> deselectObjects = _player->GetSelectedObjects();
-
-		//Decolourize everything
-		for (GameObject* i : deselectObjects)
-		{
-			i->SetColorOffset(DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f));
-		}
-		_player->DeselectObjects();
-
-		//Check if we picked anything
-		vector<vector<GameObject*>> pickedUnits;
-		pickedUnits.push_back(_pickingDevice->PickObjects(_controls->GetMouseCoord()._pos, *_objectHandler->GetAllByType(GUARD)));
-		pickedUnits.push_back(_pickingDevice->PickObjects(_controls->GetMouseCoord()._pos, *_objectHandler->GetAllByType(TRAP)));
-		pickedUnits.push_back(_pickingDevice->PickObjects(_controls->GetMouseCoord()._pos, *_objectHandler->GetAllByType(CAMERA)));
-
-		//Then Select it
-		_player->SelectObjects(pickedUnits);
-
-		//Retrieve the objects in an actual container and mark them with colour
-		vector<GameObject*> objects = _player->GetSelectedObjects();
-		for (GameObject* i : objects)
-		{
-			i->SetColorOffset(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));
-		}
-	}
-	*/
-
 	//Deselect blueprint
 	if (_controls->IsFunctionKeyDown("MOUSE:DESELECT"))
 	{
-		//If we have a selected unit and want to deselect
+		//If we have a selected unit and want to deselect it.
 		if (_selectedBlueprint._blueprint != nullptr)
 		{
 			_selectedBlueprint.Reset();
+			_ghostImage.RemoveGhostImage();
 		}
 		else
 		{
@@ -436,10 +293,10 @@ void PlacementState::HandleInput()
 			vector<GameObject*> objects = _player->GetSelectedObjects();
 			if (1 == objects.size())
 			{
-				if (objects[0]->GetTilePosition() == _pickingDevice->PickTile(coord._pos))
-				{
+				//if (objects[0]->GetTilePosition() == _pickingDevice->PickTile(coord._pos))
+				//{
 					//Check which direction he should be pointing
-					AI::Vec2D direction = _pickingDevice->PickDirection(coord._pos, _objectHandler->GetTileMap());
+					AI::Vec2D direction = _pickingDevice->PickDirection(coord._pos, objects[0]->GetTilePosition(), _objectHandler->GetTileMap());
 
 					//Change direction
 					vector<GameObject*> objects = _player->GetSelectedObjects();
@@ -447,7 +304,7 @@ void PlacementState::HandleInput()
 					{
 						i->SetDirection(direction);
 					}
-				}
+				//}
 			}
 			else
 			{
@@ -459,97 +316,9 @@ void PlacementState::HandleInput()
 	//Delete object
 	if (_controls->IsFunctionKeyDown("MAP_EDIT:DELETE_UNIT"))
 	{
-		vector<GameObject*> objectsToDelete = _player->GetSelectedObjects();
-		if (objectsToDelete.size() > 0)
-		{
-			for (GameObject* i : objectsToDelete)
-			{
-				_objectHandler->Remove(i);
-			}
-		}
-		_player->DeselectObjects();
+		_player->DeleteSelectedObjects();
 	}
-
-	/*
-	if (_baseEdit->GetMarkedObject() != nullptr)
-		{
-		_toPlace._type = _baseEdit->GetMarkedObject()->GetType();
-		_toPlace._subType =_baseEdit->GetMarkedObject()->GetSubType();
-		_toPlace._blueprintID = _baseEdit->GetMarkedObject()->GetID();
-			EvaluateGoldCost();
-			if (_controls->IsFunctionKeyDown("MAP_EDIT:DELETE_UNIT"))
-			{
-				_playerProfile[_currentPlayer]._gold += _toPlace._goldCost;
-				_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_playerProfile[_currentPlayer]._gold));
-			_baseEdit->DeleteMarkedObject();
-				_toPlace.ResetTemps();
-			}
-		}
-	*/
-	/*
-	if (_baseEdit->DroppedObject())
-	{
-		if (_budget >= _toPlace._goldCost && _baseEdit->CreatedObject() != nullptr)
-		{
-			_budget -= _toPlace._goldCost;
-			_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_budget));
-		}
-		else
-		{
-			_objectHandler->Remove(_baseEdit->CreatedObject());
-		}
-	}
-
-	if (_baseEdit->DeletedObjectBlueprint() != nullptr)
-	{
-		_toPlace._sB._blueprint = _baseEdit->DeletedObjectBlueprint();
-		EvaluateGoldCost();
-		_budget += _toPlace._goldCost;
-		_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_budget));
-	}
-	*/
-	// placement invalid
-	//if (_toPlace._goldCost != -1 && !_objectHandler->Find(_toPlace._sB._blueprint->_type, _toPlace._markerID) && !_baseEdit->IsPlace())
-	//{
-	//	_budget += _toPlace._goldCost;
-	//	_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_budget));
-	//	_toPlace.ResetTemps();
-	//}
 }
-
-	/*
-	if (create)
-	{
-		EvaluateGoldCost();
-		_baseEdit->HandleBlueprint(&_toPlace._sB);
-		_toPlace._blueprintID = _baseEdit->GetMarkedObject()->GetID();
-
-		//if (_budget >= _toPlace._goldCost)
-		//{
-		//	_baseEdit->HandleBlueprint(&_toPlace._sB);
-		//	_budget -= _toPlace._goldCost;
-		//	_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_budget));
-		//	_toPlace._markerID = _baseEdit->GetMarkedObject()->GetID();
-		//}
-		//else
-		//{
-		//	_toPlace._goldCost = -1;
-		//}
-	}
-	*/
-
-	//Item UI
-	//if (_uiTree.IsButtonColliding("Guard", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
-	//{
-	//	// Temp, should be replaced with blueprint
-	//	_toPlace._type = GUARD;
-	//	_toPlace._name = "guard_proto";
-
-	//	if (_baseEdit->IsSelection() && !_baseEdit->IsPlace())
-	//	{
-	//		create = true;
-	//	}
-	//}
 
 void PlacementState::HandleDescriptions()
 {
