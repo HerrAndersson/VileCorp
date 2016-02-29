@@ -145,18 +145,21 @@ Enemy::Enemy(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 ro
 		_baseDamage = 25;
 		_detectionSkill = 40;
 		_disarmSkill = 30;
+		_trapInteractionTime = 2;
 		break;
 	case DISABLER:
 		_health = 60;
 		_baseDamage = 20;
 		_detectionSkill = 80;
 		_disarmSkill = 70;
+		_trapInteractionTime = 1;
 		break;
 	case ASSASSIN:
 		_health = 100;
 		_baseDamage = 50;
 		_detectionSkill = 20;
 		_disarmSkill = 20;
+		_trapInteractionTime = 3;
 		break;
 	default:
 		break;

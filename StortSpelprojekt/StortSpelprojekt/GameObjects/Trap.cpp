@@ -220,7 +220,7 @@ AI::Vec2D Trap::ConvertOctant(int octant, AI::Vec2D pos, bool in)
 	TODO: Add individual reset time.
 	--Victor
 */
-void Trap::Initialize(int damage, int tileSize, int triggerSize, int AOESize, int detectDifficulty, int disarmDifficulty, 
+void Trap::Initialize(int damage, int tileSize, int triggerSize, int AOESize, int detectDifficulty, int disarmDifficulty, int repairTime, int disarmTime,
 					  Unit::StatusEffect statusEffect, int statusTimer, int statusInterval, int triggerTimer, int ammunition)
 {
 	delete[] _areaOfEffect;
@@ -232,6 +232,8 @@ void Trap::Initialize(int damage, int tileSize, int triggerSize, int AOESize, in
 	_areaOfEffect = new AI::Vec2D[_areaOfEffectArrayCapacity];
 	_detectDifficulty = detectDifficulty;
 	_disarmDifficulty = disarmDifficulty;
+	_repairTime = repairTime;
+	_disarmTime = disarmTime;
 	_statusEffect = statusEffect;
 	_statusTimer = statusTimer;
 	_statusInterval = statusInterval;
@@ -347,7 +349,7 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 		  const Tilemap* tileMap, int trapType, AI::Vec2D direction)
 	: GameObject(ID, position, rotation, tilePosition, type, renderObject, soundModule)
 {
-	_isActive = true;
+	_isActive = false;
 	_direction = direction;
 	_tileMap = tileMap;
 	_triggerTimer = -1;
@@ -362,36 +364,36 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	bool firstFrame = false;
 	switch (_subType)
 	{
-	case SPIKE:																												//Basic one tile, damage only, trap
-		Initialize(40, 1, 1, 1, 40, 50, Unit::StatusEffect::NO_EFFECT, 0, 0);
+	case SPIKE:																						//Basic one tile, damage only, trap
+		Initialize(40, 1, 1, 1, 40, 50, 140, 140, Unit::StatusEffect::NO_EFFECT, 0, 0);
 		firstFrame = true;
 		break;
-	case TESLACOIL:																											//AOE that stuns for a few seconds and does a small amount of damage
-		Initialize(30, 9, 9, 37, 30, 80, Unit::StatusEffect::STUNNED, 120, 120, 60, 2);
+	case TESLACOIL:																					//AOE that stuns for a few seconds and does a small amount of damage
+		Initialize(30, 9, 9, 37, 30, 80, 140, 140, Unit::StatusEffect::STUNNED, 120, 120, 60, 2);
 		break;
-	case SHARK:																												//Takes up a lot of space, but is an instant kill if it hits.
-		Initialize(999, 12, 2, 2, 60, 80, Unit::StatusEffect::NO_EFFECT, 0, 0);
+	case SHARK:																						//Takes up a lot of space, but is an instant kill if it hits.
+		Initialize(999, 12, 2, 2, 60, 80, 140, 140, Unit::StatusEffect::NO_EFFECT, 0, 0);
 		break;
-	case GUN:																												//Mid tier standard damage dealer. Damage is done in a straight line. Can trigger multiple times
-		Initialize(60, 10, 10, 10, 40, 90, Unit::StatusEffect::NO_EFFECT, 0, 0, 60, 5);
+	case GUN:																						//Mid tier standard damage dealer. Damage is done in a straight line. Can trigger multiple times
+		Initialize(60, 10, 10, 10, 40, 90, 140, 140, Unit::StatusEffect::NO_EFFECT, 0, 0, 60, 5);
 		break;
-	case SAW:																												//Goes back and forth in a line. doesn't need to be reset unless an enemy disarms it.
-		Initialize(60, 3, 1, 1, 30, 80, Unit::StatusEffect::NO_EFFECT, 0, 0, 60, -1);
+	case SAW:																						//Goes back and forth in a line. doesn't need to be reset unless an enemy disarms it.
+		Initialize(60, 3, 1, 1, 30, 80, 140, 140, Unit::StatusEffect::NO_EFFECT, 0, 0, 60, -1);
 		break;
-	case CAKEBOMB:																											//Instant kill on one tile. TODO: Make it seem easier to disarm than it is
-		Initialize(999, 1, 1, 1, 90, 60, Unit::StatusEffect::NO_EFFECT, 0, 0);
+	case CAKEBOMB:																					//Instant kill on one tile. TODO: Make it seem easier to disarm than it is
+		Initialize(999, 1, 1, 1, 90, 60, 280, 140, Unit::StatusEffect::NO_EFFECT, 0, 0);
 		break;
-	case BEAR:																												//Another one tile trap. Easy to disarm to lure enemies into wasting time on it
-		Initialize(50, 1, 1, 1, 10, 20, Unit::StatusEffect::NO_EFFECT, 0, 0);
+	case BEAR:																						//Another one tile trap. Easy to disarm to lure enemies into wasting time on it
+		Initialize(50, 1, 1, 1, 10, 20, 140, 280, Unit::StatusEffect::NO_EFFECT, 0, 0);
 		break;
-	case FLAMETHROWER:																										//Shorter range and less direct damage than a gun, but does damage over time.
-		Initialize(20, 7, 7, 7, 60, 60, Unit::StatusEffect::BURNING, 300, 60, 60, 3);
+	case FLAMETHROWER:																				//Shorter range and less direct damage than a gun, but does damage over time.
+		Initialize(20, 7, 7, 7, 60, 60, 140, 140, Unit::StatusEffect::BURNING, 300, 60, 60, 3);
 		break;
-	case WATER_GUN:																											//No damage, but inflicts slow for a long time. Range is the same as the flamethrower
-		Initialize(0, 7, 7, 7, 60, 60, Unit::StatusEffect::SLOWED, 450, 450, 60, 5);
+	case WATER_GUN:																					//No damage, but inflicts slow for a long time. Range is the same as the flamethrower
+		Initialize(0, 7, 7, 7, 60, 60, 140, 140, Unit::StatusEffect::SLOWED, 450, 450, 60, 5);
 		break;
-	case SPIN_TRAP:																											//No damage, but inflicts confusion, which cause the enemy to move randomly for the duration.
-		Initialize(0, 1, 1, 1, 70, 90, Unit::StatusEffect::CONFUSED, 300, 300, 0, -1);
+	case SPIN_TRAP:																					//No damage, but inflicts confusion, which cause the enemy to move randomly for the duration.
+		Initialize(0, 1, 1, 1, 70, 90, 140, 140, Unit::StatusEffect::CONFUSED, 300, 300, 0, -1);
 		break;
 	default:
 		_areaOfEffect = nullptr;

@@ -25,14 +25,17 @@ Guard::Guard(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 ro
 	case BASICGUARD:
 		_health = 100;
 		_baseDamage = 30;
+		_trapInteractionTime = 2;
 		break;
 	case ENGINEER:
-		_health = 100;
-		_baseDamage = 30;
+		_health = 70;
+		_baseDamage = 20;
+		_trapInteractionTime = 1;
 		break;
 	case MARKSMAN:
 		_health = 100;
-		_baseDamage = 30;
+		_baseDamage = 50;
+		_trapInteractionTime = 2;
 		break;
 	default:
 		break;
