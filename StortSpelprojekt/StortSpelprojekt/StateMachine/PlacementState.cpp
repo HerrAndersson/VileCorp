@@ -5,9 +5,9 @@ PlacementState::PlacementState(System::Controls* controls, ObjectHandler* object
 	_ghostImage(objectHandler, pickingDevice)
 {
 	_playerProfile.resize(1);
-	_tutorialLogic = new TutorialLogic(&_uiTree, _controls);
 	_player = new Player(_objectHandler, pickingDevice);
 	_buttons = _uiTree.GetNode("UnitList")->GetChildren();
+	_tutorialLogic = new TutorialLogic(&_uiTree, _controls, _player, _buttons, &_ghostImage, objectHandler, pickingDevice);
 
 	//Money
 	_costOfAnvilTrap	= 50;
@@ -48,16 +48,34 @@ void PlacementState::Update(float deltaTime)
 	if (_tutorialState != TutorialState::NOTUTORIAL)
 	{
 		//bypass the normal UI interface to interface the tutorial elements into it.
-		//_tutorialLogic->Update(deltaTime, _baseEdit, _toPlace, _playerProfile.at(_currentPlayer));
+		_tutorialLogic->Update(deltaTime, _playerProfile.at(_currentPlayer));
 		if (_tutorialLogic->IsTutorialCompleted())
 		{
 			ChangeState(State::PLAYSTATE);
 			_tutorialState = TutorialState::NOTUTORIAL;
 		}
+
+		//Menu - We keep this outside of tutorial due to the changestate function.
+		if (_controls->IsFunctionKeyDown("MENU:MENU"))
+		{
+			if (_ghostImage.IsGhostImageActive() || _player->IsSelectedObjects())
+			{
+				_ghostImage.RemoveGhostImage();
+				_player->DeselectObjects();
+			}
+			else
+			{
+				ChangeState(PAUSESTATE);
+			}
+		}
+	}
+	//else Normal games
+	else
+	{
+		HandleInput();
 	}
 	HandleDescriptions();
 	HandleButtonHighlight(coord);
-	HandleInput();
 	HandleCam(deltaTime);
 }
 
