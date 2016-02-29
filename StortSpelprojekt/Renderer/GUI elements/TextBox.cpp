@@ -1,8 +1,9 @@
 #include "TextBox.h"
 
-GUI::TextBox::TextBox(Node* attachedGUINode, int characterLimit, bool allowMultipleLines, bool allowOnlyNumbers, bool clearDefaultTextOnFirstEnter)
+GUI::TextBox::TextBox(Node* textNode, int characterLimit, bool allowMultipleLines, bool allowOnlyNumbers, bool clearDefaultTextOnFirstEnter)
 {
-	_attachedGUINode = attachedGUINode;
+	_textNode = textNode;
+	_boxNode = _textNode->GetParent();
 	_characterLimit = characterLimit;
 	_allowMultipleLines = allowMultipleLines;
 	_allowOnlyNumbers = allowOnlyNumbers;
@@ -16,30 +17,50 @@ GUI::TextBox::~TextBox()
 
 }
 
-GUI::Node* GUI::TextBox::GetAttachedGUINode() const
+GUI::Node* GUI::TextBox::GetTextNode() const
 {
-	return _attachedGUINode;
+	return _textNode;
 }
 
-void GUI::TextBox::SetAttachedGUINode(GUI::Node* attachedGUINode)
+void GUI::TextBox::SetTextNode(GUI::Node* textNode)
 {
-	_attachedGUINode = attachedGUINode;
+	_textNode = textNode;
+}
+
+GUI::Node* GUI::TextBox::GetBoxNode() const
+{
+	return _boxNode;
+}
+
+void GUI::TextBox::SetBoxNode(GUI::Node* boxNode)
+{
+	_boxNode = boxNode;
 }
 
 std::wstring GUI::TextBox::GetText() const
 {
-	if (_attachedGUINode != nullptr)
+	if (_textNode != nullptr)
 	{
-		return _attachedGUINode->GetText();
+		return _textNode->GetText();
 	}
 }
 
 void GUI::TextBox::SetText(const std::wstring &text)
 {
-	if (_attachedGUINode != nullptr)
+	if (_textNode != nullptr)
 	{
-		_attachedGUINode->SetText(text);
+		_textNode->SetText(text);
 	}
+}
+
+int GUI::TextBox::GetCharacterLimit() const
+{
+	return _characterLimit;
+}
+
+void GUI::TextBox::SetCharacterLimit(const int &characterLimit)
+{
+	_characterLimit = characterLimit;
 }
 
 void GUI::TextBox::SelectTextBox()

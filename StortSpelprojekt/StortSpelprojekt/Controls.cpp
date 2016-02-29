@@ -375,9 +375,9 @@ namespace System
 		return _inputDevice->GetCurrentText();
 	}
 
-	void Controls::SetIsTextInputMode(std::wstring currentText, bool breakOnEsc, bool breakOnCarriageReturn, bool breakOnTab)
+	void Controls::SetIsTextInputMode(std::wstring currentText, bool breakOnEsc, bool breakOnCarriageReturn, bool breakOnTab, int characterLimit)
 	{
-		_inputDevice->SetIsTextInputMode(currentText, breakOnEsc, breakOnCarriageReturn, breakOnTab);
+		_inputDevice->SetIsTextInputMode(currentText, breakOnEsc, breakOnCarriageReturn, breakOnTab, characterLimit);
 	}
 
 	void Controls::ResetTextInputMode()

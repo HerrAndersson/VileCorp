@@ -59,7 +59,7 @@ namespace System
 
 		void SetCurrentText(std::wstring text);
 		std::wstring GetCurrentText() const;
-		void SetIsTextInputMode(std::wstring currentText, bool breakOnEsc = false, bool breakOnCarriageReturn = false, bool breakOnTab = false);
+		void SetIsTextInputMode(std::wstring currentText, bool breakOnEsc = false, bool breakOnCarriageReturn = false, bool breakOnTab = false, int characterLimit = 1000);
 		void ResetTextInputMode();
 		bool GetIsTextInputMode() const;
 	};

@@ -249,6 +249,12 @@ namespace System
 	{
 		if (_isTextInputMode)
 		{
+			bool overCharacterLimit = false;
+			if (_currentText.size() >= _characterLimit)
+			{
+				overCharacterLimit = true;
+			}
+
 			switch (wparam)
 			{
 			case 0x08: //Process a backspace
@@ -275,7 +281,10 @@ namespace System
 				}
 				else
 				{
-					_currentText += wparam;
+					if (!overCharacterLimit)
+					{
+						_currentText += wparam;
+					}
 				}
 				break;
 			}
@@ -287,7 +296,10 @@ namespace System
 				}
 				else
 				{
-					_currentText += wparam;
+					if (!overCharacterLimit)
+					{
+						_currentText += wparam;
+					}
 				}
 				break;
 			}
@@ -295,7 +307,10 @@ namespace System
 			{
 				if (iswprint(wparam))
 				{
-					_currentText += wparam;
+					if (!overCharacterLimit)
+					{
+						_currentText += wparam;
+					}
 				}
 				break;
 			}
@@ -361,13 +376,14 @@ namespace System
 		return _currentText;
 	}
 
-	void InputDevice::SetIsTextInputMode(std::wstring currentText, bool breakOnEsc, bool breakOnCarriageReturn, bool breakOnTab)
+	void InputDevice::SetIsTextInputMode(std::wstring currentText, bool breakOnEsc, bool breakOnCarriageReturn, bool breakOnTab, int characterLimit)
 	{
 		_isTextInputMode = true;
 		_currentText = currentText;
 		_breakOnEsc = breakOnEsc;
 		_breakOnCarriageReturn = breakOnCarriageReturn;
 		_breakOnTab = breakOnTab;
+		_characterLimit = characterLimit;
 	}
 	void InputDevice::ResetTextInputMode()
 	{

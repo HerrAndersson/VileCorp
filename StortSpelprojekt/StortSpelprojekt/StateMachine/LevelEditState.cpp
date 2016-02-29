@@ -40,7 +40,7 @@ void LevelEditState::OnStateEnter()
 
 	_currentlySelectedTextBox = nullptr;
 	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("StoryTitleText"), 50, false, false, true));
-	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("StoryText"), 1000, true, false, true));
+	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("StoryText"), 850, true, false, true));
 	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("BudgetBoxText"), 7, false, true));
 	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("tileNumberX"), 3, false, true));
 	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("tileNumberY"), 3, false, true));
@@ -197,7 +197,7 @@ bool LevelEditState::HandleButtons()
 			_currentlySelectedTextBox->SetText(_controls->GetCurrentText());
 
 			//User clicks outside of the textbox
-			if (!_uiTree.IsButtonColliding(_currentlySelectedTextBox->GetAttachedGUINode(), coord) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
+			if (!_uiTree.IsButtonColliding(_currentlySelectedTextBox->GetBoxNode(), coord) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
 			{
 				_currentlySelectedTextBox->DeselectTextBox();
 				_currentlySelectedTextBox = nullptr;
@@ -639,15 +639,15 @@ bool LevelEditState::HandleButtons()
 				for (int i = 0; i < _textBoxes.size(); i++)
 				{
 					GUI::TextBox* textBox = &_textBoxes[i];
-					GUI::Node* textBoxNode = textBox->GetAttachedGUINode();
+					GUI::Node* boxNode = textBox->GetBoxNode();
 
 					//User clicked the textbox while it was visible
-					if (_uiTree.IsButtonColliding(textBoxNode, coord) && !_uiTree.IsNodeHidden(textBoxNode))
+					if (_uiTree.IsButtonColliding(boxNode, coord) && !_uiTree.IsNodeHidden(boxNode))
 					{
 						clickedOnGUI = true;
 						textBox->SelectTextBox();
 						_currentlySelectedTextBox = textBox;
-						_controls->SetIsTextInputMode(_currentlySelectedTextBox->GetText(), true, !_currentlySelectedTextBox->GetAllowMultipleLines(), true);
+						_controls->SetIsTextInputMode(_currentlySelectedTextBox->GetText(), true, !_currentlySelectedTextBox->GetAllowMultipleLines(), true, _currentlySelectedTextBox->GetCharacterLimit());
 					}
 				}
 			}
