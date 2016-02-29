@@ -459,6 +459,7 @@ namespace Renderer
 		}
 		case GEO_PASS:
 		{
+			_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::WIREFRAME);
 			deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 			_d3d->SetGeometryStage();
 			_shaderHandler->SetGeometryStageShaders(deviceContext);

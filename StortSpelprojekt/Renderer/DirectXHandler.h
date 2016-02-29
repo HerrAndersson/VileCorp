@@ -37,6 +37,7 @@ namespace Renderer
 		ID3D11RasterizerState*		 _rasterizerStateBack;
 		ID3D11RasterizerState*		 _rasterizerStateFront;
 		ID3D11RasterizerState*		 _rasterizerStateNone;
+		ID3D11RasterizerState*		 _rasterizerStateWireframe;
 
 		ID3D11BlendState*			 _blendStateEnable;
 		ID3D11BlendState*			 _blendStateDisable;
@@ -45,7 +46,7 @@ namespace Renderer
 
 	public:
 
-		enum CullingState { BACK, FRONT, NONE };
+		enum CullingState { BACK, FRONT, NONE, WIREFRAME };
 		enum BlendState { ENABLE, DISABLE };
 
 		DirectXHandler(HWND hwnd, System::Settings* settings);

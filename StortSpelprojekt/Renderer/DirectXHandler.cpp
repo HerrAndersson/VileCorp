@@ -93,6 +93,14 @@ namespace Renderer
 			throw std::runtime_error("DirectXHandler: Error creating rasterizer state NONE");
 		}
 
+		rasterDesc.CullMode = D3D11_CULL_BACK;
+		rasterDesc.FillMode = D3D11_FILL_WIREFRAME;
+		hResult = _device->CreateRasterizerState(&rasterDesc, &_rasterizerStateWireframe);
+		if (FAILED(hResult))
+		{
+			throw std::runtime_error("DirectXHandler: Error creating rasterizer state WIREFRAME");
+		}
+
 		/////////////////////////////////////////////////////// Depth stencil states ///////////////////////////////////////////////////////
 		D3D11_DEPTH_STENCIL_DESC depthStencilDesc;
 		ZeroMemory(&depthStencilDesc, sizeof(depthStencilDesc));
@@ -308,7 +316,8 @@ namespace Renderer
 		SAFE_RELEASE(_rasterizerStateNone)
 		SAFE_RELEASE(_rasterizerStateBack)
 		SAFE_RELEASE(_rasterizerStateFront)
-
+		SAFE_RELEASE(_rasterizerStateWireframe)
+			
 		SAFE_RELEASE(_backBufferDSV);
 		SAFE_RELEASE(_backBufferDepthSRV);
 
@@ -383,6 +392,11 @@ namespace Renderer
 			_deviceContext->RSSetState(_rasterizerStateNone);
 			break;
 		}
+		case Renderer::DirectXHandler::CullingState::WIREFRAME:
+		{
+			_deviceContext->RSSetState(_rasterizerStateWireframe);
+			break;
+		}
 		default:
 			break;
 		}
@@ -437,7 +451,9 @@ namespace Renderer
 			modeDesc.Height = settings->_screenHeight;
 			modeDesc.Format = DXGI_FORMAT_UNKNOWN;
 
+			//TODO: Add fullscreen setting /Jonas
 			_swapChain->ResizeTarget(&modeDesc);
+			_swapChain->SetFullscreenState(true, NULL);
 
 			//Preserve the existing buffer count and format. Automatically choose the width and height to match the client rect for HWNDs.
 			hr = _swapChain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
