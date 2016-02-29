@@ -13,7 +13,7 @@ namespace GUI
 		float _nodeOffset;
 
 	public:
-		NodeBar(bool verticalOrientation = false, DirectX::XMFLOAT2 position = {0,0}, float nodeOffset = 0.2f);
+		NodeBar(bool verticalOrientation = false, DirectX::XMFLOAT2 position = {-0.1f,0.05f}, float nodeOffset = 0.1f);
 		~NodeBar();
 		std::vector<GUI::Node*>* GetAttachedGUINodes();
 		void OrganizeNodes();

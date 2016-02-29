@@ -39,7 +39,7 @@ bool ObjectHandler::Add(System::Blueprint* blueprint, int textureId, const XMFLO
 		object = new Architecture(_idCount, position, rotation, tilepos, type, renderObject, _soundModule);
 		break;
 	case  System::SPAWN:
-		object = new SpawnPoint(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, 66, 6);
+		object = new SpawnPoint(_idCount, position, rotation, tilepos, type, renderObject, _soundModule);
 		break;
 	case  System::TRAP:
 		object = new Trap(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, _tilemap, blueprint->_subType);
@@ -474,6 +474,8 @@ bool ObjectHandler::LoadLevel(std::string levelBinaryFilePath)
 		}
 
 		_currentAvailableUnits = levelData._availableUnits;
+		_currentEnemySpawnVector = levelData._enemyOrderedSpawnVector;
+		_currentEnemySpawnIndex = 0;
 
 		_lightCulling = new LightCulling(_tilemap);
 	}
@@ -521,131 +523,116 @@ void ObjectHandler::InitPathfinding()
 	}
 }
 
-void ObjectHandler::EnableSpawnPoints()
-{
-	for (GameObject* g : _gameObjects[System::SPAWN])
-	{
-		((SpawnPoint*)g)->Enable();
-	}
-}
-
-void ObjectHandler::DisableSpawnPoints()
-{
-	for (GameObject* g : _gameObjects[System::SPAWN])
-	{
-		((SpawnPoint*)g)->Disable();
-	}
-}
-
-int ObjectHandler::GetRemainingToSpawn() const
-{
-	int result = 0;
-	for (GameObject* g : _gameObjects[3])
-	{
-		result += static_cast<SpawnPoint*>(g)->GetUnitsToSpawn();
-	}
-	return result;
-}
-
 void ObjectHandler::Update(float deltaTime)
 {
 	//Update all objects' gamelogic
 	for (int i = 0; i <  System::NR_OF_TYPES; i++)
 	{
-		for (unsigned int j = 0; j < _gameObjects[i].size(); j++)
+		if (i != System::Type::SPAWN)
 		{
-			GameObject* g = _gameObjects[i][j];
-			g->Update(deltaTime);
+			for (unsigned int j = 0; j < _gameObjects[i].size(); j++)
+			{
+				GameObject* g = _gameObjects[i][j];
+				g->Update(deltaTime);
 
-			if (g->GetPickUpState() == PICKEDUP)
-			{
-				_tilemap->RemoveObjectFromTile(g);
-				g->SetPickUpState(HELD);
-			}
-			else if (g->GetPickUpState() == DROPPING)
-			{
-				_tilemap->AddObjectToTile(g->GetTilePosition(), g);
-				g->SetPickUpState(ONTILE);
-			}
-
-			if (g->GetType() == System::GUARD || g->GetType() == System::ENEMY)
-			{
-				Unit* unit = static_cast<Unit*>(g);
-				GameObject* heldObject = unit->GetHeldObject();
-				if (heldObject != nullptr && heldObject->GetPickUpState() == HELD)
+				if (g->GetPickUpState() == PICKEDUP)
 				{
-					heldObject->SetPosition(DirectX::XMFLOAT3(unit->GetPosition().x, unit->GetPosition().y + 2, unit->GetPosition().z));
-					heldObject->SetTilePosition(AI::Vec2D(heldObject->GetPosition().x, heldObject->GetPosition().z));
+					_tilemap->RemoveObjectFromTile(g);
+					g->SetPickUpState(HELD);
+				}
+				else if (g->GetPickUpState() == DROPPING)
+				{
+					_tilemap->AddObjectToTile(g->GetTilePosition(), g);
+					g->SetPickUpState(ONTILE);
 				}
 
-				if (unit->GetHealth() <= 0)
+				if (g->GetType() == System::GUARD || g->GetType() == System::ENEMY)
 				{
-					if (heldObject != nullptr)
+					Unit* unit = static_cast<Unit*>(g);
+					GameObject* heldObject = unit->GetHeldObject();
+					if (heldObject != nullptr && heldObject->GetPickUpState() == HELD)
 					{
-						bool lootRemoved = false;
+						heldObject->SetPosition(DirectX::XMFLOAT3(unit->GetPosition().x, unit->GetPosition().y + 2, unit->GetPosition().z));
+						heldObject->SetTilePosition(AI::Vec2D(heldObject->GetPosition().x, heldObject->GetPosition().z));
+					}
 
-						for (uint k = 0; k < _gameObjects[System::SPAWN].size() && !lootRemoved; k++)
+					if (unit->GetHealth() <= 0)
+					{
+						if (heldObject != nullptr)
 						{
-							//If the enemy is at the despawn point with an objective, remove the objective and the enemy, Aron
-							if (_gameObjects[System::SPAWN][k]->InRange(unit->GetTilePosition()))
+							bool lootRemoved = false;
+
+							for (uint k = 0; k < _gameObjects[System::SPAWN].size() && !lootRemoved; k++)
 							{
-								lootRemoved = Remove(heldObject);
-								((SpawnPoint*)_gameObjects[System::SPAWN][k])->AddUnitsToSpawn(1);
-								((SpawnPoint*)_gameObjects[System::SPAWN][k])->Enable();
+								//If the enemy is at the despawn point with an objective, remove the objective NOT the enemy, Aron, Rikhard
+								if (_gameObjects[System::SPAWN][k]->InRange(unit->GetTilePosition()))
+								{
+									lootRemoved = Remove(heldObject);
+								}
+							}
+
+							if (!lootRemoved)
+							{
+								heldObject->SetPickUpState(DROPPING);
+								heldObject->SetPosition(XMFLOAT3(heldObject->GetPosition().x, 0.0f, heldObject->GetPosition().z));
 							}
 						}
 
-						if (!lootRemoved)
+						//Bloodparticles on death
+						ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::SPLASH, ParticleSubType::BLOOD_SUBTYPE, -1, unit->GetPosition(), XMFLOAT3(0, 1, 0), 300.0f, 200, 0.1f, true);
+						GetParticleEventQueue()->Insert(msg);
+
+
+						//Play death sound
+						float x = g->GetPosition().x;
+						float z = g->GetPosition().z;
+						if (g->GetType() == System::ENEMY)
 						{
-							heldObject->SetPickUpState(DROPPING);
-							heldObject->SetPosition(XMFLOAT3(heldObject->GetPosition().x, 0.0f, heldObject->GetPosition().z));
+							_soundModule->SetSoundPosition("enemy_death", x, 0.0f, z);
+							_soundModule->Play("enemy_death");
 						}
+						else if (g->GetType() == System::GUARD)
+						{
+							_soundModule->SetSoundPosition("guard_death", x, 0.0f, z);
+							_soundModule->Play("guard_death");
+						}
+
+						//Remove object
+						Remove(g);
+						g = nullptr;
+						unit = nullptr;
+						j--;
 					}
-
-					//Bloodparticles on death
-					ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::SPLASH, ParticleSubType::BLOOD_SUBTYPE, -1, unit->GetPosition(), XMFLOAT3(0, 1, 0), 300.0f, 200, 0.1f, true);
-					GetParticleEventQueue()->Insert(msg);
-
-
-					//Play death sound
-					float x = g->GetPosition().x;
-					float z = g->GetPosition().z;
-					if (g->GetType() == System::ENEMY)
+					else if (unit->IsSwitchingTile())
 					{
-						_soundModule->SetSoundPosition("enemy_death", x, 0.0f, z);
-						_soundModule->Play("enemy_death");
-					}
-					else if (g->GetType() == System::GUARD)
-					{
-						_soundModule->SetSoundPosition("guard_death", x, 0.0f, z);
-						_soundModule->Play("guard_death");
-					}
-
-					//Remove object
-					Remove(g);
-					g = nullptr;
-					unit = nullptr;
-					j--;
-				}
-				else if (unit->IsSwitchingTile())
-				{
-					_tilemap->RemoveObjectFromTile(unit->GetTilePosition(), g);
-					_tilemap->AddObjectToTile(unit->GetNextTile(), g);
-				}
-			}
-			else if (g->GetType() == System::SPAWN)															//Manage enemy spawning
-			{
-				if (static_cast<SpawnPoint*>(g)->isSpawning() && _tilemap->GetNrOfLoot() > 0)
-				{
-					if (Add(_blueprints.GetBlueprintByType(System::ENEMY,0), 0, g->GetPosition(), g->GetRotation())) //TODO blueprints of spawned enemies should be kept in spawnpoints - Fredrik
-					{
-						((Unit*)_gameObjects[System::ENEMY].back())->InitializePathFinding();
+						_tilemap->RemoveObjectFromTile(unit->GetTilePosition(), g);
+						_tilemap->AddObjectToTile(unit->GetNextTile(), g);
 					}
 				}
 			}
 		}
 	}
+	SpawnEnemies();
 	UpdateLights();
+
+	_spawnTimer++;
+}
+
+void ObjectHandler::SpawnEnemies()
+{
+	//else if (g->GetType() == System::SPAWN)															//Manage enemy spawning
+	//{
+	//	if (static_cast<SpawnPoint*>(g)->isSpawning() && _tilemap->GetNrOfLoot() > 0)
+	//	{
+	//		if (Add(_blueprints.GetBlueprintByType(System::ENEMY,0), 0, g->GetPosition(), g->GetRotation())) //TODO blueprints of spawned enemies should be kept in spawnpoints - Fredrik
+	//		{
+	//			((Unit*)_gameObjects[System::ENEMY].back())->InitializePathFinding();
+	//		}
+	//	}
+	//}
+
+	//_currentEnemySpawnVector[_currentEnemySpawnIndex]
+
 }
 
 void ObjectHandler::UpdateLights()
@@ -717,9 +704,9 @@ System::Blueprint* ObjectHandler::GetBlueprintByType(int type, int subType)
 	return _blueprints.GetBlueprintByType(type, subType);
 }
 
-std::vector<std::string> ObjectHandler::GetCurrentAvailableUnits() const
+std::vector<std::string>* ObjectHandler::GetCurrentAvailableUnits()
 {
-	return _currentAvailableUnits;
+	return &_currentAvailableUnits;
 }
 
 map<GameObject*, Renderer::Spotlight*>* ObjectHandler::GetSpotlights()

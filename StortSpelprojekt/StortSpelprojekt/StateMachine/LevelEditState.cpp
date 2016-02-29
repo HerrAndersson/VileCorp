@@ -33,17 +33,28 @@ void LevelEditState::OnStateEnter()
 	_settingsTabs = _uiTree.GetNode("Otherbuttons")->GetChildren();
 
 	_currentlySelectedTextBox = nullptr;
-	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("StoryTitleText"), 50, false, false, true));
-	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("StoryText"), 1000, true, false, true));
-	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("BudgetBoxText"), 7, false, true));
-	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("tileNumberX"), 3, false, true));
-	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("tileNumberY"), 3, false, true));
-	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("UnitAmmountText"), 2, false, true));
-	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("UnitStartingTimeText"), 3, false, true));
-	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("UnitSpawnFrequencyText"), 3, false, true));
-	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("SaveLevelText"), 25, false, false, true));
-	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("MinuteText"), 3, false, true));
-	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("SecondText"), 3, false, true));
+	_textBoxesGeneral.push_back(GUI::TextBox(_uiTree.GetNode("StoryTitleText"), 50, false, false, true));
+	_textBoxesGeneral.push_back(GUI::TextBox(_uiTree.GetNode("StoryText"), 1000, true, false, true));
+	_textBoxesGeneral.push_back(GUI::TextBox(_uiTree.GetNode("BudgetBoxText"), 7, false, true));
+	_textBoxesGeneral.push_back(GUI::TextBox(_uiTree.GetNode("tileNumberX"), 3, false, true));
+	_textBoxesGeneral.push_back(GUI::TextBox(_uiTree.GetNode("tileNumberY"), 3, false, true));
+	_saveLevelNameTextNode = _uiTree.GetNode("SaveLevelText");
+	_textBoxesGeneral.push_back(GUI::TextBox(_saveLevelNameTextNode, 25, false, false, true));
+	_textBoxesGeneral.push_back(GUI::TextBox(_uiTree.GetNode("MinuteText"), 3, false, true));
+	_textBoxesGeneral.push_back(GUI::TextBox(_uiTree.GetNode("SecondText"), 3, false, true));
+
+	_textBoxesSpawnSettings.push_back(GUI::TextBox(_uiTree.GetNode("UnitAmmountText"), 2, false, true));
+	_textBoxesSpawnSettings.push_back(GUI::TextBox(_uiTree.GetNode("UnitStartingTimeText"), 3, false, true));
+	_textBoxesSpawnSettings.push_back(GUI::TextBox(_uiTree.GetNode("UnitSpawnFrequencyText"), 3, false, true));
+	_selectedSpawnWaveNode = _uiTree.GetNode("WaveNumber");
+
+	GUI::Node* spawnTypesRadioButtonParentNode = _uiTree.GetNode("SpawnTypesRadioButton");
+	_spawnTypesRadioButtonsNodes = spawnTypesRadioButtonParentNode->GetChildren();
+	for each (GUI::Node* radioButton in *_spawnTypesRadioButtonsNodes)
+	{
+		_spawnWaveTypeRadioButtons.AddRadioButtonNode(radioButton);
+	}
+	_spawnWaveTypeRadioButtons.SelectRadioButtonNode(_spawnTypesRadioButtonsNodes->at(0));
 
 	for (unsigned i = 0; i < System::NR_OF_TYPES; i++)
 	{
@@ -79,7 +90,6 @@ void LevelEditState::OnStateEnter()
 	_ambientLight->y = AMBIENT_LIGHT_DAY.y;
 	_ambientLight->z = AMBIENT_LIGHT_DAY.z;
 
-	_objectHandler->DisableSpawnPoints();
 	_uiTree.GetNode("wholelist")->SetHidden(true);
 	_uiTree.GetNode("SettingList")->SetHidden(true);
 	_uiTree.GetNode("UnitLockToolTip")->SetHidden(true);
@@ -94,6 +104,9 @@ void LevelEditState::OnStateEnter()
 	_uiTree.GetNode("ExportMapList")->SetHidden(true);
 
 	_levelHeader = Level::LevelHeader();
+	_levelBinary = Level::LevelBinary();
+	AddSpawnWaveAndSelectIt();
+
 	_currentLevelFileName = "";
 	_isNewLevel = true;
 
@@ -116,11 +129,10 @@ void LevelEditState::OnStateEnter()
 			GUI::Node* currentButton = _uiTree.GetNode("Buttons")->GetChildren()->at(i);
 
 			currentButton->SetPosition(_buttonPositions[i]);
-
 		}
 		else
 		{
-			GUI::Node* currentButton = _uiTree.GetNode("Otherbuttons")->GetChildren()->at(i-7);
+			GUI::Node* currentButton = _uiTree.GetNode("Otherbuttons")->GetChildren()->at(i - 7);
 
 			currentButton->SetPosition(_buttonPositions[i]);
 			_isPressed[i - 7] = false;
@@ -396,236 +408,152 @@ bool LevelEditState::HandleButtons()
 					_isPressed[4] = false;
 				}
 			}
-			else if (_uiTree.IsButtonColliding("ThiefInactiveBox", coord._pos.x, coord._pos.y) && _isPressed[4] == true)
+			clickedOnGUI = HandleButtonsForSpawn(coord, clickedOnGUI);
+			if (!clickedOnGUI)
 			{
-				clickedOnGUI = true;
-				//Move Button icon
-				GUI::Node* node = _uiTree.GetNode("ThiefInactiveBox");
-				XMFLOAT2 unpickedPosition = node->GetLocalPosition();
-
-				GUI::Node* node2 = _uiTree.GetNode("ThiefActiveBox");
-				XMFLOAT2 pickedPosition = node2->GetLocalPosition();
-
-				node2->SetPosition(unpickedPosition);
-				node->SetPosition(pickedPosition);
-
-				if (pickedPosition.y > unpickedPosition.y)
+				if (_uiTree.IsButtonColliding("GridOff", coord._pos.x, coord._pos.y) && _isPressed[0] == true)
 				{
-					//BURGLAR has been picked
-					//TODO: Save this setting for this wave
+					clickedOnGUI = true;
+					//Move Button
+					GUI::Node* node = _uiTree.GetNode("GridOff");
+					XMFLOAT2 gridOffPosition = node->GetLocalPosition();
+
+					GUI::Node* node2 = _uiTree.GetNode("GridOn");
+					XMFLOAT2 gridOnPosition = node2->GetLocalPosition();
+
+					node2->SetPosition(gridOffPosition);
+					node->SetPosition(gridOnPosition);
+
+					if (gridOnPosition.x > gridOffPosition.x)
+					{
+						//TODO: Activate Grid Julia och Enbom
+					}
+					else
+					{
+						//TODO: Deactive Grid Julia och Enbom
+					}
 				}
-				else if (pickedPosition.x > unpickedPosition.x)
+				else if (_uiTree.IsButtonColliding("ObjectiveOff", coord._pos.x, coord._pos.y) && _isPressed[0] == true)
 				{
-					//Assassin has been picked
-					//TODO: Save this setting for this wave
+					clickedOnGUI = true;
+					//Move Button
+					GUI::Node* node = _uiTree.GetNode("ObjectiveOff");
+					XMFLOAT2 objectiveOffPosition = node->GetLocalPosition();
+
+					GUI::Node* node2 = _uiTree.GetNode("ObjectiveOn");
+					XMFLOAT2 objectiveOnPosition = node2->GetLocalPosition();
+
+					node2->SetPosition(objectiveOffPosition);
+					node->SetPosition(objectiveOnPosition);
+
+					if (objectiveOnPosition.y > objectiveOffPosition.y)
+					{
+						//Survival
+						_uiTree.GetNode("MapSurviveSelected")->SetHidden(false);
+						_levelHeader._gameMode = Level::GameModes::SURVIVAL;
+					}
+					else
+					{
+						//Kill
+						_uiTree.GetNode("MapSurviveSelected")->SetHidden(true);
+						_levelHeader._gameMode = Level::GameModes::KILL_THEM_ALL;
+					}
 				}
-				else
+				//Export, Import or make a new Map
+				else if (_uiTree.IsButtonColliding("ExportMap", coord._pos.x, coord._pos.y) && _mapChangeSelected == -1)
 				{
-					//DEMOLISHER has been picked
-					//TODO: Save this setting for this wave
+					clickedOnGUI = true;
+					_uiTree.GetNode("ExportMapList")->SetHidden(false);
+					_mapChangeSelected = 0;
 				}
-			}
-			else if (_uiTree.IsButtonColliding("ThiefInactiveBox2", coord._pos.x, coord._pos.y) && _isPressed[4] == true)
-			{
-				clickedOnGUI = true;
-				//Move Button icon
-				GUI::Node* node = _uiTree.GetNode("ThiefInactiveBox2");
-				XMFLOAT2 unpickedPosition = node->GetLocalPosition();
-
-				GUI::Node* node2 = _uiTree.GetNode("ThiefActiveBox");
-				XMFLOAT2 pickedPosition = node2->GetLocalPosition();
-
-				node2->SetPosition(unpickedPosition);
-				node->SetPosition(pickedPosition);
-
-				if (pickedPosition.y > unpickedPosition.y)
+				else if (_uiTree.IsButtonColliding("ImportMap", coord._pos.x, coord._pos.y) && _mapChangeSelected == -1)
 				{
-					//BURGLAR has been picked
-					//TODO: Save this setting for this wave
+					clickedOnGUI = true;
+					//Is only supposed to bring up the Import GUI
+					_uiTree.GetNode("ImportMapList")->SetHidden(false);
+					_mapChangeSelected = 1;
+					//TODO: ImportMap GUI stuff and functions Julia and Enbom
 				}
-				else if (pickedPosition.x > unpickedPosition.x)
+				else if (_uiTree.IsButtonColliding("NewMap", coord._pos.x, coord._pos.y) && _mapChangeSelected == -1)
 				{
-					//Assassin has been picked
-					//TODO: Save this setting for this wave
+					clickedOnGUI = true;
+					//Is only supposed to bring up the confirmation GUI
+					_uiTree.GetNode("LeaveMap")->SetHidden(false);
+					_leaveCheck = 0;
+					_mapChangeSelected = 2;
 				}
-				else
+				//Export Map Functions
+				else if (_uiTree.IsButtonColliding("ExportYes", coord._pos.x, coord._pos.y) && _mapChangeSelected == 0)
 				{
-					//DEMOLISHER has been picked
-					//TODO: Save this setting for this wave
+					clickedOnGUI = true;
+					_uiTree.GetNode("ExportMapList")->SetHidden(true);
+					ExportLevel();
+
+					_mapChangeSelected = -1;
 				}
-			}
-			else if (_uiTree.IsButtonColliding("WaveAdd", coord._pos.x, coord._pos.y) && _isPressed[4] == true)
-			{
-				clickedOnGUI = true;
-				//TODO: Add functionality to add new page/wave
-			}
-			else if (_uiTree.IsButtonColliding("WaveDelete", coord._pos.x, coord._pos.y) && _isPressed[4] == true)
-			{
-				clickedOnGUI = true;
-				//TODO: Add functionality to delete current page/wave
-			}
-			else if (_uiTree.IsButtonColliding("WaveLeft", coord._pos.x, coord._pos.y) && _isPressed[4] == true)
-			{
-				clickedOnGUI = true;
-				//TODO: Find which page we are on, check so that it's not the first, if it is NOT the first, then you can press.
-			}
-			else if (_uiTree.IsButtonColliding("WaveRight", coord._pos.x, coord._pos.y) && _isPressed[4] == true)
-			{
-				clickedOnGUI = true;
-				//TODO: Find page so that we are not on the last page, also so that we are able to switch to a new page
-			}
-			else if (_uiTree.IsButtonColliding("GridOff", coord._pos.x, coord._pos.y) && _isPressed[0] == true)
-			{
-				clickedOnGUI = true;
-				//Move Button
-				GUI::Node* node = _uiTree.GetNode("GridOff");
-				XMFLOAT2 gridOffPosition = node->GetLocalPosition();
-
-				GUI::Node* node2 = _uiTree.GetNode("GridOn");
-				XMFLOAT2 gridOnPosition = node2->GetLocalPosition();
-
-				node2->SetPosition(gridOffPosition);
-				node->SetPosition(gridOnPosition);
-
-				if (gridOnPosition.x > gridOffPosition.x)
+				else if (_uiTree.IsButtonColliding("ExportNo", coord._pos.x, coord._pos.y) && _mapChangeSelected == 0)
 				{
-					//TODO: Activate Grid Julia och Enbom
+					//Only close down Export GUI
+					clickedOnGUI = true;
+					_uiTree.GetNode("ExportMapList")->SetHidden(true);
+					_mapChangeSelected = -1;
 				}
-				else
+				//Import Map Functions
+				else if (_uiTree.IsButtonColliding("ImportYes", coord._pos.x, coord._pos.y) && _mapChangeSelected == 1)
 				{
-					//TODO: Deactive Grid Julia och Enbom
+					clickedOnGUI = true;
+					_uiTree.GetNode("ImportMapList")->SetHidden(true);
+					//TODO: Load Level name and then level Enbom
+
+					_mapChangeSelected = -1;
 				}
-			}
-			else if (_uiTree.IsButtonColliding("ObjectiveOff", coord._pos.x, coord._pos.y) && _isPressed[0] == true)
-			{
-				clickedOnGUI = true;
-				//Move Button
-				GUI::Node* node = _uiTree.GetNode("ObjectiveOff");
-				XMFLOAT2 objectiveOffPosition = node->GetLocalPosition();
-
-				GUI::Node* node2 = _uiTree.GetNode("ObjectiveOn");
-				XMFLOAT2 objectiveOnPosition = node2->GetLocalPosition();
-
-				node2->SetPosition(objectiveOffPosition);
-				node->SetPosition(objectiveOnPosition);
-
-				if (objectiveOnPosition.y > objectiveOffPosition.y)
+				else if (_uiTree.IsButtonColliding("ImportNo", coord._pos.x, coord._pos.y) && _mapChangeSelected == 1)
 				{
-					//Survival
-					_uiTree.GetNode("MapSurviveSelected")->SetHidden(false);
-					_levelHeader._gameMode = Level::GameModes::SURVIVAL;
+					//Only close down Import GUI
+					clickedOnGUI = true;
+					_uiTree.GetNode("ImportMapList")->SetHidden(true);
+					_mapChangeSelected = -1;
 				}
-				else
+				else if (_uiTree.IsButtonColliding("LevelUp", coord._pos.x, coord._pos.y) && _mapChangeSelected == 1)
 				{
-					//Kill
-					_uiTree.GetNode("MapSurviveSelected")->SetHidden(true);
-					_levelHeader._gameMode = Level::GameModes::KILL_THEM_ALL;
+					clickedOnGUI = true;
+					//TODO: Switch between levels going up Enbom
 				}
-			}
-			//Export, Import or make a new Map
-			else if (_uiTree.IsButtonColliding("ExportMap", coord._pos.x, coord._pos.y) && _mapChangeSelected == -1)
-			{
-				clickedOnGUI = true;
-				_uiTree.GetNode("ExportMapList")->SetHidden(false);
-				_mapChangeSelected = 0;
-			}
-			else if (_uiTree.IsButtonColliding("ImportMap", coord._pos.x, coord._pos.y) && _mapChangeSelected == -1)
-			{
-				clickedOnGUI = true;
-				//Is only supposed to bring up the Import GUI
-				_uiTree.GetNode("ImportMapList")->SetHidden(false);
-				_mapChangeSelected = 1;
-				//TODO: ImportMap GUI stuff and functions Julia and Enbom
-			}
-			else if (_uiTree.IsButtonColliding("NewMap", coord._pos.x, coord._pos.y) && _mapChangeSelected == -1)
-			{
-				clickedOnGUI = true;
-				//Is only supposed to bring up the confirmation GUI
-				_uiTree.GetNode("LeaveMap")->SetHidden(false);
-				_leaveCheck = 0;
-				_mapChangeSelected = 2;
-			}
-			//Export Map Functions
-			else if (_uiTree.IsButtonColliding("ExportYes", coord._pos.x, coord._pos.y) && _mapChangeSelected == 0)
-			{
-				clickedOnGUI = true;
-				_uiTree.GetNode("ExportMapList")->SetHidden(true);
-				ExportLevel();
-
-				_mapChangeSelected = -1;
-			}
-			else if (_uiTree.IsButtonColliding("ExportNo", coord._pos.x, coord._pos.y) && _mapChangeSelected == 0)
-			{
-				//Only close down Export GUI
-				clickedOnGUI = true;
-				_uiTree.GetNode("ExportMapList")->SetHidden(true);
-				_mapChangeSelected = -1;
-			}
-			//Import Map Functions
-			else if (_uiTree.IsButtonColliding("ImportYes", coord._pos.x, coord._pos.y) && _mapChangeSelected == 1)
-			{
-				clickedOnGUI = true;
-				_uiTree.GetNode("ImportMapList")->SetHidden(true);
-				//TODO: Load Level name and then level Enbom
-
-				_mapChangeSelected = -1;
-			}
-			else if (_uiTree.IsButtonColliding("ImportNo", coord._pos.x, coord._pos.y) && _mapChangeSelected == 1)
-			{
-				//Only close down Import GUI
-				clickedOnGUI = true;
-				_uiTree.GetNode("ImportMapList")->SetHidden(true);
-				_mapChangeSelected = -1;
-			}
-			else if (_uiTree.IsButtonColliding("LevelUp", coord._pos.x, coord._pos.y) && _mapChangeSelected == 1)
-			{
-				clickedOnGUI = true;
-				//TODO: Switch between levels going up Enbom
-			}
-			else if (_uiTree.IsButtonColliding("LevelDown", coord._pos.x, coord._pos.y) && _mapChangeSelected == 1)
-			{
-				clickedOnGUI = true;
-				//TODO: Switch between levels going down Enbom
-			}
-			//New Map Functions
-			else if (_uiTree.IsButtonColliding("LeaveMapYes", coord._pos.x, coord._pos.y) && _leaveCheck > -1)
-			{
-				clickedOnGUI = true;
-				if (_leaveCheck == 0)
+				else if (_uiTree.IsButtonColliding("LevelDown", coord._pos.x, coord._pos.y) && _mapChangeSelected == 1)
 				{
-					//TODO: NewMap GUI stuff and functions (Make new Map) Julia and Enbom
+					clickedOnGUI = true;
+					//TODO: Switch between levels going down Enbom
+				}
+				//New Map Functions
+				else if (_uiTree.IsButtonColliding("LeaveMapYes", coord._pos.x, coord._pos.y) && _leaveCheck > -1)
+				{
+					clickedOnGUI = true;
+					if (_leaveCheck == 0)
+					{
+						//TODO: NewMap GUI stuff and functions (Make new Map) Julia and Enbom
+						_uiTree.GetNode("LeaveMap")->SetHidden(true);
+						_leaveCheck = -1;
+					}
+					else
+					{
+						//TODO: Clean up Level so that if you go back to the menu it won't crash! Enbom
+						_leaveCheck = -1;
+						ChangeState(MENUSTATE);
+					}
+					_mapChangeSelected = -1;
+				}
+				else if (_uiTree.IsButtonColliding("LeaveMapNo", coord._pos.x, coord._pos.y))
+				{
+					clickedOnGUI = true;
 					_uiTree.GetNode("LeaveMap")->SetHidden(true);
 					_leaveCheck = -1;
+					_mapChangeSelected = -1;
 				}
 				else
 				{
-					//TODO: Clean up Level so that if you go back to the menu it won't crash! Enbom
-					_leaveCheck = -1;
-					ChangeState(MENUSTATE);
-				}
-				_mapChangeSelected = -1;
-			}
-			else if (_uiTree.IsButtonColliding("LeaveMapNo", coord._pos.x, coord._pos.y))
-			{
-				clickedOnGUI = true;
-				_uiTree.GetNode("LeaveMap")->SetHidden(true);
-				_leaveCheck = -1;
-				_mapChangeSelected = -1;
-			}
-			else
-			{
-				for (int i = 0; i < _textBoxes.size(); i++)
-				{
-					GUI::TextBox* textBox = &_textBoxes[i];
-					GUI::Node* textBoxNode = textBox->GetAttachedGUINode();
-
-					//User clicked the textbox while it was visible
-					if (_uiTree.IsButtonColliding(textBoxNode, coord) && !_uiTree.IsNodeHidden(textBoxNode))
+					for (int i = 0; i < _textBoxesGeneral.size(); i++)
 					{
-						clickedOnGUI = true;
-						textBox->SelectTextBox();
-						_currentlySelectedTextBox = textBox;
-						_controls->SetIsTextInputMode(_currentlySelectedTextBox->GetText(), true, !_currentlySelectedTextBox->GetAllowMultipleLines(), true);
+						clickedOnGUI = SelectTextBox(&_textBoxesGeneral[i], coord, clickedOnGUI);
 					}
 				}
 			}
@@ -709,11 +637,11 @@ bool LevelEditState::HandleButtons()
 	{
 		//Hide Gui
 		_uiTree.GetNode("SettingList")->SetHidden(true);
-		for (unsigned i = 0; i < _uiTree.GetNode("Otherbuttons")->GetChildren()->size()-3; i++)
+		for (unsigned i = 0; i < _uiTree.GetNode("Otherbuttons")->GetChildren()->size() - 3; i++)
 		{
 			//Move gui
 			GUI::Node* node = _uiTree.GetNode("Otherbuttons")->GetChildren()->at(i);
-			node->SetPosition(_buttonPositions[i+7]);
+			node->SetPosition(_buttonPositions[i + 7]);
 			_isPressed[i] = false;
 		}
 		_settingsId = -2;
@@ -722,11 +650,11 @@ bool LevelEditState::HandleButtons()
 	{
 		////Show Gui
 		_uiTree.GetNode("SettingList")->SetHidden(false);
-		for (unsigned i = 0; i < _uiTree.GetNode("Otherbuttons")->GetChildren()->size()-3; i++)
+		for (unsigned i = 0; i < _uiTree.GetNode("Otherbuttons")->GetChildren()->size() - 3; i++)
 		{
 			//Move gui
 			GUI::Node* node = _uiTree.GetNode("Otherbuttons")->GetChildren()->at(i);
-			XMFLOAT2 move = _buttonPositions[i+7];
+			XMFLOAT2 move = _buttonPositions[i + 7];
 			move.x = move.x - 0.296f;
 			XMFLOAT2 moveShort = move;
 			moveShort.x += 0.01f;
@@ -766,11 +694,141 @@ bool LevelEditState::HandleButtons()
 	return clickedOnGUI;
 }
 
+bool LevelEditState::HandleButtonsForSpawn(System::MouseCoord &coord, bool clickedOnGUI)
+{
+	std::vector<GUI::Node*>* notSelectedRadioButtonNodes = _spawnWaveTypeRadioButtons.GetNotSelectedRadioButtonNodes();
+	for (int i = 0; i < notSelectedRadioButtonNodes->size() && !clickedOnGUI; i++)
+	{
+		if (!_uiTree.IsNodeHidden(notSelectedRadioButtonNodes->at(i)) && _uiTree.IsButtonColliding(notSelectedRadioButtonNodes->at(i), coord))
+		{
+			_spawnWaveTypeRadioButtons.SelectRadioButtonNode(notSelectedRadioButtonNodes->at(i));
+			SaveCurrentSpawnWave();
+			clickedOnGUI = true;
+		}
+	}
+	if (!clickedOnGUI)
+	{
+		if (_uiTree.IsButtonColliding("WaveAdd", coord._pos.x, coord._pos.y) && _isPressed[4] == true)
+		{
+			clickedOnGUI = true;
+			SaveCurrentSpawnWave();
+			AddSpawnWaveAndSelectIt();
+			ShowSelectedSpawnWave();
+		}
+		else if (_uiTree.IsButtonColliding("WaveDelete", coord._pos.x, coord._pos.y) && _isPressed[4] == true)
+		{
+			clickedOnGUI = true;
+			if (RemoveSelectedSpawnWave())
+			{
+				ShowSelectedSpawnWave();
+			}
+		}
+		else if (_uiTree.IsButtonColliding("WaveLeft", coord._pos.x, coord._pos.y) && _isPressed[4] == true)
+		{
+			clickedOnGUI = true;
+			if (_selectedSpawnWave > 0)
+			{
+				SaveCurrentSpawnWave();
+				_selectedSpawnWave--;
+				ShowSelectedSpawnWave();
+			}
+		}
+		else if (_uiTree.IsButtonColliding("WaveRight", coord._pos.x, coord._pos.y) && _isPressed[4] == true)
+		{
+			clickedOnGUI = true;
+			if (_selectedSpawnWave < _levelBinary._enemyWavesGUIData.size() - 1)
+			{
+				SaveCurrentSpawnWave();
+				_selectedSpawnWave++;
+				ShowSelectedSpawnWave();
+			}
+		}
+		else
+		{
+			for (int i = 0; i < _textBoxesSpawnSettings.size() && !clickedOnGUI; i++)
+			{
+				clickedOnGUI = SelectTextBox(&_textBoxesSpawnSettings[i], coord, clickedOnGUI);
+			}
+		}
+	}
+	return clickedOnGUI;
+}
+
+void LevelEditState::SaveCurrentSpawnWave()
+{
+	GUI::Node* selectedSpawnTypeNode = _spawnWaveTypeRadioButtons.GetSelectedRadioButtonNode();
+	std::string selectedSpawnTypeString = selectedSpawnTypeNode->GetId();
+	int selectedSpawnType;
+	if (selectedSpawnTypeString == "BurglarRadioButton")
+	{
+		selectedSpawnType = 0;
+	}
+	else if (selectedSpawnTypeString == "DemolisherRadioButton")
+	{
+		selectedSpawnType = 1;
+	}
+	else if (selectedSpawnTypeString == "AssassinRadioButton")
+	{
+		selectedSpawnType = 2;
+	}
+
+	_levelBinary._enemyWavesGUIData[_selectedSpawnWave][0] = selectedSpawnType;
+	_levelBinary._enemyWavesGUIData[_selectedSpawnWave][1] = std::stoi(_textBoxesSpawnSettings[0].GetText());
+	_levelBinary._enemyWavesGUIData[_selectedSpawnWave][2] = std::stoi(_textBoxesSpawnSettings[1].GetText());
+	_levelBinary._enemyWavesGUIData[_selectedSpawnWave][3] = std::stoi(_textBoxesSpawnSettings[2].GetText());
+}
+
+bool LevelEditState::SelectTextBox(GUI::TextBox* textBox, System::MouseCoord & coord, bool clickedOnGUI)
+{
+	GUI::Node* textBoxNode = textBox->GetAttachedGUINode();
+
+	//User clicked the textbox while it was visible
+	if (_uiTree.IsButtonColliding(textBoxNode, coord) && !_uiTree.IsNodeHidden(textBoxNode))
+	{
+		clickedOnGUI = true;
+		textBox->SelectTextBox();
+		_currentlySelectedTextBox = textBox;
+		_controls->SetIsTextInputMode(_currentlySelectedTextBox->GetText(), true, !_currentlySelectedTextBox->GetAllowMultipleLines(), true);
+	}
+	return clickedOnGUI;
+}
+
+bool LevelEditState::RemoveSelectedSpawnWave() //Returns true if removed
+{
+	if (_levelBinary._enemyWavesGUIData.size() > 1)
+	{
+		_levelBinary._enemyWavesGUIData.erase(_levelBinary._enemyWavesGUIData.begin() + _selectedSpawnWave);
+		_selectedSpawnWave--;
+		if (_selectedSpawnWave < 0)
+		{
+			_selectedSpawnWave = 0;
+		}
+		return true;
+	}
+	return false;
+}
+
+void LevelEditState::AddSpawnWaveAndSelectIt()
+{
+	_levelBinary._enemyWavesGUIData.push_back(std::vector<int>{0, 0, 0, 0});
+	_selectedSpawnWave = _levelBinary._enemyWavesGUIData.size() - 1;
+}
+
+void LevelEditState::ShowSelectedSpawnWave()
+{
+	_selectedSpawnWaveNode->SetText(std::to_wstring(_selectedSpawnWave + 1));
+	_spawnWaveTypeRadioButtons.SelectRadioButtonNode(_spawnTypesRadioButtonsNodes->at(_levelBinary._enemyWavesGUIData[_selectedSpawnWave][0]));
+	_textBoxesSpawnSettings[0].SetText(std::to_wstring(_levelBinary._enemyWavesGUIData[_selectedSpawnWave][1]));
+	_textBoxesSpawnSettings[1].SetText(std::to_wstring(_levelBinary._enemyWavesGUIData[_selectedSpawnWave][2]));
+	_textBoxesSpawnSettings[2].SetText(std::to_wstring(_levelBinary._enemyWavesGUIData[_selectedSpawnWave][3]));
+}
+
 void LevelEditState::ExportLevel()
 {
+	SaveCurrentSpawnWave();
 	_baseEdit->ReleaseMarkers();
 
-	_currentLevelFileName = System::WStringToString(_textBoxes.at(8).GetText());
+	_currentLevelFileName = System::WStringToString(_saveLevelNameTextNode->GetText());
 
 	////Fill Level Header:
 
@@ -800,22 +858,20 @@ void LevelEditState::ExportLevel()
 	_levelHeader._levelBinaryFilename = _currentLevelFileName + ".bin";
 
 	////Fill Level Binary:
-	Level::LevelBinary levelBinary;
-
 	//Tilemap size
 	Tilemap* tileMap = _objectHandler->GetTileMap();
-	levelBinary._tileMapSizeX = tileMap->GetWidth();
-	levelBinary._tileMapSizeZ = tileMap->GetHeight();
+	_levelBinary._tileMapSizeX = tileMap->GetWidth();
+	_levelBinary._tileMapSizeZ = tileMap->GetHeight();
 
 	//Game objects
 	std::vector<std::vector<GameObject*>>* gameObjects = _objectHandler->GetGameObjects();
-	levelBinary._gameObjectData.resize(_objectHandler->GetObjectCount());
+	_levelBinary._gameObjectData.resize(_objectHandler->GetObjectCount());
 	int gameObjectIndex = 0;
 	for (uint i = 0; i < gameObjects->size(); i++)
 	{
 		for (GameObject* gameObject : gameObjects->at(i))
 		{
-			std::vector<int>* formattedGameObject = &levelBinary._gameObjectData[gameObjectIndex];
+			std::vector<int>* formattedGameObject = &_levelBinary._gameObjectData[gameObjectIndex];
 			formattedGameObject->resize(6);
 
 			//Type
@@ -852,8 +908,27 @@ void LevelEditState::ExportLevel()
 		}
 	}
 
-	//TODO: Fill _enemyWavesData /Rikhard
-	//TODO: Fill _enemySpawnMap /Rikhard
+	//Convert spawn wave data to spawn wave map
+
+	for (int i = 0; i < _levelBinary._enemyWavesGUIData.size(); i++)
+	{
+		std::vector<int>* spawnWave = &_levelBinary._enemyWavesGUIData[i];
+		int enemyType = spawnWave->at(0);
+		int nrOfEnemies = spawnWave->at(1);
+		int startingTime = spawnWave->at(2);
+		int spawnFrequency = spawnWave->at(3);
+
+		for (int enemyIterator = 0; enemyIterator < nrOfEnemies; enemyIterator++)
+		{
+			std::array<int, 2> singleSpawn = { startingTime + (spawnFrequency * enemyIterator), enemyType};
+			_levelBinary._enemyOrderedSpawnVector.push_back(singleSpawn);
+		}
+	}
+
+	std::sort(_levelBinary._enemyOrderedSpawnVector.begin(), _levelBinary._enemyOrderedSpawnVector.end(), [](std::array<int, 2> a, std::array<int, 2> b)
+	{
+		return b[0] > a[0];
+	});
 
 	//Save available units
 	GUI::ToggleButton* currentToggleButton;
@@ -865,7 +940,7 @@ void LevelEditState::ExportLevel()
 		{
 			currentToggleNode = currentToggleButton->GetAttachedGUINode();
 
-			levelBinary._availableUnits.push_back(currentToggleNode->GetId());
+			_levelBinary._availableUnits.push_back(currentToggleNode->GetId());
 		}
 	}
 
@@ -904,7 +979,7 @@ void LevelEditState::ExportLevel()
 	outStream.open(binaryPath, std::ios::binary);
 	{
 		cereal::BinaryOutputArchive binOut(outStream);
-		binOut(levelBinary);
+		binOut(_levelBinary);
 	}
 	outStream.close();
 }

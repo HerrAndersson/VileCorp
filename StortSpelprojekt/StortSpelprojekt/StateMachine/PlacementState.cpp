@@ -110,7 +110,7 @@ void PlacementState::OnStateEnter()
 	std::vector<GUI::Node*>* availableUnitsGUINodes = _unitBar.GetAttachedGUINodes();
 	
 	//List of units that should be available in the placement bar
-	std::vector<std::string> availableUnitsList = _objectHandler->GetCurrentAvailableUnits();
+	std::vector<std::string>* availableUnitsList = _objectHandler->GetCurrentAvailableUnits();
 
 	//This node contains buttons for placing all the units in the game
 	GUI::Node* allUnitsParentNode = _uiTree.GetNode("UnitList");
@@ -121,13 +121,13 @@ void PlacementState::OnStateEnter()
 	{
 		GUI::Node* currentGUINode = allUnitGUINodes->at(i);
 		bool foundUnit = false;
-		for (int y = 0; y < availableUnitsList.size() && !foundUnit; y++)
+		for (int y = 0; y < availableUnitsList->size() && !foundUnit; y++)
 		{
-			if (currentGUINode->GetId() == availableUnitsList[y])
+			if (currentGUINode->GetId() == availableUnitsList->at(y))
 			{
 				foundUnit = true;
 				availableUnitsGUINodes->push_back(currentGUINode);
-				availableUnitsList.erase(availableUnitsList.begin() + y);
+				availableUnitsList->erase(availableUnitsList->begin() + y);
 			}
 		}
 		if (!foundUnit)

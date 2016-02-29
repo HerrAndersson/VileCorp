@@ -528,24 +528,24 @@
 					"ThiefTypes2": {
 						"position": [0.17, 0.17],
 						"scale": [0.05, 0.06],
-						"text": "Assasssin",
+						"text": "Assassin",
 						"color": "FF000000",
 						"fontsize": 18.0
 					}
 				},
 				"ThiefBox": {
-					"UnitTypeBox": {
-						"ThiefActiveBox": {
+					"SpawnTypesRadioButton": {
+						"BurglarRadioButton": {
 							"position": [-0.075, 0.21],
 							"scale": [0.021, 0.036],
 							"texture": "../Menues/LevelEdit/GUI/buttonOn.png"
 						},
-						"ThiefInactiveBox": {
+						"DemolisherRadioButton": {
 							"position": [-0.075, 0.1275],
 							"scale": [0.021, 0.036],
 							"texture": "../Menues/LevelEdit/GUI/buttonOff.png"
 						},
-						"ThiefInactiveBox2": {
+						"AssassinRadioButton": {
 							"position": [0.085, 0.21],
 							"scale": [0.021, 0.036],
 							"texture": "../Menues/LevelEdit/GUI/buttonOff.png"

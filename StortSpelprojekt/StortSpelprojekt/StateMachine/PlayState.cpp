@@ -49,7 +49,6 @@ void PlayState::Update(float deltaTime)
 	if (_controls->IsFunctionKeyDown("MOUSE:SELECT") && !_uiTree.GetNode("Tutorial")->GetHidden())
 	{
 		_uiTree.GetNode("Tutorial")->SetHidden(true);
-		_objectHandler->EnableSpawnPoints();
 	}
 
 	_gameLogic->Update(deltaTime);

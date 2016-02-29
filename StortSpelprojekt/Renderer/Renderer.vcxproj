@@ -28,6 +28,7 @@
     <ClCompile Include="GUI elements\HighlightNode.cpp" />
     <ClCompile Include="GUI elements\Node.cpp" />
     <ClCompile Include="GUI elements\NodeBar.cpp" />
+    <ClCompile Include="GUI elements\RadioButtonCollection.cpp" />
     <ClCompile Include="GUI elements\TextBox.cpp" />
     <ClCompile Include="GUI elements\ToggleButton.cpp" />
     <ClCompile Include="ParticleSystem\Particle.cpp" />
@@ -52,6 +53,7 @@
     <ClInclude Include="GUI elements\HighlightNode.h" />
     <ClInclude Include="GUI elements\Node.h" />
     <ClInclude Include="GUI elements\NodeBar.h" />
+    <ClInclude Include="GUI elements\RadioButtonCollection.h" />
     <ClInclude Include="GUI elements\TextBox.h" />
     <ClInclude Include="GUI elements\ToggleButton.h" />
     <ClInclude Include="ParticleSystem\Particle.h" />

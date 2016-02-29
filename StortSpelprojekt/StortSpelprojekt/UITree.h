@@ -4,6 +4,7 @@
 #include "GUI elements/TextBox.h"
 #include "GUI elements/ToggleButton.h"
 #include "GUI elements/NodeBar.h"
+#include "GUI elements/RadioButtonCollection.h"
 #include "InputDevice.h"
 #include "AssetManager.h"
 #include "ObjectHandler.h"
