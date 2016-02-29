@@ -267,15 +267,18 @@ void Game::Render()
 
 void Game::RenderGameObjects(int forShaderStage, std::vector<std::vector<GameObject*>>* gameObjects)
 {
-	if (forShaderStage == Renderer::RenderModule::ShaderStage::GEO_PASS)
+	if (tempTestCombinedStuff)
 	{
-		std::vector<std::vector<CombinedMesh>>* combinedMeshes = _combinedMeshGenerator->GetCombinedMeshes();
-		for (auto& objVector : *combinedMeshes)
+		if (forShaderStage == Renderer::RenderModule::ShaderStage::GEO_PASS)
 		{
-			for (auto& obj : objVector)
+			std::vector<std::vector<CombinedMesh>>* combinedMeshes = _combinedMeshGenerator->GetCombinedMeshes();
+			for (auto& objVector : *combinedMeshes)
 			{
-				_renderModule->SetDataPerObjectType(obj._combinedObject);
-				_renderModule->Render(&obj._world, obj._vertexCount);
+				for (auto& obj : objVector)
+				{
+					_renderModule->SetDataPerObjectType(obj._combinedObject);
+					_renderModule->Render(&obj._world, obj._vertexCount);
+				}
 			}
 		}
 	}

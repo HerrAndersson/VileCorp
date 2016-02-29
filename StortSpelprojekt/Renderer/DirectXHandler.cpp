@@ -453,6 +453,8 @@ namespace Renderer
 
 			//TODO: Add fullscreen setting /Jonas
 			_swapChain->ResizeTarget(&modeDesc);
+
+			//DO THIS!
 			_swapChain->SetFullscreenState(true, NULL);
 
 			//Preserve the existing buffer count and format. Automatically choose the width and height to match the client rect for HWNDs.
