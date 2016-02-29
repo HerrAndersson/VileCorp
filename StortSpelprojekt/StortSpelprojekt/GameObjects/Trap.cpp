@@ -284,6 +284,7 @@ void Trap::SetTiles()
 		_nrOfOccupiedTiles = CalculateRectangle(5, 2, _tilePosition, _occupiedTiles);
 		_nrOfTriggers = CalculateRectangle(1, 2, _tilePosition, _triggerTiles);
 		_nrOfAOETiles = CalculateRectangle(1, 2, _tilePosition, _areaOfEffect);
+		break;
 	case GUN:
 		_nrOfOccupiedTiles = CalculateLine(10, _tilePosition, _occupiedTiles);
 		_nrOfAOETiles = CalculateLine(10, _tilePosition, _areaOfEffect);
@@ -325,14 +326,14 @@ void Trap::SetTiles()
 	{
 		if (_tileMap->IsFloorOnTile(_areaOfEffect[i]))
 		{
-			_tileMap->GetObjectOnTile(_areaOfEffect[i], System::FLOOR)->SetColorOffset({3.0f,1.0f,0.0f});
+			_tileMap->GetObjectOnTile(_areaOfEffect[i], System::FLOOR)->SetColorOffset({ 3.0f,1.0f,0.0f });
 		}
 	}
 	for (int i = 0; i < _nrOfOccupiedTiles; i++)
 	{
 		if (_tileMap->IsFloorOnTile(_occupiedTiles[i]))
 		{
-			_tileMap->GetObjectOnTile(_occupiedTiles[i], System::FLOOR)->SetColorOffset({2,2,0});
+			_tileMap->GetObjectOnTile(_occupiedTiles[i], System::FLOOR)->SetColorOffset({ 2,2,0 });
 		}
 	}
 }
