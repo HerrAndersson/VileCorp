@@ -185,7 +185,7 @@ void Guard::Act(GameObject* obj)
 			if (!static_cast<Trap*>(obj)->IsTrapActive())
 			{
 				Animate(FIXTRAPANIM);
-				if(System::FrameCountdown(_interactionTime, _animation->GetLength(FIXTRAPANIM, _animSpeed)))
+				if(System::FrameCountdown(_interactionTime, _animation->GetLength(FIXTRAPANIM)))
 				{
 					static_cast<Trap*>(obj)->SetTrapActive(true);
 					//	obj->SetColorOffset({0,0,0});
@@ -195,7 +195,7 @@ void Guard::Act(GameObject* obj)
 			break;
 		case  System::ENEMY:											//The guard hits the enemy
 			Animate(FIGHTANIM);
-			if(System::FrameCountdown(_interactionTime, _animation->GetLength(FIGHTANIM, _animSpeed)))
+			if(System::FrameCountdown(_interactionTime, _animation->GetLength(FIGHTANIM)))
 			{
 				Unit* enemy = static_cast<Unit*>(obj);
 				enemy->TakeDamage(1);

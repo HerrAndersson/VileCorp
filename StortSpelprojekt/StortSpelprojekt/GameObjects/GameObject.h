@@ -35,7 +35,6 @@ protected:
 	bool _active;
 	RenderObject* _renderObject;
 	Animation* _animation = nullptr;
-	float _animSpeed;
 
 	System::SoundModule* _soundModule;
 

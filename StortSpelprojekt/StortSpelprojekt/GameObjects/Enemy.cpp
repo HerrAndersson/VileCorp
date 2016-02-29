@@ -267,7 +267,7 @@ void Enemy::Act(GameObject* obj)
 			{
 				obj->SetPickUpState(PICKINGUP);
 				Animate(PICKUPOBJECTANIM);
-				if (System::FrameCountdown(_interactionTime, _animation->GetLength(PICKUPOBJECTANIM, _animSpeed)))
+				if (System::FrameCountdown(_interactionTime, _animation->GetLength(PICKUPOBJECTANIM)))
 				{
 					obj->SetPickUpState(PICKEDUP);
 					_heldObject = obj;
@@ -285,7 +285,7 @@ void Enemy::Act(GameObject* obj)
 			if (static_cast<Trap*>(obj)->IsTrapActive())
 			{
 				Animate(DISABLETRAPANIM);
-				if (System::FrameCountdown(_interactionTime, _animation->GetLength(DISABLETRAPANIM, _animSpeed)))
+				if (System::FrameCountdown(_interactionTime, _animation->GetLength(DISABLETRAPANIM)))
 				{
 					DisarmTrap(static_cast<Trap*>(obj));
 					ClearObjective();
@@ -299,7 +299,7 @@ void Enemy::Act(GameObject* obj)
 		break;
 		case  System::GUARD:
 			Animate(FIGHTANIM);
-			if(System::FrameCountdown(_interactionTime, _animation->GetLength(FIGHTANIM, _animSpeed)))
+			if(System::FrameCountdown(_interactionTime, _animation->GetLength(FIGHTANIM)))
 			{
 				Unit* guard = static_cast<Unit*>(obj);
 				guard->TakeDamage(_baseDamage);

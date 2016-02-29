@@ -339,7 +339,6 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	_occupiedTiles = nullptr;
 	_triggerTiles = nullptr;
 	_subType = trapType;
-	_animSpeed = 1.0f;
 	int radius = 0;
 
 	bool frozen = true;
@@ -579,16 +578,16 @@ void Trap::Animate(Anim anim)
 		switch (anim)
 		{
 		case IDLEANIM:
-			_animation->SetActionAsCycle(IDLEANIM, _animSpeed);
+			_animation->SetActionAsCycle(IDLEANIM);
 			break;
 		case ACTIVATEANIM:
-			_animation->PlayAction(ACTIVATEANIM, _animSpeed, true, true);
+			_animation->PlayAction(ACTIVATEANIM, true, true);
 			break;
 		case DISABLEANIM:
-			_animation->PlayAction(DISABLEANIM, _animSpeed, true, true);
+			_animation->PlayAction(DISABLEANIM, true, true);
 			break;
 		case FIXANIM:
-			_animation->PlayAction(FIXANIM, _animSpeed);
+			_animation->PlayAction(FIXANIM);
 			break;
 		default:
 			break;
