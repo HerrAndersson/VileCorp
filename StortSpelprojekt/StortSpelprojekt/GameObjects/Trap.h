@@ -19,7 +19,6 @@ private:
 	int _statusInterval;				//time between status effects. Set to same time as _statusTimer to only activate once.
 	int _detectDifficulty;
 	int _disarmDifficulty;
-	bool _triggered;
 
 	int _triggerTimer;					//Used either for moving triggers around (e.g. spinning sawblade) or time between automatic reloads (e.g. firearms)
 	int	_maxTimeToTrigger;				//What _triggerTime resets to
@@ -58,8 +57,6 @@ public:
 	bool InRange(AI::Vec2D pos) const;
 	bool IsTrapActive() const;
 	void SetTrapActive(bool active);
-	bool GetTriggered() const;
-	void SetTriggered(bool triggered);
 
 	void RequestParticleByType(Unit* unit);
 

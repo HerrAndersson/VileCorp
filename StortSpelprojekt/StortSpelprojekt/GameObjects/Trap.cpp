@@ -339,7 +339,6 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	_occupiedTiles = nullptr;
 	_triggerTiles = nullptr;
 	_subType = trapType;
-	_triggered = false;
 	_animSpeed = 1.0f;
 	int radius = 0;
 
@@ -445,13 +444,17 @@ void Trap::SetTrapActive(bool active)
 	_isActive = active;
 	if (!active)
 	{
-		//TODO: pos should be defined in the model format //Mattias
 		_currentAmmunition = _maxAmmunition;
+
 		XMFLOAT3 pos = GetPosition();
-		Animate(FIXANIM);
-		pos.y += 3;
-		_particleEventQueue->Insert(new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::WRENCH_SUBTYPE, GetID(), pos, XMFLOAT3(0, 0, 0), 0.0f, 1, 0.25f, true, false));
+		XMFLOAT3 iconPos;
+		iconPos.x = _renderObject->_mesh->_iconPos[0] + pos.x;
+		iconPos.y = _renderObject->_mesh->_iconPos[1] + pos.y;
+		iconPos.z = _renderObject->_mesh->_iconPos[2] + pos.z;
+		_particleEventQueue->Insert(new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::WRENCH_SUBTYPE, GetID(), iconPos, XMFLOAT3(0, 0, 0), 0.0f, 1, 0.25f, true, false));
 		_hasParticleEffect = true;
+
+		Animate(FIXANIM);
 	}
 	else
 	{
@@ -463,19 +466,22 @@ void Trap::SetTrapActive(bool active)
 
 void Trap::RequestParticleByType(Unit* unit)
 {
-	//TODO: pos should be defined in the model format //Mattias
 	XMFLOAT3 pos = GetPosition();
+	XMFLOAT3 particlePos;
+	particlePos.x = _renderObject->_mesh->_particleSpawnerPos[0] + pos.x;
+	particlePos.y = _renderObject->_mesh->_particleSpawnerPos[1] + pos.y;
+	particlePos.z = _renderObject->_mesh->_particleSpawnerPos[2] + pos.z;
 
 	switch (GetSubType())
 	{
 	case SPIKE:
 	{
-		_particleEventQueue->Insert(new ParticleRequestMessage(ParticleType::SPLASH, ParticleSubType::BLOOD_SUBTYPE, -1, pos, XMFLOAT3(0, 1, 0), 300.0f, 20, 0.1f, true));
+		_particleEventQueue->Insert(new ParticleRequestMessage(ParticleType::SPLASH, ParticleSubType::BLOOD_SUBTYPE, -1, particlePos, XMFLOAT3(0, 1, 0), 300.0f, 20, 0.1f, true));
 		break;
 	}
 	case TESLACOIL:
 	{
-		_particleEventQueue->Insert(new ParticleRequestMessage(ParticleType::ELECTRICITY, ParticleSubType::SPARK_SUBTYPE, -1, pos, XMFLOAT3(0, 0, 0), 1000.0f, 20, 0.3f, true, true, unit->GetPosition()));
+		_particleEventQueue->Insert(new ParticleRequestMessage(ParticleType::ELECTRICITY, ParticleSubType::SPARK_SUBTYPE, -1, particlePos, XMFLOAT3(0, 0, 0), 1000.0f, 20, 0.3f, true, true, unit->GetPosition()));
 		break;
 	}
 	case SHARK:
@@ -484,7 +490,7 @@ void Trap::RequestParticleByType(Unit* unit)
 	{
 		AI::Vec2D objectDir = GetDirection();
 		XMFLOAT3 dir(objectDir._x, 0, objectDir._y);
-		_particleEventQueue->Insert(new ParticleRequestMessage(ParticleType::MUZZLE_FLASH, ParticleSubType::MUZZLE_FLASH_SUBTYPE, -1, pos, dir, 50.0f, 1, 0.1f, true));
+		_particleEventQueue->Insert(new ParticleRequestMessage(ParticleType::MUZZLE_FLASH, ParticleSubType::MUZZLE_FLASH_SUBTYPE, -1, particlePos, dir, 50.0f, 1, 0.1f, true));
 		break;
 	}
 	default:
@@ -498,10 +504,10 @@ void Trap::Activate()
 	{
 		if (_tileMap->IsEnemyOnTile(_areaOfEffect[i]))
 		{
-			static_cast<Unit*>(_tileMap->GetObjectOnTile(_areaOfEffect[i], System::ENEMY))->TakeDamage(_damage);
-			static_cast<Unit*>(_tileMap->GetObjectOnTile(_areaOfEffect[i], System::ENEMY))->SetStatusEffect(_statusEffect, _statusInterval, _statusTimer);
 			Unit* unit = static_cast<Unit*>(_tileMap->GetObjectOnTile(_areaOfEffect[i], System::ENEMY));
-			
+
+			unit->TakeDamage(_damage);
+			unit->SetStatusEffect(_statusEffect, _statusInterval, _statusTimer);	
 			RequestParticleByType(unit);
 		}
 		if (_tileMap->IsGuardOnTile(_areaOfEffect[i]))
@@ -511,7 +517,6 @@ void Trap::Activate()
 			RequestParticleByType(unit);
 		}
 	}
-	_triggered = false;
 	Animate(ACTIVATEANIM);
 	PlayActivateSound();
 	_currentAmmunition--;
@@ -610,15 +615,6 @@ void Trap::SetDirection(const AI::Vec2D direction)
 	_direction = direction;
 }
 
-bool Trap::GetTriggered() const
-{
-	return _triggered;
-}
-
-void Trap::SetTriggered(bool triggered)
-{
-	_triggered = triggered;
-}
 void Trap::Animate(Anim anim)
 {
 	if (_animation != nullptr && _animation->GetisFinished())
