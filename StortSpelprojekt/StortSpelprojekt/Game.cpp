@@ -5,7 +5,7 @@
 
 Game::Game(HINSTANCE hInstance, int nCmdShow):
 	_settingsReader("Assets/settings.xml", "Assets/profile.xml"),
-	_soundModule(_settingsReader.GetSettings())
+	_soundModule(_settingsReader.GetSettings(), "Assets/Sounds/", ".ogg")
 {
 	srand(time(NULL));
 	System::Settings* settings = _settingsReader.GetSettings();
