@@ -25,14 +25,17 @@ Guard::Guard(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 ro
 	case BASICGUARD:
 		_health = 100;
 		_baseDamage = 30;
+		_trapInteractionTime = 2;
 		break;
 	case ENGINEER:
-		_health = 100;
-		_baseDamage = 30;
+		_health = 70;
+		_baseDamage = 20;
+		_trapInteractionTime = 1;
 		break;
 	case MARKSMAN:
 		_health = 100;
-		_baseDamage = 30;
+		_baseDamage = 50;
+		_trapInteractionTime = 2;
 		break;
 	default:
 		break;
@@ -137,7 +140,7 @@ void Guard::Release()
 void Guard::Update(float deltaTime)
 {
 	Unit::Update(deltaTime);
-	if (_health > 0)
+	if (_health > 0 && _status != StatusEffect::STUNNED)
 	{
 		switch (_moveState)
 		{
@@ -200,7 +203,7 @@ void Guard::Act(GameObject* obj)
 				Unit* enemy = static_cast<Unit*>(obj);
 				enemy->TakeDamage(1);
 				enemy->Animate(HURTANIM);
-				if (static_cast<Unit*>(obj)->GetHealth() <= 0)
+				if (enemy->GetHealth() <= 0)
 				{
 					ClearObjective();
 				}

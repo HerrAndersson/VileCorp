@@ -30,10 +30,11 @@ protected:
 	int _baseDamage;
 	int _visionRadius;
 	VisionCone* _visionCone;
+	int _trapInteractionTime;		//Multiplier that affects repair time for guards, or disarm time for enemies.
 
 	//Unit status
 	StatusEffect _status;
-	int _statusInterval;				//Time between status activations
+	int _statusInterval;			//Time between status activations
 	int _statusTimer;				//Time until the status ends
 	
 	//Movement state variables
