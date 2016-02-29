@@ -12,8 +12,13 @@
 #include "ObjectHandler.h"
 #include "../System/Settings/Profile.h"
 
-#define BUTTONGUARD 0
-#define BUTTON 1
+//Since subtypes are so complicated to access
+//We define those that we are going to use
+//Ugly I know. But fine due to the circumstances imo. -Alex
+#define SUBTYPEGUARD 0
+#define SUBTYPESPIKE 0
+#define SUBTYPETESLACOIL 1
+#define SUBTYPESECURITYCAMERA 0
 
 enum TutorialState
 {
@@ -59,9 +64,11 @@ private:
 	bool _tutorialCompleted;
 	float _time;
 	bool _light;
+	bool _objectPlaced;
 
 private:
-	void InputButtons(int type);
+	void InputButtons(System::Type type, int subType);
+	void InputButtons();
 
 public:
 	TutorialLogic(GUI::UITree* uiTree, System::Controls* controls, Player* player, std::vector<GUI::Node*>* buttons, GhostImage* ghostImage, ObjectHandler* objectHandler, PickingDevice* pickingDevice, System::Profile* profile);
