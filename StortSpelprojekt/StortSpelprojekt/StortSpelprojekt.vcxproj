@@ -32,6 +32,7 @@
     <ClCompile Include="GameObjects\SpawnPoint.cpp" />
     <ClCompile Include="GameObjects\Trap.cpp" />
     <ClCompile Include="GameObjects\Unit.cpp" />
+    <ClCompile Include="GhostImage.cpp" />
     <ClCompile Include="LightCulling.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ObjectHandler.cpp" />
@@ -67,6 +68,7 @@
     <ClInclude Include="GameObjects\SpawnPoint.h" />
     <ClInclude Include="GameObjects\Trap.h" />
     <ClInclude Include="GameObjects\Unit.h" />
+    <ClInclude Include="GhostImage.h" />
     <ClInclude Include="LightCulling.h" />
     <ClInclude Include="QuadTree.h" />
     <ClInclude Include="ObjectHandler.h" />

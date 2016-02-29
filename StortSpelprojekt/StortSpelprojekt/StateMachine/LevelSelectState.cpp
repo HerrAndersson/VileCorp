@@ -68,6 +68,7 @@ void LevelSelectState::Update(float deltaTime)
 					{
 						_tutorialState = TutorialState::NEWTUTORIAL;
 					}
+					else
 					{
 						_tutorialState = TutorialState::NOTUTORIAL;
 					}

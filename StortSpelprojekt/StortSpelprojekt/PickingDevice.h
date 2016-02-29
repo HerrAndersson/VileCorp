@@ -39,6 +39,8 @@ public:
 	AI::Vec2D PickTile(POINT mousePoint);
 	//This function is to determine the direction of your click compared to the center of the tile you clicked on.
 	AI::Vec2D PickDirection(POINT mousePoint, Tilemap* tilemap);
+	//Determine the direction of your click compared to an origin of an object.
+	AI::Vec2D PickDirection(POINT mousePoint, AI::Vec2D origin, Tilemap* tilemap);
 
 	XMFLOAT3 PickPoint(POINT mousePoint);
 	vector<GameObject*> PickObjects(POINT mousePoint, vector<GameObject*> pickableObjects);

@@ -118,7 +118,7 @@ void BaseEdit::MarkerMoveEvent()
 		// Check validity of placement
 		_marker._placeable = CheckValidity(pickedTile, _marker._g->GetType());
 
-		// Move marker grafically
+		// Move marker graphically
 		_marker._g->SetPosition(p);
 
 		// Move marker logically but unconnected
@@ -397,16 +397,18 @@ void BaseEdit::HandleMouseInput()
 			_isPlace = false;
 			_isDragAndDropMode = false;
 		}
-		
-		if (_controls->IsFunctionKeyDown("MOUSE:SELECT") && !_isPlace && !_isDragAndDropMode)
+		else // necessary because left and right mouse button might be pressed at once
 		{
-			_isPlace = true;
-		}
+			if (_controls->IsFunctionKeyDown("MOUSE:SELECT") && !_isPlace && !_isDragAndDropMode)
+			{
+				_isPlace = true;
+			}
 
-		if ((_isDragAndDropMode && _controls->IsFunctionKeyUp("MOUSE:SELECT"))
-			|| (!_isDragAndDropMode && _controls->IsFunctionKeyDown("MOUSE:DRAG") && _isPlace))
-		{
-			DropEvent();
+			if ((_isDragAndDropMode && _controls->IsFunctionKeyUp("MOUSE:SELECT"))
+				|| (!_isDragAndDropMode && _controls->IsFunctionKeyDown("MOUSE:DRAG") && _isPlace))
+			{
+				DropEvent();
+			}
 		}
 	}
 }
@@ -517,7 +519,7 @@ bool BaseEdit::CheckValidity(AI::Vec2D tile, System::Type type)
 	return valid;
 }
 
-void BaseEdit::HandleBlueprint(SpecificBlueprint* sB)
+void BaseEdit::HandleBlueprint(System::SpecificBlueprint* sB)
 {
 	_sB = sB;
 	if (_isSelectionMode)

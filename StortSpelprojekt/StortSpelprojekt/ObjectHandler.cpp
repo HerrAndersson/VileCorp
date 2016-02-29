@@ -14,10 +14,6 @@ ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, G
 	_gameObjects.resize(System::NR_OF_TYPES);
 	_particleEventQueue = particleEventQueue;
 	_soundModule = soundModule;
-
-	//Init sounds
-	_soundModule->AddSound("enemy_death", 0.7f, 1.0f, false, false);
-	_soundModule->AddSound("guard_death", 1.0f, 0.6f, false, false);
 }
 
 ObjectHandler::~ObjectHandler()
@@ -26,7 +22,7 @@ ObjectHandler::~ObjectHandler()
 	SAFE_DELETE(_buildingGrid);
 }
 
-bool ObjectHandler::Add(System::Blueprint* blueprint, int textureId, const XMFLOAT3& position, const XMFLOAT3& rotation, const bool placeOnTilemap)
+int ObjectHandler::Add(System::Blueprint* blueprint, int textureId, const XMFLOAT3& position, const XMFLOAT3& rotation, const bool placeOnTilemap)
 {
 	GameObject* object = nullptr;
 	System::Type type = (System::Type)blueprint->_type;
@@ -55,7 +51,7 @@ bool ObjectHandler::Add(System::Blueprint* blueprint, int textureId, const XMFLO
 		object = new Enemy(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, _tilemap, blueprint->_subType);
 		break;
 	case  System::GUARD:
-		object = new Guard(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, _tilemap);
+		object = new Guard(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, _tilemap, blueprint->_subType);
 		break;
 	default:
 		break;
@@ -101,7 +97,6 @@ bool ObjectHandler::Add(System::Blueprint* blueprint, int textureId, const XMFLO
 
 	if (object != nullptr)
 	{
-		_idCount++;
 		_gameObjects[type].push_back(object);
 
 		//TODO: remove when proper loading can be done /Jonas
@@ -144,9 +139,9 @@ bool ObjectHandler::Add(System::Blueprint* blueprint, int textureId, const XMFLO
 		//	_spotlights[object] = new Renderer::Spotlight(_device, i, 0.1f, 1000.0f);
 		//}
 		_objectCount++;
-		return true;
+		return _idCount++;
 	}
-	return false;
+	return -1;
 }
 
 bool ObjectHandler::Remove(int ID)
@@ -296,6 +291,11 @@ vector<vector<GameObject*>>* ObjectHandler::GetGameObjects()
 int ObjectHandler::GetObjectCount() const
 {
 	return _objectCount;
+}
+
+int ObjectHandler::GetIdCount()const
+{
+	return _idCount;
 }
 
 Tilemap * ObjectHandler::GetTileMap() const

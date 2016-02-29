@@ -33,7 +33,7 @@ void MenuState::Update(float deltaTime)
 	{
 		if (_uiTree.IsButtonColliding("playbutton", coord._pos.x, coord._pos.y))
 		{
-			_soundModule->Stop("theme");
+			_soundModule->Stop("theme", 3000);
 			_soundModule->Play("page");
 
 			ChangeState(State::LEVELSELECTSTATE);
