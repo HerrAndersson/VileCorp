@@ -63,6 +63,16 @@ void GUI::TextBox::SetCharacterLimit(const int &characterLimit)
 	_characterLimit = characterLimit;
 }
 
+bool GUI::TextBox::GetOnlyNumbersAllowed()
+{
+	return _allowOnlyNumbers;
+}
+
+void GUI::TextBox::SetOnlyNumbersAllowed(bool &allowOnlyNumbers)
+{
+	_allowOnlyNumbers = allowOnlyNumbers;
+}
+
 void GUI::TextBox::SelectTextBox()
 {
 	//TODO: Add code for blinking text marker here /Rikhard

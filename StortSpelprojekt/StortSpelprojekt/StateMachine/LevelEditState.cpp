@@ -647,7 +647,7 @@ bool LevelEditState::HandleButtons()
 						clickedOnGUI = true;
 						textBox->SelectTextBox();
 						_currentlySelectedTextBox = textBox;
-						_controls->SetIsTextInputMode(_currentlySelectedTextBox->GetText(), true, !_currentlySelectedTextBox->GetAllowMultipleLines(), true, _currentlySelectedTextBox->GetCharacterLimit());
+						_controls->SetIsTextInputMode(_currentlySelectedTextBox->GetText(), true, !_currentlySelectedTextBox->GetAllowMultipleLines(), true, _currentlySelectedTextBox->GetCharacterLimit(), _currentlySelectedTextBox->GetOnlyNumbersAllowed());
 					}
 				}
 			}

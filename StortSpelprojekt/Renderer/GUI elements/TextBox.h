@@ -27,6 +27,8 @@ namespace GUI
 		void SetText(const std::wstring &text);
 		int GetCharacterLimit() const;
 		void SetCharacterLimit(const int &characterLimit);
+		bool GetOnlyNumbersAllowed();
+		void SetOnlyNumbersAllowed(bool &allowOnlyNumbers);
 		void SelectTextBox();
 		void DeselectTextBox();
 		bool GetAllowMultipleLines() const;

@@ -305,11 +305,16 @@ namespace System
 			}
 			default: //Process displayable characters
 			{
+
 				if (iswprint(wparam))
 				{
-					if (!overCharacterLimit)
+					if (wparam <= 0x39 && wparam >= 0x30 || _onlyNumbers== false)
 					{
-						_currentText += wparam;
+						
+						if (!overCharacterLimit)
+						{
+							_currentText += wparam;
+						}
 					}
 				}
 				break;
@@ -376,7 +381,7 @@ namespace System
 		return _currentText;
 	}
 
-	void InputDevice::SetIsTextInputMode(std::wstring currentText, bool breakOnEsc, bool breakOnCarriageReturn, bool breakOnTab, int characterLimit)
+	void InputDevice::SetIsTextInputMode(std::wstring currentText, bool breakOnEsc, bool breakOnCarriageReturn, bool breakOnTab, int characterLimit, bool onlyNumbers)
 	{
 		_isTextInputMode = true;
 		_currentText = currentText;
@@ -384,6 +389,7 @@ namespace System
 		_breakOnCarriageReturn = breakOnCarriageReturn;
 		_breakOnTab = breakOnTab;
 		_characterLimit = characterLimit;
+		_onlyNumbers = onlyNumbers;
 	}
 	void InputDevice::ResetTextInputMode()
 	{
