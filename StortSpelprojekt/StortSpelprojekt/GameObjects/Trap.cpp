@@ -213,7 +213,14 @@ AI::Vec2D Trap::ConvertOctant(int octant, AI::Vec2D pos, bool in)
 	return convertedPos;
 }
 
-void Trap::Initialize(int damage, int tileSize, int triggerSize, int AOESize, int detectDifficulty, int disarmDifficulty, 
+
+/*
+	Sets any subtype specific stats besides those related to area, which are set in SetTiles().  
+
+	TODO: Add individual reset time.
+	--Victor
+*/
+void Trap::Initialize(int damage, int tileSize, int triggerSize, int AOESize, int detectDifficulty, int disarmDifficulty, int repairTime, int disarmTime,
 					  Unit::StatusEffect statusEffect, int statusTimer, int statusInterval, int triggerTimer, int ammunition)
 {
 	delete[] _areaOfEffect;
@@ -225,6 +232,8 @@ void Trap::Initialize(int damage, int tileSize, int triggerSize, int AOESize, in
 	_areaOfEffect = new AI::Vec2D[_areaOfEffectArrayCapacity];
 	_detectDifficulty = detectDifficulty;
 	_disarmDifficulty = disarmDifficulty;
+	_repairTime = repairTime;
+	_disarmTime = disarmTime;
 	_statusEffect = statusEffect;
 	_statusTimer = statusTimer;
 	_statusInterval = statusInterval;
@@ -273,14 +282,18 @@ void Trap::SetTiles()
 		break;
 	case SHARK:
 		_nrOfOccupiedTiles = CalculateRectangle(5, 2, _tilePosition, _occupiedTiles);
+		_nrOfTriggers = CalculateRectangle(1, 2, _tilePosition, _triggerTiles);
 		_nrOfAOETiles = CalculateRectangle(1, 2, _tilePosition, _areaOfEffect);
+		break;
 	case GUN:
 		_nrOfOccupiedTiles = CalculateLine(10, _tilePosition, _occupiedTiles);
 		_nrOfAOETiles = CalculateLine(10, _tilePosition, _areaOfEffect);
+		_nrOfTriggers = CalculateLine(10, _tilePosition, _triggerTiles);
 		break;
 	case SAW:
 		_nrOfOccupiedTiles = CalculateRectangle(3, 1, _tilePosition, _occupiedTiles);
 		_areaOfEffect[_nrOfAOETiles++] = _tilePosition;
+		_triggerTiles[_nrOfTriggers++] = _tilePosition;
 		break;
 	case CAKEBOMB:
 		_occupiedTiles[_nrOfOccupiedTiles++] = _tilePosition;
@@ -295,6 +308,14 @@ void Trap::SetTiles()
 	case FLAMETHROWER:
 		_nrOfOccupiedTiles = CalculateLine(7, _tilePosition, _occupiedTiles);
 		_nrOfAOETiles = CalculateLine(7, _tilePosition, _areaOfEffect);
+		_nrOfTriggers = CalculateLine(7, _tilePosition, _triggerTiles);
+		break;
+	case WATER_GUN:
+		break;
+	case SPIN_TRAP:
+		_occupiedTiles[_nrOfOccupiedTiles++] = _tilePosition;
+		_triggerTiles[_nrOfTriggers++] = _tilePosition;
+		_areaOfEffect[_nrOfAOETiles++] = _tilePosition;
 		break;
 	default:
 		_areaOfEffect = nullptr;
@@ -305,14 +326,14 @@ void Trap::SetTiles()
 	{
 		if (_tileMap->IsFloorOnTile(_areaOfEffect[i]))
 		{
-			_tileMap->GetObjectOnTile(_areaOfEffect[i], System::FLOOR)->SetColorOffset({3.0f,1.0f,0.0f});
+			_tileMap->GetObjectOnTile(_areaOfEffect[i], System::FLOOR)->SetColorOffset({ 3.0f,1.0f,0.0f });
 		}
 	}
 	for (int i = 0; i < _nrOfOccupiedTiles; i++)
 	{
 		if (_tileMap->IsFloorOnTile(_occupiedTiles[i]))
 		{
-			_tileMap->GetObjectOnTile(_occupiedTiles[i], System::FLOOR)->SetColorOffset({2,2,0});
+			_tileMap->GetObjectOnTile(_occupiedTiles[i], System::FLOOR)->SetColorOffset({ 2,2,0 });
 		}
 	}
 }
@@ -344,30 +365,36 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	bool firstFrame = false;
 	switch (_subType)
 	{
-	case SPIKE:
-		Initialize(30, 1, 1, 1, 50, 50, Unit::StatusEffect::NO_EFFECT, 0, 0);
+	case SPIKE:																						//Basic one tile, damage only, trap
+		Initialize(40, 1, 1, 1, 50, 50, 140, 140, Unit::StatusEffect::NO_EFFECT, 0, 0);
 		firstFrame = true;
 		break;
-	case TESLACOIL:	
-		Initialize(0, 9, 9, 37, 80, 80, Unit::StatusEffect::STUNNED, 120, 120, 60, 2);
+	case TESLACOIL:																					//AOE that stuns for a few seconds and does a small amount of damage
+		Initialize(30, 9, 9, 37, 80, 80, 140, 140, Unit::StatusEffect::STUNNED, 620, 620, 60, 2);
 		break;
-	case SHARK:
-		Initialize(120, 12, 2, 2, 50, 50, Unit::StatusEffect::NO_EFFECT, 0, 0);
+	case SHARK:																						//Takes up a lot of space, but is an instant kill if it hits.
+		Initialize(999, 12, 2, 2, 60, 80, 140, 140, Unit::StatusEffect::NO_EFFECT, 0, 0);
 		break;
-	case GUN:
-		Initialize(60, 10, 10, 10, 60, 60, Unit::StatusEffect::NO_EFFECT, 0, 0, 60, 5);
+	case GUN:																						//Mid tier standard damage dealer. Damage is done in a straight line. Can trigger multiple times
+		Initialize(60, 10, 10, 10, 40, 90, 140, 140, Unit::StatusEffect::NO_EFFECT, 0, 0, 60, 5);
 		break;
-	case SAW:
-		Initialize(80, 3, 1, 1, 50, 70, Unit::StatusEffect::NO_EFFECT, 0, 0, 60, -1);
+	case SAW:																						//Goes back and forth in a line. doesn't need to be reset unless an enemy disarms it.
+		Initialize(60, 3, 1, 1, 30, 80, 140, 140, Unit::StatusEffect::NO_EFFECT, 0, 0, 60, -1);
 		break;
-	case CAKEBOMB:
-		Initialize(90, 1, 1, 1, 90, 60, Unit::StatusEffect::NO_EFFECT, 0, 0);
+	case CAKEBOMB:																					//Instant kill on one tile. TODO: Make it seem easier to disarm than it is
+		Initialize(999, 1, 1, 1, 90, 60, 280, 140, Unit::StatusEffect::NO_EFFECT, 0, 0);
 		break;
-	case BEAR:
-		Initialize(40, 1, 1, 1, 20, 20, Unit::StatusEffect::NO_EFFECT, 0, 0);
+	case BEAR:																						//Another one tile trap. Easy to disarm to lure enemies into wasting time on it
+		Initialize(50, 1, 1, 1, 10, 20, 140, 280, Unit::StatusEffect::NO_EFFECT, 0, 0);
 		break;
-	case FLAMETHROWER:
-		Initialize(20, 7, 7, 7, 60, 60, Unit::StatusEffect::BURNING, 300, 60, 60, 3);
+	case FLAMETHROWER:																				//Shorter range and less direct damage than a gun, but does damage over time.
+		Initialize(20, 7, 7, 7, 60, 60, 140, 140, Unit::StatusEffect::BURNING, 300, 60, 60, 3);
+		break;
+	case WATER_GUN:																					//No damage, but inflicts slow for a long time. Range is the same as the flamethrower
+		Initialize(0, 7, 7, 7, 60, 60, 140, 140, Unit::StatusEffect::SLOWED, 450, 450, 60, 5);
+		break;
+	case SPIN_TRAP:																					//No damage, but inflicts confusion, which cause the enemy to move randomly for the duration.
+		Initialize(0, 1, 1, 1, 70, 90, 140, 140, Unit::StatusEffect::CONFUSED, 300, 300, 0, -1);
 		break;
 	default:
 		_areaOfEffect = nullptr;
@@ -462,6 +489,7 @@ void Trap::Activate()
 		if (_tileMap->IsGuardOnTile(_areaOfEffect[i]))
 		{
 			static_cast<Unit*>(_tileMap->GetObjectOnTile(_areaOfEffect[i], System::GUARD))->TakeDamage(_damage);
+			static_cast<Unit*>(_tileMap->GetObjectOnTile(_areaOfEffect[i], System::GUARD))->SetStatusEffect(_statusEffect, _statusInterval, _statusTimer);
 		}
 	}
 	Animate(ACTIVATE);

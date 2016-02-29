@@ -22,7 +22,7 @@ ObjectHandler::~ObjectHandler()
 	SAFE_DELETE(_buildingGrid);
 }
 
-int ObjectHandler::Add(System::Blueprint* blueprint, int textureId, const XMFLOAT3& position, const XMFLOAT3& rotation, const bool placeOnTilemap)
+GameObject* ObjectHandler::Add(System::Blueprint* blueprint, int textureId, const XMFLOAT3& position, const XMFLOAT3& rotation, const bool placeOnTilemap)
 {
 	GameObject* object = nullptr;
 	System::Type type = (System::Type)blueprint->_type;
@@ -39,7 +39,7 @@ int ObjectHandler::Add(System::Blueprint* blueprint, int textureId, const XMFLOA
 		object = new Architecture(_idCount, position, rotation, tilepos, type, renderObject, _soundModule);
 		break;
 	case  System::SPAWN:
-		object = new SpawnPoint(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, 66, 6);
+		object = new SpawnPoint(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, 66, 1);
 		break;
 	case  System::TRAP:
 		object = new Trap(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, _tilemap, blueprint->_subType);
@@ -72,7 +72,7 @@ int ObjectHandler::Add(System::Blueprint* blueprint, int textureId, const XMFLOA
 	{
 		addedObject = true;
 	}
-	if (type == System::TRAP && addedObject && !placeOnTilemap)
+	if (type == System::TRAP && addedObject && placeOnTilemap)
 	{
 		Trap* trap = static_cast<Trap*>(object);
 		int i = 0;
@@ -97,6 +97,7 @@ int ObjectHandler::Add(System::Blueprint* blueprint, int textureId, const XMFLOA
 
 	if (object != nullptr)
 	{
+		_idCount++;
 		_gameObjects[type].push_back(object);
 
 		//TODO: remove when proper loading can be done /Jonas
@@ -139,9 +140,9 @@ int ObjectHandler::Add(System::Blueprint* blueprint, int textureId, const XMFLOA
 		//	_spotlights[object] = new Renderer::Spotlight(_device, i, 0.1f, 1000.0f);
 		//}
 		_objectCount++;
-		return _idCount++;
+		return object;
 	}
-	return -1;
+	return nullptr;
 }
 
 bool ObjectHandler::Remove(int ID)

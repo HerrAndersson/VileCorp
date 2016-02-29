@@ -85,7 +85,7 @@ bool Enemy::SafeToAttack(AI::Vec2D direction)
 bool Enemy::TryToDisarm(Trap* trap)
 {
 	srand((int)time(NULL));
-	return trap->IsTrapActive() && SpotTrap(trap) && (_disarmSkill - trap->GetDisarmDifficulty() > (rand() % 50) - 25);
+	return trap->IsTrapActive() && (_disarmSkill - trap->GetDisarmDifficulty() > (rand() % 50) - 25);
 }
 
 bool Enemy::SpotTrap(Trap * trap)
@@ -145,18 +145,21 @@ Enemy::Enemy(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 ro
 		_baseDamage = 25;
 		_detectionSkill = 40;
 		_disarmSkill = 30;
+		_trapInteractionTime = 2;
 		break;
 	case DISABLER:
 		_health = 60;
 		_baseDamage = 20;
 		_detectionSkill = 80;
 		_disarmSkill = 70;
+		_trapInteractionTime = 1;
 		break;
 	case ASSASSIN:
 		_health = 100;
 		_baseDamage = 50;
 		_detectionSkill = 20;
 		_disarmSkill = 20;
+		_trapInteractionTime = 3;
 		break;
 	default:
 		break;
@@ -198,27 +201,30 @@ void Enemy::EvaluateTile(GameObject* obj)
 		case  System::TRAP:
 		{
 			Trap* trap = static_cast<Trap*>(obj);
-			if (TryToDisarm(trap))
+			if (SpotTrap(trap))
 			{
-				tempPriority = 1;
-			}
-			else
-			{
-				bool changeRoute = false;
-				for (int i = 0; i < trap->GetNrOfOccupiedTiles(); i++)
+				if (TryToDisarm(trap))
 				{
-					AI::Vec2D pos = trap->GetTiles()[i];
-					if (_aStar->GetTileCost(pos) != 15)					//Arbitrary cost. Just make sure the getter and setter use the same number
-					{
-						_aStar->SetTileCost(trap->GetTiles()[i], 15);
-						changeRoute = true;
-					}
+					tempPriority = 1;
 				}
-				if (changeRoute)
+				else
 				{
-					GameObject* temp = _objective;
-					SetGoalTilePosition(_goalTilePosition);					//resets pathfinding to goal
-					_objective = temp;
+					bool changeRoute = false;
+					for (int i = 0; i < trap->GetNrOfOccupiedTiles(); i++)
+					{
+						AI::Vec2D pos = trap->GetTiles()[i];
+						if (_aStar->GetTileCost(pos) != 15)					//Arbitrary cost. Just make sure the getter and setter use the same number
+						{
+							_aStar->SetTileCost(trap->GetTiles()[i], 15);
+							changeRoute = true;
+						}
+					}
+					if (changeRoute)
+					{
+						GameObject* temp = _objective;
+						SetGoalTilePosition(_goalTilePosition);					//resets pathfinding to goal
+						_objective = temp;
+					}
 				}
 			}
 		}
