@@ -286,12 +286,12 @@ void CombinedMeshGenerator::CombineMeshes(Tilemap* tilemap, const Type& typeToCo
 								foundY = false;
 							}
 
-							float scaleX = maxX-basePos.x;
-							float scaleY = maxY-basePos.z;
+							float scaleX = maxX-basePos.x+1;
+							float scaleY = maxY-basePos.z+1;
 
 							XMMATRIX scaleTranslation = XMMatrixScaling(scaleX, 1.0f, scaleY);
 							XMMATRIX scaleUV = XMMatrixScaling(scaleX, scaleY, 1.0f);
-							XMMATRIX translation = scaleTranslation * XMMatrixTranslation(basePos.x + maxX/2.0f, basePos.y, basePos.z + maxY/2.0f);
+							XMMATRIX translation = scaleTranslation * XMMatrixTranslation(basePos.x + scaleX/2.0f-0.5f, basePos.y, basePos.z + scaleY/2.0f-0.5f);
 
 							//Translating the mesh data by the object translation
 							for (auto& vertex : singleObjectDataVector)
