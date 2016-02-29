@@ -60,10 +60,10 @@ Game::~Game()
 
 void Game::ResizeResources(System::Settings* settings)
 {
+	_renderModule->ResizeResources(settings);
 	_window->ResizeWindow(settings);
 	_SM->Resize(settings);
 	_camera->Resize(settings);
-	_renderModule->ResizeResources(settings);
 }
 
 void Game::LoadParticleSystemData(ParticleTextures& particleTextures, ParticleModifierOffsets& modifiers)
@@ -135,11 +135,12 @@ void Game::LoadParticleSystemData(ParticleTextures& particleTextures, ParticleMo
 
 bool Game::Update(double deltaTime)
 {
+	_soundModule.Update(_camera->GetPosition().x, _camera->GetPosition().y, _camera->GetPosition().z);
+
 	if (_SM->GetState() == PLACEMENTSTATE)
 	{
 		_objectHandler->UpdateLights();
 	}
-	_soundModule.Update(_camera->GetPosition().x, _camera->GetPosition().y, _camera->GetPosition().z);
 
 	bool run = true;
 

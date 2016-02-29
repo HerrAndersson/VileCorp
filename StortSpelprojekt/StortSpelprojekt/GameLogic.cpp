@@ -26,8 +26,6 @@ GameLogic::GameLogic(ObjectHandler* objectHandler, System::Camera* camera, Syste
 	_surviveForSeconds = currentLevelHeader->_surviveForSeconds;
 	
 	_soundModule = soundModule;
-	_soundModule->AddSound("unit_select", 0.5f, 1.0f, true, false);
-	_soundModule->AddSound("unit_move", 0.5f, 1.0f, true, false);
 }
 
 GameLogic::~GameLogic()
@@ -109,9 +107,7 @@ void GameLogic::HandleUnitSelect()
 			{
 				_player->SelectUnit((Unit*)pickedUnits[i]);
 			}
-
-			//Play "hm" sound
-			_soundModule->Play("unit_select");
+			PlaySelectSound((GuardType)(((Guard*)pickedUnits[0])->GetSubType()));
 		}
 	}
 
@@ -122,6 +118,23 @@ void GameLogic::HandleUnitSelect()
 		pos.y += 2.5f;
 		ParticleUpdateMessage* msg = new ParticleUpdateMessage(u->GetID(), true, pos);
 		_objectHandler->GetParticleEventQueue()->Insert(msg);
+	}
+}
+
+void GameLogic::PlaySelectSound(GuardType guardType)
+{
+	switch (guardType)
+	{
+	case GuardType::BASICGUARD:
+		_soundModule->Play("unit_select");
+		break;
+
+	case GuardType::ENGINEER:
+		_soundModule->Play("engineer_select");
+		break;
+
+	case GuardType::MARKSMAN:
+		break;
 	}
 }
 
@@ -158,12 +171,34 @@ void GameLogic::HandleUnitMove()
 
 				//Change direction
 				units.at(0)->SetDirection(direction);
+
+				//Play sound
+				PlayMoveSound((GuardType)(((Guard*)units.at(0))->GetSubType()));
 		}
 		else if(units.size() > 0)
 		{
 			_player->MoveUnits(selectedTile);
-			_soundModule->Play("unit_move");
+			//Play sound
+			PlayMoveSound((GuardType)(((Guard*)units.at(0))->GetSubType()));
 		}
+	}
+}
+
+void GameLogic::PlayMoveSound(GuardType guardType)
+{
+	switch (guardType)
+	{
+	case GuardType::BASICGUARD:
+		_soundModule->Play("unit_move");
+		break;
+
+	case GuardType::ENGINEER:
+		_soundModule->Play("engineer_move");
+		break;
+
+	case GuardType::MARKSMAN:
+		_soundModule->Play("unit_move");
+		break;
 	}
 }
 
