@@ -139,34 +139,37 @@ void Guard::Update(float deltaTime)
 {
 	Unit::Update(deltaTime);
 
-	switch (_moveState)
+	if (_status != StatusEffect::STUNNED)
 	{
-	case MoveState::IDLE:
-		Animate(IDLEANIM);
-		Wait();
-		break;
-	case MoveState::FINDING_PATH:
-		if (_objective != nullptr)
+		switch (_moveState)
 		{
-			SetGoal(_objective);
+		case MoveState::IDLE:
+			Animate(IDLEANIM);
+			Wait();
+			break;
+		case MoveState::FINDING_PATH:
+			if (_objective != nullptr)
+			{
+				SetGoal(_objective);
+			}
+			else
+			{
+				SetGoal(_goalTilePosition); //Switch state at the end
+			}
+			break;
+		case MoveState::MOVING:
+			Moving();
+			Animate(WALKANIM);
+			break;
+		case MoveState::SWITCHING_NODE:
+			SwitchingNode();
+			break;
+		case MoveState::AT_OBJECTIVE:
+			Act(_objective);
+			break;
+		default:
+			break;
 		}
-		else
-		{
-			SetGoal(_goalTilePosition); //Switch state at the end
-		}
-		break;
-	case MoveState::MOVING:
-		Moving();
-		Animate(WALKANIM);
-		break;
-	case MoveState::SWITCHING_NODE:
-		SwitchingNode();
-		break;
-	case MoveState::AT_OBJECTIVE:
-		Act(_objective);
-		break;
-	default:
-		break;
 	}
 }
 

@@ -349,7 +349,7 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 		  const Tilemap* tileMap, int trapType, AI::Vec2D direction)
 	: GameObject(ID, position, rotation, tilePosition, type, renderObject, soundModule)
 {
-	_isActive = false;
+	_isActive = true;
 	_direction = direction;
 	_tileMap = tileMap;
 	_triggerTimer = -1;
@@ -365,11 +365,11 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	switch (_subType)
 	{
 	case SPIKE:																						//Basic one tile, damage only, trap
-		Initialize(40, 1, 1, 1, 40, 50, 140, 140, Unit::StatusEffect::NO_EFFECT, 0, 0);
+		Initialize(40, 1, 1, 1, 50, 50, 140, 140, Unit::StatusEffect::NO_EFFECT, 0, 0);
 		firstFrame = true;
 		break;
 	case TESLACOIL:																					//AOE that stuns for a few seconds and does a small amount of damage
-		Initialize(30, 9, 9, 37, 30, 80, 140, 140, Unit::StatusEffect::STUNNED, 120, 120, 60, 2);
+		Initialize(30, 9, 9, 37, 80, 80, 140, 140, Unit::StatusEffect::STUNNED, 620, 620, 60, 2);
 		break;
 	case SHARK:																						//Takes up a lot of space, but is an instant kill if it hits.
 		Initialize(999, 12, 2, 2, 60, 80, 140, 140, Unit::StatusEffect::NO_EFFECT, 0, 0);
@@ -488,6 +488,7 @@ void Trap::Activate()
 		if (_tileMap->IsGuardOnTile(_areaOfEffect[i]))
 		{
 			static_cast<Unit*>(_tileMap->GetObjectOnTile(_areaOfEffect[i], System::GUARD))->TakeDamage(_damage);
+			static_cast<Unit*>(_tileMap->GetObjectOnTile(_areaOfEffect[i], System::GUARD))->SetStatusEffect(_statusEffect, _statusInterval, _statusTimer);
 		}
 	}
 	Animate(ACTIVATE);

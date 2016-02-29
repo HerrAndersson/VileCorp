@@ -85,7 +85,7 @@ bool Enemy::SafeToAttack(AI::Vec2D direction)
 bool Enemy::TryToDisarm(Trap* trap)
 {
 	srand((int)time(NULL));
-	return trap->IsTrapActive() && SpotTrap(trap) && (_disarmSkill - trap->GetDisarmDifficulty() > (rand() % 50) - 25);
+	return trap->IsTrapActive() && (_disarmSkill - trap->GetDisarmDifficulty() > (rand() % 50) - 25);
 }
 
 bool Enemy::SpotTrap(Trap * trap)
@@ -201,27 +201,30 @@ void Enemy::EvaluateTile(GameObject* obj)
 		case  System::TRAP:
 		{
 			Trap* trap = static_cast<Trap*>(obj);
-			if (TryToDisarm(trap))
+			if (SpotTrap(trap))
 			{
-				tempPriority = 1;
-			}
-			else
-			{
-				bool changeRoute = false;
-				for (int i = 0; i < trap->GetNrOfOccupiedTiles(); i++)
+				if (TryToDisarm(trap))
 				{
-					AI::Vec2D pos = trap->GetTiles()[i];
-					if (_aStar->GetTileCost(pos) != 15)					//Arbitrary cost. Just make sure the getter and setter use the same number
-					{
-						_aStar->SetTileCost(trap->GetTiles()[i], 15);
-						changeRoute = true;
-					}
+					tempPriority = 1;
 				}
-				if (changeRoute)
+				else
 				{
-					GameObject* temp = _objective;
-					SetGoalTilePosition(_goalTilePosition);					//resets pathfinding to goal
-					_objective = temp;
+					bool changeRoute = false;
+					for (int i = 0; i < trap->GetNrOfOccupiedTiles(); i++)
+					{
+						AI::Vec2D pos = trap->GetTiles()[i];
+						if (_aStar->GetTileCost(pos) != 15)					//Arbitrary cost. Just make sure the getter and setter use the same number
+						{
+							_aStar->SetTileCost(trap->GetTiles()[i], 15);
+							changeRoute = true;
+						}
+					}
+					if (changeRoute)
+					{
+						GameObject* temp = _objective;
+						SetGoalTilePosition(_goalTilePosition);					//resets pathfinding to goal
+						_objective = temp;
+					}
 				}
 			}
 		}
