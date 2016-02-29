@@ -140,8 +140,7 @@ void Guard::Release()
 void Guard::Update(float deltaTime)
 {
 	Unit::Update(deltaTime);
-
-	if (_status != StatusEffect::STUNNED)
+	if (_health > 0 && _status != StatusEffect::STUNNED)
 	{
 		switch (_moveState)
 		{
@@ -188,14 +187,8 @@ void Guard::Act(GameObject* obj)
 		case  System::TRAP:
 			if (!static_cast<Trap*>(obj)->IsTrapActive())
 			{
-				if (!System::FrameCountdown(_interactionTime, _animation->GetLength(2, 1.0f * _speedMultiplier)))
-				{
-					if (_animation != nullptr)
-					{
-						Animate(FIXTRAPANIM);
-					}
-				}
-				else
+				Animate(FIXTRAPANIM);
+				if(System::FrameCountdown(_interactionTime, _animation->GetLength(FIXTRAPANIM)))
 				{
 					static_cast<Trap*>(obj)->SetTrapActive(true);
 					//	obj->SetColorOffset({0,0,0});
@@ -204,14 +197,13 @@ void Guard::Act(GameObject* obj)
 			}
 			break;
 		case  System::ENEMY:											//The guard hits the enemy
-			if (_animation != nullptr && !System::FrameCountdown(_interactionTime, _animation->GetLength(4, 4.5f * _speedMultiplier)))
+			Animate(FIGHTANIM);
+			if(System::FrameCountdown(_interactionTime, _animation->GetLength(FIGHTANIM)))
 			{
-				Animate(FIGHTANIM);
-			}
-			else
-			{
-				static_cast<Unit*>(obj)->TakeDamage(1);
-				if (static_cast<Unit*>(obj)->GetHealth() <= 0)
+				Unit* enemy = static_cast<Unit*>(obj);
+				enemy->TakeDamage(1);
+				enemy->Animate(HURTANIM);
+				if (enemy->GetHealth() <= 0)
 				{
 					ClearObjective();
 				}
@@ -247,6 +239,7 @@ void Guard::Act(GameObject* obj)
 	if (_objective == nullptr)
 	{
 		_moveState = MoveState::MOVING;
+		Animate(WALKANIM);
 	}
 }
 void Guard::SwitchingNode()

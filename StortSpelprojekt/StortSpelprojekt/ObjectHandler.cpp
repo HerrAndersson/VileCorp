@@ -581,7 +581,7 @@ void ObjectHandler::Update(float deltaTime)
 					heldObject->SetTilePosition(AI::Vec2D(heldObject->GetPosition().x, heldObject->GetPosition().z));
 				}
 
-				if (unit->GetHealth() <= 0)
+				if (unit->GetHealth() <= 0 && unit->GetAnimisFinished())
 				{
 					if (heldObject != nullptr)
 					{
@@ -749,7 +749,6 @@ void ObjectHandler::ReleaseGameObjects()
 	_idCount = 0;
 	_objectCount = 0;
 }
-
 
 Renderer::ParticleEventQueue* ObjectHandler::GetParticleEventQueue()
 {

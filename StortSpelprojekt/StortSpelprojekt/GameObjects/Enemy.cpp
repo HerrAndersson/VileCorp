@@ -271,37 +271,27 @@ void Enemy::Act(GameObject* obj)
 		case  System::LOOT:
 			if (_heldObject == nullptr)
 			{
-				if (_interactionTime < 0)
-				{
-					obj->SetPickUpState(PICKINGUP);
-					if (_animation != nullptr)
-					{
-						System::FrameCountdown(_interactionTime, _animation->GetLength(3, 1.0f * _speedMultiplier));
-						Animate(PICKUPOBJECTANIM);
-					}
-				}
-				else if(_interactionTime == 0)
+				obj->SetPickUpState(PICKINGUP);
+				Animate(PICKUPOBJECTANIM);
+				if (System::FrameCountdown(_interactionTime, _animation->GetLength(PICKUPOBJECTANIM)))
 				{
 					obj->SetPickUpState(PICKEDUP);
 					_heldObject = obj;
 					obj->SetVisibility(_visible);
 					ClearObjective();
 				}
-				else
-				{
-					System::FrameCountdown(_interactionTime);
-				}
 			}
 			break;
 		case  System::SPAWN:
-			TakeDamage(_health);						//TODO: Right now despawn is done by killing the unit. This should be changed to reflect that it's escaping --Victor
-														//^ This will also make the guard_death sound not play if it's an escape -- Sebastian
+				TakeDamage(_health);						//TODO: Right now despawn is done by killing the unit. This should be changed to reflect that it's escaping --Victor
+															//^ This will also make the guard_death sound not play if it's an escape -- Sebastian
 			break;
 		case  System::TRAP:
 		{
 			if (static_cast<Trap*>(obj)->IsTrapActive())
 			{
-				if (System::FrameCountdown(_interactionTime, 60))
+				Animate(DISABLETRAPANIM);
+				if (System::FrameCountdown(_interactionTime, _animation->GetLength(DISABLETRAPANIM)))
 				{
 					DisarmTrap(static_cast<Trap*>(obj));
 					ClearObjective();
@@ -314,17 +304,13 @@ void Enemy::Act(GameObject* obj)
 		}
 		break;
 		case  System::GUARD:
-			if (!System::FrameCountdown(_interactionTime, _animation->GetLength(1, 1.0f * _speedMultiplier)))
+			Animate(FIGHTANIM);
+			if(System::FrameCountdown(_interactionTime, _animation->GetLength(FIGHTANIM)))
 			{
-				if (_animation != nullptr)
-				{
-					Animate(FIGHTANIM);
-				}
-			}
-			else
-			{
-				static_cast<Unit*>(obj)->TakeDamage(_baseDamage);
-				if (static_cast<Unit*>(obj)->GetHealth() <= 0)
+				Unit* guard = static_cast<Unit*>(obj);
+				guard->TakeDamage(_baseDamage);
+				guard->Animate(HURTANIM);
+				if (guard->GetHealth() <= 0)
 				{
 					ClearObjective();
 				}
@@ -338,6 +324,7 @@ void Enemy::Act(GameObject* obj)
 		if (_objective == nullptr)
 		{
 			_moveState = MoveState::MOVING;
+			Animate(WALKANIM);
 		}
 	}
 }
@@ -348,12 +335,8 @@ void Enemy::Release()
 void Enemy::Update(float deltaTime)
 {
 	Unit::Update(deltaTime);
-	if (_animation != nullptr)
-	{
-		_animation->Update(deltaTime);
-	}
 
-	if (_status != StatusEffect::STUNNED)
+	if (_status != StatusEffect::STUNNED && _health > 0)
 	{
 		switch (_moveState)
 		{
