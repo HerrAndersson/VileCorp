@@ -164,11 +164,6 @@ bool Game::Update(double deltaTime)
 		}
 
 		tempTestCombinedStuff = !tempTestCombinedStuff;
-
-		//XMFLOAT3 pos = XMFLOAT3(50, 1.0f, 50);
-		//ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::QUESTIONMARK_SUBTYPE, -1, pos, XMFLOAT3(0, 0, 0), 100000.0f, 1, 10.5f, true, false); //Follows owner and is not timed
-		//_particleHandler->GetParticleEventQueue()->Insert(msg);
-
 	}
 
 	_particleHandler->Update(deltaTime);

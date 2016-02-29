@@ -373,11 +373,14 @@ void ObjectHandler::MinimizeTileMap()
 
 				for (GameObject* g : temp)
 				{
-					// Update real pos
-					g->SetPosition(XMFLOAT3(x, g->GetPosition().y, y));
+					if (g)
+					{
+						// Update real pos
+						g->SetPosition(XMFLOAT3(x, g->GetPosition().y, y));
 
-					// Update tile
-					minimized->AddObjectToTile(x, y, g);
+						// Update tile
+						minimized->AddObjectToTile(x, y, g);
+					}
 				}
 			}
 		}

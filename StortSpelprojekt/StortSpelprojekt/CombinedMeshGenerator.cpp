@@ -109,6 +109,12 @@ void CombinedMeshGenerator::CreateCombinedMesh(std::vector<Vertex>& combinedMesh
 	RenderObject* combinedRenderObject = new RenderObject();
 	CreateRenderObject(combinedRenderObject, objectToCopy);
 
+
+
+
+	//Combine vertex buffer data here?
+
+
 	D3D11_BUFFER_DESC bufferDesc;
 	ZeroMemory(&bufferDesc, sizeof(bufferDesc));
 	bufferDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -148,11 +154,19 @@ void CombinedMeshGenerator::CombineMeshes(Tilemap* tilemap, const Type& typeToCo
 	int height = tilemap->GetHeight();
 
 	RenderObject* prevRenderObject = nullptr;
-	RenderObject* currentRenderObject = nullptr;
+	RenderObject* thisRenderObject = nullptr;
 
 	std::vector<RenderObject*> renderObjects;
 	std::vector<int> numberPerRenderObject; //Holds how many objects that share a single render object. The indexes are directly mapped between renderObjects and numberPerRenderObject
 	int index = -1;
+
+	//Create a map where each position corresponds to the same position in the tilemap
+	std::vector<std::vector<bool>> tileIsCombined;
+	tileIsCombined.resize(width);
+	for (int i = 0; i < width; i++)
+	{
+		tileIsCombined[i].resize(height);
+	}
 	
 	//Scan the tilemap to find how many different versions we should look for, and which these versions are. For example Type == FLOOR, and there are two different floors with different textures.
 	for (int x = 0; x < width; x++)
@@ -164,10 +178,8 @@ void CombinedMeshGenerator::CombineMeshes(Tilemap* tilemap, const Type& typeToCo
 			{
 				if (object && object->GetType() == typeToCombine)
 				{
-					RenderObject* thisRenderObject = object->GetRenderObject();
+					thisRenderObject = object->GetRenderObject();
 
-					//THIS DOES NOT WORK, CHECK THE ENTIRE VECTOR INSTEAD OF JUST THE PREVIOUS
-					//if (thisRenderObject != prevRenderObject)
 					if(!contains(renderObjects, thisRenderObject))
 					{
 						prevRenderObject = thisRenderObject;
@@ -194,35 +206,131 @@ void CombinedMeshGenerator::CombineMeshes(Tilemap* tilemap, const Type& typeToCo
 		{
 			for (int y = 0; y < height; y++)
 			{
-				std::vector<GameObject*>* objectsOnTile = tilemap->GetAllObjectsOnTile(x, y);
-				for (auto& object : *objectsOnTile)
+				if (!tileIsCombined[x][y])
 				{
-					if (object && object->GetType() == typeToCombine && *object->GetRenderObject() == *renderObject)
+					std::vector<GameObject*>* objectsOnTile = tilemap->GetAllObjectsOnTile(x, y);
+					for (auto& object : *objectsOnTile)
 					{
-						XMFLOAT3 pos = object->GetPosition();
-						XMMATRIX translation = XMMatrixTranslation(pos.x, pos.y, pos.z);
-
-						//Translating the mesh data by the object translation
-						for (auto& vertex : singleObjectDataVector)
+						if (object && object->GetType() == typeToCombine && *object->GetRenderObject() == *renderObject)
 						{
-							Vertex vert = vertex;
-							XMVECTOR posV = XMLoadFloat3(&vert._position);
-							posV = XMVector3TransformCoord(posV, translation);
-							XMStoreFloat3(&vert._position, posV);
-							combinedMeshDataVector.push_back(vert);
-						}
+							XMFLOAT3 basePos = object->GetPosition();
+							XMFLOAT3 endPos; //Holds the corner furthest away from basePos
 
-						combinedCount++;
+							int offsetX = 0;
+							int offsetY = 0;
+							bool stopX = false;
+							bool stopY = false;
+							int maxX = std::numeric_limits<int>::infinity();
+							int maxY = std::numeric_limits<int>::infinity();
+							bool foundX = false;
+							bool foundY = false;
 
-						if (countPerCombine != -1 && combinedCount % countPerCombine == 0)
-						{
-							//Create a combination of a given number of meshes
-							CreateCombinedMesh(combinedMeshDataVector, renderObject, _combinedTypes);
-							combinedMeshDataVector.clear();
+							while (!stopX && (x + offsetX) < width)
+							{
+
+								std::vector<GameObject*>* xObjectsOnTile = tilemap->GetAllObjectsOnTile(x + offsetX, y);
+								for (auto& xObject : *xObjectsOnTile)
+								{
+									if (xObject && xObject->GetType() == typeToCombine && *xObject->GetRenderObject() == *renderObject)
+									{
+										foundX = true;
+									}
+								}
+
+								if (foundX)
+								{
+									while (!stopY && (y + offsetY) < height)
+									{
+										foundY = false;
+										if (!tileIsCombined[x + offsetX][y + offsetY])
+										{
+											std::vector<GameObject*>* yObjectsOnTile = tilemap->GetAllObjectsOnTile(x + offsetX, y + offsetY);
+											for (auto& yObject : *yObjectsOnTile)
+											{
+												if (yObject && yObject->GetType() == typeToCombine && *yObject->GetRenderObject() == *renderObject)
+												{
+													tileIsCombined[x + offsetX][y + offsetY] = true;
+													foundY = true;
+												}
+											}
+										}
+										else
+										{
+											maxY = y + offsetY - 1;
+											stopY = true;
+											break;
+										}
+
+										if (!foundY)
+										{
+											maxY = y + offsetY - 1;
+											stopY = true;
+											break;
+										}
+
+										offsetY++;
+									}
+								}
+								else
+								{
+									stopX = true;
+									maxX = x + offsetX - 1;
+									break;
+								}
+
+								//Restart the next column
+								stopY = false;
+								offsetX++;
+								offsetY = 0;
+								foundX = false;
+								foundY = false;
+							}
+
+							float scaleX = maxX-basePos.x;
+							float scaleY = maxY-basePos.z;
+
+							XMMATRIX scaleTranslation = XMMatrixScaling(scaleX, 1.0f, scaleY);
+							XMMATRIX scaleUV = XMMatrixScaling(scaleX, scaleY, 1.0f);
+							XMMATRIX translation = scaleTranslation * XMMatrixTranslation(basePos.x + maxX/2.0f, basePos.y, basePos.z + maxY/2.0f);
+
+							//Translating the mesh data by the object translation
+							for (auto& vertex : singleObjectDataVector)
+							{
+								Vertex vert = vertex;
+
+								//Transform the position
+								XMVECTOR posV = XMLoadFloat3(&vert._position);
+								posV = XMVector3TransformCoord(posV, translation);
+								XMStoreFloat3(&vert._position, posV);
+
+								//Scale the uv-coords according to the same scaling as the position
+								XMVECTOR uvV = XMLoadFloat2(&vert._uv);
+								uvV = XMVector2TransformCoord(uvV, scaleUV);
+								XMStoreFloat2(&vert._uv, uvV);
+
+								combinedMeshDataVector.push_back(vert);
+							}
+
+							combinedCount++;
+
+							if (countPerCombine != -1 && combinedCount % countPerCombine == 0)
+							{
+								//Create a combination of a given number of meshes
+								CreateCombinedMesh(combinedMeshDataVector, renderObject, _combinedTypes);
+								combinedMeshDataVector.clear();
+							}
 						}
 					}
 				}
 			}
+		}
+
+		if (countPerCombine != -1 && combinedMeshDataVector.size() > 0)
+		{
+			//If combinedCount % countPerCombine is not 0 the last time, the remaining objects will have to be added here. 
+			//For example, countPerCombine is 4, but there are 10 objects. The last two will be combined here
+			CreateCombinedMesh(combinedMeshDataVector, renderObject, _combinedTypes);
+			combinedMeshDataVector.clear();
 		}
 
 		if (countPerCombine == -1)

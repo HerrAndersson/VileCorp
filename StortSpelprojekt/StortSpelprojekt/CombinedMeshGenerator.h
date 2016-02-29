@@ -42,8 +42,7 @@ private:
 	void CreateCombinedMesh(std::vector<Vertex>& combinedMeshDataVector, RenderObject* objectToCopy, int index);
 
 	template<class C, class T>
-	auto contains(const C& v, const T& x)
-		-> decltype(end(v), true)
+	auto contains(const C& v, const T& x) -> decltype(end(v), true)
 	{
 		return end(v) != std::find(begin(v), end(v), x);
 	}
