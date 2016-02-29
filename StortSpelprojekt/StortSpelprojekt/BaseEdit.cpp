@@ -207,7 +207,11 @@ void BaseEdit::DropEvent()
 	{
 		if (_droppedObject)
 		{
-			_createdObject = _marker._g;
+			_tileMap->RemoveObjectFromTile(_marker._g);
+			_createdObject = _objectHandler->Add(_sB->_blueprint, _sB->_textureId, _marker._g->GetPosition(), _marker._g->GetRotation(), true);
+			_objectHandler->Remove(_marker._g);
+
+			//_createdObject = _marker._g;
 		}
 		_marker.Reset();
 		CreateMarker();
@@ -519,7 +523,7 @@ bool BaseEdit::CheckValidity(AI::Vec2D tile, System::Type type)
 	return valid;
 }
 
-void BaseEdit::HandleBlueprint(SpecificBlueprint* sB)
+void BaseEdit::HandleBlueprint(System::SpecificBlueprint* sB)
 {
 	_sB = sB;
 	if (_isSelectionMode)

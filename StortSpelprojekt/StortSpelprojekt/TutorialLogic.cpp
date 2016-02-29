@@ -48,8 +48,9 @@ void TutorialLogic::ResetUiTree()
 	_uiTree->GetNode("playexplained")->SetHidden(true);
 }
 
-bool TutorialLogic::Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace, PlayerInfo playerProfile)
+bool TutorialLogic::Update(float deltaTime, PlayerInfo playerProfile)
 {
+	
 	System::MouseCoord coord = _controls->GetMouseCoord();
 	_time += deltaTime;
 	//icon blink speed
@@ -58,7 +59,7 @@ bool TutorialLogic::Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace
 		_time = 0;
 		_light = !_light;
 	}
-
+	/*
 	if (_controls->IsFunctionKeyDown("DEBUG:RELOAD_GUI"))
 	{
 		_uiTree->ReloadTree("../../../../StortSpelprojekt/Assets/GUI/placement.json");
@@ -173,7 +174,7 @@ bool TutorialLogic::Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace
 			//If we placed an anvil.
 			if (baseEdit->IsSelection() && !baseEdit->IsPlace())
 			{
-				/*	toPlace._subType = TrapType::SPIKE;
+					toPlace._subType = TrapType::SPIKE;
 					baseEdit->DragActivate(toPlace._type, toPlace._name, toPlace._subType);
 					_gold -= toPlace._goldCost;
 					_uiTree->GetNode("BudgetValue")->SetText(to_wstring(_gold));
@@ -182,7 +183,7 @@ bool TutorialLogic::Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace
 					_currentStage = TESLAEXPLAINED;
 					_uiTree->GetNode("anvilplace")->SetHidden(true);
 					_uiTree->GetNode("teslaexplained")->SetHidden(false);
-					_uiTree->GetNode("AnvilTrap")->SetColorOffset(DirectX::XMFLOAT4(0, 0, 0, 1.0f));*/
+					_uiTree->GetNode("AnvilTrap")->SetColorOffset(DirectX::XMFLOAT4(0, 0, 0, 1.0f));
 			}
 		}
 		break;
@@ -219,7 +220,7 @@ bool TutorialLogic::Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace
 			//If we placed an anvil.
 			if (baseEdit->IsSelection() && !baseEdit->IsPlace())
 			{
-				/*baseEdit->DragActivate(toPlace._type, toPlace._name, toPlace._subType);
+				baseEdit->DragActivate(toPlace._type, toPlace._name, toPlace._subType);
 				_gold -= toPlace._goldCost;
 				_uiTree->GetNode("BudgetValue")->SetText(to_wstring(_gold));
 				toPlace._blueprintID = baseEdit->GetSelectedObject()->GetID();
@@ -228,7 +229,7 @@ bool TutorialLogic::Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace
 				_uiTree->GetNode("teslaplace")->SetHidden(true);
 				_uiTree->GetNode("securitycameraexplained")->SetHidden(false);
 				_uiTree->GetNode("TeslaTrap")->SetColorOffset(DirectX::XMFLOAT4(0, 0, 0, 1.0f));
-			}*/
+			}
 			}
 			break;
 		}
@@ -264,12 +265,12 @@ bool TutorialLogic::Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace
 			//If we placed an anvil.
 			if (baseEdit->IsSelection() && !baseEdit->IsPlace())
 			{
-				/*baseEdit->DragActivate(toPlace._type, toPlace._name, toPlace._subType);
+				baseEdit->DragActivate(toPlace._type, toPlace._name, toPlace._subType);
 				_gold -= toPlace._goldCost;
 				_uiTree->GetNode("BudgetValue")->SetText(to_wstring(_gold));
 				toPlace._blueprintID = baseEdit->GetSelectedObject()->GetID();
 				_sCameraPlaced = true;
-				_uiTree->GetNode("Camera")->SetColorOffset(DirectX::XMFLOAT4(0, 0, 0, 1.0f));*/
+				_uiTree->GetNode("Camera")->SetColorOffset(DirectX::XMFLOAT4(0, 0, 0, 1.0f));
 			}
 		}
 		if (_controls->IsFunctionKeyDown("MENU:CONTINUE") && _sCameraPlaced)
@@ -311,7 +312,7 @@ bool TutorialLogic::Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace
 			_uiTree->GetNode("Play")->SetColorOffset(DirectX::XMFLOAT4(0, 0, 0, 1.0f));
 		}
 
-		/*
+		
 		//If we want to be able to place even more traps before hitting play.
 		//Guards
 		if (_uiTree->IsButtonColliding("Guard", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
@@ -369,15 +370,17 @@ bool TutorialLogic::Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace
 				toPlace._blueprintID = baseEdit->GetSelectedObject()->GetID();
 			}
 		}
-		*/
+		
 		break;
 	}
 	default:
 		break;
 	}
 	}
+	*/
 	return _tutorialCompleted;
 }
+
 
 bool TutorialLogic::IsTutorialCompleted() const
 {

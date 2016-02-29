@@ -442,6 +442,7 @@ void Unit::ActivateStatus()
 		_moveSpeed /= 2.0f;
 		break;
 	case StatusEffect::STUNNED:					//No active effect. Instead units are prevented from updating while this is in effect.
+		Animate(IDLEANIM);
 		break;
 	case StatusEffect::SCARED:					//TODO: Either allow pursuer to be a non-unit, or make a specific movement state
 		break;
