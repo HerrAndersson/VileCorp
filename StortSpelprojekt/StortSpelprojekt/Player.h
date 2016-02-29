@@ -13,7 +13,7 @@ private:
 	vector<GameObject*> _selectedObjects;
 	vector<GameObject*> _selectedObjectsPreviousPos;
 	bool _drag;
-	GameObject* _dragOrigin;
+	AI::Vec2D _dragOrigin;
 	
 	void AddGuardIcon(Unit* unit);
 	void AddPatrolIcons(Guard* guard);

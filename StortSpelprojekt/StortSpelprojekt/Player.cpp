@@ -90,19 +90,21 @@ void Player::UpdateDragPositions(System::MouseCoord coord)
 	{
 		if (IsSelectedObjects())
 		{
-			AI::Vec2D v2dragOrigin = _dragOrigin->GetTilePosition();
+
 			//We want to compare the picked tile with the object we clicked on.
 			AI::Vec2D pickedTile = _pickingDevice->PickTile(coord._pos);
 			DirectX::XMFLOAT3 clickedPos = XMFLOAT3(pickedTile._x, 0, pickedTile._y);
-			deltaPos.x = clickedPos.x - v2dragOrigin._x;
+			//Deltapos for the objects
+			deltaPos.x = clickedPos.x - _dragOrigin._x;
 			deltaPos.y = 0;
-			deltaPos.z = clickedPos.z - v2dragOrigin._y;
+			deltaPos.z = clickedPos.z - _dragOrigin._y;
+			//give the new values to the objects
 			for (auto i : _selectedObjects)
 			{
 				currentPos = i->GetPosition();
 				i->SetPosition(XMFLOAT3(deltaPos.x + currentPos.x, 0, deltaPos.z + currentPos.z));
 			}
-			_dragOrigin->SetPosition(XMFLOAT3(pickedTile._x, 0, pickedTile._y));
+			_dragOrigin = pickedTile;
 		}
 	}
 }
@@ -259,13 +261,13 @@ bool Player::IsDragging()const
 void Player::ActivateDragging(GameObject* object)
 {
 	_drag = true;
-	_dragOrigin = object;
+	_dragOrigin = object->GetTilePosition();
 }
 
 void Player::DeactivateDragging()
 {
 	_drag = false;
-	_dragOrigin = nullptr;
+	_dragOrigin = AI::Vec2D(0,0);
 	_selectedObjectsPreviousPos.clear();
 }
 

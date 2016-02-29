@@ -214,19 +214,14 @@ void PlacementState::HandleInput()
 				//Selecting placed units
 				_pickingDevice->SetFirstBoxPoint(_controls->GetMouseCoord()._pos);
 
-				//Do we have anything selected if so. We will check if we want to drag or deselect. Else Make box marker.
-				if (_player->GetNumSelectedObjects() > 0)
+				//Do we have anything selected if so. We will check if we want to drag or deselect
+				if (_player->IsSelectedObjects())
 				{
+					//Check the selected objects, if we click on one of them. Then activate dragging with it.
 					vector<GameObject*> hitObjects = _pickingDevice->PickObjects(coord._pos, _player->GetSelectedObjects());
-
-					//Check if we are clicking on objects or the tile of the objects. If we are, we will drag the object. Otherwise we will do nothing and eventually deselect
-					for (GameObject* i : _player->GetSelectedObjects())
+					if (!hitObjects.empty())
 					{
-						if (i->GetTilePosition() == pickedTile || hitObjects.size() > 0)
-						{
-							_player->ActivateDragging(i);
-							break;
-						}
+						_player->ActivateDragging(hitObjects[0]);
 					}
 				}
 			}
