@@ -9,6 +9,7 @@ LevelEditState::LevelEditState(System::Controls* controls, ObjectHandler* object
 	_pageCheck = false;
 	_leaveCheck = -1;
 	_mapChangeSelected = -1;
+	_selectedLevelint = 0;
 
 	_ambientLight = ambientLight;
 }
@@ -28,6 +29,11 @@ void LevelEditState::Update(float deltaTime)
 
 void LevelEditState::OnStateEnter()
 {
+	
+	_levelHeaderFilenames.clear();
+	GetFilenamesInDirectory("Assets/Levels/", ".lvl", _levelHeaderFilenames, false);
+
+
 	_uiTree.ReloadTree(System::LEVELEDIT_GUI_PATH);
 	_objectTabs = _uiTree.GetNode("Buttons")->GetChildren();
 	_settingsTabs = _uiTree.GetNode("Otherbuttons")->GetChildren();
@@ -143,7 +149,7 @@ void LevelEditState::OnStateExit()
 	// Needs to be deallocated first because BaseEdit has GameObject pointers
 	delete _baseEdit;
 	_baseEdit = nullptr;
-
+	
 	_objectHandler->MinimizeTileMap();
 	//TODO: Remove this function to LevelSelection when that state is created. /Alex
 	_objectHandler->UnloadLevel();
@@ -152,10 +158,10 @@ void LevelEditState::OnStateExit()
 void LevelEditState::HandleInput()
 {
 	//Press C to init new level
-	if (_controls->IsFunctionKeyDown("MAP_EDIT:NEWLEVEL"))
-	{
-		_objectHandler->UnloadLevel();
-	}
+	//if (_controls->IsFunctionKeyDown("MAP_EDIT:NEWLEVEL"))
+	//{
+	//	_objectHandler->UnloadLevel();
+	//}
 
 	if (_controls->IsFunctionKeyDown("MENU:MENU"))
 	{
@@ -165,7 +171,8 @@ void LevelEditState::HandleInput()
 
 	if (_controls->IsFunctionKeyDown("DEBUG:EXPORT_LEVEL"))
 	{
-		ExportLevel();
+		_uiTree.GetNode("ExportMapList")->SetHidden(false);
+		_mapChangeSelected = 0;
 	}
 
 	if (_controls->IsFunctionKeyDown("DEBUG:RELOAD_GUI"))
@@ -528,6 +535,7 @@ bool LevelEditState::HandleButtons()
 				clickedOnGUI = true;
 				_uiTree.GetNode("ExportMapList")->SetHidden(false);
 				_mapChangeSelected = 0;
+				
 			}
 			else if (_uiTree.IsButtonColliding("ImportMap", coord._pos.x, coord._pos.y) && _mapChangeSelected == -1)
 			{
@@ -581,11 +589,21 @@ bool LevelEditState::HandleButtons()
 			{
 				clickedOnGUI = true;
 				//TODO: Switch between levels going up Enbom
+				if (!(_selectedLevelint >= _levelHeaderFilenames.size()))
+				{
+					_selectedLevelint += 1;
+				}
+				
 			}
 			else if (_uiTree.IsButtonColliding("LevelDown", coord._pos.x, coord._pos.y) && _mapChangeSelected == 1)
 			{
 				clickedOnGUI = true;
 				//TODO: Switch between levels going down Enbom
+				if (_selectedLevelint != 0)
+				{
+					_selectedLevelint -= 1;
+				}
+				
 			}
 			//New Map Functions
 			else if (_uiTree.IsButtonColliding("LeaveMapYes", coord._pos.x, coord._pos.y) && _leaveCheck > -1)
@@ -596,6 +614,10 @@ bool LevelEditState::HandleButtons()
 					//TODO: NewMap GUI stuff and functions (Make new Map) Julia and Enbom
 					_uiTree.GetNode("LeaveMap")->SetHidden(true);
 					_leaveCheck = -1;
+
+					OnStateExit();
+					OnStateEnter();
+					//TODO: Causes strage behaviour in levelEdit, FIND BUGS Julia & Jesper
 				}
 				else
 				{

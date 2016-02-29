@@ -47,6 +47,10 @@ private:
 	std::vector<GUI::ToggleButton> _toggleButtons;
 	std::vector<std::string> _levelHeaderFilenames;
 
+	//Level::LevelHeader _selectedLevelHeader;
+	int _selectedLevelint;
+
+
 	bool _floorChosen = false;
 	bool _wallChosen = false;
 
