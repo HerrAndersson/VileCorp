@@ -198,7 +198,10 @@
 			"XTrap" :{
 				"position": [0.66, 0.057],
 				"scale": [0.048, 0.083],
-				"texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png",
+        "texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png",
+        "type" : 4,
+				"subType": 4,
+				"textureId" : 0,
 				
 				"TeslaText":
 				{
@@ -210,10 +213,13 @@
 				"centered": true
 				}
 			},
-			"XTrap" :{
+			"YTrap" :{
 				"position": [0.78, 0.057],
 				"scale": [0.048, 0.083],
-				"texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png",
+        "texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png",
+        "type" : 4,
+				"subType": 5,
+				"textureId" : 0,
 				
 				"TeslaText":
 				{
@@ -225,10 +231,13 @@
 				"centered": true
 				}
 			},
-			"XTrap" :{
+			"ZTrap" :{
 				"position": [0.90, 0.057],
 				"scale": [0.048, 0.083],
-				"texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png",
+        "texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png",
+        "type" : 4,
+				"subType": 6,
+				"textureId" : 0,
 				
 				"TeslaText":
 				{
