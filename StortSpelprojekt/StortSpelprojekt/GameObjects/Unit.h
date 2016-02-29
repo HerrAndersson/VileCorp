@@ -11,7 +11,7 @@ class Unit : public GameObject
 public:
 	enum MoveState {IDLE, FINDING_PATH, MOVING, SWITCHING_NODE, AT_OBJECTIVE, FLEEING};
 	enum StatusEffect{NO_EFFECT, BURNING, SLOWED, STUNNED, SCARED, CONFUSED};
-	enum Anim{IDLEANIM, WALKANIM, FIXTRAPANIM, FIGHTANIM, PICKUPOBJECTANIM, NR_OF_ANIM/*Has to be last*/};
+	enum Anim{IDLEANIM, WALKANIM, FIGHTANIM, PICKUPOBJECTANIM, FIXTRAPANIM, DISABLETRAPANIM, HURTANIM, DEATHANIM, NR_OF_ANIM/*Has to be last*/};
 protected:
 	//Pathfinding variables
 	AI::Vec2D _nextTile;
@@ -42,7 +42,8 @@ protected:
 	int _interactionTime;
 	int _waiting;
 
-	float _speedMultiplier;
+	// Animations variables
+	Anim _lastAnimState;
 
 	void CalculatePath();
 	void Rotate();

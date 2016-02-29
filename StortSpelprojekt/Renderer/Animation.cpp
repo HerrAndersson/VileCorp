@@ -1,6 +1,6 @@
 #include"Animation.h"
 
-Animation::Animation(Skeleton* skeleton, bool firstFrame)
+Animation::Animation(Skeleton* skeleton, bool firstFrame, bool frozen)
 {
 	_skeleton = skeleton;
 	_boneCount = _skeleton->_parents.size();
@@ -47,6 +47,8 @@ Animation::Animation(Skeleton* skeleton, bool firstFrame)
 			}
 		}
 	}
+
+	_frozen = frozen;
 }
 
 Animation::~Animation()
@@ -184,7 +186,7 @@ bool Animation::GetisFinished()
 
 float Animation::GetLength(int animation, float speed)
 {
-	int test = _length[animation] / speed;
+	int test = _length[animation] * speed;
 	return test;
 }
 

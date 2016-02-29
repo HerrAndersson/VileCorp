@@ -340,18 +340,18 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	_triggerTiles = nullptr;
 	_subType = trapType;
 	_triggered = false;
-
+	_animSpeed = 1.0f;
 	int radius = 0;
 
-	bool firstFrame = false;
+	bool frozen = true;
 	switch (_subType)
 	{
 	case SPIKE:
 		Initialize(30, 1, 1, 1, 50, 50, Unit::StatusEffect::NO_EFFECT, 0, 0);
-		firstFrame = true;
 		break;
 	case TESLACOIL:
 		Initialize(0, 9, 9, 37, 80, 80, Unit::StatusEffect::STUNNED, 120, 120, 60, 2);
+		frozen = false;
 		break;
 	case SHARK:
 		Initialize(120, 12, 2, 2, 50, 50, Unit::StatusEffect::NO_EFFECT, 0, 0);
@@ -380,8 +380,8 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 
 	if (_renderObject->_mesh->_isSkinned)
 	{
-		_animation = new Animation(_renderObject->_mesh->_skeleton, firstFrame);
-		_animation->Freeze(false);
+		_animation = new Animation(_renderObject->_mesh->_skeleton, true, frozen);
+		Animate(IDLEANIM);
 	}
 }
 
@@ -448,6 +448,7 @@ void Trap::SetTrapActive(bool active)
 		//TODO: pos should be defined in the model format //Mattias
 		_currentAmmunition = _maxAmmunition;
 		XMFLOAT3 pos = GetPosition();
+		Animate(FIXANIM);
 		pos.y += 3;
 		_particleEventQueue->Insert(new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::WRENCH_SUBTYPE, GetID(), pos, XMFLOAT3(0, 0, 0), 0.0f, 1, 0.25f, true, false));
 		_hasParticleEffect = true;
@@ -456,6 +457,7 @@ void Trap::SetTrapActive(bool active)
 	{
 		_particleEventQueue->Insert(new ParticleUpdateMessage(GetID(), false, GetPosition()));
 		_hasParticleEffect = false;
+		Animate(DISABLEANIM);
 	}
 }
 
@@ -510,7 +512,7 @@ void Trap::Activate()
 		}
 	}
 	_triggered = false;
-	Animate(ACTIVATE);
+	Animate(ACTIVATEANIM);
 	PlayActivateSound();
 	_currentAmmunition--;
 	if (_currentAmmunition == 0)
@@ -525,7 +527,7 @@ void Trap::Activate()
 
 void Trap::Update(float deltaTime)
 {
-	if (_animation != nullptr && !_isActive)
+	if (_animation != nullptr)
 	{
 		_animation->Update(deltaTime);
 	}
@@ -621,35 +623,25 @@ void Trap::Animate(Anim anim)
 {
 	if (_animation != nullptr && _animation->GetisFinished())
 	{
-		if (_subType == SPIKE)
+		switch (anim)
 		{
-			switch (anim)
-			{
-			case IDLE:
-				_animation->SetActionAsCycle(0, 2.0f);
-				break;
-			case ACTIVATE:
-				_animation->PlayAction(0, 1.0f, true, true);
-				break;
-			default:
-				break;
-			}
-		}
-		else if (_subType == TESLACOIL)
-		{
-			switch (anim)
-			{
-			case IDLE:
-				_animation->SetActionAsCycle(0, 2.0f);
-				break;
-			case ACTIVATE:
-				_animation->PlayAction(1, 1.0f);
-				break;
-			default:
-				break;
-			}
+		case IDLEANIM:
+			_animation->SetActionAsCycle(IDLEANIM, _animSpeed);
+			break;
+		case ACTIVATEANIM:
+			_animation->PlayAction(ACTIVATEANIM, _animSpeed, true, true);
+			break;
+		case DISABLEANIM:
+			_animation->PlayAction(DISABLEANIM, _animSpeed, true, true);
+			break;
+		case FIXANIM:
+			_animation->PlayAction(FIXANIM, _animSpeed);
+			break;
+		default:
+			break;
 		}
 	}
+
 }
 
 //Sound
@@ -661,7 +653,7 @@ void Trap::PlayActivateSound()
 		_soundModule->SetSoundPosition("anvil_activate", _position.x, 0.0f, _position.z);
 		_soundModule->Play("anvil_activate");
 		break;
-		
+
 	case TESLACOIL:
 		_soundModule->SetSoundPosition("tesla_activate", _position.x, 0.0f, _position.z);
 		_soundModule->Play("tesla_activate");

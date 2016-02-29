@@ -74,7 +74,7 @@ public:
 	void SetTilePosition(AI::Vec2D pos);
 	AI::Vec2D GetDirection();
 	void SetDirection(const AI::Vec2D direction);
-
+	enum Anim { IDLEANIM, ACTIVATEANIM, DISABLEANIM, FIXANIM, NR_OF_ANIM/*Has to be last*/ };
 	
 	void Animate(Anim anim);
 

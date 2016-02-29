@@ -10,10 +10,10 @@ PlacementState::PlacementState(System::Controls* controls, ObjectHandler* object
 	_buttons = _uiTree.GetNode("UnitList")->GetChildren();
 
 	//Money
-	_costOfAnvilTrap	= 50;
-	_costOfTeslaCoil	= 100;
-	_costOfCamera		= 80;
-	_costOfGuard		= 200;
+	_costOfAnvilTrap = 50;
+	_costOfTeslaCoil = 100;
+	_costOfCamera = 80;
+	_costOfGuard = 200;
 	//load all player profiles
 	GetFilenamesInDirectory("Assets/PlayerProfiles/", ".json", _playerProfilesPath);
 
@@ -72,7 +72,7 @@ void PlacementState::OnStateEnter()
 		System::loadJSON(&_playerProfile[i], _playerProfilesPath[i]);
 	}
 	_budget = _objectHandler->GetCurrentLevelHeader()->_budget;
-	
+
 	//Fix so that budgetvalue won't get read if we go into pause state! We don't want the players to cheat themselves back to their budget money by pressing pause, resume, pause etc.. Enbom
 	_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_budget));
 	_objectHandler->DisableSpawnPoints();

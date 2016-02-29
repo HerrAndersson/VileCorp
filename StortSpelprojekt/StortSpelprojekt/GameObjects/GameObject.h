@@ -37,6 +37,7 @@ protected:
 	RenderObject* _renderObject;
 	Animation* _animation = nullptr;
 	bool _hasParticleEffect;
+	float _animSpeed;
 
 	System::SoundModule* _soundModule;
 
@@ -101,5 +102,8 @@ public:
 	//Overloading these guarantees 16B alignment of XMMATRIX
 	void* operator new(size_t i);
 	void operator delete(void* p);
+
+	// Returns 0 if _animation = nullptr
+	int GetAnimLength(int layer);
 };
 
