@@ -120,7 +120,6 @@ Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	_direction = {0, 1};
 	_nextTile = _tilePosition;
 	_isSwitchingTile = false;
-	_animSpeed = 1.0f;
 	Rotate();
 	if (_renderObject->_mesh->_isSkinned)
 	{
@@ -442,6 +441,7 @@ void Unit::ActivateStatus()
 		_moveSpeed /= 2.0f;
 		break;
 	case StatusEffect::STUNNED:					//No active effect. Instead units are prevented from updating while this is in effect.
+		Animate(IDLEANIM);
 		break;
 	case StatusEffect::SCARED:					//TODO: Either allow pursuer to be a non-unit, or make a specific movement state
 		break;
@@ -495,28 +495,28 @@ void Unit::Animate(Anim anim)
 		switch (anim)
 		{
 		case IDLEANIM:
-			_animation->SetActionAsCycle(IDLEANIM, _animSpeed);
+			_animation->SetActionAsCycle(IDLEANIM);
 			break;
 		case WALKANIM:
-			_animation->SetActionAsCycle(WALKANIM, _animSpeed);
+			_animation->SetActionAsCycle(WALKANIM);
 			break;
 		case FIGHTANIM:
-			_animation->PlayAction(FIGHTANIM, _animSpeed);
+			_animation->PlayAction(FIGHTANIM);
 			break;
 		case PICKUPOBJECTANIM:
-			_animation->PlayAction(PICKUPOBJECTANIM, _animSpeed);
+			_animation->PlayAction(PICKUPOBJECTANIM);
 			break;
 		case FIXTRAPANIM:
-			_animation->PlayAction(FIXTRAPANIM, _animSpeed);
+			_animation->PlayAction(FIXTRAPANIM);
 			break;
 		case DISABLETRAPANIM:
-			_animation->PlayAction(DISABLETRAPANIM, _animSpeed);
+			_animation->PlayAction(DISABLETRAPANIM);
 			break;
 		case HURTANIM:
-			_animation->PlayAction(HURTANIM, _animSpeed);
+			_animation->PlayAction(HURTANIM);
 			break;
 		case DEATHANIM:
-			_animation->PlayAction(DEATHANIM, _animSpeed);
+			_animation->PlayAction(DEATHANIM);
 			break;
 		default:
 			break;

@@ -39,7 +39,7 @@ GameObject* ObjectHandler::Add(System::Blueprint* blueprint, int textureId, cons
 		object = new Architecture(_idCount, position, rotation, tilepos, type, renderObject, _soundModule);
 		break;
 	case  System::SPAWN:
-		object = new SpawnPoint(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, 66, 6);
+		object = new SpawnPoint(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, 66, 1);
 		break;
 	case  System::TRAP:
 		object = new Trap(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, _tilemap, blueprint->_subType);

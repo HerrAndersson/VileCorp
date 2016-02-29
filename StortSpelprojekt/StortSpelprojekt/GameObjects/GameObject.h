@@ -37,7 +37,6 @@ protected:
 	RenderObject* _renderObject;
 	Animation* _animation = nullptr;
 	bool _hasParticleEffect;
-	float _animSpeed;
 
 	System::SoundModule* _soundModule;
 
