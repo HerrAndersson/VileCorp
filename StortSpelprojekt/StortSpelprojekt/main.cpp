@@ -15,7 +15,7 @@ int WINAPI wWinMain(HINSTANCE _hInstance, HINSTANCE _hPrevInstance, LPWSTR _lpCm
 	}
 	catch (const std::exception& e)
 	{
-		MessageBoxA(NULL, e.what(), "Error", MB_ICONERROR | MB_OK);
+		MessageBox(NULL, e.what(), "Error", MB_ICONERROR | MB_DEFAULT_DESKTOP_ONLY);
 		result = 1;
 	}
 	return result;
