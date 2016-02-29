@@ -10,6 +10,7 @@
 #include "Player.h"
 #include "GhostImage.h"
 #include "ObjectHandler.h"
+#include "../System/Settings/Profile.h"
 
 #define BUTTONGUARD 0
 #define BUTTON 1
@@ -49,6 +50,7 @@ private:
 	GhostImage*	_ghostImage;
 	ObjectHandler* _objectHandler;
 	PickingDevice* _pickingDevice;
+	System::Profile* _profile;
 	
 	System::SpecificBlueprint _selectedBlueprint;
 	TutorialStage _currentStage;
@@ -62,10 +64,10 @@ private:
 	void InputButtons(int type);
 
 public:
-	TutorialLogic(GUI::UITree* uiTree, System::Controls* controls, Player* player, std::vector<GUI::Node*>* buttons, GhostImage* ghostImage, ObjectHandler* objectHandler, PickingDevice* pickingDevice);
+	TutorialLogic(GUI::UITree* uiTree, System::Controls* controls, Player* player, std::vector<GUI::Node*>* buttons, GhostImage* ghostImage, ObjectHandler* objectHandler, PickingDevice* pickingDevice, System::Profile* profile);
 	~TutorialLogic();
 
-	bool Update(float deltaTime, PlayerInfo playerProfile);
+	bool Update(float deltaTime);
 	void OnStateEnter();
 	void ResetUiTree();
 	bool IsTutorialCompleted()const;

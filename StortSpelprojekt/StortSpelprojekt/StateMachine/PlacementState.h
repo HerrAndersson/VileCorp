@@ -8,6 +8,7 @@
 #include "../TutorialLogic.h"
 #include "CommonUtils.h"
 #include "../GhostImage.h"
+#include "../System/Settings/Profile.h"
 
 class PlacementState : public BaseState
 {
@@ -24,8 +25,7 @@ private:
 	int _currentPlayer = 0;
 	DirectX::XMFLOAT3* _ambientLight;
 
-	std::vector<PlayerInfo> _playerProfile;
-	std::vector<string> _playerProfilesPath;
+	System::Profile* _profile;
 
 	Player* _player;
 	System::SpecificBlueprint _selectedBlueprint;

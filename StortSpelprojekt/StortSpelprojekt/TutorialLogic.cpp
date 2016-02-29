@@ -1,6 +1,6 @@
 #include "TutorialLogic.h"
 
-TutorialLogic::TutorialLogic(GUI::UITree* uiTree, System::Controls* controls, Player* player, std::vector<GUI::Node*>* buttons, GhostImage* ghostImage, ObjectHandler* objectHandler, PickingDevice* pickingDevice)
+TutorialLogic::TutorialLogic(GUI::UITree* uiTree, System::Controls* controls, Player* player, std::vector<GUI::Node*>* buttons, GhostImage* ghostImage, ObjectHandler* objectHandler, PickingDevice* pickingDevice, System::Profile* profile)
 {
 	_uiTree = uiTree;
 	_controls = controls;
@@ -9,6 +9,7 @@ TutorialLogic::TutorialLogic(GUI::UITree* uiTree, System::Controls* controls, Pl
 	_ghostImage = ghostImage;
 	_objectHandler = objectHandler;
 	_pickingDevice = pickingDevice;
+	_profile = profile;
 	_budget = 500;
 	_sCameraPlaced = false;
 	_tutorialCompleted = false;
@@ -53,9 +54,8 @@ void TutorialLogic::ResetUiTree()
 	_uiTree->GetNode("playexplained")->SetHidden(true);
 }
 
-bool TutorialLogic::Update(float deltaTime, PlayerInfo playerProfile)
+bool TutorialLogic::Update(float deltaTime)
 {
-	
 	System::MouseCoord coord = _controls->GetMouseCoord();
 	_time += deltaTime;
 	//icon blink speed
@@ -126,7 +126,7 @@ bool TutorialLogic::Update(float deltaTime, PlayerInfo playerProfile)
 			_uiTree->GetNode("Guard")->SetColorOffset(DirectX::XMFLOAT4(0, 0, 0, 1.0f));
 		}
 			
-		InputButtons(BUTTONGUARD);
+		//InputButtons(BUTTONGUARD);
 			
 		// Temp, should be replaced with blueprint
 			//toPlace._type = System::Type::GUARD;
