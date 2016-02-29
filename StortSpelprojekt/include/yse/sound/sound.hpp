@@ -33,7 +33,7 @@ namespace YSE {
       OCCLUSION,
       DSP,
       TIME,
-      RELATIVE,
+      RELATIVE1337,
       DOPPLER,
       PAN2D,
       FADE_AND_STOP,

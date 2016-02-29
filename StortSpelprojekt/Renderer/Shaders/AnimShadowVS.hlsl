@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------------------------------------------------------
-| Animation Vertex shader used for generate the depth buffer for objects that should cast shadows.							 |
+| Animation Vertex shader used for generate the depth buffer for objects that should cast shadows.					 |
 | Binds null-rendertarget and a depth stencil view																     |
 --------------------------------------------------------------------------------------------------------------------*/
 
@@ -16,7 +16,7 @@ cbuffer matrixBufferPerObject : register(b1)
 
 cbuffer matrixBufferPerObjectObject : register(b5)
 {
-	matrix bones[30];
+	matrix bones[50];
 };
 
 struct VertexInputType
@@ -31,10 +31,9 @@ struct VertexInputType
 float4 main(VertexInputType input) : SV_POSITION
 {
 	float4 inputPos = float4(input.pos, 1.0f);
-	float4 animPos;
 
 	// Calculating the new position for every vertex based on the bones matrices
-	animPos = mul(inputPos, bones[input.boneIndex.y]) * input.boneWeight.y;
+	float4 animPos = mul(inputPos, bones[input.boneIndex.y]) * input.boneWeight.y;
 	animPos += mul(inputPos, bones[input.boneIndex.x]) * input.boneWeight.x;
 	animPos += mul(inputPos, bones[input.boneIndex.z]) * input.boneWeight.z;
 	animPos += mul(inputPos, bones[input.boneIndex.w]) * input.boneWeight.w;
@@ -42,7 +41,6 @@ float4 main(VertexInputType input) : SV_POSITION
 	animPos = mul(animPos, worldMatrix);
 	animPos = mul(animPos, viewMatrix);
 	animPos = mul(animPos, projectionMatrix);
-	animPos.w = 1.0f;
 
 	return animPos;
 }

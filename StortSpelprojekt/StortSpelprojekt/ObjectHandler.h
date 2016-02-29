@@ -1,4 +1,6 @@
 #pragma once
+
+#include "../System/SoundModule.h"
 #include <vector>
 #include "stdafx.h"
 #include "GameObject.h"
@@ -54,6 +56,7 @@ private:
 	Tilemap* _tilemap;
 	Grid* _buildingGrid;
 	Level::LevelHeader _currentLevelHeader;
+	System::SoundModule*	_soundModule;
 
 	int _idCount = 0;
 	int _objectCount = 0;
@@ -66,28 +69,28 @@ private:
 	map<GameObject*, Renderer::Pointlight*> _pointligths;
 	LightCulling* _lightCulling;
 
-	Renderer::ParticleEventQueue* _ParticleEventQueue;
+	Renderer::ParticleEventQueue* _particleEventQueue;
 
 	void ReleaseGameObjects();
 
 public:
-	ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data, System::Settings* settings, Renderer::ParticleEventQueue* particleReque);	
+	ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data, System::Settings* settings, Renderer::ParticleEventQueue* particleReque, System::SoundModule*	soundModule);
 	~ObjectHandler();
 
 	//Add a gameobject
-	bool Add(XMFLOAT3 position, XMFLOAT3 rotation, Type type, int subType, string textureReference);
-	bool Add(Blueprint* blueprint, int textureId, const XMFLOAT3& position, const XMFLOAT3& rotation, const bool placeOnTilemap = true);
-	
+	bool Add(XMFLOAT3 position, XMFLOAT3 rotation, System::Type type, int subType, string textureReference);
+	GameObject* Add(System::Blueprint* blueprint, int textureId, const XMFLOAT3& position, const XMFLOAT3& rotation, const bool placeOnTilemap = true);
+
 	bool Remove(int ID);
-	bool Remove(Type type, int ID);
+	bool Remove(System::Type type, int ID);
 	bool Remove(GameObject* gameObject);
 
 	GameObject* Find(int ID);
-	GameObject* Find(Type type, int ID);
-	GameObject* Find(Type type, short index);
+	GameObject* Find(System::Type type, int ID);
+	GameObject* Find(System::Type type, short index);
 
 	//Returns a vector containing all gameobjects with the same type
-	vector<GameObject*>* GetAllByType(Type type);
+	vector<GameObject*>* GetAllByType(System::Type type);
 	//Returns a list of a renderobject and matrices for all objects using the renderobject
 	RenderList GetAllByType(int renderObjectID);
 	vector<vector<GameObject*>>* GetGameObjects();
@@ -97,6 +100,7 @@ public:
 	vector<vector<GameObject*>>* GetObjectsInLight(Renderer::Spotlight* spotlight);
 
 	int GetObjectCount() const;
+	int GetIdCount()const;
 
 	Tilemap* GetTileMap() const;
 	void SetTileMap(Tilemap* tilemap);
@@ -114,12 +118,14 @@ public:
 	void DisableSpawnPoints();
 	int GetRemainingToSpawn()const;
 
+	Renderer::ParticleEventQueue* GetParticleEventQueue();
+
 	//Update gamelogic of all objects
 	void Update(float deltaTime);
 	void UpdateLights();
 
-	vector<Blueprint>* GetBlueprints();
-	Blueprint* GetBlueprintByName(string name);
-	Blueprint* GetBlueprintByType(int type, int subType = 0);
+	vector<System::Blueprint>* GetBlueprints();
+	System::Blueprint* GetBlueprintByName(string name);
+	System::Blueprint* GetBlueprintByType(int type, int subType = 0);
 };
 

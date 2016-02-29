@@ -5,6 +5,7 @@
 #include "AIUtil.h"
 #include "Animation.h"
 #include "ParticleSystem\ParticleEventQueue.h"
+#include "../System/SoundModule.h"
 
 /*
 GameObject class
@@ -29,13 +30,15 @@ protected:
 	DirectX::XMFLOAT3 _colorOffset;
 	AI::Vec2D _tilePosition;
 	AI::Vec2D _direction;
-	Type _type;
+	System::Type _type;
 	unsigned int _subType;
 	bool _visible;
 	bool _active;
 	RenderObject* _renderObject;
 	Animation* _animation = nullptr;
 	bool _hasParticleEffect;
+
+	System::SoundModule* _soundModule;
 
 	PickUpState _pickUpState;
 
@@ -46,7 +49,7 @@ public:
 
 	GameObject();
 	//Type might not be necessary, depending on whether subclasses can correspond to one type or many.
-	GameObject(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, Type type, RenderObject* renderObject, DirectX::XMFLOAT3 colorOffset = DirectX::XMFLOAT3(0,0,0));
+	GameObject(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject* renderObject, System::SoundModule* soundModule, DirectX::XMFLOAT3 colorOffset = DirectX::XMFLOAT3(0,0,0));
 	virtual ~GameObject();
 
 	unsigned short GetID() const;
@@ -72,8 +75,8 @@ public:
 	AI::Vec2D GetDirection()const;
 
 	virtual void SetTilePosition(AI::Vec2D dir);
-	virtual void SetDirection(AI::Vec2D pos);
-	Type GetType() const;
+	virtual void SetDirection(const AI::Vec2D pos);
+	System::Type GetType() const;
 	unsigned int GetSubType() const;
 
 	bool IsCenteredOnTile(AI::Vec2D tile)const;

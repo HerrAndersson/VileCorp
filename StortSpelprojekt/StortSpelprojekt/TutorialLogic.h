@@ -6,7 +6,6 @@
 #include "AssetManager.h"
 #include "FontWrapper.h"
 #include "SettingsReader.h"
-#include "ToPlace.h"
 #include "CommonUtils.h"
 
 enum TutorialState
@@ -50,7 +49,7 @@ public:
 	TutorialLogic(GUI::UITree* uiTree, System::Controls* controls);
 	~TutorialLogic();
 
-	bool Update(float deltaTime, BaseEdit* baseEdit, ToPlace& toPlace, PlayerInfo playerProfile);
+	bool Update(float deltaTime, PlayerInfo playerProfile);
 	void OnStateEnter();
 	void ResetUiTree();
 	bool IsTutorialCompleted()const;

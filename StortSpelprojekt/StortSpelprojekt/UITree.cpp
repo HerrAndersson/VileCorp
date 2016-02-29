@@ -55,12 +55,12 @@ namespace GUI
 		current->UpdateFont();
 	}
 
-	int UITree::CreateTilesetObject(Blueprint* object, Node* list, int index)
+	int UITree::CreateBlueprintNodes(System::Blueprint* object, Node* list, int index)
 	{
 		int createdThumbnails = 0;
 		if (list == nullptr)
 		{
-			throw runtime_error("UITree::CreateTilesetObject: list not found");
+			throw runtime_error("UITree::CreateBlueprintNodes: list not found");
 		}
 		for (unsigned i = 0; i < object->_thumbnails.size(); i++)
 		{
@@ -85,68 +85,121 @@ namespace GUI
 
 	Node* UITree::LoadGUITree(const std::string& name, rapidjson::Value::ConstMemberIterator start, rapidjson::Value::ConstMemberIterator end, Node* parent)
 	{
+		if (parent != nullptr && parent->GetId() == "UnitList")
+		{
+			return ParseBlueprintNode(start, end, parent, name);
+		}
+		return ParseRegularNode(start, end, parent, name);
+	}
+
+	Node* UITree::ParseRegularNode(rapidjson::Value::ConstMemberIterator start, rapidjson::Value::ConstMemberIterator end, Node* parent, const std::string& name)
+	{
 		Node* returnNode = new Node(&_info);
 		returnNode->SetParent(parent);
 		returnNode->SetId(name);
 		for (Value::ConstMemberIterator i = start; i != end; ++i)
 		{
-			if (i->name == "position")
-			{
-				if (i->value.IsArray())
-				{
-					//if(test == "Trap" || returnNode->GetId() == "Unit" || returnNode->GetId() == "Entry" || returnNode->GetId() == "Floor" || returnNode->GetId() == "Wall" || returnNode->GetId() == "Decoration" || returnNode->GetId() == "Objective")
-					returnNode->SetPosition(XMFLOAT2(
-						(float)i->value[0].GetDouble(),
-						(float)i->value[1].GetDouble()
-						));
-				}
-			}
-			else if (i->name == "scale")
-			{
-				if (i->value.IsArray())
-				{
-					returnNode->SetScale(XMFLOAT2(
-						(float)i->value[0].GetDouble(),
-						(float)i->value[1].GetDouble()
-						));
-				}
-			}
-			else if (i->name == "texture")
-			{
-				returnNode->SetTexture(_AM->GetTexture(i->value.GetString())->_data);
-			}
-			else if (i->name == "text")
-			{
-				//Convert from utf-8 to wchar
-				std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-				returnNode->SetText(converter.from_bytes(i->value.GetString()));
-			}
-			else if (i->name == "color")
-			{
-				UINT color;
-				std::stringstream ss;
-				ss << std::hex << i->value.GetString();
-				ss >> color;
-				returnNode->SetColor(color);
-			}
-			else if (i->name == "fontsize")
-			{
-				returnNode->SetFontSize((float)i->value.GetDouble());
-			}
-			else if (i->name == "centered")
-			{
-				returnNode->SetCentered(i->value.GetBool());
-			}
-			else if (i->name == "hidden")
-			{
-				returnNode->SetHidden(i->value.GetBool());
-			}
-			else
+			if (RegularNodeDataParsed(i, returnNode))
 			{
 				returnNode->AddChild(LoadGUITree(i->name.GetString(), i->value.MemberBegin(), i->value.MemberEnd(), returnNode));
 			}
 		}
 		return returnNode;
+	}
+
+	bool UITree::RegularNodeDataParsed(rapidjson::Value::ConstMemberIterator i, Node* returnNode)
+	{
+		if (i->name == "position")
+		{
+			if (i->value.IsArray())
+			{
+				returnNode->SetPosition(XMFLOAT2(
+					(float)i->value[0].GetDouble(),
+					(float)i->value[1].GetDouble()
+					));
+			}
+		}
+		else if (i->name == "scale")
+		{
+			if (i->value.IsArray())
+			{
+				returnNode->SetScale(XMFLOAT2(
+					(float)i->value[0].GetDouble(),
+					(float)i->value[1].GetDouble()
+					));
+			}
+		}
+		else if (i->name == "texture")
+		{
+			returnNode->SetTexture(_AM->GetTexture(i->value.GetString())->_data);
+		}
+		else if (i->name == "text")
+		{
+			//Convert from utf-8 to wchar
+			std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+			returnNode->SetText(converter.from_bytes(i->value.GetString()));
+		}
+		else if (i->name == "color")
+		{
+			UINT color;
+			std::stringstream ss;
+			ss << std::hex << i->value.GetString();
+			ss >> color;
+			returnNode->SetColor(color);
+		}
+		else if (i->name == "fontsize")
+		{
+			returnNode->SetFontSize((float)i->value.GetDouble());
+		}
+		else if (i->name == "centered")
+		{
+			returnNode->SetCentered(i->value.GetBool());
+		}
+		else if (i->name == "hidden")
+		{
+			returnNode->SetHidden(i->value.GetBool());
+		}
+		else
+		{
+			return true;
+		}
+		return false;
+	}
+
+	BlueprintNode* UITree::ParseBlueprintNode(rapidjson::Value::ConstMemberIterator start, rapidjson::Value::ConstMemberIterator end, Node* parent, const std::string& name)
+	{
+		BlueprintNode* returnNode = new BlueprintNode(&_info);
+		returnNode->SetParent(parent);
+		returnNode->SetId(name);
+		for (Value::ConstMemberIterator i = start; i != end; ++i)
+		{
+			if (RegularNodeDataParsed(i, returnNode) && BlueprintNodeDataParsed(i, returnNode))
+			{
+				returnNode->AddChild(LoadGUITree(i->name.GetString(), i->value.MemberBegin(), i->value.MemberEnd(), returnNode));
+			}
+		}
+		return returnNode;
+	}
+
+	bool UITree::BlueprintNodeDataParsed(rapidjson::Value::ConstMemberIterator i, BlueprintNode* returnNode)
+	{
+		if (i->name == "type")
+		{
+			returnNode->SetType(i->value.GetInt());
+		}
+		else if (i->name == "subType")
+		{
+			returnNode->SetSubType(i->value.GetInt());
+		}
+		else if (i->name == "textureId")
+		{
+			returnNode->SetTextureId(i->value.GetInt());
+		}
+		else
+		{
+			return true;
+		}
+		return false;
 	}
 
 	void UITree::Release(Node * node)
@@ -160,7 +213,6 @@ namespace GUI
 
 	bool UITree::IsButtonColliding(Node* current, int x, int y)
 	{
-
 		XMFLOAT2 topLeft;
 		XMFLOAT2 size;
 		XMFLOAT2 pos = current->GetFinalPosition();
@@ -172,25 +224,22 @@ namespace GUI
 		topLeft.y = pos.y*-1.0f - scale.y;
 
 		//Convert coordinates to pixel coordinate system
-			topLeft.x = (topLeft.x + 1.0f) * 0.5f * _info._windowWidth;
-			topLeft.y = (topLeft.y + 1.0f) * 0.5f * _info._windowHeight;
+		topLeft.x = (topLeft.x + 1.0f) * 0.5f * _info._windowWidth;
+		topLeft.y = (topLeft.y + 1.0f) * 0.5f * _info._windowHeight;
 
-			size.x = scale.x * _info._windowWidth;
-			size.y = scale.y * _info._windowHeight;
+		size.x = scale.x * _info._windowWidth;
+		size.y = scale.y * _info._windowHeight;
 
 		//Check collision with mouse coord and return the result
 		return (
 			(y > topLeft.y && y < topLeft.y + size.y) &&
 			(x > topLeft.x && x < topLeft.x + size.x)
 			);
-
-		return false;
 	}
 
 	bool UITree::IsButtonColliding(const std::string& id, int x, int y)
 	{
 		return IsButtonColliding(UITree::GetNode(id), x, y);
-//		return IsButtonColliding(current->GetId(), x, y);
 	}
 
 	bool UITree::IsButtonColliding(const std::string& id, System::MouseCoord coord)

@@ -16,7 +16,7 @@ AssetManager::AssetManager(ID3D11Device* device)
 	_meshFormatVersion[27] = &AssetManager::ScanModel27;
 	_meshFormatVersion[28] = &AssetManager::ScanModel28;
 
-	GetFilenamesInDirectory((char*)LEVEL_FOLDER_PATH.c_str(), ".lvl", *_levelFileNames);
+	GetFilenamesInDirectory((char*)System::LEVEL_FOLDER_PATH.c_str(), ".lvl", *_levelFileNames);
 }
 
 AssetManager::~AssetManager()
@@ -73,7 +73,7 @@ HRESULT Texture::LoadTexture(ID3D11Device* device)
 	HRESULT res = S_OK;
 	if (!_loaded)
 	{
-		wstring _filePath = TEXTURE_FOLDER_PATH_W;
+		wstring _filePath = System::TEXTURE_FOLDER_PATH_W;
 		_filePath.append(_name.begin(), _name.end());
 		res = DirectX::CreateWICTextureFromFile(device, _filePath.c_str(), nullptr, &_data, 0);
 
@@ -103,7 +103,7 @@ bool Mesh::DecrementUsers()
 //Loads a model to the GPU
 bool AssetManager::LoadModel(string name, Mesh* mesh) {
 
-	string file_path = MODEL_FOLDER_PATH;
+	string file_path = System::MODEL_FOLDER_PATH;
 
 	file_path.append(name);
 	_infile->open(file_path.c_str(), ifstream::binary);
@@ -146,7 +146,7 @@ Texture* AssetManager::ScanTexture(string name)
 Mesh* AssetManager::ScanModel(string name)
 {
 
-	string file_path = MODEL_FOLDER_PATH;
+	string file_path = System::MODEL_FOLDER_PATH;
 
 	file_path.append(name);
 	_infile->open(file_path.c_str(), ifstream::binary);
@@ -232,8 +232,8 @@ Mesh* AssetManager::ScanModel28()
 
 	mesh->_vertexBufferSize = meshHeader._numberOfVertices;
 
-	mesh->_hitbox = new Hitbox();
-	_infile->read((char*)mesh->_hitbox, sizeof(Hitbox));
+	mesh->_hitbox = new System::Hitbox();
+	_infile->read((char*)mesh->_hitbox, sizeof(System::Hitbox));
 
 	return mesh;
 }
@@ -540,13 +540,13 @@ Skeleton* AssetManager::LoadSkeleton(string name)
 {
 	for (Skeleton* skeleton : *_skeletons)
 	{
-		if (strcmp(skeleton->_name.c_str(), name.data()))
+		if (skeleton->_name == name)
 		{
 			return skeleton;
 		}
 	}
 
-	string file_path = ANIMATION_FOLDER_PATH;
+	string file_path = System::ANIMATION_FOLDER_PATH;
 
 	file_path.append(name);
 	_infile->open(file_path.c_str(), ifstream::binary);
@@ -558,7 +558,7 @@ Skeleton* AssetManager::LoadSkeleton(string name)
 
 	Skeleton* skeleton = new Skeleton;
 	_skeletons->push_back(skeleton);
-
+	skeleton->_name = name;
 	SkeletonHeader header;
 	_infile->read((char*)&header, sizeof(SkeletonHeader));
 	if (header._version != _animationFormatVersion)

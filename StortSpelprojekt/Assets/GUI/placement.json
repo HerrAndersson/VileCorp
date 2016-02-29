@@ -12,7 +12,9 @@
 				"position": [-0.18, 0.057],
 				"scale": [0.048, 0.083],
 				"texture": "../Menues/PlacementStateGUI/units/Guardbutton1.png",
-		
+				"type" : 6,
+				"subType": 0,
+				"textureId" : 0,
 				"GuardText": {
 					"position": [0.0, -0.173],
 					"scale": [0.068, 0.083],
@@ -41,7 +43,9 @@
 				"position": [-0.06, 0.057],
 				"scale": [0.048, 0.083],
 				"texture": "../Menues/PlacementStateGUI/units/Guardbutton1.png",
-		
+				"type" : 6,
+				"subType": 1,
+				"textureId" : 0,
 				"GuardText": {
 					"position": [0.0, -0.173],
 					"scale": [0.068, 0.083],
@@ -55,7 +59,9 @@
 				"position": [0.06, 0.057],
 				"scale": [0.048, 0.083],
 				"texture": "../Menues/PlacementStateGUI/units/Camerabutton1.png",
-		
+				"type" : 5,
+				"subType": 0,
+				"textureId" : 0,
 				"CameraText": {
 					"position": [0.0, -0.173],
 					"scale": [0.068, 0.083],
@@ -83,7 +89,9 @@
 				"position": [0.18, 0.057],
 				"scale": [0.048, 0.083],
 				"texture": "../Menues/PlacementStateGUI/units/Anvilbutton1.png",
-		
+				"type" : 4,
+				"subType": 0,
+				"textureId" : 0,
 				"AnvilText": {
 					"position": [0.0, -0.173],
 					"scale": [0.068, 0.083],
@@ -112,7 +120,9 @@
 				"position": [0.30, 0.057],
 				"scale": [0.048, 0.083],
 				"texture": "../Menues/PlacementStateGUI/units/Teslabutton1.png",
-		
+				"type" : 4,
+				"subType": 1,
+				"textureId" : 0,
 				"TeslaText": {
 					"position": [0.03, -0.173],
 					"scale": [0.068, 0.083],
@@ -135,12 +145,14 @@
 						"fontsize" : 18.0
 					}
 				}
-				},
+			},
 			"MachineGunTrap" :{
 				"position": [0.42, 0.057],
 				"scale": [0.048, 0.083],
 				"texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png",
-				
+				"type" : 4,
+				"subType": 3,
+				"textureId" : 0,
 				"TeslaText":
 				{
 					"position": [0.0, -0.173],
@@ -170,7 +182,9 @@
 				"position": [0.54, 0.057],
 				"scale": [0.048, 0.083],
 				"texture": "../Menues/PlacementStateGUI/units/Sharkbutton1.png",
-				
+				"type" : 4,
+				"subType": 2,
+				"textureId" : 0,
 				"TeslaText":
 				{
 					"position": [0.0, -0.173],
@@ -471,10 +485,10 @@
 			"": {
 				"position": [0, -0.15],
 				"scale": [0.15, 0.6],
-				"text": "Click and drag the security camera to a neat place. You can rotate the camera by using R and T once on the position you find suitable.",
+				"text": "Click and drag the security camera\nto a position of your choice!\nYou can also rotate objects like these with R and T.",
 				"color": "FF000000",
 				"centered": true,
-				"fontsize": 30.0
+				"fontsize": 20.0
 			},
 			"": {
 				"position": [0, -1],
@@ -482,7 +496,7 @@
 				"text": "Press Enter to Continue.",
 				"color": "FF000000",
 				"centered": true,
-				"fontsize": 30.0
+				"fontsize": 24.0
 			}
 		},
 		"budgetexplained": {
@@ -492,10 +506,10 @@
 			"": {
 				"position": [0, -0.15],
 				"scale": [0.15, 0.6],
-				"text": "If you havent noticed already. You have a budget at the top left that deducts money for each item you place. In case you change your mind, you can refund items by selecting them and pressing delete on your keyboard.",
+				"text": "You probably noticed already, but in the top left the budget allowed for this job is visible. As you buy items, their cost will be deducted from it.\n\n You can refund units to increase your budget again, by selecting them and pressing DELETE.",
 				"color": "FF000000",
 				"centered": true,
-				"fontsize": 30.0
+				"fontsize": 26.0
 			},
 			"": {
 				"position": [0, -1],
@@ -503,7 +517,7 @@
 				"text": "Press Enter to Continue.",
 				"color": "FF000000",
 				"centered": true,
-				"fontsize": 30.0
+				"fontsize": 24.0
 			}
 		},
 		"playexplained": {
@@ -513,10 +527,10 @@
 			"": {
 				"position": [0, -0.15],
 				"scale": [0.15, 0.6],
-				"text": "Once you done placing objects. Hit Play at the top right corner to start the game.",
+				"text": "Once you feel ready, press Play in the top right to start.",
 				"color": "FF000000",
 				"centered": true,
-				"fontsize": 30.0
+				"fontsize": 26.0
 			},
 			"": {
 				"position": [0, -1],

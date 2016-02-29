@@ -227,20 +227,20 @@ struct GameObjectInfo
 	std::vector<std::vector<GameObjectBaseInfo*>*> _objects;
 	GameObjectInfo()
 	{
-		_objects.resize(NR_OF_TYPES);
-		_objects[FLOOR] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectFloorInfo*>;
-		_objects[WALL] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectWallInfo*>;
-		_objects[LOOT] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectLootInfo*>;
-		_objects[SPAWN] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectSpawnInfo*>;
-		_objects[TRAP] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectTrapInfo*>;
-		_objects[CAMERA] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectCameraInfo*>;
-		_objects[GUARD] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectGuardInfo*>;
-		_objects[ENEMY] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectEnemyInfo*>;
-		_objects[FURNITURE] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectFurnitureInfo*>;
+		_objects.resize(System::NR_OF_TYPES);
+		_objects[System::FLOOR] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectFloorInfo*>;
+		_objects[System::WALL] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectWallInfo*>;
+		_objects[System::LOOT] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectLootInfo*>;
+		_objects[System::SPAWN] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectSpawnInfo*>;
+		_objects[System::TRAP] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectTrapInfo*>;
+		_objects[System::CAMERA] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectCameraInfo*>;
+		_objects[System::GUARD] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectGuardInfo*>;
+		_objects[System::ENEMY] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectEnemyInfo*>;
+		_objects[System::FURNITURE] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectFurnitureInfo*>;
 	}
 	~GameObjectInfo()
 	{
-		for (int i = 0; i < NR_OF_TYPES; i++)
+		for (int i = 0; i <  System::NR_OF_TYPES; i++)
 		{
 			for (GameObjectBaseInfo* obj : *_objects[i])
 			{
@@ -252,74 +252,74 @@ struct GameObjectInfo
 
 	GameObjectFloorInfo* Floors(unsigned i)
 	{
-		if (_objects[FLOOR]->size() < i + 1)
+		if (_objects[System::FLOOR]->size() < i + 1)
 		{
-			_objects[FLOOR]->push_back((GameObjectBaseInfo*)new GameObjectFloorInfo());
+			_objects[System::FLOOR]->push_back((GameObjectBaseInfo*)new GameObjectFloorInfo());
 		}
-		return (GameObjectFloorInfo*)_objects[FLOOR]->at(i);
+		return (GameObjectFloorInfo*)_objects[System::FLOOR]->at(i);
 	}
 	GameObjectWallInfo* Walls(unsigned i)
 	{
-		if (_objects[WALL]->size() < i + 1)
+		if (_objects[System::WALL]->size() < i + 1)
 		{
-			_objects[WALL]->push_back((GameObjectBaseInfo*)new GameObjectWallInfo());
+			_objects[System::WALL]->push_back((GameObjectBaseInfo*)new GameObjectWallInfo());
 		}
-		return (GameObjectWallInfo*)_objects[WALL]->at(i);
+		return (GameObjectWallInfo*)_objects[System::WALL]->at(i);
 	}
 	GameObjectFurnitureInfo* Furnitures(unsigned i)
 	{
-		if (_objects[FURNITURE]->size() < i + 1)
+		if (_objects[System::FURNITURE]->size() < i + 1)
 		{
-			_objects[FURNITURE]->push_back((GameObjectBaseInfo*)new GameObjectFurnitureInfo());
+			_objects[System::FURNITURE]->push_back((GameObjectBaseInfo*)new GameObjectFurnitureInfo());
 		}
-		return (GameObjectFurnitureInfo*)_objects[FURNITURE]->at(i);
+		return (GameObjectFurnitureInfo*)_objects[System::FURNITURE]->at(i);
 	}
 	GameObjectLootInfo* Loot(unsigned i)
 	{
-		if (_objects[LOOT]->size() < i + 1)
+		if (_objects[System::LOOT]->size() < i + 1)
 		{
-			_objects[LOOT]->push_back((GameObjectBaseInfo*)new GameObjectLootInfo());
+			_objects[System::LOOT]->push_back((GameObjectBaseInfo*)new GameObjectLootInfo());
 		}
-		return (GameObjectLootInfo*)_objects[LOOT]->at(i);
+		return (GameObjectLootInfo*)_objects[System::LOOT]->at(i);
 	}
 	GameObjectSpawnInfo* Spawns(unsigned i)
 	{
-		if (_objects[SPAWN]->size() < i + 1)
+		if (_objects[System::SPAWN]->size() < i + 1)
 		{
-			_objects[SPAWN]->push_back((GameObjectBaseInfo*)new GameObjectSpawnInfo());
+			_objects[System::SPAWN]->push_back((GameObjectBaseInfo*)new GameObjectSpawnInfo());
 		}
-		return (GameObjectSpawnInfo*)_objects[SPAWN]->at(i);
+		return (GameObjectSpawnInfo*)_objects[System::SPAWN]->at(i);
 	}
 	GameObjectTrapInfo* Traps(unsigned i)
 	{
-		if (_objects[TRAP]->size() < i + 1)
+		if (_objects[System::TRAP]->size() < i + 1)
 		{
-			_objects[TRAP]->push_back((GameObjectBaseInfo*)new GameObjectTrapInfo());
+			_objects[System::TRAP]->push_back((GameObjectBaseInfo*)new GameObjectTrapInfo());
 		}
-		return (GameObjectTrapInfo*)_objects[TRAP]->at(i);
+		return (GameObjectTrapInfo*)_objects[System::TRAP]->at(i);
 	}
 	GameObjectCameraInfo* Cameras(unsigned i)
 	{
-		if (_objects[CAMERA]->size() < i + 1)
+		if (_objects[System::CAMERA]->size() < i + 1)
 		{
-			_objects[CAMERA]->push_back((GameObjectBaseInfo*)new GameObjectCameraInfo());
+			_objects[System::CAMERA]->push_back((GameObjectBaseInfo*)new GameObjectCameraInfo());
 		}
-		return (GameObjectCameraInfo*)_objects[CAMERA]->at(i);
+		return (GameObjectCameraInfo*)_objects[System::CAMERA]->at(i);
 	}
 	GameObjectGuardInfo* Guards(unsigned i)
 	{
-		if (_objects[GUARD]->size() < i + 1)
+		if (_objects[System::GUARD]->size() < i + 1)
 		{
-			_objects[GUARD]->push_back((GameObjectBaseInfo*)new GameObjectGuardInfo());
+			_objects[System::GUARD]->push_back((GameObjectBaseInfo*)new GameObjectGuardInfo());
 		}
-		return (GameObjectGuardInfo*)_objects[GUARD]->at(i);
+		return (GameObjectGuardInfo*)_objects[System::GUARD]->at(i);
 	}
 	GameObjectEnemyInfo* Enemies(unsigned i)
 	{
-		if (_objects[ENEMY]->size() < i + 1)
+		if (_objects[System::ENEMY]->size() < i + 1)
 		{
-			_objects[ENEMY]->push_back((GameObjectBaseInfo*)new GameObjectEnemyInfo());
+			_objects[System::ENEMY]->push_back((GameObjectBaseInfo*)new GameObjectEnemyInfo());
 		}
-		return (GameObjectEnemyInfo*)_objects[ENEMY]->at(i);
+		return (GameObjectEnemyInfo*)_objects[System::ENEMY]->at(i);
 	}
 };

@@ -1,19 +1,18 @@
 #pragma once
 
 #include "BaseState.h"
-#include "../BaseEdit.h"
 #include "../JsonStructs.h"
 #include "jsonparser.h"
 #include "Assetmanager.h"
+#include "../Player.h"
 #include "../TutorialLogic.h"
-
-#include "../ToPlace.h"
+#include "CommonUtils.h"
+#include "../GhostImage.h"
 
 class PlacementState : public BaseState
 {
 private:
 	TutorialLogic* _tutorialLogic;
-	BaseEdit* _baseEdit;
 	bool _trapChosen = false;
 	
 	int _budget;
@@ -28,8 +27,10 @@ private:
 	std::vector<PlayerInfo> _playerProfile;
 	std::vector<string> _playerProfilesPath;
 
-	// Temp, should be replaced with blueprint
-	ToPlace _toPlace;
+	Player* _player;
+	System::SpecificBlueprint _selectedBlueprint;
+	std::vector<GUI::Node*>* _buttons;
+	GhostImage _ghostImage;
 
 	void EvaluateGoldCost();
 	void HandleDescriptions();
@@ -43,6 +44,5 @@ public:
 	void OnStateExit();
 
 	void HandleInput();
-	void HandleButtons();
 };
 
