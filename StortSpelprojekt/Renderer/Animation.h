@@ -39,7 +39,7 @@ private:
 	std::vector<int> _length;
 
 public:
-	Animation(Skeleton* skeleton, bool firstFrame = false);
+	Animation(Skeleton* skeleton, bool firstFrame = false, bool frozen = false);
 	~Animation();
 
 	void Update(float time);

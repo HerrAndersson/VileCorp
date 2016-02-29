@@ -34,8 +34,6 @@ private:
 	int _nrOfAOETiles;
 	int _areaOfEffectArrayCapacity;
 
-	int _animLength[4];
-
 	int CalculateCircle(int radius, AI::Vec2D basePosition, AI::Vec2D* arr);
 	int CalculateLine(int length, AI::Vec2D basePosition, AI::Vec2D* arr);
 	int CalculateRectangle(int length, int width, AI::Vec2D basePosition, AI::Vec2D* arr);

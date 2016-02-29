@@ -338,18 +338,18 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	_occupiedTiles = nullptr;
 	_triggerTiles = nullptr;
 	_subType = trapType;
-
+	_animSpeed = 1.0f;
 	int radius = 0;
 
-	bool firstFrame = false;
+	bool frozen = true;
 	switch (_subType)
 	{
 	case SPIKE:
 		Initialize(30, 1, 1, 1, 50, 50, Unit::StatusEffect::NO_EFFECT, 0, 0);
-		firstFrame = true;
 		break;
 	case TESLACOIL:	
 		Initialize(0, 9, 9, 37, 80, 80, Unit::StatusEffect::STUNNED, 120, 120, 60, 2);
+		frozen = false;
 		break;
 	case SHARK:
 		Initialize(120, 12, 2, 2, 50, 50, Unit::StatusEffect::NO_EFFECT, 0, 0);
@@ -378,8 +378,7 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 
 	if (_renderObject->_mesh->_isSkinned)
 	{
-		_animation = new Animation(_renderObject->_mesh->_skeleton, firstFrame);
-		_animation->Freeze(false);
+		_animation = new Animation(_renderObject->_mesh->_skeleton, true, frozen);
 		Animate(IDLEANIM);
 	}
 }
@@ -574,18 +573,24 @@ void Trap::SetDirection(const AI::Vec2D direction)
 
 void Trap::Animate(Anim anim)
 {
-	if (_animation != nullptr)
+	if (_animation != nullptr && _animation->GetisFinished())
 	{
 		switch (anim)
 		{
 		case IDLEANIM:
-			_animation->SetActionAsCycle(IDLEANIM, 1.0f);
+			_animation->SetActionAsCycle(IDLEANIM, _animSpeed);
 			break;
 		case ACTIVATEANIM:
-			_animation->PlayAction(ACTIVATEANIM, 1.0f, true);
+			_animation->PlayAction(ACTIVATEANIM, _animSpeed, true, true);
 			break;
 		case DISABLEANIM:
-			_animation->PlayAction(DISABLEANIM, 1.0f, true);
+			_animation->PlayAction(DISABLEANIM, _animSpeed, true, true);
+			break;
+		case FIXANIM:
+			_animation->PlayAction(FIXANIM, _animSpeed);
+			break;
+		default:
+			break;
 		}
 	}
 

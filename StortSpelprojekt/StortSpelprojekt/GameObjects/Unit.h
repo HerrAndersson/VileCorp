@@ -42,7 +42,8 @@ protected:
 	int _interactionTime;
 	int _waiting;
 
-	float _speedMultiplier;
+	// Animations variables
+	Anim _lastAnimState;
 
 	void CalculatePath();
 	void Rotate();

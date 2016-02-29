@@ -422,7 +422,7 @@ void Game::RenderGameObjects(int forShaderStage, std::vector<std::vector<GameObj
 						_renderModule->SetDataPerObjectType(renderObject);
 						vertexBufferSize = renderObject->_mesh->_vertexBufferSize;
 					}
-					if (gameObject->IsVisible())
+					//if (gameObject->IsVisible())
 					{
 						if (forShaderStage == Renderer::RenderModule::ShaderStage::GEO_PASS)
 						{

@@ -576,7 +576,7 @@ void ObjectHandler::Update(float deltaTime)
 					heldObject->SetTilePosition(AI::Vec2D(heldObject->GetPosition().x, heldObject->GetPosition().z));
 				}
 
-				if (unit->GetHealth() <= 0)
+				if (unit->GetHealth() <= 0 && unit->GetAnimisFinished())
 				{
 					if (heldObject != nullptr)
 					{

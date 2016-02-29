@@ -136,34 +136,38 @@ void Guard::Release()
 
 void Guard::Update(float deltaTime)
 {
-	switch (_moveState)
+	Unit::Update(deltaTime);
+	if (_health > 0)
 	{
-	case MoveState::IDLE:
-		Animate(IDLEANIM);
-		Wait();
-		break;
-	case MoveState::FINDING_PATH:
-		if (_objective != nullptr)
+		switch (_moveState)
 		{
-			SetGoal(_objective);
+		case MoveState::IDLE:
+			Animate(IDLEANIM);
+			Wait();
+			break;
+		case MoveState::FINDING_PATH:
+			if (_objective != nullptr)
+			{
+				SetGoal(_objective);
+			}
+			else
+			{
+				SetGoal(_goalTilePosition); //Switch state at the end
+			}
+			break;
+		case MoveState::MOVING:
+			Moving();
+			Animate(WALKANIM);
+			break;
+		case MoveState::SWITCHING_NODE:
+			SwitchingNode();
+			break;
+		case MoveState::AT_OBJECTIVE:
+			Act(_objective);
+			break;
+		default:
+			break;
 		}
-		else
-		{
-			SetGoal(_goalTilePosition); //Switch state at the end
-		}
-		break;
-	case MoveState::MOVING:
-		Moving();
-		Animate(WALKANIM);
-		break;
-	case MoveState::SWITCHING_NODE:
-		SwitchingNode();
-		break;
-	case MoveState::AT_OBJECTIVE:
-		Act(_objective);
-		break;
-	default:
-		break;
 	}
 }
 
@@ -180,14 +184,8 @@ void Guard::Act(GameObject* obj)
 		case  System::TRAP:
 			if (!static_cast<Trap*>(obj)->IsTrapActive())
 			{
-				if (!System::FrameCountdown(_interactionTime, _animation->GetLength(2, 1.0f * _speedMultiplier)))
-				{
-					if (_animation != nullptr)
-					{
-						Animate(FIXTRAPANIM);
-					}
-				}
-				else
+				Animate(FIXTRAPANIM);
+				if(System::FrameCountdown(_interactionTime, _animation->GetLength(FIXTRAPANIM, _animSpeed)))
 				{
 					static_cast<Trap*>(obj)->SetTrapActive(true);
 					//	obj->SetColorOffset({0,0,0});
@@ -196,13 +194,12 @@ void Guard::Act(GameObject* obj)
 			}
 			break;
 		case  System::ENEMY:											//The guard hits the enemy
-			if (_animation != nullptr && !System::FrameCountdown(_interactionTime, _animation->GetLength(4, 4.5f * _speedMultiplier)))
+			Animate(FIGHTANIM);
+			if(System::FrameCountdown(_interactionTime, _animation->GetLength(FIGHTANIM, _animSpeed)))
 			{
-				Animate(FIGHTANIM);
-			}
-			else
-			{
-				static_cast<Unit*>(obj)->TakeDamage(1);
+				Unit* enemy = static_cast<Unit*>(obj);
+				enemy->TakeDamage(1);
+				enemy->Animate(HURTANIM);
 				if (static_cast<Unit*>(obj)->GetHealth() <= 0)
 				{
 					ClearObjective();
@@ -239,6 +236,7 @@ void Guard::Act(GameObject* obj)
 	if (_objective == nullptr)
 	{
 		_moveState = MoveState::MOVING;
+		Animate(WALKANIM);
 	}
 }
 void Guard::SwitchingNode()

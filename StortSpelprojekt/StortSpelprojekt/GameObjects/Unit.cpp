@@ -120,12 +120,13 @@ Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	_direction = {0, 1};
 	_nextTile = _tilePosition;
 	_isSwitchingTile = false;
-	_speedMultiplier = 2.0f;
+	_animSpeed = 1.0f;
 	Rotate();
 	if (_renderObject->_mesh->_isSkinned)
 	{
 		_animation = new Animation(_renderObject->_mesh->_skeleton, true);
 		_animation->Freeze(false);
+		Animate(IDLEANIM);
 	}
 	_moveState = MoveState::IDLE;
 	_interactionTime = -1;
@@ -476,30 +477,50 @@ void Unit::DeactivateStatus()
 
 void Unit::TakeDamage(int damage)
 {
-	_health -= damage;
+	if (_health - damage > 0)
+	{
+		_health -= damage;
+	}
+	else if (_health > 0)
+	{
+		Animate(DEATHANIM);
+		_health -= damage;
+	}
 }
 
 void Unit::Animate(Anim anim)
 {
-	if (_animation != nullptr)
+	if (_animation != nullptr && _animation->GetisFinished() && _lastAnimState != anim)
 	{
 		switch (anim)
 		{
 		case IDLEANIM:
-			_animation->SetActionAsCycle(IDLEANIM, 1.0f);
+			_animation->SetActionAsCycle(IDLEANIM, _animSpeed);
 			break;
 		case WALKANIM:
-			_animation->SetActionAsCycle(WALKANIM, 1.0f);
+			_animation->SetActionAsCycle(WALKANIM, _animSpeed);
 			break;
 		case FIGHTANIM:
-			_animation->PlayAction(FIGHTANIM, 1.0f);
+			_animation->PlayAction(FIGHTANIM, _animSpeed);
 			break;
 		case PICKUPOBJECTANIM:
-			_animation->PlayAction(PICKUPOBJECTANIM, 1.0f);
+			_animation->PlayAction(PICKUPOBJECTANIM, _animSpeed);
 			break;
 		case FIXTRAPANIM:
-			_animation->PlayAction(FIXTRAPANIM, 1.0f);
-
+			_animation->PlayAction(FIXTRAPANIM, _animSpeed);
+			break;
+		case DISABLETRAPANIM:
+			_animation->PlayAction(DISABLETRAPANIM, _animSpeed);
+			break;
+		case HURTANIM:
+			_animation->PlayAction(HURTANIM, _animSpeed);
+			break;
+		case DEATHANIM:
+			_animation->PlayAction(DEATHANIM, _animSpeed);
+			break;
+		default:
+			break;
 		}
+		_lastAnimState = anim;
 	}
 }
