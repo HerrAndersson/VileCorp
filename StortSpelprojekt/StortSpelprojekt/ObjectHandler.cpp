@@ -196,6 +196,7 @@ bool ObjectHandler::Remove(Type type, int ID)
 
 			delete _gameObjects[type][i];
 			// Replace pointer with the last pointer int the vector
+			_gameObjects[type][i] = nullptr;
 			_gameObjects[type][i] = _gameObjects[type].back();
 
 			// Remove pointer value to avoid various problems
@@ -563,6 +564,7 @@ void ObjectHandler::Update(float deltaTime)
 			{
 				_tilemap->AddObjectToTile(g->GetTilePosition(), g);
 				g->SetPickUpState(ONTILE);
+				((Architecture*)g)->SetTargeted(false);
 			}
 
 			if (g->GetType() == GUARD || g->GetType() == ENEMY)
@@ -600,13 +602,58 @@ void ObjectHandler::Update(float deltaTime)
 					}
 
 					//Avoids the case where the Guard tries to attack a scrap value when the Enemy has been taken care of, Aron
-					for (int i = 0; i < _gameObjects[GUARD].size(); i++)
+					for (uint k = 0; k < _gameObjects[GUARD].size(); k++)
 					{
-						if (((Guard*)_gameObjects[GUARD][i])->GetObjective() != nullptr)
+						if (((Guard*)_gameObjects[GUARD][k])->GetObjective() != nullptr)
 						{
-							if (((Guard*)_gameObjects[GUARD][i])->GetObjective()->GetID() == g->GetID())
+							if (((Guard*)_gameObjects[GUARD][k])->GetObjective()->GetID() == g->GetID())
 							{
-								((Guard*)_gameObjects[GUARD][i])->ClearObjective();
+								((Guard*)_gameObjects[GUARD][k])->ClearObjective();
+							}
+						}
+					}
+
+					//for (uint k = 0; k < _gameObjects[ENEMY].size(); k++)
+					//{
+					//	if (((Enemy*)_gameObjects[ENEMY][k])->GetObjective() != nullptr)
+					//	{
+					//		if (((Enemy*)_gameObjects[ENEMY][k])->GetObjective()->GetID() == g->GetID())
+					//		{
+					//			if (unit->GetHeldObject() != nullptr)
+					//			{
+					//				bool lootRemoved = false;
+					//
+					//				for (uint l = 0; l < _gameObjects[SPAWN].size() && !lootRemoved; l++)
+					//				{
+					//					//When the Enemy despawns with a Loot at hand at a spawn point, spawn them again as if they re-enter to get more Loot, Aron
+					//					if (_gameObjects[SPAWN][l]->InRange(unit->GetTilePosition()))
+					//					{
+					//						lootRemoved = Remove(heldObject);
+					//						((SpawnPoint*)_gameObjects[SPAWN][l])->AddUnitsToSpawn(1);
+					//						((SpawnPoint*)_gameObjects[SPAWN][l])->Enable();
+					//					}
+					//				}
+					//
+					//				if (!lootRemoved)
+					//				{
+					//					heldObject->SetPickUpState(DROPPING);
+					//					heldObject->SetPosition(XMFLOAT3(heldObject->GetPosition().x, 0.0f, heldObject->GetPosition().z));
+					//				}
+					//			}
+					//
+					//			((Enemy*)_gameObjects[ENEMY][k])->ClearObjective();
+					//		}
+					//	}
+					//}
+
+					//Avoids the case where the Enemy tries to attack a scrap value when the Guard has been taken care of, Aron
+					for (uint k = 0; k < _gameObjects[ENEMY].size(); k++)
+					{
+						if (((Enemy*)_gameObjects[ENEMY][k])->GetObjective() != nullptr)
+						{
+							if (((Enemy*)_gameObjects[ENEMY][k])->GetObjective()->GetID() == g->GetID())
+							{
+								((Enemy*)_gameObjects[ENEMY][k])->ClearObjective();
 							}
 						}
 					}
@@ -635,7 +682,7 @@ void ObjectHandler::Update(float deltaTime)
 
 						if (unit->GetType() != GUARD &&
 							(_gameObjects[LOOT].size() == 0 || allLootIsCarried) &&
-							unit->InRange(_gameObjects[SPAWN][k]->GetTilePosition()))
+							_gameObjects[SPAWN][k]->InRange(unit->GetTilePosition()))
 						{
 							unit->TakeDamage(10);
 						}
@@ -649,9 +696,9 @@ void ObjectHandler::Update(float deltaTime)
 			}
 			else if (g->GetType() == SPAWN)															//Manage enemy spawning
 			{
-				if (static_cast<SpawnPoint*>(g)->isSpawning() && _tilemap->GetNrOfLoot() > 0)
+				if (static_cast<SpawnPoint*>(g)->GetUnitsToSpawn() > 0 && _tilemap->GetNrOfLoot() > 0)
 				{
-					if (Add(_blueprints.GetBlueprintByType(ENEMY,0), 0, g->GetPosition(), g->GetRotation())) //TODO blueprints of spawned enemies should be kept in spawnpoints - Fredrik
+					if (Add(_blueprints.GetBlueprintByType(ENEMY, 0), 0, g->GetPosition(), g->GetRotation()))  //TODO blueprints of spawned enemies should be kept in spawnpoints - Fredrik
 					{
 						((Unit*)_gameObjects[ENEMY].back())->InitializePathFinding();
 					}

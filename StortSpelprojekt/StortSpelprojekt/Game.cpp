@@ -543,6 +543,88 @@ void Game::RenderGameObjects(int forShaderStage, std::vector<std::vector<GameObj
 	}
 }
 
+void Game::GenerateShadowMap(Renderer::Spotlight* spotlight, unsigned short ownerID)
+{
+	//Non skinned objects
+	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::SHADOW_GENERATION);
+	_renderModule->SetShadowMapDataPerSpotlight(spotlight->GetViewMatrix(), spotlight->GetProjectionMatrix());
+
+	vector<vector<GameObject*>>* inLight = _objectHandler->GetObjectsInLight(spotlight);
+	unsigned int prevSubType = -1;
+	int vertexBufferSize = 0;
+
+	for (auto j : *inLight)
+	{
+		if (j.size() > 0)
+		{
+			prevSubType = -1;
+			vertexBufferSize = 0;
+
+			for (int i = 0; i < j.size(); i++)
+			{
+				GameObject* obj = j.at(i);
+				RenderObject* renderObject = obj->GetRenderObject();
+
+				if (!renderObject->_mesh->_isSkinned)
+				{
+					//If the current object and the previous object are different, set the new data
+					unsigned int thisSubType = obj->GetSubType();
+					if (thisSubType != prevSubType)
+					{
+						_renderModule->SetShadowMapDataPerObjectType(renderObject);
+						vertexBufferSize = renderObject->_mesh->_vertexBufferSize;
+						prevSubType = obj->GetSubType();
+					}
+
+					//Render the visible objects, but skip the owner itself
+					//if (obj->IsVisible() && obj->GetID() != ownerID)
+					{
+						_renderModule->RenderShadowMap(obj->GetMatrix(), vertexBufferSize);
+					}
+				}
+			}
+		}
+	}
+
+	//Animated/skinned objects
+	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::ANIM_SHADOW_GENERATION);
+	_renderModule->SetShadowMapDataPerSpotlight(spotlight->GetViewMatrix(), spotlight->GetProjectionMatrix());
+
+	for (auto j : *inLight)
+	{
+		if (j.size() > 0)
+		{
+			prevSubType = -1;
+			vertexBufferSize = 0;
+
+			for (int i = 0; i < j.size(); i++)
+			{
+				GameObject* obj = j.at(i);
+				RenderObject* renderObject = obj->GetRenderObject();
+				Animation* anim = obj->GetAnimation();
+
+				if (renderObject->_mesh->_isSkinned && anim)
+				{
+					//If the current object and the previous object are different, set the new data
+					unsigned int thisSubType = obj->GetSubType();
+					if (thisSubType != prevSubType)
+					{
+						_renderModule->SetShadowMapDataPerObjectType(renderObject);
+						vertexBufferSize = renderObject->_mesh->_vertexBufferSize;
+						prevSubType = obj->GetSubType();
+					}
+
+					//Render the visible objects, but skip the owner itself
+					//if (obj->IsVisible() && obj->GetID() != ownerID)
+					{
+						_renderModule->RenderShadowMap(obj->GetMatrix(), vertexBufferSize, anim->GetFloats());
+					}
+				}
+			}
+		}
+	}
+}
+
 int Game::Run()
 {
 	bool run = true;

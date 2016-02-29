@@ -7,6 +7,7 @@ GameObject::GameObject()
 	_visible = true;
 	_renderObject = nullptr;
 	_pickUpState = PickUpState::DROPPING;
+	_isTargeted = false;
 }
 
 GameObject::GameObject(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation,  AI::Vec2D tilePosition, Type type, RenderObject * renderObject, DirectX::XMFLOAT3 colorOffset)
@@ -20,6 +21,7 @@ GameObject::GameObject(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::X
 	_type = type;
 	_renderObject = renderObject;
 	_pickUpState = ONTILE;
+	_isTargeted = false;
 	_visible = true;
 	_subType = 0;
 
@@ -111,6 +113,16 @@ AI::Vec2D GameObject::GetTilePosition() const
 AI::Vec2D GameObject::GetDirection() const
 {
 	return _direction;
+}
+
+bool GameObject::IsTargeted() const
+{
+	return _isTargeted;
+}
+
+void GameObject::SetTargeted(bool targeted)
+{
+	_isTargeted = targeted;
 }
 
 void GameObject::SetTilePosition(AI::Vec2D pos)

@@ -14,7 +14,7 @@ If the object doesn't need a _renderObject, set it to nullptr.
 If the object has a renderObject but is out of sight _visibility will be false.
 */
 
-enum PickUpState{ONTILE, HELD, PICKINGUP, PICKEDUP, DROPPING};
+enum PickUpState{ONTILE, HELD, PICKEDUP, DROPPING};
 const float TILE_EPSILON = 0.05f;			//Maximum offset for a position to be considered centered on a tile
 class GameObject
 {
@@ -36,7 +36,7 @@ protected:
 	Animation* _animation = nullptr;
 
 	PickUpState _pickUpState;
-
+	bool _isTargeted;
 	void CalculateMatrix();
 
 public:
@@ -67,6 +67,9 @@ public:
 
 	AI::Vec2D GetTilePosition()const;
 	AI::Vec2D GetDirection()const;
+
+	bool IsTargeted() const;
+	void SetTargeted(bool targeted);
 
 	virtual void SetTilePosition(AI::Vec2D dir);
 	virtual void SetDirection(AI::Vec2D pos);

@@ -252,20 +252,21 @@ void Enemy::Act(GameObject* obj)
 		switch (obj->GetType())
 		{
 		case LOOT:
-			if (_heldObject == nullptr)
+			if (_heldObject == nullptr && !((GameObject*)obj)->IsTargeted())
 			{
 				if (_interactionTime < 0)
 				{
-					obj->SetPickUpState(PICKINGUP);
+					obj->SetPickUpState(PICKEDUP);
 					if (_animation != nullptr)
 					{
 						UseCountdown(_animation->GetLength(3, 1.0f * _speedMultiplier));
 						Animate(PICKUPOBJECTANIM);
 					}
 				}
-				else if(_interactionTime == 0)
+				else if (_interactionTime == 0)
 				{
 					obj->SetPickUpState(PICKEDUP);
+					obj->SetTargeted(true);
 					_heldObject = obj;
 					obj->SetVisibility(_visible);
 					ClearObjective();
@@ -310,8 +311,12 @@ void Enemy::Act(GameObject* obj)
 			}
 			else if (_interactionTime == 0)
 			{
-				static_cast<Unit*>(obj)->TakeDamage(1);
-				if (static_cast<Unit*>(obj)->GetHealth() <= 0 || !InRange(obj->GetTilePosition()))
+				if (static_cast<Unit*>(obj)->GetHealth() > 0 && InRange(obj->GetTilePosition()))
+				{
+					//static_cast<Unit*>(obj)->TakeDamage(_baseDamage);
+					static_cast<Unit*>(obj)->TakeDamage(1);
+				}
+				else if (static_cast<Unit*>(obj)->GetHealth() <= 0 || !InRange(obj->GetTilePosition()))
 				{
 					ClearObjective();
 				}
@@ -326,10 +331,10 @@ void Enemy::Act(GameObject* obj)
 		default:
 			break;
 		}
-		if (_objective == nullptr)
-		{
-			_moveState = MoveState::MOVING;
-		}
+	}
+	else if (_objective == nullptr)
+	{
+		_moveState = MoveState::MOVING;
 	}
 }
 
@@ -356,6 +361,7 @@ void Enemy::Update(float deltaTime)
 		}
 		else if (_interactionTime == 0)
 		{
+			UseCountdown();
 			CheckAllTiles();
 		}
 		else
@@ -364,7 +370,7 @@ void Enemy::Update(float deltaTime)
 		}
 		Animate(IDLEANIM);
 	}
-		break;
+	break;
 	case MoveState::FINDING_PATH:
 		if (_objective != nullptr)
 		{
@@ -379,7 +385,23 @@ void Enemy::Update(float deltaTime)
 		SwitchingNode();
 		break;
 	case MoveState::AT_OBJECTIVE:
-		Act(_objective);
+		if (_objective != nullptr)
+		{
+			if (!_objective->IsTargeted())
+			{
+				Act(_objective);
+			}
+			else
+			{
+				_moveState = IDLE;
+				ClearObjective();
+			}
+		}
+		else
+		{
+			_moveState = IDLE;
+			ClearObjective();
+		}
 		break;
 	case MoveState::FLEEING:
 		Flee();

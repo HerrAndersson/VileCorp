@@ -20,8 +20,8 @@ Guard::Guard(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 ro
 	switch (_guardType)				//TODO: Repair time, vision radius, etc --Victor
 	{
 	case BASICGUARD:
-		_health = 100;
-		_baseDamage = 30;
+		_health = 100; // 2000;
+		_baseDamage = 0;
 		break;
 	case ENGINEER:
 		_health = 100;
@@ -66,7 +66,7 @@ void Guard::EvaluateTile(GameObject * obj)
 			break;
 		}
 		tempPriority;
-		if (tempPriority > 0 && obj->GetTilePosition() != _tilePosition && 
+		if (tempPriority > 0 && obj->GetTilePosition() != _tilePosition &&
 			(_pathLength <= 0 || tempPriority * GetApproxDistance(obj->GetTilePosition()) < _goalPriority * GetApproxDistance(GetGoalTilePosition())))			//TODO Either optimize properly or check path properly --Victor
 		{
 			SetGoalTilePosition(obj->GetTilePosition());
@@ -182,43 +182,44 @@ void Guard::Act(GameObject* obj)
 				{
 					if (_interactionTime != 0)
 					{
-					if (_animation != nullptr)
-					{
-						UseCountdown(_animation->GetLength(2, 1.0f * _speedMultiplier));
-						Animate(FIXTRAPANIM);
+						if (_animation != nullptr)
+						{
+							UseCountdown(_animation->GetLength(2, 1.0f * _speedMultiplier));
+							Animate(FIXTRAPANIM);
+						}
 					}
-
 				}
 				else if (_interactionTime == 0)
-					{
-						static_cast<Trap*>(obj)->SetTrapActive(true);
-						//	obj->SetColorOffset({0,0,0});
-						ClearObjective();
-					}
+				{
+					static_cast<Trap*>(obj)->SetTrapActive(true);
+					//	obj->SetColorOffset({0,0,0});
+					ClearObjective();
+				}
 				else
 				{
 					UseCountdown();
 				}
-				}
 				break;
 			case ENEMY:											//The guard hits the enemy
-			if (_animation != nullptr && _interactionTime != 0)
-			{
-				UseCountdown(_animation->GetLength(4, 4.5f * _speedMultiplier));
-				Animate(FIGHTANIM);
-			}
-			else if (_interactionTime == 0)
-			{
-				static_cast<Unit*>(obj)->TakeDamage(1);
-				if (static_cast<Unit*>(obj)->GetHealth() <= 0)
+				if (_animation != nullptr && _interactionTime != 0)
 				{
-					ClearObjective();
+					UseCountdown(_animation->GetLength(4, 4.5f * _speedMultiplier));
+					Animate(FIGHTANIM);
 				}
-			}
-			else
-			{
-				UseCountdown();
-			}
+				else if (_interactionTime == 0)
+				{
+					static_cast<Unit*>(obj)->TakeDamage(_baseDamage);
+					static_cast<Unit*>(obj)->TakeDamage(1);
+
+					if (static_cast<Unit*>(obj)->GetHealth() <= 0 || !InRange(obj->GetTilePosition()))
+					{
+						ClearObjective();
+					}
+				}
+				else
+				{
+					UseCountdown();
+				}
 				break;
 			case FLOOR:
 				if (!_patrolRoute.empty())

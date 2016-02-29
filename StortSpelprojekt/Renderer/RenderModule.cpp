@@ -312,7 +312,7 @@ namespace Renderer
 		SetDataPerMesh(renderObject->_mesh->_vertexBuffer, vertexSize);
 	}
 
-	void RenderModule::RenderShadowMap(DirectX::XMMATRIX* world, int vertexBufferSize)
+	void RenderModule::RenderShadowMap(DirectX::XMMATRIX* world, int vertexBufferSize, std::vector<DirectX::XMFLOAT4X4>* animTransformData)
 	{
 		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
 		_shadowMap->SetDataPerObject(_d3d->GetDeviceContext(), world);
