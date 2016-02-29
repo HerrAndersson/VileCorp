@@ -510,12 +510,48 @@ void Trap::RequestParticleByType(Unit* unit)
 		break;
 	}
 	case SHARK:
+	{
+		_particleEventQueue->Insert(new ParticleRequestMessage(ParticleType::SPLASH, ParticleSubType::WATER_SUBTYPE, -1, pos, XMFLOAT3(0, 1, 0), 400.0f, 20, 0.1f, true));
 		break;
+	}
 	case GUN:
 	{
 		AI::Vec2D objectDir = GetDirection();
 		XMFLOAT3 dir(objectDir._x, 0, objectDir._y);
-		_particleEventQueue->Insert(new ParticleRequestMessage(ParticleType::MUZZLE_FLASH, ParticleSubType::MUZZLE_FLASH_SUBTYPE, -1, particlePos, dir, 50.0f, 1, 0.1f, true));
+		_particleEventQueue->Insert(new ParticleRequestMessage(ParticleType::MUZZLE_FLASH, ParticleSubType::MUZZLE_FLASH_SUBTYPE, -1, particlePos, dir, 200.0f, 100.0f, 0.1f, true));
+		break;
+	}
+	case SAW:
+	{
+		_particleEventQueue->Insert(new ParticleRequestMessage(ParticleType::SPLASH, ParticleSubType::BLOOD_SUBTYPE, -1, particlePos, XMFLOAT3(0, 1, 0), 300.0f, 20, 0.1f, true));
+		break;
+	}
+	case CAKEBOMB:
+	{
+		_particleEventQueue->Insert(new ParticleRequestMessage(ParticleType::FIRE, ParticleSubType::FIRE_SUBTYPE, -1, pos, XMFLOAT3(0, 1, 0), 1000.0f, 50, 0.1f, true));
+		break;
+	}
+	case BEAR:
+	{
+		_particleEventQueue->Insert(new ParticleRequestMessage(ParticleType::SPLASH, ParticleSubType::BLOOD_SUBTYPE, -1, particlePos, XMFLOAT3(0, 1, 0), 300.0f, 20, 0.1f, true));
+		break;
+	}
+	case FLAMETHROWER:
+	{
+		AI::Vec2D objectDir = GetDirection();
+		XMFLOAT3 dir(objectDir._x, 0, objectDir._y);
+		_particleEventQueue->Insert(new ParticleRequestMessage(ParticleType::FIRE, ParticleSubType::FIRE_SUBTYPE, -1, pos, dir, 1000.0f, 50, 0.1f, true));
+		break;
+	}
+	case WATER_GUN:
+	{
+		AI::Vec2D objectDir = GetDirection();
+		XMFLOAT3 dir(objectDir._x, 0, objectDir._y);
+		_particleEventQueue->Insert(new ParticleRequestMessage(ParticleType::SPLASH, ParticleSubType::WATER_SUBTYPE, -1, pos, dir, 400.0f, 20, 0.1f, true));
+		break;
+	}
+	case SPIN_TRAP:
+	{
 		break;
 	}
 	default:
