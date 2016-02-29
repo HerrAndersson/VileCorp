@@ -4,21 +4,17 @@ PlacementState::PlacementState(System::Controls* controls, ObjectHandler* object
 	: BaseState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settingsReader, soundModule),
 	_ghostImage(objectHandler, pickingDevice)
 {
-	_playerProfile.resize(1);
-	_tutorialLogic = new TutorialLogic(&_uiTree, _controls);
 	_player = new Player(_objectHandler, pickingDevice);
 	_buttons = _uiTree.GetNode("UnitList")->GetChildren();
+	_profile = settingsReader->GetProfile();
+	_tutorialLogic = new TutorialLogic(&_uiTree, _controls, _player, _buttons, &_ghostImage, objectHandler, pickingDevice, _profile);
 
 	//Money
 	_costOfAnvilTrap	= 50;
 	_costOfTeslaCoil	= 100;
 	_costOfCamera		= 80;
 	_costOfGuard		= 200;
-	//load all player profiles
-	GetFilenamesInDirectory("Assets/PlayerProfiles/", ".json", _playerProfilesPath);
 
-	//rezise vector that stores player profiles
-	_playerProfile.resize(_playerProfilesPath.size());
 	_controls = controls;
 	_objectHandler = objectHandler;
 	_camera = camera;
@@ -48,16 +44,34 @@ void PlacementState::Update(float deltaTime)
 	if (_tutorialState != TutorialState::NOTUTORIAL)
 	{
 		//bypass the normal UI interface to interface the tutorial elements into it.
-		//_tutorialLogic->Update(deltaTime, _baseEdit, _toPlace, _playerProfile.at(_currentPlayer));
+		_tutorialLogic->Update(deltaTime);
 		if (_tutorialLogic->IsTutorialCompleted())
 		{
 			ChangeState(State::PLAYSTATE);
 			_tutorialState = TutorialState::NOTUTORIAL;
 		}
+
+		//Menu - We keep this outside of tutorial due to the changestate function.
+		if (_controls->IsFunctionKeyDown("MENU:MENU"))
+		{
+			if (_ghostImage.IsGhostImageActive() || _player->IsSelectedObjects())
+			{
+				_ghostImage.RemoveGhostImage();
+				_player->DeselectObjects();
+			}
+			else
+			{
+				ChangeState(PAUSESTATE);
+			}
+		}
+	}
+	//else Normal games
+	else
+	{
+		HandleInput();
 	}
 	HandleDescriptions();
 	HandleButtonHighlight(coord);
-	HandleInput();
 	HandleCam(deltaTime);
 }
 
@@ -67,10 +81,6 @@ void PlacementState::OnStateEnter()
 	_ambientLight->y = AMBIENT_LIGHT_DAY.y;
 	_ambientLight->z = AMBIENT_LIGHT_DAY.z;
 
-	for (int i = 0; i < _playerProfilesPath.size(); i++)
-	{
-		System::loadJSON(&_playerProfile[i], _playerProfilesPath[i]);
-	}
 	_budget = _objectHandler->GetCurrentLevelHeader()->_budget;
 	
 	//Fix so that budgetvalue won't get read if we go into pause state! We don't want the players to cheat themselves back to their budget money by pressing pause, resume, pause etc.. Enbom
