@@ -156,13 +156,18 @@ bool Game::Update(double deltaTime)
 
 	if (_controls->IsFunctionKeyDown("DEBUG:REQUEST_PARTICLE"))
 	{
-		//_combinedMeshGenerator->CombineMeshes(_objectHandler->GetTileMap(), System::FLOOR);
-		//_combinedMeshGenerator->CombineMeshes(_objectHandler->GetTileMap(), System::WALL, 2);
+		if (!tempAlreadyCombined)
+		{
+			_combinedMeshGenerator->CombineMeshes(_objectHandler->GetTileMap(), System::FLOOR);
+			_combinedMeshGenerator->CombineMeshes(_objectHandler->GetTileMap(), System::WALL);
+			tempAlreadyCombined = true;
+		}
 
+		tempTestCombinedStuff = !tempTestCombinedStuff;
 
-		XMFLOAT3 pos = XMFLOAT3(50, 1.0f, 50);
-		ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::QUESTIONMARK_SUBTYPE, -1, pos, XMFLOAT3(0, 0, 0), 100000.0f, 1, 10.5f, true, false); //Follows owner and is not timed
-		_particleHandler->GetParticleEventQueue()->Insert(msg);
+		//XMFLOAT3 pos = XMFLOAT3(50, 1.0f, 50);
+		//ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::QUESTIONMARK_SUBTYPE, -1, pos, XMFLOAT3(0, 0, 0), 100000.0f, 1, 10.5f, true, false); //Follows owner and is not timed
+		//_particleHandler->GetParticleEventQueue()->Insert(msg);
 
 	}
 
@@ -284,10 +289,13 @@ void Game::RenderGameObjects(int forShaderStage, std::vector<std::vector<GameObj
 	{
 		if (i.size() > 0)
 		{
-			//The floors in the gameObjects vector should not be rendered, as these are combined in a single mesh to reduce draw calls
-			if ((_SM->GetState() == PLACEMENTSTATE || _SM->GetState() == PLAYSTATE) && (i.at(0)->GetType() == System::FLOOR || i.at(0)->GetType() == System::WALL))
+			if (tempTestCombinedStuff)
 			{
-				continue;
+				//The floors in the gameObjects vector should not be rendered, as these are combined in a single mesh to reduce draw calls
+				if ((_SM->GetState() == PLACEMENTSTATE || _SM->GetState() == PLAYSTATE) && (i.at(0)->GetType() == System::FLOOR || i.at(0)->GetType() == System::WALL))
+				{
+					continue;
+				}
 			}
 
 			GameObject* lastGameObject = nullptr;

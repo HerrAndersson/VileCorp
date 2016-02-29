@@ -153,7 +153,7 @@ void CombinedMeshGenerator::CombineMeshes(Tilemap* tilemap, const Type& typeToCo
 	std::vector<RenderObject*> renderObjects;
 	std::vector<int> numberPerRenderObject; //Holds how many objects that share a single render object. The indexes are directly mapped between renderObjects and numberPerRenderObject
 	int index = -1;
-
+	
 	//Scan the tilemap to find how many different versions we should look for, and which these versions are. For example Type == FLOOR, and there are two different floors with different textures.
 	for (int x = 0; x < width; x++)
 	{
@@ -165,7 +165,10 @@ void CombinedMeshGenerator::CombineMeshes(Tilemap* tilemap, const Type& typeToCo
 				if (object && object->GetType() == typeToCombine)
 				{
 					RenderObject* thisRenderObject = object->GetRenderObject();
-					if (thisRenderObject != prevRenderObject)
+
+					//THIS DOES NOT WORK, CHECK THE ENTIRE VECTOR INSTEAD OF JUST THE PREVIOUS
+					//if (thisRenderObject != prevRenderObject)
+					if(!contains(renderObjects, thisRenderObject))
 					{
 						prevRenderObject = thisRenderObject;
 						renderObjects.push_back(thisRenderObject);
@@ -194,7 +197,7 @@ void CombinedMeshGenerator::CombineMeshes(Tilemap* tilemap, const Type& typeToCo
 				std::vector<GameObject*>* objectsOnTile = tilemap->GetAllObjectsOnTile(x, y);
 				for (auto& object : *objectsOnTile)
 				{
-					if (object && object->GetType() == typeToCombine)
+					if (object && object->GetType() == typeToCombine && *object->GetRenderObject() == *renderObject)
 					{
 						XMFLOAT3 pos = object->GetPosition();
 						XMMATRIX translation = XMMatrixTranslation(pos.x, pos.y, pos.z);
@@ -229,6 +232,7 @@ void CombinedMeshGenerator::CombineMeshes(Tilemap* tilemap, const Type& typeToCo
 			combinedMeshDataVector.clear();
 		}
 	}
+
 	_combinedTypes++;
 }
 

@@ -481,7 +481,7 @@ HRESULT AssetManager::ParseLevelBinary(Level::LevelBinary* outputLevelBin, std::
 {
 	try
 	{
-		std::ifstream in(levelBinaryFilePath);
+		std::ifstream in(levelBinaryFilePath, std::ios::binary);
 		cereal::BinaryInputArchive archive(in);
 		archive(*outputLevelBin);
 		in.close();
