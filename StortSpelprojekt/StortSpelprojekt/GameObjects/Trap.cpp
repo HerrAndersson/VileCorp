@@ -284,6 +284,7 @@ void Trap::SetTiles()
 		_nrOfOccupiedTiles = CalculateRectangle(5, 2, _tilePosition, _occupiedTiles);
 		_nrOfTriggers = CalculateRectangle(1, 2, _tilePosition, _triggerTiles);
 		_nrOfAOETiles = CalculateRectangle(1, 2, _tilePosition, _areaOfEffect);
+		break;
 	case GUN:
 		_nrOfOccupiedTiles = CalculateLine(10, _tilePosition, _occupiedTiles);
 		_nrOfAOETiles = CalculateLine(10, _tilePosition, _areaOfEffect);

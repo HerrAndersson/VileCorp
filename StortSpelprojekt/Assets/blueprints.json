@@ -238,7 +238,7 @@
 			"_mesh": "JuliaBear-27.bin",
 			"_name": "Bear Trap",
 			"_type": 4,
-			"_subType": 4,
+			"_subType": 6,
 			"_tooltip": "SampleText",
 			"_textures": [
 				"bear.png"
@@ -250,7 +250,7 @@
 			"_mesh": "sawTrap-27.bin",
 			"_name": "Saw Trap",
 			"_type": 4,
-			"_subType": 5,
+			"_subType": 4,
 			"_tooltip": "SampleText",
 			"_textures": [
 				"saw.png"
@@ -262,7 +262,7 @@
 			"_mesh": "Cupcake-27.bin",
 			"_name": "Cupcake Trap",
 			"_type": 4,
-			"_subType": 6,
+			"_subType": 5,
 			"_tooltip": "SampleText",
 			"_textures": [
 				"cuppycake.png"
@@ -286,7 +286,7 @@
 			"_mesh": "sawRoofTrap-28.bin",
 			"_name": "Roof Saw Trap",
 			"_type": 4,
-			"_subType": 8,
+			"_subType": 10,
 			"_tooltip": "SampleText",
 			"_textures": [
 				"sawRoofTrap.png"
