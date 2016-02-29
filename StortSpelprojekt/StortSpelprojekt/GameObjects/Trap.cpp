@@ -531,16 +531,22 @@ void Trap::Activate()
 		{
 			Unit* unit = static_cast<Unit*>(_tileMap->GetObjectOnTile(_areaOfEffect[i], System::ENEMY));
 
-			unit->TakeDamage(_damage);
-			unit->SetStatusEffect(_statusEffect, _statusInterval, _statusTimer);	
-			RequestParticleByType(unit);
+			if (unit)
+			{
+				unit->TakeDamage(_damage);
+				unit->SetStatusEffect(_statusEffect, _statusInterval, _statusTimer);
+				RequestParticleByType(unit);
+			}
 		}
 		if (_tileMap->IsGuardOnTile(_areaOfEffect[i]))
 		{
 			Unit* unit = static_cast<Unit*>(_tileMap->GetObjectOnTile(_areaOfEffect[i], System::GUARD));
-			unit->SetStatusEffect(_statusEffect, _statusInterval, _statusTimer);
-			unit->TakeDamage(_damage);
-			RequestParticleByType(unit);
+			if (unit)
+			{
+				unit->SetStatusEffect(_statusEffect, _statusInterval, _statusTimer);
+				unit->TakeDamage(_damage);
+				RequestParticleByType(unit);
+			}
 		}
 	}
 	Animate(ACTIVATEANIM);
