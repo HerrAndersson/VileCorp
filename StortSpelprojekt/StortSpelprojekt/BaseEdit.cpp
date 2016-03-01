@@ -26,6 +26,7 @@ BaseEdit::BaseEdit(ObjectHandler* objectHandler, System::Controls* controls, Pic
 	_isPlace = false;
 	_modeLock = false;
 	_isInvalidateFloor = false;
+	_isObjectButtonReleased = true;
 
 	_sB = nullptr;
 	_movingGhostImage._g = nullptr;
@@ -54,6 +55,7 @@ void BaseEdit::AddBoxGhostImage()
 	_baseGhostImage = _movingGhostImage;
 	_baseGhostImage._origPos = _baseGhostImage._g->GetTilePosition();
 
+
 	// Create ghost/blueprint for _marker
 	AddGhostImage();
 }
@@ -65,8 +67,11 @@ void BaseEdit::AddGhostImage()
 
 	_movingGhostImage._g = _objectHandler->Add(_sB->_blueprint, _sB->_textureId, pos, XMFLOAT3(0.0f, 0.0f, 0.0f), false);
 	_movingGhostImage._origPos = _movingGhostImage._g->GetTilePosition();
+	_movingGhostImage._origRot = _movingGhostImage._g->GetRotation();
+	_movingGhostImage._origDir = _movingGhostImage._g->GetDirection();
 	_movingGhostImage._created = false;
 	_isPlace = true;
+	_isObjectButtonReleased = false;
 }
 
 //GameObject* BaseEdit::GetMarkedObject()
@@ -139,6 +144,8 @@ void BaseEdit::DragEvent(System::Type type)
 			//Fetches either the floor if there is no other object on the tile, or the object that is on the tile
 			_movingGhostImage._g = _tileMap->GetObjectOnTile(pickedTile, type);
 			_movingGhostImage._origPos = pickedTile;
+			_movingGhostImage._origRot = _movingGhostImage._g->GetRotation();
+			_movingGhostImage._origDir = _movingGhostImage._g->GetDirection();
 
 			// Remove logically from old tile
 			_tileMap->RemoveObjectFromTile(_movingGhostImage._g);
@@ -160,6 +167,8 @@ void BaseEdit::DropEvent()
 		p.x = _movingGhostImage._origPos._x;
 		p.z = _movingGhostImage._origPos._y;
 		_movingGhostImage._g->SetPosition(p);
+		_movingGhostImage._g->SetRotation(_movingGhostImage._origRot);
+		_movingGhostImage._g->SetDirection(_movingGhostImage._origDir);
 	}
 
 	// Special camera non floating fix
@@ -199,15 +208,19 @@ void BaseEdit::DropEvent()
 		{
 			_tileMap->RemoveObjectFromTile(_movingGhostImage._g);
 			_createdObject = _objectHandler->Add(_sB->_blueprint, _sB->_textureId, _movingGhostImage._g->GetPosition(), _movingGhostImage._g->GetRotation(), true);
-			
-			RemoveGhostImage();
-			
-			//_objectHandler->Remove(_movingGhostImage._g);
-
-			//_createdObject = _marker._g;
+			if (_createdObject != nullptr)
+			{
+				_createdObject->SetDirection(_movingGhostImage._g->GetDirection());
+			}
 		}
-		_movingGhostImage.Reset();
-		AddGhostImage();
+
+		// Disables multiplacement with mouse in placement state
+		if (!_extendedMode)
+		{
+			//RemoveGhostImage();
+			_isPlace = false;
+			_isDragAndDropMode = false;
+		}
 	}
 }
 
@@ -402,9 +415,13 @@ void BaseEdit::HandleMouseInput()
 			}
 
 			if ((_isDragAndDropMode && _controls->IsFunctionKeyUp("MOUSE:SELECT"))
-				|| (!_isDragAndDropMode && _controls->IsFunctionKeyDown("MOUSE:DRAG") && _isPlace))
+				|| (!_isDragAndDropMode && _controls->IsFunctionKeyDown("MOUSE:DRAG") && _isPlace && _movingGhostImage._placeable && _isObjectButtonReleased))
 			{
 				DropEvent();
+			}
+			else if ( !_isObjectButtonReleased && _controls->IsFunctionKeyUp("MOUSE:SELECT"))
+			{
+				_isObjectButtonReleased = true;
 			}
 		}
 	}
@@ -423,6 +440,7 @@ void BaseEdit::HandleKeyInput()
 			_movingGhostImage._g->SetRotation(XMFLOAT3(tempRot.x, tempRot.y + (DirectX::XM_PI / 4), tempRot.z));
 			rotated = true;
 			clockwise = true;
+
 		}
 		if (_controls->IsFunctionKeyDown("MAP_EDIT:ROTATE_MARKER_COUNTERCLOCK"))
 		{

@@ -145,6 +145,7 @@ void PlacementState::OnStateEnter()
 void PlacementState::OnStateExit()
 {
 	delete _baseEdit;
+	_baseEdit = nullptr;
 
 	//if the tutorialstage is anything other than no tutorial. Hide it. We want to reset on entry, not exit.
 	if (_tutorialState != NOTUTORIAL)

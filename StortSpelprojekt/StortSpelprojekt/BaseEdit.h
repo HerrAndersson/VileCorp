@@ -25,6 +25,8 @@ private:
 	{
 		GameObject* _g = nullptr;
 		AI::Vec2D _origPos;
+		AI::Vec2D _origDir;
+		XMFLOAT3 _origRot;
 		bool _placeable = true;
 		bool _created = true;
 
@@ -34,7 +36,9 @@ private:
 			bool _placeable = true;
 			bool _created = true;
 		}
-	} _movingGhostImage, _baseGhostImage;
+	};
+	GhostImage _movingGhostImage;
+	GhostImage _baseGhostImage;
 
 	bool _droppedObject;
 	GameObject* _createdObject = nullptr;
@@ -48,6 +52,7 @@ private:
 	bool _isPlace;
 	bool _modeLock;
 	bool _isInvalidateFloor;
+	bool _isObjectButtonReleased;
 	
 	void MarkerMoveEvent();
 	void DragEvent(System::Type type);
