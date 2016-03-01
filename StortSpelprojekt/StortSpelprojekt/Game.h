@@ -64,9 +64,6 @@ private:
 
 	void LoadParticleSystemData(ParticleTextures& particleTextures, ParticleModifierOffsets& modifiers);
 
-	bool tempTestCombinedStuff = false;
-	bool tempAlreadyCombined = false;
-
 public:
 
 	Game(HINSTANCE hInstance, int nCmdShow);

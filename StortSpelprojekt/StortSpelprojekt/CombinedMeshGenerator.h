@@ -48,10 +48,13 @@ private:
 		return end(v) != std::find(begin(v), end(v), x);
 	}
 
+	void Release();
+
 public:
 
 	CombinedMeshGenerator(ID3D11Device* device, ID3D11DeviceContext* deviceContext);
 	~CombinedMeshGenerator();
+	void Reset();
 
 	void CombineMeshes(Tilemap* tilemap, const System::Type& typeToCombine, int countPerCombine = -1); //Adds the vertex buffers together. Can specify how many objects to add, if all should be combined, send -1
 	void CombineAndOptimizeMeshes(Tilemap* tilemap, const System::Type& typeToCombine); //Scans the map to find where the vertex buffers can be optimized. For example, a patch of 4x4 floor tiles becomes a single quad with size 4x4

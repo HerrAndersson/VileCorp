@@ -33,8 +33,8 @@ namespace System
 			}
 
 			YSE::System().close();
-			delete _allSounds;
 		}
+		delete _allSounds;
 	}
 
 	/*

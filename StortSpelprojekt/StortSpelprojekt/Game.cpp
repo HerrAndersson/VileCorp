@@ -156,14 +156,16 @@ bool Game::Update(double deltaTime)
 
 	if (_controls->IsFunctionKeyDown("DEBUG:REQUEST_PARTICLE"))
 	{
-		if (!tempAlreadyCombined)
-		{
-			_combinedMeshGenerator->CombineAndOptimizeMeshes(_objectHandler->GetTileMap(), System::FLOOR);
-			_combinedMeshGenerator->CombineAndOptimizeMeshes(_objectHandler->GetTileMap(), System::WALL);
-			tempAlreadyCombined = true;
-		}
+		//if (!tempAlreadyCombined)
+		//{
+		//	_combinedMeshGenerator->CombineAndOptimizeMeshes(_objectHandler->GetTileMap(), System::FLOOR);
+		//	_combinedMeshGenerator->CombineMeshes(_objectHandler->GetTileMap(), System::WALL);
 
-		tempTestCombinedStuff = !tempTestCombinedStuff;
+		//    //_combinedMeshGenerator->CombineAndOptimizeMeshes(_objectHandler->GetTileMap(), System::WALL);*/ //Works if the texture is repeatable
+		//	tempAlreadyCombined = true;
+		//}
+
+		//tempTestCombinedStuff = !tempTestCombinedStuff;
 	}
 
 	_particleHandler->Update(deltaTime);
@@ -267,18 +269,15 @@ void Game::Render()
 
 void Game::RenderGameObjects(int forShaderStage, std::vector<std::vector<GameObject*>>* gameObjects)
 {
-	if (tempTestCombinedStuff)
+	if (forShaderStage == Renderer::RenderModule::ShaderStage::GEO_PASS)
 	{
-		if (forShaderStage == Renderer::RenderModule::ShaderStage::GEO_PASS)
+		std::vector<std::vector<CombinedMesh>>* combinedMeshes = _combinedMeshGenerator->GetCombinedMeshes();
+		for (auto& objVector : *combinedMeshes)
 		{
-			std::vector<std::vector<CombinedMesh>>* combinedMeshes = _combinedMeshGenerator->GetCombinedMeshes();
-			for (auto& objVector : *combinedMeshes)
+			for (auto& obj : objVector)
 			{
-				for (auto& obj : objVector)
-				{
-					_renderModule->SetDataPerObjectType(obj._combinedObject);
-					_renderModule->Render(&obj._world, obj._vertexCount);
-				}
+				_renderModule->SetDataPerObjectType(obj._combinedObject);
+				_renderModule->Render(&obj._world, obj._vertexCount);
 			}
 		}
 	}
@@ -287,20 +286,11 @@ void Game::RenderGameObjects(int forShaderStage, std::vector<std::vector<GameObj
 	{
 		if (i.size() > 0)
 		{
-			if (tempTestCombinedStuff)
+			//The floors in the gameObjects vector should not be rendered, as these are combined in a single mesh to reduce draw calls
+			if ((_SM->GetState() == PLACEMENTSTATE || _SM->GetState() == PLAYSTATE) && (i.at(0)->GetType() == System::FLOOR || i.at(0)->GetType() == System::WALL))
 			{
-				//The floors in the gameObjects vector should not be rendered, as these are combined in a single mesh to reduce draw calls
-				if ((_SM->GetState() == PLACEMENTSTATE || _SM->GetState() == PLAYSTATE) && (i.at(0)->GetType() == System::FLOOR || i.at(0)->GetType() == System::WALL))
-				{
-					continue;
-				}
+				continue;
 			}
-
-			//if ((_SM->GetState() == PLACEMENTSTATE || _SM->GetState() == PLAYSTATE) && (i.at(0)->GetType() == System::WALL))
-			//{
-			//	continue;
-			//}
-
 
 			GameObject* lastGameObject = nullptr;
 			RenderObject* lastRenderObject = nullptr;

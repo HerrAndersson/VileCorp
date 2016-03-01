@@ -14,6 +14,11 @@ CombinedMeshGenerator::CombinedMeshGenerator(ID3D11Device* device, ID3D11DeviceC
 
 CombinedMeshGenerator::~CombinedMeshGenerator()
 {
+	Release();
+}
+
+void CombinedMeshGenerator::Release()
+{
 	for (auto& objVector : _combinedMeshes)
 	{
 		for (auto& obj : objVector)
@@ -28,12 +33,18 @@ CombinedMeshGenerator::~CombinedMeshGenerator()
 	SAFE_RELEASE(_bufferCopy);
 	_combinedMeshes.clear();
 
-	//Not really necessary, but cleanup is always good
 	for (unsigned int i = 0; i < _tileIsCombined.size(); i++)
 	{
 		_tileIsCombined[i].clear();
 	}
 	_tileIsCombined.clear();
+}
+
+void CombinedMeshGenerator::Reset()
+{
+	Release();
+	_bufferCopy = nullptr;
+	_combinedTypes = 0;
 }
 
 //Copy the contents of the vertex buffer of a single object into a vector holding that data
@@ -245,6 +256,12 @@ void CombinedMeshGenerator::CombineAndOptimizeMeshes(Tilemap* tilemap, const Typ
 										{
 											maxY = y + offsetY - 1;
 										}
+
+										if (offsetY == 1)
+										{
+											maxY = y;
+										}
+
 										break;
 									}
 
@@ -252,6 +269,7 @@ void CombinedMeshGenerator::CombineAndOptimizeMeshes(Tilemap* tilemap, const Typ
 									foundY = false;
 								}
 							}
+
 
 							//If a tile does not hold an object of the type, the max value for x has been found
 							if (!foundX)
@@ -268,9 +286,9 @@ void CombinedMeshGenerator::CombineAndOptimizeMeshes(Tilemap* tilemap, const Typ
 						}
 
 						//Mark the found tiles as combined
-						for (int xo = x; xo < maxX+1; xo++)
+						for (int xo = x; xo < maxX+1 && xo < width; xo++)
 						{
-							for (int yo = y; yo < maxY+1; yo++)
+							for (int yo = y; yo < maxY+1 && yo < height; yo++)
 							{
 								_tileIsCombined[xo][yo] = true;
 							}
@@ -280,7 +298,17 @@ void CombinedMeshGenerator::CombineAndOptimizeMeshes(Tilemap* tilemap, const Typ
 						float scaleY = maxY - basePos.z + 1;
 
 						XMMATRIX scaleTranslation = XMMatrixScaling(scaleX, 1.0f, scaleY);
-						XMMATRIX scaleUV = XMMatrixScaling(scaleX, scaleY, 1.0f);
+						XMMATRIX scaleUV;
+
+						if (typeToCombine == FLOOR)
+						{
+							scaleUV = XMMatrixScaling(scaleX, scaleY, 1.0f);
+						}
+						else
+						{
+							scaleUV = XMMatrixScaling(max(scaleX, scaleY), 1.0f, 1.0f);
+						}
+						 
 						XMMATRIX translation = scaleTranslation * XMMatrixTranslation(basePos.x + scaleX / 2.0f - 0.5f, basePos.y, basePos.z + scaleY / 2.0f - 0.5f);
 
 						//Translating the mesh data by the object translation
@@ -294,6 +322,7 @@ void CombinedMeshGenerator::CombineAndOptimizeMeshes(Tilemap* tilemap, const Typ
 							XMStoreFloat3(&vert._position, posV);
 
 							//Scale the uv-coords according to the same scaling as the position
+
 							XMVECTOR uvV = XMLoadFloat2(&vert._uv);
 							uvV = XMVector2TransformCoord(uvV, scaleUV);
 							XMStoreFloat2(&vert._uv, uvV);
@@ -302,7 +331,6 @@ void CombinedMeshGenerator::CombineAndOptimizeMeshes(Tilemap* tilemap, const Typ
 						}
 
 						combinedCount++;
-
 					}
 				}
 			}
