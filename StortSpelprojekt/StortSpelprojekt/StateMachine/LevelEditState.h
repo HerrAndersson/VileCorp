@@ -54,6 +54,10 @@ private:
 	GUI::RadioButtonCollection _spawnWaveTypeRadioButtons;
 	int _selectedSpawnWave;
 
+	//Level::LevelHeader _selectedLevelHeader;
+	int _selectedLevelint;
+
+
 	bool _floorChosen = false;
 	bool _wallChosen = false;
 
