@@ -371,7 +371,7 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 		Initialize(40, 1, 1, 1, 50, 50, 140, 140, Unit::StatusEffect::NO_EFFECT, 0, 0);
 		break;
 	case TESLACOIL:																					//AOE that stuns for a few seconds and does a small amount of damage
-		Initialize(30, 9, 9, 37, 80, 80, 140, 140, Unit::StatusEffect::STUNNED, 620, 620, 60, 2);
+		Initialize(30, 9, 9, 37, 80, 80, 140, 140, Unit::StatusEffect::STUNNED, 120, 120, 60, 2);
 		frozen = false;
 		break;
 	case SHARK:																						//Takes up a lot of space, but is an instant kill if it hits.
