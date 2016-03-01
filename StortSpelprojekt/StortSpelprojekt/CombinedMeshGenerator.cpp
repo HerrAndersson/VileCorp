@@ -214,7 +214,6 @@ void CombinedMeshGenerator::CombineMeshes(Tilemap* tilemap, const Type& typeToCo
 						if (object && object->GetType() == typeToCombine && *object->GetRenderObject() == *renderObject)
 						{
 							XMFLOAT3 basePos = object->GetPosition();
-							XMFLOAT3 endPos; //Holds the corner furthest away from basePos
 
 							int offsetX = 0;
 							int offsetY = 0;
@@ -225,65 +224,56 @@ void CombinedMeshGenerator::CombineMeshes(Tilemap* tilemap, const Type& typeToCo
 							bool foundX = false;
 							bool foundY = false;
 
+							//Check X-direction
 							while (!stopX && (x + offsetX) < width)
 							{
-
+								//Check if the tile holds an object of the type that is being combined
 								std::vector<GameObject*>* xObjectsOnTile = tilemap->GetAllObjectsOnTile(x + offsetX, y);
 								for (auto& xObject : *xObjectsOnTile)
 								{
 									if (xObject && xObject->GetType() == typeToCombine && *xObject->GetRenderObject() == *renderObject)
 									{
 										foundX = true;
+										tileIsCombined[x + offsetX][y] = true;
 									}
 								}
 
-								if (foundX)
-								{
-									while (!stopY && (y + offsetY) < height)
-									{
-										foundY = false;
-										if (!tileIsCombined[x + offsetX][y + offsetY])
-										{
-											std::vector<GameObject*>* yObjectsOnTile = tilemap->GetAllObjectsOnTile(x + offsetX, y + offsetY);
-											for (auto& yObject : *yObjectsOnTile)
-											{
-												if (yObject && yObject->GetType() == typeToCombine && *yObject->GetRenderObject() == *renderObject)
-												{
-													tileIsCombined[x + offsetX][y + offsetY] = true;
-													foundY = true;
-												}
-											}
-										}
-										else
-										{
-											maxY = y + offsetY - 1;
-											stopY = true;
-											break;
-										}
-
-										if (!foundY)
-										{
-											maxY = y + offsetY - 1;
-											stopY = true;
-											break;
-										}
-
-										offsetY++;
-									}
-								}
-								else
+								//If a tile does not hold an object of the type, the max value for x has been found
+								if (!foundX)
 								{
 									stopX = true;
-									maxX = x + offsetX - 1;
+									maxX = x + offsetX - 1; //Should -1 be there?
 									break;
 								}
+							}
 
-								//Restart the next column
-								stopY = false;
-								offsetX++;
+							//Check Y-direction of the found x positions
+							for (int xo = 0; xo < offsetX; xo++)
+							{
+								while (!stopY && (y + offsetY) < width)
+								{
+									if (!tileIsCombined[x + xo][y + offsetY])
+									{
+										std::vector<GameObject*>* yObjectsOnTile = tilemap->GetAllObjectsOnTile(x + offsetX, y + offsetY);
+										for (auto& yObject : *yObjectsOnTile)
+										{
+											if (yObject && yObject->GetType() == typeToCombine && *yObject->GetRenderObject() == *renderObject && yObject->GetPosition().z <= maxY)
+											{
+												tileIsCombined[x + offsetX][y + offsetY] = true;
+												foundY = true;
+												maxY = y + offsetY - 1;
+											}
+										}
+									}
+
+									if (!foundY)
+									{
+
+									}
+
+									offsetY++;
+								}
 								offsetY = 0;
-								foundX = false;
-								foundY = false;
 							}
 
 							float scaleX = maxX-basePos.x+1;

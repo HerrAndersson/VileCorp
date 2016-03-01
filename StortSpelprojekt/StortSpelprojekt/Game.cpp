@@ -296,6 +296,12 @@ void Game::RenderGameObjects(int forShaderStage, std::vector<std::vector<GameObj
 				}
 			}
 
+			//if ((_SM->GetState() == PLACEMENTSTATE || _SM->GetState() == PLAYSTATE) && (i.at(0)->GetType() == System::WALL))
+			//{
+			//	continue;
+			//}
+
+
 			GameObject* lastGameObject = nullptr;
 			RenderObject* lastRenderObject = nullptr;
 			int vertexBufferSize = 0;
