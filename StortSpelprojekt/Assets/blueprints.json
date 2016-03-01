@@ -271,7 +271,7 @@
 				"cuppycake.png"
 			]
 		}, {
-			"_mesh": "flamethrowerTrap-28.bin",
+			"_mesh": "flamethrowerTrap-29.bin",
 			"_name": "Flame Trap",
 			"_type": 4,
 			"_subType": 7,
@@ -281,6 +281,18 @@
 			],
 			"_thumbnails": [
 				"../Menues/PlacementStateGUI/units/FlameThrowerbutton1.png"
+			]
+		}, {
+			"_mesh": "sawRoofTrap-28.bin",
+			"_name": "Water Gun Trap",
+			"_type": 4,
+			"_subType": 8,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"sawRoofTrap.png"
+			],
+			"_thumbnails": [
+				"sawRoofTrap.png"
 			]
 		}, {
 			"_mesh": "sawRoofTrap-28.bin",
