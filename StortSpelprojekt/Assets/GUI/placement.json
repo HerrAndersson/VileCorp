@@ -1,7 +1,7 @@
 {
 	"Units": {
 		"position": [-0.5, -0.855],
-		"scale": [0.8, 0.2],
+		"scale": [1.2, 0.2],
 		"texture": "../Menues/PlacementStateGUI/placementUnits1.png",
 
 		"UnitList":
@@ -195,7 +195,7 @@
 				"centered": true
 				}
 			},
-			"XTrap" :{
+			"SawTrap" :{
 				"position": [0.66, 0.057],
 				"scale": [0.048, 0.083],
         "texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png",
@@ -203,17 +203,17 @@
 				"subType": 4,
 				"textureId" : 0,
 				
-				"TeslaText":
+				"SawText":
 				{
 					"position": [0.0, -0.173],
 					"scale": [0.068, 0.083],
-					"text": "Future Trap\n  X$",
+					"text": "Sawblade\n  X$",
 				"color": "FF000000",
 				"fontsize": 18.0,
 				"centered": true
 				}
 			},
-			"YTrap" :{
+			"CakeTrap" :{
 				"position": [0.78, 0.057],
 				"scale": [0.048, 0.083],
         "texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png",
@@ -221,29 +221,80 @@
 				"subType": 5,
 				"textureId" : 0,
 				
-				"TeslaText":
+				"CakeText":
 				{
 					"position": [0.0, -0.173],
 					"scale": [0.068, 0.083],
-					"text": "Future Trap\n  X$",
+					"text": "Sugar Bomb\n  X$",
 				"color": "FF000000",
 				"fontsize": 18.0,
 				"centered": true
 				}
 			},
-			"ZTrap" :{
-				"position": [0.90, 0.057],
+      "BearTrap": {
+        "position": [ 0.90, 0.057 ],
+        "scale": [ 0.048, 0.083 ],
+        "texture": "../Menues/PlacementStateGUI/units/Bearbutton.png",
+        "type": 4,
+        "subType": 6,
+        "textureId": 0,
+
+        "BearText": {
+          "position": [ 0.0, -0.173 ],
+          "scale": [ 0.068, 0.083 ],
+          "text": "Bear Trap\n  X$",
+          "color": "FF000000",
+          "fontsize": 18.0,
+          "centered": true
+        }
+      },
+      "FlameThrowerTrap": {
+        "position": [ 1.02, 0.057 ],
+        "scale": [ 0.048, 0.083 ],
+        "texture": "../Menues/PlacementStateGUI/units/FlameThrowerbutton1.png",
+        "type": 4,
+        "subType": 7,
+        "textureId": 0,
+
+        "FlameThrowerText": {
+          "position": [ 0.0, -0.173 ],
+          "scale": [ 0.068, 0.083 ],
+          "text": "Flamethrower\n  X$",
+          "color": "FF000000",
+          "fontsize": 18.0,
+          "centered": true
+        }
+      },
+      "WaterGunTrap": {
+        "position": [ 1.14, 0.057 ],
+        "scale": [ 0.048, 0.083 ],
+        "texture": "../Menues/PlacementStateGUI/units/FlameThrowerbutton1.png",
+        "type": 4,
+        "subType": 8,
+        "textureId": 0,
+
+        "WaterGunText": {
+          "position": [ 0.0, -0.173 ],
+          "scale": [ 0.068, 0.083 ],
+          "text": "Water gun: Not Finished\n  X$",
+          "color": "FF000000",
+          "fontsize": 18.0,
+          "centered": true
+        }
+      },
+      "SpinTrap" :{
+				"position": [1.26, 0.057],
 				"scale": [0.048, 0.083],
-        "texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png",
+        "texture": "../Menues/PlacementStateGUI/units/ConfuseTrapButton.png",
         "type" : 4,
-				"subType": 6,
+				"subType": 9,
 				"textureId" : 0,
 				
-				"TeslaText":
+				"SpinText":
 				{
 					"position": [0.0, -0.173],
 					"scale": [0.068, 0.083],
-					"text": "Future Trap\n  X$",
+					"text": "Spinning Tile\n  X$",
 				"color": "FF000000",
 				"fontsize": 18.0,
 				"centered": true
