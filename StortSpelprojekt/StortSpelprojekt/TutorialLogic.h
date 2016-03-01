@@ -8,7 +8,7 @@
 #include "SettingsReader.h"
 #include "CommonUtils.h"
 #include "Player.h"
-#include "GhostImage.h"
+//#include "GhostImage.h"
 #include "ObjectHandler.h"
 #include "../System/Settings/Profile.h"
 
@@ -52,7 +52,10 @@ private:
 	System::Controls* _controls;
 	Player* _player;
 	std::vector<GUI::Node*>* _buttons;
-	GhostImage*	_ghostImage;
+	
+	BaseEdit* _baseEdit;
+	
+	
 	ObjectHandler* _objectHandler;
 	PickingDevice* _pickingDevice;
 	System::Profile* _profile;
@@ -71,7 +74,7 @@ private:
 	void InputButtons();
 
 public:
-	TutorialLogic(GUI::UITree* uiTree, System::Controls* controls, Player* player, std::vector<GUI::Node*>* buttons, GhostImage* ghostImage, ObjectHandler* objectHandler, PickingDevice* pickingDevice, System::Profile* profile);
+	TutorialLogic(GUI::UITree* uiTree, System::Controls* controls, Player* player, std::vector<GUI::Node*>* buttons, BaseEdit* baseEdit, ObjectHandler* objectHandler, PickingDevice* pickingDevice, System::Profile* profile);
 	~TutorialLogic();
 
 	bool Update(float deltaTime);

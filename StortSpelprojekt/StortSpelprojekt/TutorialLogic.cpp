@@ -1,12 +1,12 @@
 #include "TutorialLogic.h"
 
-TutorialLogic::TutorialLogic(GUI::UITree* uiTree, System::Controls* controls, Player* player, std::vector<GUI::Node*>* buttons, GhostImage* ghostImage, ObjectHandler* objectHandler, PickingDevice* pickingDevice, System::Profile* profile)
+TutorialLogic::TutorialLogic(GUI::UITree* uiTree, System::Controls* controls, Player* player, std::vector<GUI::Node*>* buttons, BaseEdit* baseEdit, ObjectHandler* objectHandler, PickingDevice* pickingDevice, System::Profile* profile)
 {
 	_uiTree = uiTree;
 	_controls = controls;
 	_player = player;
 	_buttons = buttons;
-	_ghostImage = ghostImage;
+	_baseEdit = baseEdit;
 	_objectHandler = objectHandler;
 	_pickingDevice = pickingDevice;
 	_profile = profile;

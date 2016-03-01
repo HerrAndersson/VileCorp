@@ -1,20 +1,22 @@
 #pragma once
 
 #include "BaseState.h"
+#include "../BaseEdit.h"
 #include "../JsonStructs.h"
 #include "jsonparser.h"
 #include "Assetmanager.h"
+//#include "../TutorialLogic.h"
+#include "../ToPlace.h"
+
 #include "../Player.h"
-#include "../TutorialLogic.h"
 #include "CommonUtils.h"
-#include "../GhostImage.h"
 #include "../System/Settings/Profile.h"
 
 class PlacementState : public BaseState
 {
 private:
-	TutorialLogic* _tutorialLogic;
-	bool _trapChosen = false;
+	//TutorialLogic* _tutorialLogic;
+	BaseEdit* _baseEdit;
 	
 	int _budget;
 	int _costOfAnvilTrap;
@@ -22,15 +24,16 @@ private:
 	int _costOfCamera;
 	int _costOfGuard;
 
-	int _currentPlayer = 0;
 	DirectX::XMFLOAT3* _ambientLight;
 
 	System::Profile* _profile;
-
 	Player* _player;
-	System::SpecificBlueprint _selectedBlueprint;
+
+	// Temp, should be replaced with blueprint
+	ToPlace _toPlace;
+
+	//GUI::NodeBar _unitBar;
 	std::vector<GUI::Node*>* _buttons;
-	GhostImage _ghostImage;
 
 	void EvaluateGoldCost();
 	void HandleDescriptions();
@@ -44,5 +47,6 @@ public:
 	void OnStateExit();
 
 	void HandleInput();
+	void HandleButtons();
 };
 

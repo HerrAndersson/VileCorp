@@ -5,9 +5,9 @@ LevelEditState::LevelEditState(System::Controls* controls, ObjectHandler* object
 {
 	_listId = -1;
 	_moveCheck = -1;
-	_baseEdit = nullptr;
 	_pageCheck = false;
 	_leaveCheck = -1;
+	_baseEdit = nullptr;
 
 	_ambientLight = ambientLight;
 }
@@ -22,7 +22,7 @@ void LevelEditState::Update(float deltaTime)
 	HandleCam(deltaTime);
 	HandleInput();
 	bool clickedOnGUI = HandleButtons();  //TODO: make a separate function to check if any visible gui node was clicked
-	_baseEdit->Update(deltaTime, clickedOnGUI);
+	_baseEdit->Update();
 }
 
 void LevelEditState::OnStateEnter()
@@ -91,8 +91,6 @@ void LevelEditState::OnStateEnter()
 
 	_objectHandler->EnlargeTilemap(50);
 
-	_baseEdit = new BaseEdit(_objectHandler, _controls, _pickingDevice, _camera, true);
-
 	XMFLOAT3 campos;
 	campos.x = (float)_objectHandler->GetTileMap()->GetWidth() / 2;
 	campos.y = 15;
@@ -122,13 +120,14 @@ void LevelEditState::OnStateEnter()
 	{
 		_isLocked[i] = false;
 	}
+
+	_baseEdit = new BaseEdit(_objectHandler, _controls, _pickingDevice, true);
 }
 
 void LevelEditState::OnStateExit()
 {
 	// Needs to be deallocated first because BaseEdit has GameObject pointers
-	delete _baseEdit;
-	_baseEdit = nullptr;
+	_baseEdit->RemoveGhostImage();
 
 	_objectHandler->MinimizeTileMap();
 	//TODO: Remove this function to LevelSelection when that state is created. /Alex
@@ -712,7 +711,7 @@ bool LevelEditState::HandleButtons()
 
 void LevelEditState::ExportLevel()
 {
-	_baseEdit->ReleaseMarkers();
+	_baseEdit->RemoveGhostImage();
 
 	_currentLevelFileName = "exported level";
 
