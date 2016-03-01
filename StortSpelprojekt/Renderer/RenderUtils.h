@@ -21,12 +21,12 @@ struct Frame
 	DirectX::XMVECTOR _rotation;
 	DirectX::XMVECTOR _scale;
 
-	void* Frame::operator new(size_t i)
+	static void* Frame::operator new(size_t i)
 	{
 		return _mm_malloc(i, 16);
 	}
 
-	void Frame::operator delete(void* p)
+	static void Frame::operator delete(void* p)
 	{
 		_mm_free(p);
 	}
@@ -36,7 +36,7 @@ struct BoneFrames
 {
 	int _frameCount;
 	std::vector<float> _frameTime;
-	std::vector<Frame> _frames;
+	Frame* _frames;
 };
 
 struct Action
