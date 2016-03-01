@@ -385,6 +385,7 @@ void Unit::SwitchingNode()
 		}
 		Rotate();
 		_moveState = MoveState::MOVING;
+		_isSwitchingTile = false;
 	}
 	else
 	{

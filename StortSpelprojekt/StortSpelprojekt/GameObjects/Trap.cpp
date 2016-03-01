@@ -281,9 +281,9 @@ void Trap::SetTiles()
 		_nrOfAOETiles = CalculateCircle(3, _tilePosition, _areaOfEffect);
 		break;
 	case SHARK:
-		_nrOfOccupiedTiles = CalculateRectangle(5, 2, _tilePosition, _occupiedTiles);
-		_nrOfTriggers = CalculateRectangle(1, 2, _tilePosition, _triggerTiles);
-		_nrOfAOETiles = CalculateRectangle(1, 2, _tilePosition, _areaOfEffect);
+		_nrOfOccupiedTiles = CalculateRectangle(5, 2, _tilePosition - AI::Vec2D(_direction._y, _direction._x), _occupiedTiles);
+		_nrOfTriggers = CalculateRectangle(1, 2, _tilePosition - AI::Vec2D(_direction._y, _direction._x), _triggerTiles);
+		_nrOfAOETiles = CalculateRectangle(1, 2, _tilePosition - AI::Vec2D(_direction._y, _direction._x), _areaOfEffect);
 		break;
 	case GUN:
 		_nrOfOccupiedTiles = CalculateLine(10, _tilePosition, _occupiedTiles);
@@ -311,6 +311,9 @@ void Trap::SetTiles()
 		_nrOfTriggers = CalculateLine(7, _tilePosition, _triggerTiles);
 		break;
 	case WATER_GUN:
+		_nrOfOccupiedTiles = CalculateLine(7, _tilePosition, _occupiedTiles);
+		_nrOfAOETiles = CalculateLine(7, _tilePosition, _areaOfEffect);
+		_nrOfTriggers = CalculateLine(7, _tilePosition, _triggerTiles);
 		break;
 	case SPIN_TRAP:
 		_occupiedTiles[_nrOfOccupiedTiles++] = _tilePosition;
@@ -523,6 +526,8 @@ void Trap::Update(float deltaTime)
 			{}
 			_triggerTiles[0] = _occupiedTiles[i%_nrOfOccupiedTiles];
 			_areaOfEffect[0] = _triggerTiles[0];
+		//	_tileMap->GetObjectOnTile(_areaOfEffect[0], System::FLOOR)->SetColorOffset({0.0f,0.0f,3.0f});
+
 		}
 		if (_tileMap->IsEnemyOnTile(_triggerTiles[0]))
 		{
@@ -581,7 +586,6 @@ void Trap::SetVisibleToEnemies(bool visible)
 // Overloaded function
 void Trap::SetTilePosition(AI::Vec2D pos)
 {
-
 	//_nrOfAOETiles = 0;
 	int radius = 0;
 	GameObject::SetTilePosition(pos);	

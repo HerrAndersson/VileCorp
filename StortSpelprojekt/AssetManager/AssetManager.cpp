@@ -74,7 +74,7 @@ HRESULT Texture::LoadTexture(ID3D11Device* device)
 		_filePath.append(_name.begin(), _name.end());
 //		res = DirectX::CreateWICTextureFromFile(device, _filePath.c_str(), nullptr, &_data, 0);
 //		DirectX::CreateDDSTextureFromFile(device, (_filePath.substr(0,_filePath.size()-3) + L"dds").c_str(), nullptr, &_data, 0);
-		res = DirectX::CreateDDSTextureFromFileEx(device, (_filePath.substr(0, _filePath.size() - 3) + L"dds").c_str(), 0, D3D11_USAGE_IMMUTABLE, D3D11_BIND_SHADER_RESOURCE, 0, 0, false, nullptr, &_data,0);
+		res = DirectX::CreateDDSTextureFromFileEx(device, _filePath.c_str(), 0, D3D11_USAGE_IMMUTABLE, D3D11_BIND_SHADER_RESOURCE, 0, 0, false, nullptr, &_data,0);
 
 		if (_data == nullptr)
 		{
@@ -130,7 +130,13 @@ bool AssetManager::LoadModel(string name, Mesh* mesh) {
 Texture* AssetManager::ScanTexture(string name)
 {
 	Texture* texture = new Texture;
-	texture->_name = name;
+
+	if (name.substr(name.size() - 4) == string(".png"))//TODO remove - Fredrik
+	{
+		name.resize(name.size() - 4);
+	}
+
+	texture->_name = name + ".dds";
 	_textures->push_back(texture);
 	return texture;
 }

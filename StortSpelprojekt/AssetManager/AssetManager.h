@@ -7,7 +7,6 @@
 #include <vector>
 #include <DirectXMath.h>
 #include <fstream>
-#include "WICTextureLoader.h"
 #include "DDSTextureLoader.h"
 #include "RenderUtils.h"
 #include "LevelFormat.h"

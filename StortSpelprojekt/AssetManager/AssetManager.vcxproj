@@ -22,7 +22,6 @@
     <ClCompile Include="DDSTextureLoader.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="AssetManager.cpp" />
-    <ClCompile Include="WICTextureLoader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DDSTextureLoader.h" />
@@ -30,7 +29,6 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="AssetManager.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="WICTextureLoader.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{12D08945-3BE4-48F7-86C9-093AB5610DFB}</ProjectGuid>
