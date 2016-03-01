@@ -71,9 +71,9 @@ private:
 	//Currently loaded level information
 	Level::LevelHeader _currentLevelHeader;
 	std::vector<std::string> _currentAvailableUnits;
-	std::vector<std::array<int, 2>> _currentEnemySpawnVector;
+	std::vector<std::array<int, 2>> _enemySpawnVector;
 
-	int _currentEnemySpawnIndex = 0;
+	int _enemySpawnIndex = 0;
 	int _spawnTimer = 0;
 
 	Renderer::ParticleEventQueue* _particleEventQueue;
@@ -120,11 +120,6 @@ public:
 	bool LoadLevel(std::string levelBinaryFilePath);
 	void UnloadLevel();
 
-	void InitPathfinding();
-	void EnableSpawnPoints();
-	void DisableSpawnPoints();
-	int GetRemainingToSpawn()const;
-
 	Renderer::ParticleEventQueue* GetParticleEventQueue();
 
 	//Update gamelogic of all objects
@@ -135,5 +130,6 @@ public:
 	System::Blueprint* GetBlueprintByName(string name);
 	System::Blueprint* GetBlueprintByType(int type, int subType = 0);
 	std::vector<std::string>* GetCurrentAvailableUnits();
+	int GetRemainingToSpawn();
 };
 

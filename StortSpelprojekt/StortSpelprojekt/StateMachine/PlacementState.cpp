@@ -82,7 +82,6 @@ void PlacementState::OnStateEnter()
 	//Fix so that budgetvalue won't get read if we go into pause state! We don't want the players to cheat themselves back to their budget money by pressing pause, resume, pause etc.. Enbom
 	_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_budget));
 	_baseEdit = new BaseEdit(_objectHandler, _controls, _pickingDevice, _camera, false);
-	_objectHandler->DisableSpawnPoints();
 
 	XMFLOAT3 campos;
 	campos.x = _objectHandler->GetTileMap()->GetWidth() / 2;

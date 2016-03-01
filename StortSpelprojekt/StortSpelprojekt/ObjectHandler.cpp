@@ -474,8 +474,8 @@ bool ObjectHandler::LoadLevel(std::string levelBinaryFilePath)
 		}
 
 		_currentAvailableUnits = levelData._availableUnits;
-		_currentEnemySpawnVector = levelData._enemyOrderedSpawnVector;
-		_currentEnemySpawnIndex = 0;
+		_enemySpawnVector = levelData._enemyOrderedSpawnVector;
+		_enemySpawnIndex = 0;
 
 		_lightCulling = new LightCulling(_tilemap);
 	}
@@ -506,21 +506,6 @@ void ObjectHandler::UnloadLevel()
 	ReleaseGameObjects();
 	SAFE_DELETE(_tilemap);
 	SAFE_DELETE(_lightCulling);
-}
-
-void ObjectHandler::InitPathfinding()
-{
-	for (GameObject* i : _gameObjects[System::ENEMY])
-	{
-		Unit* unit = dynamic_cast<Unit*>(i);
-		unit->InitializePathFinding();
-	}
-
-	for (GameObject* i : _gameObjects[System::GUARD])
-	{
-		Unit* unit = dynamic_cast<Unit*>(i);		unit->InitializePathFinding();
-		unit->InitializePathFinding();
-	}
 }
 
 void ObjectHandler::Update(float deltaTime)
@@ -564,7 +549,7 @@ void ObjectHandler::Update(float deltaTime)
 
 							for (uint k = 0; k < _gameObjects[System::SPAWN].size() && !lootRemoved; k++)
 							{
-								//If the enemy is at the despawn point with an objective, remove the objective NOT the enemy, Aron, Rikhard
+								//If the enemy is at the despawn point with an objective, remove the objective and the enemy, Aron
 								if (_gameObjects[System::SPAWN][k]->InRange(unit->GetTilePosition()))
 								{
 									lootRemoved = Remove(heldObject);
@@ -612,27 +597,53 @@ void ObjectHandler::Update(float deltaTime)
 			}
 		}
 	}
-	SpawnEnemies();
-	UpdateLights();
-
+	if (_spawnTimer % 60 == 0)
+	{
+		SpawnEnemies();
+	}
 	_spawnTimer++;
+	UpdateLights();
 }
 
 void ObjectHandler::SpawnEnemies()
 {
-	//else if (g->GetType() == System::SPAWN)															//Manage enemy spawning
-	//{
-	//	if (static_cast<SpawnPoint*>(g)->isSpawning() && _tilemap->GetNrOfLoot() > 0)
-	//	{
-	//		if (Add(_blueprints.GetBlueprintByType(System::ENEMY,0), 0, g->GetPosition(), g->GetRotation())) //TODO blueprints of spawned enemies should be kept in spawnpoints - Fredrik
-	//		{
-	//			((Unit*)_gameObjects[System::ENEMY].back())->InitializePathFinding();
-	//		}
-	//	}
-	//}
+	if (_enemySpawnVector.size() > 0 && _enemySpawnIndex < _enemySpawnVector.size() - 1)
+	{
+		int nextEnemySpawnTime = _enemySpawnVector[_enemySpawnIndex][0];
 
-	//_currentEnemySpawnVector[_currentEnemySpawnIndex]
+		if (_spawnTimer >= nextEnemySpawnTime * 60)
+		{
+			int nextEnemyType = _enemySpawnVector[_enemySpawnIndex][1];
+			System::Blueprint* nextEnemyBlueprint = _blueprints.GetBlueprintByType(System::ENEMY, nextEnemyType);
 
+			std::vector<GameObject*> spawnPoints(_gameObjects[System::Type::SPAWN]);
+
+			bool enemyAdded = false;
+
+			while (!enemyAdded && spawnPoints.size() > 0)
+			{
+				int spawnPointIndex = 0;
+				if (spawnPoints.size() > 1)
+				{
+					spawnPointIndex = rand() % (spawnPoints.size() - 1);
+				}
+				
+				GameObject* selectedSpawnPoint = spawnPoints[spawnPointIndex];
+				enemyAdded = Add(nextEnemyBlueprint, 0, selectedSpawnPoint->GetPosition(), selectedSpawnPoint->GetRotation(), true);
+
+				if (!enemyAdded)
+				{
+					spawnPoints.erase(spawnPoints.begin() + spawnPointIndex);
+				}
+			}
+
+			if (enemyAdded)
+			{
+				_enemySpawnIndex++;
+				SpawnEnemies();
+			}
+		}
+	}
 }
 
 void ObjectHandler::UpdateLights()
@@ -709,6 +720,11 @@ std::vector<std::string>* ObjectHandler::GetCurrentAvailableUnits()
 	return &_currentAvailableUnits;
 }
 
+int ObjectHandler::GetRemainingToSpawn()
+{
+	return _enemySpawnVector.size() - (_enemySpawnIndex + 1);
+}
+
 map<GameObject*, Renderer::Spotlight*>* ObjectHandler::GetSpotlights()
 {
 	return &_spotlights;
@@ -738,7 +754,6 @@ void ObjectHandler::ReleaseGameObjects()
 	_idCount = 0;
 	_objectCount = 0;
 }
-
 
 Renderer::ParticleEventQueue* ObjectHandler::GetParticleEventQueue()
 {

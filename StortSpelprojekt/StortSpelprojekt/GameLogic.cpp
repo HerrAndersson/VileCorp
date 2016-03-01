@@ -1,6 +1,4 @@
 #include "GameLogic.h"
-#include <DirectXMath.h>
-#include "InputDevice.h"
 
 GameLogic::GameLogic(ObjectHandler* objectHandler, System::Camera* camera, System::Controls* controls, PickingDevice* pickingDevice, GUI::UITree* uiTree, AssetManager* assetManager, System::SettingsReader* settingsReader , System::SoundModule* soundModule)
 {
@@ -11,7 +9,12 @@ GameLogic::GameLogic(ObjectHandler* objectHandler, System::Camera* camera, Syste
 	_settingsReader = settingsReader;
 
 	_player = new Player(objectHandler);
-	_objectHandler->InitPathfinding();
+
+	for (GameObject* guard : *_objectHandler->GetAllByType(System::Type::GUARD))
+	{
+		static_cast<Unit*>(guard)->InitializePathFinding();
+	}
+
 	_uiTree = uiTree;
 	_assetManager = assetManager;
 	_guardTexture = _assetManager->GetTexture("../Menues/PlacementStateGUI/units/Guardbutton1.png")->_data;
