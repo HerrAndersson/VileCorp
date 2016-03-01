@@ -33,6 +33,7 @@ private:
 	ID3D11DeviceContext* _deviceContext;
 	ID3D11Buffer* _bufferCopy;
 
+	std::vector<std::vector<bool>> _tileIsCombined; //Each position corresponds to the same position in the tilemap
 	std::vector<std::vector<CombinedMesh>> _combinedMeshes;
 	int _combinedTypes;
 
@@ -52,7 +53,8 @@ public:
 	CombinedMeshGenerator(ID3D11Device* device, ID3D11DeviceContext* deviceContext);
 	~CombinedMeshGenerator();
 
-	void CombineMeshes(Tilemap* tilemap, const System::Type& typeToCombine, int countPerCombine = -1);
+	void CombineMeshes(Tilemap* tilemap, const System::Type& typeToCombine, int countPerCombine = -1); //Adds the vertex buffers together. Can specify how many objects to add, if all should be combined, send -1
+	void CombineAndOptimizeMeshes(Tilemap* tilemap, const System::Type& typeToCombine); //Scans the map to find where the vertex buffers can be optimized. For example, a patch of 4x4 floor tiles becomes a single quad with size 4x4
 
 	std::vector<std::vector<CombinedMesh>>* GetCombinedMeshes();
 };

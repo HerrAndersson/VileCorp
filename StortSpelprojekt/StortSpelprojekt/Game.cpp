@@ -158,8 +158,8 @@ bool Game::Update(double deltaTime)
 	{
 		if (!tempAlreadyCombined)
 		{
-			//_combinedMeshGenerator->CombineMeshes(_objectHandler->GetTileMap(), System::FLOOR);
-			_combinedMeshGenerator->CombineMeshes(_objectHandler->GetTileMap(), System::WALL);
+			_combinedMeshGenerator->CombineAndOptimizeMeshes(_objectHandler->GetTileMap(), System::FLOOR);
+			_combinedMeshGenerator->CombineAndOptimizeMeshes(_objectHandler->GetTileMap(), System::WALL);
 			tempAlreadyCombined = true;
 		}
 
