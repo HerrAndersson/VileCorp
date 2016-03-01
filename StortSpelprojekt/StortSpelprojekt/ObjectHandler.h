@@ -118,6 +118,8 @@ public:
 	Level::LevelHeader* GetCurrentLevelHeader();
 	void SetCurrentLevelHeader(Level::LevelHeader levelheader);
 	bool LoadLevel(std::string levelBinaryFilePath);
+	bool LoadLevel(Level::LevelBinary &levelData);
+
 	void UnloadLevel();
 
 	Renderer::ParticleEventQueue* GetParticleEventQueue();

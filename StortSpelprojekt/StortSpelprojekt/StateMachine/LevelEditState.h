@@ -3,6 +3,7 @@
 #include "BaseState.h"
 #include "../BaseEdit.h"
 #include "LevelFormat.h"
+#include "JsonParser.h"
 
 class LevelEditState : public BaseState
 {
@@ -19,13 +20,11 @@ private:
 	int _moveCheck;
 	bool _pageCheck;
 	bool _isPressed[5];
-	bool _isLocked[11];
-	int _mapChangeSelected;
-	XMFLOAT4 _OrginLockColor[11];
+	bool _dialogWindowLock;
 	int _leaveCheck;
 	XMFLOAT2 _buttonPositions[12];
 	GUI::Node* _currentList = nullptr;
-	int _currentPage = 0;
+	int _currentPage;
 	std::vector<GUI::Node*>* _objectTabs;
 	DirectX::XMFLOAT3* _ambientLight;
 	std::vector<GUI::Node*>* _settingsTabs;
@@ -45,25 +44,29 @@ private:
 
 	GUI::TextBox* _currentlySelectedTextBox;
 	GUI::Node* _saveLevelNameTextNode;
+	GUI::Node* _budgetTextNode;
+	GUI::Node* _storyTitleTextNode;
+	GUI::Node* _storyTextNode;
 	std::vector<GUI::TextBox> _textBoxesGeneral;
 	std::vector<GUI::TextBox> _textBoxesSpawnSettings;
 	std::vector<GUI::ToggleButton> _toggleButtons;
+	GUI::ToggleButton _noPlacementZoneToggleButton;
 	std::vector<std::string> _levelHeaderFilenames;
+	GUI::Node* _loadLevelTextNode;
 	GUI::Node* _selectedSpawnWaveNode;
 	std::vector<GUI::Node*>* _spawnTypesRadioButtonsNodes;
 	GUI::RadioButtonCollection _spawnWaveTypeRadioButtons;
 	int _selectedSpawnWave;
 
-	//Level::LevelHeader _selectedLevelHeader;
-	int _selectedLevelint;
-
-
-	bool _floorChosen = false;
-	bool _wallChosen = false;
+	int _loadLevelSelectedIndex;
 
 	SpecificBlueprint _toPlace;
 
+	void LoadLevel(std::string fileName);
+
+	void ResetLevel();
 	bool HandleButtonsForSpawn(System::MouseCoord &coord, bool clickedOnGUI);
+	bool HandleButtonsForDialogWindows(System::MouseCoord &coord, bool clickedOnGUI);
 	void SaveCurrentSpawnWave();
 	bool SelectTextBox(GUI::TextBox* textBox, System::MouseCoord & coord, bool clickedOnGUI);
 	bool RemoveSelectedSpawnWave();

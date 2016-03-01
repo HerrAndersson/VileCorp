@@ -89,7 +89,7 @@ bool ObjectHandler::Add(System::Blueprint* blueprint, int textureId, const XMFLO
 			for (int i = 0; i < trap->GetNrOfOccupiedTiles() && addedObject; i++)
 			{
 				_tilemap->AddObjectToTile(arr[i], object);
-			//	_tilemap->GetObjectOnTile(arr[i], FLOOR)->AddColorOffset({2,0,0});
+				//	_tilemap->GetObjectOnTile(arr[i], FLOOR)->AddColorOffset({2,0,0});
 			}
 		}
 
@@ -147,7 +147,7 @@ bool ObjectHandler::Add(System::Blueprint* blueprint, int textureId, const XMFLO
 
 bool ObjectHandler::Remove(int ID)
 {
-	for (int i = 0; i <  System::NR_OF_TYPES; i++)
+	for (int i = 0; i < System::NR_OF_TYPES; i++)
 	{
 		for (uint j = 0; j < _gameObjects[i].size(); j++)
 		{
@@ -163,7 +163,7 @@ bool ObjectHandler::Remove(int ID)
 				}
 
 				delete _gameObjects[i][j];
-				
+
 
 				// Replace pointer with the last pointer int the vector
 				_gameObjects[i][j] = _gameObjects[i].back();
@@ -268,7 +268,7 @@ RenderList ObjectHandler::GetAllByType(int renderObjectID)
 	list._renderObject = _assetManager->GetRenderObject(renderObjectID);
 
 	int count = 0;
-	for (int i = 0; i <  System::NR_OF_TYPES; i++)
+	for (int i = 0; i < System::NR_OF_TYPES; i++)
 	{
 		for (GameObject* g : _gameObjects[i])
 		{
@@ -454,35 +454,42 @@ bool ObjectHandler::LoadLevel(std::string levelBinaryFilePath)
 
 	if (success == S_OK)
 	{
-		result = true;
-		delete _tilemap;
-		_tilemap = new Tilemap(AI::Vec2D(levelData._tileMapSizeX, levelData._tileMapSizeZ));
-
-		for (int i = 0; i < levelData._gameObjectData.size() && result; i++)
-		{
-			std::vector<int>* formattedGameObject = &levelData._gameObjectData[i]; //Structure: { type, subType, textureID, posX, posZ, rot }
-			System::Blueprint* blueprint = GetBlueprintByType(formattedGameObject->at(0), formattedGameObject->at(1));
-
-			//Position
-			float posX = static_cast<float>(formattedGameObject->at(3));
-			float posZ = static_cast<float>(formattedGameObject->at(4));
-
-			//Rotation
-			float rotY = (formattedGameObject->at(5) * DirectX::XM_PI) / 180.0f;
-
-			Add(blueprint, formattedGameObject->at(2), DirectX::XMFLOAT3(posX, 0, posZ), DirectX::XMFLOAT3(0, rotY, 0), true);
-		}
-
-		_currentAvailableUnits = levelData._availableUnits;
-		_enemySpawnVector = levelData._enemyOrderedSpawnVector;
-		_enemySpawnIndex = 0;
-
-		_lightCulling = new LightCulling(_tilemap);
+		bool result = LoadLevel(levelData);
 	}
 	else
 	{
+		delete _tilemap;
 		_tilemap = new Tilemap();
 	}
+	return result;
+}
+
+bool ObjectHandler::LoadLevel(Level::LevelBinary &levelData)
+{
+	bool result = true;
+	delete _tilemap;
+	_tilemap = new Tilemap(AI::Vec2D(levelData._tileMapSizeX, levelData._tileMapSizeZ));
+
+	for (int i = 0; i < levelData._gameObjectData.size() && result; i++)
+	{
+		std::vector<int>* formattedGameObject = &levelData._gameObjectData[i]; //Structure: { type, subType, textureID, posX, posZ, rot }
+		System::Blueprint* blueprint = GetBlueprintByType(formattedGameObject->at(0), formattedGameObject->at(1));
+
+		//Position
+		float posX = static_cast<float>(formattedGameObject->at(3));
+		float posZ = static_cast<float>(formattedGameObject->at(4));
+
+		//Rotation
+		float rotY = (formattedGameObject->at(5) * DirectX::XM_PI) / 180.0f;
+
+		Add(blueprint, formattedGameObject->at(2), DirectX::XMFLOAT3(posX, 0, posZ), DirectX::XMFLOAT3(0, rotY, 0), true);
+	}
+
+	_currentAvailableUnits = levelData._availableUnits;
+	_enemySpawnVector = levelData._enemyOrderedSpawnVector;
+	_enemySpawnIndex = 0;
+
+	_lightCulling = new LightCulling(_tilemap);
 	return result;
 }
 
@@ -511,7 +518,7 @@ void ObjectHandler::UnloadLevel()
 void ObjectHandler::Update(float deltaTime)
 {
 	//Update all objects' gamelogic
-	for (int i = 0; i <  System::NR_OF_TYPES; i++)
+	for (int i = 0; i < System::NR_OF_TYPES; i++)
 	{
 		if (i != System::Type::SPAWN)
 		{
@@ -553,6 +560,7 @@ void ObjectHandler::Update(float deltaTime)
 								if (_gameObjects[System::SPAWN][k]->InRange(unit->GetTilePosition()))
 								{
 									lootRemoved = Remove(heldObject);
+									_enemySpawnVector.push_back(std::array<int, 2>{(_spawnTimer / 60) + 1, (int)unit->GetSubType()});
 								}
 							}
 
@@ -616,26 +624,26 @@ void ObjectHandler::SpawnEnemies()
 			int nextEnemyType = _enemySpawnVector[_enemySpawnIndex][1];
 			System::Blueprint* nextEnemyBlueprint = _blueprints.GetBlueprintByType(System::ENEMY, nextEnemyType);
 
-			std::vector<GameObject*> spawnPoints(_gameObjects[System::Type::SPAWN]);
-
 			bool enemyAdded = false;
+			int initialSpawnPointIndex = rand() % (_gameObjects[System::Type::SPAWN].size() - 1);
+			int currentSpawnPointIndex = initialSpawnPointIndex;
 
-			while (!enemyAdded && spawnPoints.size() > 0)
+			do
 			{
-				int spawnPointIndex = 0;
-				if (spawnPoints.size() > 1)
+				GameObject* selectedSpawnPoint = _gameObjects[System::Type::SPAWN][currentSpawnPointIndex];
+				if (!_tilemap->IsEnemyOnTile(selectedSpawnPoint->GetTilePosition()))
 				{
-					spawnPointIndex = rand() % (spawnPoints.size() - 1);
+					enemyAdded = Add(nextEnemyBlueprint, 0, selectedSpawnPoint->GetPosition(), selectedSpawnPoint->GetRotation(), true);
 				}
-				
-				GameObject* selectedSpawnPoint = spawnPoints[spawnPointIndex];
-				enemyAdded = Add(nextEnemyBlueprint, 0, selectedSpawnPoint->GetPosition(), selectedSpawnPoint->GetRotation(), true);
-
-				if (!enemyAdded)
+				else
 				{
-					spawnPoints.erase(spawnPoints.begin() + spawnPointIndex);
+					currentSpawnPointIndex++;
+					if (_gameObjects[System::Type::SPAWN].size() <= currentSpawnPointIndex)
+					{
+						currentSpawnPointIndex = 0;
+					}
 				}
-			}
+			} while (!enemyAdded && currentSpawnPointIndex != initialSpawnPointIndex);
 
 			if (enemyAdded)
 			{
@@ -747,7 +755,7 @@ vector<vector<GameObject*>>* ObjectHandler::GetObjectsInLight(Renderer::Spotligh
 
 void ObjectHandler::ReleaseGameObjects()
 {
-	for (int i = 0; i <  System::NR_OF_TYPES; i++)
+	for (int i = 0; i < System::NR_OF_TYPES; i++)
 	{
 		for (GameObject* g : _gameObjects[i])
 		{

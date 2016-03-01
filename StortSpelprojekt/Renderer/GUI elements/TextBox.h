@@ -1,4 +1,5 @@
 #pragma once
+#include <cctype>
 #include "Node.h"
 #include "CommonUtils.h"
 
@@ -14,13 +15,15 @@ namespace GUI
 		Node* _boxNode;
 		int _characterLimit;
 		bool _allowMultipleLines;
-		bool _allowOnlyNumbers;  //TODO: Enforce this /Rikhard
+		bool _allowOnlyNumbers;
 		bool _clearDefaultTextOnFirstEnter;
 		bool _firstTimeEditingText;
 		bool _isSelectedForEditing;
 		bool _showTextMarker;
 		int _textMarkerFrameTimer;
 		std::wstring _oldText;
+
+		bool IsInteger(const std::string & s);
 
 	public:
 		TextBox(Node* textNode, int characterLimit = 1000, bool allowMultipleLines = false, bool allowOnlyNumbers = false, bool clearDefaultTextOnFirstEnter = false);

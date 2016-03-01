@@ -116,12 +116,8 @@ void GUI::TextBox::DeselectTextBox()
 	}
 	if (_allowOnlyNumbers)
 	{
-		std::wstring text = _textNode->GetText();
-		try
-		{
-			stoi(text);
-		}
-		catch (...)
+		std::string text = System::WStringToString(_textNode->GetText());
+		if (!IsInteger(text))
 		{
 			_textNode->SetText(_oldText);
 		}
@@ -131,4 +127,14 @@ void GUI::TextBox::DeselectTextBox()
 bool GUI::TextBox::GetAllowMultipleLines() const
 {
 	return _allowMultipleLines;
+}
+
+bool GUI::TextBox::IsInteger(const std::string & s)
+{
+	if (s.empty() || ((!isdigit(s[0])) && (s[0] != '-') && (s[0] != '+'))) return false;
+
+	char * p;
+	strtol(s.c_str(), &p, 10);
+
+	return (*p == 0);
 }

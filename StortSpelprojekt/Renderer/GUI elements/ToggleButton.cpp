@@ -9,6 +9,11 @@ GUI::ToggleButton::ToggleButton(Node* attachedGUINode, bool isToggled /*= false*
 	_colorOffset = colorOffset;
 }
 
+GUI::ToggleButton::ToggleButton()
+{
+
+}
+
 GUI::ToggleButton::~ToggleButton()
 {}
 

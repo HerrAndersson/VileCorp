@@ -12,6 +12,7 @@ namespace GUI
 		DirectX::XMFLOAT4 _colorOffset;
 
 	public:
+		ToggleButton();
 		ToggleButton(Node* attachedGUINode, bool isToggled = false, DirectX::XMFLOAT4 colorOffset = DirectX::XMFLOAT4( 0.4f, 0.4f, 0.4f, 1.0f));
 		~ToggleButton();
 		GUI::Node* GetAttachedGUINode() const;

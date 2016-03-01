@@ -293,24 +293,24 @@ void BaseEdit::HandleMouseInput()
 {
 	if (_extendedMode)
 	{
-		if (_controls->IsFunctionKeyDown("MAP_EDIT:UNDO"))
-		{
-			_isInvalidateFloor = !_isInvalidateFloor;
-		}
-		if (_isInvalidateFloor)
-		{
-			AI::Vec2D pickedTile = _pickingDevice->PickTile(_controls->GetMouseCoord()._pos);
-			if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
-			{
-				_tileMap->LockTile(pickedTile);
+		//if (_controls->IsFunctionKeyDown("MAP_EDIT:UNDO"))
+		//{
+		//	_isInvalidateFloor = !_isInvalidateFloor;
+		//}
+		//if (_isInvalidateFloor)
+		//{
+		//	AI::Vec2D pickedTile = _pickingDevice->PickTile(_controls->GetMouseCoord()._pos);
+		//	if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
+		//	{
+		//		_tileMap->LockTile(pickedTile);
 
-			}
-			if (_controls->IsFunctionKeyDown("MOUSE:DESELECT"))
-			{
-				_tileMap->UnlockTile(pickedTile);
-			}
+		//	}
+		//	if (_controls->IsFunctionKeyDown("MOUSE:DESELECT"))
+		//	{
+		//		_tileMap->UnlockTile(pickedTile);
+		//	}
 
-		}
+		//}
 		else
 		{
 			if (_controls->IsFunctionKeyDown("MOUSE:BOX_PLACE") || _controls->IsFunctionKeyDown("MOUSE:BOX_DELETE"))
