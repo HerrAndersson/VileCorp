@@ -4,7 +4,7 @@
 namespace Renderer
 {
 
-	ParticleHandler::ParticleHandler(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const ParticleTextures& textures, const ParticleModifierOffsets& modifiers)
+	ParticleHandler::ParticleHandler(ID3D11Device* device, ID3D11DeviceContext* deviceContext, ParticleTextures* textures, const ParticleModifierOffsets& modifiers)
 	{
 		_device = device;
 		_deviceContext = deviceContext;
@@ -31,6 +31,7 @@ namespace Renderer
 		{
 			SAFE_DELETE(p);
 		}
+		delete _textures;
 		_particleEmitters.clear();
 	}
 
@@ -115,9 +116,9 @@ namespace Renderer
 		return _requestQueue;
 	}
 
-	ID3D11ShaderResourceView** ParticleHandler::GetTextures(int& count, const ParticleSubType& subType)
+	Texture** ParticleHandler::GetTextures(int& count, const ParticleSubType& subType)
 	{
-		ID3D11ShaderResourceView** textures = nullptr;
+		Texture** textures = nullptr;
 		count = -1;
 
 		switch (subType)
@@ -125,37 +126,37 @@ namespace Renderer
 			case ParticleSubType::BLOOD_SUBTYPE:
 			{
 				count = PARTICLE_TEXTURE_COUNT;
-				textures = _textures._bloodTextures;
+				textures = _textures->_bloodTextures;
 				break;
 			}
 			case ParticleSubType::WATER_SUBTYPE:
 			{
 				count = PARTICLE_TEXTURE_COUNT;
-				textures = _textures._waterTextures;
+				textures = _textures->_waterTextures;
 				break;
 			}
 			case ParticleSubType::SPARK_SUBTYPE:
 			{
 				count = PARTICLE_TEXTURE_COUNT;
-				textures = _textures._sparkTextures;
+				textures = _textures->_sparkTextures;
 				break;
 			}
 			case ParticleSubType::SMOKE_SUBTYPE:
 			{
 				count = PARTICLE_TEXTURE_COUNT;
-				textures = _textures._smokeTextures;
+				textures = _textures->_smokeTextures;
 				break;
 			}
 			case ParticleSubType::FIRE_SUBTYPE:
 			{
 				count = PARTICLE_TEXTURE_COUNT;
-				textures = _textures._fireTextures;
+				textures = _textures->_fireTextures;
 				break;
 			}
 			case ParticleSubType::MUZZLE_FLASH_SUBTYPE:
 			{
 				count = PARTICLE_TEXTURE_COUNT;
-				textures = _textures._muzzleFlashTextures;
+				textures = _textures->_muzzleFlashTextures;
 				break;
 			}
 			default:
@@ -167,20 +168,20 @@ namespace Renderer
 		return textures;
 	}
 
-	ID3D11ShaderResourceView* ParticleHandler::GetIconTexture(const ParticleSubType& subType)
+	Texture* ParticleHandler::GetIconTexture(const ParticleSubType& subType)
 	{
-		ID3D11ShaderResourceView* icon = nullptr;
+		Texture* icon = nullptr;
 		switch (subType)
 		{
 			case ParticleSubType::EXCLAMATIONMARK_SUBTYPE:
 			{
-				icon = _textures._iconTextures[ICON_EXCLAMATIONMARK];
+				icon = _textures->_iconTextures[ICON_EXCLAMATIONMARK];
 				break;
 			}
 
 			case ParticleSubType::QUESTIONMARK_SUBTYPE:
 			{
-				icon = _textures._iconTextures[ICON_QUESTIONMARK];
+				icon = _textures->_iconTextures[ICON_QUESTIONMARK];
 				break;
 			}
 			default:

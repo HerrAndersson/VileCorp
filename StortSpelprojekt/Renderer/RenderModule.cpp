@@ -242,7 +242,7 @@ namespace Renderer
 	}
 
 	void RenderModule::SetDataPerParticleEmitter(const XMFLOAT3& position, XMMATRIX* camView, XMMATRIX* camProjection,
-												 const XMFLOAT3& camPos, float scale, ID3D11ShaderResourceView** textures, int textureCount, int isIcon)
+												 const XMFLOAT3& camPos, float scale, Texture** textures, int textureCount, int isIcon)
 	{
 		HRESULT result;
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -269,9 +269,11 @@ namespace Renderer
 
 		if (textures)
 		{
-			deviceContext->PSSetShaderResources(0, textureCount, textures);
+			for (int i = 0; i < textureCount; i++)
+			{
+				deviceContext->PSSetShaderResources(i, 1, &textures[i]->_data);
+			}
 		}
-
 	}
 
 	void RenderModule::SetDataPerMesh(ID3D11Buffer* vertexBuffer, int vertexSize)
@@ -592,7 +594,7 @@ namespace Renderer
 	{
 		if (!current->GetHidden())
 		{
-			ID3D11ShaderResourceView* tex = current->GetTexture();
+			Texture* tex = current->GetTexture();
 			if (tex)
 			{
 				D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -617,7 +619,7 @@ namespace Renderer
 				deviceContext->Unmap(_matrixBufferHUD, 0);
 
 				deviceContext->VSSetConstantBuffers(1, 1, &_matrixBufferHUD);
-				deviceContext->PSSetShaderResources(0, 1, &tex);
+				deviceContext->PSSetShaderResources(0, 1, &tex->_data);
 
 				deviceContext->Draw(6, 0);
 			}

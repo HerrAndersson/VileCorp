@@ -97,15 +97,15 @@ struct Mesh
 {
 	short _activeUsers = 0;
 	bool _meshLoaded;
-	System::Hitbox* _hitbox = nullptr;
 	bool _isSkinned = false;
 	bool DecrementUsers();
-	std::string _skeletonName;
-	Skeleton* _skeleton;
 	int _vertexBufferSize, _toMesh;
 	float _particleSpawnerPos[3], _iconPos[3];
+	System::Hitbox* _hitbox = nullptr;
+	Skeleton* _skeleton;
 	ID3D11Buffer* _vertexBuffer;
 	std::string _name;
+	std::string _skeletonName;
 	std::vector<PointlightData> _pointLights;
 	std::vector<SpotlightData> _spotLights;
 	~Mesh()
@@ -143,7 +143,6 @@ struct Texture
 
 struct RenderObject
 {
-	System::Type _type = System::Type::FLOOR;
 	Texture* _diffuseTexture = nullptr;
 	Texture* _specularTexture = nullptr;
 	Mesh* _mesh = nullptr;

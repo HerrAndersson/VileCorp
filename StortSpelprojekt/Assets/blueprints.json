@@ -271,7 +271,7 @@
 				"cuppycake.png"
 			]
 		}, {
-			"_mesh": "flamethrowerTrap-28.bin",
+			"_mesh": "flamethrowerTrap-29.bin",
 			"_name": "Flame Trap",
 			"_type": 4,
 			"_subType": 7,

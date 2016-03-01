@@ -98,13 +98,23 @@
       <AdditionalLibraryDirectories>../include/yse/dll;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <CustomBuildStep>
-      <Command>robocopy "C:\%HOMEPATH%\Google Drive\Stort spelprojekt\Assets" "$(OutDir)Assets" /E /Z /XA:H /W:0 /R:0 /V
+      <Command>robocopy "C:\%HOMEPATH%\Google Drive\Stort spelprojekt\Assets" "$(OutDir)Assets" /MIR /XF *.* /W:0 /R:0
 
-robocopy "$(SolutionDir)Renderer\Shaders" "$(OutDir)Assets\Shaders" *.hlsl /E /XA:H /W:0 /R:0 /V
+"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Visual Studio 2015\Visual Studio Tools\MSBuild Command Prompt for VS2015.lnk"
 
-robocopy "$(SolutionDir)Assets" "$(OutDir)Assets" *.json *.xml /E /XA:H /W:0 /R:0 /V
+IF NOT EXIST "$(SolutionDir)..\TextureConverter\x64\Debug\TextureConverter.exe" msbuild "$(SolutionDir)..\TextureConverter\TextureConverter.sln"
 
-robocopy "$(SolutionDir)include\yse\dll" "$(OutDir)" /E /XA:H /W:0 /R:0 /V
+"$(SolutionDir)..\TextureConverter\x64\Debug\TextureConverter.exe" "$(OutDir)Assets/" "C:%HOMEPATH%/Google Drive/Stort spelprojekt/Assetsdds/" "C:%HOMEPATH%/Google Drive/Stort spelprojekt/Assets/" -ToDDS png
+
+
+robocopy "$(SolutionDir)Renderer\Shaders" "$(OutDir)Assets\Shaders" *.hlsl /E /XA:H /W:0 /R:0
+
+
+
+robocopy "$(SolutionDir)Assets" "$(OutDir)Assets" *.json *.xml /E /XA:H /W:0 /R:0
+
+robocopy "$(SolutionDir)include\yse\dll" "$(OutDir)" /E /XA:H /W:0 /R:0
+
 
 if errorlevel 1 exit 0 else exit %errorlevel%</Command>
     </CustomBuildStep>
