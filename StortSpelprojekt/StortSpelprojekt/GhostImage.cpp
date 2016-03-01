@@ -30,21 +30,8 @@ void GhostImage::Update(System::MouseCoord coord)
 		//update position
 		object->SetPosition(XMFLOAT3(pos._x, 0, pos._y));
 		//update color
-		vector<GameObject*> tileObjects = _objectHandler->GetTileMap()->GetAllObjectsOnTile(pos);
-		if (tileObjects.size() > 0)
-		{
-			for (GameObject* i : tileObjects)
-			{
-				if (i->GetType() != System::Type::FLOOR)
-				{
-					placeable = false;
-				}
-			}
-		}
-		else
-		{
-			placeable = false;
-		}
+
+		placeable = _objectHandler->GetTileMap()->IsFloorOnTile(pos);
 		if (placeable)
 		{
 			object->SetColorOffset(XMFLOAT3(0.0f, 1.0f, 0.0f));

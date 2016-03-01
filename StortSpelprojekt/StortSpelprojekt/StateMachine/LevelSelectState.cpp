@@ -1,7 +1,7 @@
 #include "LevelSelectState.h"
 
 
-LevelSelectState::LevelSelectState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule) :
+LevelSelectState::LevelSelectState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule, CombinedMeshGenerator* combinedMeshGenerator) :
 	BaseState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settingsReader, soundModule)
 {
 	std::vector<GUI::Node*>* levelSelectionPageNodes = _uiTree.GetNode("LevelSelectionPageContent")->GetChildren();
@@ -27,6 +27,8 @@ LevelSelectState::LevelSelectState(System::Controls* controls, ObjectHandler* ob
 		_tabPosition[i] = modeSelect->GetLocalPosition();
 	}
 
+	_combinedMeshGenerator = combinedMeshGenerator;
+	
 	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("nextlevel")));
 	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("prevlevel")));
 	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("playbutton")));
@@ -81,6 +83,13 @@ void LevelSelectState::Update(float deltaTime)
 
 				_objectHandler->SetCurrentLevelHeader(_selectedLevelHeader);
 				_objectHandler->LoadLevel(levelBinaryPath);
+
+
+				//Combining objects into bigger meshes used for rendering to reduce draw calls
+				//_combinedMeshGenerator->CombineMeshes(_objectHandler->GetTileMap(), System::Type::FLOOR);
+				//_combinedMeshGenerator->CombineMeshes(_objectHandler->GetTileMap(), System::Type::WALL, 2);
+
+
 				ChangeState(State::PLACEMENTSTATE);
 			}
 			if (_uiTree.IsButtonColliding("prevlevel", coord._pos.x, coord._pos.y))

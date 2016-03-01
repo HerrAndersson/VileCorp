@@ -19,6 +19,7 @@
 #include "ParticleSystem\ParticleHandler.h"
 #include "ParticleSystem\ParticleUtils.h"
 #include "SettingsReader.h"
+#include "CombinedMeshGenerator.h"
 
 class Game
 {
@@ -40,6 +41,7 @@ private:
 	System::SettingsReader		_settingsReader;
 	GameObjectInfo				_data;
 	System::SoundModule			_soundModule;
+	CombinedMeshGenerator*		_combinedMeshGenerator;
 
 	bool						_hasFocus;
 	bool						_enemiesHasSpawned;
@@ -54,11 +56,15 @@ private:
 
 	void RenderGameObjects(int forShaderStage, std::vector<std::vector<GameObject*>>* gameObjects);
 	void GenerateShadowMap(Renderer::Spotlight* spotlight, unsigned short ownerID);
+	void RenderParticles();
 
 	std::vector<GameObject*> _enemies;
 	std::vector<GameObject*> _loot;
 
 	void LoadParticleSystemData(ParticleTextures& particleTextures, ParticleModifierOffsets& modifiers);
+
+	bool tempTestCombinedStuff = false;
+	bool tempAlreadyCombined = false;
 
 public:
 

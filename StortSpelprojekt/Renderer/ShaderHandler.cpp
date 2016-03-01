@@ -1,8 +1,6 @@
 #include "ShaderHandler.h"
 #include <d3dcompiler.h>
 #include <stdexcept>
-#include <string>
-#include <atlstr.h>
 
 #pragma comment (lib, "d3d11.lib")
 #pragma comment (lib, "d3dcompiler.lib")
@@ -203,7 +201,7 @@ namespace Renderer
 		SAFE_RELEASE(_samplerCMP);
 	}
 
-	ShaderHandler::VertexShaderData* ShaderHandler::CreateVertexShader(ID3D11Device* device, LPCWSTR fileName, D3D11_INPUT_ELEMENT_DESC* inputDesc, int inputDescSize)
+	ShaderHandler::VertexShaderData* ShaderHandler::CreateVertexShader(ID3D11Device* device, const std::wstring& fileName, D3D11_INPUT_ELEMENT_DESC* inputDesc, int inputDescSize)
 	{
 		HRESULT result;
 		ID3DBlob* errorMessage = nullptr;
@@ -211,7 +209,7 @@ namespace Renderer
 		ID3D11VertexShader* vertexShader = nullptr;
 		ID3D11InputLayout* inputLayout = nullptr;
 
-		result = D3DCompileFromFile(fileName, NULL, NULL, "main", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, &shaderBuffer, &errorMessage);
+		result = D3DCompileFromFile(fileName.c_str(), NULL, NULL, "main", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, &shaderBuffer, &errorMessage);
 		//result = D3DCompileFromFile(fileName, NULL, NULL, "main", "vs_5_0", D3DCOMPILE_DEBUG, 0, &shaderBuffer, &errorMessage);
 		if (FAILED(result))
 		{
@@ -221,7 +219,7 @@ namespace Renderer
 			}
 			else
 			{
-				std::string s = ATL::CW2A(fileName);
+				std::string s(fileName.begin(), fileName.end());
 				throw std::runtime_error("ShaderHandler::CreateVertexShader: Shader file not found. Filename: " + s);
 			}
 		}
@@ -229,7 +227,7 @@ namespace Renderer
 		result = device->CreateVertexShader(shaderBuffer->GetBufferPointer(), shaderBuffer->GetBufferSize(), NULL, &vertexShader);
 		if (FAILED(result))
 		{
-			std::string s = ATL::CW2A(fileName);
+			std::string s(fileName.begin(), fileName.end());
 			throw std::runtime_error("ShaderHandler::CreateVertexShader: Shader file not found. Filename: " + s);
 		}
 
@@ -241,14 +239,14 @@ namespace Renderer
 		return new VertexShaderData(vertexShader, inputLayout);
 	}
 
-	ID3D11HullShader* ShaderHandler::CreateHullShader(ID3D11Device* device, LPCWSTR fileName)
+	ID3D11HullShader* ShaderHandler::CreateHullShader(ID3D11Device* device, const std::wstring& fileName)
 	{
 		HRESULT result;
 		ID3DBlob* errorMessage = nullptr;
 		ID3DBlob* shaderBuffer = nullptr;
 		ID3D11HullShader* hullShader = nullptr;
 
-		result = D3DCompileFromFile(fileName, NULL, NULL, "main", "hs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, &shaderBuffer, &errorMessage);
+		result = D3DCompileFromFile(fileName.c_str(), NULL, NULL, "main", "hs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, &shaderBuffer, &errorMessage);
 		if (FAILED(result))
 		{
 			if (errorMessage)
@@ -257,7 +255,7 @@ namespace Renderer
 			}
 			else
 			{
-				std::string s = ATL::CW2A(fileName);
+				std::string s(fileName.begin(), fileName.end());
 				throw std::runtime_error("ShaderHandler::CreateHullShader: Shader file not found. Filename: " + s);
 			}
 		}
@@ -265,7 +263,7 @@ namespace Renderer
 		result = device->CreateHullShader(shaderBuffer->GetBufferPointer(), shaderBuffer->GetBufferSize(), NULL, &hullShader);
 		if (FAILED(result))
 		{
-			std::string s = ATL::CW2A(fileName);
+			std::string s(fileName.begin(), fileName.end());
 			throw std::runtime_error("ShaderHandler::CreateHullShader: Shader file not found. Filename: " + s);
 		}
 
@@ -274,14 +272,14 @@ namespace Renderer
 
 		return hullShader;
 	}
-	ID3D11GeometryShader* ShaderHandler::CreateGeometryShader(ID3D11Device* device, LPCWSTR fileName)
+	ID3D11GeometryShader* ShaderHandler::CreateGeometryShader(ID3D11Device* device, const std::wstring& fileName)
 	{
 		HRESULT result;
 		ID3DBlob* errorMessage = nullptr;
 		ID3DBlob* shaderBuffer = nullptr;
 		ID3D11GeometryShader* geometryShader = nullptr;
 
-		result = D3DCompileFromFile(fileName, NULL, NULL, "main", "gs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, &shaderBuffer, &errorMessage);
+		result = D3DCompileFromFile(fileName.c_str(), NULL, NULL, "main", "gs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, &shaderBuffer, &errorMessage);
 		if (FAILED(result))
 		{
 			if (errorMessage)
@@ -290,7 +288,7 @@ namespace Renderer
 			}
 			else
 			{
-				std::string s = ATL::CW2A(fileName);
+				std::string s(fileName.begin(), fileName.end());
 				throw std::runtime_error("ShaderHandler::CreateGeometryShader: Shader file not found. Filename: " + s);
 			}
 		}
@@ -298,7 +296,7 @@ namespace Renderer
 		result = device->CreateGeometryShader(shaderBuffer->GetBufferPointer(), shaderBuffer->GetBufferSize(), NULL, &geometryShader);
 		if (FAILED(result))
 		{
-			std::string s = ATL::CW2A(fileName);
+			std::string s(fileName.begin(), fileName.end());
 			throw std::runtime_error("ShaderHandler::CreateGeometryShader: Shader file not found.. Filename: " + s);
 		}
 
@@ -307,14 +305,14 @@ namespace Renderer
 
 		return geometryShader;
 	}
-	ID3D11DomainShader* ShaderHandler::CreateDomainShader(ID3D11Device* device, LPCWSTR fileName)
+	ID3D11DomainShader* ShaderHandler::CreateDomainShader(ID3D11Device* device, const std::wstring& fileName)
 	{
 		HRESULT result;
 		ID3DBlob* errorMessage = nullptr;
 		ID3DBlob* shaderBuffer = nullptr;
 		ID3D11DomainShader* domainShader = nullptr;
 
-		result = D3DCompileFromFile(fileName, NULL, NULL, "main", "ds_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, &shaderBuffer, &errorMessage);
+		result = D3DCompileFromFile(fileName.c_str(), NULL, NULL, "main", "ds_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, &shaderBuffer, &errorMessage);
 		if (FAILED(result))
 		{
 			if (errorMessage)
@@ -323,7 +321,7 @@ namespace Renderer
 			}
 			else
 			{
-				std::string s = ATL::CW2A(fileName);
+				std::string s(fileName.begin(), fileName.end());
 				throw std::runtime_error("ShaderHandler::CreateDomainShader: Shader file not found. Filename: " + s);
 			}
 		}
@@ -331,7 +329,7 @@ namespace Renderer
 		result = device->CreateDomainShader(shaderBuffer->GetBufferPointer(), shaderBuffer->GetBufferSize(), NULL, &domainShader);
 		if (FAILED(result))
 		{
-			std::string s = ATL::CW2A(fileName);
+			std::string s(fileName.begin(), fileName.end());
 			throw std::runtime_error("ShaderHandler::CreateDomainShader: Shader file not found. Filename: " + s);
 		}
 
@@ -340,14 +338,14 @@ namespace Renderer
 
 		return domainShader;
 	}
-	ID3D11PixelShader* ShaderHandler::CreatePixelShader(ID3D11Device* device, LPCWSTR fileName)
+	ID3D11PixelShader* ShaderHandler::CreatePixelShader(ID3D11Device* device, const std::wstring& fileName)
 	{
 		HRESULT result;
 		ID3DBlob* errorMessage = nullptr;
 		ID3DBlob* shaderBuffer = nullptr;
 		ID3D11PixelShader* pixelShader = nullptr;
 
-		result = D3DCompileFromFile(fileName, NULL, NULL, "main", "ps_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, &shaderBuffer, &errorMessage);
+		result = D3DCompileFromFile(fileName.c_str(), NULL, NULL, "main", "ps_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, &shaderBuffer, &errorMessage);
 		//result = D3DCompileFromFile(fileName, NULL, NULL, "main", "ps_5_0", D3D10_SHADER_ENABLE_STRICTNESS | D3DCOMPILE_DEBUG, 0, &shaderBuffer, &errorMessage);
 		if (FAILED(result))
 		{
@@ -357,7 +355,7 @@ namespace Renderer
 			}
 			else
 			{
-				std::string s = ATL::CW2A(fileName);
+				std::string s(fileName.begin(), fileName.end());
 				throw std::runtime_error("ShaderHandler::CreatePixelShader: Shader file not found. Filename: " + s);
 			}
 		}
@@ -365,7 +363,7 @@ namespace Renderer
 		result = device->CreatePixelShader(shaderBuffer->GetBufferPointer(), shaderBuffer->GetBufferSize(), NULL, &pixelShader);
 		if (FAILED(result))
 		{
-			std::string s = ATL::CW2A(fileName);
+			std::string s(fileName.begin(), fileName.end());
 			throw std::runtime_error("ShaderHandler::CreatePixelShader: Shader file not found. Filename: " + s);
 		}
 
@@ -374,14 +372,14 @@ namespace Renderer
 
 		return pixelShader;
 	}
-	ID3D11ComputeShader* ShaderHandler::CreateComputeShader(ID3D11Device* device, LPCWSTR fileName)
+	ID3D11ComputeShader* ShaderHandler::CreateComputeShader(ID3D11Device* device, const std::wstring& fileName)
 	{
 		HRESULT result;
 		ID3DBlob* errorMessage = nullptr;
 		ID3DBlob* shaderBuffer = nullptr;
 		ID3D11ComputeShader* computeShader = nullptr;
 
-		result = D3DCompileFromFile(fileName, NULL, NULL, "main", "cs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, &shaderBuffer, &errorMessage);
+		result = D3DCompileFromFile(fileName.c_str(), NULL, NULL, "main", "cs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, &shaderBuffer, &errorMessage);
 		if (FAILED(result))
 		{
 			if (errorMessage)
@@ -390,7 +388,7 @@ namespace Renderer
 			}
 			else
 			{
-				std::string s = ATL::CW2A(fileName);
+				std::string s(fileName.begin(), fileName.end());
 				throw std::runtime_error("ShaderHandler::CreateComputeShader: Shader file not found. Filename: " + s);
 			}
 		}
@@ -398,7 +396,7 @@ namespace Renderer
 		result = device->CreateComputeShader(shaderBuffer->GetBufferPointer(), shaderBuffer->GetBufferSize(), NULL, &computeShader);
 		if (FAILED(result))
 		{
-			std::string s = ATL::CW2A(fileName);
+			std::string s(fileName.begin(), fileName.end());
 			throw std::runtime_error("ShaderHandler::CreateComputeShader: Shader file not found. Filename: " + s);
 		}
 

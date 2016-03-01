@@ -88,12 +88,6 @@ HRESULT Texture::LoadTexture(ID3D11Device* device)
 	return res;
 }
 
-bool Mesh::DecrementUsers()
-{
-	_activeUsers--;
-	return (!_activeUsers);
-}
-
 //Loads a model to the GPU
 bool AssetManager::LoadModel(string name, Mesh* mesh) {
 
@@ -534,7 +528,7 @@ HRESULT AssetManager::ParseLevelBinary(Level::LevelBinary* outputLevelBin, std::
 {
 	try
 	{
-		std::ifstream in(levelBinaryFilePath);
+		std::ifstream in(levelBinaryFilePath, std::ios::binary);
 		cereal::BinaryInputArchive archive(in);
 		archive(*outputLevelBin);
 		in.close();

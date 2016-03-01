@@ -93,6 +93,14 @@ namespace Renderer
 			throw std::runtime_error("DirectXHandler: Error creating rasterizer state NONE");
 		}
 
+		rasterDesc.CullMode = D3D11_CULL_BACK;
+		rasterDesc.FillMode = D3D11_FILL_WIREFRAME;
+		hResult = _device->CreateRasterizerState(&rasterDesc, &_rasterizerStateWireframe);
+		if (FAILED(hResult))
+		{
+			throw std::runtime_error("DirectXHandler: Error creating rasterizer state WIREFRAME");
+		}
+
 		/////////////////////////////////////////////////////// Depth stencil states ///////////////////////////////////////////////////////
 		D3D11_DEPTH_STENCIL_DESC depthStencilDesc;
 		ZeroMemory(&depthStencilDesc, sizeof(depthStencilDesc));
@@ -308,7 +316,8 @@ namespace Renderer
 		SAFE_RELEASE(_rasterizerStateNone)
 		SAFE_RELEASE(_rasterizerStateBack)
 		SAFE_RELEASE(_rasterizerStateFront)
-
+		SAFE_RELEASE(_rasterizerStateWireframe)
+			
 		SAFE_RELEASE(_backBufferDSV);
 		SAFE_RELEASE(_backBufferDepthSRV);
 
@@ -383,6 +392,11 @@ namespace Renderer
 			_deviceContext->RSSetState(_rasterizerStateNone);
 			break;
 		}
+		case Renderer::DirectXHandler::CullingState::WIREFRAME:
+		{
+			_deviceContext->RSSetState(_rasterizerStateWireframe);
+			break;
+		}
 		default:
 			break;
 		}
@@ -439,6 +453,12 @@ namespace Renderer
 
 			_swapChain->ResizeTarget(&modeDesc);
 
+			/*Uncomment this if REAL fullscreen should be used
+			int systemSizeX = GetSystemMetrics(SM_CXSCREEN);
+			int systemSizeY = GetSystemMetrics(SM_CYSCREEN);
+			bool fullscreen = (settings->_windowWidth == systemSizeX && settings->_windowHeight == systemSizeY && settings->_borderless);
+			_swapChain->SetFullscreenState(fullscreen, NULL);*/
+
 			//Preserve the existing buffer count and format. Automatically choose the width and height to match the client rect for HWNDs.
 			hr = _swapChain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
 			if (FAILED(hr))
@@ -473,8 +493,8 @@ namespace Renderer
 			vp.MaxDepth = 1.0f;
 			vp.TopLeftX = 0;
 			vp.TopLeftY = 0;
-			_viewport = vp;
 
+			_viewport = vp;
 			_deviceContext->RSSetViewports(1, &_viewport);
 
 			SAFE_RELEASE(_backBufferDSV);
@@ -500,7 +520,7 @@ namespace Renderer
 		//	_deviceContext->ClearRenderTargetView(_deferredRTVArray[i], color);
 		//}
 
-		// TODO: replace with something else
+		// TODO: Comment this line when the screen is always filled with objects. Then we don't need to clear this
 		_deviceContext->ClearRenderTargetView(_deferredRTVArray[2], color);
 
 		_deviceContext->ClearDepthStencilView(_backBufferDSV, D3D11_CLEAR_DEPTH, 1.0f, 0);
@@ -508,6 +528,7 @@ namespace Renderer
 
 	void DirectXHandler::EndScene()
 	{
+		//V-Sync enabled
 		_swapChain->Present(1, 0);
 	}
 }

@@ -831,8 +831,10 @@ void LevelEditState::ExportLevel()
 	outStream.close();
 
 	//Write the binary
-	outStream.open(binaryPath);
-	cereal::BinaryOutputArchive binOut(outStream);
-	binOut(levelBinary);
+	outStream.open(binaryPath,std::ios::binary);
+	{
+		cereal::BinaryOutputArchive binOut(outStream);
+		binOut(levelBinary);
+	}
 	outStream.close();
 }

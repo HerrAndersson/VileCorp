@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="BaseEdit.cpp" />
     <ClCompile Include="Blueprints.cpp" />
+    <ClCompile Include="CombinedMeshGenerator.cpp" />
     <ClCompile Include="Controls.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameLogic.cpp" />
@@ -57,6 +58,7 @@
   <ItemGroup>
     <ClInclude Include="BaseEdit.h" />
     <ClInclude Include="Blueprints.h" />
+    <ClInclude Include="CombinedMeshGenerator.h" />
     <ClInclude Include="Controls.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameLogic.h" />

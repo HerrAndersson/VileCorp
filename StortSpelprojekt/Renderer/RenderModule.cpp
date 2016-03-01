@@ -459,6 +459,7 @@ namespace Renderer
 		}
 		case GEO_PASS:
 		{
+			//_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::WIREFRAME);
 			deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 			_d3d->SetGeometryStage();
 			_shaderHandler->SetGeometryStageShaders(deviceContext);
@@ -671,7 +672,7 @@ namespace Renderer
 		deviceContext->Draw(6, 0);
 	}
 
-	void RenderModule::RenderLightVolume(ID3D11Buffer* volume, DirectX::XMMATRIX* world, int vertexCount, int vertexSize)
+	void RenderModule::RenderVertexBuffer(ID3D11Buffer* vertexBuffer, DirectX::XMMATRIX* world, int vertexCount, int vertexSize)
 	{
 		HRESULT result;
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -694,7 +695,7 @@ namespace Renderer
 		UINT32 vtxs = vertexSize;
 		UINT32 offset = 0;
 
-		deviceContext->IASetVertexBuffers(0, 1, &volume, &vtxs, &offset);
+		deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &vtxs, &offset);
 
 		deviceContext->Draw(vertexCount, 0);
 	}
