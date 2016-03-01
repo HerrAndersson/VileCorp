@@ -35,8 +35,8 @@ void LevelEditState::OnStateEnter()
 	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("StoryTitleText"), 50, false, false, true));
 	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("StoryText"), 1000, true, false, true));
 	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("BudgetBoxText"), 7, false, true));
-	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("tileNumberX"), 3, false, true));
-	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("tileNumberY"), 3, false, true));
+	//_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("tileNumberX"), 3, false, true));
+	//_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("tileNumberY"), 3, false, true));
 	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("UnitAmmountText"), 2, false, true));
 	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("UnitStartingTimeText"), 3, false, true));
 	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("UnitSpawnFrequencyText"), 3, false, true));
@@ -469,54 +469,54 @@ bool LevelEditState::HandleButtons()
 				clickedOnGUI = true;
 				//TODO: Find page so that we are not on the last page, also so that we are able to switch to a new page
 			}
-			else if (_uiTree.IsButtonColliding("GridOff", coord._pos.x, coord._pos.y) && _isPressed[0] == true)
-			{
-				clickedOnGUI = true;
-				//Move Button
-				GUI::Node* node = _uiTree.GetNode("GridOff");
-				XMFLOAT2 gridOffPosition = node->GetLocalPosition();
+			//else if (_uiTree.IsButtonColliding("GridOff", coord._pos.x, coord._pos.y) && _isPressed[0] == true)
+			//{
+			//	clickedOnGUI = true;
+			//	//Move Button
+			//	GUI::Node* node = _uiTree.GetNode("GridOff");
+			//	XMFLOAT2 gridOffPosition = node->GetLocalPosition();
 
-				GUI::Node* node2 = _uiTree.GetNode("GridOn");
-				XMFLOAT2 gridOnPosition = node2->GetLocalPosition();
+			//	GUI::Node* node2 = _uiTree.GetNode("GridOn");
+			//	XMFLOAT2 gridOnPosition = node2->GetLocalPosition();
 
-				node2->SetPosition(gridOffPosition);
-				node->SetPosition(gridOnPosition);
+			//	node2->SetPosition(gridOffPosition);
+			//	node->SetPosition(gridOnPosition);
 
-				if (gridOnPosition.x > gridOffPosition.x)
-				{
-					//TODO: Activate Grid Julia och Enbom
-				}
-				else
-				{
-					//TODO: Deactive Grid Julia och Enbom
-				}
-			}
-			else if (_uiTree.IsButtonColliding("ObjectiveOff", coord._pos.x, coord._pos.y) && _isPressed[0] == true)
-			{
-				clickedOnGUI = true;
-				//Move Button
-				GUI::Node* node = _uiTree.GetNode("ObjectiveOff");
-				XMFLOAT2 objectiveOffPosition = node->GetLocalPosition();
+			//	if (gridOnPosition.x > gridOffPosition.x)
+			//	{
+			//		//TODO: Activate Grid Julia och Enbom
+			//	}
+			//	else
+			//	{
+			//		//TODO: Deactive Grid Julia och Enbom
+			//	}
+			//}
+			//else if (_uiTree.IsButtonColliding("ObjectiveOff", coord._pos.x, coord._pos.y) && _isPressed[0] == true)
+			//{
+			//	clickedOnGUI = true;
+			//	//Move Button
+			//	GUI::Node* node = _uiTree.GetNode("ObjectiveOff");
+			//	XMFLOAT2 objectiveOffPosition = node->GetLocalPosition();
 
-				GUI::Node* node2 = _uiTree.GetNode("ObjectiveOn");
-				XMFLOAT2 objectiveOnPosition = node2->GetLocalPosition();
+			//	GUI::Node* node2 = _uiTree.GetNode("ObjectiveOn");
+			//	XMFLOAT2 objectiveOnPosition = node2->GetLocalPosition();
 
-				node2->SetPosition(objectiveOffPosition);
-				node->SetPosition(objectiveOnPosition);
+			//	node2->SetPosition(objectiveOffPosition);
+			//	node->SetPosition(objectiveOnPosition);
 
-				if (objectiveOnPosition.y > objectiveOffPosition.y)
-				{
-					//Survival
-					_uiTree.GetNode("MapSurviveSelected")->SetHidden(false);
-					_levelHeader._gameMode = Level::GameModes::SURVIVAL;
-				}
-				else
-				{
-					//Kill
-					_uiTree.GetNode("MapSurviveSelected")->SetHidden(true);
-					_levelHeader._gameMode = Level::GameModes::KILL_THEM_ALL;
-				}
-			}
+			//	if (objectiveOnPosition.y > objectiveOffPosition.y)
+			//	{
+			//		//Survival
+			//		_uiTree.GetNode("MapSurviveSelected")->SetHidden(false);
+			//		_levelHeader._gameMode = Level::GameModes::SURVIVAL;
+			//	}
+			//	else
+			//	{
+			//		//Kill
+			//		_uiTree.GetNode("MapSurviveSelected")->SetHidden(true);
+			//		_levelHeader._gameMode = Level::GameModes::KILL_THEM_ALL;
+			//	}
+			//}
 			else if (_uiTree.IsButtonColliding("ExportMap", coord._pos.x, coord._pos.y))
 			{
 				clickedOnGUI = true;
@@ -685,6 +685,10 @@ bool LevelEditState::HandleButtons()
 			else
 			{
 				_uiTree.GetNode("SettingList")->GetChildren()->at(i)->SetHidden(false);
+				_uiTree.GetNode("grid")->SetHidden(true);
+				_uiTree.GetNode("grid2")->SetHidden(true);
+				_uiTree.GetNode("MapTileText")->SetHidden(true);
+				_uiTree.GetNode("gamemode")->SetHidden(true);
 				_isPressed[i] = true;
 			}
 		}
@@ -727,18 +731,18 @@ void LevelEditState::ExportLevel()
 	wss << _uiTree.GetNode("BudgetBoxText")->GetText();
 	wss >> _levelHeader._budget;
 
-	//Survival time 
-	if (_levelHeader._gameMode == Level::GameModes::SURVIVAL)
-	{
-		int survivalMinutes = 0;
-		int survivalSeconds = 0;
-		wss << _uiTree.GetNode("MinuteText")->GetText();
-		wss >> survivalMinutes;
-		wss << _uiTree.GetNode("SecondBox")->GetText();
-		wss >> survivalSeconds;
+	////Survival time 
+	//if (_levelHeader._gameMode == Level::GameModes::SURVIVAL)
+	//{
+	//	int survivalMinutes = 0;
+	//	int survivalSeconds = 0;
+	//	wss << _uiTree.GetNode("MinuteText")->GetText();
+	//	wss >> survivalMinutes;
+	//	wss << _uiTree.GetNode("SecondBox")->GetText();
+	//	wss >> survivalSeconds;
 
-		_levelHeader._surviveForSeconds = (survivalMinutes * 60) + survivalSeconds;
-	}
+	//	_levelHeader._surviveForSeconds = (survivalMinutes * 60) + survivalSeconds;
+	//}
 
 	//Get Level Binary file name
 	_levelHeader._levelBinaryFilename = _currentLevelFileName + ".bin";

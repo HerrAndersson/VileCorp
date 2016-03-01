@@ -32,6 +32,9 @@ LevelSelectState::LevelSelectState(System::Controls* controls, ObjectHandler* ob
 	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("playbutton")));
 	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("CampaignTab")));
 	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("SkirmishTab")));
+
+	_uiTree.GetNode("GameModeText")->SetHidden(true);
+	_uiTree.GetNode("GameMode")->SetHidden(true);
 }
 
 LevelSelectState::~LevelSelectState()

@@ -155,7 +155,7 @@
 				"color": "FF000000",
 				"fontsize": 18.0
 			},
-			"": {
+			"grid": {
 				"position": [-0.025, 0.0],
 				"GridMapX": {
 					"position": [0.006, 0.1925],
@@ -186,22 +186,25 @@
 			},
 			"": {
 				"position": [0.0, 0.01],
-				"MapGridText": {
-					"position": [0.0, 0.095],
-					"scale": [0.118, 0.02],
-					"text": "Grid:              On              Off",
-					"color": "FF000000",
-					"fontsize": 18.0
-				},
-				"GridOn": {
-					"position": [-0.05, 0.0925],
-					"scale": [0.025, 0.04],
-					"texture": "../Menues/LevelEdit/GUI/buttonOn.png"
-				},
-				"GridOff": {
-					"position": [0.032, 0.0925],
-					"scale": [0.025, 0.04],
-					"texture": "../Menues/PlayState GUI/button.png"
+				"grid2":
+				{
+					"MapGridText": {
+						"position": [0.0, 0.095],
+						"scale": [0.118, 0.02],
+						"text": "Grid:              On              Off",
+						"color": "FF000000",
+						"fontsize": 18.0
+					},
+					"GridOn": {
+						"position": [-0.05, 0.0925],
+						"scale": [0.025, 0.04],
+						"texture": "../Menues/LevelEdit/GUI/buttonOn.png"
+					},
+					"GridOff": {
+						"position": [0.032, 0.0925],
+						"scale": [0.025, 0.04],
+						"texture": "../Menues/PlayState GUI/button.png"
+					}
 				},
 				"BudgetText": {
 					"position": [-0.09, 0.005],
@@ -223,7 +226,7 @@
 					}
 				}
 			},
-			"": {
+			"gamemode": {
 				"position": [0.0, -0.06],
 				"MapObjectiveText": {
 					"position": [0.0, -0.05],
