@@ -57,7 +57,9 @@
     [
       "Particles/icon_exclamationmark.png",
       "Particles/icon_questionmark.png",
-	  "Particles/icon_wrench.png"
+	  "Particles/icon_wrench.png",
+	  "Particles/icon_noplacement.png",
+	  "Particles/icon_occupied.png"
     ]
   }
 }

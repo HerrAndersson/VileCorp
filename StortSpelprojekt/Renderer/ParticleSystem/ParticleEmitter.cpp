@@ -316,6 +316,7 @@ namespace Renderer
 				break;
 			}
 			case ICON:
+			case STATIC_ICON:
 			{
 				//Do not set random texture here. The desired icon texture will always be at register 0
 				p = Particle(XMFLOAT3(0, 0, 0), 0, 100, 0);
@@ -448,8 +449,10 @@ namespace Renderer
 						}
 						case MUZZLE_FLASH:
 						case ICON:
+						case STATIC_ICON:
 						{
 							p.DecreaseTimeLeft((float)deltaTime);
+							p.SetPosition(_position);
 							break;
 						}
 						default:

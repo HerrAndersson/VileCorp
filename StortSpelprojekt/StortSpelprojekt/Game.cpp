@@ -445,14 +445,13 @@ void Game::RenderParticles()
 				if (type != ParticleType::ELECTRICITY)
 				{
 					int textureCount = PARTICLE_TEXTURE_COUNT;
-					if (type == ParticleType::ICON)
+					if (type == ParticleType::ICON || type == ParticleType::STATIC_ICON)
 					{
-						ParticleSubType subType = emitter->GetSubType();
 						XMFLOAT3 campos = _camera->GetPosition();
 						XMFLOAT3 emitterPosition = emitter->GetPosition();
-						bool isMarker = (subType == ParticleSubType::QUESTIONMARK_SUBTYPE);
+						bool isMarker = (type == ParticleType::STATIC_ICON);
 						if (isMarker)
-						{	
+						{
 							campos = emitterPosition;
 							campos.y += 1.0f;
 						}

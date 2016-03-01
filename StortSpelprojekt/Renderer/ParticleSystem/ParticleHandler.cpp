@@ -188,6 +188,16 @@ namespace Renderer
 				icon = _textures._iconTextures[ICON_WRENCH];
 				break;
 			}
+			case ParticleSubType::NO_PLACEMENT_SUBTYPE:
+			{
+				icon = _textures._iconTextures[ICON_NOPLACMENT];
+				break;
+			}
+			case ParticleSubType::OCCUPIED_SUBTYPE:
+			{
+				icon = _textures._iconTextures[ICON_OCCUPIED];
+				break;
+			}
 			default:
 			{
 				break;
