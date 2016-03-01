@@ -14,12 +14,12 @@ public:
 	enum Anim{IDLEANIM, WALKANIM, FIGHTANIM, PICKUPOBJECTANIM, FIXTRAPANIM, DISABLETRAPANIM, HURTANIM, DEATHANIM, NR_OF_ANIM/*Has to be last*/};
 protected:
 	//Pathfinding variables
-	AI::Vec2D _nextTile;
+	AI::Vec2D _nextTile;			//The tile it is currently walking to.
+	AI::Vec2D _goalTilePosition;	//The tile it eventually wants to reach.
 	AI::AStar* _aStar;
-	AI::Vec2D _goalTilePosition;
 	AI::Vec2D* _path;
-	const Tilemap* _tileMap;		//Pointer to the tileMap in objectHandler(?). Units should preferably have read-, but not write-access.
 	int _pathLength;
+	const Tilemap* _tileMap;		//Pointer to the tileMap in objectHandler(?). Units should preferably have read-, but not write-access.
 	GameObject* _objective;
 	GameObject* _heldObject;
 	int _goalPriority;				//Lower value means higher priority
@@ -39,18 +39,18 @@ protected:
 	
 	//Movement state variables
 	MoveState _moveState;
-	bool _isSwitchingTile;
-	int _interactionTime;
+	bool _isSwitchingTile;			//Indicator to ObjectHandler that it should be moved to a different tile
+	int _interactionTime;			//Timer for when it needs to do something.
 	int _waiting;
 
 	// Animations variables
 	Anim _lastAnimState;
 
-	void CalculatePath();
-	void Rotate();
-	int GetApproxDistance(AI::Vec2D target)const;
+	void CalculatePath();								//Calls pathfiding algorithm and checks that a path was indeed found
+	void Rotate();										//Rotation for model, game logic and vision cone
+	int GetApproxDistance(AI::Vec2D target)const;		//The distance to a position assuming no obstacles. Used for picking a target.
 	void SetGoal(AI::Vec2D goal);
-	void SetGoal(GameObject* objective);
+	void SetGoal(GameObject* objective);				//Does the things necessary to change the pathfinding to a new goal
 public:
 	Unit();
 	Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject* renderObject, System::SoundModule* soundModule, const Tilemap* tileMap);
@@ -66,7 +66,7 @@ public:
 	int GetVisionRadius()const;
 	bool GetAnimisFinished();
 
-	void SetGoalTilePosition(AI::Vec2D goal);
+	void SetGoalTilePosition(AI::Vec2D goal);													//Decides on a target and changes MoveState to FINDING_PATH
 	void SetDirection(const AI::Vec2D direction);
 	void SetSwitchingTile(const bool switchTile);
 	void SetVisibility(bool visible);
@@ -76,24 +76,24 @@ public:
 	bool IsSwitchingTile()const;
 
 	//Decision making
-	void CheckVisibleTiles();
-	void CheckAllTiles();
-	void InitializePathFinding();
+	void CheckVisibleTiles();																	//Checks for targets in vision cone. Typically done after switching tile.
+	void CheckAllTiles();																		//Checks the whole map. Typically done by idle enemies to find loot or an exit point.
+	void InitializePathFinding();																//Transfers map info to the pathfinding. Done once the tilemap is fully loaded.
 	virtual void EvaluateTile(System::Type objective, AI::Vec2D tile) = 0;
-	virtual void EvaluateTile(GameObject* obj) = 0;
-	virtual void Act(GameObject* obj) = 0;
+	virtual void EvaluateTile(GameObject* obj) = 0;												//Decide priority of potential targets
+	virtual void Act(GameObject* obj) = 0;														//Act on target within range
 
 	//Update related actions
-	virtual void Update(float deltaTime);
-	virtual void Moving();
-	virtual void SwitchingNode();									//context specific action on the unit's objective
-	void ClearObjective();
+	virtual void Update(float deltaTime);							//Checks MoveState for appropriate update function
+	virtual void Moving();											//Update function when unit is not dead center on a tile.
+	virtual void SwitchingNode();									//Update function when unit is on a tile center and needs to decide next tile to move to.
+	void ClearObjective();											//Cleaning function for when objective is lost.
 	virtual void Release();
 
 	//Damage and status effects
-	void ActivateStatus();
-	void DeactivateStatus();
-	void TakeDamage(int damage);
+	void ActivateStatus();											//Called whenever status triggers (once for everything but burning)
+	void DeactivateStatus();										//Called when status wears off.
+	void TakeDamage(int damage);	
 
 	void Animate(Anim anim);
 };
