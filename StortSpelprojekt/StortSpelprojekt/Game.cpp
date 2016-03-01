@@ -430,7 +430,7 @@ void Game::RenderGameObjects(int forShaderStage, std::vector<std::vector<GameObj
 						}
 						else
 						{
-							_renderModule->RenderAnimation(gameObject->GetMatrix(), vertexBufferSize, gameObject->GetAnimation()->GetFloats(), gameObject->GetColorOffset());
+							_renderModule->RenderAnimation(gameObject->GetMatrix(), vertexBufferSize, gameObject->GetAnimation()->GetTransforms(), gameObject->GetAnimation()->GetBoneCount(), gameObject->GetColorOffset());
 						}
 					}
 					lastGameObject = gameObject;
@@ -515,7 +515,7 @@ void Game::GenerateShadowMap(Renderer::Spotlight* spotlight, unsigned short owne
 					//Render the visible objects, but skip the owner itself
 					if (obj->IsVisible() && obj->GetID() != ownerID)
 					{
-						_renderModule->RenderShadowMap(obj->GetMatrix(), vertexBufferSize, anim->GetFloats());
+						_renderModule->RenderShadowMap(obj->GetMatrix(), vertexBufferSize, anim->GetTransforms(), anim->GetBoneCount());
 					}
 				}
 			}

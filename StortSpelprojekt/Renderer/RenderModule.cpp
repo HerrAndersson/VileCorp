@@ -162,7 +162,7 @@ namespace Renderer
 		deviceContext->VSSetConstantBuffers(0, 1, &_matrixBufferPerFrame);
 	}
 
-	void RenderModule::SetDataPerSkinnedObject(XMMATRIX* world, std::vector<DirectX::XMFLOAT4X4>* extra, const DirectX::XMFLOAT3& colorOffset)
+	void RenderModule::SetDataPerSkinnedObject(XMMATRIX* world, DirectX::XMMATRIX* extra, int bonecount, const DirectX::XMFLOAT3& colorOffset)
 	{
 		HRESULT result;
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -180,7 +180,7 @@ namespace Renderer
 
 		MatrixBufferPerSkinnedObject* dataPtr = static_cast<MatrixBufferPerSkinnedObject*>(mappedResource.pData);
 
-		memcpy(&dataPtr->_bones, extra->data(), sizeof(DirectX::XMFLOAT4X4) * extra->size());
+		memcpy(&dataPtr->_bones, extra, sizeof(DirectX::XMMATRIX) * bonecount);
 		
 		deviceContext->Unmap(_matrixBufferPerSkinnedObject, 0);
 
@@ -314,7 +314,7 @@ namespace Renderer
 		SetDataPerMesh(renderObject->_mesh->_vertexBuffer, vertexSize);
 	}
 
-	void RenderModule::RenderShadowMap(DirectX::XMMATRIX* world, int vertexBufferSize, std::vector<DirectX::XMFLOAT4X4>* animTransformData)
+	void RenderModule::RenderShadowMap(DirectX::XMMATRIX* world, int vertexBufferSize, DirectX::XMMATRIX* animTransformData, int bonecount)
 	{
 		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
 
@@ -332,7 +332,7 @@ namespace Renderer
 			}
 
 			MatrixBufferPerSkinnedObject* dataPtr = static_cast<MatrixBufferPerSkinnedObject*>(mappedResource.pData);
-			memcpy(&dataPtr->_bones, animTransformData->data(), sizeof(DirectX::XMFLOAT4X4) * animTransformData->size());
+			memcpy(&dataPtr->_bones, animTransformData, sizeof(DirectX::XMFLOAT4X4) * bonecount);
 			deviceContext->Unmap(_matrixBufferPerSkinnedObject, 0);
 			deviceContext->VSSetConstantBuffers(5, 1, &_matrixBufferPerSkinnedObject);
 		}
@@ -575,9 +575,9 @@ namespace Renderer
 		_d3d->GetDeviceContext()->Draw(vertexBufferSize, 0);
 	}
 
-	void RenderModule::RenderAnimation(DirectX::XMMATRIX* world, int vertexBufferSize, std::vector<DirectX::XMFLOAT4X4>* extra, const DirectX::XMFLOAT3& colorOffset)
+	void RenderModule::RenderAnimation(DirectX::XMMATRIX* world, int vertexBufferSize, DirectX::XMMATRIX* extra, int bonecount, const DirectX::XMFLOAT3& colorOffset)
 	{
-		SetDataPerSkinnedObject(world, extra, colorOffset);
+		SetDataPerSkinnedObject(world, extra, bonecount, colorOffset);
 		_d3d->GetDeviceContext()->Draw(vertexBufferSize, 0);
 	}
 
