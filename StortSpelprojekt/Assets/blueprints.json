@@ -370,7 +370,7 @@
 			"_mesh": "pedestalDecoration-28.bin",
 			"_name": "Pedistal",
 			"_type": 8,
-			"_subType": 0,
+			"_subType": 1,
 			"_tooltip": "SampleText",
 			"_textures": [
 				"pillowpedestal.png"
@@ -382,7 +382,7 @@
 			"_mesh": "paintingDecoration-28.bin",
 			"_name": "Painting",
 			"_type": 8,
-			"_subType": 0,
+			"_subType": 2,
 			"_tooltip": "SampleText",
 			"_textures": [
 				"painting.png"
@@ -394,7 +394,7 @@
 			"_mesh": "lionStatueDecoration-28.bin",
 			"_name": "Lion Statue",
 			"_type": 8,
-			"_subType": 0,
+			"_subType": 3,
 			"_tooltip": "SampleText",
 			"_textures": [
 				"lionstatue.png"
@@ -406,7 +406,7 @@
 			"_mesh": "grandfatherClockDecoration-28.bin",
 			"_name": "Grand Father Clock",
 			"_type": 8,
-			"_subType": 0,
+			"_subType": 4,
 			"_tooltip": "SampleText",
 			"_textures": [
 				"grandpaclock.png"
@@ -418,7 +418,7 @@
 			"_mesh": "glassTableDecoration-28.bin",
 			"_name": "Glass Table",
 			"_type": 8,
-			"_subType": 0,
+			"_subType": 5,
 			"_tooltip": "SampleText",
 			"_textures": [
 				"glasstable.png"
@@ -430,7 +430,7 @@
 			"_mesh": "generatorDecoration-28.bin",
 			"_name": "Generator",
 			"_type": 8,
-			"_subType": 0,
+			"_subType": 6,
 			"_tooltip": "SampleText",
 			"_textures": [
 				"generator.png"
@@ -442,7 +442,7 @@
 			"_mesh": "frontDeskDecoration-28.bin",
 			"_name": "Front Desk",
 			"_type": 8,
-			"_subType": 0,
+			"_subType": 7,
 			"_tooltip": "SampleText",
 			"_textures": [
 				"frontdesk.png"
@@ -454,7 +454,7 @@
 			"_mesh": "floorLampDecoration-28.bin",
 			"_name": "Floor Lamp",
 			"_type": 8,
-			"_subType": 0,
+			"_subType": 8,
 			"_tooltip": "SampleText",
 			"_textures": [
 				"floorlamp.png"
@@ -466,7 +466,7 @@
 			"_mesh": "armlesStatueDecoration-28.bin",
 			"_name": "Armless Statue",
 			"_type": 8,
-			"_subType": 0,
+			"_subType": 9,
 			"_tooltip": "SampleText",
 			"_textures": [
 				"armlessstatue.png"
@@ -478,7 +478,7 @@
 			"_mesh": "museumFenceDecoration-28.bin",
 			"_name": "Museum Fence",
 			"_type": 8,
-			"_subType": 0,
+			"_subType": 10,
 			"_tooltip": "SampleText",
 			"_textures": [
 				"fences.png"
@@ -490,7 +490,7 @@
 			"_mesh": "museumFenceCornerDecoration-28.bin",
 			"_name": "Museum Fence",
 			"_type": 8,
-			"_subType": 0,
+			"_subType": 11,
 			"_tooltip": "SampleText",
 			"_textures": [
 				"fences.png"

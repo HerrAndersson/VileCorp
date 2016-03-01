@@ -30,7 +30,7 @@ private:
 	DirectX::XMFLOAT3* _ambientLight;
 	std::vector<GUI::Node*>* _settingsTabs;
 
-	std::map<System::Type, std::string> _typeLists =
+	std::map<int, std::string> _typeLists =
 	{
 		{ System::FLOOR, "floorlist" },
 		{ System::WALL, "walllist" },

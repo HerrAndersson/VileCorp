@@ -62,18 +62,29 @@ void LevelEditState::OnStateEnter()
 	}
 	_spawnWaveTypeRadioButtons.SelectRadioButtonNode(_spawnTypesRadioButtonsNodes->at(0));
 
-	for (unsigned i = 0; i < System::NR_OF_TYPES; i++)
+	std::vector<std::vector<System::Blueprint*>>* blueprints = _objectHandler->GetBlueprintsOrderedByType();
+
+	for (unsigned type = 0; type < System::NR_OF_TYPES; type++)
 	{
-		int index = 0;
-		vector<System::Blueprint>* blueprints = _objectHandler->GetBlueprints();
-		for (unsigned b = 0; b < blueprints->size(); b++)
+		GUI::Node* currentTab = _uiTree.GetNode(_typeLists[type]);
+		for (unsigned subType = 0; subType < blueprints->at(type).size(); subType++)
 		{
-			if (_typeLists[blueprints->at(b)._type] == _typeLists[(System::Type)i])
-			{
-				index += _uiTree.CreateBlueprintNodes(&blueprints->at(b), _uiTree.GetNode(_typeLists[(System::Type)blueprints->at(b)._type]), index);
-			}
+			_uiTree.CreateBlueprintNodes(blueprints->at(type)[subType], currentTab);
 		}
 	}
+
+	//for (unsigned i = 0; i < System::NR_OF_TYPES; i++)
+	//{
+	//	int index = 0;
+	//	vector<System::Blueprint>* blueprints = _objectHandler->GetBlueprints();
+	//	for (unsigned b = 0; b < blueprints->size(); b++)
+	//	{
+	//		if (_typeLists[blueprints->at(b)._type] == _typeLists[(System::Type)i])
+	//		{
+	//			index += _uiTree.CreateBlueprintNodes(&blueprints->at(b), _uiTree.GetNode(_typeLists[(System::Type)blueprints->at(b)._type]), index);
+	//		}
+	//	}
+	//}
 
 	for (unsigned i = 0; i < _objectTabs->size(); i++)
 	{

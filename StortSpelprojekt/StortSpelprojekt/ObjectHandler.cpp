@@ -36,10 +36,10 @@ bool ObjectHandler::Add(System::Blueprint* blueprint, int textureId, const XMFLO
 	case System::FLOOR:
 	case System::FURNITURE:
 	case System::LOOT:
-		object = new Architecture(_idCount, position, rotation, tilepos, type, renderObject, _soundModule);
+		object = new Architecture(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, blueprint->_subType);
 		break;
 	case  System::SPAWN:
-		object = new SpawnPoint(_idCount, position, rotation, tilepos, type, renderObject, _soundModule);
+		object = new SpawnPoint(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, blueprint->_subType);
 		break;
 	case  System::TRAP:
 		object = new Trap(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, _tilemap, blueprint->_subType);
@@ -703,6 +703,11 @@ void ObjectHandler::UpdateLights()
 vector<System::Blueprint>* ObjectHandler::GetBlueprints()
 {
 	return _blueprints.GetBlueprints();
+}
+
+std::vector<std::vector<System::Blueprint*>>* ObjectHandler::GetBlueprintsOrderedByType()
+{
+	return _blueprints.GetBlueprintsOrderedByType();
 }
 
 System::Blueprint* ObjectHandler::GetBlueprintByName(string name)

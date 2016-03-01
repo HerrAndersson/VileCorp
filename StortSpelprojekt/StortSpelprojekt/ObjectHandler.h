@@ -127,6 +127,7 @@ public:
 	void UpdateLights();
 
 	vector<System::Blueprint>* GetBlueprints();
+	std::vector<std::vector<System::Blueprint*>>* GetBlueprintsOrderedByType();
 	System::Blueprint* GetBlueprintByName(string name);
 	System::Blueprint* GetBlueprintByType(int type, int subType = 0);
 	std::vector<std::string>* GetCurrentAvailableUnits();
