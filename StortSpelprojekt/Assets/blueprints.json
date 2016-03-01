@@ -460,7 +460,7 @@
 				"frontdesk.png"
 			],
 			"_thumbnails": [
-				"frontdesk.png"
+				"../Menues/LevelEdit/Decorations/frontdeskButton.png"
 			]
 		}, {
 			"_mesh": "floorLampDecoration-28.bin",
@@ -472,7 +472,7 @@
 				"floorlamp.png"
 			],
 			"_thumbnails": [
-				"floorlamp.png"
+				"../Menues/LevelEdit/Decorations/floorlampButton.png"
 			]
 		}, {
 			"_mesh": "armlesStatueDecoration-28.bin",
@@ -520,7 +520,7 @@
 				"cupboardtexture.png"
 			],
 			"_thumbnails": [
-				"cupboardtexture.png"
+				"../Menues/LevelEdit/Decorations/cupboardButton.png"
 			]
 		}, {
 			"_mesh": "tableEndsectionDecoration-28.bin",
