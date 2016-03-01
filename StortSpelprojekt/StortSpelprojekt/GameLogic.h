@@ -22,7 +22,7 @@ private:
 	Player*					_player;
 	GUI::UITree*			_uiTree;
 	AssetManager*			_assetManager;
-	ID3D11ShaderResourceView* _guardTexture;
+	Texture*				_guardTexture;
 	bool					_returnToMenu;
 	System::SettingsReader* _settingsReader;
 	float					_buttonReady;

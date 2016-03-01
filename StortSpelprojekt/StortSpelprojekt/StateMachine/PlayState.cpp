@@ -10,7 +10,7 @@ PlayState::PlayState(System::Controls* controls, ObjectHandler* objectHandler, S
 	Add all sounds used in playstate (even though they might not be played in this class)
 	*/
 	//Music
-	_soundModule->AddSound("in_game_2", 0.2f, 1.0f, true, true);
+	_soundModule->AddSound("in_game_2", 0.2f, 1.0f, true, true, true);
 	//Unit
 	_soundModule->AddSound("unit_select", 0.5f, 1.0f, true, false);
 	_soundModule->AddSound("unit_move", 0.5f, 1.0f, true, false);

@@ -22,7 +22,7 @@ ObjectHandler::~ObjectHandler()
 	SAFE_DELETE(_buildingGrid);
 }
 
-bool ObjectHandler::Add(System::Blueprint* blueprint, int textureId, const XMFLOAT3& position, const XMFLOAT3& rotation, const bool placeOnTilemap)
+GameObject* ObjectHandler::Add(System::Blueprint* blueprint, int textureId, const XMFLOAT3& position, const XMFLOAT3& rotation, const bool placeOnTilemap)
 {
 	GameObject* object = nullptr;
 	System::Type type = (System::Type)blueprint->_type;
@@ -72,7 +72,7 @@ bool ObjectHandler::Add(System::Blueprint* blueprint, int textureId, const XMFLO
 	{
 		addedObject = true;
 	}
-	if (type == System::TRAP && addedObject && !placeOnTilemap)
+	if (type == System::TRAP && addedObject && placeOnTilemap)
 	{
 		Trap* trap = static_cast<Trap*>(object);
 		int i = 0;
@@ -140,9 +140,9 @@ bool ObjectHandler::Add(System::Blueprint* blueprint, int textureId, const XMFLO
 		//	_spotlights[object] = new Renderer::Spotlight(_device, i, 0.1f, 1000.0f);
 		//}
 		_objectCount++;
-		return true;
+		return object;
 	}
-	return false;
+	return nullptr;
 }
 
 bool ObjectHandler::Remove(int ID)
@@ -292,6 +292,11 @@ vector<vector<GameObject*>>* ObjectHandler::GetGameObjects()
 int ObjectHandler::GetObjectCount() const
 {
 	return _objectCount;
+}
+
+int ObjectHandler::GetIdCount()const
+{
+	return _idCount;
 }
 
 Tilemap * ObjectHandler::GetTileMap() const
@@ -548,8 +553,12 @@ void ObjectHandler::Update(float deltaTime)
 						heldObject->SetTilePosition(AI::Vec2D(heldObject->GetPosition().x, heldObject->GetPosition().z));
 					}
 
-					if (unit->GetHealth() <= 0)
+				if (unit->GetHealth() <= 0 && unit->GetAnimisFinished())
 					{
+					if (unit->IsSwitchingTile())
+					{
+						unit->SetTilePosition(unit->GetNextTile());
+					}
 						if (heldObject != nullptr)
 						{
 							bool lootRemoved = false;

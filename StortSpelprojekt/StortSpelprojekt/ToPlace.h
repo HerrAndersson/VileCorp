@@ -1,5 +1,8 @@
 #pragma once
 
+#include "CommonUtils.h"
+#include "BaseEdit.h"
+
 struct ToPlace
 {
 	ToPlace()

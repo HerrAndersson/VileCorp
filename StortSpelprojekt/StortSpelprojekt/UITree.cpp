@@ -82,7 +82,7 @@ namespace GUI
 			newNode->SetId(object->_name);
 			newNode->SetPosition(XMFLOAT2(-0.125 + (0.09 * column), 0.42 - (0.13 * row)));
 			newNode->SetScale(XMFLOAT2(0.04, 0.060));
-			newNode->SetTexture(_AM->GetTexture(object->_thumbnails[i])->_data);
+			newNode->SetTexture(_AM->GetTexture(object->_thumbnails[i]));
 			createdThumbnails++;
 			if (page >= list->GetChildren()->size())
 			{
@@ -143,7 +143,7 @@ namespace GUI
 		}
 		else if (i->name == "texture")
 		{
-			returnNode->SetTexture(_AM->GetTexture(i->value.GetString())->_data);
+			returnNode->SetTexture(_AM->GetTexture(i->value.GetString()));
 		}
 		else if (i->name == "text")
 		{

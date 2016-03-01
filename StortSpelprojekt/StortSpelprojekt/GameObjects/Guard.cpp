@@ -25,14 +25,17 @@ Guard::Guard(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 ro
 	case BASICGUARD:
 		_health = 100;
 		_baseDamage = 30;
+		_trapInteractionTime = 2;
 		break;
 	case ENGINEER:
-		_health = 100;
-		_baseDamage = 30;
+		_health = 70;
+		_baseDamage = 20;
+		_trapInteractionTime = 1;
 		break;
 	case MARKSMAN:
 		_health = 100;
-		_baseDamage = 30;
+		_baseDamage = 50;
+		_trapInteractionTime = 2;
 		break;
 	default:
 		break;
@@ -137,35 +140,37 @@ void Guard::Release()
 void Guard::Update(float deltaTime)
 {
 	Unit::Update(deltaTime);
-
-	switch (_moveState)
+	if (_health > 0 && _status != StatusEffect::STUNNED)
 	{
-	case MoveState::IDLE:
-		Animate(IDLEANIM);
-		Wait();
-		break;
-	case MoveState::FINDING_PATH:
-		if (_objective != nullptr)
+		switch (_moveState)
 		{
-			SetGoal(_objective);
+		case MoveState::IDLE:
+			Animate(IDLEANIM);
+			Wait();
+			break;
+		case MoveState::FINDING_PATH:
+			if (_objective != nullptr)
+			{
+				SetGoal(_objective);
+			}
+			else
+			{
+				SetGoal(_goalTilePosition); //Switch state at the end
+			}
+			break;
+		case MoveState::MOVING:
+			Moving();
+			Animate(WALKANIM);
+			break;
+		case MoveState::SWITCHING_NODE:
+			SwitchingNode();
+			break;
+		case MoveState::AT_OBJECTIVE:
+			Act(_objective);
+			break;
+		default:
+			break;
 		}
-		else
-		{
-			SetGoal(_goalTilePosition); //Switch state at the end
-		}
-		break;
-	case MoveState::MOVING:
-		Moving();
-		Animate(WALKANIM);
-		break;
-	case MoveState::SWITCHING_NODE:
-		SwitchingNode();
-		break;
-	case MoveState::AT_OBJECTIVE:
-		Act(_objective);
-		break;
-	default:
-		break;
 	}
 }
 
@@ -182,14 +187,8 @@ void Guard::Act(GameObject* obj)
 		case  System::TRAP:
 			if (!static_cast<Trap*>(obj)->IsTrapActive())
 			{
-				if (!System::FrameCountdown(_interactionTime, _animation->GetLength(2, 1.0f * _speedMultiplier)))
-				{
-					if (_animation != nullptr)
-					{
-						Animate(FIXTRAPANIM);
-					}
-				}
-				else
+				Animate(FIXTRAPANIM);
+				if(System::FrameCountdown(_interactionTime, _animation->GetLength(FIXTRAPANIM)))
 				{
 					static_cast<Trap*>(obj)->SetTrapActive(true);
 					//	obj->SetColorOffset({0,0,0});
@@ -198,14 +197,13 @@ void Guard::Act(GameObject* obj)
 			}
 			break;
 		case  System::ENEMY:											//The guard hits the enemy
-			if (_animation != nullptr && !System::FrameCountdown(_interactionTime, _animation->GetLength(4, 4.5f * _speedMultiplier)))
+			Animate(FIGHTANIM);
+			if(System::FrameCountdown(_interactionTime, _animation->GetLength(FIGHTANIM)))
 			{
-				Animate(FIGHTANIM);
-			}
-			else
-			{
-				static_cast<Unit*>(obj)->TakeDamage(1);
-				if (static_cast<Unit*>(obj)->GetHealth() <= 0)
+				Unit* enemy = static_cast<Unit*>(obj);
+				enemy->TakeDamage(1);
+				enemy->Animate(HURTANIM);
+				if (enemy->GetHealth() <= 0)
 				{
 					ClearObjective();
 				}
@@ -241,6 +239,7 @@ void Guard::Act(GameObject* obj)
 	if (_objective == nullptr)
 	{
 		_moveState = MoveState::MOVING;
+		Animate(WALKANIM);
 	}
 }
 void Guard::SwitchingNode()

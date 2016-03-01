@@ -36,25 +36,28 @@ namespace System
 		const float OFFSET = 2.0f;
 
 		std::map<std::string, YSE::sound*>* _allSounds;
-		const std::string soundExtension = ".ogg";
+		std::string _soundExtension;
+		std::string _stdPath;
 		float _volume[NR_OF_CHANNELS];
 		bool _initiated;
 
 	public:
 		/*Functions*/
-		SoundModule(System::Settings* settings);
+		SoundModule(System::Settings* settings, const std::string &stdPath, const std::string &extension);
 		~SoundModule();
 
-		bool AddSound(const std::string &fileName, float volume = 1.0f, float speed = 1.0f, bool relative = true, bool looping = false);
+		bool AddSound(const std::string &fileName, float volume = 1.0f, float speed = 1.0f, bool relative = true, bool looping = false, bool streaming = false);
 		bool RemoveSound(const std::string &fileName);   //Not needed but good to have
 
 		void Update(float listenerX, float listenerY, float listenerZ);
-		bool Play(std::string fileName);
-		bool Pause(std::string fileName);
+		bool Play(const std::string &fileName);
+		bool Pause(const std::string &fileName);
+		bool Stop(const std::string &fileName);
+		bool Stop(const std::string &fileName, int fadeTime);
+		bool HardStop(const std::string &fileName);
+
+		void SetSoundPosition(const std::string &fileName,float x, float y, float z);  //Sets position of a sound
 		void SetVolume(float volume, int channel);
 		float GetVolume(int channel);
-		bool Stop(std::string fileName);
-		bool Stop(std::string fileName, int fadeTime);
-		void SetSoundPosition(std::string fileName,float x, float y, float z);  //Sets position of a sound
 	};
 }
