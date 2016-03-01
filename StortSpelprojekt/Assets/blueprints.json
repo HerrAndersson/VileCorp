@@ -187,7 +187,7 @@
 				"doubledoorsopen.png"
 			]
 		}, {
-			"_mesh": "anvilTrap-28.bin",
+			"_mesh": "anvilTrap-29.bin",
 			"_name": "Anvil Trap",
 			"_type": 4,
 			"_subType": 0,
@@ -199,7 +199,7 @@
 				"../Menues/PlacementStateGUI/units/Anvilbutton1.png"
 			]
 		}, {
-			"_mesh": "teslaTrap-28.bin",
+			"_mesh": "teslaTrap-29.bin",
 			"_name": "Tesla Trap",
 			"_type": 4,
 			"_subType": 1,
@@ -211,7 +211,7 @@
 				"../Menues/PlacementStateGUI/units/Teslabutton1.png"
 			]
 		}, {
-			"_mesh": "sharkTrap-28.bin",
+			"_mesh": "sharkTrap-29.bin",
 			"_name": "Shark Trap",
 			"_type": 4,
 			"_subType": 2,
@@ -223,7 +223,7 @@
 				"../Menues/PlacementStateGUI/units/Sharkbutton1.png"
 			]
 		}, {
-			"_mesh": "gunTrap-28.bin",
+			"_mesh": "gunTrap-29.bin",
 			"_name": "Machine Gun Trap",
 			"_type": 4,
 			"_subType": 3,
@@ -247,7 +247,7 @@
 				"../Menues/PlacementStateGUI/units/Bearbutton.png"
 			]
 		}, {
-			"_mesh": "sawTrap-27.bin",
+			"_mesh": "sawGroundTrap-29.bin",
 			"_name": "Saw Trap",
 			"_type": 4,
 			"_subType": 4,
@@ -295,7 +295,7 @@
 				"sawRoofTrap.png"
 			]
 		}, {
-			"_mesh": "confuseTrap-28.bin",
+			"_mesh": "confuseTrap-29.bin",
 			"_name": "Confusion Trap",
 			"_type": 4,
 			"_subType": 9,
@@ -319,7 +319,7 @@
 				"../Menues/PlacementStateGUI/units/Camerabutton1.png"
 			]
 		}, {
-			"_mesh": "guard-28.bin",
+			"_mesh": "guard1-29.bin",
 			"_name": "Guard",
 			"_type": 6,
 			"_subType": 0,
@@ -343,13 +343,13 @@
 				"basewomancolors.png"
 			]
 		}, {
-			"_mesh": "enemy-28.bin",
+			"_mesh": "enemy1-29.bin",
 			"_name": "Enemy",
 			"_type": 7,
 			"_subType": 0,
 			"_tooltip": "SampleText",
 			"_textures": [
-				"Enemy.png"
+				"texturered2.png"
 			],
 			"_thumbnails": [
 				"Enemy.png"

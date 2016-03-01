@@ -326,14 +326,14 @@ void Trap::SetTiles()
 	{
 		if (_tileMap->IsFloorOnTile(_areaOfEffect[i]))
 		{
-			_tileMap->GetObjectOnTile(_areaOfEffect[i], System::FLOOR)->SetColorOffset({3.0f,1.0f,0.0f});
+			_tileMap->GetObjectOnTile(_areaOfEffect[i], System::FLOOR)->SetColorOffset({ 3.0f,1.0f,0.0f });
 		}
 	}
 	for (int i = 0; i < _nrOfOccupiedTiles; i++)
 	{
 		if (_tileMap->IsFloorOnTile(_occupiedTiles[i]))
 		{
-			_tileMap->GetObjectOnTile(_occupiedTiles[i], System::FLOOR)->SetColorOffset({2,2,0});
+			_tileMap->GetObjectOnTile(_occupiedTiles[i], System::FLOOR)->SetColorOffset({ 2,2,0 });
 		}
 	}
 }
@@ -359,18 +359,17 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	_occupiedTiles = nullptr;
 	_triggerTiles = nullptr;
 	_subType = trapType;
-
 	int radius = 0;
 
-	bool firstFrame = false;
+	bool frozen = true;
 	switch (_subType)
 	{
 	case SPIKE:																						//Basic one tile, damage only, trap
 		Initialize(40, 1, 1, 1, 50, 50, 140, 140, Unit::StatusEffect::NO_EFFECT, 0, 0);
-		firstFrame = true;
 		break;
 	case TESLACOIL:																					//AOE that stuns for a few seconds and does a small amount of damage
 		Initialize(30, 9, 9, 37, 80, 80, 140, 140, Unit::StatusEffect::STUNNED, 620, 620, 60, 2);
+		frozen = false;
 		break;
 	case SHARK:																						//Takes up a lot of space, but is an instant kill if it hits.
 		Initialize(999, 12, 2, 2, 60, 80, 140, 140, Unit::StatusEffect::NO_EFFECT, 0, 0);
@@ -405,8 +404,8 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 
 	if (_renderObject->_mesh->_isSkinned)
 	{
-		_animation = new Animation(_renderObject->_mesh->_skeleton, firstFrame);
-		_animation->Freeze(false);
+		_animation = new Animation(_renderObject->_mesh->_skeleton, true, frozen);
+		Animate(IDLEANIM);
 	}
 }
 
@@ -470,10 +469,12 @@ void Trap::SetTrapActive(bool active)
 	{
 		SetColorOffset({0,0,0});
 		_currentAmmunition = _maxAmmunition;
+		Animate(FIXANIM);
 	}
 	else
 	{
 		SetColorOffset({4,0,0});
+		Animate(DISABLEANIM);
 	}
 }
 
@@ -492,7 +493,7 @@ void Trap::Activate()
 			static_cast<Unit*>(_tileMap->GetObjectOnTile(_areaOfEffect[i], System::GUARD))->SetStatusEffect(_statusEffect, _statusInterval, _statusTimer);
 		}
 	}
-	Animate(ACTIVATE);
+	Animate(ACTIVATEANIM);
 	PlayActivateSound();
 	_currentAmmunition--;
 	if (_currentAmmunition == 0)
@@ -507,7 +508,7 @@ void Trap::Activate()
 
 void Trap::Update(float deltaTime)
 {	
-	if (_animation != nullptr && !_isActive)
+	if (_animation != nullptr)
 	{
 		_animation->Update(deltaTime);
 	}
@@ -601,35 +602,25 @@ void Trap::Animate(Anim anim)
 {
 	if (_animation != nullptr && _animation->GetisFinished())
 	{
-		if (_subType == SPIKE)
+		switch (anim)
 		{
-			switch (anim)
-			{
-			case IDLE:
-				_animation->SetActionAsCycle(0, 2.0f);
-				break;
-			case ACTIVATE:
-				_animation->PlayAction(0, 1.0f, true, true);
-				break;
-			default:
-				break;
-			}
-		}
-		else if (_subType == TESLACOIL)
-		{
-			switch (anim)
-			{
-			case IDLE:
-				_animation->SetActionAsCycle(0, 2.0f);
-				break;
-			case ACTIVATE:
-				_animation->PlayAction(1, 1.0f);
-				break;
-			default:
-				break;
-			}
+		case IDLEANIM:
+			_animation->SetActionAsCycle(IDLEANIM);
+			break;
+		case ACTIVATEANIM:
+			_animation->PlayAction(ACTIVATEANIM, true, true);
+			break;
+		case DISABLEANIM:
+			_animation->PlayAction(DISABLEANIM, true, true);
+			break;
+		case FIXANIM:
+			_animation->PlayAction(FIXANIM);
+			break;
+		default:
+			break;
 		}
 	}
+
 }
 
 //Sound
@@ -641,7 +632,7 @@ void Trap::PlayActivateSound()
 		_soundModule->SetSoundPosition("anvil_activate", _position.x, 0.0f, _position.z);
 		_soundModule->Play("anvil_activate");
 		break;
-		
+
 	case TESLACOIL:
 		_soundModule->SetSoundPosition("tesla_activate", _position.x, 0.0f, _position.z);
 		_soundModule->Play("tesla_activate");

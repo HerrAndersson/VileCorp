@@ -22,7 +22,7 @@ ObjectHandler::~ObjectHandler()
 	SAFE_DELETE(_buildingGrid);
 }
 
-int ObjectHandler::Add(System::Blueprint* blueprint, int textureId, const XMFLOAT3& position, const XMFLOAT3& rotation, const bool placeOnTilemap)
+GameObject* ObjectHandler::Add(System::Blueprint* blueprint, int textureId, const XMFLOAT3& position, const XMFLOAT3& rotation, const bool placeOnTilemap)
 {
 	GameObject* object = nullptr;
 	System::Type type = (System::Type)blueprint->_type;
@@ -72,7 +72,7 @@ int ObjectHandler::Add(System::Blueprint* blueprint, int textureId, const XMFLOA
 	{
 		addedObject = true;
 	}
-	if (type == System::TRAP && addedObject && !placeOnTilemap)
+	if (type == System::TRAP && addedObject && placeOnTilemap)
 	{
 		Trap* trap = static_cast<Trap*>(object);
 		int i = 0;
@@ -97,6 +97,7 @@ int ObjectHandler::Add(System::Blueprint* blueprint, int textureId, const XMFLOA
 
 	if (object != nullptr)
 	{
+		_idCount++;
 		_gameObjects[type].push_back(object);
 
 		//TODO: remove when proper loading can be done /Jonas
@@ -139,9 +140,9 @@ int ObjectHandler::Add(System::Blueprint* blueprint, int textureId, const XMFLOA
 		//	_spotlights[object] = new Renderer::Spotlight(_device, i, 0.1f, 1000.0f);
 		//}
 		_objectCount++;
-		return _idCount++;
+		return object;
 	}
-	return -1;
+	return nullptr;
 }
 
 bool ObjectHandler::Remove(int ID)
@@ -580,7 +581,7 @@ void ObjectHandler::Update(float deltaTime)
 					heldObject->SetTilePosition(AI::Vec2D(heldObject->GetPosition().x, heldObject->GetPosition().z));
 				}
 
-				if (unit->GetHealth() <= 0)
+				if (unit->GetHealth() <= 0 && unit->GetAnimisFinished())
 				{
 					if (heldObject != nullptr)
 					{
@@ -748,7 +749,6 @@ void ObjectHandler::ReleaseGameObjects()
 	_idCount = 0;
 	_objectCount = 0;
 }
-
 
 Renderer::ParticleEventQueue* ObjectHandler::GetParticleEventQueue()
 {
