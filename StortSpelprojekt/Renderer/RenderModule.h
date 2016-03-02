@@ -91,6 +91,7 @@ namespace Renderer
 		{
 			DirectX::XMMATRIX _model;
 			DirectX::XMFLOAT4 _colorOffset;
+			int _hasTexture;
 		};
 
 		struct MatrixBufferLightPassPerFrame
@@ -139,6 +140,7 @@ namespace Renderer
 		ID3D11Buffer*		_matrixBufferLightPassPerSpotlight;
 		ID3D11Buffer*		_matrixBufferLightPassPerPointlight;
 		ID3D11Buffer*		_screenQuad;
+		ID3D11Buffer*		_selectionQuad;
 		ID3D11Buffer*		_matrixBufferHUD;
 		ID3D11Buffer*		_matrixBufferParticles;
 
@@ -193,6 +195,7 @@ namespace Renderer
 		void Render(GUI::Node* root, FontWrapper* fontWrapper);
 		void RenderLineStrip(DirectX::XMMATRIX* world, int nrOfPoints, const DirectX::XMFLOAT3& colorOffset = DirectX::XMFLOAT3(0,0,0));
 		void RenderShadowMap(DirectX::XMMATRIX* world, int vertexBufferSize, DirectX::XMMATRIX* animTransformData = nullptr, int bonecount = 0);
+		void RenderSelectionQuad(float lastX, float lastY, float currentX, float currentY);
 		void RenderScreenQuad();
 		void RenderParticles(ID3D11Buffer* particlePointsBuffer, int vertexCount, int vertexSize);
 		void RenderLightVolume(ID3D11Buffer* volume, DirectX::XMMATRIX* world, int vertexCount, int vertexSize);
@@ -200,5 +203,7 @@ namespace Renderer
 
 		ID3D11Device* GetDevice() const;
 		ID3D11DeviceContext* GetDeviceContext() const;
+
+		Texture* tex;
 	};
 }

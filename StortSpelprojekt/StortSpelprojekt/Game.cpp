@@ -393,6 +393,11 @@ void Game::Render()
 	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::HUD_STAGE);
 	_renderModule->Render(_SM->GetCurrentStatePointer()->GetUITree()->GetRootNode(), _fontWrapper);
 
+	if (_SM->GetState() == PLAYSTATE || _SM->GetState() == PLACEMENTSTATE)
+	{
+		_renderModule->RenderSelectionQuad(_controls->GetClickedCoord()._pos.x, _controls->GetClickedCoord()._pos.y, _controls->GetMouseCoord()._pos.x, _controls->GetMouseCoord()._pos.y);
+	}
+
 	_renderModule->EndScene();
 }
 
