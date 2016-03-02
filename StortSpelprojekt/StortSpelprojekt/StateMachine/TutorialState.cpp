@@ -21,12 +21,17 @@ void TutorialState::PlacementGuideCheck(std::string nodeName, System::Type type,
 
 	//TODO: Add inputhandling to only accept the correct button --Victor / Zache
 
-	//if (_objectPlaced)
-	//{
+	if (_baseEdit->IsObjectDropValid() && _baseEdit->GetCreatedObject()->GetType() == type && _baseEdit->GetCreatedObject()->GetSubType() == subType)
+	{
+		_objectPlaced = true;
+	}
+	if (_objectPlaced)
+	{
 		ChangeTutorialStages();
 		_objectPlaced = false;
 		_uiTree.GetNode(nodeName)->SetColorOffset(DirectX::XMFLOAT4(0, 0, 0, 1.0f));
-	//}
+
+	}
 
 
 }
@@ -52,6 +57,7 @@ TutorialState::~TutorialState()
 
 void TutorialState::Update(float deltaTime)
 {
+	PlacementState::Update(deltaTime);
 	System::MouseCoord coord = _controls->GetMouseCoord();
 
 	switch (_currentStage)
