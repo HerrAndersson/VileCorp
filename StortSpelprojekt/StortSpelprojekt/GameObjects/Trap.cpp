@@ -643,6 +643,8 @@ void Trap::PlayActivateSound()
 		break;
 
 	case SHARK:
+		_soundModule->SetSoundPosition("shark_activate", _position.x, 0.0f, _position.z);
+		_soundModule->Play("shark_activate");
 		break;
 
 	case GUN:
@@ -668,6 +670,16 @@ void Trap::PlayActivateSound()
 	case FLAMETHROWER:
 		_soundModule->SetSoundPosition("flame_activate", _position.x, 0.0f, _position.z);
 		_soundModule->Play("flame_activate");
+		break;
+
+	case WATER_GUN:
+		_soundModule->SetSoundPosition("water_activate", _position.x, 0.0f, _position.z);
+		_soundModule->Play("water_activate");
+		break;
+
+	case SPIN_TRAP:
+		_soundModule->SetSoundPosition("spin_activate", _position.x, 0.0f, _position.z);
+		_soundModule->Play("spin_activate");
 		break;
 	}
 }
