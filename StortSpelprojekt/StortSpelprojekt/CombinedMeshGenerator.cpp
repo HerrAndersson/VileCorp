@@ -298,16 +298,7 @@ void CombinedMeshGenerator::CombineAndOptimizeMeshes(Tilemap* tilemap, const Typ
 						float scaleY = maxY - basePos.z + 1;
 
 						XMMATRIX scaleTranslation = XMMatrixScaling(scaleX, 1.0f, scaleY);
-						XMMATRIX scaleUV;
-
-						if (typeToCombine == FLOOR)
-						{
-							scaleUV = XMMatrixScaling(scaleX, scaleY, 1.0f);
-						}
-						else
-						{
-							scaleUV = XMMatrixScaling(max(scaleX, scaleY), 1.0f, 1.0f);
-						}
+						XMMATRIX scaleUV = XMMatrixScaling(scaleX, scaleY, 1.0f);
 						 
 						XMMATRIX translation = scaleTranslation * XMMatrixTranslation(basePos.x + scaleX / 2.0f - 0.5f, basePos.y, basePos.z + scaleY / 2.0f - 0.5f);
 
@@ -322,7 +313,6 @@ void CombinedMeshGenerator::CombineAndOptimizeMeshes(Tilemap* tilemap, const Typ
 							XMStoreFloat3(&vert._position, posV);
 
 							//Scale the uv-coords according to the same scaling as the position
-
 							XMVECTOR uvV = XMLoadFloat2(&vert._uv);
 							uvV = XMVector2TransformCoord(uvV, scaleUV);
 							XMStoreFloat2(&vert._uv, uvV);

@@ -307,16 +307,16 @@ namespace Renderer
 	{
 		_swapChain->SetFullscreenState(false, NULL);
 
-		SAFE_RELEASE(_swapChain)
-		SAFE_RELEASE(_device)
-		SAFE_RELEASE(_deviceContext)
-		SAFE_RELEASE(_backBufferRTV)
-		SAFE_RELEASE(_blendStateEnable)
-		SAFE_RELEASE(_blendStateDisable)
-		SAFE_RELEASE(_rasterizerStateNone)
-		SAFE_RELEASE(_rasterizerStateBack)
-		SAFE_RELEASE(_rasterizerStateFront)
-		SAFE_RELEASE(_rasterizerStateWireframe)
+		SAFE_RELEASE(_swapChain);
+		SAFE_RELEASE(_device);
+		SAFE_RELEASE(_deviceContext);
+		SAFE_RELEASE(_backBufferRTV);
+		SAFE_RELEASE(_blendStateEnable);
+		SAFE_RELEASE(_blendStateDisable);
+		SAFE_RELEASE(_rasterizerStateNone);
+		SAFE_RELEASE(_rasterizerStateBack);
+		SAFE_RELEASE(_rasterizerStateFront);
+		SAFE_RELEASE(_rasterizerStateWireframe);
 			
 		SAFE_RELEASE(_backBufferDSV);
 		SAFE_RELEASE(_backBufferDepthSRV);
@@ -453,11 +453,10 @@ namespace Renderer
 
 			_swapChain->ResizeTarget(&modeDesc);
 
-			/*Uncomment this if REAL fullscreen should be used
 			int systemSizeX = GetSystemMetrics(SM_CXSCREEN);
 			int systemSizeY = GetSystemMetrics(SM_CYSCREEN);
 			bool fullscreen = (settings->_windowWidth == systemSizeX && settings->_windowHeight == systemSizeY && settings->_borderless);
-			_swapChain->SetFullscreenState(fullscreen, NULL);*/
+			_swapChain->SetFullscreenState(fullscreen, NULL);
 
 			//Preserve the existing buffer count and format. Automatically choose the width and height to match the client rect for HWNDs.
 			hr = _swapChain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
@@ -519,9 +518,7 @@ namespace Renderer
 		//{
 		//	_deviceContext->ClearRenderTargetView(_deferredRTVArray[i], color);
 		//}
-
-		// TODO: Comment this line when the screen is always filled with objects. Then we don't need to clear this
-		_deviceContext->ClearRenderTargetView(_deferredRTVArray[2], color);
+		//_deviceContext->ClearRenderTargetView(_deferredRTVArray[2], color);
 
 		_deviceContext->ClearDepthStencilView(_backBufferDSV, D3D11_CLEAR_DEPTH, 1.0f, 0);
 	}
@@ -529,6 +526,6 @@ namespace Renderer
 	void DirectXHandler::EndScene()
 	{
 		//V-Sync enabled
-		_swapChain->Present(1, 0);
+		_swapChain->Present(0, 0);
 	}
 }
