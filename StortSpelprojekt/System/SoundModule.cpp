@@ -233,37 +233,9 @@ namespace System
 	{
 		if (_initiated)
 		{
-			switch (channel)
-			{
-			case CHMASTER:
-				_volume[CHMASTER] = volume;
-				YSE::ChannelMaster().setVolume(_volume[CHMASTER]);
-				break;
-			case CHAMBIENT:
-				_volume[CHAMBIENT] = volume;
-				YSE::ChannelAmbient().setVolume(_volume[CHAMBIENT]);
-				break;
-			case CHFX:
-				_volume[CHFX] = volume;
-				YSE::ChannelFX().setVolume(_volume[CHFX]);
-				break;
-			case CHGUI:
-				_volume[CHGUI] = volume;
-				YSE::ChannelGui().setVolume(_volume[CHGUI]);
-				break;
-			case CHMUSIC:
-				_volume[CHMUSIC] = volume;
-				YSE::ChannelMusic().setVolume(_volume[CHMUSIC]);
-				break;
-			case CHVOICE:
-				_volume[CHVOICE] = volume;
-				YSE::ChannelVoice().setVolume(_volume[CHVOICE]);
-				break;
-			default:
-				break;
-			}
+			_volume[channel] = volume;
+			YSE::ChannelMaster().setVolume(_volume[channel]);
 		}
-
 	}
 
 	float SoundModule::GetVolume(int channel)
