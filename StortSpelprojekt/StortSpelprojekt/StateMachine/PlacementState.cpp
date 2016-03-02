@@ -10,6 +10,7 @@ PlacementState::PlacementState(System::Controls* controls, ObjectHandler* object
 	_tutorialLogic = new TutorialLogic(&_uiTree, _controls, _player, _buttons, &_ghostImage, objectHandler, pickingDevice, _profile);
 
 	//Money
+	_budget = 0;
 	_costOfAnvilTrap	= 50;
 	_costOfTeslaCoil	= 100;
 	_costOfCamera		= 80;
@@ -88,9 +89,9 @@ void PlacementState::OnStateEnter()
 	_objectHandler->DisableSpawnPoints();
 
 	XMFLOAT3 campos;
-	campos.x = _objectHandler->GetTileMap()->GetWidth() / 2;
-	campos.y = 15;
-	campos.z = _objectHandler->GetTileMap()->GetHeight() / 2 - 10;
+	campos.x = (float)_objectHandler->GetTileMap()->GetWidth() / 2.0f;
+	campos.y = 15.0f;
+	campos.z = (float)_objectHandler->GetTileMap()->GetHeight() / 2.0f - 10.0f;
 	_camera->SetPosition(campos);
 
 	_buttonHighlights.clear();
