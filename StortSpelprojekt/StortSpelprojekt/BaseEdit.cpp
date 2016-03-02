@@ -163,7 +163,7 @@ void BaseEdit::DropEvent()
 	_modeLock = false;
 	_marker._g->SetColorOffset(XMFLOAT3(0.0f, 0.0f, 0.0f));
 	XMFLOAT3 p = XMFLOAT3(_marker._g->GetPosition());
-	
+
 	if (!_marker._placeable)
 	{
 		//Redirect position to old pos
@@ -207,7 +207,11 @@ void BaseEdit::DropEvent()
 	{
 		if (_droppedObject)
 		{
-			_createdObject = _marker._g;
+			_tileMap->RemoveObjectFromTile(_marker._g);
+			_createdObject = _objectHandler->Add(_sB->_blueprint, _sB->_textureId, _marker._g->GetPosition(), _marker._g->GetRotation(), true);
+			_objectHandler->Remove(_marker._g);
+
+			//_createdObject = _marker._g;
 		}
 		_marker.Reset();
 		CreateMarker();
@@ -311,62 +315,60 @@ void BaseEdit::HandleMouseInput()
 		//	}
 
 		//}
+
+		if (_controls->IsFunctionKeyDown("MOUSE:BOX_PLACE") || _controls->IsFunctionKeyDown("MOUSE:BOX_DELETE"))
+		{
+			if (!_modeLock && _isSelectionMode)
+			{
+				_isSelectionMode = false;
+				_isDragAndPlaceMode = true;
+
+				_isDragAndDropMode = false;
+				_isPlace = false;
+			}
+		}
+
+		if (_isSelectionMode)
+		{
+			if (_marker._g == nullptr)
+			{
+				// Drag in world
+				bool found = false;
+				for (int i = System::Type::NR_OF_TYPES - 1; i > -1 && !found; i--)
+				{
+					DragEvent((System::Type)i);
+					if (_marker._g != nullptr)
+					{
+						found = true;
+					}
+				}
+			}
+			//else
+			//{
+			//	// For buttons
+			//	DragEvent(_marker._g->GetType());
+			//}
+		}
 		else
 		{
-			if (_controls->IsFunctionKeyDown("MOUSE:BOX_PLACE") || _controls->IsFunctionKeyDown("MOUSE:BOX_DELETE"))
+			if (_sB != nullptr)
 			{
-				if (!_modeLock && _isSelectionMode)
+				if (!_modeLock)
 				{
-					_isSelectionMode = false;
-					_isDragAndPlaceMode = true;
-
-					_isDragAndDropMode = false;
-					_isPlace = false;
-				}
-			}
-
-			if (_isSelectionMode)
-			{
-				if (_marker._g == nullptr)
-				{
-					// Drag in world
-					bool found = false;
-					for (int i = System::Type::NR_OF_TYPES - 1; i > -1 && !found; i--)
+					if (_controls->IsFunctionKeyDown("MOUSE:BOX_PLACE"))
 					{
-						DragEvent((System::Type)i);
-						if (_marker._g != nullptr)
-						{
-							found = true;
-						}
+						CreateMarkers();
+						_isPlace = true;
+					}
+
+					// Not really diselect but activates remove mode (temp)
+					if (_controls->IsFunctionKeyDown("MOUSE:BOX_DELETE"))
+					{
+						CreateMarkers();
+						_isPlace = false;
 					}
 				}
-				//else
-				//{
-				//	// For buttons
-				//	DragEvent(_marker._g->GetType());
-				//}
-			}
-			else
-			{
-				if (_sB != nullptr)
-				{
-					if (!_modeLock)
-					{
-						if (_controls->IsFunctionKeyDown("MOUSE:BOX_PLACE"))
-						{
-							CreateMarkers();
-							_isPlace = true;
-						}
-
-						// Not really diselect but activates remove mode (temp)
-						if (_controls->IsFunctionKeyDown("MOUSE:BOX_DELETE"))
-						{
-							CreateMarkers();
-							_isPlace = false;
-						}
-					}
-					BoxEvent();
-				}
+				BoxEvent();
 			}
 		}
 	}
@@ -519,7 +521,7 @@ bool BaseEdit::CheckValidity(AI::Vec2D tile, System::Type type)
 	return valid;
 }
 
-void BaseEdit::HandleBlueprint(SpecificBlueprint* sB)
+void BaseEdit::HandleBlueprint(System::SpecificBlueprint* sB)
 {
 	_sB = sB;
 	if (_isSelectionMode)

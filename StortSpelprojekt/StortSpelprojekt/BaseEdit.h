@@ -9,17 +9,7 @@
 #include "../Controls.h"
 #include "../PickingDevice.h"
 #include "../System/Camera.h"
-
-struct SpecificBlueprint
-{
-	SpecificBlueprint()
-	{
-		_blueprint = nullptr;
-		_textureId = -1;
-	}
-	System::Blueprint* _blueprint = nullptr;
-	int _textureId = -1;
-};
+#include "CommonUtils.h"
 
 class BaseEdit
 {
@@ -30,7 +20,7 @@ private:
 	ObjectHandler*			_objectHandler;
 	PickingDevice*			_pickingDevice;
 
-	SpecificBlueprint* _sB;
+	System::SpecificBlueprint* _sB;
 
 	struct Marker
 	{
@@ -83,7 +73,7 @@ public:
 	bool DeleteMarkedObject();
 	void ReleaseMarkers();
 
-	void HandleBlueprint(SpecificBlueprint* sB);
+	void HandleBlueprint(System::SpecificBlueprint* sB);
 
 	bool IsSelection() const;
 	bool IsDragAndPlace() const;

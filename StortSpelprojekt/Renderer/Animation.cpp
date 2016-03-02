@@ -1,21 +1,18 @@
 #include"Animation.h"
 
-Animation::Animation(Skeleton* skeleton, bool firstFrame)
+Animation::Animation(Skeleton* skeleton, bool firstFrame, bool frozen)
 {
 	_skeleton = skeleton;
 	_boneCount = _skeleton->_parents.size();
 	toRootTransforms = (XMMATRIX*)_aligned_malloc(sizeof(XMMATRIX) * _boneCount, 16);
 	toParentTransforms = (XMMATRIX*)_aligned_malloc(sizeof(XMMATRIX) * _boneCount, 16);
 	finalTransforms = (XMMATRIX*)_aligned_malloc(sizeof(XMMATRIX) * _boneCount, 16);
-	finalFloats.resize(_boneCount);
 
 	_animTime = 0.0f;
 	_currentAction = -1;
 	_currentCycle = 0;
 	_inactive = false;
 	_lastFrame = false;
-	_actionSpeed = 1.0f;
-	_cycleSpeed = 1.0f;
 	_isFinished = true;
 
 	if (firstFrame)
@@ -29,7 +26,6 @@ Animation::Animation(Skeleton* skeleton, bool firstFrame)
 		for (unsigned i = 0; i < _boneCount; i++)
 		{
 			finalTransforms[i] = XMMatrixIdentity();
-			XMStoreFloat4x4(&finalFloats[i], XMMatrixIdentity());
 		}
 	}
 	for (int i = 0; i < _skeleton->_actions.size(); i++)
@@ -47,6 +43,8 @@ Animation::Animation(Skeleton* skeleton, bool firstFrame)
 			}
 		}
 	}
+
+	_frozen = frozen;
 }
 
 Animation::~Animation()
@@ -62,14 +60,9 @@ void Animation::Update(float time)
 	{
 		return;
 	}
-	if (_currentAction != -1)
-	{
-		_animTime += (time / 1000) * _actionSpeed;
-	}
-	else
-	{
-		_animTime += (time / 1000) * _cycleSpeed;
-	}
+
+	_animTime += (time / 1000);
+
 	if (_currentAction != -1)
 	{
 		if (_skeleton->_actions[_currentAction]._bones[0]._frameTime.back() < _animTime)
@@ -118,7 +111,6 @@ void Animation::Update(float time)
 	for (unsigned i = 0; i < _boneCount; i++)
 	{
 		finalTransforms[i] = XMMatrixTranspose(_skeleton->_bindposes[i] * toRootTransforms[i]);
-		XMStoreFloat4x4(&finalFloats[i], finalTransforms[i]);
 	}
 }
 
@@ -127,23 +119,18 @@ XMMATRIX* Animation::GetTransforms()
 	return finalTransforms;
 }
 
-std::vector<XMFLOAT4X4>* Animation::GetFloats()
-{
-	return &finalFloats;
-}
 int Animation::GetBoneCount() const
 {
 	return _boneCount;
 }
 
-void Animation::SetActionAsCycle(int action, float speed, bool reset)
+void Animation::SetActionAsCycle(int action, bool reset)
 {
 	if (reset)
 	{
 		_animTime = 0.0f;
 	}
 	_currentCycle = action;
-	_cycleSpeed = speed;
 }
 
 void Animation::Freeze(bool freeze)
@@ -151,19 +138,7 @@ void Animation::Freeze(bool freeze)
 	_frozen = freeze;
 }
 
-void Animation::SetSpeed(float speed, bool cycle)
-{
-	if (cycle)
-	{
-		_cycleSpeed = speed;
-	}
-	else
-	{
-		_actionSpeed = speed;
-	}
-}
-
-void Animation::PlayAction(int action, float speed, bool freeze, bool lastFrame)
+void Animation::PlayAction(int action, bool freeze, bool lastFrame)
 {
 	_frozen = false;
 	_animTime = 0.0f;
@@ -174,7 +149,6 @@ void Animation::PlayAction(int action, float speed, bool freeze, bool lastFrame)
 		_inactive = true;
 	}
 	_lastFrameRender = lastFrame;
-	_actionSpeed = speed;
 }
 
 bool Animation::GetisFinished()
@@ -182,9 +156,9 @@ bool Animation::GetisFinished()
 	return _isFinished;
 }
 
-float Animation::GetLength(int animation, float speed)
+float Animation::GetLength(int animation)
 {
-	int test = _length[animation] / speed;
+	int test = _length[animation];
 	return test;
 }
 

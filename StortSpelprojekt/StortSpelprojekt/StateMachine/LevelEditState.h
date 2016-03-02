@@ -60,7 +60,7 @@ private:
 
 	int _loadLevelSelectedIndex;
 
-	SpecificBlueprint _toPlace;
+	System::SpecificBlueprint _toPlace;
 
 	void LoadLevel(std::string fileName);
 

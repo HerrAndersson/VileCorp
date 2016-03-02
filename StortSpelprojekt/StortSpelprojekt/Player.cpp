@@ -9,6 +9,7 @@ void Player::AddGuardIcon(Unit* unit)
 	pos.y += 2.5f;
 	msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::QUESTIONMARK_SUBTYPE, unit->GetID(), pos, XMFLOAT3(0, 0, 0), 1000.0f, 1, 0.25f, true, false);
 	_objectHandler->GetParticleEventQueue()->Insert(msg);
+	_drag = false;
 }
 void Player::AddPatrolIcons(Guard* guard)
 {
@@ -48,6 +49,16 @@ void Player::RemovePatrolIcons(Guard* guard)
 	}
 }
 
+void Player::ColorObject(GameObject * obj)
+{
+	obj->SetColorOffset(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));
+}
+
+void Player::DecolorObject(GameObject * obj)
+{
+	obj->SetColorOffset(DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f));
+}
+
 
 Player::Player()
 {
@@ -59,10 +70,43 @@ Player::Player(ObjectHandler* objectHandler)
 	_objectHandler = objectHandler;
 }
 
+Player::Player(ObjectHandler * objectHandler, PickingDevice * pickingDevice)
+{
+	_objectHandler = objectHandler;
+	_pickingDevice = pickingDevice;
+}
+
 Player::~Player()
 {
 	_objectHandler = nullptr;
 	_selectedUnits.clear();
+}
+
+void Player::UpdateDragPositions(System::MouseCoord coord)
+{
+	XMFLOAT3 deltaPos, currentPos;
+	bool move = false;
+	if (_drag)
+	{
+		if (IsSelectedObjects())
+		{
+
+			//We want to compare the picked tile with the object we clicked on.
+			AI::Vec2D pickedTile = _pickingDevice->PickTile(coord._pos);
+			DirectX::XMFLOAT3 clickedPos = XMFLOAT3(pickedTile._x, 0, pickedTile._y);
+			//Deltapos for the objects
+			deltaPos.x = clickedPos.x - _dragOrigin._x;
+			deltaPos.y = 0;
+			deltaPos.z = clickedPos.z - _dragOrigin._y;
+			//give the new values to the objects
+			for (auto i : _selectedObjects)
+			{
+				currentPos = i->GetPosition();
+				i->SetPosition(XMFLOAT3(deltaPos.x + currentPos.x, 0, deltaPos.z + currentPos.z));
+			}
+			_dragOrigin = pickedTile;
+		}
+	}
 }
 
 void Player::SelectUnit(Unit* pickedUnit)
@@ -160,4 +204,81 @@ void Player::PatrolUnits(AI::Vec2D patrolPoint)
 int Player::GetNumberOfSelectedUnits()
 {
 	return _selectedUnits.size();
+}
+
+void Player::SelectObjects(GameObject* pickedObject)
+{
+	ColorObject(pickedObject);
+	_selectedObjects.push_back(pickedObject);
+}
+
+void Player::SelectObjects(vector<vector<GameObject*>> pickedObjects)
+{
+	for (vector<GameObject*> i : pickedObjects)
+	{
+		for (GameObject* j : i)
+		{
+			ColorObject(j);
+			_selectedObjects.push_back(j);
+		}
+	}
+}
+
+void Player::DeselectObjects()
+{
+	//Decolourize everything
+	for (GameObject* i : _selectedObjects)
+	{
+		DecolorObject(i);
+	}
+	_selectedObjects.clear();
+}
+
+void Player::DeleteSelectedObjects()
+{
+	for (GameObject* i : _selectedObjects)
+	{
+		_objectHandler->Remove(i);
+	}
+	_selectedObjects.clear();
+}
+
+vector<GameObject*> Player::GetSelectedObjects()
+{
+	return _selectedObjects;
+}
+
+unsigned int Player::GetNumSelectedObjects()
+{
+	return _selectedObjects.size();
+}
+
+bool Player::IsDragging()const
+{
+	return _drag;
+}
+
+void Player::ActivateDragging(GameObject* object)
+{
+	_drag = true;
+	_dragOrigin = object->GetTilePosition();
+}
+
+void Player::DeactivateDragging()
+{
+	_drag = false;
+	_dragOrigin = AI::Vec2D(0,0);
+	_selectedObjectsPreviousPos.clear();
+}
+
+bool Player::IsSelectedObjects()
+{
+	if (_selectedObjects.size() > 0)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }

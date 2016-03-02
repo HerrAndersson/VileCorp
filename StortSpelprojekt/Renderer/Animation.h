@@ -15,6 +15,7 @@ class __declspec(dllexport) Animation
 {
 private:
 
+	XMVECTOR _zeroVector = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
 	XMMATRIX Interpolate(unsigned int boneID, int action);
 
 	bool _frozen;
@@ -23,33 +24,36 @@ private:
 	float _nextTime;
 	float _lerpPercent;
 	unsigned _lastFrame, _boneCount;
-	XMVECTOR _zeroVector = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
 	XMMATRIX* toRootTransforms;
 	XMMATRIX* toParentTransforms;
 	XMMATRIX* finalTransforms;
-	std::vector<XMFLOAT4X4> finalFloats;
 	Skeleton* _skeleton;
 	float _animTime;
 	int _currentCycle, _currentAction;
 	bool _inactive;
 	bool _lastFrameRender;
-	float _cycleSpeed;
-	float _actionSpeed;
 	bool _isFinished;
 	std::vector<int> _length;
 
 public:
-	Animation(Skeleton* skeleton, bool firstFrame = false);
+	Animation(Skeleton* skeleton, bool firstFrame = false, bool frozen = false);
 	~Animation();
 
 	void Update(float time);
-	void SetActionAsCycle(int action, float speed, bool reset = false);
+	void SetActionAsCycle(int action, bool reset = false);
 	void Freeze(bool freeze);
-	void SetSpeed(float speed, bool cycle);
 	XMMATRIX* GetTransforms();
-	void PlayAction(int action, float speed, bool freeze = false, bool lastFrame = false);
-	std::vector<XMFLOAT4X4>* GetFloats();
+	void PlayAction(int action, bool freeze = false, bool lastFrame = false);
 	int GetBoneCount() const;
 	bool GetisFinished();
-	float GetLength(int animation, float speed = 1.0f);
+	float GetLength(int animation);
+	static void* Animation::operator new(size_t i)
+	{
+		return _mm_malloc(i, 16);
+	}
+
+		static void Animation::operator delete(void* p)
+	{
+		_mm_free(p);
+	}
 };

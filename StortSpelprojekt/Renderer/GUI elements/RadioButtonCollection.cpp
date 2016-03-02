@@ -26,7 +26,7 @@ void GUI::RadioButtonCollection::SelectRadioButtonNode(GUI::Node* selectedRadioB
 
 		if (oldSelectedRadioButtonNode != nullptr)
 		{
-			ID3D11ShaderResourceView* tempTexture = oldSelectedRadioButtonNode->GetTexture();
+			Texture* tempTexture = oldSelectedRadioButtonNode->GetTexture();
 			oldSelectedRadioButtonNode->SetTexture(_selectedRadioButtonNode->GetTexture());
 			_selectedRadioButtonNode->SetTexture(tempTexture);
 		}

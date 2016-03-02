@@ -4,6 +4,7 @@ LevelEditState::LevelEditState(System::Controls* controls, ObjectHandler* object
 	: BaseState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settingsReader, soundModule)
 {
 	_ambientLight = ambientLight;
+	_baseEdit = nullptr;
 }
 
 LevelEditState::~LevelEditState()

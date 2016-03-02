@@ -120,12 +120,12 @@ Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	_direction = {0, 1};
 	_nextTile = _tilePosition;
 	_isSwitchingTile = false;
-	_speedMultiplier = 2.0f;
 	Rotate();
 	if (_renderObject->_mesh->_isSkinned)
 	{
 		_animation = new Animation(_renderObject->_mesh->_skeleton, true);
 		_animation->Freeze(false);
+		Animate(IDLEANIM);
 	}
 	_moveState = MoveState::IDLE;
 	_interactionTime = -1;
@@ -302,6 +302,10 @@ void Unit::InitializePathFinding()
 			{
 				_aStar->SetTileCost({i, j}, -1);
 			}
+			else if (_tileMap->IsFurnitureOnTile(AI::Vec2D(i, j)))
+			{
+				_aStar->SetTileCost({i, j}, SHRT_MAX/2);					//Needs to be reachable in case objective is on a furniture tile, but it's still high enough that units almost always avoid it.
+			}
 			else
 			{
 				_aStar->SetTileCost({i, j}, 1);
@@ -312,7 +316,7 @@ void Unit::InitializePathFinding()
 
 void Unit::Update(float deltaTime)
 {
-	if (_renderObject->_mesh->_isSkinned)
+	if (_animation != nullptr)
 	{
 		_animation->Update(deltaTime);
 	}
@@ -384,6 +388,7 @@ void Unit::SwitchingNode()
 		}
 		Rotate();
 		_moveState = MoveState::MOVING;
+		_isSwitchingTile = false;
 	}
 	else
 	{
@@ -440,6 +445,7 @@ void Unit::ActivateStatus()
 		_moveSpeed /= 2.0f;
 		break;
 	case StatusEffect::STUNNED:					//No active effect. Instead units are prevented from updating while this is in effect.
+		Animate(IDLEANIM);
 		break;
 	case StatusEffect::SCARED:					//TODO: Either allow pursuer to be a non-unit, or make a specific movement state
 		break;
@@ -475,52 +481,50 @@ void Unit::DeactivateStatus()
 
 void Unit::TakeDamage(int damage)
 {
-	_health -= damage;
+	if (_health - damage > 0)
+	{
+		_health -= damage;
+	}
+	else if (_health > 0)
+	{
+		Animate(DEATHANIM);
+		_health -= damage;
+	}
 }
 
 void Unit::Animate(Anim anim)
 {
-	if (_animation != nullptr)
+	if (_animation != nullptr && _animation->GetisFinished() && _lastAnimState != anim)
 	{
-		if (_type == System::GUARD)
+		switch (anim)
 		{
-			switch (anim)
-			{
-			case IDLEANIM:
-				_animation->SetActionAsCycle(0, 1.0f * _speedMultiplier);
-				break;
-			case WALKANIM:
-				_animation->SetActionAsCycle(1, 1.0f * _speedMultiplier);
-				break;
-			case FIXTRAPANIM:
-				_animation->SetActionAsCycle(2, 1.0f * _speedMultiplier);
-				break;
-			case FIGHTANIM:
-				_animation->PlayAction(4, 4.5f * _speedMultiplier);
-				break;
-			default:
-				break;
-			}
+		case IDLEANIM:
+			_animation->SetActionAsCycle(IDLEANIM);
+			break;
+		case WALKANIM:
+			_animation->SetActionAsCycle(WALKANIM);
+			break;
+		case FIGHTANIM:
+			_animation->PlayAction(FIGHTANIM);
+			break;
+		case PICKUPOBJECTANIM:
+			_animation->PlayAction(PICKUPOBJECTANIM);
+			break;
+		case FIXTRAPANIM:
+			_animation->PlayAction(FIXTRAPANIM);
+			break;
+		case DISABLETRAPANIM:
+			_animation->PlayAction(DISABLETRAPANIM);
+			break;
+		case HURTANIM:
+			_animation->PlayAction(HURTANIM);
+			break;
+		case DEATHANIM:
+			_animation->PlayAction(DEATHANIM);
+			break;
+		default:
+			break;
 		}
-		if (_type == System::ENEMY)
-		{
-			switch (anim)
-			{
-			case IDLEANIM:
-				_animation->SetActionAsCycle(0, 1.0f * _speedMultiplier);
-				break;
-			case WALKANIM:
-				_animation->SetActionAsCycle(1, 1.0f * _speedMultiplier);
-				break;
-			case FIGHTANIM:
-				_animation->PlayAction(1, 1.0f * _speedMultiplier);
-				break;
-			case PICKUPOBJECTANIM:
-				_animation->PlayAction(3, 1.0f * _speedMultiplier);
-				break;
-			default:
-				break;
-			}
-		}
+		_lastAnimState = anim;
 	}
 }
