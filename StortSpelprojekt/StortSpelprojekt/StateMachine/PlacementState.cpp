@@ -27,6 +27,22 @@ PlacementState::PlacementState(System::Controls* controls, ObjectHandler* object
 
 void PlacementState::EvaluateGoldCost()
 {
+	if (_toPlace._sB._blueprint->_subType == SPIKE)
+	{
+		_toPlace._goldCost = _costOfAnvilTrap;
+	}
+	else if (_toPlace._sB._blueprint->_subType == TESLACOIL)
+	{
+		_toPlace._goldCost = _costOfTeslaCoil;
+	}
+	if (_toPlace._sB._blueprint->_type == System::CAMERA)
+	{
+		_toPlace._goldCost = _costOfCamera;
+	}
+	else if (_toPlace._sB._blueprint->_type == System::GUARD)
+	{
+		_toPlace._goldCost = _costOfGuard;
+	}
 }
 
 PlacementState::~PlacementState()
