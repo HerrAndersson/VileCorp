@@ -198,7 +198,8 @@
 					}
 				}
 			},
-			"MachineGunTrap" :{
+			"MachineGunTrap" :
+			{
 				"position": [0.54, 0.057],
 				"scale": [0.048, 0.083],
 				"texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png",
@@ -229,25 +230,139 @@
 					}
 				}
 			},
-			"SharkTrap" :{
-				"position": [0.66, 0.057],
+			"FlameThrowerTrap": 
+			{
+				"position": [ 0.66, 0.057 ],
+				"scale": [ 0.048, 0.083 ],
+				"texture": "../Menues/PlacementStateGUI/units/FlameThrowerbutton1.png",
+				"type": 4,
+				"subType": 7,
+				"textureId": 0,
+				"FlameThrowerText": 
+				{
+					"position": [ 0.0, -0.173 ],
+					"scale": [ 0.068, 0.083 ],
+					"text": "Flamethrower\n  X$",
+					"color": "FF000000",
+					"fontsize": 18.0,
+					"centered": true
+				},
+				"FlameThrowerDescription":
+				{
+					"position" : [0.0, 0.25],
+					"scale": [0.1, 0.12],
+					"texture": "../Menues/General/wide-button-thin.png",
+					
+					"FlameThrowerCost":
+					{
+						"position" : [0.0, 0.075],
+						"scale": [0.09, 0.02],
+						"text": "Cost: 100",
+						"fontsize" : 18.0
+					}
+				}
+				
+			},
+			"WaterGunTrap": 
+			{
+				"position": [ 0.78, 0.057 ],
+				"scale": [ 0.048, 0.083 ],
+				"texture": "../Menues/PlacementStateGUI/units/FlameThrowerbutton1.png",
+				"type": 4,
+				"subType": 8,
+				"textureId": 0,
+
+				"WaterGunText": 
+				{
+					"position": [ 0.0, -0.173 ],
+					"scale": [ 0.068, 0.083 ],
+					"text": "Water gun: Not Finished\n  X$",
+					"color": "FF000000",
+					"fontsize": 18.0,
+					"centered": true
+				},
+				"WaterGunDescription":
+				{
+					"position" : [0.0, 0.25],
+					"scale": [0.1, 0.12],
+					"texture": "../Menues/General/wide-button-thin.png",
+					
+					"WaterGunCost":
+					{
+						"position" : [0.0, 0.075],
+						"scale": [0.09, 0.02],
+						"text": "Cost: 100",
+						"fontsize" : 18.0
+					}
+				}
+			},
+			"TeslaTrap": 
+			{
+				"position": [ 0.90, 0.057 ],
 				"scale": [0.048, 0.083],
-				"texture": "../Menues/PlacementStateGUI/units/Sharkbutton1.png",
+				"texture": "../Menues/PlacementStateGUI/units/Teslabutton1.png",
 				"type" : 4,
-				"subType": 2,
+				"subType": 1,
 				"textureId" : 0,
-				"TeslaText":
+				"TeslaText": 
 				{
 					"position": [0.0, -0.173],
 					"scale": [0.068, 0.083],
-					"text": "Shark Trap\n  300$",
-				"color": "FF000000",
-				"fontsize": 18.0,
-				"centered": true
+					"text": "Tesla Trap\n  100$",
+					"color": "FF000000",
+					"fontsize" : 18.0,
+					"centered": true
+				},
+				"TeslaDescription":
+				{
+					"position" : [0.0, 0.25],
+					"scale": [0.1, 0.12],
+					"texture": "../Menues/General/wide-button-thin.png",
+					
+					"TeslaCost":
+					{
+						"position" : [0.0, 0.075],
+						"scale": [0.09, 0.02],
+						"text": "Cost: 100",
+						"fontsize" : 18.0
+					}
 				}
 			},
-			"CakeTrap" :{
-				"position": [0.78, 0.057],
+			"SpinTrap" :
+			{
+				"position": [1.02, 0.057],
+				"scale": [0.048, 0.083],
+				"texture": "../Menues/PlacementStateGUI/units/ConfuseTrapButton.png",
+				"type" : 4,
+				"subType": 9,
+				"textureId" : 0,
+				"SpinText":
+				{
+					"position": [0.0, -0.173],
+					"scale": [0.068, 0.083],
+					"text": "Spinning Tile\n  150$",
+					"color": "FF000000",
+					"fontsize": 18.0,
+					"centered": true
+				},
+				"SpinDescription":
+				{
+					"position" : [0.0, 0.25],
+					"scale": [0.1, 0.12],
+					"texture": "../Menues/General/wide-button-thin.png",
+					
+					"SpinCost":
+					{
+						"position" : [0.0, 0.075],
+						"scale": [0.09, 0.02],
+						"text": "Cost: 100",
+						"fontsize" : 18.0
+					}
+				}
+			},
+			"CakeTrap" :
+			{
+				"position": [1.14, 0.057],
 				"scale": [0.048, 0.083],
 				"texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png",
 				"type" : 4,
@@ -258,92 +373,56 @@
 				{
 					"position": [0.0, -0.173],
 					"scale": [0.068, 0.083],
-					"text": "Sugar Bomb\n  X$",
-				"color": "FF000000",
-				"fontsize": 18.0,
-				"centered": true
-				}
-			},
-			"TeslaTrap": {
-				"position": [ 0.90, 0.057 ],
-				"scale": [0.048, 0.083],
-				"texture": "../Menues/PlacementStateGUI/units/Teslabutton1.png",
-				"type" : 4,
-				"subType": 1,
-				"textureId" : 0,
-				"TeslaText": {
-					"position": [0.03, -0.173],
-					"scale": [0.068, 0.083],
-					"text": "Tesla Trap\n  100$",
+					"text": "Sugar Bomb\n  100$",
 					"color": "FF000000",
-					"fontsize" : 18.0
-					},
-				"TeslaDescription":
+					"fontsize": 18.0,
+					"centered": true
+				},
+				"CakeDescription":
 				{
-					"position" : [0.0, 0.20],
-					"scale": [0.1, 0.07],
+					"position" : [0.0, 0.25],
+					"scale": [0.1, 0.12],
 					"texture": "../Menues/General/wide-button-thin.png",
 					
-					"TeslaCost":
+					"CakeCost":
 					{
-						"position" : [0.0, 0.0],
-						"scale": [0.05, 0.02],
+						"position" : [0.0, 0.075],
+						"scale": [0.09, 0.02],
 						"text": "Cost: 100",
-						"centered": true,
 						"fontsize" : 18.0
 					}
 				}
 			},
-      "FlameThrowerTrap": {
-        "position": [ 1.02, 0.057 ],
-        "scale": [ 0.048, 0.083 ],
-        "texture": "../Menues/PlacementStateGUI/units/FlameThrowerbutton1.png",
-        "type": 4,
-        "subType": 7,
-        "textureId": 0,
-
-        "FlameThrowerText": {
-          "position": [ 0.0, -0.173 ],
-          "scale": [ 0.068, 0.083 ],
-          "text": "Flamethrower\n  X$",
-          "color": "FF000000",
-          "fontsize": 18.0,
-          "centered": true
-        }
-      },
-      "WaterGunTrap": {
-        "position": [ 1.14, 0.057 ],
-        "scale": [ 0.048, 0.083 ],
-        "texture": "../Menues/PlacementStateGUI/units/FlameThrowerbutton1.png",
-        "type": 4,
-        "subType": 8,
-        "textureId": 0,
-
-        "WaterGunText": {
-          "position": [ 0.0, -0.173 ],
-          "scale": [ 0.068, 0.083 ],
-          "text": "Water gun: Not Finished\n  X$",
-          "color": "FF000000",
-          "fontsize": 18.0,
-          "centered": true
-        }
-      },
-      "SpinTrap" :{
+			"SharkTrap" :
+			{
 				"position": [1.26, 0.057],
 				"scale": [0.048, 0.083],
-        "texture": "../Menues/PlacementStateGUI/units/ConfuseTrapButton.png",
-        "type" : 4,
-				"subType": 9,
+				"texture": "../Menues/PlacementStateGUI/units/Sharkbutton1.png",
+				"type" : 4,
+				"subType": 2,
 				"textureId" : 0,
-				
-				"SpinText":
+				"SharkText":
 				{
 					"position": [0.0, -0.173],
 					"scale": [0.068, 0.083],
-					"text": "Spinning Tile\n  X$",
-				"color": "FF000000",
-				"fontsize": 18.0,
-				"centered": true
+					"text": "Shark Trap\n  300$",
+					"color": "FF000000",
+					"fontsize": 18.0,
+					"centered": true
+				},
+				"SharkDescription":
+				{
+					"position" : [0.0, 0.25],
+					"scale": [0.1, 0.12],
+					"texture": "../Menues/General/wide-button-thin.png",
+					
+					"SharkCost":
+					{
+						"position" : [0.0, 0.075],
+						"scale": [0.09, 0.02],
+						"text": "Cost: 100",
+						"fontsize" : 18.0
+					}
 				}
 			}
 		}
