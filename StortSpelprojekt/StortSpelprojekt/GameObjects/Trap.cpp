@@ -352,8 +352,11 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	_isVisibleToEnemies = false;
 	_areaOfEffect = nullptr;
 	_occupiedTiles = nullptr;
+	_nrOfOccupiedTiles = 0;
 	_triggerTiles = nullptr;
+	_nrOfTriggers = 0;
 	_subType = trapType;
+	_nrOfAOETiles = 0;
 	int radius = 0;
 
 	bool frozen = true;
