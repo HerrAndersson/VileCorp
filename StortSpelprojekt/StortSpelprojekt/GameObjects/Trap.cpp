@@ -270,7 +270,7 @@ void Trap::SetTiles()
 	_nrOfAOETiles = 0;
 	switch (_subType)
 	{
-	case SPIKE:
+	case ANVIL:
 		_occupiedTiles[_nrOfOccupiedTiles++] = _tilePosition;
 		_triggerTiles[_nrOfTriggers++] = _tilePosition;
 		_areaOfEffect[_nrOfAOETiles++] = _tilePosition;
@@ -367,7 +367,7 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	bool frozen = true;
 	switch (_subType)
 	{
-	case SPIKE:																						//Basic one tile, damage only, trap
+	case ANVIL:																						//Basic one tile, damage only, trap
 		Initialize(40, 1, 1, 1, 50, 50, 140, 140, Unit::StatusEffect::NO_EFFECT, 0, 0);
 		break;
 	case TESLACOIL:																					//AOE that stuns for a few seconds and does a small amount of damage
@@ -632,7 +632,7 @@ void Trap::PlayActivateSound()
 {
 	switch (_subType)
 	{
-	case SPIKE:
+	case ANVIL:
 		_soundModule->SetSoundPosition("anvil_activate", _position.x, 0.0f, _position.z);
 		_soundModule->Play("anvil_activate");
 		break;

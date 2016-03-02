@@ -525,91 +525,98 @@ void ObjectHandler::Update(float deltaTime)
 	//Update all objects' gamelogic
 	for (int i = 0; i < System::NR_OF_TYPES; i++)
 	{
-		if (i != System::Type::SPAWN)
+		for (unsigned int j = 0; j < _gameObjects[i].size(); j++)
 		{
-			for (unsigned int j = 0; j < _gameObjects[i].size(); j++)
+			GameObject* g = _gameObjects[i][j];
+			g->Update(deltaTime);
+
+			if (g->GetPickUpState() == PICKEDUP)
 			{
-				GameObject* g = _gameObjects[i][j];
-				g->Update(deltaTime);
+				_tilemap->RemoveObjectFromTile(g);
+				g->SetPickUpState(HELD);
+			}
+			else if (g->GetPickUpState() == DROPPING)
+			{
+				_tilemap->AddObjectToTile(g->GetTilePosition(), g);
+				g->SetPickUpState(ONTILE);
+			}
 
-				if (g->GetPickUpState() == PICKEDUP)
+			if (g->GetType() == System::GUARD || g->GetType() == System::ENEMY)
+			{
+				Unit* unit = static_cast<Unit*>(g);
+				GameObject* heldObject = unit->GetHeldObject();
+				if (heldObject != nullptr && heldObject->GetPickUpState() == HELD)
 				{
-					_tilemap->RemoveObjectFromTile(g);
-					g->SetPickUpState(HELD);
-				}
-				else if (g->GetPickUpState() == DROPPING)
-				{
-					_tilemap->AddObjectToTile(g->GetTilePosition(), g);
-					g->SetPickUpState(ONTILE);
+					heldObject->SetPosition(DirectX::XMFLOAT3(unit->GetPosition().x, unit->GetPosition().y + 2, unit->GetPosition().z));
+					heldObject->SetTilePosition(AI::Vec2D(heldObject->GetPosition().x, heldObject->GetPosition().z));
 				}
 
-				if (g->GetType() == System::GUARD || g->GetType() == System::ENEMY)
+				//Show Unit Lifebar
+				if (unit->GetHealth() > 0 && unit->IsVisible())
 				{
-					Unit* unit = static_cast<Unit*>(g);
-					GameObject* heldObject = unit->GetHeldObject();
-					if (heldObject != nullptr && heldObject->GetPickUpState() == HELD)
-					{
-						heldObject->SetPosition(DirectX::XMFLOAT3(unit->GetPosition().x, unit->GetPosition().y + 2, unit->GetPosition().z));
-						heldObject->SetTilePosition(AI::Vec2D(heldObject->GetPosition().x, heldObject->GetPosition().z));
-					}
+					XMFLOAT3 pos = unit->GetPosition();
+					pos.y += 2.5f;
+
+					ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::EXCLAMATIONMARK_SUBTYPE, -1, pos, XMFLOAT3(0, 0, 0), 1.0f, 1, unit->GetHealth()*0.0025f, true, true);
+					GetParticleEventQueue()->Insert(msg);
+				}
 
 				if (unit->GetHealth() <= 0 && unit->GetAnimisFinished())
-					{
+				{
 					if (unit->IsSwitchingTile())
 					{
 						unit->SetTilePosition(unit->GetNextTile());
 					}
-						if (heldObject != nullptr)
-						{
-							bool lootRemoved = false;
-
-							for (uint k = 0; k < _gameObjects[System::SPAWN].size() && !lootRemoved; k++)
-							{
-								//If the enemy is at the despawn point with an objective, remove the objective and the enemy, Aron
-								if (_gameObjects[System::SPAWN][k]->InRange(unit->GetTilePosition()))
-								{
-									lootRemoved = Remove(heldObject);
-									_enemySpawnVector.push_back(std::array<int, 2>{(_spawnTimer / 60) + 1, (int)unit->GetSubType()});
-								}
-							}
-
-							if (!lootRemoved)
-							{
-								heldObject->SetPickUpState(DROPPING);
-								heldObject->SetPosition(XMFLOAT3(heldObject->GetPosition().x, 0.0f, heldObject->GetPosition().z));
-							}
-						}
-
-						//Bloodparticles on death
-						ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::SPLASH, ParticleSubType::BLOOD_SUBTYPE, -1, unit->GetPosition(), XMFLOAT3(0, 1, 0), 300.0f, 200, 0.1f, true);
-						GetParticleEventQueue()->Insert(msg);
-
-
-						//Play death sound
-						float x = g->GetPosition().x;
-						float z = g->GetPosition().z;
-						if (g->GetType() == System::ENEMY)
-						{
-							_soundModule->SetSoundPosition("enemy_death", x, 0.0f, z);
-							_soundModule->Play("enemy_death");
-						}
-						else if (g->GetType() == System::GUARD)
-						{
-							_soundModule->SetSoundPosition("guard_death", x, 0.0f, z);
-							_soundModule->Play("guard_death");
-						}
-
-						//Remove object
-						Remove(g);
-						g = nullptr;
-						unit = nullptr;
-						j--;
-					}
-					else if (unit->IsSwitchingTile())
+					if (heldObject != nullptr)
 					{
-						_tilemap->RemoveObjectFromTile(unit->GetTilePosition(), g);
-						_tilemap->AddObjectToTile(unit->GetNextTile(), g);
+						bool lootRemoved = false;
+
+						for (uint k = 0; k < _gameObjects[System::SPAWN].size() && !lootRemoved; k++)
+						{
+							//If the enemy is at the despawn point with an objective, remove the objective and the enemy, Aron
+							if (_gameObjects[System::SPAWN][k]->InRange(unit->GetTilePosition()))
+							{
+								lootRemoved = Remove(heldObject);
+								_enemySpawnVector.push_back(std::array<int, 2>{(_spawnTimer / 60) + 1, (int)unit->GetSubType()});
+							}
+						}
+
+						if (!lootRemoved)
+						{
+							heldObject->SetPickUpState(DROPPING);
+							heldObject->SetPosition(XMFLOAT3(heldObject->GetPosition().x, 0.0f, heldObject->GetPosition().z));
+						}
 					}
+
+					//Bloodparticles on death
+					ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::SPLASH, ParticleSubType::BLOOD_SUBTYPE, -1, unit->GetPosition(), XMFLOAT3(0, 1, 0), 300.0f, 200, 0.1f, true);
+					GetParticleEventQueue()->Insert(msg);
+
+
+					//Play death sound
+					float x = g->GetPosition().x;
+					float z = g->GetPosition().z;
+					if (g->GetType() == System::ENEMY)
+					{
+						_soundModule->SetSoundPosition("enemy_death", x, 0.0f, z);
+						_soundModule->Play("enemy_death");
+					}
+					else if (g->GetType() == System::GUARD)
+					{
+						_soundModule->SetSoundPosition("guard_death", x, 0.0f, z);
+						_soundModule->Play("guard_death");
+					}
+
+					//Remove object
+					Remove(g);
+					g = nullptr;
+					unit = nullptr;
+					j--;
+				}
+				else if (unit->IsSwitchingTile())
+				{
+					_tilemap->RemoveObjectFromTile(unit->GetTilePosition(), g);
+					_tilemap->AddObjectToTile(unit->GetNextTile(), g);
 				}
 			}
 		}

@@ -398,16 +398,16 @@ void Game::Render()
 
 void Game::RenderGameObjects(int forShaderStage, std::vector<std::vector<GameObject*>>* gameObjects)
 {
-	for (auto i : *gameObjects)
+	for (auto gameObjectVector : *gameObjects)
 	{
-		if (i.size() > 0)
+		if (gameObjectVector.size() > 0)
 		{
 			GameObject* lastGameObject = nullptr;
 			RenderObject* lastRenderObject = nullptr;
 			int vertexBufferSize = 0;
-			for (int j = 0; j < i.size(); j++)
+			for (int j = 0; j < gameObjectVector.size(); j++)
 			{
-				GameObject* gameObject = i.at(j);
+				GameObject* gameObject = gameObjectVector[j];
 				RenderObject* renderObject = gameObject->GetRenderObject();
 				
 				if ((forShaderStage == Renderer::RenderModule::ShaderStage::GEO_PASS && renderObject->_mesh->_isSkinned)

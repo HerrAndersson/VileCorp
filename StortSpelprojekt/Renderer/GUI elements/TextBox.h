@@ -26,8 +26,10 @@ namespace GUI
 		bool IsInteger(const std::string & s);
 
 	public:
+		TextBox();
 		TextBox(Node* textNode, int characterLimit = 1000, bool allowMultipleLines = false, bool allowOnlyNumbers = false, bool clearDefaultTextOnFirstEnter = false);
 		~TextBox();
+		GUI::TextBox& operator=(const GUI::TextBox &other);
 		void Update();
 		GUI::Node* GetTextNode() const;
 		void SetTextNode(GUI::Node* textNode);

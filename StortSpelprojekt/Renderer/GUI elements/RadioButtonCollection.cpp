@@ -26,9 +26,7 @@ void GUI::RadioButtonCollection::SelectRadioButtonNode(GUI::Node* selectedRadioB
 
 		if (oldSelectedRadioButtonNode != nullptr)
 		{
-			Texture* tempTexture = oldSelectedRadioButtonNode->GetTexture();
-			oldSelectedRadioButtonNode->SetTexture(_selectedRadioButtonNode->GetTexture());
-			_selectedRadioButtonNode->SetTexture(tempTexture);
+			oldSelectedRadioButtonNode->SwapTexture(_selectedRadioButtonNode);
 		}
 
 		for (int i = 0; i < _notSelectedRadioButtons.size(); i++)

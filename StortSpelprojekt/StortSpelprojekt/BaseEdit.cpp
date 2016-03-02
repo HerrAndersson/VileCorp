@@ -12,12 +12,11 @@ bool compareFloat3(XMFLOAT3 a, XMFLOAT3 b)
 
 
 // Instancing
-BaseEdit::BaseEdit(ObjectHandler* objectHandler, System::Controls* controls, PickingDevice* pickingDevice, System::Camera* camera, bool extendedMode)
+BaseEdit::BaseEdit(ObjectHandler* objectHandler, System::Controls* controls, PickingDevice* pickingDevice, bool extendedMode)
 {
 	_objectHandler = objectHandler;
 	_controls = controls;
 	_pickingDevice = pickingDevice;
-	_camera = camera;
 
 	_extendedMode = extendedMode;
 	_isSelectionMode = true;
@@ -27,75 +26,71 @@ BaseEdit::BaseEdit(ObjectHandler* objectHandler, System::Controls* controls, Pic
 	_isPlace = false;
 	_modeLock = false;
 	_isInvalidateFloor = false;
+	_isObjectButtonReleased = true;
 
 	_sB = nullptr;
-	_marker._g = nullptr;
-	_baseMarker._g = nullptr;
+	_movingGhostImage._g = nullptr;
+	_baseGhostImage._g = nullptr;
 	_tileMap = _objectHandler->GetTileMap();
 }
 
 BaseEdit::~BaseEdit()
 {
-	ReleaseMarkers();
+	RemoveGhostImage();
 }
 
 
 // Marker functions
 
-void BaseEdit::CreateMarkers()
+void BaseEdit::AddBoxGhostImage()
 {
 	_modeLock = true;
 
 	// Create ghost/blueprint for _baseMarker
-	if (_marker._g == nullptr)
+	if (_movingGhostImage._g == nullptr)
 	{
-		CreateMarker();
+		AddGhostImage();
 	}
 	MarkerMoveEvent();
-	_baseMarker = _marker;
-	_baseMarker._origPos = _baseMarker._g->GetTilePosition();
+	_baseGhostImage = _movingGhostImage;
+	_baseGhostImage._origPos = _baseGhostImage._g->GetTilePosition();
+
 
 	// Create ghost/blueprint for _marker
-	CreateMarker();
+	AddGhostImage();
 }
 
-void BaseEdit::CreateMarker()
+void BaseEdit::AddGhostImage()
 {
 	AI::Vec2D pickedTile = _pickingDevice->PickTile(_controls->GetMouseCoord()._pos);
 	XMFLOAT3 pos = XMFLOAT3(pickedTile._x, 0, pickedTile._y);
 
-	_objectHandler->Add(_sB->_blueprint, _sB->_textureId, pos, XMFLOAT3(0.0f, 0.0f, 0.0f), false);
-	_marker._g = _objectHandler->GetGameObjects()->at(_sB->_blueprint->_type).back();
-	_marker._origPos = _marker._g->GetTilePosition();
-	_marker._created = false;
+	_movingGhostImage._g = _objectHandler->Add(_sB->_blueprint, _sB->_textureId, pos, XMFLOAT3(0.0f, 0.0f, 0.0f), false);
+	_movingGhostImage._origPos = _movingGhostImage._g->GetTilePosition();
+	_movingGhostImage._origRot = _movingGhostImage._g->GetRotation();
+	_movingGhostImage._origDir = _movingGhostImage._g->GetDirection();
+	_movingGhostImage._created = false;
 	_isPlace = true;
+	_isObjectButtonReleased = false;
 }
 
-GameObject* BaseEdit::GetMarkedObject()
-{
-	return _marker._g;
-}
+//GameObject* BaseEdit::GetMarkedObject()
+//{
+//	return _movingGhostImage._g;
+//}
 
-bool BaseEdit::DeleteMarkedObject()
-{
-	bool removed = _objectHandler->Remove(_marker._g);
-	_marker.Reset();
-	_isPlace = false;
-	return removed;
-}
-
-void BaseEdit::ReleaseMarkers()
+void BaseEdit::RemoveGhostImage()
 {
 	// Delete ghosts/blueprints
-	if (_marker._g != nullptr)
+	if (_movingGhostImage._g != nullptr)
 	{
-		_objectHandler->Remove(_marker._g);
-		_marker._g = nullptr;
+		_objectHandler->Remove(_movingGhostImage._g);
+		_movingGhostImage._g = nullptr;
 	}
-	if (_baseMarker._g != nullptr)
+	if (_baseGhostImage._g != nullptr)
 	{
-		_objectHandler->Remove(_baseMarker._g);
-		_baseMarker._g = nullptr;
+		_objectHandler->Remove(_baseGhostImage._g);
+		_baseGhostImage._g = nullptr;
 	}
 }
 
@@ -108,30 +103,30 @@ void BaseEdit::MarkerMoveEvent()
 
 	if (_tileMap)
 	{
-		GameObject* objectOnTile = _tileMap->GetObjectOnTile(pickedTile._x, pickedTile._y, _marker._g->GetType());
+		GameObject* objectOnTile = _tileMap->GetObjectOnTile(pickedTile._x, pickedTile._y, _movingGhostImage._g->GetType());
 
 		// New position
-		XMFLOAT3 p = XMFLOAT3(_marker._g->GetPosition());
+		XMFLOAT3 p = XMFLOAT3(_movingGhostImage._g->GetPosition());
 		p.x = pickedTile._x;
 		p.z = pickedTile._y;
 
 		// Check validity of placement
-		_marker._placeable = CheckValidity(pickedTile, _marker._g->GetType());
+		_movingGhostImage._placeable = CheckValidity(pickedTile, _movingGhostImage._g->GetType());
 
 		// Move marker graphically
-		_marker._g->SetPosition(p);
+		_movingGhostImage._g->SetPosition(p);
 
 		// Move marker logically but unconnected
-		_marker._g->SetTilePosition(pickedTile);
+		_movingGhostImage._g->SetTilePosition(pickedTile);
 
 		// Change color to represent placement validity
-		if (!_marker._placeable)
+		if (!_movingGhostImage._placeable)
 		{
-			_marker._g->SetColorOffset(XMFLOAT3(1.0f, 0.0f, 0.0f));
+			_movingGhostImage._g->SetColorOffset(XMFLOAT3(1.0f, 0.0f, 0.0f));
 		}
 		else
 		{
-			_marker._g->SetColorOffset(XMFLOAT3(0.0f, 1.0f, 0.0f));
+			_movingGhostImage._g->SetColorOffset(XMFLOAT3(0.0f, 1.0f, 0.0f));
 		}
 	}
 }
@@ -147,11 +142,13 @@ void BaseEdit::DragEvent(System::Type type)
 			_modeLock = true;
 
 			//Fetches either the floor if there is no other object on the tile, or the object that is on the tile
-			_marker._g = _tileMap->GetObjectOnTile(pickedTile, type);
-			_marker._origPos = pickedTile;
+			_movingGhostImage._g = _tileMap->GetObjectOnTile(pickedTile, type);
+			_movingGhostImage._origPos = pickedTile;
+			_movingGhostImage._origRot = _movingGhostImage._g->GetRotation();
+			_movingGhostImage._origDir = _movingGhostImage._g->GetDirection();
 
 			// Remove logically from old tile
-			_tileMap->RemoveObjectFromTile(_marker._g);
+			_tileMap->RemoveObjectFromTile(_movingGhostImage._g);
 
 			_isDragAndDropMode = true;
 		}
@@ -161,45 +158,47 @@ void BaseEdit::DragEvent(System::Type type)
 void BaseEdit::DropEvent()
 {
 	_modeLock = false;
-	_marker._g->SetColorOffset(XMFLOAT3(0.0f, 0.0f, 0.0f));
-	XMFLOAT3 p = XMFLOAT3(_marker._g->GetPosition());
-
-	if (!_marker._placeable)
+	_movingGhostImage._g->SetColorOffset(XMFLOAT3(0.0f, 0.0f, 0.0f));
+	XMFLOAT3 p = XMFLOAT3(_movingGhostImage._g->GetPosition());
+	
+	if (!_movingGhostImage._placeable)
 	{
 		//Redirect position to old pos
-		p.x = _marker._origPos._x;
-		p.z = _marker._origPos._y;
-		_marker._g->SetPosition(p);
+		p.x = _movingGhostImage._origPos._x;
+		p.z = _movingGhostImage._origPos._y;
+		_movingGhostImage._g->SetPosition(p);
+		_movingGhostImage._g->SetRotation(_movingGhostImage._origRot);
+		_movingGhostImage._g->SetDirection(_movingGhostImage._origDir);
 	}
 
 	// Special camera non floating fix
-	if (_marker._g->GetType() == System::CAMERA)
+	if (_movingGhostImage._g->GetType() == System::CAMERA)
 	{
-		if (_marker._g->GetDirection()._x != 0 && _marker._g->GetDirection()._y != 0)
+		if (_movingGhostImage._g->GetDirection()._x != 0 && _movingGhostImage._g->GetDirection()._y != 0)
 		{
-			XMFLOAT3 cameraDiagonal = _marker._g->GetPosition();
-			cameraDiagonal.x -= (float)_marker._g->GetDirection()._x*0.2;
-			cameraDiagonal.z -= (float)_marker._g->GetDirection()._y*0.2;
-			_marker._g->SetPosition(cameraDiagonal);
+			XMFLOAT3 cameraDiagonal = _movingGhostImage._g->GetPosition();
+			cameraDiagonal.x -= (float)_movingGhostImage._g->GetDirection()._x*0.2;
+			cameraDiagonal.z -= (float)_movingGhostImage._g->GetDirection()._y*0.2;
+			_movingGhostImage._g->SetPosition(cameraDiagonal);
 		}
 	}
 
 	// Bind position logically
-	_tileMap->AddObjectToTile(p.x, p.z, _marker._g);
+	_tileMap->AddObjectToTile(p.x, p.z, _movingGhostImage._g);
 
-	if (_marker._g != nullptr && _isPlace)
+	if (_movingGhostImage._g != nullptr && _isPlace)
 	{
 		_droppedObject = true;
-		if (!_marker._g->IsVisible() || (_marker._created == false && _marker._placeable == false))
+		if (!_movingGhostImage._g->IsVisible() || (_movingGhostImage._created == false && _movingGhostImage._placeable == false))
 		{
 			_droppedObject = false;
-			_objectHandler->Remove(_marker._g);
+			_objectHandler->Remove(_movingGhostImage._g);
 		}
 	}
 
 	if (_isDragAndDropMode)
 	{
-		_marker.Reset();
+		_movingGhostImage.Reset();
 		_isPlace = false;
 		_isDragAndDropMode = false;
 	}
@@ -207,14 +206,21 @@ void BaseEdit::DropEvent()
 	{
 		if (_droppedObject)
 		{
-			_tileMap->RemoveObjectFromTile(_marker._g);
-			_createdObject = _objectHandler->Add(_sB->_blueprint, _sB->_textureId, _marker._g->GetPosition(), _marker._g->GetRotation(), true);
-			_objectHandler->Remove(_marker._g);
-
-			//_createdObject = _marker._g;
+			_tileMap->RemoveObjectFromTile(_movingGhostImage._g);
+			_createdObject = _objectHandler->Add(_sB->_blueprint, _sB->_textureId, _movingGhostImage._g->GetPosition(), _movingGhostImage._g->GetRotation(), true);
+			if (_createdObject != nullptr)
+			{
+				_createdObject->SetDirection(_movingGhostImage._g->GetDirection());
+			}
 		}
-		_marker.Reset();
-		CreateMarker();
+
+		// Disables multiplacement with mouse in placement state
+		if (!_extendedMode)
+		{
+			//RemoveGhostImage();
+			_isPlace = false;
+			_isDragAndDropMode = false;
+		}
 	}
 }
 
@@ -224,33 +230,33 @@ void BaseEdit::BoxEvent()
 	{
 		_modeLock = false;
 
-		_marker._origPos = _marker._g->GetTilePosition();
+		_movingGhostImage._origPos = _movingGhostImage._g->GetTilePosition();
 
 		// Identify min and max
 		int minX, maxX;
-		if (_baseMarker._origPos._x < _marker._origPos._x)
+		if (_baseGhostImage._origPos._x < _movingGhostImage._origPos._x)
 		{
-			minX = _baseMarker._origPos._x;
-			maxX = _marker._origPos._x;
+			minX = _baseGhostImage._origPos._x;
+			maxX = _movingGhostImage._origPos._x;
 		}
 		else
 		{
-			minX = _marker._origPos._x;
-			maxX = _baseMarker._origPos._x;
+			minX = _movingGhostImage._origPos._x;
+			maxX = _baseGhostImage._origPos._x;
 		}
 		int minY, maxY;
-		if (_baseMarker._origPos._y < _marker._origPos._y)
+		if (_baseGhostImage._origPos._y < _movingGhostImage._origPos._y)
 		{
-			minY = _baseMarker._origPos._y;
-			maxY = _marker._origPos._y;
+			minY = _baseGhostImage._origPos._y;
+			maxY = _movingGhostImage._origPos._y;
 		}
 		else
 		{
-			minY = _marker._origPos._y;
-			maxY = _baseMarker._origPos._y;
+			minY = _movingGhostImage._origPos._y;
+			maxY = _baseGhostImage._origPos._y;
 		}
 
-		ReleaseMarkers();
+		RemoveGhostImage();
 
 		// Check tiles
 		GameObject* objectOnTile;
@@ -297,85 +303,87 @@ void BaseEdit::HandleMouseInput()
 {
 	if (_extendedMode)
 	{
-		//if (_controls->IsFunctionKeyDown("MAP_EDIT:UNDO"))
-		//{
-		//	_isInvalidateFloor = !_isInvalidateFloor;
-		//}
-		//if (_isInvalidateFloor)
-		//{
-		//	AI::Vec2D pickedTile = _pickingDevice->PickTile(_controls->GetMouseCoord()._pos);
-		//	if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
-		//	{
-		//		_tileMap->LockTile(pickedTile);
-
-		//	}
-		//	if (_controls->IsFunctionKeyDown("MOUSE:DESELECT"))
-		//	{
-		//		_tileMap->UnlockTile(pickedTile);
-		//	}
-
-		//}
-
-		if (_controls->IsFunctionKeyDown("MOUSE:BOX_PLACE") || _controls->IsFunctionKeyDown("MOUSE:BOX_DELETE"))
+		if (_controls->IsFunctionKeyDown("MAP_EDIT:UNDO"))
 		{
-			if (!_modeLock && _isSelectionMode)
-			{
-				_isSelectionMode = false;
-				_isDragAndPlaceMode = true;
-
-				_isDragAndDropMode = false;
-				_isPlace = false;
-			}
+			_isInvalidateFloor = !_isInvalidateFloor;
 		}
-
-		if (_isSelectionMode)
+		if (_isInvalidateFloor)
 		{
-			if (_marker._g == nullptr)
+			AI::Vec2D pickedTile = _pickingDevice->PickTile(_controls->GetMouseCoord()._pos);
+			if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
 			{
-				// Drag in world
-				bool found = false;
-				for (int i = System::Type::NR_OF_TYPES - 1; i > -1 && !found; i--)
-				{
-					DragEvent((System::Type)i);
-					if (_marker._g != nullptr)
-					{
-						found = true;
-					}
-				}
+				_tileMap->LockTile(pickedTile);
+
 			}
-			//else
-			//{
-			//	// For buttons
-			//	DragEvent(_marker._g->GetType());
-			//}
+			if (_controls->IsFunctionKeyDown("MOUSE:DESELECT"))
+			{
+				_tileMap->UnlockTile(pickedTile);
+			}
+
 		}
 		else
 		{
-			if (_sB != nullptr)
+			if (_controls->IsFunctionKeyDown("MOUSE:BOX_PLACE") || _controls->IsFunctionKeyDown("MOUSE:BOX_DELETE"))
 			{
-				if (!_modeLock)
+				if (!_modeLock && _isSelectionMode)
 				{
-					if (_controls->IsFunctionKeyDown("MOUSE:BOX_PLACE"))
-					{
-						CreateMarkers();
-						_isPlace = true;
-					}
+					_isSelectionMode = false;
+					_isDragAndPlaceMode = true;
 
-					// Not really diselect but activates remove mode (temp)
-					if (_controls->IsFunctionKeyDown("MOUSE:BOX_DELETE"))
+					_isDragAndDropMode = false;
+					_isPlace = false;
+				}
+			}
+
+			if (_isSelectionMode)
+			{
+				if (_movingGhostImage._g == nullptr)
+				{
+					// Drag in world
+					bool found = false;
+					for (int i = System::Type::NR_OF_TYPES - 1; i > -1 && !found; i--)
 					{
-						CreateMarkers();
-						_isPlace = false;
+						DragEvent((System::Type)i);
+						if (_movingGhostImage._g != nullptr)
+						{
+							found = true;
+						}
 					}
 				}
-				BoxEvent();
+				//else
+				//{
+				//	// For buttons
+				//	DragEvent(_marker._g->GetType());
+				//}
+			}
+			else
+			{
+				if (_sB != nullptr)
+				{
+					if (!_modeLock)
+					{
+						if (_controls->IsFunctionKeyDown("MOUSE:BOX_PLACE"))
+						{
+							AddBoxGhostImage();
+							_isPlace = true;
+						}
+
+						// Not really diselect but activates remove mode (temp)
+						if (_controls->IsFunctionKeyDown("MOUSE:BOX_DELETE"))
+						{
+							AddBoxGhostImage();
+							_isPlace = false;
+						}
+					}
+					BoxEvent();
+				}
 			}
 		}
 	}
 	else
 	{
 
-		if (_isSelectionMode && _marker._g == nullptr)
+		if (_isSelectionMode && _movingGhostImage._g == nullptr)
 		{
 			DragEvent(System::TRAP);
 			DragEvent(System::GUARD);
@@ -385,7 +393,7 @@ void BaseEdit::HandleMouseInput()
 
 
 
-	if (_marker._g != nullptr)
+	if (_movingGhostImage._g != nullptr)
 	{
 		MarkerMoveEvent();
 
@@ -393,9 +401,9 @@ void BaseEdit::HandleMouseInput()
 		{
 			if (_isDragAndDropMode)
 			{
-				_deletedObjectBlueprint = _objectHandler->GetBlueprintByType(_marker._g->GetType(), _marker._g->GetSubType());
+				_deletedObjectBlueprint = _objectHandler->GetBlueprintByType(_movingGhostImage._g->GetType(), _movingGhostImage._g->GetSubType());
 			}
-			ReleaseMarkers();
+			RemoveGhostImage();
 			_isPlace = false;
 			_isDragAndDropMode = false;
 		}
@@ -407,50 +415,55 @@ void BaseEdit::HandleMouseInput()
 			}
 
 			if ((_isDragAndDropMode && _controls->IsFunctionKeyUp("MOUSE:SELECT"))
-				|| (!_isDragAndDropMode && _controls->IsFunctionKeyDown("MOUSE:DRAG") && _isPlace))
+				|| (!_isDragAndDropMode && _controls->IsFunctionKeyDown("MOUSE:DRAG") && _isPlace && _movingGhostImage._placeable && _isObjectButtonReleased))
 			{
 				DropEvent();
+			}
+			else if ( !_isObjectButtonReleased && _controls->IsFunctionKeyUp("MOUSE:SELECT"))
+			{
+				_isObjectButtonReleased = true;
 			}
 		}
 	}
 }
 
-void BaseEdit::HandleKeyInput(double deltaTime)
+void BaseEdit::HandleKeyInput()
 {
-	if (_marker._g != nullptr)
+	if (_movingGhostImage._g != nullptr)
 	{
 		// Rotation
 		bool rotated = false;
 		bool clockwise = false;
 		if (_controls->IsFunctionKeyDown("MAP_EDIT:ROTATE_MARKER_CLOCK"))
 		{
-			XMFLOAT3 tempRot = _marker._g->GetRotation();
-			_marker._g->SetRotation(XMFLOAT3(tempRot.x, tempRot.y + (DirectX::XM_PI / 4), tempRot.z));
+			XMFLOAT3 tempRot = _movingGhostImage._g->GetRotation();
+			_movingGhostImage._g->SetRotation(XMFLOAT3(tempRot.x, tempRot.y + (DirectX::XM_PI / 4), tempRot.z));
 			rotated = true;
 			clockwise = true;
+
 		}
 		if (_controls->IsFunctionKeyDown("MAP_EDIT:ROTATE_MARKER_COUNTERCLOCK"))
 		{
-			XMFLOAT3 tempRot = _marker._g->GetRotation();
-			_marker._g->SetRotation(XMFLOAT3(tempRot.x, tempRot.y - (DirectX::XM_PI / 4), tempRot.z));
+			XMFLOAT3 tempRot = _movingGhostImage._g->GetRotation();
+			_movingGhostImage._g->SetRotation(XMFLOAT3(tempRot.x, tempRot.y - (DirectX::XM_PI / 4), tempRot.z));
 			rotated = true;
 			clockwise = false;
 		}
 		if (rotated)
 		{
-			_marker._g->SetDirection(AI::GetNextDirection(static_cast<Unit*>(_marker._g)->GetDirection(), clockwise));
+			_movingGhostImage._g->SetDirection(AI::GetNextDirection(static_cast<Unit*>(_movingGhostImage._g)->GetDirection(), clockwise));
 
-			if (_marker._g->GetType() != System::CAMERA && _marker._g->GetType() != System::GUARD)			//Traps need to be right angles
+			if (_movingGhostImage._g->GetType() != System::CAMERA && _movingGhostImage._g->GetType() != System::GUARD)			//Traps need to be right angles
 			{
-				XMFLOAT3 tempRot = _marker._g->GetRotation();
-				_marker._g->SetDirection(AI::GetNextDirection(static_cast<Unit*>(_marker._g)->GetDirection(), clockwise));
+				XMFLOAT3 tempRot = _movingGhostImage._g->GetRotation();
+				_movingGhostImage._g->SetDirection(AI::GetNextDirection(static_cast<Unit*>(_movingGhostImage._g)->GetDirection(), clockwise));
 				if (clockwise)
 				{
-					_marker._g->SetRotation(XMFLOAT3(tempRot.x, tempRot.y + (DirectX::XM_PI / 4), tempRot.z));
+					_movingGhostImage._g->SetRotation(XMFLOAT3(tempRot.x, tempRot.y + (DirectX::XM_PI / 4), tempRot.z));
 				}
 				else
 				{
-					_marker._g->SetRotation(XMFLOAT3(tempRot.x, tempRot.y - (DirectX::XM_PI / 4), tempRot.z));
+					_movingGhostImage._g->SetRotation(XMFLOAT3(tempRot.x, tempRot.y - (DirectX::XM_PI / 4), tempRot.z));
 				}
 			}
 		}
@@ -492,7 +505,7 @@ bool BaseEdit::CheckValidity(AI::Vec2D tile, System::Type type)
 				}
 				else if (type == System::CAMERA)
 				{
-					if (!_tileMap->IsWallOnTile(tile - _marker._g->GetDirection()))
+					if (!_tileMap->IsWallOnTile(tile - _movingGhostImage._g->GetDirection()))
 					{
 						valid = false;
 					}
@@ -526,8 +539,9 @@ void BaseEdit::HandleBlueprint(System::SpecificBlueprint* sB)
 	_sB = sB;
 	if (_isSelectionMode)
 	{
-		ReleaseMarkers();
-		CreateMarker();
+		RemoveGhostImage();
+		AddGhostImage();
+		_createdObject = _movingGhostImage._g;
 		_isPlace = false;
 		//_modeLock = true;
 	}
@@ -541,44 +555,26 @@ void BaseEdit::HandleBlueprint(System::SpecificBlueprint* sB)
 	}
 }
 
-bool BaseEdit::IsSelection() const
-{
-	return _isSelectionMode;
-}
-
-bool BaseEdit::IsDragAndPlace() const
-{
-	return _isDragAndPlaceMode;
-}
-
-bool BaseEdit::IsPlace() const
-{
-	return _isPlace;
-}
-
-bool BaseEdit::DroppedObject()
+bool BaseEdit::IsObjectDropValid() const
 {
 	return _droppedObject;
 }
 
-GameObject * BaseEdit::CreatedObject()
+GameObject * BaseEdit::GetCreatedObject()
 {
 	return _createdObject;
 }
 
-System::Blueprint * BaseEdit::DeletedObjectBlueprint()
+System::Blueprint * BaseEdit::GetDeletedObjectBlueprint()
 {
 	return _deletedObjectBlueprint;
 }
 
-void BaseEdit::Update(float deltaTime, bool clickedOnGUI)
+void BaseEdit::Update()
 {
 	_droppedObject = false;
 	_createdObject = false;
 	_deletedObjectBlueprint = nullptr;
-	if (!clickedOnGUI)
-	{
-		HandleMouseInput();
-	}
-	HandleKeyInput(deltaTime);
+	HandleMouseInput();
+	HandleKeyInput();
 }

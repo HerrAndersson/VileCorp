@@ -92,7 +92,7 @@ private:
 	typedef std::map<int, AssetManager::_scanFunc> _scanFuncMap;
 
 	_scanFuncMap _meshFormatVersion;
-	int _animationFormatVersion = 10;
+	int _animationFormatVersion = 10, _idCounter = 0;
 	ifstream* _infile;
 	ID3D11Device* _device;
 	vector<string>* _levelFileNames;

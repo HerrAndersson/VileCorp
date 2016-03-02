@@ -14,9 +14,29 @@ GUI::TextBox::TextBox(Node* textNode, int characterLimit, bool allowMultipleLine
 	_textMarkerFrameTimer = 0;
 }
 
+GUI::TextBox::TextBox()
+{
+
+}
+
 GUI::TextBox::~TextBox()
 {
 
+}
+
+GUI::TextBox& GUI::TextBox::operator=(const GUI::TextBox &other)
+{
+	_textNode = other._textNode;
+	_boxNode = other._boxNode;
+	_characterLimit = other._characterLimit;
+	_allowMultipleLines = other._allowMultipleLines;
+	_allowOnlyNumbers = other._allowOnlyNumbers;
+	_clearDefaultTextOnFirstEnter = other._clearDefaultTextOnFirstEnter;
+	_firstTimeEditingText = other._firstTimeEditingText;
+	_isSelectedForEditing = other._isSelectedForEditing;
+	_showTextMarker = other._showTextMarker;
+	_textMarkerFrameTimer = other._textMarkerFrameTimer;
+	return *this;
 }
 
 void GUI::TextBox::Update()

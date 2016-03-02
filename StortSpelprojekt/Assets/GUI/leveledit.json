@@ -357,23 +357,7 @@
 					"position": [0.0, -0.015],
 					"scale": [0.05, 0.05],
 					"centered": true,
-					"text": "Flame Thrower",
-					"color": "FF000000",
-					"fontsize": 20.0
-				},
-				"": {
-					"position": [0.0, -0.015],
-					"scale": [0.05, 0.05],
-					"centered": true,
-					"text": "Bear Trap",
-					"color": "FF000000",
-					"fontsize": 20.0
-				},
-				"": {
-					"position": [0.0, -0.015],
-					"scale": [0.05, 0.05],
-					"centered": true,
-					"text": "Confusion Trap",
+					"text": "Saw Trap",
 					"color": "FF000000",
 					"fontsize": 20.0
 				},
@@ -389,7 +373,7 @@
 					"position": [0.0, -0.015],
 					"scale": [0.05, 0.05],
 					"centered": true,
-					"text": "Saw Trap",
+					"text": "Bear Trap",
 					"color": "FF000000",
 					"fontsize": 20.0
 				},
@@ -397,7 +381,23 @@
 					"position": [0.0, -0.015],
 					"scale": [0.05, 0.05],
 					"centered": true,
-					"text": "Roof Saw Trap",
+					"text": "Flame Thrower",
+					"color": "FF000000",
+					"fontsize": 20.0
+				},
+				"": {
+					"position": [0.0, -0.015],
+					"scale": [0.05, 0.05],
+					"centered": true,
+					"text": "Water Gun Trap",
+					"color": "FF000000",
+					"fontsize": 20.0
+				},
+				"": {
+					"position": [0.0, -0.015],
+					"scale": [0.05, 0.05],
+					"centered": true,
+					"text": "Confusion Trap",
 					"color": "FF000000",
 					"fontsize": 20.0
 				}
@@ -434,35 +434,35 @@
 					"scale": [0.032, 0.051],
 					"texture": "../Menues/PlacementStateGUI/units/Gunbutton1"
 				},
-				"FlameThrowerTrap": {
-					"position": [-0.1175, -0.07],
+				"SawTrap": {
+					"position": [0.03, -0.195],
 					"scale": [0.032, 0.051],
-					"texture": "../Menues/PlacementStateGUI/units/FlameThrowerbutton1.png"
+					"texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png"
+				},
+				"CupCakeTrap": {
+					"position": [-0.1175, -0.195],
+					"scale": [0.032, 0.051],
+					"texture": "../Menues/PlacementStateGUI/units/Gunbutton1"
 				},
 				"BearTrap": {
 					"position": [-0.044, -0.07],
 					"scale": [0.032, 0.051],
 					"texture": "../Menues/PlacementStateGUI/units/Bearbutton.png"
 				},
-				"ConfusionTrap": {
-					"position": [0.03, -0.07],
+				"FlameThrowerTrap": {
+					"position": [-0.1175, -0.07],
 					"scale": [0.032, 0.051],
-					"texture": "../Menues/PlacementStateGUI/units/confusetrapButton.png"
+					"texture": "../Menues/PlacementStateGUI/units/FlameThrowerbutton1.png"
 				},
-				"CupCakeTrap": {
-					"position": [-0.1175, -0.195],
-					"scale": [0.032, 0.051],
-					"texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png"
-				},
-				"RoofSawTrap": {
+				"WaterGunTrap": {
 					"position": [-0.044, -0.195],
 					"scale": [0.032, 0.051],
 					"texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png"
 				},
-				"SawTrap": {
-					"position": [0.03, -0.195],
+				"ConfusionTrap": {
+					"position": [0.03, -0.07],
 					"scale": [0.032, 0.051],
-					"texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png"
+					"texture": "../Menues/PlacementStateGUI/units/confusetrapButton.png"
 				}
 			}
 		}

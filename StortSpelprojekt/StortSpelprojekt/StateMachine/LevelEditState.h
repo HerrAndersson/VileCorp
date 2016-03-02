@@ -43,6 +43,7 @@ private:
 	};
 
 	GUI::TextBox* _currentlySelectedTextBox;
+	GUI::TextBox _saveLevelNameTextBox;
 	GUI::Node* _saveLevelNameTextNode;
 	GUI::Node* _budgetTextNode;
 	GUI::Node* _storyTitleTextNode;

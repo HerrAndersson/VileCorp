@@ -23,7 +23,10 @@ void LevelEditState::Update(float deltaTime)
 	}
 	else
 	{
-		_baseEdit->Update(deltaTime, clickedOnGUI);
+		if (!clickedOnGUI)
+		{
+			_baseEdit->Update();
+		}
 	}
 }
 
@@ -60,13 +63,14 @@ void LevelEditState::OnStateEnter()
 	_textBoxesGeneral.push_back(GUI::TextBox(_budgetTextNode, 7, false, true));
 	_textBoxesGeneral.push_back(GUI::TextBox(_uiTree.GetNode("tileNumberX"), 3, false, true, true));
 	_textBoxesGeneral.push_back(GUI::TextBox(_uiTree.GetNode("tileNumberY"), 3, false, true, true));
-	_saveLevelNameTextNode = _uiTree.GetNode("SaveLevelText");
-	_textBoxesGeneral.push_back(GUI::TextBox(_saveLevelNameTextNode, 25, false, false, true));
 	_textBoxesGeneral.push_back(GUI::TextBox(_uiTree.GetNode("MinuteText"), 3, false, true, true));
 	_textBoxesGeneral.push_back(GUI::TextBox(_uiTree.GetNode("SecondText"), 3, false, true, true));
 
-	_textBoxesSpawnSettings = std::vector<GUI::TextBox>();
+	_saveLevelNameTextNode = _uiTree.GetNode("SaveLevelText");
+	_saveLevelNameTextBox = GUI::TextBox(_saveLevelNameTextNode, 25, false, false, true);
+	_textBoxesGeneral.push_back(_saveLevelNameTextBox);
 
+	_textBoxesSpawnSettings = std::vector<GUI::TextBox>();
 	_textBoxesSpawnSettings.push_back(GUI::TextBox(_uiTree.GetNode("UnitAmmountText"), 2, false, true, true));
 	_textBoxesSpawnSettings.push_back(GUI::TextBox(_uiTree.GetNode("UnitStartingTimeText"), 3, false, true, true));
 	_textBoxesSpawnSettings.push_back(GUI::TextBox(_uiTree.GetNode("UnitSpawnFrequencyText"), 3, false, true, true));
@@ -139,7 +143,7 @@ void LevelEditState::OnStateEnter()
 
 	_objectHandler->EnlargeTilemap(50);
 
-	_baseEdit = new BaseEdit(_objectHandler, _controls, _pickingDevice, _camera, true);
+	_baseEdit = new BaseEdit(_objectHandler, _controls, _pickingDevice, true);
 
 	XMFLOAT3 campos;
 	campos.x = (float)_objectHandler->GetTileMap()->GetWidth() / 2;
@@ -647,6 +651,7 @@ bool LevelEditState::HandleButtonsForDialogWindows(System::MouseCoord &coord, bo
 	//Export, Import or make a new Map
 	if (!clickedOnGUI)
 	{
+		clickedOnGUI = SelectTextBox(&_saveLevelNameTextBox, coord, clickedOnGUI);
 		//Export Map Functions
 		if (_uiTree.IsButtonColliding("ExportYes", coord._pos.x, coord._pos.y) && !_uiTree.IsNodeHidden("ExportYes"))
 		{
@@ -756,7 +761,7 @@ void LevelEditState::ResetLevel()
 	_isNewLevel = true;
 
 	_objectHandler->EnlargeTilemap(50);
-	_baseEdit = new BaseEdit(_objectHandler, _controls, _pickingDevice, _camera, true);
+	_baseEdit = new BaseEdit(_objectHandler, _controls, _pickingDevice, true);
 }
 
 bool LevelEditState::HandleButtonsForSpawn(System::MouseCoord &coord, bool clickedOnGUI)
@@ -797,7 +802,7 @@ bool LevelEditState::HandleButtonsForSpawn(System::MouseCoord &coord, bool click
 				_selectedSpawnWave--;
 				ShowSelectedSpawnWave();
 			}
-	}
+		}
 		else if (_uiTree.IsButtonColliding("WaveRight", coord._pos.x, coord._pos.y) && _isPressed[4] == true)
 		{
 			clickedOnGUI = true;
@@ -815,7 +820,7 @@ bool LevelEditState::HandleButtonsForSpawn(System::MouseCoord &coord, bool click
 				clickedOnGUI = SelectTextBox(&_textBoxesSpawnSettings[i], coord, clickedOnGUI);
 			}
 		}
-}
+	}
 	return clickedOnGUI;
 }
 
@@ -847,7 +852,7 @@ void LevelEditState::SaveCurrentSpawnWave()
 		_levelBinary._enemyWavesGUIData[_selectedSpawnWave][2] = std::stoi(_textBoxesSpawnSettings[1].GetText());
 		_levelBinary._enemyWavesGUIData[_selectedSpawnWave][3] = std::stoi(_textBoxesSpawnSettings[2].GetText());
 	}
-	}
+}
 
 bool LevelEditState::SelectTextBox(GUI::TextBox* textBox, System::MouseCoord & coord, bool clickedOnGUI)
 {
@@ -899,7 +904,7 @@ void LevelEditState::ExportLevel()
 	try
 	{
 		SaveCurrentSpawnWave();
-		_baseEdit->ReleaseMarkers();
+		_baseEdit->RemoveGhostImage();
 
 		_currentLevelFileName = System::WStringToString(_saveLevelNameTextNode->GetText());
 
