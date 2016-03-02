@@ -156,16 +156,8 @@ bool Game::Update(double deltaTime)
 
 	if (_controls->IsFunctionKeyDown("DEBUG:REQUEST_PARTICLE"))
 	{
-		//if (!tempAlreadyCombined)
-		//{
-		//	_combinedMeshGenerator->CombineAndOptimizeMeshes(_objectHandler->GetTileMap(), System::FLOOR);
-		//	_combinedMeshGenerator->CombineMeshes(_objectHandler->GetTileMap(), System::WALL);
-
-		//    //_combinedMeshGenerator->CombineAndOptimizeMeshes(_objectHandler->GetTileMap(), System::WALL);*/ //Works if the texture is repeatable
-		//	tempAlreadyCombined = true;
-		//}
-
-		//tempTestCombinedStuff = !tempTestCombinedStuff;
+		//_combinedMeshGenerator->CombineAndOptimizeMeshes(_objectHandler->GetTileMap(), System::FLOOR);
+		//_combinedMeshGenerator->CombineMeshes(_objectHandler->GetTileMap(), System::WALL);
 	}
 
 	_particleHandler->Update(deltaTime);
@@ -271,6 +263,7 @@ void Game::RenderGameObjects(int forShaderStage, std::vector<std::vector<GameObj
 {
 	if (forShaderStage == Renderer::RenderModule::ShaderStage::GEO_PASS)
 	{
+		//Render the combined objects
 		std::vector<std::vector<CombinedMesh>>* combinedMeshes = _combinedMeshGenerator->GetCombinedMeshes();
 		for (auto& objVector : *combinedMeshes)
 		{
@@ -280,7 +273,17 @@ void Game::RenderGameObjects(int forShaderStage, std::vector<std::vector<GameObj
 				_renderModule->Render(&obj._world, obj._vertexCount);
 			}
 		}
+
+		RenderObject* backgroundObject = _objectHandler->GetBackgroundObject();
+		if (backgroundObject)
+		{
+			_renderModule->SetDataPerObjectType(backgroundObject);
+			int vertexBufferSize = backgroundObject->_mesh->_vertexBufferSize;
+			XMMATRIX m = XMMatrixIdentity();
+			_renderModule->Render(&m, vertexBufferSize);
+		}
 	}
+
 
 	for (auto& i : *gameObjects)
 	{
@@ -333,7 +336,7 @@ void Game::RenderGameObjects(int forShaderStage, std::vector<std::vector<GameObj
 
 void Game::GenerateShadowMap(Renderer::Spotlight* spotlight, unsigned short ownerID)
 {
-	//Non skinned objects
+	//Static objects
 	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::SHADOW_GENERATION);
 	_renderModule->SetShadowMapDataPerSpotlight(spotlight->GetViewMatrix(), spotlight->GetProjectionMatrix());
 
@@ -523,8 +526,8 @@ int Game::Run()
 					{
 						Render();
 
-						string s = to_string(_timer.GetFrameTime()) + " " + to_string(_timer.GetFPS());
-						SetWindowText(_window->GetHWND(), s.c_str());
+						//string s = to_string(_timer.GetFrameTime()) + " " + to_string(_timer.GetFPS());
+						//SetWindowText(_window->GetHWND(), s.c_str());
 
 						_timer.Reset();
 					}
