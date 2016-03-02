@@ -15,6 +15,10 @@ ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, G
 	_particleEventQueue = particleEventQueue;
 	_soundModule = soundModule;
 	_backgroundObject = nullptr;
+
+	int sizeX = 100;
+	int sizeY = 100;
+	CreateBackgroundObject(sizeX, sizeY, "grass1.png", sizeX, sizeY);
 }
 
 ObjectHandler::~ObjectHandler()
@@ -101,6 +105,14 @@ bool ObjectHandler::Add(System::Blueprint* blueprint, int textureId, const XMFLO
 	{
 		_idCount++;
 		_gameObjects[type].push_back(object);
+
+		//TODO: sort when entering playstate!
+		std::sort(_gameObjects[type].begin(), _gameObjects[type].end(), 
+			[](GameObject* first, GameObject* second)
+			{
+				return *first < *second;
+			}
+		);
 
 		//TODO: remove when proper loading can be done /Jonas
 		if (type == System::GUARD)
@@ -482,6 +494,8 @@ bool ObjectHandler::LoadLevel(std::string levelBinaryFilePath)
 		}
 
 		_lightCulling = new LightCulling(_tilemap);
+
+		SAFE_DELETE(_backgroundObject);
 		int sizeX = _tilemap->GetWidth() * 3;
 		int sizeY = _tilemap->GetHeight() * 3;
 		CreateBackgroundObject(sizeX, sizeY, "grass1.png", sizeX/3, sizeY/3);

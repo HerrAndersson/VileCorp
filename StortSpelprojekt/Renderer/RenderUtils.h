@@ -131,6 +131,7 @@ struct Mesh
 struct Texture
 {
 	HRESULT LoadTexture(ID3D11Device* device);
+	int _id = 0;
 	short _activeUsers = 0;
 	bool _loaded = false;
 	std::string _name;
@@ -164,6 +165,12 @@ struct RenderObject
 			SAFE_DELETE(_mesh);
 		}
 	}
+
+	bool operator<(const RenderObject& other)
+	{
+		return (this->_diffuseTexture->_id < other._diffuseTexture->_id);
+	}
+
 	bool operator==(const RenderObject& other) 
 	{
 		if (this->_type != other._type)

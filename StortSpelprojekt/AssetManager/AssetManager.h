@@ -109,6 +109,8 @@ private:
 	Mesh* GetModel(string name);
 	Skeleton* LoadSkeleton(string name);
 	ID3D11Buffer* CreateVertexBuffer(vector<WeightedVertex> *weightedVertices, vector<Vertex> *vertices, int skeleton);
+
+	int _textureIdCounter = 0;
 public:
 	AssetManager(ID3D11Device* device);
 	~AssetManager();

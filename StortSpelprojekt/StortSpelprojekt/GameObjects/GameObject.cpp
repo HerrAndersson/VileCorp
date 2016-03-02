@@ -227,3 +227,8 @@ void GameObject::operator delete(void* p)
 {
 	_mm_free(p);
 }
+
+bool GameObject::operator<(const GameObject& other)
+{
+	return (this->_renderObject < other._renderObject);
+}

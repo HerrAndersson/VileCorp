@@ -505,6 +505,7 @@ Texture* AssetManager::GetTexture(string name)
 	}
 	Texture* texture = ScanTexture(name);
 	texture->LoadTexture(_device);
+	texture->_id = _textureIdCounter++;
 	return texture;
 }
 
