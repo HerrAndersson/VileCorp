@@ -10,13 +10,13 @@ GhostImage::GhostImage(ObjectHandler* objectHandler, PickingDevice* pickingDevic
 GhostImage::~GhostImage()
 {}
 
-void GhostImage::AddGhostImage(System::SpecificBlueprint blueprint, System::MouseCoord coord)
+void GhostImage::AddGhostImage(System::SpecificBlueprint blueprint, const System::MouseCoord& coord)
 {
 	AI::Vec2D pos = _pickingDevice->PickTile(coord._pos);
 	_gameObjectId = _objectHandler->Add(blueprint._blueprint, blueprint._textureId, DirectX::XMFLOAT3(pos._x, 0, pos._y), DirectX::XMFLOAT3(0, 0, 0), false)->GetID();
 }
 
-void GhostImage::Update(System::MouseCoord coord)
+void GhostImage::Update(const System::MouseCoord& coord)
 {
 	AI::Vec2D pos = _pickingDevice->PickTile(coord._pos);
 	GameObject* object;

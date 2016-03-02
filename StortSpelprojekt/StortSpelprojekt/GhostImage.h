@@ -17,8 +17,8 @@ public:
 	GhostImage(ObjectHandler* objectHandler, PickingDevice* pickingDevice);
 	~GhostImage();
 	
-	void AddGhostImage(System::SpecificBlueprint blueprint, System::MouseCoord coord);
-	void Update(System::MouseCoord coord);
+	void AddGhostImage(System::SpecificBlueprint blueprint, const System::MouseCoord& coord);
+	void Update(const System::MouseCoord& coord);
 	void RemoveGhostImage();
 	bool IsGhostImageActive();
 };

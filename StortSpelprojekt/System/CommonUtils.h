@@ -47,16 +47,14 @@ namespace System
 		float _center[3], _height, _width, _depth;
 	};
 
-	inline std::string WStringToString(std::wstring ws)
+	inline std::string WStringToString(const std::wstring& ws)
 	{
-		std::string s(ws.begin(), ws.end());
-		return s;
+		return std::string(ws.begin(), ws.end());
 	}
 
-	inline std::wstring StringToWstring(std::string s)
+	inline std::wstring StringToWstring(const std::string& s)
 	{
-		std::wstring ws(s.begin(), s.end());
-		return ws;
+		return std::wstring(s.begin(), s.end());
 	}
 	/*
 		Timer that countdowns 1 each time it's called

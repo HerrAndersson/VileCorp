@@ -74,6 +74,7 @@ Player::Player(ObjectHandler * objectHandler, PickingDevice * pickingDevice)
 {
 	_objectHandler = objectHandler;
 	_pickingDevice = pickingDevice;
+	_drag = false;
 }
 
 Player::~Player()
@@ -82,7 +83,7 @@ Player::~Player()
 	_selectedUnits.clear();
 }
 
-void Player::UpdateDragPositions(System::MouseCoord coord)
+void Player::UpdateDragPositions(const System::MouseCoord& coord)
 {
 	XMFLOAT3 deltaPos, currentPos;
 	bool move = false;
@@ -212,7 +213,7 @@ void Player::SelectObjects(GameObject* pickedObject)
 	_selectedObjects.push_back(pickedObject);
 }
 
-void Player::SelectObjects(vector<vector<GameObject*>> pickedObjects)
+void Player::SelectObjects(const vector<vector<GameObject*>>& pickedObjects)
 {
 	for (vector<GameObject*> i : pickedObjects)
 	{

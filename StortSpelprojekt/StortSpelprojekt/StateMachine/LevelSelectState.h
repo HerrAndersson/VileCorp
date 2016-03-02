@@ -33,7 +33,7 @@ private:
 	int _skirmishSelectedIndex;
 
 	void LoadLevelHeader(int levelFilename, Level::LevelHeader* headerToLoad);
-	void LoadLevelHeader(std::string levelFilename, Level::LevelHeader* headerToLoad);
+	void LoadLevelHeader(const std::string& levelFilename, Level::LevelHeader* headerToLoad);
 	void SelectedLevelHeaderToGUI();
 	void UpdateButtonsNextPreviousVisability();
 	void SwitchLevelSelectionMode();

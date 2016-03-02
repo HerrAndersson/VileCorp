@@ -109,8 +109,8 @@ public:
 	Grid* GetBuildingGrid();
 
 	Level::LevelHeader* GetCurrentLevelHeader();
-	void SetCurrentLevelHeader(Level::LevelHeader levelheader);
-	bool LoadLevel(std::string levelBinaryFilePath);
+	void SetCurrentLevelHeader(const Level::LevelHeader& levelheader);
+	bool LoadLevel(const std::string& levelBinaryFilePath);
 	void UnloadLevel();
 
 	void InitPathfinding();
@@ -125,7 +125,7 @@ public:
 	void UpdateLights();
 
 	vector<System::Blueprint>* GetBlueprints();
-	System::Blueprint* GetBlueprintByName(string name);
+	System::Blueprint* GetBlueprintByName(const std::string& name);
 	System::Blueprint* GetBlueprintByType(int type, int subType = 0);
 };
 

@@ -40,13 +40,13 @@ public:
 
 	//Object Control
 	void SelectObjects(GameObject* pickedObject);
-	void SelectObjects(vector<vector<GameObject*>> pickedObjects);
+	void SelectObjects(const vector<vector<GameObject*>>& pickedObjects);
 	void DeselectObjects();
 	void DeleteSelectedObjects();
 	vector<GameObject*> GetSelectedObjects();
 	unsigned int GetNumSelectedObjects();
 	//Currently only updating dragged units
-	void UpdateDragPositions(System::MouseCoord coord);
+	void UpdateDragPositions(const System::MouseCoord& coord);
 	bool IsDragging()const;
 	void ActivateDragging(GameObject* originObj);
 	void DeactivateDragging();

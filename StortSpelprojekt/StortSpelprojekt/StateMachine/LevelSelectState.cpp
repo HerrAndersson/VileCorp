@@ -32,6 +32,9 @@ LevelSelectState::LevelSelectState(System::Controls* controls, ObjectHandler* ob
 	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("playbutton")));
 	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("CampaignTab")));
 	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("SkirmishTab")));
+
+	_profile = _settingsReader->GetProfile();
+	_isCampaignMode = true;
 }
 
 LevelSelectState::~LevelSelectState()
@@ -191,7 +194,7 @@ void LevelSelectState::LoadLevelHeader(int levelFilename, Level::LevelHeader * h
 	LoadLevelHeader(std::to_string(levelFilename), headerToLoad);
 }
 
-void LevelSelectState::LoadLevelHeader(std::string levelFilename, Level::LevelHeader * headerToLoad)
+void LevelSelectState::LoadLevelHeader(const std::string& levelFilename, Level::LevelHeader * headerToLoad)
 {
 	std::string levelPath;
 	if (_isCampaignMode)

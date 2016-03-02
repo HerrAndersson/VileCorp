@@ -446,12 +446,12 @@ Level::LevelHeader * ObjectHandler::GetCurrentLevelHeader()
 	return &_currentLevelHeader;
 }
 
-void ObjectHandler::SetCurrentLevelHeader(Level::LevelHeader levelheader)
+void ObjectHandler::SetCurrentLevelHeader(const Level::LevelHeader& levelheader)
 {
 	_currentLevelHeader = levelheader;
 }
 
-bool ObjectHandler::LoadLevel(std::string levelBinaryFilePath)
+bool ObjectHandler::LoadLevel(const std::string& levelBinaryFilePath)
 {
 	bool result = false;
 	Level::LevelBinary levelData;
@@ -714,7 +714,7 @@ vector<System::Blueprint>* ObjectHandler::GetBlueprints()
 	return _blueprints.GetBlueprints();
 }
 
-System::Blueprint* ObjectHandler::GetBlueprintByName(string name)
+System::Blueprint* ObjectHandler::GetBlueprintByName(const std::string& name)
 {
 	return _blueprints.GetBlueprintByName(name);
 }
