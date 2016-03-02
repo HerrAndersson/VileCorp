@@ -32,6 +32,7 @@ std::wstring GUI::TextBox::GetText() const
 	{
 		return _attachedGUINode->GetText();
 	}
+	return L"";
 }
 
 void GUI::TextBox::SetText(const std::wstring &text)
