@@ -420,8 +420,7 @@ namespace Renderer
 		deviceContext->GSSetShader(nullptr, nullptr, 0);
 
 		//Set sampler
-		ID3D11SamplerState* samplers[2] = { _samplerWRAP, _samplerCLAMP };
-		deviceContext->PSSetSamplers(0, 2, samplers);
+		deviceContext->PSSetSamplers(0, 1, &_samplerWRAP);
 	}
 
 	void ShaderHandler::SetAnimationPassShaders(ID3D11DeviceContext* deviceContext)
@@ -435,8 +434,7 @@ namespace Renderer
 		deviceContext->GSSetShader(nullptr, nullptr, 0);
 
 		//Set sampler
-		ID3D11SamplerState* samplers[2] = { _samplerWRAP, _samplerCLAMP };
-		deviceContext->PSSetSamplers(0, 2, samplers);
+		deviceContext->PSSetSamplers(0, 1, &_samplerWRAP);
 	}
 
 	void ShaderHandler::SetLinestripShaders(ID3D11DeviceContext * deviceContext)
@@ -448,10 +446,6 @@ namespace Renderer
 		deviceContext->VSSetShader(_linestripVS->_vertexShader, nullptr, 0);
 		deviceContext->PSSetShader(_linestripPS, nullptr, 0);
 		deviceContext->GSSetShader(nullptr, nullptr, 0);
-
-		//Set sampler
-		ID3D11SamplerState* samplers[2] = { _samplerWRAP, _samplerCLAMP };
-		deviceContext->PSSetSamplers(0, 2, samplers);
 	}
 
 	void ShaderHandler::SetHUDPassShaders(ID3D11DeviceContext * deviceContext)
@@ -478,10 +472,6 @@ namespace Renderer
 		deviceContext->VSSetShader(_animShadowMapVS->_vertexShader, nullptr, 0);
 		deviceContext->PSSetShader(nullptr, nullptr, 0);
 		deviceContext->GSSetShader(nullptr, nullptr, 0);
-
-		//Set sampler
-		ID3D11SamplerState* samplers[2] = { _samplerWRAP, _samplerCLAMP };
-		deviceContext->PSSetSamplers(0, 2, samplers);
 	}
 
 	void ShaderHandler::SetShadowGenerationShaders(ID3D11DeviceContext* deviceContext)
@@ -493,10 +483,6 @@ namespace Renderer
 		deviceContext->VSSetShader(_shadowMapVS->_vertexShader, nullptr, 0);
 		deviceContext->PSSetShader(nullptr, nullptr, 0);
 		deviceContext->GSSetShader(nullptr, nullptr, 0);
-
-		//Set sampler
-		ID3D11SamplerState* samplers[2] = { _samplerWRAP, _samplerCLAMP };
-		deviceContext->PSSetSamplers(0, 2, samplers);
 	}
 
 	void ShaderHandler::SetSpotlightApplicationShaders(ID3D11DeviceContext* deviceContext)
@@ -525,8 +511,7 @@ namespace Renderer
 		deviceContext->GSSetShader(nullptr, nullptr, 0);
 
 		//Set sampler
-		ID3D11SamplerState* samplers[2] = { _samplerWRAP, _samplerCLAMP };
-		deviceContext->PSSetSamplers(0, 2, samplers);
+		deviceContext->PSSetSamplers(0, 1, &_samplerWRAP);
 	}
 
 	void ShaderHandler::SetFXAAPassShaders(ID3D11DeviceContext* deviceContext, bool enabled)
@@ -537,6 +522,7 @@ namespace Renderer
 		// Set shaders
 		deviceContext->VSSetShader(_passthroughVS->_vertexShader, nullptr, 0);
 
+		//Checks if FXAA should be enabled or not
 		if (enabled)
 		{
 			deviceContext->PSSetShader(_fxaaPassPS, nullptr, 0);
@@ -548,8 +534,7 @@ namespace Renderer
 		deviceContext->GSSetShader(nullptr, nullptr, 0);
 
 		//Set sampler
-		ID3D11SamplerState* samplers[2] = { _samplerWRAP, _samplerCLAMP };
-		deviceContext->PSSetSamplers(0, 2, samplers);
+		deviceContext->PSSetSamplers(0, 1, &_samplerWRAP);
 	}
 
 	void ShaderHandler::SetBillboardingStageShaders(ID3D11DeviceContext* deviceContext)
@@ -563,7 +548,6 @@ namespace Renderer
 		deviceContext->GSSetShader(_billboardingGS, nullptr, 0);
 
 		//Set sampler
-		ID3D11SamplerState* samplers[2] = { _samplerWRAP, _samplerCLAMP };
-		deviceContext->PSSetSamplers(0, 2, samplers);
+		deviceContext->PSSetSamplers(0, 1, &_samplerWRAP);
 	}
 }

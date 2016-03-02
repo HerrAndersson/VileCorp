@@ -528,8 +528,8 @@ int Game::Run()
 					{
 						Render();
 
-						//string s = to_string(_timer.GetFrameTime()) + " " + to_string(_timer.GetFPS());
-						//SetWindowText(_window->GetHWND(), s.c_str());
+						string s = to_string(_timer.GetFrameTime()) + " " + to_string(_timer.GetFPS());
+						SetWindowText(_window->GetHWND(), s.c_str());
 
 						_timer.Reset();
 					}
