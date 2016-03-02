@@ -146,7 +146,7 @@
 				"../Menues/LevelEdit/Loot/diamond8.png",
 				"../Menues/LevelEdit/Loot/diamond9.png"
 			]
-			}, {
+		}, {
 			"_mesh": "moneyBriefcaseLoot-28.bin",
 			"_name": "MoneyBriefcase",
 			"_type": 2,
@@ -156,7 +156,19 @@
 				"moneyBriefcase.png"
 			],
 			"_thumbnails": [
-				"moneyBriefcase.png"
+				"../Menues/LevelEdit/Loot/moneybriefcaseButton.png"
+			]
+		}, {
+			"_mesh": "moneyBagLoot-28.bin",
+			"_name": "MoneyBag",
+			"_type": 2,
+			"_subType": 0,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"moneyBag.png"
+			],
+			"_thumbnails": [
+				"../Menues/LevelEdit/Loot/moneybagButton.png"
 			]
 		}, {
 			"_mesh": "windowDoubleSpawn-28.bin",
@@ -181,8 +193,7 @@
 				"doubledoorsopen.png"
 			],
 			"_thumbnails": [
-				"doubledoors.png",
-				"doubledoorsopen.png"
+				"../Menues/LevelEdit/Entry/door1Button.png"
 			]
 		}, {
 			"_mesh": "doubleDoorSide2Spawn-28.bin",
@@ -195,8 +206,7 @@
 				"doubledoorsopen.png"
 			],
 			"_thumbnails": [
-				"doubledoors.png",
-				"doubledoorsopen.png"
+				"../Menues/LevelEdit/Entry/door2Button.png"
 			]
 		}, {
 			"_mesh": "anvilTrap-28.bin",
@@ -268,7 +278,7 @@
 				"saw.png"
 			],
 			"_thumbnails": [
-				"saw.png"
+				"../Menues/LevelEdit/Traps/sawButton.png"
 			]
 		}, {
 			"_mesh": "Cupcake-27.bin",
@@ -280,7 +290,7 @@
 				"cuppycake.png"
 			],
 			"_thumbnails": [
-				"cuppycake.png"
+				"../Menues/LevelEdit/Traps/cupcakeButton.png"
 			]
 		}, {
 			"_mesh": "flamethrowerTrap-28.bin",
@@ -304,7 +314,7 @@
 				"saw.png"
 			],
 			"_thumbnails": [
-				"saw.png"
+				"../Menues/LevelEdit/Traps/roofsawButton.png"
 			]
 		}, {
 			"_mesh": "confuseTrap-28.bin",
@@ -316,7 +326,7 @@
 				"tilespin.png"
 			],
 			"_thumbnails": [
-				"tilespin.png"
+				"../Menues/LevelEdit/Traps/confusiontrapButton.png"
 			]
 		}, {
 			"_mesh": "SecurityCamera-27.bin",
@@ -328,7 +338,7 @@
 				"cameraFin.png"
 			],
 			"_thumbnails": [
-				"../Menues/PlacementStateGUI/units/Camerabutton1.png"
+				"../Menues/LevelEdit/Units/Camerabutton1.png"
 			]
 		}, {
 			"_mesh": "guard-28.bin",
@@ -340,7 +350,7 @@
 				"textureblue.png"
 			],
 			"_thumbnails": [
-				"../Menues/PlacementStateGUI/units/Guardbutton1.png"
+				"../Menues/LevelEdit/Units/Guardbutton1.png"
 			]
 		}, {
 			"_mesh": "Basewoman-27.bin",
@@ -532,7 +542,7 @@
 				"table2leg.png"
 			],
 			"_thumbnails": [
-				"table2leg.png"
+				"../Menues/LevelEdit/Decorations/tableend2Button.png"
 			]
 		}, {
 			"_mesh": "tableEndsectionSingleLegDecoration-28.bin",
@@ -544,7 +554,7 @@
 				"table1leg.png"
 			],
 			"_thumbnails": [
-				"table1leg.png"
+				"../Menues/LevelEdit/Decorations/tableend1Button.png"
 			]
 		}, {
 			"_mesh": "tableMidsectionDecoration-28.bin",
@@ -556,7 +566,7 @@
 				"tablemid.png"
 			],
 			"_thumbnails": [
-				"tablemid.png"
+				"../Menues/LevelEdit/Decorations/tablemiddleButton.png"
 			]
 		}, {
 			"_mesh": "counterFlatDecoration-28.bin",
