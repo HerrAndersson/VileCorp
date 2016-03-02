@@ -3,10 +3,8 @@
 PlacementState::PlacementState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule, DirectX::XMFLOAT3* ambientLight)
 	: BaseState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settingsReader, soundModule)
 {
-	_player = new Player(_objectHandler, pickingDevice);
 	_buttons = _uiTree.GetNode("UnitList")->GetChildren();
 	_profile = settingsReader->GetProfile();
-	//_tutorialLogic = new TutorialLogic(&_uiTree, _controls, _player, _buttons, &_ghostImage, objectHandler, pickingDevice, _profile);
 
 	//Money
 	_costOfAnvilTrap	= 50;
@@ -32,10 +30,6 @@ void PlacementState::EvaluateGoldCost()
 PlacementState::~PlacementState()
 {
 	delete _baseEdit;
-	delete _player;
-
-	//delete _tutorialLogic;
-	//_tutorialLogic = nullptr;
 }
 
 void PlacementState::Update(float deltaTime)
@@ -47,37 +41,11 @@ void PlacementState::Update(float deltaTime)
 	}
 
 	System::MouseCoord coord = _controls->GetMouseCoord();
-	//if tutorial mode. Then bypass normal baseEdit update loops.
-	if (_tutorialState != TutorialState::NOTUTORIAL)
-	{
-		//bypass the normal UI interface to interface the tutorial elements into it.
-		//_tutorialLogic->Update(deltaTime, _baseEdit, _toPlace, _profile);
-		//if (_tutorialLogic->IsTutorialCompleted())
-		//{
-		//	ChangeState(State::PLAYSTATE);
-		//	_tutorialState = TutorialState::NOTUTORIAL;
-		//}
+	
+	//Handle the buttons normally
+	HandleButtons();
+	HandleDescriptions();
 
-		//Menu - We keep this outside of tutorial due to the changestate function.
-		if (_controls->IsFunctionKeyDown("MENU:MENU"))
-		{
-			//if (_ghostImage.IsGhostImageActive() || _player->IsSelectedObjects())
-			//{
-			//	_ghostImage.RemoveGhostImage();
-			//	_player->DeselectObjects();
-			//}
-			//else
-			//{
-			//	ChangeState(PAUSESTATE);
-			//}
-		}
-	}
-	else
-	{
-		//Handle the buttons normally
-		HandleButtons();
-		HandleDescriptions();
-	}
 	HandleButtonHighlight(coord);
 	HandleInput();
 	HandleCam(deltaTime);
@@ -121,19 +89,10 @@ void PlacementState::OnStateEnter()
 	_uiTree.GetNode("CameraDescription")->SetHidden(true);
 	_uiTree.GetNode("CameraCost")->SetText(L"Cost: " + to_wstring(80) + L"$");
 
-	if (_tutorialState == TutorialState::NEWTUTORIAL)
+	std::vector<GUI::Node*>* tutorialNodes = _uiTree.GetNode("Tutorial")->GetChildren();
+	for (int i = 0; i < tutorialNodes->size(); i++)
 	{
-		_uiTree.GetNode("Tutorial")->SetHidden(false);
-		//_tutorialLogic->ResetUiTree();
-	}
-	//Coming back from pause state
-	else if (_tutorialState == TutorialState::OLDTUTORIAL)
-	{
-		_uiTree.GetNode("Tutorial")->SetHidden(false);
-	}
-	else if (_tutorialState == TutorialState::NOTUTORIAL)
-	{
-		_uiTree.GetNode("Tutorial")->SetHidden(true);
+		tutorialNodes->at(i)->SetHidden(true);
 	}
 
 	_baseEdit = new BaseEdit(_objectHandler, _controls, _pickingDevice, false);
@@ -146,12 +105,6 @@ void PlacementState::OnStateExit()
 {
 	delete _baseEdit;
 	_baseEdit = nullptr;
-
-	//if the tutorialstage is anything other than no tutorial. Hide it. We want to reset on entry, not exit.
-	if (_tutorialState != NOTUTORIAL)
-	{
-		_uiTree.GetNode("Tutorial")->SetHidden(true);
-	}
 
 	//Pause music
 	_soundModule->Pause("in_game_1");
@@ -193,20 +146,6 @@ void PlacementState::HandleButtons()
 	bool create = false;
 
 	System::MouseCoord coord = _controls->GetMouseCoord();
-
-	////Menu
-	//if (_controls->IsFunctionKeyDown("MENU:MENU"))
-	//{
-	//	if (_ghostImage.IsGhostImageActive() || _player->IsSelectedObjects())
-	//	{
-	//		_ghostImage.RemoveGhostImage();
-	//		_player->DeselectObjects();
-	//	}
-	//	else
-	//	{
-	//		ChangeState(PAUSESTATE);
-	//	}
-	//}
 
 	//Play
 	if (_uiTree.IsButtonColliding("Play", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
