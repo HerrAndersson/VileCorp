@@ -117,8 +117,24 @@ void GameLogic::HandleUnitSelect()
 	{
 		XMFLOAT3 pos = u->GetPosition();
 		pos.y += 2.5f;
-		ParticleUpdateMessage* msg = new ParticleUpdateMessage(u->GetID(), true, pos);
+
+		ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::QUESTIONMARK_SUBTYPE, -1, pos, XMFLOAT3(0, 0, 0), 1.0f, 1, 0.25f, true, true);
 		_objectHandler->GetParticleEventQueue()->Insert(msg);
+
+		if (u->GetType() == System::GUARD)
+		{
+			for (auto p : ((Guard*)u)->GetPatrolRoute())
+			{
+				pos = XMFLOAT3(p._x, 0.5, p._y);
+
+				msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::EXCLAMATIONMARK_SUBTYPE, -1, pos, XMFLOAT3(0, 0, 0), 1.0f, 1, 0.25f, true, true);
+				_objectHandler->GetParticleEventQueue()->Insert(msg);
+			}
+
+		}
+
+
+
 	}
 }
 
