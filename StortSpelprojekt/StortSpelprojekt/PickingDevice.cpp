@@ -34,9 +34,8 @@ Ray PickingDevice::CalculatePickRay(long x, long y)
 	XMMATRIX inverseViewMatrix = XMMatrixInverse(&determinant, *_camera->GetViewMatrix());
 	XMStoreFloat3(&mouseViewPos, XMVector3TransformCoord(XMVectorSet(mouseViewPos.x, mouseViewPos.y, mouseViewPos.z, 0.0f), inverseViewMatrix));
 
-	Ray ray = Ray(Vec3(_camera->GetPosition()), (Vec3(mouseViewPos) - Vec3(_camera->GetPosition())));
-
-	return ray;
+	Vec3 campos(_camera->GetPosition());
+	return Ray(campos, Vec3(mouseViewPos) - campos);
 }
 
 std::vector<Vec2> PickingDevice::CreatePickBox(Vec3 points[4])
@@ -341,7 +340,7 @@ XMFLOAT3 PickingDevice::PickPoint(POINT mousePoint)
 
 	return pickedPoint.convertToXMFLOAT();
 }
-vector<GameObject*> PickingDevice::PickObjects(POINT mousePoint, vector<GameObject*> pickableObjects)
+vector<GameObject*> PickingDevice::PickObjects(POINT mousePoint, const vector<GameObject*>& pickableObjects)
 {
 	vector<GameObject*> pickedObjects;
 	if (_firstBoxPoint.x != 0 && _firstBoxPoint.y != 0)
