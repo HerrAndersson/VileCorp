@@ -186,7 +186,19 @@ bool ObjectHandler::Remove(System::Type type, int ID)
 	{
 		if (_gameObjects[type][i]->GetID() == ID)
 		{
-			_tilemap->RemoveObjectFromTile(_gameObjects[type].at(i));
+			if (type == System::TRAP)
+			{
+				AI::Vec2D* tempTiles = static_cast<Trap*>(_gameObjects[type][i])->GetTiles();
+ 				for (int j = 0; j < static_cast<Trap*>(_gameObjects[type][i])->GetNrOfOccupiedTiles(); j++)
+				{
+					_tilemap->RemoveObjectFromTile(tempTiles[j], _gameObjects[type][i]);
+				}
+			} 
+			else
+			{
+				_tilemap->RemoveObjectFromTile(_gameObjects[type].at(i));
+			}
+			
 			_gameObjects[type][i]->Release();
 
 			if (_spotlights.count(_gameObjects[type][i]))
