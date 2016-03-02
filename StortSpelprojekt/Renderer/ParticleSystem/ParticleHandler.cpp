@@ -11,12 +11,6 @@ namespace Renderer
 		_emitterCount = 0;
 		_textures = textures;
 		_modifiers = modifiers;
-
-		for (int i = 0; i < _emitterCount; i++)
-		{
-			_particleEmitters.push_back(new ParticleEmitter(device, deviceContext, &_modifiers));
-		}
-
 		_requestQueue = new ParticleEventQueue(&_queue);
 	}
 
