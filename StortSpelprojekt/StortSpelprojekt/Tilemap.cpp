@@ -42,6 +42,7 @@ Tilemap::Tilemap(const Tilemap& copy)
 	_height = copy._height;
 	_width = copy._width;
 	_map = new Tile*[copy._width];
+	_nrOfLoot = copy._nrOfLoot;
 
 	for (int i = 0; i < copy._width; i++)
 	{
