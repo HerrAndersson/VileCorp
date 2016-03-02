@@ -211,15 +211,15 @@ struct GameObjectInfo
 	GameObjectInfo()
 	{
 		_objects.resize(System::NR_OF_TYPES);
-		_objects[System::FLOOR] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectFloorInfo*>;
-		_objects[System::WALL] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectWallInfo*>;
-		_objects[System::LOOT] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectLootInfo*>;
-		_objects[System::SPAWN] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectSpawnInfo*>;
-		_objects[System::TRAP] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectTrapInfo*>;
-		_objects[System::CAMERA] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectCameraInfo*>;
-		_objects[System::GUARD] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectGuardInfo*>;
-		_objects[System::ENEMY] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectEnemyInfo*>;
-		_objects[System::FURNITURE] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectFurnitureInfo*>;
+		_objects[System::FLOOR] =		new std::vector<GameObjectBaseInfo*>;
+		_objects[System::WALL] =		new std::vector<GameObjectBaseInfo*>;
+		_objects[System::LOOT] =		new std::vector<GameObjectBaseInfo*>;
+		_objects[System::SPAWN] =		new std::vector<GameObjectBaseInfo*>;
+		_objects[System::TRAP] =		new std::vector<GameObjectBaseInfo*>;
+		_objects[System::CAMERA] =		new std::vector<GameObjectBaseInfo*>;
+		_objects[System::GUARD] =		new std::vector<GameObjectBaseInfo*>;
+		_objects[System::ENEMY] =		new std::vector<GameObjectBaseInfo*>;
+		_objects[System::FURNITURE] =	new std::vector<GameObjectBaseInfo*>;
 	}
 	~GameObjectInfo()
 	{
