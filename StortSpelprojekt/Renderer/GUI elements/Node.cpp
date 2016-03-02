@@ -221,6 +221,10 @@ namespace GUI
 
 	Texture* Node::GetTexture()
 	{
+		if (_texture)
+		{
+			_texture->IncrementUsers();
+		}
 		return _texture;
 	}
 

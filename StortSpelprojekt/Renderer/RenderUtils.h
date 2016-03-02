@@ -139,6 +139,10 @@ struct Texture
 			_data->Release();
 		}
 	}
+	void IncrementUsers()
+	{
+		_activeUsers++;
+	}
 };
 
 struct RenderObject
