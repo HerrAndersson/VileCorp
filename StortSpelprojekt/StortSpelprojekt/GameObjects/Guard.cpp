@@ -1,15 +1,5 @@
 #include "Guard.h"
 
-Guard::Guard()
-	: Unit()
-{
-	_health = 100;
-	_baseDamage = 30;
-
-	_isSelected = false;
-	_currentPatrolGoal = -1;
-}
-
 Guard::Guard(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject * renderObject, System::SoundModule* soundModule, const Tilemap * tileMap, int guardType)
 	: Unit(ID, position, rotation, tilePosition, type, renderObject, soundModule, tileMap)
 {

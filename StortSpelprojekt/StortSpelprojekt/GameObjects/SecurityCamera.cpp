@@ -24,15 +24,6 @@ void SecurityCamera::Rotate()
 	CheckVisibleTiles();
 }
 
-SecurityCamera::SecurityCamera()
-	: GameObject()
-{
-	_tileMap = nullptr;
-	_direction = {0,-1};
-	_visionRadius = 0;
-	_visionCone = nullptr;
-}
-
 SecurityCamera::SecurityCamera(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject * renderObject, System::SoundModule* soundModule, const Tilemap * tileMap)
 	: GameObject(ID, position, rotation, tilePosition, type, renderObject, soundModule)
 {

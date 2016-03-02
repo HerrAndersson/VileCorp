@@ -19,7 +19,6 @@ private:
 	bool SpotTrap(Trap* trap);
 	void DisarmTrap(Trap* trap);
 public:
-	Enemy();
 	Enemy(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject* renderObject, System::SoundModule* soundModule, const Tilemap* tileMap, const int enemyType);
 	virtual ~Enemy();
 	void EvaluateTile(System::Type objective, AI::Vec2D tile);

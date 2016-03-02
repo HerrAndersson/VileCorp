@@ -52,7 +52,6 @@ protected:
 	void SetGoal(AI::Vec2D goal);
 	void SetGoal(GameObject* objective);				//Does the things necessary to change the pathfinding to a new goal
 public:
-	Unit();
 	Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject* renderObject, System::SoundModule* soundModule, const Tilemap* tileMap);
 	virtual ~Unit();
 
@@ -67,7 +66,7 @@ public:
 	bool GetAnimisFinished();
 
 	void SetGoalTilePosition(AI::Vec2D goal);													//Decides on a target and changes MoveState to FINDING_PATH
-	void SetDirection(const AI::Vec2D direction);
+	void SetDirection(const AI::Vec2D& direction);
 	void SetSwitchingTile(const bool switchTile);
 	void SetVisibility(bool visible);
 	void SetTilePosition(AI::Vec2D pos);

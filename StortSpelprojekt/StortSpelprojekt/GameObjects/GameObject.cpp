@@ -1,14 +1,5 @@
 #include "GameObject.h"
 
-GameObject::GameObject()
-{
-	_ID = -1;
-	_type = System::FLOOR;
-	_visible = true;
-	_renderObject = nullptr;
-	_pickUpState = PickUpState::DROPPING;
-}
-
 GameObject::GameObject(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation,  AI::Vec2D tilePosition, System::Type type, RenderObject * renderObject, System::SoundModule* soundModule, DirectX::XMFLOAT3 colorOffset)
 {
 	_ID = ID;
@@ -22,7 +13,7 @@ GameObject::GameObject(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::X
 	_pickUpState = ONTILE;
 	_visible = true;
 	_subType = 0;
-
+	_active = true;
 	_soundModule = soundModule;
 
 	CalculateMatrix();
@@ -185,10 +176,7 @@ RenderObject * GameObject::GetRenderObject() const
 
 Animation * GameObject::GetAnimation() const
 {
-	if (_animation != nullptr)
-	{
-		return _animation;
-	}
+	return _animation;
 }
 
 void GameObject::SetPickUpState(PickUpState state)

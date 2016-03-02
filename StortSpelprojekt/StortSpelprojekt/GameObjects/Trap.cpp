@@ -341,14 +341,6 @@ void Trap::SetTiles()
 	}
 }
 
-Trap::Trap()
-	:GameObject()
-{
-	_areaOfEffect = nullptr;
-	_occupiedTiles = nullptr;
-	_triggerTiles = nullptr;
-}
-
 Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject * renderObject, System::SoundModule* soundModule, 
 		  const Tilemap* tileMap, int trapType, AI::Vec2D direction)
 	: GameObject(ID, position, rotation, tilePosition, type, renderObject, soundModule)
@@ -597,7 +589,7 @@ AI::Vec2D Trap::GetDirection()
 	return _direction;
 }
 
-void Trap::SetDirection(const AI::Vec2D direction)
+void Trap::SetDirection(const AI::Vec2D& direction)
 {
 	_direction = direction;
 }

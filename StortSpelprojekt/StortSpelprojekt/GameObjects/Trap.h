@@ -47,7 +47,6 @@ private:
 					Unit::StatusEffect statusEffect, int statusTimer, int statusInterval, int triggerTimer = 0, int ammunition = 1);							/*Initialize adds any characteristics specific to the subtype*/
 	void SetTiles();
 public:
-	Trap();
 	Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject * renderObject, System::SoundModule* soundModule,
 		 const Tilemap* tileMap, int trapType = SPIKE, AI::Vec2D direction = {1,0});
 	virtual ~Trap();
@@ -70,7 +69,7 @@ public:
 	// Overloaded function
 	void SetTilePosition(AI::Vec2D pos);
 	AI::Vec2D GetDirection();
-	void SetDirection(const AI::Vec2D direction);
+	void SetDirection(const AI::Vec2D& direction);
 	enum Anim { IDLEANIM, ACTIVATEANIM, DISABLEANIM, FIXANIM, NR_OF_ANIM/*Has to be last*/ };
 	void Animate(Anim anim);
 

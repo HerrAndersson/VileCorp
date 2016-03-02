@@ -1,9 +1,5 @@
 #include "Architecture.h"
 
-Architecture::Architecture()
-{
-
-}
 Architecture::Architecture(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject* renderObject, System::SoundModule* soundModule)
 	: GameObject(ID, position, rotation, tilePosition, type, renderObject, soundModule)
 {

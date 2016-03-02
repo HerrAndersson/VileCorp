@@ -1,14 +1,5 @@
 #include "SpawnPoint.h"
 
-SpawnPoint::SpawnPoint()
-	: GameObject()
-{
-	_timer = 1;
-	_time = _timer;
-	_unitsToSpawn = 0;
-	_enabled = false;
-}
-
 SpawnPoint::SpawnPoint(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject* renderObject, System::SoundModule* soundModule)
 	: GameObject(ID, position, rotation, tilePosition, type, renderObject, soundModule)
 {
