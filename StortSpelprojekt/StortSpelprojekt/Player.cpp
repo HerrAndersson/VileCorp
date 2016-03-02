@@ -63,11 +63,15 @@ void Player::DecolorObject(GameObject * obj)
 Player::Player()
 {
 	_objectHandler = nullptr;
+	_pickingDevice = nullptr;
+	_drag = false;
 }
 
 Player::Player(ObjectHandler* objectHandler)
 {
 	_objectHandler = objectHandler;
+	_pickingDevice = nullptr;
+	_drag = false;
 }
 
 Player::Player(ObjectHandler * objectHandler, PickingDevice * pickingDevice)

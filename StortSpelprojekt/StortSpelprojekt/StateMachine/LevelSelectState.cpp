@@ -2,7 +2,8 @@
 
 
 LevelSelectState::LevelSelectState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule) :
-	BaseState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settingsReader, soundModule)
+	BaseState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settingsReader, soundModule),
+	_selectedLevelHeader()
 {
 	std::vector<GUI::Node*>* levelSelectionPageNodes = _uiTree.GetNode("LevelSelectionPageContent")->GetChildren();
 
@@ -35,6 +36,8 @@ LevelSelectState::LevelSelectState(System::Controls* controls, ObjectHandler* ob
 
 	_profile = _settingsReader->GetProfile();
 	_isCampaignMode = true;
+	_campaignSelection = 0;
+	_campaignSelectionMax = 0;
 }
 
 LevelSelectState::~LevelSelectState()
