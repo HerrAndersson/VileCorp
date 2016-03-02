@@ -81,13 +81,12 @@ namespace System
 		{
 			throw std::runtime_error("Failed to open controls.json");
 		}
-		string str((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
+		_allKeys = new string((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
 		file.close();
-		_allKeys = &str;
 
 		Document d;
 
-		d.Parse(str.c_str());
+		d.Parse(_allKeys->c_str());
 
 		//Loop through all the states
 		for (Value::ConstMemberIterator it = d.MemberBegin(); it != d.MemberEnd(); ++it)
@@ -129,6 +128,7 @@ namespace System
 	{
 		delete _keymap;
 		delete _inputDevice;
+		delete _allKeys;
 	}
 
 	void Controls::Update()
