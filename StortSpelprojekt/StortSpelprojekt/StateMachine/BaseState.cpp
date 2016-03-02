@@ -16,7 +16,6 @@ BaseState::BaseState(System::Controls* controls, ObjectHandler* objectHandler, S
 	_oldState			= EXITSTATE;
 	_soundModule		= soundModule;
 	_settingsReader		= settingsReader;
-	_assetManager		= assetManager;
 }
 
 BaseState::~BaseState()
@@ -155,10 +154,13 @@ void BaseState::HandleCamMove(float deltaTime)
 	/*
 	Camera move
 	*/
-	const float LIMIT_UPPER = _objectHandler->GetTileMap()->GetHeight() * 1.2f;
-	const float LIMIT_LOWER = _objectHandler->GetTileMap()->GetHeight() * -0.2f;
-	const float LIMIT_RIGHT = _objectHandler->GetTileMap()->GetWidth() * 1.2f;
-	const float LIMIT_LEFT = _objectHandler->GetTileMap()->GetWidth() * -0.2f;
+	int width = _objectHandler->GetTileMap()->GetWidth();
+	int height = _objectHandler->GetTileMap()->GetHeight();
+
+	const float LIMIT_UPPER = height * 1.2f;
+	const float LIMIT_LOWER = height * -0.2f;
+	const float LIMIT_RIGHT = width * 1.2f;
+	const float LIMIT_LEFT = width * -0.2f;
 
 	XMFLOAT3 right(0.0f, 0.0f, 0.0f);
 	XMFLOAT3 forward(0.0f, 0.0f, 0.0f);
@@ -217,21 +219,22 @@ void BaseState::HandleCamMove(float deltaTime)
 
 		if (_camera->GetMode() == System::LOCKED_CAM)
 		{
+			XMFLOAT3 campos = _camera->GetPosition();
 			//Checks if out of bounds
 			_camera->SetPosition(XMFLOAT3(
-				max(_camera->GetPosition().x, LIMIT_LEFT),
-				_camera->GetPosition().y,
-				max(_camera->GetPosition().z, LIMIT_LOWER)));
+				max(campos.x, LIMIT_LEFT),
+				campos.y,
+				max(campos.z, LIMIT_LOWER)));
 
 			_camera->SetPosition(XMFLOAT3(
-				min(_camera->GetPosition().x, LIMIT_RIGHT),
-				_camera->GetPosition().y,
-				min(_camera->GetPosition().z, LIMIT_UPPER)));
+				min(campos.x, LIMIT_RIGHT),
+				campos.y,
+				min(campos.z, LIMIT_UPPER)));
 		}
 	}
 }
 
-void BaseState::HandleButtonHighlight(System::MouseCoord coord)
+void BaseState::HandleButtonHighlight(const System::MouseCoord& coord)
 {
 	for (auto& n : _buttonHighlights)
 	{
