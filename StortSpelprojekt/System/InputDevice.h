@@ -64,9 +64,9 @@ namespace System
 		bool IsReleased(int key);
 		MouseCoord GetMouseCoord()const;
 
-		void SetCurrentText(std::wstring text);
+		void SetCurrentText(const std::wstring& text);
 		std::wstring GetCurrentText() const;
-		void SetIsTextInputMode(std::wstring currentText, bool breakOnEsc = false, bool breakOnCarriageReturn = false, bool breakOnTab = false);
+		void SetIsTextInputMode(const std::wstring& currentText, bool breakOnEsc = false, bool breakOnCarriageReturn = false, bool breakOnTab = false);
 		void ResetTextInputMode();
 		bool GetIsTextInputMode() const;
 	};

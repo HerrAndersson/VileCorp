@@ -42,9 +42,9 @@ namespace GUI
 
 		int CreateBlueprintNodes(System::Blueprint* object, Node* list, int index);
 		bool IsButtonColliding(const std::string& id, int x, int y);
-		bool IsButtonColliding(const std::string& id, System::MouseCoord coord);
+		bool IsButtonColliding(const std::string& id, const System::MouseCoord& coord);
 		bool IsButtonColliding(Node* current, int x, int y);
-		bool IsButtonColliding(Node* current, System::MouseCoord coord);
+		bool IsButtonColliding(Node* current, const System::MouseCoord& coord);
 		bool IsNodeHidden(const std::string& id);
 		bool IsNodeHidden(Node* node);
 		Node* GetNode(const std::string& id);

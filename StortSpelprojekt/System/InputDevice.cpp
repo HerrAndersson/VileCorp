@@ -351,7 +351,7 @@ namespace System
 		return _mouseCoord;
 	}
 
-	void InputDevice::SetCurrentText(std::wstring text)
+	void InputDevice::SetCurrentText(const std::wstring& text)
 	{
 		_currentText = text;
 	}
@@ -361,7 +361,7 @@ namespace System
 		return _currentText;
 	}
 
-	void InputDevice::SetIsTextInputMode(std::wstring currentText, bool breakOnEsc, bool breakOnCarriageReturn, bool breakOnTab)
+	void InputDevice::SetIsTextInputMode(const std::wstring& currentText, bool breakOnEsc, bool breakOnCarriageReturn, bool breakOnTab)
 	{
 		_isTextInputMode = true;
 		_currentText = currentText;
