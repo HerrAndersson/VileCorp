@@ -272,5 +272,6 @@ namespace System
 		{
 			return _volume[channel];
 		}
+		return 0.0f;
 	}
 }
