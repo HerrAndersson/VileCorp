@@ -49,7 +49,6 @@ static bool GetFilenamesInDirectory(char* folder, char* extension, vector<string
 	bool result = false;
 	if (folder != nullptr && extension != nullptr)
 	{
-		ofstream testout;
 		string search_path = folder;
 		search_path.append("*");
 		search_path.append(extension);

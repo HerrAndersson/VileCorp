@@ -380,7 +380,7 @@ Mesh* AssetManager::ScanModel24()
 	skeletonName.resize(skeletonStringLength);
 	_infile->read((char*)skeletonName.data(), skeletonStringLength);
 
-	mesh->_isSkinned = skeletonName.data() == "Unrigged";
+	mesh->_isSkinned = skeletonName == "Unrigged";
 	_infile->read((char*)&mesh->_toMesh, 4);
 
 	for (int i = 0; i < meshes; i++)
