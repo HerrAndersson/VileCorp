@@ -362,8 +362,7 @@ static const bool Collision(Triangle &triangle, Square &square)
 	bool collision = true;
 
 	std::vector<Vec2>* trianglePoints = new std::vector<Vec2>();
-	std::vector<Vec2>* squarePoints = new std::vector<Vec2>();
-	squarePoints = FindSquareCorners(square);
+	std::vector<Vec2>* squarePoints = FindSquareCorners(square);
 
 	trianglePoints->push_back(Vec2(triangle._pos1._x, triangle._pos1._z));
 	trianglePoints->push_back(Vec2(triangle._pos2._x, triangle._pos2._z));
@@ -667,28 +666,28 @@ static const bool Collision(Box &box, Square &square)
 {
 	bool collision = true;
 	std::vector<Vec3>* boxCorners = FindBoxCorners(box);
-	std::vector<Vec3>* squareCorners;
+	std::vector<Vec3> squareCorners;
 
-	squareCorners->push_back(Vec3(square._minPos._x, 1.0f, square._minPos._y));
-	squareCorners->push_back(Vec3(square._maxPos._x, 1.0f, square._minPos._y));
-	squareCorners->push_back(Vec3(square._minPos._x, 1.0f, square._maxPos._y));
-	squareCorners->push_back(Vec3(square._maxPos._x, 1.0f, square._maxPos._y));
+	squareCorners.push_back(Vec3(square._minPos._x, 1.0f, square._minPos._y));
+	squareCorners.push_back(Vec3(square._maxPos._x, 1.0f, square._minPos._y));
+	squareCorners.push_back(Vec3(square._minPos._x, 1.0f, square._maxPos._y));
+	squareCorners.push_back(Vec3(square._maxPos._x, 1.0f, square._maxPos._y));
 
-	if (!SATVectorCheck(box._xSlab._normal, squareCorners, boxCorners))
+	if (!SATVectorCheck(box._xSlab._normal, &squareCorners, boxCorners))
 	{
 		collision = false;
 	}
 
-	else if (!SATVectorCheck(box._zSlab._normal, squareCorners, boxCorners))
+	else if (!SATVectorCheck(box._zSlab._normal, &squareCorners, boxCorners))
 	{
 		collision = false;
 	}
-	else if (!SATVectorCheck(Vec3(1.0f, 0.0f, 0.0f), squareCorners, boxCorners))
+	else if (!SATVectorCheck(Vec3(1.0f, 0.0f, 0.0f), &squareCorners, boxCorners))
 	{
 		collision = false;
 	}
 
-	else if (!SATVectorCheck(Vec3(0.0f, 0.0f, 1.0f), squareCorners, boxCorners))
+	else if (!SATVectorCheck(Vec3(0.0f, 0.0f, 1.0f), &squareCorners, boxCorners))
 	{
 		collision = false;
 	}
