@@ -39,6 +39,7 @@ Game::Game(HINSTANCE hInstance, int nCmdShow):
 
 	_ambientLight = _renderModule->GetAmbientLight();	
 	ResizeResources(settings);//This fixes a bug which offsets mousepicking, do not touch! //Markus
+	_renderModule->SetAntialiasingEnabled(settings->_antialiasing);
 }
 
 Game::~Game()
@@ -149,6 +150,7 @@ bool Game::Update(double deltaTime)
 		ResizeResources(settings);
 		_soundModule.SetVolume(settings->_volume / 100.0f, CHMASTER);
 		_settingsReader.SetSettingsChanged(false);
+		_renderModule->SetAntialiasingEnabled(settings->_antialiasing);
 	}
 
 	_controls->Update();

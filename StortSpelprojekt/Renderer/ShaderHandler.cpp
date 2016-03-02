@@ -113,6 +113,7 @@ namespace Renderer
 		_lightApplySpotlightVolumePS = CreatePixelShader(device, L"Assets/Shaders/LightApplySpotlightVolumePS.hlsl");
 		_lightApplyPointlightVolumePS = CreatePixelShader(device, L"Assets/Shaders/LightApplyPointlightVolumePS.hlsl");
 		_fxaaPassPS = CreatePixelShader(device, L"Assets/Shaders/FxaaPS.hlsl");
+		_noFxaaPS = CreatePixelShader(device, L"Assets/Shaders/NoFxaaPS.hlsl");
 		_hudPassVS = CreateVertexShader(device, L"Assets/Shaders/HudVS.hlsl", lightInputDesc, numElements);
 		_hudPassPS = CreatePixelShader(device, L"Assets/Shaders/HudPS.hlsl");
 
@@ -194,6 +195,8 @@ namespace Renderer
 		SAFE_RELEASE(_lightApplyPointlightVolumePS);
 		SAFE_RELEASE(_billboardingPS);
 		SAFE_RELEASE(_billboardingGS);
+		SAFE_RELEASE(_fxaaPassPS);
+		SAFE_RELEASE(_noFxaaPS);
 
 		SAFE_RELEASE(_samplerWRAP);
 		SAFE_RELEASE(_samplerPOINT);
@@ -415,9 +418,6 @@ namespace Renderer
 		deviceContext->VSSetShader(_geoPassVS->_vertexShader, nullptr, 0);
 		deviceContext->PSSetShader(_geoPassPS, nullptr, 0);
 		deviceContext->GSSetShader(nullptr, nullptr, 0);
-		//deviceContext->HSSetShader(nullptr, nullptr, 0);
-		//deviceContext->DSSetShader(nullptr, nullptr, 0);
-		//deviceContext->CSSetShader(nullptr, nullptr, 0);
 
 		//Set sampler
 		ID3D11SamplerState* samplers[2] = { _samplerWRAP, _samplerCLAMP };
@@ -433,9 +433,6 @@ namespace Renderer
 		deviceContext->VSSetShader(_animPassVS->_vertexShader, nullptr, 0);
 		deviceContext->PSSetShader(_geoPassPS, nullptr, 0);
 		deviceContext->GSSetShader(nullptr, nullptr, 0);
-		//deviceContext->HSSetShader(nullptr, nullptr, 0);
-		//deviceContext->DSSetShader(nullptr, nullptr, 0);
-		//deviceContext->CSSetShader(nullptr, nullptr, 0);
 
 		//Set sampler
 		ID3D11SamplerState* samplers[2] = { _samplerWRAP, _samplerCLAMP };
@@ -451,9 +448,6 @@ namespace Renderer
 		deviceContext->VSSetShader(_linestripVS->_vertexShader, nullptr, 0);
 		deviceContext->PSSetShader(_linestripPS, nullptr, 0);
 		deviceContext->GSSetShader(nullptr, nullptr, 0);
-		//deviceContext->HSSetShader(nullptr, nullptr, 0);
-		//deviceContext->DSSetShader(nullptr, nullptr, 0);
-		//deviceContext->CSSetShader(nullptr, nullptr, 0);
 
 		//Set sampler
 		ID3D11SamplerState* samplers[2] = { _samplerWRAP, _samplerCLAMP };
@@ -469,9 +463,6 @@ namespace Renderer
 		deviceContext->VSSetShader(_hudPassVS->_vertexShader, nullptr, 0);
 		deviceContext->PSSetShader(_hudPassPS, nullptr, 0);
 		deviceContext->GSSetShader(nullptr, nullptr, 0);
-		//deviceContext->HSSetShader(nullptr, nullptr, 0);
-		//deviceContext->DSSetShader(nullptr, nullptr, 0);
-		//deviceContext->CSSetShader(nullptr, nullptr, 0);
 
 		//Set sampler
 		ID3D11SamplerState* samplers[2] = { _samplerWRAP, _samplerCLAMP };
@@ -487,9 +478,6 @@ namespace Renderer
 		deviceContext->VSSetShader(_animShadowMapVS->_vertexShader, nullptr, 0);
 		deviceContext->PSSetShader(nullptr, nullptr, 0);
 		deviceContext->GSSetShader(nullptr, nullptr, 0);
-		//deviceContext->HSSetShader(nullptr, nullptr, 0);
-		//deviceContext->DSSetShader(nullptr, nullptr, 0);
-		//deviceContext->CSSetShader(nullptr, nullptr, 0);
 
 		//Set sampler
 		ID3D11SamplerState* samplers[2] = { _samplerWRAP, _samplerCLAMP };
@@ -505,9 +493,6 @@ namespace Renderer
 		deviceContext->VSSetShader(_shadowMapVS->_vertexShader, nullptr, 0);
 		deviceContext->PSSetShader(nullptr, nullptr, 0);
 		deviceContext->GSSetShader(nullptr, nullptr, 0);
-		//deviceContext->HSSetShader(nullptr, nullptr, 0);
-		//deviceContext->DSSetShader(nullptr, nullptr, 0);
-		//deviceContext->CSSetShader(nullptr, nullptr, 0);
 
 		//Set sampler
 		ID3D11SamplerState* samplers[2] = { _samplerWRAP, _samplerCLAMP };
@@ -523,9 +508,6 @@ namespace Renderer
 		deviceContext->VSSetShader(_lightApplyLightVolumeVS->_vertexShader, nullptr, 0);
 		deviceContext->PSSetShader(_lightApplySpotlightVolumePS, nullptr, 0);
 		deviceContext->GSSetShader(nullptr, nullptr, 0);
-		//deviceContext->HSSetShader(nullptr, nullptr, 0);
-		//deviceContext->DSSetShader(nullptr, nullptr, 0);
-		//deviceContext->CSSetShader(nullptr, nullptr, 0);
 
 		//Set sampler
 		ID3D11SamplerState* samplers[] = { _samplerWRAP, _samplerCLAMP, _samplerPOINT };
@@ -541,27 +523,29 @@ namespace Renderer
 		deviceContext->VSSetShader(_lightApplyLightVolumeVS->_vertexShader, nullptr, 0);
 		deviceContext->PSSetShader(_lightApplyPointlightVolumePS, nullptr, 0);
 		deviceContext->GSSetShader(nullptr, nullptr, 0);
-		//deviceContext->HSSetShader(nullptr, nullptr, 0);
-		//deviceContext->DSSetShader(nullptr, nullptr, 0);
-		//deviceContext->CSSetShader(nullptr, nullptr, 0);
 
 		//Set sampler
 		ID3D11SamplerState* samplers[2] = { _samplerWRAP, _samplerCLAMP };
 		deviceContext->PSSetSamplers(0, 2, samplers);
 	}
 
-	void ShaderHandler::SetFXAAPassShaders(ID3D11DeviceContext* deviceContext)
+	void ShaderHandler::SetFXAAPassShaders(ID3D11DeviceContext* deviceContext, bool enabled)
 	{
 		// Set vertex layout
 		deviceContext->IASetInputLayout(_passthroughVS->_inputLayout);
 
 		// Set shaders
 		deviceContext->VSSetShader(_passthroughVS->_vertexShader, nullptr, 0);
-		deviceContext->PSSetShader(_fxaaPassPS, nullptr, 0);
+
+		if (enabled)
+		{
+			deviceContext->PSSetShader(_fxaaPassPS, nullptr, 0);
+		}
+		else
+		{
+			deviceContext->PSSetShader(_noFxaaPS, nullptr, 0);
+		}
 		deviceContext->GSSetShader(nullptr, nullptr, 0);
-		//deviceContext->HSSetShader(nullptr, nullptr, 0);
-		//deviceContext->DSSetShader(nullptr, nullptr, 0);
-		//deviceContext->CSSetShader(nullptr, nullptr, 0);
 
 		//Set sampler
 		ID3D11SamplerState* samplers[2] = { _samplerWRAP, _samplerCLAMP };
@@ -577,9 +561,6 @@ namespace Renderer
 		deviceContext->VSSetShader(_billboardingVS->_vertexShader, nullptr, 0);
 		deviceContext->PSSetShader(_billboardingPS, nullptr, 0);
 		deviceContext->GSSetShader(_billboardingGS, nullptr, 0);
-		//deviceContext->HSSetShader(nullptr, nullptr, 0);
-		//deviceContext->DSSetShader(nullptr, nullptr, 0);
-		//deviceContext->CSSetShader(nullptr, nullptr, 0);
 
 		//Set sampler
 		ID3D11SamplerState* samplers[2] = { _samplerWRAP, _samplerCLAMP };

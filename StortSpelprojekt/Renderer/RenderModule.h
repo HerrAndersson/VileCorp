@@ -148,6 +148,7 @@ namespace Renderer
 		System::Settings*	_settings;
 
 		DirectX::XMFLOAT3	_ambientLight;
+		bool				_antialiasingEnabled;
 
 		void InitializeConstantBuffers();
 		void InitializeScreenQuadBuffer();
@@ -186,6 +187,7 @@ namespace Renderer
 
 		DirectX::XMFLOAT3 GetAmbientLight() const;
 		void SetAmbientLight(const DirectX::XMFLOAT3 &ambientLight);
+		void SetAntialiasingEnabled(bool enabled);
 
 		void BeginScene(float red, float green, float blue, float alpha);
 		void Render(DirectX::XMMATRIX* world, int vertexBufferSize, const DirectX::XMFLOAT3& colorOffset = DirectX::XMFLOAT3(0, 0, 0));

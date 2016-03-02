@@ -10,6 +10,7 @@ namespace Renderer
 		_d3d = new DirectXHandler(hwnd, settings);
 		_settings = settings;
 		_shaderHandler = new ShaderHandler(_d3d->GetDevice());
+		_antialiasingEnabled = 0;
 
 		InitializeScreenQuadBuffer();
 		InitializeConstantBuffers();
@@ -473,7 +474,7 @@ namespace Renderer
 			_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::DISABLE);
 			_d3d->SetAntiAliasingState();
 
-			_shaderHandler->SetFXAAPassShaders(deviceContext);
+			_shaderHandler->SetFXAAPassShaders(deviceContext, _antialiasingEnabled);
 			break;
 		}
 		case SHADOW_GENERATION:
@@ -558,6 +559,11 @@ namespace Renderer
 	void RenderModule::SetAmbientLight(const DirectX::XMFLOAT3 &ambientLight)
 	{
 		_ambientLight = ambientLight;
+	}
+
+	void RenderModule::SetAntialiasingEnabled(bool enabled)
+	{
+		_antialiasingEnabled = enabled;
 	}
 
 	void RenderModule::BeginScene(float red, float green, float blue, float alpha)
@@ -656,19 +662,16 @@ namespace Renderer
 		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
 
 		SetDataPerObject(world, colorOffset);
-
 		deviceContext->Draw(nrOfPoints, 0);
 	}
 
 	void RenderModule::RenderScreenQuad()
 	{
 		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
-
 		UINT32 vertexSize = sizeof(ScreenQuadVertex);
 		UINT32 offset = 0;
 
 		deviceContext->IASetVertexBuffers(0, 1, &_screenQuad, &vertexSize, &offset);
-
 		deviceContext->Draw(6, 0);
 	}
 

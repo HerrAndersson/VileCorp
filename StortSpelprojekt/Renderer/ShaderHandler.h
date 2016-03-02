@@ -47,6 +47,7 @@ namespace Renderer
 		ID3D11PixelShader*		_hudPassPS;
 		ID3D11PixelShader*		_fxaaPassPS;
 		ID3D11PixelShader*		_billboardingPS;
+		ID3D11PixelShader*		_noFxaaPS;
 
 		//Geometry shaders
 		ID3D11GeometryShader*   _billboardingGS;
@@ -78,7 +79,7 @@ namespace Renderer
 		void SetSpotlightApplicationShaders(ID3D11DeviceContext* deviceContext);
 		void SetPointlightApplicationShaders(ID3D11DeviceContext* deviceContext);
 		void SetHUDPassShaders(ID3D11DeviceContext* deviceContext);
-		void SetFXAAPassShaders(ID3D11DeviceContext* deviceContext);
+		void SetFXAAPassShaders(ID3D11DeviceContext* deviceContext, bool enabled);
 		void SetBillboardingStageShaders(ID3D11DeviceContext* deviceContext);
 	};
 }
