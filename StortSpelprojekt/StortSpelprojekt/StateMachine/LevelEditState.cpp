@@ -233,12 +233,14 @@ bool LevelEditState::HandleButtons()
 			{
 				_currentlySelectedTextBox->DeselectTextBox();
 				_currentlySelectedTextBox = nullptr;
+				_controls->ResetTextInputMode();
 			}
 		}
 		else
 		{
 			_currentlySelectedTextBox->DeselectTextBox();
 			_currentlySelectedTextBox = nullptr;
+			_controls->ResetTextInputMode();
 		}
 	}
 	if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
