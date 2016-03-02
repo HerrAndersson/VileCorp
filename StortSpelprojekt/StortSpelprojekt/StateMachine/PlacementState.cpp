@@ -107,19 +107,51 @@ void PlacementState::OnStateEnter()
 	_buttonHighlights.clear();
 	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("Play")));
 
-	//TODO: Move hardcoded costs and description to logical location /Rikhard
+	//Hide all descs
 	_uiTree.GetNode("GuardDescription")->SetHidden(true);
-	_uiTree.GetNode("GuardCost")->SetText(L"Cost: " + to_wstring(200) + L"$");
-	_uiTree.GetNode("AnvilDescription")->SetHidden(true);
-	_uiTree.GetNode("AnvilCost")->SetText(L"Cost: " + to_wstring(50) + L"$");
-	_uiTree.GetNode("TeslaDescription")->SetHidden(true);
-	_uiTree.GetNode("TeslaCost")->SetText(L"Cost: " + to_wstring(100) + L"$");
-	_uiTree.GetNode("MachineGunDescription")->SetHidden(true);
-	_uiTree.GetNode("MachineGunCost")->SetText(L"Cost: " + to_wstring(120) + L"$");
-	//_uiTree.GetNode("SharkDescription")->SetHidden(true);
-	//_uiTree.GetNode("SharkCost")->SetText(L"Cost: " + to_wstring(150) + L"$");
+	_uiTree.GetNode("EngineerDescription")->SetHidden(true);
 	_uiTree.GetNode("CameraDescription")->SetHidden(true);
-	_uiTree.GetNode("CameraCost")->SetText(L"Cost: " + to_wstring(80) + L"$");
+	_uiTree.GetNode("AnvilDescription")->SetHidden(true);
+	_uiTree.GetNode("BearDescription")->SetHidden(true);
+	_uiTree.GetNode("SawDescription")->SetHidden(true);
+	_uiTree.GetNode("MachineGunDescription")->SetHidden(true);
+	_uiTree.GetNode("FlameThrowerDescription")->SetHidden(true);
+	_uiTree.GetNode("WaterGunDescription")->SetHidden(true);
+	_uiTree.GetNode("TeslaDescription")->SetHidden(true);
+	_uiTree.GetNode("SpinDescription")->SetHidden(true);
+	_uiTree.GetNode("CakeDescription")->SetHidden(true);
+	_uiTree.GetNode("SharkDescription")->SetHidden(true);
+
+	//TODO: Move hardcoded costs and description to logical location /Rikhard
+	/*
+	Set text for descriptions
+	*/
+	//GUARD
+	_uiTree.GetNode("GuardCost")->SetText(L"Damage: Medium\nHP: " + to_wstring(100) + L"\nSpeed: Medium\nEffect: Average Joe");
+	//ENGINEER
+	_uiTree.GetNode("EngineerCost")->SetText(L"Damage: Low\nHP: " + to_wstring(50) + L"\nSpeed: Fast\nEffect: Fast repair");
+	//CAMERA
+	_uiTree.GetNode("CameraCost")->SetText(L"Damage: None\nUses: Infinite\nAtk. Speed: None\nEffect: Vision");
+	//ANVIL TRAP
+	_uiTree.GetNode("AnvilCost")->SetText(L"Damage: High\nUses: 3\nAtk. Speed: Medium\nEffect: Cheap");
+	//BEAR TRAP
+	_uiTree.GetNode("BearCost")->SetText(L"Damage: High\nUses: 1\nAtk. Speed: Medium\nEffect: Distraction");
+	//SAWBLADE TRAP (FLOOR)
+	_uiTree.GetNode("SawCost")->SetText(L"Damage: Medium\nUses: Infinite\nAtk. Speed: Medium\nEffect: Traversing");
+	//MACHINE GUN TRAP
+	_uiTree.GetNode("MachineGunCost")->SetText(L"Damage: Medium Low\nUses: 10\nAtk. Speed: Fast\nEffect: None");
+	//FLAMETHROWER TRAP
+	_uiTree.GetNode("FlameThrowerCost")->SetText(L"Damage: Low\nUses: 10\nAtk. Speed: Fast\nEffect: Burn");
+	//WATER GUN TRAP
+	_uiTree.GetNode("WaterGunCost")->SetText(L"Damage: None\nUses: 10\nAtk. Speed: Fast\nEffect: Slow");
+	//TESLA TRAP
+	_uiTree.GetNode("TeslaCost")->SetText(L"Damage: Low\nUses: 2\nAtk. Speed: Medium\nEffect: Big Area, Stun");
+	//SPIN TRAP
+	_uiTree.GetNode("SpinCost")->SetText(L"Damage: None\nUses: Infinite\nAtk. Speed: Slow\nEffect: Confusion");
+	//CAKE TRAP
+	_uiTree.GetNode("CakeCost")->SetText(L"Damage: Very High\nUses: 1\nAtk. Speed: Slow\nEffect: Slow repair");
+	//SHARK TRAP
+	_uiTree.GetNode("SharkCost")->SetText(L"Damage: Very Haj\nUses: 1\nAtk. Speed: Slow\nEffect: Big area");
 
 	if (_tutorialState == TutorialState::NEWTUTORIAL)
 	{
@@ -242,69 +274,133 @@ void PlacementState::HandleButtons()
 void PlacementState::HandleDescriptions()
 {
 	System::MouseCoord coord = _controls->GetMouseCoord();
+	//GUARD
 	if (_uiTree.IsButtonColliding("Guard", coord._pos.x, coord._pos.y))
 	{
 		_uiTree.GetNode("GuardDescription")->SetHidden(false);
-
-		// Add description
 	}
 	else
 	{
 		_uiTree.GetNode("GuardDescription")->SetHidden(true);
 	}
 
+	//ENGINEER
+	if (_uiTree.IsButtonColliding("Engineer", coord._pos.x, coord._pos.y))
+	{
+		_uiTree.GetNode("EngineerDescription")->SetHidden(false);
+	}
+	else
+	{
+		_uiTree.GetNode("EngineerDescription")->SetHidden(true);
+	}
+
+	//CAMERA
+	if (_uiTree.IsButtonColliding("Camera", coord._pos.x, coord._pos.y))
+	{
+		_uiTree.GetNode("CameraDescription")->SetHidden(false);
+	}
+	else
+	{
+		_uiTree.GetNode("CameraDescription")->SetHidden(true);
+	}
+
+	//ANVIL TRAP
 	if (_uiTree.IsButtonColliding("AnvilTrap", coord._pos.x, coord._pos.y))
 	{
 		_uiTree.GetNode("AnvilDescription")->SetHidden(false);
-
-		// Add description
 	}
 	else
 	{
 		_uiTree.GetNode("AnvilDescription")->SetHidden(true);
 	}
 
-	if (_uiTree.IsButtonColliding("TeslaTrap", coord._pos.x, coord._pos.y))
+	//BEAR TRAP
+	if (_uiTree.IsButtonColliding("BearTrap", coord._pos.x, coord._pos.y))
 	{
-		_uiTree.GetNode("TeslaDescription")->SetHidden(false);
-
-		// Add description
+		_uiTree.GetNode("BearDescription")->SetHidden(false);
 	}
 	else
 	{
-		_uiTree.GetNode("TeslaDescription")->SetHidden(true);
+		_uiTree.GetNode("BearDescription")->SetHidden(true);
 	}
 
+	//SAWBLADE TRAP
+	if (_uiTree.IsButtonColliding("SawTrap", coord._pos.x, coord._pos.y))
+	{
+		_uiTree.GetNode("SawDescription")->SetHidden(false);
+	}
+	else
+	{
+		_uiTree.GetNode("SawDescription")->SetHidden(true);
+	}
+
+	//MACHINE GUN TRAP
 	if (_uiTree.IsButtonColliding("MachineGunTrap", coord._pos.x, coord._pos.y))
 	{
 		_uiTree.GetNode("MachineGunDescription")->SetHidden(false);
-
-		// Add description
 	}
 	else
 	{
 		_uiTree.GetNode("MachineGunDescription")->SetHidden(true);
 	}
 
-	//if (_uiTree.IsButtonColliding("SharkTrap", coord._pos.x, coord._pos.y))
-	//{
-	//	_uiTree.GetNode("SharkDescription")->SetHidden(false);
-
-	//	// Add description
-	//}
-	//else
-	//{
-	//	_uiTree.GetNode("SharkDescription")->SetHidden(true);
-	//}
-
-	if (_uiTree.IsButtonColliding("Camera", coord._pos.x, coord._pos.y))
+	//FLAMETHROWER TRAP
+	if (_uiTree.IsButtonColliding("FlameThrowerTrap", coord._pos.x, coord._pos.y))
 	{
-		_uiTree.GetNode("CameraDescription")->SetHidden(false);
-
-		// Add description
+		_uiTree.GetNode("FlameThrowerDescription")->SetHidden(false);
 	}
 	else
 	{
-		_uiTree.GetNode("CameraDescription")->SetHidden(true);
+		_uiTree.GetNode("FlameThrowerDescription")->SetHidden(true);
+	}
+
+	//WATER GUN TRAP
+	if (_uiTree.IsButtonColliding("WaterGunTrap", coord._pos.x, coord._pos.y))
+	{
+		_uiTree.GetNode("WaterGunDescription")->SetHidden(false);
+	}
+	else
+	{
+		_uiTree.GetNode("WaterGunDescription")->SetHidden(true);
+	}
+
+	//TESLA TRAP
+	if (_uiTree.IsButtonColliding("TeslaTrap", coord._pos.x, coord._pos.y))
+	{
+		_uiTree.GetNode("TeslaDescription")->SetHidden(false);
+	}
+	else
+	{
+		_uiTree.GetNode("TeslaDescription")->SetHidden(true);
+	}
+
+	//SPIN TRAP
+	if (_uiTree.IsButtonColliding("SpinTrap", coord._pos.x, coord._pos.y))
+	{
+		_uiTree.GetNode("SpinDescription")->SetHidden(false);
+	}
+	else
+	{
+		_uiTree.GetNode("SpinDescription")->SetHidden(true);
+	}
+
+	//SUGAR BOMB
+	if (_uiTree.IsButtonColliding("CakeTrap", coord._pos.x, coord._pos.y))
+	{
+		_uiTree.GetNode("CakeDescription")->SetHidden(false);
+	}
+	else
+	{
+		_uiTree.GetNode("CakeDescription")->SetHidden(true);
+	}
+
+	//SHARK TRAP
+	if (_uiTree.IsButtonColliding("SharkTrap", coord._pos.x, coord._pos.y))
+	{
+		_uiTree.GetNode("SharkDescription")->SetHidden(false);
+	}
+	else
+	{
+		_uiTree.GetNode("SharkDescription")->SetHidden(true);
 	}
 }
