@@ -352,7 +352,10 @@ void Enemy::Update(float deltaTime)
 			break;
 		case MoveState::MOVING:
 			Moving();
-			Animate(WALKANIM);
+			if (_moveState == MoveState::MOVING)
+			{
+				Animate(WALKANIM);
+			}
 			break;
 		case MoveState::SWITCHING_NODE:
 			SwitchingNode();
