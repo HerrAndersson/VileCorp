@@ -31,6 +31,17 @@ void MenuState::Update(float deltaTime)
 
 	if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
+		if (_uiTree.IsButtonColliding("tutorialbutton", coord._pos.x, coord._pos.y))
+		{
+			_soundModule->Stop("theme");
+			_soundModule->Play("page");
+
+			std::string levelBinaryPath = System::SKIRMISH_FOLDER_PATH;
+			levelBinaryPath += "tutorial1.bin";
+			_objectHandler->LoadLevel(levelBinaryPath);
+
+			ChangeState(State::TUTORIALSTATE);
+		}
 		if (_uiTree.IsButtonColliding("playbutton", coord._pos.x, coord._pos.y))
 		{
 			_soundModule->Stop("theme");
