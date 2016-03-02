@@ -2,9 +2,9 @@
 
 void TutorialState::ChangeTutorialStages(bool forward/* = true*/)
 {
-	_uiTree.GetNode("Tutorial")->GetChildren()->at(_currentStage)->SetHidden(false);
-	_currentStage = TutorialStage(_currentStage + 1);
 	_uiTree.GetNode("Tutorial")->GetChildren()->at(_currentStage)->SetHidden(true);
+	_currentStage = TutorialStage(_currentStage + 1);
+	_uiTree.GetNode("Tutorial")->GetChildren()->at(_currentStage)->SetHidden(false);
 }
 
 void TutorialState::PlacementGuideCheck(std::string nodeName, System::Type type, int subType /*= 0*/)
@@ -101,6 +101,7 @@ void TutorialState::Update(float deltaTime)
 			_profile->_firstTime = false;
 			_tutorialCompleted = true;
 			_uiTree.GetNode("Play")->SetColorOffset(DirectX::XMFLOAT4(0, 0, 0, 1.0f));
+			ChangeState(PLAYSTATE);
 		}
 		break;
 	default:

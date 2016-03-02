@@ -26,7 +26,7 @@ void PauseState::Update(float deltaTime)
 
 		if (_uiTree.IsButtonColliding("mainmenu", coord._pos.x, coord._pos.y) || _controls->IsFunctionKeyDown("MENU:MENU"))
 		{
-			// Tutorial
+			ChangeState(State::MENUSTATE);
 		}
 
 		if (_uiTree.IsButtonColliding("quit", coord._pos.x, coord._pos.y))
