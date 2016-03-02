@@ -77,7 +77,7 @@ namespace Renderer
 		
 		struct MatrixBufferPerSkinnedObject
 		{
-			DirectX::XMFLOAT4X4 _bones[50];
+			DirectX::XMMATRIX _bones[50];
 		};
 
 		struct MatrixBufferPerFrame
@@ -153,7 +153,7 @@ namespace Renderer
 		void InitializeScreenQuadBuffer();
 
 		void SetDataPerObject(DirectX::XMMATRIX* world, const DirectX::XMFLOAT3& colorOffset = DirectX::XMFLOAT3(0, 0, 0));
-		void SetDataPerSkinnedObject(DirectX::XMMATRIX* world, std::vector<DirectX::XMFLOAT4X4>* extra, const DirectX::XMFLOAT3& colorOffset = DirectX::XMFLOAT3(0, 0, 0));
+		void SetDataPerSkinnedObject(DirectX::XMMATRIX* world, DirectX::XMMATRIX* extra, int bonecount, const DirectX::XMFLOAT3& colorOffset = DirectX::XMFLOAT3(0, 0, 0));
 		void SetDataPerMesh(ID3D11Buffer* vertexBuffer, int vertexSize);
 		void SetShadowMapDataPerObject(DirectX::XMMATRIX* world);
 
@@ -173,7 +173,7 @@ namespace Renderer
 		void SetDataPerObjectType(RenderObject* renderObject);
 		void SetDataPerLineList(ID3D11Buffer* lineList, int vertexSize);
 		void SetDataPerParticleEmitter(const DirectX::XMFLOAT3& position, DirectX::XMMATRIX* camView, DirectX::XMMATRIX* camProjection, 
-									   const DirectX::XMFLOAT3& camPos, float scale, ID3D11ShaderResourceView** textures, int textureCount, int isIcon);
+									   const DirectX::XMFLOAT3& camPos, float scale, Texture** textures, int textureCount, int isIcon);
 
 		void SetShadowMapDataPerObjectType(RenderObject* renderObject);
 		void SetShadowMapDataPerSpotlight(DirectX::XMMATRIX* lightView, DirectX::XMMATRIX* lightProjection);
@@ -189,10 +189,10 @@ namespace Renderer
 
 		void BeginScene(float red, float green, float blue, float alpha);
 		void Render(DirectX::XMMATRIX* world, int vertexBufferSize, const DirectX::XMFLOAT3& colorOffset = DirectX::XMFLOAT3(0, 0, 0));
-		void RenderAnimation(DirectX::XMMATRIX* world, int vertexBufferSize, std::vector<DirectX::XMFLOAT4X4>* extra = nullptr, const DirectX::XMFLOAT3& colorOffset = DirectX::XMFLOAT3(0, 0, 0));
+		void RenderAnimation(DirectX::XMMATRIX* world, int vertexBufferSize, DirectX::XMMATRIX* extra, int bonecount, const DirectX::XMFLOAT3& colorOffset = DirectX::XMFLOAT3(0, 0, 0));
 		void Render(GUI::Node* root, FontWrapper* fontWrapper);
 		void RenderLineStrip(DirectX::XMMATRIX* world, int nrOfPoints, const DirectX::XMFLOAT3& colorOffset = DirectX::XMFLOAT3(0,0,0));
-		void RenderShadowMap(DirectX::XMMATRIX* world, int vertexBufferSize, std::vector<DirectX::XMFLOAT4X4>* animTransformData = nullptr);
+		void RenderShadowMap(DirectX::XMMATRIX* world, int vertexBufferSize, DirectX::XMMATRIX* animTransformData = nullptr, int bonecount = 0);
 		void RenderScreenQuad();
 		void RenderParticles(ID3D11Buffer* particlePointsBuffer, int vertexCount, int vertexSize);
 		void RenderLightVolume(ID3D11Buffer* volume, DirectX::XMMATRIX* world, int vertexCount, int vertexSize);

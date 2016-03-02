@@ -7,7 +7,6 @@ Animation::Animation(Skeleton* skeleton, bool firstFrame, bool frozen)
 	toRootTransforms = (XMMATRIX*)_aligned_malloc(sizeof(XMMATRIX) * _boneCount, 16);
 	toParentTransforms = (XMMATRIX*)_aligned_malloc(sizeof(XMMATRIX) * _boneCount, 16);
 	finalTransforms = (XMMATRIX*)_aligned_malloc(sizeof(XMMATRIX) * _boneCount, 16);
-	finalFloats.resize(_boneCount);
 
 	_animTime = 0.0f;
 	_currentAction = -1;
@@ -27,7 +26,6 @@ Animation::Animation(Skeleton* skeleton, bool firstFrame, bool frozen)
 		for (unsigned i = 0; i < _boneCount; i++)
 		{
 			finalTransforms[i] = XMMatrixIdentity();
-			XMStoreFloat4x4(&finalFloats[i], XMMatrixIdentity());
 		}
 	}
 	for (int i = 0; i < _skeleton->_actions.size(); i++)
@@ -113,7 +111,6 @@ void Animation::Update(float time)
 	for (unsigned i = 0; i < _boneCount; i++)
 	{
 		finalTransforms[i] = XMMatrixTranspose(_skeleton->_bindposes[i] * toRootTransforms[i]);
-		XMStoreFloat4x4(&finalFloats[i], finalTransforms[i]);
 	}
 }
 
@@ -122,10 +119,6 @@ XMMATRIX* Animation::GetTransforms()
 	return finalTransforms;
 }
 
-std::vector<XMFLOAT4X4>* Animation::GetFloats()
-{
-	return &finalFloats;
-}
 int Animation::GetBoneCount() const
 {
 	return _boneCount;

@@ -26,9 +26,9 @@ Game::Game(HINSTANCE hInstance, int nCmdShow):
 	_camera->SetPosition(XMFLOAT3(3, 20, 0));
 	_camera->SetRotation(XMFLOAT3(60, 0, 0));
 
-	ParticleTextures particleTextures;
+	ParticleTextures* particleTextures = new ParticleTextures();
 	ParticleModifierOffsets modifiers;
-	LoadParticleSystemData(particleTextures, modifiers);
+	LoadParticleSystemData(*particleTextures, modifiers);
 
 	_particleHandler = new Renderer::ParticleHandler(_renderModule->GetDevice(), _renderModule->GetDeviceContext(), particleTextures, modifiers);
 
@@ -52,10 +52,10 @@ Game::~Game()
 	SAFE_DELETE(_camera);
 	SAFE_DELETE(_SM);
 	SAFE_DELETE(_controls);
-	SAFE_DELETE(_assetManager);
 	SAFE_DELETE(_pickingDevice);
 	SAFE_DELETE(_fontWrapper);
 	SAFE_DELETE(_particleHandler);
+	SAFE_DELETE(_assetManager);
 }
 
 void Game::ResizeResources(System::Settings* settings)
@@ -83,37 +83,37 @@ void Game::LoadParticleSystemData(ParticleTextures& particleTextures, ParticleMo
 
 	for (unsigned int i = 0; i < data._subtypeTexturePaths.at(ParticleSubType::BLOOD_SUBTYPE).size(); i++)
 	{
-		particleTextures._bloodTextures[i] = _assetManager->GetTexture(data._subtypeTexturePaths.at(ParticleSubType::BLOOD_SUBTYPE).at(i))->_data;
+		particleTextures._bloodTextures[i] = _assetManager->GetTexture(data._subtypeTexturePaths.at(ParticleSubType::BLOOD_SUBTYPE).at(i));
 	}
 
 	for (unsigned int i = 0; i < data._subtypeTexturePaths.at(ParticleSubType::WATER_SUBTYPE).size(); i++)
 	{
-		particleTextures._waterTextures[i] = _assetManager->GetTexture(data._subtypeTexturePaths.at(ParticleSubType::WATER_SUBTYPE).at(i))->_data;
+		particleTextures._waterTextures[i] = _assetManager->GetTexture(data._subtypeTexturePaths.at(ParticleSubType::WATER_SUBTYPE).at(i));
 	}
 
 	for (unsigned int i = 0; i < data._subtypeTexturePaths.at(ParticleSubType::SPARK_SUBTYPE).size(); i++)
 	{
-		particleTextures._sparkTextures[i] = _assetManager->GetTexture(data._subtypeTexturePaths.at(ParticleSubType::SPARK_SUBTYPE).at(i))->_data;
+		particleTextures._sparkTextures[i] = _assetManager->GetTexture(data._subtypeTexturePaths.at(ParticleSubType::SPARK_SUBTYPE).at(i));
 	}
 
 	for (unsigned int i = 0; i < data._subtypeTexturePaths.at(ParticleSubType::SMOKE_SUBTYPE).size(); i++)
 	{
-		particleTextures._smokeTextures[i] = _assetManager->GetTexture(data._subtypeTexturePaths.at(ParticleSubType::SMOKE_SUBTYPE).at(i))->_data;
+		particleTextures._smokeTextures[i] = _assetManager->GetTexture(data._subtypeTexturePaths.at(ParticleSubType::SMOKE_SUBTYPE).at(i));
 	}
 
 	for (unsigned int i = 0; i < data._subtypeTexturePaths.at(ParticleSubType::FIRE_SUBTYPE).size(); i++)
 	{
-		particleTextures._fireTextures[i] = _assetManager->GetTexture(data._subtypeTexturePaths.at(ParticleSubType::FIRE_SUBTYPE).at(i))->_data;
+		particleTextures._fireTextures[i] = _assetManager->GetTexture(data._subtypeTexturePaths.at(ParticleSubType::FIRE_SUBTYPE).at(i));
 	}
 
 	for (unsigned int i = 0; i < data._subtypeTexturePaths.at(ParticleSubType::MUZZLE_FLASH_SUBTYPE).size(); i++)
 	{
-		particleTextures._muzzleFlashTextures[i] = _assetManager->GetTexture(data._subtypeTexturePaths.at(ParticleSubType::MUZZLE_FLASH_SUBTYPE).at(i))->_data;
+		particleTextures._muzzleFlashTextures[i] = _assetManager->GetTexture(data._subtypeTexturePaths.at(ParticleSubType::MUZZLE_FLASH_SUBTYPE).at(i));
 	}
 
 	for (unsigned int i = 0; i < data._iconTexturePaths.size(); i++)
 	{
-		particleTextures._iconTextures[i] = _assetManager->GetTexture(data._iconTexturePaths.at(i))->_data;
+		particleTextures._iconTextures[i] = _assetManager->GetTexture(data._iconTexturePaths.at(i));
 	}
 
 	modifiers._splashPositionOffset = data._splashPositionOffset;
@@ -289,7 +289,7 @@ void Game::Render()
 					if (type == ParticleType::ICON)
 					{
 						textureCount = 1;
-						ID3D11ShaderResourceView* textures[1];
+						Texture* textures[1];
 						textures[0] = _particleHandler->GetIconTexture(emitter->GetSubType());
 
 						_renderModule->SetDataPerParticleEmitter(emitter->GetPosition(), _camera->GetViewMatrix(), _camera->GetProjectionMatrix(), _camera->GetPosition(), emitter->GetParticleScale(), textures, textureCount, 1);
@@ -297,7 +297,7 @@ void Game::Render()
 					}
 					else
 					{
-						ID3D11ShaderResourceView** textures = _particleHandler->GetTextures(textureCount, emitter->GetSubType());
+						Texture** textures = _particleHandler->GetTextures(textureCount, emitter->GetSubType());
 						_renderModule->SetDataPerParticleEmitter(emitter->GetPosition(), _camera->GetViewMatrix(), _camera->GetProjectionMatrix(), _camera->GetPosition(), emitter->GetParticleScale(), textures, textureCount, 0);
 
 						_renderModule->RenderParticles(vertexBuffer, emitter->GetParticleCount(), emitter->GetVertexSize());
@@ -430,7 +430,7 @@ void Game::RenderGameObjects(int forShaderStage, std::vector<std::vector<GameObj
 						}
 						else
 						{
-							_renderModule->RenderAnimation(gameObject->GetMatrix(), vertexBufferSize, gameObject->GetAnimation()->GetFloats(), gameObject->GetColorOffset());
+							_renderModule->RenderAnimation(gameObject->GetMatrix(), vertexBufferSize, gameObject->GetAnimation()->GetTransforms(), gameObject->GetAnimation()->GetBoneCount(), gameObject->GetColorOffset());
 						}
 					}
 					lastGameObject = gameObject;
@@ -515,7 +515,7 @@ void Game::GenerateShadowMap(Renderer::Spotlight* spotlight, unsigned short owne
 					//Render the visible objects, but skip the owner itself
 					if (obj->IsVisible() && obj->GetID() != ownerID)
 					{
-						_renderModule->RenderShadowMap(obj->GetMatrix(), vertexBufferSize, anim->GetFloats());
+						_renderModule->RenderShadowMap(obj->GetMatrix(), vertexBufferSize, anim->GetTransforms(), anim->GetBoneCount());
 					}
 				}
 			}

@@ -19,7 +19,7 @@ namespace Renderer
 		ID3D11Device* _device;
 		ID3D11DeviceContext* _deviceContext;
 
-		ParticleTextures _textures;
+		ParticleTextures* _textures;
 		ParticleModifierOffsets _modifiers;
 
 		std::vector<ParticleMessage*> _queue;
@@ -32,15 +32,15 @@ namespace Renderer
 
 	public:
 
-		ParticleHandler(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const ParticleTextures& textures, const ParticleModifierOffsets& modifiers);
+		ParticleHandler(ID3D11Device* device, ID3D11DeviceContext* deviceContext, ParticleTextures* textures, const ParticleModifierOffsets& modifiers);
 		virtual ~ParticleHandler();
 
 		void Update(double deltaTime);
 
 		int GetEmitterCount() const;
 		ParticleEmitter* GetEmitter(int index);
-		ID3D11ShaderResourceView** GetTextures(int& count, const ParticleSubType& subType);
-		ID3D11ShaderResourceView* GetIconTexture(const ParticleSubType& subType);
+		Texture** GetTextures(int& count, const ParticleSubType& subType);
+		Texture* GetIconTexture(const ParticleSubType& subType);
 		
 		void DeactivateAllEmitters();
 

@@ -17,46 +17,46 @@
     "_lightningRepeatTime": 100,
     "_subtypeTexturePaths": [
       [
-        "Particles/blood1.png",
-        "Particles/blood2.png",
-        "Particles/blood3.png",
-        "Particles/blood4.png"
+        "Particles/blood1",
+        "Particles/blood2",
+        "Particles/blood3",
+        "Particles/blood4"
       ],
       [
-        "Particles/water1.png",
-        "Particles/water2.png",
-        "Particles/water3.png",
-        "Particles/water4.png"
+        "Particles/water1",
+        "Particles/water2",
+        "Particles/water3",
+        "Particles/water4"
       ],
       [
-        "Particles/blood1.png",
-        "Particles/blood2.png",
-        "Particles/blood3.png",
-        "Particles/blood4.png"
+        "Particles/blood1",
+        "Particles/blood2",
+        "Particles/blood3",
+        "Particles/blood4"
       ],
       [
-        "Particles/smoke1.png",
-        "Particles/smoke2.png",
-        "Particles/smoke3.png",
-        "Particles/smoke4.png"
+        "Particles/smoke1",
+        "Particles/smoke2",
+        "Particles/smoke3",
+        "Particles/smoke4"
       ],
       [
-        "Particles/fire1.png",
-        "Particles/fire2.png",
-        "Particles/fire1.png",
-        "Particles/fire2.png"
+        "Particles/fire1",
+        "Particles/fire2",
+        "Particles/fire1",
+        "Particles/fire2"
       ],
       [
-        "Particles/muzzleflash1.png",
-        "Particles/muzzleflash2.png",
-        "Particles/muzzleflash3.png",
-        "Particles/muzzleflash4.png"
+        "Particles/muzzleflash1",
+        "Particles/muzzleflash2",
+        "Particles/muzzleflash3",
+        "Particles/muzzleflash4"
       ]
     ],
     "_iconTexturePaths": 
     [
-      "Particles/icon_exclamationmark.png",
-      "Particles/icon_questionmark.png"
+      "Particles/icon_exclamationmark",
+      "Particles/icon_questionmark"
     ]
   }
 }

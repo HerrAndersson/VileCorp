@@ -583,6 +583,10 @@ void ObjectHandler::Update(float deltaTime)
 
 				if (unit->GetHealth() <= 0 && unit->GetAnimisFinished())
 				{
+					if (unit->IsSwitchingTile())
+					{
+						unit->SetTilePosition(unit->GetNextTile());
+					}
 					if (heldObject != nullptr)
 					{
 						bool lootRemoved = false;

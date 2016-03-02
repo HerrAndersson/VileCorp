@@ -302,6 +302,10 @@ void Unit::InitializePathFinding()
 			{
 				_aStar->SetTileCost({i, j}, -1);
 			}
+			else if (_tileMap->IsFurnitureOnTile(AI::Vec2D(i, j)))
+			{
+				_aStar->SetTileCost({i, j}, SHRT_MAX/2);					//Needs to be reachable in case objective is on a furniture tile, but it's still high enough that units almost always avoid it.
+			}
 			else
 			{
 				_aStar->SetTileCost({i, j}, 1);
@@ -385,6 +389,7 @@ void Unit::SwitchingNode()
 		}
 		Rotate();
 		_moveState = MoveState::MOVING;
+		_isSwitchingTile = false;
 	}
 	else
 	{

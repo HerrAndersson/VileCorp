@@ -15,6 +15,7 @@ class __declspec(dllexport) Animation
 {
 private:
 
+	XMVECTOR _zeroVector = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
 	XMMATRIX Interpolate(unsigned int boneID, int action);
 
 	bool _frozen;
@@ -23,11 +24,9 @@ private:
 	float _nextTime;
 	float _lerpPercent;
 	unsigned _lastFrame, _boneCount;
-	XMVECTOR _zeroVector = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
 	XMMATRIX* toRootTransforms;
 	XMMATRIX* toParentTransforms;
 	XMMATRIX* finalTransforms;
-	std::vector<XMFLOAT4X4> finalFloats;
 	Skeleton* _skeleton;
 	float _animTime;
 	int _currentCycle, _currentAction;
@@ -45,8 +44,16 @@ public:
 	void Freeze(bool freeze);
 	XMMATRIX* GetTransforms();
 	void PlayAction(int action, bool freeze = false, bool lastFrame = false);
-	std::vector<XMFLOAT4X4>* GetFloats();
 	int GetBoneCount() const;
 	bool GetisFinished();
 	float GetLength(int animation);
+	static void* Animation::operator new(size_t i)
+	{
+		return _mm_malloc(i, 16);
+	}
+
+		static void Animation::operator delete(void* p)
+	{
+		_mm_free(p);
+	}
 };

@@ -281,9 +281,9 @@ void Trap::SetTiles()
 		_nrOfAOETiles = CalculateCircle(3, _tilePosition, _areaOfEffect);
 		break;
 	case SHARK:
-		_nrOfOccupiedTiles = CalculateRectangle(5, 2, _tilePosition, _occupiedTiles);
-		_nrOfTriggers = CalculateRectangle(1, 2, _tilePosition, _triggerTiles);
-		_nrOfAOETiles = CalculateRectangle(1, 2, _tilePosition, _areaOfEffect);
+		_nrOfOccupiedTiles = CalculateRectangle(5, 2, _tilePosition - AI::Vec2D(_direction._y, _direction._x), _occupiedTiles);
+		_nrOfTriggers = CalculateRectangle(1, 2, _tilePosition - AI::Vec2D(_direction._y, _direction._x), _triggerTiles);
+		_nrOfAOETiles = CalculateRectangle(1, 2, _tilePosition - AI::Vec2D(_direction._y, _direction._x), _areaOfEffect);
 		break;
 	case GUN:
 		_nrOfOccupiedTiles = CalculateLine(10, _tilePosition, _occupiedTiles);
@@ -311,6 +311,9 @@ void Trap::SetTiles()
 		_nrOfTriggers = CalculateLine(7, _tilePosition, _triggerTiles);
 		break;
 	case WATER_GUN:
+		_nrOfOccupiedTiles = CalculateLine(7, _tilePosition, _occupiedTiles);
+		_nrOfAOETiles = CalculateLine(7, _tilePosition, _areaOfEffect);
+		_nrOfTriggers = CalculateLine(7, _tilePosition, _triggerTiles);
 		break;
 	case SPIN_TRAP:
 		_occupiedTiles[_nrOfOccupiedTiles++] = _tilePosition;
@@ -368,7 +371,7 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 		Initialize(40, 1, 1, 1, 50, 50, 140, 140, Unit::StatusEffect::NO_EFFECT, 0, 0);
 		break;
 	case TESLACOIL:																					//AOE that stuns for a few seconds and does a small amount of damage
-		Initialize(30, 9, 9, 37, 80, 80, 140, 140, Unit::StatusEffect::STUNNED, 620, 620, 60, 2);
+		Initialize(30, 9, 9, 37, 80, 80, 140, 140, Unit::StatusEffect::STUNNED, 120, 120, 60, 2);
 		frozen = false;
 		break;
 	case SHARK:																						//Takes up a lot of space, but is an instant kill if it hits.
@@ -523,6 +526,8 @@ void Trap::Update(float deltaTime)
 			{}
 			_triggerTiles[0] = _occupiedTiles[i%_nrOfOccupiedTiles];
 			_areaOfEffect[0] = _triggerTiles[0];
+		//	_tileMap->GetObjectOnTile(_areaOfEffect[0], System::FLOOR)->SetColorOffset({0.0f,0.0f,3.0f});
+
 		}
 		if (_tileMap->IsEnemyOnTile(_triggerTiles[0]))
 		{
@@ -581,7 +586,6 @@ void Trap::SetVisibleToEnemies(bool visible)
 // Overloaded function
 void Trap::SetTilePosition(AI::Vec2D pos)
 {
-
 	//_nrOfAOETiles = 0;
 	int radius = 0;
 	GameObject::SetTilePosition(pos);	
