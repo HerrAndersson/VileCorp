@@ -50,17 +50,17 @@ Game::Game(HINSTANCE hInstance, int nCmdShow) :
 
 Game::~Game()
 {
-	SAFE_DELETE(_objectHandler);
-	SAFE_DELETE(_window);
-	SAFE_DELETE(_renderModule);
-	SAFE_DELETE(_camera);
-	SAFE_DELETE(_SM);
-	SAFE_DELETE(_controls);
-	SAFE_DELETE(_pickingDevice);
-	SAFE_DELETE(_fontWrapper);
-	SAFE_DELETE(_particleHandler);
-	SAFE_DELETE(_combinedMeshGenerator);
-	SAFE_DELETE(_assetManager);
+	delete _objectHandler;
+	delete _window;
+	delete _renderModule;
+	delete _camera;
+	delete _SM;
+	delete _controls;
+	delete _pickingDevice;
+	delete _fontWrapper;
+	delete _particleHandler;
+	delete _combinedMeshGenerator;
+	delete _assetManager;
 }
 
 void Game::ResizeResources(System::Settings* settings)
@@ -140,14 +140,12 @@ void Game::LoadParticleSystemData(ParticleTextures& particleTextures, ParticleMo
 
 bool Game::Update(double deltaTime)
 {
-	_soundModule.Update(_camera->GetPosition().x, _camera->GetPosition().y, _camera->GetPosition().z);
+	_soundModule.Update(_camera->GetPosition());
 
 	if (_SM->GetState() == PLACEMENTSTATE)
 	{
 		_objectHandler->UpdateLights();
 	}
-
-	bool run = true;
 
 	//Apply settings if they has changed
 	if (_settingsReader.GetSettingsChanged())
@@ -160,7 +158,7 @@ bool Game::Update(double deltaTime)
 	}
 
 	_controls->Update();
-	run = _SM->Update(deltaTime);
+	bool run = _SM->Update(deltaTime);
 
 	if (_controls->IsFunctionKeyDown("DEBUG:REQUEST_PARTICLE"))
 	{

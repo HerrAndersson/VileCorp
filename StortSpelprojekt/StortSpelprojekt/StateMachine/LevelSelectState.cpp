@@ -2,7 +2,8 @@
 
 
 LevelSelectState::LevelSelectState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule, CombinedMeshGenerator* combinedMeshGenerator) :
-	BaseState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settingsReader, soundModule)
+	BaseState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settingsReader, soundModule),
+	_selectedLevelHeader()
 {
 	std::vector<GUI::Node*>* levelSelectionPageNodes = _uiTree.GetNode("LevelSelectionPageContent")->GetChildren();
 
@@ -34,6 +35,11 @@ LevelSelectState::LevelSelectState(System::Controls* controls, ObjectHandler* ob
 	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("playbutton")));
 	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("CampaignTab")));
 	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("SkirmishTab")));
+
+	_profile = _settingsReader->GetProfile();
+	_isCampaignMode = true;
+	_campaignSelection = 0;
+	_campaignSelectionMax = 0;
 }
 
 LevelSelectState::~LevelSelectState()
@@ -200,7 +206,7 @@ void LevelSelectState::LoadLevelHeader(int levelFilename, Level::LevelHeader * h
 	LoadLevelHeader(std::to_string(levelFilename), headerToLoad);
 }
 
-void LevelSelectState::LoadLevelHeader(std::string levelFilename, Level::LevelHeader * headerToLoad)
+void LevelSelectState::LoadLevelHeader(const std::string& levelFilename, Level::LevelHeader * headerToLoad)
 {
 	std::string levelPath;
 	if (_isCampaignMode)

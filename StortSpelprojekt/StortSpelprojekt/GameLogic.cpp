@@ -199,7 +199,7 @@ void GameLogic::HandleUnitMove()
 		{
 			_player->MoveUnits(selectedTile);
 			//Play sound
-			PlayMoveSound((GuardType)(((Guard*)units.at(0))->GetSubType()));
+			PlayMoveSound(static_cast<GuardType>(units.at(0)->GetSubType()));
 		}
 	}
 }

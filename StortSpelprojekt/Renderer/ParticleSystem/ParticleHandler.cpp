@@ -11,25 +11,20 @@ namespace Renderer
 		_emitterCount = 0;
 		_textures = textures;
 		_modifiers = modifiers;
-
-		for (int i = 0; i < _emitterCount; i++)
-		{
-			_particleEmitters.push_back(new ParticleEmitter(device, deviceContext, &_modifiers));
-		}
-
 		_requestQueue = new ParticleEventQueue(&_queue);
 	}
 
 	ParticleHandler::~ParticleHandler()
 	{
-		SAFE_DELETE(_requestQueue);
+		delete _requestQueue;
+		_requestQueue = nullptr;
 		_queue.clear();
 		_device = nullptr;
 		_deviceContext = nullptr;
 
 		for (ParticleEmitter* p : _particleEmitters)
 		{
-			SAFE_DELETE(p);
+			delete p;
 		}
 		delete _textures;
 		_particleEmitters.clear();

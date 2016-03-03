@@ -49,7 +49,6 @@ static bool GetFilenamesInDirectory(char* folder, char* extension, vector<string
 	bool result = false;
 	if (folder != nullptr && extension != nullptr)
 	{
-		ofstream testout;
 		string search_path = folder;
 		search_path.append("*");
 		search_path.append(extension);
@@ -103,17 +102,17 @@ private:
 	vector<Texture*>* _textures;
 	vector<Mesh*>* _meshes;
 
-	bool LoadModel(string name, Mesh* mesh);
+	bool LoadModel(const std::string& name, Mesh* mesh);
 	void Flush();
 	Mesh* ScanModel24();
 	Mesh* ScanModel26();
 	Mesh* ScanModel27();
 	Mesh* ScanModel28();
 	Mesh* ScanModel29();
-	Mesh* ScanModel(string name);
-	Texture* ScanTexture(string name);
-	Mesh* GetModel(string name);
-	Skeleton* LoadSkeleton(string name);
+	Mesh* ScanModel(const std::string& name);
+	Texture* ScanTexture(const std::string& name);
+	Mesh* GetModel(const std::string& name);
+	Skeleton* LoadSkeleton(const std::string& name);
 	ID3D11Buffer* CreateVertexBuffer(vector<WeightedVertex> *weightedVertices, vector<Vertex> *vertices, int skeleton);
 
 	int _textureIdCounter = 0;
@@ -121,9 +120,9 @@ public:
 	AssetManager(ID3D11Device* device);
 	~AssetManager();
 	RenderObject* GetRenderObject(int index);
-	RenderObject* GetRenderObject(string meshName, string textureName);
-	HRESULT ParseLevelHeader(Level::LevelHeader* outputLevelHead, std::string levelHeaderFilePath);
-	HRESULT ParseLevelBinary(Level::LevelBinary* outputLevelBin, std::string levelBinaryFilePath);
-	Texture* GetTexture(string name);
+	RenderObject* GetRenderObject(const std::string& meshName, const std::string& textureName);
+	HRESULT ParseLevelHeader(Level::LevelHeader* outputLevelHead, const std::string& levelHeaderFilePath);
+	HRESULT ParseLevelBinary(Level::LevelBinary* outputLevelBin, const std::string& levelBinaryFilePath);
+	Texture* GetTexture(std::string name);
 	void Clean();
 };

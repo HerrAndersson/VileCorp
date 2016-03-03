@@ -39,7 +39,7 @@ protected:
 	void HandleCamRot();
 	void HandleCamMove(float deltaTime);
 
-	void HandleButtonHighlight(System::MouseCoord coord);
+	void HandleButtonHighlight(const System::MouseCoord& coord);
 public:
 	BaseState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule);
 	virtual ~BaseState();

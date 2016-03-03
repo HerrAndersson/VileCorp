@@ -26,7 +26,7 @@ namespace System
 
 		_lockedCursor = false;
 
-		_currentText = L"";
+		_currentText.clear();
 		_isTextInputMode = false;
 		_breakOnEsc = false;
 		_breakOnCarriageReturn = false;
@@ -371,7 +371,7 @@ namespace System
 		return _mouseCoord;
 	}
 
-	void InputDevice::SetCurrentText(std::wstring text)
+	void InputDevice::SetCurrentText(const std::wstring& text)
 	{
 		_currentText = text;
 	}
@@ -381,7 +381,7 @@ namespace System
 		return _currentText;
 	}
 
-	void InputDevice::SetIsTextInputMode(std::wstring currentText, bool breakOnEsc, bool breakOnCarriageReturn, bool breakOnTab, int characterLimit, bool onlyNumbers)
+	void InputDevice::SetIsTextInputMode(const std::wstring& currentText, bool breakOnEsc, bool breakOnCarriageReturn, bool breakOnTab, int characterLimit, bool onlyNumbers)
 	{
 		_isTextInputMode = true;
 		_currentText = currentText;
