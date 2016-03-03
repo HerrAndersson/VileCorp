@@ -1002,6 +1002,7 @@ void LevelEditState::ExportLevel()
 
 	//Convert spawn wave data to spawn wave map
 
+	_levelBinary._enemyOrderedSpawnVector = std::vector<std::array<int, 2>>();
 	for (int i = 0; i < _levelBinary._enemyWavesGUIData.size(); i++)
 	{
 		std::vector<int>* spawnWave = &_levelBinary._enemyWavesGUIData[i];

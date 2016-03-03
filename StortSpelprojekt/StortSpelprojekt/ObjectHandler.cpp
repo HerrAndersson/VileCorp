@@ -674,7 +674,7 @@ void ObjectHandler::Update(float deltaTime)
 
 void ObjectHandler::SpawnEnemies()
 {
-	if (_enemySpawnVector.size() > 0 && _enemySpawnIndex < _enemySpawnVector.size() - 1)
+	if (_enemySpawnVector.size() > 0 && _enemySpawnIndex < _enemySpawnVector.size())
 	{
 		int nextEnemySpawnTime = _enemySpawnVector[_enemySpawnIndex][0];
 
@@ -684,7 +684,11 @@ void ObjectHandler::SpawnEnemies()
 			System::Blueprint* nextEnemyBlueprint = _blueprints.GetBlueprintByType(System::ENEMY, nextEnemyType);
 
 			bool enemyAdded = false;
-			int initialSpawnPointIndex = rand() % (_gameObjects[System::Type::SPAWN].size() - 1);
+			int initialSpawnPointIndex = 0;
+			if (_gameObjects[System::Type::SPAWN].size() > 1)
+			{
+				initialSpawnPointIndex = rand() % (_gameObjects[System::Type::SPAWN].size() - 1);
+			}
 			int currentSpawnPointIndex = initialSpawnPointIndex;
 
 			do
@@ -794,7 +798,7 @@ std::vector<std::string>* ObjectHandler::GetCurrentAvailableUnits()
 
 int ObjectHandler::GetRemainingToSpawn()
 {
-	return _enemySpawnVector.size() - (_enemySpawnIndex + 1);
+	return _enemySpawnVector.size() - _enemySpawnIndex;
 }
 
 map<GameObject*, Renderer::Spotlight*>* ObjectHandler::GetSpotlights()
