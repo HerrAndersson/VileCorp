@@ -17,10 +17,15 @@ GameObject::GameObject(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::X
 	_soundModule = soundModule;
 	_direction = direction;
 	CalculateMatrix();
+	_animation = nullptr;
 }
 
 GameObject::~GameObject()
 {
+	if (_animation != nullptr)
+	{
+		delete _animation;
+	}
 }
 
 void GameObject::CalculateMatrix()
