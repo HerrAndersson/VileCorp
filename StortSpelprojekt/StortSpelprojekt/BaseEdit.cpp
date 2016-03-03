@@ -217,11 +217,7 @@ void BaseEdit::DropEvent()
 		if (_droppedObject)
 		{
 			_tileMap->RemoveObjectFromTile(_movingGhostImage._g);
-			_createdObject = _objectHandler->Add(_sB->_blueprint, _sB->_textureId, _movingGhostImage._g->GetPosition(), _movingGhostImage._g->GetRotation(), true);
-			if (_createdObject != nullptr)
-			{
-				_createdObject->SetDirection(_movingGhostImage._g->GetDirection());
-			}
+			_createdObject = _objectHandler->Add(_sB->_blueprint, _sB->_textureId, _movingGhostImage._g->GetPosition(), _movingGhostImage._g->GetRotation(), true, _movingGhostImage._g->GetDirection());
 		}
 
 		// Disables multiplacement with mouse in placement state
