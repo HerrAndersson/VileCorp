@@ -527,3 +527,13 @@ bool Tilemap::IsTileEmpty(AI::Vec2D pos) const
 {
 	return IsTileEmpty(pos._x, pos._y);
 }
+
+bool Tilemap::IsTileNoPlacementZone(int x, int z) const
+{
+	return IsFloorOnTile(x, z) && static_cast<Architecture*>(_map[x][z]._objectsOnTile[0])->GetNoPlacementZone();
+}
+
+bool Tilemap::IsTileNoPlacementZone(AI::Vec2D pos) const
+{
+	return IsTileNoPlacementZone(pos._x, pos._y);
+}
