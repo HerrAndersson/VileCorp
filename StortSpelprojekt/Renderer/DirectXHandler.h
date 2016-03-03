@@ -67,7 +67,7 @@ namespace Renderer
 
 		void ResizeResources(System::Settings* settings);
 
-		void BeginScene(float red, float green, float blue, float alpha);
+		void BeginScene(float red, float green, float blue, float alpha, bool clearBackBuffer);
 		void EndScene();
 	};
 }
