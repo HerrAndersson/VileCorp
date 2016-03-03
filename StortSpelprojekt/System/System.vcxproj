@@ -98,13 +98,15 @@
       <AdditionalLibraryDirectories>../include/yse/dll;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <CustomBuildStep>
-      <Command>robocopy "C:\%HOMEPATH%\Google Drive\Stort spelprojekt\Assets" "$(OutDir)Assets" /MIR /XF *.* /W:0 /R:0
+      <Command>Powershell.exe -ExecutionPolicy Unrestricted -file "$(SolutionDir)..\Tools\batchRenameAssets.ps1"
+
+robocopy "C:\%HOMEPATH%\Google Drive\Stort spelprojekt\Assets" "$(OutDir)Assets" /MIR /XF *.* /W:0 /R:0
 
 "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Visual Studio 2015\Visual Studio Tools\MSBuild Command Prompt for VS2015.lnk"
 
-IF NOT EXIST "$(SolutionDir)..\TextureConverter\x64\Debug\TextureConverter.exe" msbuild "$(SolutionDir)..\TextureConverter\TextureConverter.sln"
+IF NOT EXIST "$(SolutionDir)..\Tools\TextureConverter\x64\Debug\TextureConverter.exe" msbuild "$(SolutionDir)..\Tools\TextureConverter\TextureConverter.sln"
 
-"$(SolutionDir)..\TextureConverter\x64\Debug\TextureConverter.exe" "$(OutDir)Assets/" "C:%HOMEPATH%/Google Drive/Stort spelprojekt/Assetsdds/" "C:%HOMEPATH%/Google Drive/Stort spelprojekt/Assets/" -ToDDS png
+"$(SolutionDir)..\Tools\TextureConverter\x64\Debug\TextureConverter.exe" "$(OutDir)Assets/" "C:%HOMEPATH%/Google Drive/Stort spelprojekt/Assetsdds/" "C:%HOMEPATH%/Google Drive/Stort spelprojekt/Assets/" -ToDDS png
 
 robocopy "$(SolutionDir)Renderer\Shaders" "$(OutDir)Assets\Shaders" *.hlsl /E /XA:H /W:0 /R:0
 
@@ -163,13 +165,15 @@ if errorlevel 1 exit 0 else exit %errorlevel%</Command>
       <AdditionalLibraryDirectories>../include/yse/dll;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <CustomBuildStep>
-      <Command>robocopy "C:\%HOMEPATH%\Google Drive\Stort spelprojekt\Assets" "$(OutDir)Assets" /MIR /XF *.* /W:0 /R:0
+      <Command>Powershell.exe -ExecutionPolicy Unrestricted -file "$(SolutionDir)..\Tools\batchRenameAssets.ps1"
+
+robocopy "C:\%HOMEPATH%\Google Drive\Stort spelprojekt\Assets" "$(OutDir)Assets" /MIR /XF *.* /W:0 /R:0
 
 "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Visual Studio 2015\Visual Studio Tools\MSBuild Command Prompt for VS2015.lnk"
 
-IF NOT EXIST "$(SolutionDir)..\TextureConverter\x64\Debug\TextureConverter.exe" msbuild "$(SolutionDir)..\TextureConverter\TextureConverter.sln"
+IF NOT EXIST "$(SolutionDir)..\Tools\TextureConverter\x64\Debug\TextureConverter.exe" msbuild "$(SolutionDir)..\Tools\TextureConverter\TextureConverter.sln"
 
-"$(SolutionDir)..\TextureConverter\x64\Debug\TextureConverter.exe" "$(OutDir)Assets/" "C:%HOMEPATH%/Google Drive/Stort spelprojekt/Assetsdds/" "C:%HOMEPATH%/Google Drive/Stort spelprojekt/Assets/" -ToDDS png
+"$(SolutionDir)..\Tools\TextureConverter\x64\Debug\TextureConverter.exe" "$(OutDir)Assets/" "C:%HOMEPATH%/Google Drive/Stort spelprojekt/Assetsdds/" "C:%HOMEPATH%/Google Drive/Stort spelprojekt/Assets/" -ToDDS png
 
 robocopy "$(SolutionDir)Renderer\Shaders" "$(OutDir)Assets\Shaders" *.hlsl /E /XA:H /W:0 /R:0
 

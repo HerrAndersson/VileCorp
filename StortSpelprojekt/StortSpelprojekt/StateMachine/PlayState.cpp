@@ -28,6 +28,9 @@ PlayState::PlayState(System::Controls* controls, ObjectHandler* objectHandler, S
 	_soundModule->AddSound("bomb_activate", 1.0f, 1.0f, false, false);
 	_soundModule->AddSound("bear_activate", 0.8f, 1.0f, false, false);
 	_soundModule->AddSound("flame_activate", 1.0f, 1.0f, false, false);
+	_soundModule->AddSound("shark_activate", 1.0f, 1.0f, false, false);
+	_soundModule->AddSound("water_activate", 1.0f, 1.0f, false, false);
+	_soundModule->AddSound("spin_activate", 1.0f, 1.0f, false, false);
 }
 
 PlayState::~PlayState()
@@ -49,7 +52,6 @@ void PlayState::Update(float deltaTime)
 	if (_controls->IsFunctionKeyDown("MOUSE:SELECT") && !_uiTree.GetNode("Tutorial")->GetHidden())
 	{
 		_uiTree.GetNode("Tutorial")->SetHidden(true);
-		_objectHandler->EnableSpawnPoints();
 	}
 
 	_gameLogic->Update(deltaTime);
@@ -66,6 +68,18 @@ void PlayState::OnStateEnter()
 
 	//Play music
 	_soundModule->Play("in_game_2");
+
+	//TODO: Check this more! /Jonas
+	std::vector<std::vector<GameObject*>>* gameObjects = _objectHandler->GetGameObjects();
+	for (auto& gameObjectVector : *gameObjects)
+	{
+		std::sort(gameObjectVector.begin(), gameObjectVector.end(),
+			[](GameObject* first, GameObject* second)
+		{
+			return *first < *second;
+		}
+		);
+	}
 }
 
 void PlayState::OnStateExit()

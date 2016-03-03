@@ -7,7 +7,7 @@
 #include <cereal\archives\json.hpp>
 #include <cereal\types\vector.hpp>
 #include <cereal\types\string.hpp>
-#include <cereal\types\map.hpp>
+#include <cereal\types\array.hpp>
 
 namespace Level
 {
@@ -42,8 +42,9 @@ namespace Level
 		int _tileMapSizeX = 0;
 		int _tileMapSizeZ = 0;
 		std::vector<std::vector<int>> _gameObjectData = std::vector<std::vector<int>>();
-		std::vector<std::vector<int>> _enemyWavesData = std::vector<std::vector<int>>();
-		std::map<int, int> _enemySpawnMap = std::map<int, int>();
+		std::vector<std::vector<int>> _enemyWavesGUIData = std::vector<std::vector<int>>();
+		std::vector<std::array<int, 2>> _enemyOrderedSpawnVector = std::vector<std::array<int, 2>>();
+		std::vector<std::string> _availableUnits = std::vector<std::string>();
 
 		template<class A>
 		void serialize(A& a)
@@ -52,8 +53,9 @@ namespace Level
 				CEREAL_NVP(_tileMapSizeX),
 				CEREAL_NVP(_tileMapSizeZ),
 				CEREAL_NVP(_gameObjectData),
-				CEREAL_NVP(_enemyWavesData),
-				CEREAL_NVP(_enemySpawnMap)
+				CEREAL_NVP(_enemyWavesGUIData),
+				CEREAL_NVP(_enemyOrderedSpawnVector),
+				CEREAL_NVP(_availableUnits)
 				);
 		}
 	};

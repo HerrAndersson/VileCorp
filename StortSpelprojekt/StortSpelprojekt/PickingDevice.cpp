@@ -158,7 +158,7 @@ AI::Vec2D PickingDevice::PickDirection(POINT mousePoint, Tilemap* tilemap)
 	//Get picked tile
 	AI::Vec2D pickedTile = PickTile(mousePoint);
 	//Get all objects on that tile. Dont care of the type, so just take the first.
-	vector<GameObject*> object = tilemap->GetAllObjectsOnTile(pickedTile);
+	vector<GameObject*> object = *tilemap->GetAllObjectsOnTile(pickedTile);
 	//Actually click something
 	if (object.size() > 0)
 	{
@@ -357,7 +357,7 @@ vector<GameObject*> PickingDevice::PickObjects(POINT mousePoint, const vector<Ga
 
 	return pickedObjects;
 }
-vector<GameObject*> PickingDevice::PickTilemap(POINT mousePoint, Tilemap* tilemap)
+vector<GameObject*>* PickingDevice::PickTilemap(POINT mousePoint, Tilemap* tilemap)
 {
 	return tilemap->GetAllObjectsOnTile(PickTile(mousePoint));
 }

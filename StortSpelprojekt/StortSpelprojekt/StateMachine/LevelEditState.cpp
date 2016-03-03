@@ -3,13 +3,8 @@
 LevelEditState::LevelEditState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule, DirectX::XMFLOAT3* ambientLight)
 	: BaseState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settingsReader, soundModule)
 {
-	_listId = -1;
-	_moveCheck = -1;
-	_baseEdit = nullptr;
-	_pageCheck = false;
-	_leaveCheck = -1;
-
 	_ambientLight = ambientLight;
+	_baseEdit = nullptr;
 }
 
 LevelEditState::~LevelEditState()
@@ -21,36 +16,83 @@ void LevelEditState::Update(float deltaTime)
 {
 	HandleCam(deltaTime);
 	HandleInput();
-	bool clickedOnGUI = HandleButtons();  //TODO: make a separate function to check if any visible gui node was clicked
-	_baseEdit->Update(deltaTime, clickedOnGUI);
+	bool clickedOnGUI = HandleButtons();
+	if (_noPlacementZoneToggleButton.GetIsToggled())
+	{
+		//TODO: No placement /Rikhard
+	}
+	else
+	{
+		if (!clickedOnGUI)
+		{
+			_baseEdit->Update();
+		}
+	}
 }
 
 void LevelEditState::OnStateEnter()
 {
+	_moveCheck = -1;
+	_pageCheck = false;
+	_leaveCheck = -1;
+	_dialogWindowLock = false;
+	_loadLevelSelectedIndex = 0;
+	_currentPage = 0;
+
+	_objectHandler->UnloadLevel();
+	_objectHandler->SetTileMap(new Tilemap());
+
+	_controls->ResetInputBuffers();
+
+	_levelHeaderFilenames.clear();
+
 	_uiTree.ReloadTree(System::LEVELEDIT_GUI_PATH);
 	_objectTabs = _uiTree.GetNode("Buttons")->GetChildren();
 	_settingsTabs = _uiTree.GetNode("Otherbuttons")->GetChildren();
 
-	_currentlySelectedTextBox = nullptr;
-	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("StoryTitleText"), 50, false, false, true));
-	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("StoryText"), 1000, true, false, true));
-	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("BudgetBoxText"), 7, false, true));
-	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("tileNumberX"), 3, false, true));
-	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("tileNumberY"), 3, false, true));
-	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("UnitAmmountText"), 2, false, true));
-	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("UnitStartingTimeText"), 3, false, true));
-	_textBoxes.push_back(GUI::TextBox(_uiTree.GetNode("UnitSpawnFrequencyText"), 3, false, true));
+	_currentList = nullptr;
 
-	for (unsigned i = 0; i < System::NR_OF_TYPES; i++)
+	_currentlySelectedTextBox = nullptr;
+	_storyTitleTextNode = _uiTree.GetNode("StoryTitleText");
+
+	_textBoxesGeneral = std::vector<GUI::TextBox>();
+	_textBoxesGeneral.push_back(GUI::TextBox(_storyTitleTextNode, 50, false, false, true));
+	_storyTextNode = _uiTree.GetNode("StoryText");
+	_textBoxesGeneral.push_back(GUI::TextBox(_storyTextNode, 850, true, false, true));
+	_budgetTextNode = _uiTree.GetNode("BudgetBoxText");
+	_textBoxesGeneral.push_back(GUI::TextBox(_budgetTextNode, 7, false, true));
+	_textBoxesGeneral.push_back(GUI::TextBox(_uiTree.GetNode("tileNumberX"), 3, false, true, true));
+	_textBoxesGeneral.push_back(GUI::TextBox(_uiTree.GetNode("tileNumberY"), 3, false, true, true));
+	_textBoxesGeneral.push_back(GUI::TextBox(_uiTree.GetNode("MinuteText"), 3, false, true, true));
+	_textBoxesGeneral.push_back(GUI::TextBox(_uiTree.GetNode("SecondText"), 3, false, true, true));
+
+	_saveLevelNameTextNode = _uiTree.GetNode("SaveLevelText");
+	_saveLevelNameTextBox = GUI::TextBox(_saveLevelNameTextNode, 25, false, false, true);
+	_textBoxesGeneral.push_back(_saveLevelNameTextBox);
+
+	_textBoxesSpawnSettings = std::vector<GUI::TextBox>();
+	_textBoxesSpawnSettings.push_back(GUI::TextBox(_uiTree.GetNode("UnitAmmountText"), 2, false, true, true));
+	_textBoxesSpawnSettings.push_back(GUI::TextBox(_uiTree.GetNode("UnitStartingTimeText"), 3, false, true, true));
+	_textBoxesSpawnSettings.push_back(GUI::TextBox(_uiTree.GetNode("UnitSpawnFrequencyText"), 3, false, true, true));
+	_selectedSpawnWaveNode = _uiTree.GetNode("WaveNumber");
+
+	_spawnWaveTypeRadioButtons = GUI::RadioButtonCollection();
+	GUI::Node* spawnTypesRadioButtonParentNode = _uiTree.GetNode("SpawnTypesRadioButton");
+	_spawnTypesRadioButtonsNodes = spawnTypesRadioButtonParentNode->GetChildren();
+	for each (GUI::Node* radioButton in *_spawnTypesRadioButtonsNodes)
 	{
-		int index = 0;
-		vector<System::Blueprint>* blueprints = _objectHandler->GetBlueprints();
-		for (unsigned b = 0; b < blueprints->size(); b++)
+		_spawnWaveTypeRadioButtons.AddRadioButtonNode(radioButton);
+	}
+	_spawnWaveTypeRadioButtons.SelectRadioButtonNode(_spawnTypesRadioButtonsNodes->at(0));
+
+	std::vector<std::vector<System::Blueprint*>>* blueprints = _objectHandler->GetBlueprintsOrderedByType();
+
+	for (unsigned type = 0; type < System::NR_OF_TYPES; type++)
+	{
+		GUI::Node* currentTab = _uiTree.GetNode(_typeLists[type]);
+		for (unsigned subType = 0; subType < blueprints->at(type).size(); subType++)
 		{
-			if (_typeLists[blueprints->at(b)._type] == _typeLists[(System::Type)i])
-			{
-				index += _uiTree.CreateBlueprintNodes(&blueprints->at(b), _uiTree.GetNode(_typeLists[(System::Type)blueprints->at(b)._type]), index);
-			}
+			_uiTree.CreateBlueprintNodes(blueprints->at(type)[subType], currentTab);
 		}
 	}
 
@@ -63,17 +105,22 @@ void LevelEditState::OnStateEnter()
 		_buttonPositions[i + _objectTabs->size()] = _uiTree.GetNode("Otherbuttons")->GetChildren()->at(i)->GetLocalPosition();
 		_isPressed[i] = false;
 	}
-	for (unsigned i = 0; i < 7; i++)
+
+	_toggleButtons = std::vector<GUI::ToggleButton>();
+
+	std::vector<GUI::Node*>* _unitLockButtons = _uiTree.GetNode("UnitLockButtons")->GetChildren();
+	for (unsigned i = 0; i < _unitLockButtons->size(); i++)
 	{
-		_OrginLockColor[i] = _uiTree.GetNode("UnitLockButtons")->GetChildren()->at(i)->GetColorOffset();
+		_toggleButtons.push_back(GUI::ToggleButton(_unitLockButtons->at(i)));
 	}
 	_uiTree.GetRootNode()->SetPosition(_uiTree.GetRootNode()->GetFinalPosition());
+
+	_noPlacementZoneToggleButton = GUI::ToggleButton(_uiTree.GetNode("NoPlacementButton"));
 
 	_ambientLight->x = AMBIENT_LIGHT_DAY.x;
 	_ambientLight->y = AMBIENT_LIGHT_DAY.y;
 	_ambientLight->z = AMBIENT_LIGHT_DAY.z;
 
-	_objectHandler->DisableSpawnPoints();
 	_uiTree.GetNode("wholelist")->SetHidden(true);
 	_uiTree.GetNode("SettingList")->SetHidden(true);
 	_uiTree.GetNode("UnitLockToolTip")->SetHidden(true);
@@ -84,14 +131,19 @@ void LevelEditState::OnStateEnter()
 	_uiTree.GetNode("NoPlacementButton")->SetHidden(true);
 	_uiTree.GetNode("LeaveMap")->SetHidden(true);
 	_uiTree.GetNode("listbuttons")->SetHidden(true);
+	_uiTree.GetNode("ImportMapList")->SetHidden(true);
+	_uiTree.GetNode("ExportMapList")->SetHidden(true);
 
 	_levelHeader = Level::LevelHeader();
+	_levelBinary = Level::LevelBinary();
 	_currentLevelFileName.clear();
+	AddSpawnWaveAndSelectIt();
+
 	_isNewLevel = true;
 
 	_objectHandler->EnlargeTilemap(50);
 
-	_baseEdit = new BaseEdit(_objectHandler, _controls, _pickingDevice, _camera, true);
+	_baseEdit = new BaseEdit(_objectHandler, _controls, _pickingDevice, true);
 
 	XMFLOAT3 campos;
 	campos.x = (float)_objectHandler->GetTileMap()->GetWidth() / 2;
@@ -108,19 +160,21 @@ void LevelEditState::OnStateEnter()
 			GUI::Node* currentButton = _uiTree.GetNode("Buttons")->GetChildren()->at(i);
 
 			currentButton->SetPosition(_buttonPositions[i]);
-
 		}
 		else
 		{
-			GUI::Node* currentButton = _uiTree.GetNode("Otherbuttons")->GetChildren()->at(i-7);
+			GUI::Node* currentButton = _uiTree.GetNode("Otherbuttons")->GetChildren()->at(i - 7);
 
 			currentButton->SetPosition(_buttonPositions[i]);
 			_isPressed[i - 7] = false;
 		}
 	}
-	for (unsigned i = 0; i < 7; i++)
+
+	GetFilenamesInDirectory(const_cast<char*>(System::SKIRMISH_FOLDER_PATH.c_str()), ".json", _levelHeaderFilenames, false);
+	_loadLevelTextNode = _uiTree.GetNode("LoadedLevelText");
+	if (_levelHeaderFilenames.size() > 0)
 	{
-		_isLocked[i] = false;
+		_loadLevelTextNode->SetText(System::StringToWstring(_levelHeaderFilenames[_loadLevelSelectedIndex]));
 	}
 }
 
@@ -130,28 +184,26 @@ void LevelEditState::OnStateExit()
 	delete _baseEdit;
 	_baseEdit = nullptr;
 
-	_objectHandler->MinimizeTileMap();
-	//TODO: Remove this function to LevelSelection when that state is created. /Alex
-	_objectHandler->UnloadLevel();
+	_levelBinary = Level::LevelBinary();
+	_levelHeader = Level::LevelHeader();
 }
 
 void LevelEditState::HandleInput()
 {
-	//Press C to init new level
-	if (_controls->IsFunctionKeyDown("MAP_EDIT:NEWLEVEL"))
-	{
-		_objectHandler->UnloadLevel();
-	}
-
 	if (_controls->IsFunctionKeyDown("MENU:MENU"))
 	{
-		_uiTree.GetNode("LeaveMap")->SetHidden(false);
-		_leaveCheck = 1;
+		if (!_dialogWindowLock)
+		{
+			_uiTree.GetNode("LeaveMap")->SetHidden(false);
+			_leaveCheck = 1;
+		}
+		_dialogWindowLock = true;
 	}
 
 	if (_controls->IsFunctionKeyDown("DEBUG:EXPORT_LEVEL"))
 	{
-		ExportLevel();
+		_uiTree.GetNode("ExportMapList")->SetHidden(false);
+		_dialogWindowLock = true;
 	}
 
 	if (_controls->IsFunctionKeyDown("DEBUG:RELOAD_GUI"))
@@ -173,25 +225,31 @@ bool LevelEditState::HandleButtons()
 	{
 		if (_controls->GetIsTextInputMode())
 		{
+			_currentlySelectedTextBox->Update();
 			_currentlySelectedTextBox->SetText(_controls->GetCurrentText());
 
 			//User clicks outside of the textbox
-			if (!_uiTree.IsButtonColliding(_currentlySelectedTextBox->GetAttachedGUINode(), coord) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
+			if (!_uiTree.IsButtonColliding(_currentlySelectedTextBox->GetBoxNode(), coord) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
 			{
 				_currentlySelectedTextBox->DeselectTextBox();
 				_currentlySelectedTextBox = nullptr;
-				_controls->ResetInputBuffers();
+				_controls->ResetTextInputMode();
 			}
 		}
 		else
 		{
 			_currentlySelectedTextBox->DeselectTextBox();
 			_currentlySelectedTextBox = nullptr;
+			_controls->ResetTextInputMode();
 		}
 	}
-	else
+	if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
-		if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
+		if (_dialogWindowLock)
+		{
+			clickedOnGUI = HandleButtonsForDialogWindows(coord, clickedOnGUI);
+		}
+		else
 		{
 			//Open Level editor placement GUI
 			bool buttonClicked = false;
@@ -234,12 +292,6 @@ bool LevelEditState::HandleButtons()
 						_pageCheck = true;
 					}
 				}
-				else if (_uiTree.IsButtonColliding("NoPlacementButton", coord._pos.x, coord._pos.y))
-				{
-					clickedOnGUI = true;
-					//TODO Paint No Placement Zones! Julia and Enbom
-				}
-
 				//Need to go through "" json group to get to object buttons
 				if (_currentList != nullptr && _currentList->GetChildren()->size())
 				{
@@ -280,27 +332,40 @@ bool LevelEditState::HandleButtons()
 				}
 			}
 			//Lock Units for this level
-			if (_settingsId == 1)
+			if (_settingsId == 1 && !clickedOnGUI)
 			{
-				for (unsigned i = 0; i < _uiTree.GetNode("UnitLockButtons")->GetChildren()->size(); i++)
+				for (unsigned i = 0; i < _toggleButtons.size() && !clickedOnGUI; i++)
 				{
-					if (_uiTree.IsButtonColliding(_uiTree.GetNode("UnitLockButtons")->GetChildren()->at(i), coord._pos.x, coord._pos.y))
+					GUI::ToggleButton* currentToggleButton = &_toggleButtons[i];
+					GUI::Node* currentToggleButtonNode = currentToggleButton->GetAttachedGUINode();
+					if (!_uiTree.IsNodeHidden(currentToggleButtonNode) && _uiTree.IsButtonColliding(currentToggleButtonNode, coord))
 					{
 						clickedOnGUI = true;
-						if (_isLocked[i] == false)
-						{
-							_uiTree.GetNode("UnitLockButtons")->GetChildren()->at(i)->SetColorOffset(XMFLOAT4{ 0.4f, 0.4f, 0.4f, 1.0f });
-							_isLocked[i] = true;
-							//TODO: Lock Unit Enbom
-						}
-						else
-						{
-							_uiTree.GetNode("UnitLockButtons")->GetChildren()->at(i)->SetColorOffset(_OrginLockColor[i]);
-							_isLocked[i] = false;
-							//TODO: Unlock Unit Enbom
-						}
+						currentToggleButton->Toggle();
 					}
 				}
+			}
+			else if (_uiTree.IsButtonColliding("ExportMap", coord._pos.x, coord._pos.y) && !_uiTree.IsNodeHidden("ExportMap"))
+			{
+				clickedOnGUI = true;
+				_uiTree.GetNode("ExportMapList")->SetHidden(false);
+				_dialogWindowLock = true;
+
+			}
+			else if (_uiTree.IsButtonColliding("ImportMap", coord._pos.x, coord._pos.y) && !_uiTree.IsNodeHidden("ImportMap"))
+			{
+				clickedOnGUI = true;
+				//Is only supposed to bring up the Import GUI
+				_uiTree.GetNode("ImportMapList")->SetHidden(false);
+				_dialogWindowLock = true;
+			}
+			else if (_uiTree.IsButtonColliding("NewMap", coord._pos.x, coord._pos.y) && !_uiTree.IsNodeHidden("NewMap"))
+			{
+				clickedOnGUI = true;
+				//Is only supposed to bring up the confirmation GUI
+				_uiTree.GetNode("LeaveMap")->SetHidden(false);
+				_leaveCheck = 0;
+				_dialogWindowLock = true;
 			}
 			//Story data
 			if (_uiTree.IsButtonColliding("StoryButton", coord._pos.x, coord._pos.y))
@@ -391,187 +456,60 @@ bool LevelEditState::HandleButtons()
 					_isPressed[4] = false;
 				}
 			}
-			else if (_uiTree.IsButtonColliding("ThiefInactiveBox", coord._pos.x, coord._pos.y) && _isPressed[4] == true)
+			else if (_uiTree.IsButtonColliding(_noPlacementZoneToggleButton.GetAttachedGUINode(), coord) && !_uiTree.IsNodeHidden(_noPlacementZoneToggleButton.GetAttachedGUINode()))
 			{
-				clickedOnGUI = true;
-				//Move Button icon
-				GUI::Node* node = _uiTree.GetNode("ThiefInactiveBox");
-				XMFLOAT2 unpickedPosition = node->GetLocalPosition();
-
-				GUI::Node* node2 = _uiTree.GetNode("ThiefActiveBox");
-				XMFLOAT2 pickedPosition = node2->GetLocalPosition();
-
-				node2->SetPosition(unpickedPosition);
-				node->SetPosition(pickedPosition);
-
-				if (pickedPosition.y > unpickedPosition.y)
+				_noPlacementZoneToggleButton.Toggle();
+			}
+			clickedOnGUI = HandleButtonsForSpawn(coord, clickedOnGUI);
+			if (!clickedOnGUI)
+			{
+				if (_uiTree.IsButtonColliding("GridOff", coord._pos.x, coord._pos.y) && _isPressed[0] == true)
 				{
-					//BURGLAR has been picked
-					//TODO: Save this setting for this wave
+					clickedOnGUI = true;
+					//Move Button
+					GUI::Node* node = _uiTree.GetNode("GridOff");
+					XMFLOAT2 gridOffPosition = node->GetLocalPosition();
+
+					GUI::Node* node2 = _uiTree.GetNode("GridOn");
+					XMFLOAT2 gridOnPosition = node2->GetLocalPosition();
+
+					node2->SetPosition(gridOffPosition);
+					node->SetPosition(gridOnPosition);
 				}
-				else if (pickedPosition.x > unpickedPosition.x)
+				else if (_uiTree.IsButtonColliding("ObjectiveOff", coord._pos.x, coord._pos.y) && _isPressed[0] == true)
 				{
-					//Assassin has been picked
-					//TODO: Save this setting for this wave
-				}
-				else
-				{
-					//DEMOLISHER has been picked
-					//TODO: Save this setting for this wave
-				}
-			}
-			else if (_uiTree.IsButtonColliding("ThiefInactiveBox2", coord._pos.x, coord._pos.y) && _isPressed[4] == true)
-			{
-				clickedOnGUI = true;
-				//Move Button icon
-				GUI::Node* node = _uiTree.GetNode("ThiefInactiveBox2");
-				XMFLOAT2 unpickedPosition = node->GetLocalPosition();
+					clickedOnGUI = true;
+					//Move Button
+					GUI::Node* node = _uiTree.GetNode("ObjectiveOff");
+					XMFLOAT2 objectiveOffPosition = node->GetLocalPosition();
 
-				GUI::Node* node2 = _uiTree.GetNode("ThiefActiveBox");
-				XMFLOAT2 pickedPosition = node2->GetLocalPosition();
+					GUI::Node* node2 = _uiTree.GetNode("ObjectiveOn");
+					XMFLOAT2 objectiveOnPosition = node2->GetLocalPosition();
 
-				node2->SetPosition(unpickedPosition);
-				node->SetPosition(pickedPosition);
+					node2->SetPosition(objectiveOffPosition);
+					node->SetPosition(objectiveOnPosition);
 
-				if (pickedPosition.y > unpickedPosition.y)
-				{
-					//BURGLAR has been picked
-					//TODO: Save this setting for this wave
-				}
-				else if (pickedPosition.x > unpickedPosition.x)
-				{
-					//Assassin has been picked
-					//TODO: Save this setting for this wave
-				}
-				else
-				{
-					//DEMOLISHER has been picked
-					//TODO: Save this setting for this wave
-				}
-			}
-			else if (_uiTree.IsButtonColliding("WaveAdd", coord._pos.x, coord._pos.y) && _isPressed[4] == true)
-			{
-				clickedOnGUI = true;
-				//TODO: Add functionality to add new page/wave
-			}
-			else if (_uiTree.IsButtonColliding("WaveDelete", coord._pos.x, coord._pos.y) && _isPressed[4] == true)
-			{
-				clickedOnGUI = true;
-				//TODO: Add functionality to delete current page/wave
-			}
-			else if (_uiTree.IsButtonColliding("WaveLeft", coord._pos.x, coord._pos.y) && _isPressed[4] == true)
-			{
-				clickedOnGUI = true;
-				//TODO: Find which page we are on, check so that it's not the first, if it is NOT the first, then you can press.
-			}
-			else if (_uiTree.IsButtonColliding("WaveRight", coord._pos.x, coord._pos.y) && _isPressed[4] == true)
-			{
-				clickedOnGUI = true;
-				//TODO: Find page so that we are not on the last page, also so that we are able to switch to a new page
-			}
-			else if (_uiTree.IsButtonColliding("GridOff", coord._pos.x, coord._pos.y) && _isPressed[0] == true)
-			{
-				clickedOnGUI = true;
-				//Move Button
-				GUI::Node* node = _uiTree.GetNode("GridOff");
-				XMFLOAT2 gridOffPosition = node->GetLocalPosition();
-
-				GUI::Node* node2 = _uiTree.GetNode("GridOn");
-				XMFLOAT2 gridOnPosition = node2->GetLocalPosition();
-
-				node2->SetPosition(gridOffPosition);
-				node->SetPosition(gridOnPosition);
-
-				if (gridOnPosition.x > gridOffPosition.x)
-				{
-					//TODO: Activate Grid Julia och Enbom
-				}
-				else
-				{
-					//TODO: Deactive Grid Julia och Enbom
-				}
-			}
-			else if (_uiTree.IsButtonColliding("ObjectiveOff", coord._pos.x, coord._pos.y) && _isPressed[0] == true)
-			{
-				clickedOnGUI = true;
-				//Move Button
-				GUI::Node* node = _uiTree.GetNode("ObjectiveOff");
-				XMFLOAT2 objectiveOffPosition = node->GetLocalPosition();
-
-				GUI::Node* node2 = _uiTree.GetNode("ObjectiveOn");
-				XMFLOAT2 objectiveOnPosition = node2->GetLocalPosition();
-
-				node2->SetPosition(objectiveOffPosition);
-				node->SetPosition(objectiveOnPosition);
-
-				if (objectiveOnPosition.y > objectiveOffPosition.y)
-				{
-					//Survival
-					_uiTree.GetNode("MapSurviveSelected")->SetHidden(false);
-					_levelHeader._gameMode = Level::GameModes::SURVIVAL;
-				}
-				else
-				{
-					//Kill
-					_uiTree.GetNode("MapSurviveSelected")->SetHidden(true);
-					_levelHeader._gameMode = Level::GameModes::KILL_THEM_ALL;
-				}
-			}
-			else if (_uiTree.IsButtonColliding("ExportMap", coord._pos.x, coord._pos.y))
-			{
-				clickedOnGUI = true;
-				//TODO: ExportMap GUI stuff and functions Julia and Enbom
-			}
-			else if (_uiTree.IsButtonColliding("ImportMap", coord._pos.x, coord._pos.y))
-			{
-				clickedOnGUI = true;
-				//TODO: ImportMap GUI stuff and functions Julia and Enbom
-			}
-			else if (_uiTree.IsButtonColliding("NewMap", coord._pos.x, coord._pos.y))
-			{
-				clickedOnGUI = true;
-				//Is only supposed to bring up the confirmation button
-				_uiTree.GetNode("LeaveMap")->SetHidden(false);
-				_leaveCheck = 0;
-			}
-			else if (_uiTree.IsButtonColliding("LeaveMapYes", coord._pos.x, coord._pos.y) && _leaveCheck > -1)
-			{
-				clickedOnGUI = true;
-				if (_leaveCheck == 0)
-				{
-					//TODO: NewMap GUI stuff and functions (Make new Map) Julia and Enbom
-					_uiTree.GetNode("LeaveMap")->SetHidden(true);
-					_leaveCheck = -1;
-				}
-				else
-				{
-					//TODO: Clean up Level so that if you go back to the menu it won't crash! Enbom
-					_leaveCheck = -1;
-					ChangeState(MENUSTATE);
-				}
-			}
-			else if (_uiTree.IsButtonColliding("LeaveMapNo", coord._pos.x, coord._pos.y) && _leaveCheck > -1)
-			{
-				clickedOnGUI = true;
-				_uiTree.GetNode("LeaveMap")->SetHidden(true);
-				_leaveCheck = -1;
-			}
-			else
-			{
-				for (int i = 0; i < _textBoxes.size(); i++)
-				{
-					GUI::TextBox* textBox = &_textBoxes[i];
-					GUI::Node* textBoxNode = textBox->GetAttachedGUINode();
-
-					//User clicked the textbox while it was visible
-					if (_uiTree.IsButtonColliding(textBoxNode, coord) && !_uiTree.IsNodeHidden(textBoxNode))
+					if (objectiveOnPosition.y > objectiveOffPosition.y)
 					{
-						clickedOnGUI = true;
-						textBox->SelectTextBox();
-						_currentlySelectedTextBox = textBox;
-						_controls->SetIsTextInputMode(_currentlySelectedTextBox->GetText(), true, !_currentlySelectedTextBox->GetAllowMultipleLines(), true);
+						//Survival
+						_uiTree.GetNode("MapSurviveSelected")->SetHidden(false);
+						_levelHeader._gameMode = Level::GameModes::SURVIVAL;
+					}
+					else
+					{
+						//Kill
+						_uiTree.GetNode("MapSurviveSelected")->SetHidden(true);
+						_levelHeader._gameMode = Level::GameModes::KILL_THEM_ALL;
 					}
 				}
+				else
+				{
+					for (int i = 0; i < _textBoxesGeneral.size(); i++)
+					{
+						clickedOnGUI = SelectTextBox(&_textBoxesGeneral[i], coord, clickedOnGUI);
+					}
+				}
+
 			}
 		}
 	}
@@ -653,11 +591,11 @@ bool LevelEditState::HandleButtons()
 	{
 		//Hide Gui
 		_uiTree.GetNode("SettingList")->SetHidden(true);
-		for (unsigned i = 0; i < _uiTree.GetNode("Otherbuttons")->GetChildren()->size()-3; i++)
+		for (unsigned i = 0; i < _uiTree.GetNode("Otherbuttons")->GetChildren()->size() - 3; i++)
 		{
 			//Move gui
 			GUI::Node* node = _uiTree.GetNode("Otherbuttons")->GetChildren()->at(i);
-			node->SetPosition(_buttonPositions[i+7]);
+			node->SetPosition(_buttonPositions[i + 7]);
 			_isPressed[i] = false;
 		}
 		_settingsId = -2;
@@ -666,11 +604,11 @@ bool LevelEditState::HandleButtons()
 	{
 		////Show Gui
 		_uiTree.GetNode("SettingList")->SetHidden(false);
-		for (unsigned i = 0; i < _uiTree.GetNode("Otherbuttons")->GetChildren()->size()-3; i++)
+		for (unsigned i = 0; i < _uiTree.GetNode("Otherbuttons")->GetChildren()->size() - 3; i++)
 		{
 			//Move gui
 			GUI::Node* node = _uiTree.GetNode("Otherbuttons")->GetChildren()->at(i);
-			XMFLOAT2 move = _buttonPositions[i+7];
+			XMFLOAT2 move = _buttonPositions[i + 7];
 			move.x = move.x - 0.296f;
 			XMFLOAT2 moveShort = move;
 			moveShort.x += 0.01f;
@@ -710,129 +648,473 @@ bool LevelEditState::HandleButtons()
 	return clickedOnGUI;
 }
 
-void LevelEditState::ExportLevel()
+bool LevelEditState::HandleButtonsForDialogWindows(System::MouseCoord &coord, bool clickedOnGUI)
 {
-	_baseEdit->ReleaseMarkers();
-
-	_currentLevelFileName = "exported level";
-
-	////Fill Level Header:
-
-	//Getting Story Information
-	_levelHeader._storyTitle = System::WStringToString(_uiTree.GetNode("StoryTitleText")->GetText());
-	_levelHeader._storyBody = System::WStringToString(_uiTree.GetNode("StoryText")->GetText());
-
-	//Get Budget Information
-	std::wstringstream wss = std::wstringstream();
-	wss << _uiTree.GetNode("BudgetBoxText")->GetText();
-	wss >> _levelHeader._budget;
-
-	//Survival time 
-	if (_levelHeader._gameMode == Level::GameModes::SURVIVAL)
+	//Export, Import or make a new Map
+	if (!clickedOnGUI)
 	{
-		int survivalMinutes = 0;
-		int survivalSeconds = 0;
-		wss << _uiTree.GetNode("MinuteText")->GetText();
-		wss >> survivalMinutes;
-		wss << _uiTree.GetNode("SecondBox")->GetText();
-		wss >> survivalSeconds;
-
-		_levelHeader._surviveForSeconds = (survivalMinutes * 60) + survivalSeconds;
-	}
-
-	//Get Level Binary file name
-	_levelHeader._levelBinaryFilename = _currentLevelFileName + ".bin";
-
-	////Fill Level Binary:
-	Level::LevelBinary levelBinary;
-
-	//Tilemap size
-	Tilemap* tileMap = _objectHandler->GetTileMap();
-	levelBinary._tileMapSizeX = tileMap->GetWidth();
-	levelBinary._tileMapSizeZ = tileMap->GetHeight();
-
-	//Game objects
-	std::vector<std::vector<GameObject*>>* gameObjects = _objectHandler->GetGameObjects();
-	levelBinary._gameObjectData.resize(_objectHandler->GetObjectCount());
-	int gameObjectIndex = 0;
-	for (uint i = 0; i < gameObjects->size(); i++)
-	{
-		for (GameObject* gameObject : gameObjects->at(i))
+		clickedOnGUI = SelectTextBox(&_saveLevelNameTextBox, coord, clickedOnGUI);
+		//Export Map Functions
+		if (_uiTree.IsButtonColliding("ExportYes", coord._pos.x, coord._pos.y) && !_uiTree.IsNodeHidden("ExportYes"))
 		{
-			std::vector<int>* formattedGameObject = &levelBinary._gameObjectData[gameObjectIndex];
-			formattedGameObject->resize(6);
+			clickedOnGUI = true;
+			_uiTree.GetNode("ExportMapList")->SetHidden(true);
+			ExportLevel();
 
-			//Type
-			int type = formattedGameObject->at(0) = gameObject->GetType();
-
-			//Sub type 
-			int subType = formattedGameObject->at(1) = gameObject->GetSubType();
-
-			//Texture ID
-			System::Blueprint* blueprint = _objectHandler->GetBlueprintByType(type, subType);
-			std::string textureName = gameObject->GetRenderObject()->_diffuseTexture->_name;
-			formattedGameObject->at(2) = 0;
-			bool foundTexture = false;
-			for (int i = 0; !foundTexture && i < blueprint->_textures.size(); i++)
+			_dialogWindowLock = false;
+		}
+		else if (_uiTree.IsButtonColliding("ExportNo", coord._pos.x, coord._pos.y) && !_uiTree.IsNodeHidden("ExportNo"))
+		{
+			//Only close down Export GUI
+			clickedOnGUI = true;
+			_uiTree.GetNode("ExportMapList")->SetHidden(true);
+			_dialogWindowLock = false;
+		}
+		//Import Map Functions
+		else if (_uiTree.IsButtonColliding("ImportYes", coord._pos.x, coord._pos.y) && !_uiTree.IsNodeHidden("ImportYes"))
+		{
+			clickedOnGUI = true;
+			if (_levelHeaderFilenames.size() > 0)
 			{
-				if (blueprint->_textures[i] == textureName)
-				{
-					formattedGameObject->at(2) = i;
-					foundTexture = true;
-				}
+				_uiTree.GetNode("ImportMapList")->SetHidden(true);
+				LoadLevel(_levelHeaderFilenames[_loadLevelSelectedIndex]);
 			}
-
-			//Position
-			AI::Vec2D position = gameObject->GetTilePosition();
-			formattedGameObject->at(3) = static_cast<int>(position._x);
-			formattedGameObject->at(4) = static_cast<int>(position._y);
-
-			//Rotation
-			float rotYRadians = gameObject->GetRotation().y;
-			int rotYDegrees = static_cast<int>((rotYRadians / DirectX::XM_PI) * 180.0);
-			formattedGameObject->at(5) = rotYDegrees;
-
-			gameObjectIndex++;
+			_dialogWindowLock = false;
+		}
+		else if (_uiTree.IsButtonColliding("ImportNo", coord._pos.x, coord._pos.y) && !_uiTree.IsNodeHidden("ImportNo"))
+		{
+			//Only close down Import GUI
+			clickedOnGUI = true;
+			_uiTree.GetNode("ImportMapList")->SetHidden(true);
+			_dialogWindowLock = false;
+		}
+		else if (_uiTree.IsButtonColliding("LevelUp", coord) && !_uiTree.IsNodeHidden("LevelUp"))
+		{
+			clickedOnGUI = true;
+			if (_loadLevelSelectedIndex != 0)
+			{
+				_loadLevelSelectedIndex--;
+				_loadLevelTextNode->SetText(System::StringToWstring(_levelHeaderFilenames[_loadLevelSelectedIndex]));
+			}
+		}
+		else if (_uiTree.IsButtonColliding("LevelDown", coord) && !_uiTree.IsNodeHidden("LevelDown"))
+		{
+			clickedOnGUI = true;
+			if ((_loadLevelSelectedIndex < _levelHeaderFilenames.size()))
+			{
+				_loadLevelSelectedIndex++;
+				_loadLevelTextNode->SetText(System::StringToWstring(_levelHeaderFilenames[_loadLevelSelectedIndex]));
+			}
+		}
+		//New Map Functions
+		else if (_uiTree.IsButtonColliding("LeaveMapYes", coord._pos.x, coord._pos.y) && !_uiTree.IsNodeHidden("LeaveMapYes"))
+		{
+			clickedOnGUI = true;
+			if (_leaveCheck == 0) //Reset level editor
+			{
+				ResetLevel();
+			}
+			else //Exit level editor
+			{
+				_leaveCheck = -1;
+				ChangeState(MENUSTATE);
+			}
+			_dialogWindowLock = false;
+		}
+		else if (_uiTree.IsButtonColliding("LeaveMapNo", coord._pos.x, coord._pos.y))
+		{
+			clickedOnGUI = true;
+			_uiTree.GetNode("LeaveMap")->SetHidden(true);
+			_leaveCheck = -1;
+			_dialogWindowLock = false;
 		}
 	}
+	return clickedOnGUI;
+}
 
-	//TODO: Fill _enemyWavesData /Rikhard
-	//TODO: Fill _enemySpawnMap /Rikhard
+void LevelEditState::ResetLevel()
+{
+	_uiTree.GetNode("LeaveMap")->SetHidden(true);
+	_leaveCheck = -1;
 
-	////Write the files
+	delete _baseEdit;
+	_baseEdit = nullptr;
 
-	//Construct a suitable path for the level
+	_levelBinary = Level::LevelBinary();
+	_levelHeader = Level::LevelHeader();
+
+	_objectHandler->UnloadLevel();
+	_objectHandler->SetTileMap(new Tilemap(AI::Vec2D(110,110)));
+
+	for (unsigned i = 0; i < _toggleButtons.size(); i++)
+	{
+		_toggleButtons[i].SetIsToggled(false);
+	}
+
+	AddSpawnWaveAndSelectIt();
+	ShowSelectedSpawnWave();
+
+	_budgetTextNode->SetText(std::to_wstring(500));
+	std::wstring defaultStoryText = L"Write great and awesome stories here!:D";
+	_storyTextNode->SetText(defaultStoryText);
+	_storyTitleTextNode->SetText(defaultStoryText);
+
+	_currentLevelFileName = "";
+	_isNewLevel = true;
+
+	_baseEdit = new BaseEdit(_objectHandler, _controls, _pickingDevice, true);
+}
+
+bool LevelEditState::HandleButtonsForSpawn(System::MouseCoord &coord, bool clickedOnGUI)
+{
+	std::vector<GUI::Node*>* notSelectedRadioButtonNodes = _spawnWaveTypeRadioButtons.GetNotSelectedRadioButtonNodes();
+	for (int i = 0; i < notSelectedRadioButtonNodes->size() && !clickedOnGUI; i++)
+	{
+		if (!_uiTree.IsNodeHidden(notSelectedRadioButtonNodes->at(i)) && _uiTree.IsButtonColliding(notSelectedRadioButtonNodes->at(i), coord))
+		{
+			_spawnWaveTypeRadioButtons.SelectRadioButtonNode(notSelectedRadioButtonNodes->at(i));
+			SaveCurrentSpawnWave();
+			clickedOnGUI = true;
+		}
+	}
+	if (!clickedOnGUI)
+	{
+		if (_uiTree.IsButtonColliding("WaveAdd", coord._pos.x, coord._pos.y) && _isPressed[4] == true)
+		{
+			clickedOnGUI = true;
+			SaveCurrentSpawnWave();
+			AddSpawnWaveAndSelectIt();
+			ShowSelectedSpawnWave();
+		}
+		else if (_uiTree.IsButtonColliding("WaveDelete", coord._pos.x, coord._pos.y) && _isPressed[4] == true)
+		{
+			clickedOnGUI = true;
+			if (RemoveSelectedSpawnWave())
+			{
+				ShowSelectedSpawnWave();
+			}
+		}
+		else if (_uiTree.IsButtonColliding("WaveLeft", coord._pos.x, coord._pos.y) && _isPressed[4] == true)
+		{
+			clickedOnGUI = true;
+			if (_selectedSpawnWave > 0)
+			{
+				SaveCurrentSpawnWave();
+				_selectedSpawnWave--;
+				ShowSelectedSpawnWave();
+			}
+		}
+		else if (_uiTree.IsButtonColliding("WaveRight", coord._pos.x, coord._pos.y) && _isPressed[4] == true)
+		{
+			clickedOnGUI = true;
+			if (_selectedSpawnWave < _levelBinary._enemyWavesGUIData.size() - 1)
+			{
+				SaveCurrentSpawnWave();
+				_selectedSpawnWave++;
+				ShowSelectedSpawnWave();
+			}
+		}
+		else
+		{
+			for (int i = 0; i < _textBoxesSpawnSettings.size() && !clickedOnGUI; i++)
+			{
+				clickedOnGUI = SelectTextBox(&_textBoxesSpawnSettings[i], coord, clickedOnGUI);
+			}
+		}
+	}
+	return clickedOnGUI;
+}
+
+void LevelEditState::SaveCurrentSpawnWave()
+{
+	GUI::Node* selectedSpawnTypeNode = _spawnWaveTypeRadioButtons.GetSelectedRadioButtonNode();
+	std::string selectedSpawnTypeString = selectedSpawnTypeNode->GetId();
+	int selectedSpawnType;
+	if (selectedSpawnTypeString == "BurglarRadioButton")
+	{
+		selectedSpawnType = 0;
+	}
+	else if (selectedSpawnTypeString == "DemolisherRadioButton")
+	{
+		selectedSpawnType = 1;
+	}
+	else if (selectedSpawnTypeString == "AssassinRadioButton")
+	{
+		selectedSpawnType = 2;
+	}
+	else
+	{
+		selectedSpawnType = -1;
+	}
+	if (selectedSpawnType != -1)
+	{
+		_levelBinary._enemyWavesGUIData[_selectedSpawnWave][0] = selectedSpawnType;
+		_levelBinary._enemyWavesGUIData[_selectedSpawnWave][1] = std::stoi(_textBoxesSpawnSettings[0].GetText());
+		_levelBinary._enemyWavesGUIData[_selectedSpawnWave][2] = std::stoi(_textBoxesSpawnSettings[1].GetText());
+		_levelBinary._enemyWavesGUIData[_selectedSpawnWave][3] = std::stoi(_textBoxesSpawnSettings[2].GetText());
+	}
+}
+
+bool LevelEditState::SelectTextBox(GUI::TextBox* textBox, System::MouseCoord & coord, bool clickedOnGUI)
+{
+	GUI::Node* boxNode = textBox->GetBoxNode();
+
+	//User clicked the textbox while it was visible
+	if (_uiTree.IsButtonColliding(boxNode, coord) && !_uiTree.IsNodeHidden(boxNode) && _currentlySelectedTextBox != textBox)
+	{
+		clickedOnGUI = true;
+		textBox->SelectTextBox();
+		_currentlySelectedTextBox = textBox;
+		_controls->SetIsTextInputMode(_currentlySelectedTextBox->GetText(), true, !_currentlySelectedTextBox->GetAllowMultipleLines(), true, _currentlySelectedTextBox->GetCharacterLimit(), _currentlySelectedTextBox->GetOnlyNumbersAllowed());
+	}
+	return clickedOnGUI;
+}
+
+bool LevelEditState::RemoveSelectedSpawnWave() //Returns true if removed
+{
+	if (_levelBinary._enemyWavesGUIData.size() > 1)
+	{
+		_levelBinary._enemyWavesGUIData.erase(_levelBinary._enemyWavesGUIData.begin() + _selectedSpawnWave);
+		_selectedSpawnWave--;
+		if (_selectedSpawnWave < 0)
+		{
+			_selectedSpawnWave = 0;
+		}
+		return true;
+	}
+	return false;
+}
+
+void LevelEditState::AddSpawnWaveAndSelectIt()
+{
+	_levelBinary._enemyWavesGUIData.push_back(std::vector<int>{0, 0, 0, 0});
+	_selectedSpawnWave = _levelBinary._enemyWavesGUIData.size() - 1;
+}
+
+void LevelEditState::ShowSelectedSpawnWave()
+{
+	_selectedSpawnWaveNode->SetText(std::to_wstring(_selectedSpawnWave + 1));
+	_spawnWaveTypeRadioButtons.SelectRadioButtonNode(_spawnTypesRadioButtonsNodes->at(_levelBinary._enemyWavesGUIData[_selectedSpawnWave][0]));
+	_textBoxesSpawnSettings[0].SetText(std::to_wstring(_levelBinary._enemyWavesGUIData[_selectedSpawnWave][1]));
+	_textBoxesSpawnSettings[1].SetText(std::to_wstring(_levelBinary._enemyWavesGUIData[_selectedSpawnWave][2]));
+	_textBoxesSpawnSettings[2].SetText(std::to_wstring(_levelBinary._enemyWavesGUIData[_selectedSpawnWave][3]));
+}
+
+void LevelEditState::ExportLevel()
+{
+	try
+	{
+		SaveCurrentSpawnWave();
+		_baseEdit->RemoveGhostImage();
+
+		_currentLevelFileName = System::WStringToString(_saveLevelNameTextNode->GetText());
+
+		////Fill Level Header:
+
+		//Getting Story Information
+		_levelHeader._storyTitle = System::WStringToString(_uiTree.GetNode("StoryTitleText")->GetText());
+		_levelHeader._storyBody = System::WStringToString(_uiTree.GetNode("StoryText")->GetText());
+
+		//Get Budget Information
+		std::wstringstream wss = std::wstringstream();
+		wss << _uiTree.GetNode("BudgetBoxText")->GetText();
+		wss >> _levelHeader._budget;
+
+		//Survival time 
+		if (_levelHeader._gameMode == Level::GameModes::SURVIVAL)
+		{
+			int survivalMinutes = 0;
+			int survivalSeconds = 0;
+			wss << _uiTree.GetNode("MinuteText")->GetText();
+			wss >> survivalMinutes;
+			wss << _uiTree.GetNode("SecondBox")->GetText();
+			wss >> survivalSeconds;
+
+			_levelHeader._surviveForSeconds = (survivalMinutes * 60) + survivalSeconds;
+		}
+
+		//Get Level Binary file name
+		_levelHeader._levelBinaryFilename = _currentLevelFileName + ".bin";
+
+		////Fill Level Binary:
+		//Tilemap size
+		Tilemap* tileMap = _objectHandler->GetTileMap();
+		_levelBinary._tileMapSizeX = tileMap->GetWidth();
+		_levelBinary._tileMapSizeZ = tileMap->GetHeight();
+
+		//Game objects
+		std::vector<std::vector<GameObject*>>* gameObjects = _objectHandler->GetGameObjects();
+		_levelBinary._gameObjectData.resize(_objectHandler->GetObjectCount());
+		int gameObjectIndex = 0;
+		for (uint i = 0; i < gameObjects->size(); i++)
+		{
+			for (GameObject* gameObject : gameObjects->at(i))
+			{
+				std::vector<int>* formattedGameObject = &_levelBinary._gameObjectData[gameObjectIndex];
+				formattedGameObject->resize(6);
+
+				//Type
+				int type = formattedGameObject->at(0) = gameObject->GetType();
+
+				//Sub type 
+				int subType = formattedGameObject->at(1) = gameObject->GetSubType();
+
+				//Texture ID
+				System::Blueprint* blueprint = _objectHandler->GetBlueprintByType(type, subType);
+				std::string textureName = gameObject->GetRenderObject()->_diffuseTexture->_name;
+				formattedGameObject->at(2) = 0;
+				bool foundTexture = false;
+				for (int i = 0; !foundTexture && i < blueprint->_textures.size(); i++)
+				{
+					if (blueprint->_textures[i] == textureName)
+					{
+						formattedGameObject->at(2) = i;
+						foundTexture = true;
+					}
+				}
+
+				//Position
+				AI::Vec2D position = gameObject->GetTilePosition();
+				formattedGameObject->at(3) = static_cast<int>(position._x);
+				formattedGameObject->at(4) = static_cast<int>(position._y);
+
+				//Rotation
+				float rotYRadians = gameObject->GetRotation().y;
+				int rotYDegrees = static_cast<int>((rotYRadians / DirectX::XM_PI) * 180.0);
+				formattedGameObject->at(5) = rotYDegrees;
+
+				gameObjectIndex++;
+			}
+		}
+
+		//Convert spawn wave data to spawn wave map
+
+		for (int i = 0; i < _levelBinary._enemyWavesGUIData.size(); i++)
+		{
+			std::vector<int>* spawnWave = &_levelBinary._enemyWavesGUIData[i];
+			int enemyType = spawnWave->at(0);
+			int nrOfEnemies = spawnWave->at(1);
+			int startingTime = spawnWave->at(2);
+			int spawnFrequency = spawnWave->at(3);
+
+			for (int enemyIterator = 0; enemyIterator < nrOfEnemies; enemyIterator++)
+			{
+				std::array<int, 2> singleSpawn = { startingTime + (spawnFrequency * enemyIterator), enemyType };
+				_levelBinary._enemyOrderedSpawnVector.push_back(singleSpawn);
+			}
+		}
+
+		std::sort(_levelBinary._enemyOrderedSpawnVector.begin(), _levelBinary._enemyOrderedSpawnVector.end(), [](std::array<int, 2> a, std::array<int, 2> b)
+		{
+			return b[0] > a[0];
+		});
+
+		//Save available units
+		GUI::ToggleButton* currentToggleButton;
+		GUI::Node* currentToggleNode;
+		for (unsigned i = 0; i < _toggleButtons.size(); i++)
+		{
+			currentToggleButton = &_toggleButtons.at(i);
+			if (!currentToggleButton->GetIsToggled())
+			{
+				currentToggleNode = currentToggleButton->GetAttachedGUINode();
+
+				_levelBinary._availableUnits.push_back(currentToggleNode->GetId());
+			}
+		}
+
+		////Write the files
+
+		//Construct a suitable path for the level
+		std::string levelPath;
+#ifdef _DEBUG
+		char userPath[MAX_PATH];
+		SHGetFolderPathA(NULL, CSIDL_PROFILE, NULL, 0, userPath);
+
+		levelPath = userPath;
+		levelPath += "\\Google Drive\\Stort spelprojekt\\" + System::SKIRMISH_FOLDER_PATH;
+#else
+		levelPath = System::SKIRMISH_FOLDER_PATH;
+#endif
+		CreateDirectory(levelPath.c_str(), NULL);
+
+		//Make the individual file paths
+		std::string headerPath, binaryPath;
+		headerPath = binaryPath = levelPath + _currentLevelFileName;
+		headerPath += ".json";
+		binaryPath += ".bin";
+
+		std::ofstream outStream;
+
+		//Write the header
+		outStream.open(headerPath);
+		{
+			cereal::JSONOutputArchive jsonOut(outStream);
+			jsonOut(cereal::make_nvp(_currentLevelFileName.c_str(), _levelHeader));
+		}
+		outStream.close();
+
+		//Write the binary
+		outStream.open(binaryPath, std::ios::binary);
+		{
+			cereal::BinaryOutputArchive binOut(outStream);
+			binOut(_levelBinary);
+		}
+		outStream.close();
+	}
+	catch (...)
+	{
+		int i = 0;
+	}
+
+
+}
+
+void LevelEditState::LoadLevel(std::string headerFileName)
+{
+	_levelBinary = Level::LevelBinary();
+	_levelHeader = Level::LevelHeader();
+
+	_objectHandler->UnloadLevel();
+
 	std::string levelPath;
 #ifdef _DEBUG
 	char userPath[MAX_PATH];
 	SHGetFolderPathA(NULL, CSIDL_PROFILE, NULL, 0, userPath);
 
 	levelPath = userPath;
-	levelPath += "\\Google Drive\\Stort spelprojekt\\" + System::LEVEL_FOLDER_PATH;
+	levelPath += "\\Google Drive\\Stort spelprojekt\\" + System::SKIRMISH_FOLDER_PATH;
 #else
-	levelPath = System::LEVEL_FOLDER_PATH;
+	levelPath = System::SKIRMISH_FOLDER_PATH;
 #endif
-	CreateDirectory(levelPath.c_str(), NULL);
 
-	//Make the individual file paths
-	std::string headerPath, binaryPath;
-	headerPath = binaryPath = levelPath + _currentLevelFileName;
-	headerPath += ".json";
-	binaryPath += ".bin";
+	System::loadJSON(&_levelHeader, levelPath + headerFileName);
 
-	std::ofstream outStream;
+	bool result = false;
+	HRESULT success = _assetManager->ParseLevelBinary(&_levelBinary, levelPath + _levelHeader._levelBinaryFilename);
 
-	//Write the header
-	outStream.open(headerPath);
+	result = _objectHandler->LoadLevel(_levelBinary);
+	_baseEdit->RefreshTileMap();
+	
+	_budgetTextNode->SetText(std::to_wstring(_levelHeader._budget));
+	_storyTitleTextNode->SetText(System::StringToWstring(_levelHeader._storyTitle));
+	_storyTextNode->SetText(System::StringToWstring(_levelHeader._storyBody));
+
+	for (unsigned i = 0; i < _toggleButtons.size(); i++)
 	{
-		cereal::JSONOutputArchive jsonOut(outStream);
-		jsonOut(cereal::make_nvp(_currentLevelFileName.c_str(), _levelHeader));
+		_toggleButtons[i].SetIsToggled(true);
 	}
-	outStream.close();
+	for (unsigned i = 0; i < _toggleButtons.size(); i++)
+	{
+		std::string currentToggleNodeID = _toggleButtons[i].GetAttachedGUINode()->GetId();
+		std::vector<std::string>::iterator result = std::find(_levelBinary._availableUnits.begin(), _levelBinary._availableUnits.end(), currentToggleNodeID);
 
-	//Write the binary
-	outStream.open(binaryPath);
-	cereal::BinaryOutputArchive binOut(outStream);
-	binOut(levelBinary);
-	outStream.close();
+		if (result != _levelBinary._availableUnits.end())
+		{
+			_toggleButtons[i].SetIsToggled(false);
+		}
+	}
+
+	_selectedSpawnWave = 0;
+	ShowSelectedSpawnWave();
 }

@@ -91,7 +91,7 @@ private:
 	typedef std::map<int, AssetManager::_scanFunc> _scanFuncMap;
 
 	_scanFuncMap _meshFormatVersion;
-	int _animationFormatVersion = 10;
+	int _animationFormatVersion = 10, _idCounter = 0;
 	ifstream* _infile;
 	ID3D11Device* _device;
 	vector<string>* _levelFileNames;
@@ -114,6 +114,8 @@ private:
 	Mesh* GetModel(const std::string& name);
 	Skeleton* LoadSkeleton(const std::string& name);
 	ID3D11Buffer* CreateVertexBuffer(vector<WeightedVertex> *weightedVertices, vector<Vertex> *vertices, int skeleton);
+
+	int _textureIdCounter = 0;
 public:
 	AssetManager(ID3D11Device* device);
 	~AssetManager();

@@ -44,7 +44,7 @@ public:
 
 	XMFLOAT3 PickPoint(POINT mousePoint);
 	vector<GameObject*> PickObjects(POINT mousePoint, const vector<GameObject*>& pickableObjects);
-	vector<GameObject*> PickTilemap(POINT mousePoint, Tilemap* tilemap);
+	vector<GameObject*>* PickTilemap(POINT mousePoint, Tilemap* tilemap);
 
 	//Used to save the first mouseposition when boxselecting
 	void SetFirstBoxPoint(POINT mousePoint);

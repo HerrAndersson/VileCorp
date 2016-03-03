@@ -15,6 +15,11 @@ enum ParticleType { SPLASH, SMOKE, ELECTRICITY, FIRE, MUZZLE_FLASH, ICON };
 enum ParticleSubType { BLOOD_SUBTYPE, WATER_SUBTYPE, SPARK_SUBTYPE, SMOKE_SUBTYPE, FIRE_SUBTYPE, MUZZLE_FLASH_SUBTYPE, EXCLAMATIONMARK_SUBTYPE, QUESTIONMARK_SUBTYPE }; //Icons have to be last
 enum ParticleIconType { ICON_EXCLAMATIONMARK, ICON_QUESTIONMARK }; //Used for loading and using icon textures
 
+//Has to be set in the BillboardingPS shader as well. The array there has to be of hard-coded length, 
+//so "dynamic" number of textures is not possible if more than the hard-coded number
+static const int PARTICLE_TEXTURE_COUNT = 4;
+static const int ICON_TEXTURE_COUNT = 2;
+
 struct ParticleMessage
 {
 	enum ParticleMessageType { REQUEST, UPDATE };
@@ -81,20 +86,15 @@ struct ParticleUpdateMessage : ParticleMessage
 	}
 };
 
-//Has to be set in the BillboardingPS shader aswell. The array there has to be of hard-coded length, 
-//so "dynamic" number of textures is not possible if more than the hard-coded number
-static const int PARTICLE_TEXTURE_COUNT = 4;
-static const int ICON_TEXTURE_COUNT = 2;
-
 struct ParticleTextures
 {
-	Texture* _bloodTextures[PARTICLE_TEXTURE_COUNT];
-	Texture* _waterTextures[PARTICLE_TEXTURE_COUNT];
-	Texture* _smokeTextures[PARTICLE_TEXTURE_COUNT];
-	Texture* _sparkTextures[PARTICLE_TEXTURE_COUNT];
-	Texture* _fireTextures[PARTICLE_TEXTURE_COUNT];
-	Texture* _muzzleFlashTextures[PARTICLE_TEXTURE_COUNT];
-	Texture* _iconTextures[ICON_TEXTURE_COUNT];
+	ID3D11ShaderResourceView* _bloodTextures[PARTICLE_TEXTURE_COUNT];
+	ID3D11ShaderResourceView* _waterTextures[PARTICLE_TEXTURE_COUNT];
+	ID3D11ShaderResourceView* _smokeTextures[PARTICLE_TEXTURE_COUNT];
+	ID3D11ShaderResourceView* _sparkTextures[PARTICLE_TEXTURE_COUNT];
+	ID3D11ShaderResourceView* _fireTextures[PARTICLE_TEXTURE_COUNT];
+	ID3D11ShaderResourceView* _muzzleFlashTextures[PARTICLE_TEXTURE_COUNT];
+	ID3D11ShaderResourceView* _iconTextures[ICON_TEXTURE_COUNT];
 
 	ParticleTextures()
 	{
@@ -117,38 +117,17 @@ struct ParticleTextures
 	{
 		for (int i = 0; i < PARTICLE_TEXTURE_COUNT; i++)
 		{
-			if (_bloodTextures[i])
-			{
-				_bloodTextures[i]->DecrementUsers();
-			}
-			if (_waterTextures[i])
-			{
-				_waterTextures[i]->DecrementUsers();
-			}
-			if (_smokeTextures[i])
-			{
-				_smokeTextures[i]->DecrementUsers();
-			}
-			if (_sparkTextures[i])
-			{
-				_sparkTextures[i]->DecrementUsers();
-			}
-			if (_fireTextures[i])
-			{
-				_fireTextures[i]->DecrementUsers();
-			}
-			if (_muzzleFlashTextures[i])
-			{
-				_muzzleFlashTextures[i]->DecrementUsers();
-			}
+			SAFE_RELEASE(_bloodTextures[i]);
+			SAFE_RELEASE(_waterTextures[i]);
+			SAFE_RELEASE(_smokeTextures[i]);
+			SAFE_RELEASE(_sparkTextures[i]);
+			SAFE_RELEASE(_fireTextures[i]);
+			SAFE_RELEASE(_muzzleFlashTextures[i]);
 		}
 
 		for (int i = 0; i < ICON_TEXTURE_COUNT; i++)
 		{
-			if (_iconTextures[i])
-			{
-				_iconTextures[i]->DecrementUsers();
-			}
+			SAFE_RELEASE(_iconTextures[i]);
 		}
 	}
 };
@@ -229,3 +208,80 @@ struct ParticleSystemData
 		);
 	}
 };
+
+
+/*
+
+This code shows how to use the particle system.
+
+int idToFollow = 5; //Should be obj->GetID();
+if (_controls->IsFunctionKeyDown("DEBUG:REQUEST_PARTICLE"))
+{
+	//If the emitters shouldn't move
+	XMFLOAT3 pos = XMFLOAT3(11, 1.0f, 2);
+	XMFLOAT3 dir = XMFLOAT3(0, 1, 0);
+	ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::SPLASH, ParticleSubType::BLOOD_SUBTYPE, -1, pos, dir, 300.0f, 20, 0.1f, true);
+	_particleHandler->GetParticleEventQueue()->Insert(msg);
+
+	pos = XMFLOAT3(16, 1.0f, 2);
+	dir = XMFLOAT3(0, 0, 1);
+	msg = new ParticleRequestMessage(ParticleType::MUZZLE_FLASH, ParticleSubType::MUZZLE_FLASH_SUBTYPE, -1, pos, dir, 50.0f, 1, 0.1f, true);
+	_particleHandler->GetParticleEventQueue()->Insert(msg);
+
+	pos = XMFLOAT3(14, 1.0f, 2);
+	dir = XMFLOAT3(0, 1, 0);
+	msg = new ParticleRequestMessage(ParticleType::SMOKE, ParticleSubType::SMOKE_SUBTYPE, -1, pos, dir, 100000.0f, 50, 0.04f, true);
+	_particleHandler->GetParticleEventQueue()->Insert(msg);
+
+	pos = XMFLOAT3(7, 1.0f, 2);
+	dir = XMFLOAT3(0, 1, 0);
+	msg = new ParticleRequestMessage(ParticleType::SPLASH, ParticleSubType::WATER_SUBTYPE, -1, pos, dir, 400.0f, 20, 0.1f, true);
+	_particleHandler->GetParticleEventQueue()->Insert(msg);
+
+	pos = XMFLOAT3(14, 1.0f, 2);
+	dir = XMFLOAT3(0, 1, 0);
+	msg = new ParticleRequestMessage(ParticleType::FIRE, ParticleSubType::FIRE_SUBTYPE, -1, pos, dir, 100000.0f, 50, 0.1f, true);
+	_particleHandler->GetParticleEventQueue()->Insert(msg);
+
+	pos = XMFLOAT3(11, 1.0f, 4);
+	msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::EXCLAMATIONMARK_SUBTYPE, -1, pos, XMFLOAT3(0, 0, 0), 1000.0f, 1, 0.25f, true);
+	_particleHandler->GetParticleEventQueue()->Insert(msg);
+
+	//If the emitters should change, for example move, connect them to an ID of a game object
+	pos = XMFLOAT3(13, 1.0f, 4);
+	msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::QUESTIONMARK_SUBTYPE, idToFollow, pos, XMFLOAT3(0, 0, 0), 100000.0f, 1, 0.25f, true, false); //Follows owner and is not timed
+	_particleHandler->GetParticleEventQueue()->Insert(msg);
+
+	pos = XMFLOAT3(9, 1.0f, 2);
+	dir = XMFLOAT3(0, 0, 1);
+	msg = new ParticleRequestMessage(ParticleType::FIRE, ParticleSubType::FIRE_SUBTYPE, idToFollow, pos, dir, 10000.0f, 100, 0.04f, true, true); //Follows owner and is timed
+	_particleHandler->GetParticleEventQueue()->Insert(msg);
+
+	//Electricity should never move. One bolt of lightning is created each request, and updated the given time
+	pos = XMFLOAT3(5, 1.0f, 3);
+	msg = new ParticleRequestMessage(ParticleType::ELECTRICITY, ParticleSubType::SPARK_SUBTYPE, -1, pos, XMFLOAT3(0, 0, 0), 1000.0f, 20, 0.1f, true, true, XMFLOAT3(14.0f, 1.0f, 3));
+	_particleHandler->GetParticleEventQueue()->Insert(msg);
+}
+
+//If the emitter itself should be updated, for example if the icons move or if we have a spinning flamethrower.
+//Set "isAlive" parameter to disable all emitters that are connected to the ID of the GameObject. This should be done when, for example a trap is fixed and should stop smoking
+//It is possible to update only position
+std::vector<std::vector<GameObject*>>* gameObjects = _objectHandler->GetGameObjects();
+if (gameObjects->size() > 0)
+{
+	for (unsigned int i = 0; i < gameObjects->at(GUARD).size(); i++)
+	{
+		GameObject* g = gameObjects->at(GUARD).at(i);
+		if (g)
+		{
+			XMFLOAT3 pos = g->GetPosition();
+			AI::Vec2D dirv2d = ((Unit*)g)->GetDirection();
+			XMFLOAT3 dir = XMFLOAT3(dirv2d._x, 0, dirv2d._y);
+
+			pos.y = 2.5f;
+			ParticleUpdateMessage* msg = new ParticleUpdateMessage(idToFollow, true, pos, dir);
+			_particleHandler->GetParticleEventQueue()->Insert(msg);
+		}
+	}
+}
+*/

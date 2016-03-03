@@ -2,6 +2,9 @@
 #include "GUI elements/Node.h"
 #include "GUI elements/BlueprintNode.h"
 #include "GUI elements/TextBox.h"
+#include "GUI elements/ToggleButton.h"
+#include "GUI elements/NodeBar.h"
+#include "GUI elements/RadioButtonCollection.h"
 #include "InputDevice.h"
 #include "AssetManager.h"
 #include "ObjectHandler.h"
@@ -40,13 +43,15 @@ namespace GUI
 		void Resize(System::Settings* settings);
 		void Resize(Node* current);
 
-		int CreateBlueprintNodes(System::Blueprint* object, Node* list, int index);
+		int CreateBlueprintNodes(System::Blueprint* object, Node* list);
 		bool IsButtonColliding(const std::string& id, int x, int y);
 		bool IsButtonColliding(const std::string& id, const System::MouseCoord& coord);
 		bool IsButtonColliding(Node* current, int x, int y);
 		bool IsButtonColliding(Node* current, const System::MouseCoord& coord);
 		bool IsNodeHidden(const std::string& id);
 		bool IsNodeHidden(Node* node);
+		void HideNodeAndChildren(GUI::Node* node);
+		void ShowNodeAndParents(GUI::Node* node);
 		Node* GetNode(const std::string& id);
 		void ReloadTree(const std::string& filename);
 	};

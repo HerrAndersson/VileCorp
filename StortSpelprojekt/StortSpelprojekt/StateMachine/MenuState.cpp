@@ -7,6 +7,7 @@ MenuState::MenuState(System::Controls* controls, ObjectHandler* objectHandler, S
 	_soundModule->AddSound("page", 1.0f, 1.0f, true, false);
 
 	XMFLOAT4 color(0.1f, 0.1f, 0.1f, 1.0f);
+	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("tutorialbutton"), color, _uiTree.GetNode("tutorial"))); 
 	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("playbutton"), color, _uiTree.GetNode("play")));
 	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("leveleditbutton"), color, _uiTree.GetNode("leveledit")));
 	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("optionsbutton"), color, _uiTree.GetNode("options")));
@@ -31,6 +32,17 @@ void MenuState::Update(float deltaTime)
 
 	if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
+		if (_uiTree.IsButtonColliding("tutorialbutton", coord._pos.x, coord._pos.y))
+		{
+			_soundModule->Stop("theme");
+			_soundModule->Play("page");
+
+			std::string levelBinaryPath = System::SKIRMISH_FOLDER_PATH;
+			levelBinaryPath += "tutorial1.bin";
+			_objectHandler->LoadLevel(levelBinaryPath);
+
+			ChangeState(State::TUTORIALSTATE);
+		}
 		if (_uiTree.IsButtonColliding("playbutton", coord._pos.x, coord._pos.y))
 		{
 			_soundModule->Stop("theme");

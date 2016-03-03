@@ -43,7 +43,7 @@ public:
 	void SetActionAsCycle(int action, bool reset = false);
 	void Freeze(bool freeze);
 	XMMATRIX* GetTransforms();
-	void PlayAction(int action, bool freeze = false, bool lastFrame = false);
+	void PlayAction(int action, bool freeze = false, bool lastFrame = false, bool reset = false);
 	int GetBoneCount() const;
 	bool GetisFinished();
 	float GetLength(int animation);

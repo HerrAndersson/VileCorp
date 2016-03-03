@@ -3,7 +3,7 @@
 ----------------------------------------------------------------------------------------------------------------------*/
 struct VS_OUT
 {
-	float4 pos		: SV_POSITION;
+	float4 pos : SV_POSITION;
 	float3 colorOffset : COLOROFFSET;
 };
 

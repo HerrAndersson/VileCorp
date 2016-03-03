@@ -55,8 +55,18 @@ namespace GUI
 		current->UpdateFont();
 	}
 
-	int UITree::CreateBlueprintNodes(System::Blueprint* object, Node* list, int index)
+	int UITree::CreateBlueprintNodes(System::Blueprint* object, Node* list)
 	{
+		std::vector<GUI::Node*>* pages = list->GetChildren();
+		int index = 0;
+		if (pages->size() > 0)
+		{
+			for (GUI::Node* pageNode : *pages)
+			{
+				index += pageNode->GetChildren()->size();
+			}
+		}
+
 		int createdThumbnails = 0;
 		if (list == nullptr)
 		{
@@ -65,7 +75,9 @@ namespace GUI
 		for (unsigned i = 0; i < object->_thumbnails.size(); i++)
 		{
 			BlueprintNode* newNode = new BlueprintNode(&_info, object, i);
-			int row = (index + createdThumbnails) % 28 / 4, column = (index + createdThumbnails) % 28 % 4, page = (index + createdThumbnails) / 28;
+			int row = (index + createdThumbnails) % 28 / 4;
+			int column = (index + createdThumbnails) % 28 % 4;
+			int page = (index + createdThumbnails) / 28;
 
 			newNode->SetId(object->_name);
 			newNode->SetPosition(XMFLOAT2(-0.125 + (0.09 * column), 0.42 - (0.13 * row)));
@@ -82,7 +94,7 @@ namespace GUI
 		}
 		return createdThumbnails;
 	}
-
+	
 	Node* UITree::LoadGUITree(const std::string& name, rapidjson::Value::ConstMemberIterator start, rapidjson::Value::ConstMemberIterator end, Node* parent)
 	{
 		if (parent != nullptr && parent->GetId() == "UnitList")
@@ -274,6 +286,26 @@ namespace GUI
 			isHidden = true;
 		}
 		return isHidden;
+	}
+
+	void UITree::HideNodeAndChildren(GUI::Node* node)
+	{
+		node->SetHidden(true);
+		std::vector<Node*>* children = node->GetChildren();
+		for (int i = 0; i < children->size(); i++)
+		{
+			HideNodeAndChildren(children->at(i));
+		}
+	}
+
+	void UITree::ShowNodeAndParents(GUI::Node* node)
+	{
+		node->SetHidden(false);
+		Node* parent = node->GetParent();
+		if (parent != nullptr)
+		{
+			ShowNodeAndParents(parent);
+		}
 	}
 
 	Node* UITree::FindNode(Node* current, const std::string& id)

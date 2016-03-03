@@ -3,7 +3,6 @@
 --------------------------------------------------------------------------------------------------------------------*/
 
 Texture2D backbuffertemp : register(t2);
-
 SamplerState samplerWrap : register(s0);
 
 struct VS_OUT
@@ -14,11 +13,12 @@ struct VS_OUT
 
 float4 main(VS_OUT input) : SV_TARGET
 {
+	float4 finalColor = float4(0,0,0,0);
+
+	//Apply FXAA
 	float FXAA_SPAN_MAX = 8.0;
 	float FXAA_REDUCE_MIN = 1.0f / 128.0f;
 	float FXAA_REDUCE_MUL = 1.0f / 8.0f;
-
-	float4 finalColor = 0.0f;
 
 	int width = 0;
 	int height = 0;
@@ -40,10 +40,10 @@ float4 main(VS_OUT input) : SV_TARGET
 	float inverseDirAdj = 1.0f / (min(abs(dir.x), abs(dir.y)) + dirReduce);
 
 	dir = min(float2(FXAA_SPAN_MAX, FXAA_SPAN_MAX),
-		max(float2(-FXAA_SPAN_MAX, -FXAA_SPAN_MAX), dir * inverseDirAdj) ) * texelSize;
+		max(float2(-FXAA_SPAN_MAX, -FXAA_SPAN_MAX), dir * inverseDirAdj)) * texelSize;
 
 	float3 result1 = 0.5 * (
-		backbuffertemp.Sample(samplerWrap, input.uv + (dir * float2((1.0f/3.0f) - 0.5f, (1.0f / 3.0f) - 0.5f))) +
+		backbuffertemp.Sample(samplerWrap, input.uv + (dir * float2((1.0f / 3.0f) - 0.5f, (1.0f / 3.0f) - 0.5f))) +
 		backbuffertemp.Sample(samplerWrap, input.uv + (dir * float2((2.0f / 3.0f) - 0.5f, (2.0f / 3.0f) - 0.5f)))).xyz;
 
 	float3 result2 = result1 * 0.5 + (1.0f / 4.0f) * (
@@ -64,10 +64,4 @@ float4 main(VS_OUT input) : SV_TARGET
 	}
 
 	return finalColor;
-
-	/*
-	Backbuffertemp sample here for turning off AA. Maybe used in options later? /Seb 
-	*/
-	//float3 backBufferSample = backbuffertemp.Sample(samplerWrap, input.uv);
-	//return float4(backBufferSample, 0.0f);
 }

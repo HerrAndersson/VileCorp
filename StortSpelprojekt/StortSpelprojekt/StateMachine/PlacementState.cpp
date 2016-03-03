@@ -1,13 +1,10 @@
 #include "PlacementState.h"
 
 PlacementState::PlacementState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule, DirectX::XMFLOAT3* ambientLight)
-	: BaseState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settingsReader, soundModule),
-	_ghostImage(objectHandler, pickingDevice)
+	: BaseState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settingsReader, soundModule)
 {
-	_player = new Player(_objectHandler, pickingDevice);
 	_buttons = _uiTree.GetNode("UnitList")->GetChildren();
 	_profile = settingsReader->GetProfile();
-	_tutorialLogic = new TutorialLogic(&_uiTree, _controls, _player, _buttons, &_ghostImage, objectHandler, pickingDevice, _profile);
 
 	//Money
 	_budget = 0;
@@ -21,6 +18,7 @@ PlacementState::PlacementState(System::Controls* controls, ObjectHandler* object
 	_camera = camera;
 	_pickingDevice = pickingDevice;
 	_ambientLight = ambientLight;
+	_baseEdit = nullptr;
 
 	//Add sound
 	_soundModule->AddSound("in_game_1", 0.2f, 1.0f, true, true, true);
@@ -32,48 +30,29 @@ void PlacementState::EvaluateGoldCost()
 
 PlacementState::~PlacementState()
 {
-	delete _player;
-	_player = nullptr;
-	delete _tutorialLogic;
-	_tutorialLogic = nullptr;
+	delete _baseEdit;
 }
 
 void PlacementState::Update(float deltaTime)
 {
-	System::MouseCoord coord = _controls->GetMouseCoord();
-	//if tutorial mode. Then bypass normal baseEdit update loops.
-	if (_tutorialState != TutorialState::NOTUTORIAL)
-	{
-		//bypass the normal UI interface to interface the tutorial elements into it.
-		_tutorialLogic->Update(deltaTime);
-		if (_tutorialLogic->IsTutorialCompleted())
-		{
-			ChangeState(State::PLAYSTATE);
-			_tutorialState = TutorialState::NOTUTORIAL;
-		}
 
-		//Menu - We keep this outside of tutorial due to the changestate function.
-		if (_controls->IsFunctionKeyDown("MENU:MENU"))
-		{
-			if (_ghostImage.IsGhostImageActive() || _player->IsSelectedObjects())
-			{
-				_ghostImage.RemoveGhostImage();
-				_player->DeselectObjects();
-			}
-			else
-			{
-				ChangeState(PAUSESTATE);
-			}
-		}
-	}
-	//else Normal games
-	else
+	if (_controls->IsFunctionKeyDown("MENU:MENU"))
 	{
-		HandleInput();
+		ChangeState(PAUSESTATE);
 	}
+
+	System::MouseCoord coord = _controls->GetMouseCoord();
+	
+	//Handle the buttons normally
+	HandleButtons();
 	HandleDescriptions();
+
 	HandleButtonHighlight(coord);
+	HandleInput();
 	HandleCam(deltaTime);
+
+	//baseEdit update handles basic controls.
+	_baseEdit->Update();
 }
 
 void PlacementState::OnStateEnter()
@@ -86,7 +65,6 @@ void PlacementState::OnStateEnter()
 	
 	//Fix so that budgetvalue won't get read if we go into pause state! We don't want the players to cheat themselves back to their budget money by pressing pause, resume, pause etc.. Enbom
 	_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_budget));
-	_objectHandler->DisableSpawnPoints();
 
 	XMFLOAT3 campos;
 	campos.x = (float)_objectHandler->GetTileMap()->GetWidth() / 2.0f;
@@ -97,44 +75,59 @@ void PlacementState::OnStateEnter()
 	_buttonHighlights.clear();
 	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("Play")));
 
-	//std::vector<GUI::Node*>* units = _uiTree.GetNode("UnitList")->GetChildren();
-	//for (int i = 0; i < units->size(); i++)
-	//{
-	//	GUI::BlueprintNode* newUnit = new GUI::BlueprintNode(*units->at(i), _objectHandler->GetBlueprintByName(units->at(i)->GetId()), 0);
-	//	delete units->at(i);
-	//	units->at(i) = (GUI::Node*)newUnit;
-	//	_buttonHighlights.push_back(GUI::HighlightNode(units->at(i), XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f)));
-	//}
+	//Hide all descs
+	_uiTree.GetNode("GuardDescription")->SetHidden(true);
+	_uiTree.GetNode("EngineerDescription")->SetHidden(true);
+	_uiTree.GetNode("CameraDescription")->SetHidden(true);
+	_uiTree.GetNode("AnvilDescription")->SetHidden(true);
+	_uiTree.GetNode("BearDescription")->SetHidden(true);
+	_uiTree.GetNode("SawDescription")->SetHidden(true);
+	_uiTree.GetNode("MachineGunDescription")->SetHidden(true);
+	_uiTree.GetNode("FlameThrowerDescription")->SetHidden(true);
+	_uiTree.GetNode("WaterGunDescription")->SetHidden(true);
+	_uiTree.GetNode("TeslaDescription")->SetHidden(true);
+	_uiTree.GetNode("SpinDescription")->SetHidden(true);
+	_uiTree.GetNode("CakeDescription")->SetHidden(true);
+	_uiTree.GetNode("SharkDescription")->SetHidden(true);
 
 	//TODO: Move hardcoded costs and description to logical location /Rikhard
+	/*
+	Set text for descriptions
+	*/
+	//GUARD
+	_uiTree.GetNode("GuardCost")->SetText(L"Damage: Medium\nHP: " + to_wstring(100) + L"\nSpeed: Medium\nEffect: Average Joe");
+	//ENGINEER
+	_uiTree.GetNode("EngineerCost")->SetText(L"Damage: Low\nHP: " + to_wstring(50) + L"\nSpeed: Fast\nEffect: Fast repair");
+	//CAMERA
+	_uiTree.GetNode("CameraCost")->SetText(L"Damage: None\nUses: Infinite\nAtk. Speed: None\nEffect: Vision");
+	//ANVIL TRAP
+	_uiTree.GetNode("AnvilCost")->SetText(L"Damage: High\nUses: 3\nAtk. Speed: Medium\nEffect: Cheap");
+	//BEAR TRAP
+	_uiTree.GetNode("BearCost")->SetText(L"Damage: High\nUses: 1\nAtk. Speed: Medium\nEffect: Distraction");
+	//SAWBLADE TRAP (FLOOR)
+	_uiTree.GetNode("SawCost")->SetText(L"Damage: Medium\nUses: Infinite\nAtk. Speed: Medium\nEffect: Traversing");
+	//MACHINE GUN TRAP
+	_uiTree.GetNode("MachineGunCost")->SetText(L"Damage: Medium Low\nUses: 10\nAtk. Speed: Fast\nEffect: None");
+	//FLAMETHROWER TRAP
+	_uiTree.GetNode("FlameThrowerCost")->SetText(L"Damage: Low\nUses: 10\nAtk. Speed: Fast\nEffect: Burn");
+	//WATER GUN TRAP
+	_uiTree.GetNode("WaterGunCost")->SetText(L"Damage: None\nUses: 10\nAtk. Speed: Fast\nEffect: Slow");
+	//TESLA TRAP
+	_uiTree.GetNode("TeslaCost")->SetText(L"Damage: Low\nUses: 2\nAtk. Speed: Medium\nEffect: Big Area, Stun");
+	//SPIN TRAP
+	_uiTree.GetNode("SpinCost")->SetText(L"Damage: None\nUses: Infinite\nAtk. Speed: Slow\nEffect: Confusion");
+	//CAKE TRAP
+	_uiTree.GetNode("CakeCost")->SetText(L"Damage: Very High\nUses: 1\nAtk. Speed: Slow\nEffect: Slow repair");
+	//SHARK TRAP
+	_uiTree.GetNode("SharkCost")->SetText(L"Damage: Very Haj\nUses: 1\nAtk. Speed: Slow\nEffect: Big area");
 
-	_uiTree.GetNode("GuardDescription")->SetHidden(true);
-	_uiTree.GetNode("GuardCost")->SetText(L"Cost: " + to_wstring(200) + L"$");
-	_uiTree.GetNode("AnvilDescription")->SetHidden(true);
-	_uiTree.GetNode("AnvilCost")->SetText(L"Cost: " + to_wstring(50) + L"$");
-	_uiTree.GetNode("TeslaDescription")->SetHidden(true);
-	_uiTree.GetNode("TeslaCost")->SetText(L"Cost: " + to_wstring(100) + L"$");
-	_uiTree.GetNode("MachineGunDescription")->SetHidden(true);
-	_uiTree.GetNode("MachineGunCost")->SetText(L"Cost: " + to_wstring(120) + L"$");
-	//_uiTree.GetNode("SharkDescription")->SetHidden(true);
-	//_uiTree.GetNode("SharkCost")->SetText(L"Cost: " + to_wstring(150) + L"$");
-	_uiTree.GetNode("CameraDescription")->SetHidden(true);
-	_uiTree.GetNode("CameraCost")->SetText(L"Cost: " + to_wstring(80) + L"$");
+	std::vector<GUI::Node*>* tutorialNodes = _uiTree.GetNode("Tutorial")->GetChildren();
+	for (int i = 0; i < tutorialNodes->size(); i++)
+	{
+		tutorialNodes->at(i)->SetHidden(true);
+	}
 
-	if (_tutorialState == TutorialState::NEWTUTORIAL)
-	{
-		_uiTree.GetNode("Tutorial")->SetHidden(false);
-		_tutorialLogic->ResetUiTree();
-	}
-	//Coming back from pause state
-	else if (_tutorialState == TutorialState::OLDTUTORIAL)
-	{
-		_uiTree.GetNode("Tutorial")->SetHidden(false);
-	}
-	else if (_tutorialState == TutorialState::NOTUTORIAL)
-	{
-		_uiTree.GetNode("Tutorial")->SetHidden(true);
-	}
+	_baseEdit = new BaseEdit(_objectHandler, _controls, _pickingDevice, false);
 
 	//Play music
 	_soundModule->Play("in_game_1");
@@ -142,12 +135,8 @@ void PlacementState::OnStateEnter()
 
 void PlacementState::OnStateExit()
 {
-	_player->DeselectUnits();
-	//if the tutorialstage is anything other than no tutorial. Hide it. We want to reset on entry, not exit.
-	if (_tutorialState != NOTUTORIAL)
-	{
-		_uiTree.GetNode("Tutorial")->SetHidden(true);
-	}
+	delete _baseEdit;
+	_baseEdit = nullptr;
 
 	//Pause music
 	_soundModule->Pause("in_game_1");
@@ -155,244 +144,203 @@ void PlacementState::OnStateExit()
 
 void PlacementState::HandleInput()
 {
-	System::MouseCoord coord = _controls->GetMouseCoord();
-	_ghostImage.Update(coord);
-
-	//Menu
-	if (_controls->IsFunctionKeyDown("MENU:MENU"))
+	if (_baseEdit->IsObjectDropValid())
 	{
-		if (_ghostImage.IsGhostImageActive() || _player->IsSelectedObjects())
+		if (_budget >= _toPlace._goldCost && _baseEdit->GetCreatedObject() != nullptr)
 		{
-			_ghostImage.RemoveGhostImage();
-			_player->DeselectObjects();
+			_budget -= _toPlace._goldCost;
+			_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_budget));
 		}
 		else
 		{
-			ChangeState(PAUSESTATE);
+			_objectHandler->Remove(_baseEdit->GetCreatedObject());
 		}
 	}
+
+	if (_baseEdit->GetDeletedObjectBlueprint() != nullptr)
+	{
+		_toPlace._sB._blueprint = _baseEdit->GetDeletedObjectBlueprint();
+		EvaluateGoldCost();
+		_budget += _toPlace._goldCost;
+		_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_budget));
+	}
+	// placement invalid
+	//if (_toPlace._goldCost != -1 && !_objectHandler->Find(_toPlace._sB._blueprint->_type, _toPlace._markerID) && !_baseEdit->IsPlace())
+	//{
+	//	_budget += _toPlace._goldCost;
+	//	_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_budget));
+	//	_toPlace.ResetTemps();
+	//}
+}
+
+void PlacementState::HandleButtons()
+{
+	bool create = false;
+
+	System::MouseCoord coord = _controls->GetMouseCoord();
+
 	//Play
 	if (_uiTree.IsButtonColliding("Play", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
 		ChangeState(PLAYSTATE);
 	}
 
-	//Left Click
-	if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
+	if(_controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
-		//Check if we click on any of the many buttons or rest of scene
-		bool hitButtons = false;
-
-		//Button interaction. Select a blueprint
-		for (int i = 0; i < _buttons->size(); i++)
+		std::vector<GUI::Node*>* units = _uiTree.GetNode("UnitList")->GetChildren();
+		for (unsigned y = 0; y < units->size(); y++)
 		{
-			GUI::Node* currentButton = _buttons->at(i);
-			// if we click a button. Load itemspecifics into _selectedBlueprint
+			GUI::Node* currentButton = units->at(y);
 			if (_uiTree.IsButtonColliding(currentButton, coord._pos.x, coord._pos.y))
 			{
 				GUI::BlueprintNode* currentBlueprintButton = static_cast<GUI::BlueprintNode*>(currentButton);
-				_selectedBlueprint._blueprint = _objectHandler->GetBlueprintByType(currentBlueprintButton->GetType(), currentBlueprintButton->GetSubType());
-				_selectedBlueprint._textureId = currentBlueprintButton->GetTextureId();
-				_ghostImage.AddGhostImage(_selectedBlueprint, coord);
-				hitButtons = true;
+				_toPlace._sB._blueprint = _objectHandler->GetBlueprintByType(currentBlueprintButton->GetType(), currentBlueprintButton->GetSubType());
+				_toPlace._sB._textureId = currentBlueprintButton->GetTextureId();
+				create = true;
 				break;
 			}
 		}
-		//if we dont hit the buttons - Clicking on the rest of the scene
-		if (!hitButtons)
-		{
-			AI::Vec2D pickedTile = _pickingDevice->PickTile(coord._pos);
-			//if we already hit the button. We use the blueprint
-			if (_selectedBlueprint._blueprint != nullptr)
-			{
-				//Try if/and then place item
-				DirectX::XMFLOAT3 pos = XMFLOAT3(pickedTile._x, 0, pickedTile._y);
-				if (_objectHandler->Add(_selectedBlueprint._blueprint, _selectedBlueprint._textureId, pos, DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), true))
-				{
-					_ghostImage.RemoveGhostImage();
-					//Object Added. Calculate money and deselect object TODO: Look over where money is stored and use from correct path /Alex
-					int temp = _budget;// -_selectedBlueprint._blueprint->_money;
-					if (temp > 0)
-					{
-						_budget = temp;
-						_selectedBlueprint.Reset();
-					}
-				}
-			}
-			//else we are Selecting objects in the scene or dragging
-			else
-			{
-				//Selecting placed units
-				_pickingDevice->SetFirstBoxPoint(_controls->GetMouseCoord()._pos);
-
-				//Do we have anything selected if so. We will check if we want to drag or deselect
-				if (_player->IsSelectedObjects())
-				{
-					//Check the selected objects, if we click on one of them. Then activate dragging with it.
-					vector<GameObject*> hitObjects = _pickingDevice->PickObjects(coord._pos, _player->GetSelectedObjects());
-					if (!hitObjects.empty())
-					{
-						_player->ActivateDragging(hitObjects[0]);
-					}
-				}
-			}
-		}
 	}
 
-	//Drag update
-	_player->UpdateDragPositions(coord);
-
-	//Left click up
-	if (_controls->IsFunctionKeyUp("MOUSE:SELECT") && _selectedBlueprint._blueprint == nullptr)
+	if (create)
 	{
-		//Deselect everything first by first remove the color of the objects and then deselecting it.
-		_player->DeactivateDragging();
-		_player->DeselectObjects();
-
-		//Check if we picked anything
-		vector<vector<GameObject*>> pickedUnits;
-		POINT pos = _controls->GetMouseCoord()._pos;
-		pickedUnits.push_back(_pickingDevice->PickObjects(pos, *_objectHandler->GetAllByType(System::GUARD)));
-		pickedUnits.push_back(_pickingDevice->PickObjects(pos, *_objectHandler->GetAllByType(System::TRAP)));
-		pickedUnits.push_back(_pickingDevice->PickObjects(pos, *_objectHandler->GetAllByType(System::CAMERA)));
-
-		//Then Select it
-		_player->SelectObjects(pickedUnits);
-	}
-
-	//Rotation
-	//Rotation With Keys
-	if (_controls->IsFunctionKeyUp("MAP_EDIT:ROTATE_MARKER_COUNTERCLOCK"))
-	{
-		vector<GameObject*> objects = _player->GetSelectedObjects();
-		XMFLOAT3 tempRot;
-		for (GameObject* i : objects)
-		{
-			tempRot = i->GetRotation();
-			i->SetRotation(XMFLOAT3(tempRot.x, tempRot.y - (DirectX::XM_PI / 4), tempRot.z));
-		}
-
-	}
-	else if (_controls->IsFunctionKeyUp("MAP_EDIT:ROTATE_MARKER_CLOCK"))
-	{
-		vector<GameObject*> objects = _player->GetSelectedObjects();
-		XMFLOAT3 tempRot;
-		for (GameObject* i : objects)
-		{
-			tempRot = i->GetRotation();
-			i->SetRotation(XMFLOAT3(tempRot.x, tempRot.y + (DirectX::XM_PI / 4), tempRot.z));
-		}
-	}
-
-	//Deselect blueprint
-	if (_controls->IsFunctionKeyDown("MOUSE:DESELECT"))
-	{
-		//If we have a selected unit and want to deselect it.
-		if (_selectedBlueprint._blueprint != nullptr)
-		{
-			_selectedBlueprint.Reset();
-			_ghostImage.RemoveGhostImage();
-		}
-		else
-		{
-			//Rotation with mouse
-			//if one object and clicking on its tile
-			vector<GameObject*> objects = _player->GetSelectedObjects();
-			if (1 == objects.size())
-			{
-				//if (objects[0]->GetTilePosition() == _pickingDevice->PickTile(coord._pos))
-				//{
-					//Check which direction he should be pointing
-					AI::Vec2D direction = _pickingDevice->PickDirection(coord._pos, objects[0]->GetTilePosition(), _objectHandler->GetTileMap());
-
-					//Change direction
-					vector<GameObject*> objects = _player->GetSelectedObjects();
-					for (GameObject* i : objects)
-					{
-						i->SetDirection(direction);
-					}
-				//}
-			}
-			else
-			{
-				_player->DeselectObjects();
-			}
-		}
-	}
-
-	//Delete object
-	if (_controls->IsFunctionKeyDown("MAP_EDIT:DELETE_UNIT"))
-	{
-		_player->DeleteSelectedObjects();
+		EvaluateGoldCost();
+		_baseEdit->HandleBlueprint(&_toPlace._sB);
+		_toPlace._blueprintID = _baseEdit->GetCreatedObject()->GetID();
 	}
 }
 
 void PlacementState::HandleDescriptions()
 {
 	System::MouseCoord coord = _controls->GetMouseCoord();
+	//GUARD
 	if (_uiTree.IsButtonColliding("Guard", coord._pos.x, coord._pos.y))
 	{
 		_uiTree.GetNode("GuardDescription")->SetHidden(false);
-
-		// Add description
 	}
 	else
 	{
 		_uiTree.GetNode("GuardDescription")->SetHidden(true);
+		pickedUnits.push_back(_pickingDevice->PickObjects(pos, *_objectHandler->GetAllByType(System::CAMERA)));
 	}
 
+	//ENGINEER
+	if (_uiTree.IsButtonColliding("Engineer", coord._pos.x, coord._pos.y))
+	{
+		_uiTree.GetNode("EngineerDescription")->SetHidden(false);
+	}
+	else
+	{
+		_uiTree.GetNode("EngineerDescription")->SetHidden(true);
+	}
+
+	//CAMERA
+	if (_uiTree.IsButtonColliding("Camera", coord._pos.x, coord._pos.y))
+	{
+		_uiTree.GetNode("CameraDescription")->SetHidden(false);
+	}
+	else
+	{
+		_uiTree.GetNode("CameraDescription")->SetHidden(true);
+	}
+
+	//ANVIL TRAP
 	if (_uiTree.IsButtonColliding("AnvilTrap", coord._pos.x, coord._pos.y))
 	{
 		_uiTree.GetNode("AnvilDescription")->SetHidden(false);
-
-		// Add description
 	}
 	else
 	{
 		_uiTree.GetNode("AnvilDescription")->SetHidden(true);
 	}
 
-	if (_uiTree.IsButtonColliding("TeslaTrap", coord._pos.x, coord._pos.y))
+	//BEAR TRAP
+	if (_uiTree.IsButtonColliding("BearTrap", coord._pos.x, coord._pos.y))
 	{
-		_uiTree.GetNode("TeslaDescription")->SetHidden(false);
-
-		// Add description
+		_uiTree.GetNode("BearDescription")->SetHidden(false);
 	}
 	else
 	{
-		_uiTree.GetNode("TeslaDescription")->SetHidden(true);
+		_uiTree.GetNode("BearDescription")->SetHidden(true);
 	}
 
+	//SAWBLADE TRAP
+	if (_uiTree.IsButtonColliding("SawTrap", coord._pos.x, coord._pos.y))
+	{
+		_uiTree.GetNode("SawDescription")->SetHidden(false);
+	}
+	else
+	{
+		_uiTree.GetNode("SawDescription")->SetHidden(true);
+	}
+
+	//MACHINE GUN TRAP
 	if (_uiTree.IsButtonColliding("MachineGunTrap", coord._pos.x, coord._pos.y))
 	{
 		_uiTree.GetNode("MachineGunDescription")->SetHidden(false);
-
-		// Add description
 	}
 	else
 	{
 		_uiTree.GetNode("MachineGunDescription")->SetHidden(true);
 	}
 
-	//if (_uiTree.IsButtonColliding("SharkTrap", coord._pos.x, coord._pos.y))
-	//{
-	//	_uiTree.GetNode("SharkDescription")->SetHidden(false);
-
-	//	// Add description
-	//}
-	//else
-	//{
-	//	_uiTree.GetNode("SharkDescription")->SetHidden(true);
-	//}
-
-	if (_uiTree.IsButtonColliding("Camera", coord._pos.x, coord._pos.y))
+	//FLAMETHROWER TRAP
+	if (_uiTree.IsButtonColliding("FlameThrowerTrap", coord._pos.x, coord._pos.y))
 	{
-		_uiTree.GetNode("CameraDescription")->SetHidden(false);
-
-		// Add description
+		_uiTree.GetNode("FlameThrowerDescription")->SetHidden(false);
 	}
 	else
 	{
-		_uiTree.GetNode("CameraDescription")->SetHidden(true);
+		_uiTree.GetNode("FlameThrowerDescription")->SetHidden(true);
+	}
+
+	//WATER GUN TRAP
+	if (_uiTree.IsButtonColliding("WaterGunTrap", coord._pos.x, coord._pos.y))
+	{
+		_uiTree.GetNode("WaterGunDescription")->SetHidden(false);
+	}
+	else
+	{
+		_uiTree.GetNode("WaterGunDescription")->SetHidden(true);
+	}
+
+	//TESLA TRAP
+	if (_uiTree.IsButtonColliding("TeslaTrap", coord._pos.x, coord._pos.y))
+	{
+		_uiTree.GetNode("TeslaDescription")->SetHidden(false);
+	}
+	else
+	{
+		_uiTree.GetNode("TeslaDescription")->SetHidden(true);
+	}
+
+	//SPIN TRAP
+	if (_uiTree.IsButtonColliding("SpinTrap", coord._pos.x, coord._pos.y))
+	{
+		_uiTree.GetNode("SpinDescription")->SetHidden(false);
+	}
+	else
+	{
+		_uiTree.GetNode("SpinDescription")->SetHidden(true);
+	}
+
+	//SUGAR BOMB
+	if (_uiTree.IsButtonColliding("CakeTrap", coord._pos.x, coord._pos.y))
+	{
+		_uiTree.GetNode("CakeDescription")->SetHidden(false);
+	}
+	else
+	{
+		_uiTree.GetNode("CakeDescription")->SetHidden(true);
+	}
+
+	//SHARK TRAP
+	if (_uiTree.IsButtonColliding("SharkTrap", coord._pos.x, coord._pos.y))
+	{
+		_uiTree.GetNode("SharkDescription")->SetHidden(false);
+	}
+	else
+	{
+		_uiTree.GetNode("SharkDescription")->SetHidden(true);
 	}
 }
