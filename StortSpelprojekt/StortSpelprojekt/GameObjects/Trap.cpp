@@ -268,9 +268,10 @@ void Trap::SetTiles()
 	_nrOfOccupiedTiles = 0;
 	_nrOfTriggers = 0;
 	_nrOfAOETiles = 0;
+	_sawBladeDirection = 0;
 	switch (_subType)
 	{
-	case SPIKE:
+	case ANVIL:
 		_occupiedTiles[_nrOfOccupiedTiles++] = _tilePosition;
 		_triggerTiles[_nrOfTriggers++] = _tilePosition;
 		_areaOfEffect[_nrOfAOETiles++] = _tilePosition;
@@ -281,9 +282,9 @@ void Trap::SetTiles()
 		_nrOfAOETiles = CalculateCircle(3, _tilePosition, _areaOfEffect);
 		break;
 	case SHARK:
-		_nrOfOccupiedTiles = CalculateRectangle(5, 2, _tilePosition, _occupiedTiles);
-		_nrOfTriggers = CalculateRectangle(1, 2, _tilePosition, _triggerTiles);
-		_nrOfAOETiles = CalculateRectangle(1, 2, _tilePosition, _areaOfEffect);
+		_nrOfOccupiedTiles = CalculateRectangle(5, 2, _tilePosition - AI::Vec2D(-_direction._y, _direction._x), _occupiedTiles);
+		_nrOfTriggers = CalculateRectangle(1, 2, _tilePosition - AI::Vec2D(-_direction._y, _direction._x), _triggerTiles);
+		_nrOfAOETiles = CalculateRectangle(1, 2, _tilePosition - AI::Vec2D(-_direction._y, _direction._x), _areaOfEffect);
 		break;
 	case GUN:
 		_nrOfOccupiedTiles = CalculateLine(10, _tilePosition, _occupiedTiles);
@@ -294,6 +295,7 @@ void Trap::SetTiles()
 		_nrOfOccupiedTiles = CalculateRectangle(3, 1, _tilePosition, _occupiedTiles);
 		_areaOfEffect[_nrOfAOETiles++] = _tilePosition;
 		_triggerTiles[_nrOfTriggers++] = _tilePosition;
+		_sawBladeDirection = 1;
 		break;
 	case CAKEBOMB:
 		_occupiedTiles[_nrOfOccupiedTiles++] = _tilePosition;
@@ -306,11 +308,14 @@ void Trap::SetTiles()
 		_areaOfEffect[_nrOfAOETiles++] = _tilePosition;
 		break;
 	case FLAMETHROWER:
-		_nrOfOccupiedTiles = CalculateLine(7, _tilePosition, _occupiedTiles);
-		_nrOfAOETiles = CalculateLine(7, _tilePosition, _areaOfEffect);
-		_nrOfTriggers = CalculateLine(7, _tilePosition, _triggerTiles);
+		_nrOfOccupiedTiles = CalculateLine(6, _tilePosition, _occupiedTiles);
+		_nrOfAOETiles = CalculateLine(6, _tilePosition, _areaOfEffect);
+		_nrOfTriggers = CalculateLine(6, _tilePosition, _triggerTiles);
 		break;
 	case WATER_GUN:
+		_nrOfOccupiedTiles = CalculateLine(8, _tilePosition, _occupiedTiles);
+		_nrOfAOETiles = CalculateLine(8, _tilePosition, _areaOfEffect);
+		_nrOfTriggers = CalculateLine(8, _tilePosition, _triggerTiles);
 		break;
 	case SPIN_TRAP:
 		_occupiedTiles[_nrOfOccupiedTiles++] = _tilePosition;
@@ -338,14 +343,6 @@ void Trap::SetTiles()
 	}
 }
 
-Trap::Trap()
-	:GameObject()
-{
-	_areaOfEffect = nullptr;
-	_occupiedTiles = nullptr;
-	_triggerTiles = nullptr;
-}
-
 Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject * renderObject, System::SoundModule* soundModule, 
 	const Tilemap* tileMap, int trapType, AI::Vec2D direction)
 	: GameObject(ID, position, rotation, tilePosition, type, renderObject, soundModule)
@@ -357,43 +354,51 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	_isVisibleToEnemies = false;
 	_areaOfEffect = nullptr;
 	_occupiedTiles = nullptr;
+	_nrOfOccupiedTiles = 0;
 	_triggerTiles = nullptr;
+	_nrOfTriggers = 0;
 	_subType = trapType;
+	_nrOfAOETiles = 0;
 	int radius = 0;
+	_nrOfOccupiedTiles = 0;
+	_nrOfTriggers = 0;
+	_nrOfAOETiles = 0;
 
 	bool frozen = true;
+	_resetAnimTime = true;
 	switch (_subType)
 	{
-	case SPIKE:																						//Basic one tile, damage only, trap
-		Initialize(40, 1, 1, 1, 50, 50, 140, 140, Unit::StatusEffect::NO_EFFECT, 0, 0);
+	case ANVIL:																						//Basic one tile, damage only, trap
+		Initialize(60, 1, 1, 1, 70, 40, 140, 140, Unit::StatusEffect::NO_EFFECT, 0, 0, 200, 3);
 		break;
 	case TESLACOIL:																					//AOE that stuns for a few seconds and does a small amount of damage
-		Initialize(30, 9, 9, 37, 80, 80, 140, 140, Unit::StatusEffect::STUNNED, 620, 620, 60, 2);
+		Initialize(20, 9, 9, 37, 80, 80, 140, 140, Unit::StatusEffect::STUNNED, 120, 120, 180, 3);
 		frozen = false;
 		break;
 	case SHARK:																						//Takes up a lot of space, but is an instant kill if it hits.
-		Initialize(999, 12, 2, 2, 60, 80, 140, 140, Unit::StatusEffect::NO_EFFECT, 0, 0);
+		Initialize(999, 10, 2, 2, 60, 80, 140, 140, Unit::StatusEffect::NO_EFFECT, 0, 0, 480, -1);
 		break;
 	case GUN:																						//Mid tier standard damage dealer. Damage is done in a straight line. Can trigger multiple times
-		Initialize(60, 10, 10, 10, 40, 90, 140, 140, Unit::StatusEffect::NO_EFFECT, 0, 0, 60, 5);
+		Initialize(20, 10, 10, 10, 40, 90, 140, 140, Unit::StatusEffect::NO_EFFECT, 0, 0, 80, 10);
 		break;
 	case SAW:																						//Goes back and forth in a line. doesn't need to be reset unless an enemy disarms it.
-		Initialize(60, 3, 1, 1, 30, 80, 140, 140, Unit::StatusEffect::NO_EFFECT, 0, 0, 60, -1);
+		Initialize(1, 3, 1, 1, 30, 80, 140, 140, Unit::StatusEffect::NO_EFFECT, 0, 0, 100, -1);
+		_resetAnimTime = false;
 		break;
 	case CAKEBOMB:																					//Instant kill on one tile. TODO: Make it seem easier to disarm than it is
 		Initialize(999, 1, 1, 1, 90, 60, 280, 140, Unit::StatusEffect::NO_EFFECT, 0, 0);
 		break;
 	case BEAR:																						//Another one tile trap. Easy to disarm to lure enemies into wasting time on it
-		Initialize(50, 1, 1, 1, 10, 20, 140, 280, Unit::StatusEffect::NO_EFFECT, 0, 0);
+		Initialize(80, 1, 1, 1, 10, 20, 140, 280, Unit::StatusEffect::NO_EFFECT, 0, 0);
 		break;
 	case FLAMETHROWER:																				//Shorter range and less direct damage than a gun, but does damage over time.
-		Initialize(20, 7, 7, 7, 60, 60, 140, 140, Unit::StatusEffect::BURNING, 300, 60, 60, 3);
+		Initialize(10, 6, 6, 6, 60, 60, 140, 140, Unit::StatusEffect::BURNING, 300, 60, 80, 5);
 		break;
 	case WATER_GUN:																					//No damage, but inflicts slow for a long time. Range is the same as the flamethrower
-		Initialize(0, 7, 7, 7, 60, 60, 140, 140, Unit::StatusEffect::SLOWED, 450, 450, 60, 5);
+		Initialize(0, 8, 8, 8, 60, 60, 140, 140, Unit::StatusEffect::SLOWED, 450, 450, 100, 10);
 		break;
 	case SPIN_TRAP:																					//No damage, but inflicts confusion, which cause the enemy to move randomly for the duration.
-		Initialize(0, 1, 1, 1, 70, 90, 140, 140, Unit::StatusEffect::CONFUSED, 300, 300, 0, -1);
+		Initialize(0, 1, 1, 1, 70, 90, 140, 140, Unit::StatusEffect::CONFUSED, 240, 240, 480, -1);
 		break;
 	default:
 		_areaOfEffect = nullptr;
@@ -411,16 +416,29 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 
 Trap::~Trap()
 {
+	for (int i = 0; i < _nrOfAOETiles; i++)
+	{
+		GameObject* floorTile = _tileMap->GetObjectOnTile(_areaOfEffect[i], System::FLOOR);
+		if (floorTile != nullptr)
+		{
+			floorTile->SetColorOffset({ 0.0f, 0.0f, 0.0f });
+		}	
+	}
+	for (int i = 0; i < _nrOfOccupiedTiles; i++)
+	{
+		GameObject* floorTile = _tileMap->GetObjectOnTile(_occupiedTiles[i], System::FLOOR);
+		if (floorTile != nullptr)
+		{
+			floorTile->SetColorOffset({ 0.0f, 0.0f, 0.0f });
+		}
+	}
+
 	delete[] _areaOfEffect;
 	_areaOfEffect = nullptr;
 	delete[] _occupiedTiles;
 	_occupiedTiles = nullptr;
 	delete[] _triggerTiles;
 	_triggerTiles = nullptr;
-	if (_animation != nullptr)
-	{
-		delete _animation;
-	}
 	_particleEventQueue->Insert(new ParticleUpdateMessage(GetID(), false, GetPosition()));
 	_hasParticleEffect = false;
 }
@@ -611,11 +629,19 @@ void Trap::Update(float deltaTime)
 	{
 		if (System::FrameCountdown(_triggerTimer, _maxTimeToTrigger, 0))
 		{
+
 			int i = 0;
-			while (_occupiedTiles[i++] != _triggerTiles[0] && i < _nrOfOccupiedTiles)			//find which index matches to the current trigger
-			{}
-			_triggerTiles[0] = _occupiedTiles[i%_nrOfOccupiedTiles];
+			while (_occupiedTiles[i] != _triggerTiles[0] && i < _nrOfOccupiedTiles)			//find which index matches to the current trigger
+			{
+				i++;
+			}
+			if (i + _sawBladeDirection >= _nrOfOccupiedTiles || i + _sawBladeDirection < 0)
+			{
+				_sawBladeDirection = -_sawBladeDirection;
+			}
+			_triggerTiles[0] = _occupiedTiles[i + _sawBladeDirection];
 			_areaOfEffect[0] = _triggerTiles[0];
+
 		}
 		if (_tileMap->IsEnemyOnTile(_triggerTiles[0]))
 		{
@@ -666,7 +692,6 @@ void Trap::SetVisibleToEnemies(bool visible)
 // Overloaded function
 void Trap::SetTilePosition(AI::Vec2D pos)
 {
-
 	//_nrOfAOETiles = 0;
 	int radius = 0;
 	GameObject::SetTilePosition(pos);
@@ -678,9 +703,10 @@ AI::Vec2D Trap::GetDirection()
 	return _direction;
 }
 
-void Trap::SetDirection(const AI::Vec2D direction)
+void Trap::SetDirection(const AI::Vec2D& direction)
 {
 	_direction = direction;
+	SetTiles();
 }
 
 void Trap::Animate(Anim anim)
@@ -693,7 +719,7 @@ void Trap::Animate(Anim anim)
 			_animation->SetActionAsCycle(IDLEANIM);
 			break;
 		case ACTIVATEANIM:
-			_animation->PlayAction(ACTIVATEANIM, true, true);
+			_animation->PlayAction(ACTIVATEANIM, true, true, _resetAnimTime);
 			break;
 		case DISABLEANIM:
 			_animation->PlayAction(DISABLEANIM, true, true);
@@ -713,7 +739,7 @@ void Trap::PlayActivateSound()
 {
 	switch (_subType)
 	{
-	case SPIKE:
+	case ANVIL:
 		_soundModule->SetSoundPosition("anvil_activate", _position.x, 0.0f, _position.z);
 		_soundModule->Play("anvil_activate");
 		break;
@@ -724,6 +750,8 @@ void Trap::PlayActivateSound()
 		break;
 
 	case SHARK:
+		_soundModule->SetSoundPosition("shark_activate", _position.x, 0.0f, _position.z);
+		_soundModule->Play("shark_activate");
 		break;
 
 	case GUN:
@@ -749,6 +777,16 @@ void Trap::PlayActivateSound()
 	case FLAMETHROWER:
 		_soundModule->SetSoundPosition("flame_activate", _position.x, 0.0f, _position.z);
 		_soundModule->Play("flame_activate");
+		break;
+
+	case WATER_GUN:
+		_soundModule->SetSoundPosition("water_activate", _position.x, 0.0f, _position.z);
+		_soundModule->Play("water_activate");
+		break;
+
+	case SPIN_TRAP:
+		_soundModule->SetSoundPosition("spin_activate", _position.x, 0.0f, _position.z);
+		_soundModule->Play("spin_activate");
 		break;
 	}
 }

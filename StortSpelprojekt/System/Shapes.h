@@ -338,13 +338,11 @@ static const bool Collision(Vec2 &point, Square &square)
 
 static const bool Collision(Vec2 &point, Triangle &triangle)
 {
-	Vec2 p0, p1, p2;
+	Vec2 p0 = Vec2(triangle._pos1._x, triangle._pos1._z);
+	Vec2 p1 = Vec2(triangle._pos2._x, triangle._pos2._z);
+	Vec2 p2 = Vec2(triangle._pos3._x, triangle._pos3._z);
 
-	p0 = Vec2(triangle._pos1._x, triangle._pos1._z);
-	p1 = Vec2(triangle._pos2._x, triangle._pos2._z);
-	p2 = Vec2(triangle._pos3._x, triangle._pos3._z);
-
-	float area = 1 / 2 * (-p1._y*p2._x + p0._y*(-p1._x + p2._x) + p0._x*(p1._y - p2._y) + p1._x*p2._y);
+	float area = (float)1 / 2 * (-p1._y*p2._x + p0._y*(-p1._x + p2._x) + p0._x*(p1._y - p2._y) + p1._x*p2._y);
 
 	float s = 1 / (2 * area)*(p0._y*p2._x - p0._x*p2._y + (p2._y - p0._y)* point._x + (p0._x - p2._x)*point._y);
 	float t = 1 / (2 * area)*(p0._x*p1._y - p0._y*p1._x + (p0._y - p1._y)*point._x + (p1._x - p0._x)*point._y);
@@ -362,8 +360,7 @@ static const bool Collision(Triangle &triangle, Square &square)
 	bool collision = true;
 
 	std::vector<Vec2>* trianglePoints = new std::vector<Vec2>();
-	std::vector<Vec2>* squarePoints = new std::vector<Vec2>();
-	squarePoints = FindSquareCorners(square);
+	std::vector<Vec2>* squarePoints = FindSquareCorners(square);
 
 	trianglePoints->push_back(Vec2(triangle._pos1._x, triangle._pos1._z));
 	trianglePoints->push_back(Vec2(triangle._pos2._x, triangle._pos2._z));
@@ -667,28 +664,28 @@ static const bool Collision(Box &box, Square &square)
 {
 	bool collision = true;
 	std::vector<Vec3>* boxCorners = FindBoxCorners(box);
-	std::vector<Vec3>* squareCorners;
+	std::vector<Vec3> squareCorners;
 
-	squareCorners->push_back(Vec3(square._minPos._x, 1.0f, square._minPos._y));
-	squareCorners->push_back(Vec3(square._maxPos._x, 1.0f, square._minPos._y));
-	squareCorners->push_back(Vec3(square._minPos._x, 1.0f, square._maxPos._y));
-	squareCorners->push_back(Vec3(square._maxPos._x, 1.0f, square._maxPos._y));
+	squareCorners.push_back(Vec3(square._minPos._x, 1.0f, square._minPos._y));
+	squareCorners.push_back(Vec3(square._maxPos._x, 1.0f, square._minPos._y));
+	squareCorners.push_back(Vec3(square._minPos._x, 1.0f, square._maxPos._y));
+	squareCorners.push_back(Vec3(square._maxPos._x, 1.0f, square._maxPos._y));
 
-	if (!SATVectorCheck(box._xSlab._normal, squareCorners, boxCorners))
+	if (!SATVectorCheck(box._xSlab._normal, &squareCorners, boxCorners))
 	{
 		collision = false;
 	}
 
-	else if (!SATVectorCheck(box._zSlab._normal, squareCorners, boxCorners))
+	else if (!SATVectorCheck(box._zSlab._normal, &squareCorners, boxCorners))
 	{
 		collision = false;
 	}
-	else if (!SATVectorCheck(Vec3(1.0f, 0.0f, 0.0f), squareCorners, boxCorners))
+	else if (!SATVectorCheck(Vec3(1.0f, 0.0f, 0.0f), &squareCorners, boxCorners))
 	{
 		collision = false;
 	}
 
-	else if (!SATVectorCheck(Vec3(0.0f, 0.0f, 1.0f), squareCorners, boxCorners))
+	else if (!SATVectorCheck(Vec3(0.0f, 0.0f, 1.0f), &squareCorners, boxCorners))
 	{
 		collision = false;
 	}

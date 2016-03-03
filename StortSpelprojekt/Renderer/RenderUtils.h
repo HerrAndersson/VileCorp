@@ -22,12 +22,12 @@ struct Frame
 	DirectX::XMVECTOR _rotation;
 	DirectX::XMVECTOR _scale;
 
-	void* Frame::operator new(size_t i)
+	static void* Frame::operator new(size_t i)
 	{
 		return _mm_malloc(i, 16);
 	}
 
-	void Frame::operator delete(void* p)
+	static void Frame::operator delete(void* p)
 	{
 		_mm_free(p);
 	}
@@ -37,7 +37,12 @@ struct BoneFrames
 {
 	int _frameCount;
 	std::vector<float> _frameTime;
-	std::vector<Frame> _frames;
+	Frame* _frames;
+
+	~BoneFrames()
+	{
+		_aligned_free(_frames);
+	}
 };
 
 struct Action
@@ -98,14 +103,14 @@ struct Mesh
 {
 	short _activeUsers = 0;
 	bool _meshLoaded;
-	System::Hitbox* _hitbox = nullptr;
 	bool _isSkinned = false;
-	std::string _skeletonName;
-	Skeleton* _skeleton;
 	int _vertexBufferSize, _toMesh;
 	float _particleSpawnerPos[3], _iconPos[3];
+	System::Hitbox* _hitbox = nullptr;
+	Skeleton* _skeleton;
 	ID3D11Buffer* _vertexBuffer;
 	std::string _name;
+	std::string _skeletonName;
 	std::vector<PointlightData> _pointLights;
 	std::vector<SpotlightData> _spotLights;
 	~Mesh()
@@ -116,10 +121,7 @@ struct Mesh
 		{
 			_vertexBuffer->Release();
 		}
-		if (_hitbox != nullptr)
-		{
-			delete _hitbox;
-		}
+		delete _hitbox;
 	}
 
 	bool DecrementUsers()
@@ -132,6 +134,7 @@ struct Mesh
 struct Texture
 {
 	HRESULT LoadTexture(ID3D11Device* device);
+	int _id = 0;
 	short _activeUsers = 0;
 	bool _loaded = false;
 	std::string _name;
@@ -145,14 +148,18 @@ struct Texture
 			_data->Release();
 		}
 	}
+	void IncrementUsers()
+	{
+		_activeUsers++;
+	}
 };
 
 struct RenderObject
 {
-	System::Type _type = System::Type::FLOOR;
 	Texture* _diffuseTexture = nullptr;
 	Texture* _specularTexture = nullptr;
 	Mesh* _mesh = nullptr;
+	int _id;
 	~RenderObject()
 	{
 		if (_diffuseTexture != nullptr)
@@ -165,35 +172,20 @@ struct RenderObject
 		}
 		if (_mesh && _mesh->DecrementUsers())
 		{
-			SAFE_DELETE(_mesh);
+			delete _mesh;
 		}
 	}
+
+	bool operator<(const RenderObject& other)
+	{
+		return (this->_diffuseTexture->_id < other._diffuseTexture->_id);
+	}
+
 	bool operator==(const RenderObject& other) 
 	{
-		if (this->_diffuseTexture != nullptr && other._diffuseTexture != nullptr)
-		{
-			if (this->_diffuseTexture->_name != other._diffuseTexture->_name)
-			{
-				return false;
-			}
-		}
-		else if (this->_diffuseTexture != other._diffuseTexture)
-		{
-			return false;
-		}
-		if (this->_mesh != nullptr && other._mesh != nullptr)
-		{
-			if (this->_mesh->_name != other._mesh->_name)
-			{
-				return false;
-			}
-		}
-		else if (this->_mesh != other._mesh)
-		{
-			return false;
-		}
-		return true;
+		return _id == other._id;
 	}
+
 	bool operator!=(const RenderObject& other) 
 	{
 		return !(*this == other);

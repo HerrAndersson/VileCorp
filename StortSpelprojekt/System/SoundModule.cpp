@@ -2,7 +2,7 @@
 
 namespace System
 {
-	SoundModule::SoundModule(System::Settings* settings)
+	SoundModule::SoundModule(System::Settings* settings, const std::string &stdPath, const std::string &extension)
 	{
 		_allSounds = new std::map<std::string, YSE::sound*>;
 		_initiated = false;
@@ -14,6 +14,9 @@ namespace System
 		CoCreateInstance(__uuidof(MMDeviceEnumerator), NULL, CLSCTX_ALL, __uuidof(IMMDeviceEnumerator), (void**)&pEnumerator);
 		pEnumerator->EnumAudioEndpoints(eRender, DEVICE_STATE_ACTIVE, &pEndpoints);
 		pEndpoints->GetCount(&nrOfDevices);
+
+		_stdPath = stdPath;
+		_soundExtension = extension;
 
 		if (nrOfDevices > 0)
 		{
@@ -33,30 +36,30 @@ namespace System
 			}
 
 			YSE::System().close();
-			delete _allSounds;
 		}
+		delete _allSounds;
 	}
 
 	/*
 	AddSound: Builds its own path using fileName
 	*/
-	bool SoundModule::AddSound(const std::string &fileName, float volume, float speed, bool relative, bool looping)
+	bool SoundModule::AddSound(const std::string &fileName, float volume, float speed, bool relative, bool looping, bool streaming)
 	{
 		bool answer = false;
 		if (_initiated)
 		{
 			/*
-			stdPath set "Assets/Sounds/<name>.ogg
+			path set "Assets/Sounds/<name>.ogg
 			name is set to pathName
 			*/
 			std::string name = fileName;
-			std::string stdPath = "Assets/Sounds/";
-			stdPath.append(name);
-			stdPath.append(soundExtension);
+			std::string path = _stdPath;
+			path.append(name);
+			path.append(_soundExtension);
 
 			answer = true;
 			(*_allSounds)[name] = new YSE::sound();
-			(*_allSounds)[name]->create(stdPath.c_str());
+			(*_allSounds)[name]->create(path.c_str(), NULL, looping, volume, streaming);
 
 			//Check if file could be loaded
 			if (!(*_allSounds)[name]->isValid())
@@ -85,9 +88,7 @@ namespace System
 
 		if (_initiated)
 		{
-			std::string name = fileName;
-
-			auto it = _allSounds->find(name);
+			auto it = _allSounds->find(fileName);
 			if (it != _allSounds->end())
 			{
 				delete it->second;
@@ -99,19 +100,19 @@ namespace System
 		return answer;
 	}
 
-	void SoundModule::Update(float listenerX, float listenerY, float listenerZ)
+	void SoundModule::Update(const DirectX::XMFLOAT3& position)
 	{
 		if (_initiated)
 		{
 			/*
 			Updates the position of the listener to keep it synced with camera position
 			*/
-			YSE::Listener().setPosition(YSE::Vec(listenerX / OFFSET, listenerY / OFFSET, listenerZ / OFFSET));
+			YSE::Listener().setPosition(YSE::Vec(position.x / OFFSET, position.y / OFFSET, position.z / OFFSET));
 			YSE::System().update();
 		}
 	}
 
-	bool SoundModule::Play(std::string fileName)
+	bool SoundModule::Play(const std::string &fileName)
 	{
 		bool answer = false;
 
@@ -131,7 +132,7 @@ namespace System
 		return answer;
 	}
 
-	bool SoundModule::Pause(std::string fileName)
+	bool SoundModule::Pause(const std::string &fileName)
 	{
 		bool answer = false;
 
@@ -151,7 +152,7 @@ namespace System
 		return answer;
 	}
 
-	bool SoundModule::Stop(std::string fileName)
+	bool SoundModule::Stop(const std::string &fileName)
 	{
 		bool answer = false;
 
@@ -160,7 +161,7 @@ namespace System
 			if (_allSounds->find(fileName) != _allSounds->end())
 			{
 				(*_allSounds)[fileName]->stop();
-				answer = true;
+				answer = (*_allSounds)[fileName]->isStopped();
 			}
 		}
 
@@ -168,7 +169,7 @@ namespace System
 	}
 
 	//fadeTime is in milliseconds
-	bool SoundModule::Stop(std::string fileName, int fadeTime)
+	bool SoundModule::Stop(const std::string &fileName, int fadeTime)
 	{
 		bool answer = false;
 
@@ -184,7 +185,33 @@ namespace System
 		return answer;
 	}
 
-	void SoundModule::SetSoundPosition(std::string fileName ,float x, float y, float z)
+	//Hard stop is done when resetting streamed files. Removes and adds file again
+	bool SoundModule::HardStop(const std::string &fileName)
+	{
+		bool answer = false;
+
+		if (_initiated)
+		{
+			if (_allSounds->find(fileName) != _allSounds->end())
+			{
+				(*_allSounds)[fileName]->stop();
+				float volume = (*_allSounds)[fileName]->getVolume();
+				float speed = (*_allSounds)[fileName]->getSpeed();
+				bool relative = (*_allSounds)[fileName]->isRelative();
+				bool looping = (*_allSounds)[fileName]->isLooping();
+				bool streaming = true;//(*_allSounds)[fileName]->isStreaming();
+
+				RemoveSound(fileName);
+				AddSound(fileName, volume, speed, relative, looping, streaming);
+
+				answer = true;
+			}
+		}
+
+		return answer;
+	}
+
+	void SoundModule::SetSoundPosition(const std::string &fileName, float x, float y, float z)
 	{
 		if (_initiated)
 		{
@@ -203,37 +230,9 @@ namespace System
 	{
 		if (_initiated)
 		{
-			switch (channel)
-			{
-			case CHMASTER:
-				_volume[CHMASTER] = volume;
-				YSE::ChannelMaster().setVolume(_volume[CHMASTER]);
-				break;
-			case CHAMBIENT:
-				_volume[CHAMBIENT] = volume;
-				YSE::ChannelAmbient().setVolume(_volume[CHAMBIENT]);
-				break;
-			case CHFX:
-				_volume[CHFX] = volume;
-				YSE::ChannelFX().setVolume(_volume[CHFX]);
-				break;
-			case CHGUI:
-				_volume[CHGUI] = volume;
-				YSE::ChannelGui().setVolume(_volume[CHGUI]);
-				break;
-			case CHMUSIC:
-				_volume[CHMUSIC] = volume;
-				YSE::ChannelMusic().setVolume(_volume[CHMUSIC]);
-				break;
-			case CHVOICE:
-				_volume[CHVOICE] = volume;
-				YSE::ChannelVoice().setVolume(_volume[CHVOICE]);
-				break;
-			default:
-				break;
-			}
+			_volume[channel] = volume;
+			YSE::ChannelMaster().setVolume(_volume[channel]);
 		}
-
 	}
 
 	float SoundModule::GetVolume(int channel)
@@ -242,5 +241,6 @@ namespace System
 		{
 			return _volume[channel];
 		}
+		return 0.0f;
 	}
 }

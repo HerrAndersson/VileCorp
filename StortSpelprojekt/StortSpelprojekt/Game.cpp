@@ -3,18 +3,18 @@
 #include <DirectXMath.h>
 #include <sstream>
 
-Game::Game(HINSTANCE hInstance, int nCmdShow):
+Game::Game(HINSTANCE hInstance, int nCmdShow) :
 	_settingsReader("Assets/settings.xml", "Assets/profile.xml"),
-	_soundModule(_settingsReader.GetSettings())
+	_soundModule(_settingsReader.GetSettings(), "Assets/Sounds/", ".ogg")
 {
 	srand(time(NULL));
 	System::Settings* settings = _settingsReader.GetSettings();
 
 	_gameHandle = this;
-	_window = new System::Window("Amazing game", hInstance, settings, WndProc);
+	_window = new System::Window("Vile Corp.", hInstance, settings, WndProc);
 	_timer = System::Timer();
 	_renderModule = new Renderer::RenderModule(_window->GetHWND(), settings);
-	
+
 	_assetManager = new AssetManager(_renderModule->GetDevice());
 	_combinedMeshGenerator = new CombinedMeshGenerator(_renderModule->GetDevice(), _renderModule->GetDeviceContext());
 	_controls = new System::Controls(_window->GetHWND());
@@ -24,9 +24,9 @@ Game::Game(HINSTANCE hInstance, int nCmdShow):
 	_camera->SetPosition(XMFLOAT3(3, 20, 0));
 	_camera->SetRotation(XMFLOAT3(60, 0, 0));
 
-	ParticleTextures particleTextures;
+	ParticleTextures* particleTextures = new ParticleTextures();
 	ParticleModifierOffsets modifiers;
-	LoadParticleSystemData(particleTextures, modifiers);
+	LoadParticleSystemData(*particleTextures, modifiers);
 	_particleHandler = new Renderer::ParticleHandler(_renderModule->GetDevice(), _renderModule->GetDeviceContext(), particleTextures, modifiers);
 
 	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager, &_data, _settingsReader.GetSettings(), _particleHandler->GetParticleEventQueue(), &_soundModule);
@@ -39,23 +39,30 @@ Game::Game(HINSTANCE hInstance, int nCmdShow):
 
 	_enemiesHasSpawned = false;
 
-	_ambientLight = _renderModule->GetAmbientLight();	
+	_ambientLight = _renderModule->GetAmbientLight();
 	ResizeResources(settings);//This fixes a bug which offsets mousepicking, do not touch! //Markus
+	_renderModule->SetAntialiasingEnabled(settings->_antialiasing);
+
+
+	for (int i = 0; i < 10; i++)
+	{
+		//spotlights.push_back(new Renderer::Spotlight)
+	}
 }
 
 Game::~Game()
 {
-	SAFE_DELETE(_objectHandler);
-	SAFE_DELETE(_window);
-	SAFE_DELETE(_renderModule);
-	SAFE_DELETE(_camera);
-	SAFE_DELETE(_SM);
-	SAFE_DELETE(_controls);
-	SAFE_DELETE(_assetManager);
-	SAFE_DELETE(_pickingDevice);
-	SAFE_DELETE(_fontWrapper);
-	SAFE_DELETE(_particleHandler);
-	SAFE_DELETE(_combinedMeshGenerator);
+	delete _objectHandler;
+	delete _window;
+	delete _renderModule;
+	delete _camera;
+	delete _SM;
+	delete _controls;
+	delete _pickingDevice;
+	delete _fontWrapper;
+	delete _particleHandler;
+	delete _combinedMeshGenerator;
+	delete _assetManager;
 }
 
 void Game::ResizeResources(System::Settings* settings)
@@ -135,14 +142,12 @@ void Game::LoadParticleSystemData(ParticleTextures& particleTextures, ParticleMo
 
 bool Game::Update(double deltaTime)
 {
-	_soundModule.Update(_camera->GetPosition().x, _camera->GetPosition().y, _camera->GetPosition().z);
+	_soundModule.Update(_camera->GetPosition());
 
 	if (_SM->GetState() == PLACEMENTSTATE)
 	{
 		_objectHandler->UpdateLights();
 	}
-
-	bool run = true;
 
 	//Apply settings if they has changed
 	if (_settingsReader.GetSettingsChanged())
@@ -151,21 +156,15 @@ bool Game::Update(double deltaTime)
 		ResizeResources(settings);
 		_soundModule.SetVolume(settings->_volume / 100.0f, CHMASTER);
 		_settingsReader.SetSettingsChanged(false);
+		_renderModule->SetAntialiasingEnabled(settings->_antialiasing);
 	}
 
 	_controls->Update();
-	run = _SM->Update(deltaTime);
+	bool run = _SM->Update(deltaTime);
 
 	if (_controls->IsFunctionKeyDown("DEBUG:REQUEST_PARTICLE"))
 	{
-		if (!tempAlreadyCombined)
-		{
-			//_combinedMeshGenerator->CombineMeshes(_objectHandler->GetTileMap(), System::FLOOR);
-			_combinedMeshGenerator->CombineMeshes(_objectHandler->GetTileMap(), System::WALL);
-			tempAlreadyCombined = true;
-		}
 
-		tempTestCombinedStuff = !tempTestCombinedStuff;
 	}
 
 	_particleHandler->Update(deltaTime);
@@ -187,13 +186,13 @@ bool Game::Update(double deltaTime)
 void Game::Render()
 {
 	_renderModule->SetAmbientLight(_ambientLight);
-	_renderModule->BeginScene(0.0f, 0.5f, 0.5f, 1.0f);
+	_renderModule->BeginScene(0.0f, 0.5f, 0.5f, 1.0f, _SM->GetState() == LEVELEDITSTATE);
 	_renderModule->SetDataPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
 
 	/*///////////////////////////////////////////////////////  Geometry pass  ////////////////////////////////////////////////////////////
 	Render the objects to the diffuse and normal resource views. Camera depth is also generated here.									*/
 	std::vector<std::vector<GameObject*>>* gameObjects = _objectHandler->GetGameObjects();
-	
+
 	/*-------------------------------------------------  Render non-skinned objects  ---------------------------------------------------*/
 	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::GEO_PASS);
 	RenderGameObjects(Renderer::RenderModule::ShaderStage::GEO_PASS, gameObjects);
@@ -220,12 +219,12 @@ void Game::Render()
 			_renderModule->RenderLineStrip(&matrix, gr->GetNrOfPoints(), gr->GetColorOffset());
 		}
 	}
-	
+
 	////////////////////////////////////////////////////////////  Light pass  //////////////////////////////////////////////////////////////
 	if (_SM->GetState() == PLAYSTATE || _SM->GetState() == PLACEMENTSTATE)
 	{
 		/*------------------------------------------------------  Spotlights  --------------------------------------------------------------
-		Generate the shadow map for each spotlight, then apply the lighting/shadowing to the render target with additive blending.        */ 
+		Generate the shadow map for each spotlight, then apply the lighting/shadowing to the render target with additive blending.        */
 
 		_renderModule->SetLightDataPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
 
@@ -269,47 +268,49 @@ void Game::Render()
 
 void Game::RenderGameObjects(int forShaderStage, std::vector<std::vector<GameObject*>>* gameObjects)
 {
-	if (tempTestCombinedStuff)
+	if (forShaderStage == Renderer::RenderModule::ShaderStage::GEO_PASS)
 	{
-		if (forShaderStage == Renderer::RenderModule::ShaderStage::GEO_PASS)
+		if (_SM->GetState() != LEVELEDITSTATE)
 		{
+			//Render the combined objects
 			std::vector<std::vector<CombinedMesh>>* combinedMeshes = _combinedMeshGenerator->GetCombinedMeshes();
 			for (auto& objVector : *combinedMeshes)
 			{
 				for (auto& obj : objVector)
 				{
+					XMMATRIX m = XMMatrixIdentity();
 					_renderModule->SetDataPerObjectType(obj._combinedObject);
-					_renderModule->Render(&obj._world, obj._vertexCount);
+					_renderModule->Render(&m, obj._vertexCount);
 				}
+			}
+
+			RenderObject* backgroundObject = _objectHandler->GetBackgroundObject();
+			if (backgroundObject)
+			{
+				_renderModule->SetDataPerObjectType(backgroundObject);
+				int vertexBufferSize = backgroundObject->_mesh->_vertexBufferSize;
+				XMMATRIX m = XMMatrixIdentity();
+				_renderModule->Render(&m, vertexBufferSize);
 			}
 		}
 	}
 
-	for (auto& i : *gameObjects)
+	for (auto& gameObjectVector : *gameObjects)
 	{
-		if (i.size() > 0)
+		if (gameObjectVector.size() > 0)
 		{
-			if (tempTestCombinedStuff)
+			//The floors in the gameObjects vector should not be rendered, as these are combined in a single mesh to reduce draw calls
+			if ((_SM->GetState() == PLACEMENTSTATE || _SM->GetState() == PLAYSTATE || _SM->GetState() == TUTORIALSTATE || _SM->GetState() == PAUSESTATE) && (gameObjectVector.at(0)->GetType() == System::FLOOR || gameObjectVector.at(0)->GetType() == System::WALL))
 			{
-				//The floors in the gameObjects vector should not be rendered, as these are combined in a single mesh to reduce draw calls
-				if ((_SM->GetState() == PLACEMENTSTATE || _SM->GetState() == PLAYSTATE) && (i.at(0)->GetType() == System::FLOOR || i.at(0)->GetType() == System::WALL))
-				{
-					continue;
-				}
+				continue;
 			}
-
-			//if ((_SM->GetState() == PLACEMENTSTATE || _SM->GetState() == PLAYSTATE) && (i.at(0)->GetType() == System::WALL))
-			//{
-			//	continue;
-			//}
-
 
 			GameObject* lastGameObject = nullptr;
 			RenderObject* lastRenderObject = nullptr;
 			int vertexBufferSize = 0;
-			for (int j = 0; j < i.size(); j++)
+			for (int j = 0; j < gameObjectVector.size(); j++)
 			{
-				GameObject* gameObject = i.at(j);
+				GameObject* gameObject = gameObjectVector[j];
 				RenderObject* renderObject = gameObject->GetRenderObject();
 
 				if ((forShaderStage == Renderer::RenderModule::ShaderStage::GEO_PASS && renderObject->_mesh->_isSkinned)
@@ -332,7 +333,7 @@ void Game::RenderGameObjects(int forShaderStage, std::vector<std::vector<GameObj
 						}
 						else
 						{
-							_renderModule->RenderAnimation(gameObject->GetMatrix(), vertexBufferSize, gameObject->GetAnimation()->GetFloats(), gameObject->GetColorOffset());
+							_renderModule->RenderAnimation(gameObject->GetMatrix(), vertexBufferSize, gameObject->GetAnimation()->GetTransforms(), gameObject->GetAnimation()->GetBoneCount(), gameObject->GetColorOffset());
 						}
 					}
 					lastGameObject = gameObject;
@@ -345,7 +346,7 @@ void Game::RenderGameObjects(int forShaderStage, std::vector<std::vector<GameObj
 
 void Game::GenerateShadowMap(Renderer::Spotlight* spotlight, unsigned short ownerID)
 {
-	//Non skinned objects
+	//Static objects
 	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::SHADOW_GENERATION);
 	_renderModule->SetShadowMapDataPerSpotlight(spotlight->GetViewMatrix(), spotlight->GetProjectionMatrix());
 
@@ -418,7 +419,7 @@ void Game::GenerateShadowMap(Renderer::Spotlight* spotlight, unsigned short owne
 					//Render the visible objects, but skip the owner itself
 					if (obj->IsVisible() && obj->GetID() != ownerID)
 					{
-						_renderModule->RenderShadowMap(obj->GetMatrix(), vertexBufferSize, anim->GetFloats());
+						_renderModule->RenderShadowMap(obj->GetMatrix(), vertexBufferSize, anim->GetTransforms(), anim->GetBoneCount());
 					}
 				}
 			}
@@ -533,10 +534,10 @@ int Game::Run()
 					if (run)
 					{
 						Render();
-
+#ifdef _DEBUG
 						string s = to_string(_timer.GetFrameTime()) + " " + to_string(_timer.GetFPS());
 						SetWindowText(_window->GetHWND(), s.c_str());
-
+#endif // DEBUG
 						_timer.Reset();
 					}
 				}

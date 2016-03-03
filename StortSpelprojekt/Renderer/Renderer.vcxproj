@@ -27,7 +27,10 @@
     <ClCompile Include="GUI elements\BlueprintNode.cpp" />
     <ClCompile Include="GUI elements\HighlightNode.cpp" />
     <ClCompile Include="GUI elements\Node.cpp" />
+    <ClCompile Include="GUI elements\NodeBar.cpp" />
+    <ClCompile Include="GUI elements\RadioButtonCollection.cpp" />
     <ClCompile Include="GUI elements\TextBox.cpp" />
+    <ClCompile Include="GUI elements\ToggleButton.cpp" />
     <ClCompile Include="ParticleSystem\Particle.cpp" />
     <ClCompile Include="ParticleSystem\ParticleEmitter.cpp" />
     <ClCompile Include="ParticleSystem\ParticleHandler.cpp" />
@@ -49,7 +52,10 @@
     <ClInclude Include="GUI elements\BlueprintNode.h" />
     <ClInclude Include="GUI elements\HighlightNode.h" />
     <ClInclude Include="GUI elements\Node.h" />
+    <ClInclude Include="GUI elements\NodeBar.h" />
+    <ClInclude Include="GUI elements\RadioButtonCollection.h" />
     <ClInclude Include="GUI elements\TextBox.h" />
+    <ClInclude Include="GUI elements\ToggleButton.h" />
     <ClInclude Include="ParticleSystem\Particle.h" />
     <ClInclude Include="ParticleSystem\ParticleEmitter.h" />
     <ClInclude Include="ParticleSystem\ParticleHandler.h" />
@@ -168,6 +174,12 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="Shaders\NoFxaaPS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
     </FxCompile>
     <FxCompile Include="Shaders\PassthroughVS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>

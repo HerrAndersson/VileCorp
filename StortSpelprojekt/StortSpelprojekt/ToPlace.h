@@ -17,7 +17,7 @@ struct ToPlace
 		_goldCost = -1;
 		_blueprintID = 1;
 	}
-	SpecificBlueprint _sB;
+	System::SpecificBlueprint _sB;
 	System::Type _type;
 	int _subType;
 	std::string _name;

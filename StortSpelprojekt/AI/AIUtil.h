@@ -38,11 +38,6 @@ namespace AI
 		{
 			return{_x * mult, _y * mult};
 		}
-		void operator=(const Vec2D& comp)
-		{
-			_x = comp._x;
-			_y = comp._y;
-		}
 		Vec2D operator+=(const Vec2D& comp)
 		{
 			_x += comp._x;

@@ -23,5 +23,5 @@ public:
 	AI::Vec2D GetVisibleTile(int index)const;
 	int GetNrOfVisibleTiles()const;
 
-	void ColorVisibleTiles(DirectX::XMFLOAT3 color);
+	void ColorVisibleTiles(const DirectX::XMFLOAT3& color);
 };

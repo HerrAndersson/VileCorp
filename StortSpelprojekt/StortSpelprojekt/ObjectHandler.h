@@ -55,8 +55,7 @@ private:
 	GameObjectInfo* _gameObjectInfo;
 	Tilemap* _tilemap;
 	Grid* _buildingGrid;
-	Level::LevelHeader _currentLevelHeader;
-	System::SoundModule*	_soundModule;
+	System::SoundModule* _soundModule;
 
 	int _idCount = 0;
 	int _objectCount = 0;
@@ -69,17 +68,28 @@ private:
 	map<GameObject*, Renderer::Pointlight*> _pointligths;
 	LightCulling* _lightCulling;
 
+	//Currently loaded level information
+	Level::LevelHeader _currentLevelHeader;
+	std::vector<std::string> _currentAvailableUnits;
+	std::vector<std::array<int, 2>> _enemySpawnVector;
+
+	int _enemySpawnIndex = 0;
+	int _spawnTimer = 0;
+
 	Renderer::ParticleEventQueue* _particleEventQueue;
 
+	RenderObject* _backgroundObject;
+	void CreateBackgroundObject(const float& sizeX, const float& sizeY, const std::string& textureName, const int& texRepeatCountX, const int& texRepeatCountY);
+
 	void ReleaseGameObjects();
+	void SpawnEnemies();
 
 public:
 	ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data, System::Settings* settings, Renderer::ParticleEventQueue* particleReque, System::SoundModule*	soundModule);
 	~ObjectHandler();
 
 	//Add a gameobject
-	bool Add(XMFLOAT3 position, XMFLOAT3 rotation, System::Type type, int subType, string textureReference);
-	GameObject* Add(System::Blueprint* blueprint, int textureId, const XMFLOAT3& position, const XMFLOAT3& rotation, const bool placeOnTilemap = true);
+	GameObject* Add(System::Blueprint* blueprint, int textureId, const XMFLOAT3& position, const XMFLOAT3& rotation, const bool placeOnTilemap = true, AI::Vec2D direction = { 1, 0 });
 
 	bool Remove(int ID);
 	bool Remove(System::Type type, int ID);
@@ -107,16 +117,14 @@ public:
 	void MinimizeTileMap();
 	void EnlargeTilemap(int offset);
 	Grid* GetBuildingGrid();
+	RenderObject* GetBackgroundObject();
 
 	Level::LevelHeader* GetCurrentLevelHeader();
-	void SetCurrentLevelHeader(Level::LevelHeader levelheader);
-	bool LoadLevel(std::string levelBinaryFilePath);
-	void UnloadLevel();
+	void SetCurrentLevelHeader(const Level::LevelHeader& levelheader);
+	bool LoadLevel(const std::string& levelBinaryFilePath);
+	bool LoadLevel(Level::LevelBinary &levelData);
 
-	void InitPathfinding();
-	void EnableSpawnPoints();
-	void DisableSpawnPoints();
-	int GetRemainingToSpawn()const;
+	void UnloadLevel();
 
 	Renderer::ParticleEventQueue* GetParticleEventQueue();
 
@@ -125,7 +133,10 @@ public:
 	void UpdateLights();
 
 	vector<System::Blueprint>* GetBlueprints();
-	System::Blueprint* GetBlueprintByName(string name);
+	std::vector<std::vector<System::Blueprint*>>* GetBlueprintsOrderedByType();
+	System::Blueprint* GetBlueprintByName(const std::string& name);
 	System::Blueprint* GetBlueprintByType(int type, int subType = 0);
+	std::vector<std::string>* GetCurrentAvailableUnits();
+	int GetRemainingToSpawn();
 };
 

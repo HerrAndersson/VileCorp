@@ -35,7 +35,7 @@ namespace AI
 		{
 			Vec2D _position;
 			__int8 _open;										//0 = not checked, 1 = open, 2 = closed
-			__int8 _tileCost;									//cost of traversing the individual tile
+			__int16 _tileCost;									//cost of traversing the individual tile
 			float _gCost, _hCost;								//distance from start and heuristic to goal, respectively
 			Node* _parent;										//the path back to the start node 
 			Node()

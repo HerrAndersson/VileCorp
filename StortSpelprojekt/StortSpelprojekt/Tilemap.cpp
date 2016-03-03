@@ -42,6 +42,7 @@ Tilemap::Tilemap(const Tilemap& copy)
 	_height = copy._height;
 	_width = copy._width;
 	_map = new Tile*[copy._width];
+	_nrOfLoot = copy._nrOfLoot;
 
 	for (int i = 0; i < copy._width; i++)
 	{
@@ -60,6 +61,7 @@ Tilemap::~Tilemap()
 		delete[] _map[i];
 	}
 	delete[] _map;
+	_map = nullptr;
 }
 
 bool Tilemap::AddObjectToTile(AI::Vec2D pos, GameObject * obj)
@@ -524,4 +526,14 @@ bool Tilemap::IsTileEmpty(int x, int z) const
 bool Tilemap::IsTileEmpty(AI::Vec2D pos) const
 {
 	return IsTileEmpty(pos._x, pos._y);
+}
+
+bool Tilemap::IsTileNoPlacementZone(int x, int z) const
+{
+	return IsFloorOnTile(x, z) && static_cast<Architecture*>(_map[x][z]._objectsOnTile[0])->GetNoPlacementZone();
+}
+
+bool Tilemap::IsTileNoPlacementZone(AI::Vec2D pos) const
+{
+	return IsTileNoPlacementZone(pos._x, pos._y);
 }

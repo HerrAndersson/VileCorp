@@ -30,6 +30,8 @@ private:
 	int _aaOption;
 
 	int _volume;
+
+	bool _showApplyButton;
 private:
 	int ReadSetting(int setting, int setting2, Options* arr, int max);
 	void UpdateText(const std::string& contentId, int optionValue, Options* options);

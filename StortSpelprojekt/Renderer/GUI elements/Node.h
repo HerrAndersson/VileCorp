@@ -1,4 +1,5 @@
 #pragma once
+#include "../RenderUtils.h"
 #include <d3d11.h>
 #include <DirectXMath.h>
 #include <vector>
@@ -51,7 +52,7 @@ namespace GUI
 		bool _centered;
 
 		//Image info
-		ID3D11ShaderResourceView* _texture;
+		Texture* _texture = nullptr;
 
 		void UpdateMatrix();
 	protected:
@@ -64,7 +65,7 @@ namespace GUI
 			DirectX::XMFLOAT2 position = DirectX::XMFLOAT2(0.0f, 0.0f),
 			DirectX::XMFLOAT2 scale = DirectX::XMFLOAT2(1.0f, 1.0f),
 			DirectX::XMFLOAT4 colorOffset = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f),
-			ID3D11ShaderResourceView* texture = nullptr,
+			Texture* texture = nullptr,
 			const std::string& id = "parent",
 			const std::wstring& text = L"",
 			UINT32 color = 0xFF0000FF,
@@ -83,7 +84,8 @@ namespace GUI
 		void SetText(const std::wstring& text);
 		void SetColor(UINT32 color);
 		void SetFontSize(float fontSize);
-		void SetTexture(ID3D11ShaderResourceView* texture);
+		void SetTexture(Texture* texture);
+		void SwapTexture(Node* otherNode);
 		void SetColorOffset(const DirectX::XMFLOAT4& colorOffset);
 		void SetAlpha(float alpha);
 		void SetCentered(bool centered);
@@ -100,10 +102,11 @@ namespace GUI
 		UINT32 GetColor() const;
 		float GetFontSize() const;
 		FontWrapper::CustomFont* GetFont();
-		ID3D11ShaderResourceView* GetTexture();
+		Texture* GetTexture();
 		bool GetCentered() const;
 		bool GetHidden() const;
 		Node* GetParent() const;
+		DirectX::XMFLOAT2 GetSize() const;
 
 		DirectX::XMMATRIX* Node::GetModelMatrix();
 		std::vector<GUI::Node*>* GetChildren();

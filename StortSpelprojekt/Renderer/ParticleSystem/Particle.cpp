@@ -21,6 +21,7 @@ namespace Renderer
 		_speed = speed;
 		_timeLeft = timeLeft;
 		_textureNumber = textureNumber;
+		_isActive = true;
 	}
 
 	Particle::~Particle()

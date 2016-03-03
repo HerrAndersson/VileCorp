@@ -34,7 +34,7 @@ private:
 	int _skirmishSelectedIndex;
 
 	void LoadLevelHeader(int levelFilename, Level::LevelHeader* headerToLoad);
-	void LoadLevelHeader(std::string levelFilename, Level::LevelHeader* headerToLoad);
+	void LoadLevelHeader(const std::string& levelFilename, Level::LevelHeader* headerToLoad);
 	void SelectedLevelHeaderToGUI();
 	void UpdateButtonsNextPreviousVisability();
 	void SwitchLevelSelectionMode();
@@ -42,6 +42,7 @@ private:
 	CombinedMeshGenerator* _combinedMeshGenerator;
 	
 public:
+
 	LevelSelectState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule, CombinedMeshGenerator* combinedMeshGenerator);
 	~LevelSelectState();
 

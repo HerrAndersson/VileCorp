@@ -1,6 +1,4 @@
 #include "GameLogic.h"
-#include <DirectXMath.h>
-#include "InputDevice.h"
 
 GameLogic::GameLogic(ObjectHandler* objectHandler, System::Camera* camera, System::Controls* controls, PickingDevice* pickingDevice, GUI::UITree* uiTree, AssetManager* assetManager, System::SettingsReader* settingsReader , System::SoundModule* soundModule)
 {
@@ -11,10 +9,15 @@ GameLogic::GameLogic(ObjectHandler* objectHandler, System::Camera* camera, Syste
 	_settingsReader = settingsReader;
 
 	_player = new Player(objectHandler);
-	_objectHandler->InitPathfinding();
+
+	for (GameObject* guard : *_objectHandler->GetAllByType(System::Type::GUARD))
+	{
+		static_cast<Unit*>(guard)->InitializePathFinding();
+	}
+
 	_uiTree = uiTree;
 	_assetManager = assetManager;
-	_guardTexture = _assetManager->GetTexture("../Menues/PlacementStateGUI/units/Guardbutton1.png")->_data;
+	_guardTexture = _assetManager->GetTexture("../Menues/PlacementStateGUI/units/Guardbutton1.png");
 	_uiTree->GetNode("winscreen")->SetHidden(true);
 	_uiTree->GetNode("losescreen")->SetHidden(true);
 	_gameOver = false;
@@ -31,6 +34,7 @@ GameLogic::GameLogic(ObjectHandler* objectHandler, System::Camera* camera, Syste
 GameLogic::~GameLogic()
 {
 	delete _player;
+	_guardTexture->DecrementUsers();
 	_player = nullptr;
 }
 
@@ -115,9 +119,25 @@ void GameLogic::HandleUnitSelect()
 	for (auto u : _player->GetSelectedUnits())
 	{
 		XMFLOAT3 pos = u->GetPosition();
-		pos.y += 2.5f;
-		ParticleUpdateMessage* msg = new ParticleUpdateMessage(u->GetID(), true, pos);
+		pos.y += 3.0f;
+
+		ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::SELECTED_SUBTYPE, -1, pos, XMFLOAT3(0, 0, 0), 1.0f, 1, 0.25f, true, true);
 		_objectHandler->GetParticleEventQueue()->Insert(msg);
+
+		if (u->GetType() == System::GUARD)
+		{
+			for (auto p : ((Guard*)u)->GetPatrolRoute())
+			{
+				pos = XMFLOAT3(p._x, 0.5, p._y);
+
+				msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::PATROL_SUBTYPE, -1, pos, XMFLOAT3(0, 0, 0), 1.0f, 1, 0.25f, true, true);
+				_objectHandler->GetParticleEventQueue()->Insert(msg);
+			}
+
+		}
+
+
+
 	}
 }
 
@@ -179,7 +199,7 @@ void GameLogic::HandleUnitMove()
 		{
 			_player->MoveUnits(selectedTile);
 			//Play sound
-			PlayMoveSound((GuardType)(((Guard*)units.at(0))->GetSubType()));
+			PlayMoveSound(static_cast<GuardType>(units.at(0)->GetSubType()));
 		}
 	}
 }
@@ -217,7 +237,7 @@ void GameLogic::ShowSelectedInfo()
 
 		//TODO: Actually check if the units are guards //Mattias
 		_uiTree->GetNode("unitinfotext")->SetText(L"Guard");
-		_uiTree->GetNode("unitpicture")->SetTexture(_guardTexture);
+		_uiTree->GetNode("unitpicture")->SetTexture(_assetManager->GetTexture(_guardTexture->_name));
 
 		//Calculate health sum
 		for (auto& i : units)
@@ -280,8 +300,19 @@ void GameLogic::HandleWinLoseDialog(float deltaTime)
 		if (time <= 0 && _uiTree->IsButtonColliding("winbutton", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
 		{
 			_returnToMenu = true;
-			_settingsReader->GetProfile()->_level += 1;
-			_settingsReader->ApplyProfileSettings();
+			Level::LevelHeader* currentLevelHeader = _objectHandler->GetCurrentLevelHeader();
+			if (currentLevelHeader->_isCampaignMode)
+			{
+				System::Profile* playerProfile = _settingsReader->GetProfile();
+
+				int currentCampaignLevelIndex = currentLevelHeader->_campaignLevelIndex;
+				int profileCampaignLevelIndex = playerProfile->_level;
+				if (currentCampaignLevelIndex >= profileCampaignLevelIndex)
+				{
+					playerProfile->_level = currentCampaignLevelIndex + 1;
+					_settingsReader->ApplyProfileSettings();
+				}
+			}
 		}
 		_buttonReady -= deltaTime;
 	}

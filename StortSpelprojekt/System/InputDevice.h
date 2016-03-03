@@ -40,6 +40,8 @@ namespace System
 		bool _breakOnEsc;
 		bool _breakOnCarriageReturn;
 		bool _breakOnTab;
+		int _characterLimit;
+		bool _onlyNumbers;
 	private:
 		bool IsMouseKey(int key);
 
@@ -64,9 +66,9 @@ namespace System
 		bool IsReleased(int key);
 		MouseCoord GetMouseCoord()const;
 
-		void SetCurrentText(std::wstring text);
+		void SetCurrentText(const std::wstring& text);
 		std::wstring GetCurrentText() const;
-		void SetIsTextInputMode(std::wstring currentText, bool breakOnEsc = false, bool breakOnCarriageReturn = false, bool breakOnTab = false);
+		void SetIsTextInputMode(const std::wstring& currentText, bool breakOnEsc = false, bool breakOnCarriageReturn = false, bool breakOnTab = false, int characterLimit = 1000, bool onlyNumbers = true);
 		void ResetTextInputMode();
 		bool GetIsTextInputMode() const;
 	};

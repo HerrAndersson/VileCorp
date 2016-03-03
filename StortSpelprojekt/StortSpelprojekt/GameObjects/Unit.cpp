@@ -79,32 +79,8 @@ void Unit::SetGoal(GameObject * objective)
 	CalculatePath();
 }
 
-Unit::Unit()
-	: GameObject()
-{
-	_goalPriority = -1;
-	_aStar = new AI::AStar();
-	_visionCone = nullptr;
-	_visionRadius = 0;
-	_goalTilePosition = { 0,0 };
-	_heldObject = nullptr;
-	_objective = nullptr;
-	_waiting = -1;
-	_health = 1;
-	_pathLength = 0;
-	_path = nullptr;
-	_direction = {0, -1};
-	_nextTile = _tilePosition;
-	_interactionTime = -1;
-	_isSwitchingTile = false;
-	_status = NO_EFFECT;
-	_statusTimer = 0;
-	_statusInterval = 0;
-	Rotate();
-}
-
-Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject* renderObject, System::SoundModule* soundModule, const Tilemap* tileMap)
-	: GameObject(ID, position, rotation, tilePosition, type, renderObject, soundModule)
+Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject* renderObject, System::SoundModule* soundModule, const Tilemap* tileMap, AI::Vec2D direction)
+	: GameObject(ID, position, rotation, tilePosition, type, renderObject, soundModule, DirectX::XMFLOAT3(0, 0, 0), 0, direction)
 {
 	_goalPriority = -1;
 	_visionRadius = 6;
@@ -137,12 +113,7 @@ Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 Unit::~Unit()
 {
 	delete _aStar;
-	_aStar = nullptr;
 	delete _visionCone;
-	if (_animation != nullptr)
-	{
-		delete _animation;
-	}
 }
 
 int Unit::GetPathLength() const
@@ -191,6 +162,7 @@ bool Unit::GetAnimisFinished()
 	{
 		return _animation->GetisFinished();
 	}
+	return true;
 }
 
 void Unit::SetGoalTilePosition(AI::Vec2D goal)
@@ -200,7 +172,7 @@ void Unit::SetGoalTilePosition(AI::Vec2D goal)
 	_moveState = MoveState::FINDING_PATH;
 }
 
-void Unit::SetDirection(const AI::Vec2D direction)
+void Unit::SetDirection(const AI::Vec2D& direction)
 {
 	_direction = direction;
 	Rotate();
@@ -235,9 +207,18 @@ void Unit::SetTilePosition(AI::Vec2D pos)
 
 void Unit::SetStatusEffect(StatusEffect effect, int intervalTime, int totalTime)
 {
-	_status = effect;
-	_statusTimer = totalTime;
-	_statusInterval = intervalTime;
+	if (_status != effect)
+	{
+		_status = effect;
+		_statusInterval = intervalTime;
+		_statusTimer = totalTime;
+	}
+	else if (_status == effect)
+	{
+		_statusTimer = totalTime;
+		_statusTimer--;
+	}
+	
 }
 
 bool Unit::IsSwitchingTile() const
@@ -301,6 +282,10 @@ void Unit::InitializePathFinding()
 			if (_tileMap->IsWallOnTile(AI::Vec2D(i, j)))
 			{
 				_aStar->SetTileCost({i, j}, -1);
+			}
+			else if (_tileMap->IsFurnitureOnTile(AI::Vec2D(i, j)))
+			{
+				_aStar->SetTileCost({i, j}, SHRT_MAX/2);					//Needs to be reachable in case objective is on a furniture tile, but it's still high enough that units almost always avoid it.
 			}
 			else
 			{
@@ -373,7 +358,6 @@ void Unit::SwitchingNode()
 	//}
 	if (_status == StatusEffect::CONFUSED)
 	{
-		srand((int)time(NULL));
 		int randDir = rand() % 8;
 		_direction = AI::NEIGHBOUR_OFFSETS[randDir];
 		_nextTile = _tilePosition + _direction;
@@ -385,6 +369,7 @@ void Unit::SwitchingNode()
 		}
 		Rotate();
 		_moveState = MoveState::MOVING;
+		_isSwitchingTile = false;
 	}
 	else
 	{
@@ -435,7 +420,7 @@ void Unit::ActivateStatus()
 	case StatusEffect::NO_EFFECT:
 		break;
 	case StatusEffect::BURNING:
-		TakeDamage(10);
+		TakeDamage(8);
 		break;
 	case StatusEffect::SLOWED:
 		_moveSpeed /= 2.0f;

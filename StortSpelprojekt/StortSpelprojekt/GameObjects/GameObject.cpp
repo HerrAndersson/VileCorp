@@ -1,18 +1,9 @@
 #include "GameObject.h"
 
 Renderer::ParticleEventQueue* GameObject::_particleEventQueue = nullptr;
+GameObject::GameObject(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation,  AI::Vec2D tilePosition, System::Type type, RenderObject * renderObject, System::SoundModule* soundModule, DirectX::XMFLOAT3 colorOffset, int subType, AI::Vec2D direction)
 
-GameObject::GameObject()
-{
-	_ID = -1;
-	_type = System::FLOOR;
-	_visible = true;
-	_renderObject = nullptr;
-	_pickUpState = PickUpState::DROPPING;
-	_hasParticleEffect = false;
-}
 
-GameObject::GameObject(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation,  AI::Vec2D tilePosition, System::Type type, RenderObject * renderObject, System::SoundModule* soundModule, DirectX::XMFLOAT3 colorOffset)
 {
 	_ID = ID;
 	_position = position;
@@ -24,16 +15,21 @@ GameObject::GameObject(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::X
 	_renderObject = renderObject;
 	_pickUpState = ONTILE;
 	_visible = true;
-	_subType = 0;
+	_subType = subType;
 	_hasParticleEffect = false;
-
+	_active = true;
 	_soundModule = soundModule;
-
+	_direction = direction;
 	CalculateMatrix();
+	_animation = nullptr;
 }
 
 GameObject::~GameObject()
 {
+	if (_animation != nullptr)
+	{
+		delete _animation;
+	}
 }
 
 void GameObject::CalculateMatrix()
@@ -189,10 +185,7 @@ RenderObject * GameObject::GetRenderObject() const
 
 Animation * GameObject::GetAnimation() const
 {
-	if (_animation != nullptr)
-	{
-		return _animation;
-	}
+	return _animation;
 }
 
 void GameObject::SetPickUpState(PickUpState state)
@@ -230,6 +223,11 @@ void* GameObject::operator new(size_t i)
 void GameObject::operator delete(void* p)
 {
 	_mm_free(p);
+}
+
+bool GameObject::operator<(const GameObject& other)
+{
+	return (this->_renderObject < other._renderObject);
 }
 
 int GameObject::GetAnimLength(int layer)

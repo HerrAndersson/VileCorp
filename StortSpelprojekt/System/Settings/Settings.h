@@ -14,13 +14,13 @@ namespace System
 		unsigned int _windowWidth;
 		unsigned int _windowHeight;
 		unsigned int _shadowMapSize;
-		bool _borderless;
-		bool _showMouseCursor;
+		int _volume;
 		float _nearClip;
 		float _farClip;
 		float _fov;
+		bool _borderless;
+		bool _showMouseCursor;
 		bool _antialiasing;
-		int _volume;
 	public:
 		Settings();
 		~Settings();
