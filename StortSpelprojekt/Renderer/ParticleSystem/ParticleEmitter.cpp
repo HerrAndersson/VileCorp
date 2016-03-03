@@ -211,7 +211,7 @@ namespace Renderer
 		return offsets.x + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (offsets.y - offsets.x + std::numeric_limits<float>::epsilon())));
 	}
 
-	DirectX::XMFLOAT3 ParticleEmitter::Normalize(DirectX::XMFLOAT3 dir)
+	DirectX::XMFLOAT3 ParticleEmitter::Normalize(const DirectX::XMFLOAT3& dir)
 	{
 		float length = abs(dir.x) + abs(dir.y) + abs(dir.z);
 
@@ -234,7 +234,7 @@ namespace Renderer
 		float directionOffset;
 		float repeatTime;
 		XMFLOAT2 speedRange;
-		float speed;
+		float speed = 0.0f;
 		bool hasModifiers = false;
 		float randomTexture = GetRandomOffset(PARTICLE_TEXTURE_COUNT, false);
 
@@ -351,7 +351,7 @@ namespace Renderer
 		ZeroMemory(&bufferDesc, sizeof(bufferDesc));
 		bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 		bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-		bufferDesc.ByteWidth = _vertexSize * particleCount;;
+		bufferDesc.ByteWidth = _vertexSize * particleCount;
 		bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
 		D3D11_SUBRESOURCE_DATA data;

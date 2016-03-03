@@ -43,8 +43,8 @@ public:
 	AI::Vec2D PickDirection(POINT mousePoint, AI::Vec2D origin, Tilemap* tilemap);
 
 	XMFLOAT3 PickPoint(POINT mousePoint);
-	vector<GameObject*> PickObjects(POINT mousePoint, vector<GameObject*> pickableObjects);
-	vector<GameObject*> PickTilemap(POINT mousePoint, Tilemap* tilemap);
+	vector<GameObject*> PickObjects(POINT mousePoint, const vector<GameObject*>& pickableObjects);
+	vector<GameObject*>* PickTilemap(POINT mousePoint, Tilemap* tilemap);
 
 	//Used to save the first mouseposition when boxselecting
 	void SetFirstBoxPoint(POINT mousePoint);

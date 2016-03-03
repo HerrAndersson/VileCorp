@@ -254,12 +254,12 @@ namespace GUI
 		return IsButtonColliding(UITree::GetNode(id), x, y);
 	}
 
-	bool UITree::IsButtonColliding(const std::string& id, System::MouseCoord coord)
+	bool UITree::IsButtonColliding(const std::string& id, const System::MouseCoord& coord)
 	{
 		return IsButtonColliding(id, coord._pos.x, coord._pos.y);
 	}
 
-	bool UITree::IsButtonColliding(Node* current, System::MouseCoord coord)
+	bool UITree::IsButtonColliding(Node* current, const System::MouseCoord& coord)
 	{
 		return IsButtonColliding(current, coord._pos.x, coord._pos.y);
 	}

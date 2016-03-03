@@ -78,6 +78,9 @@ private:
 
 	Renderer::ParticleEventQueue* _particleEventQueue;
 
+	RenderObject* _backgroundObject;
+	void CreateBackgroundObject(const float& sizeX, const float& sizeY, const std::string& textureName, const int& texRepeatCountX, const int& texRepeatCountY);
+
 	void ReleaseGameObjects();
 	void SpawnEnemies();
 
@@ -86,8 +89,7 @@ public:
 	~ObjectHandler();
 
 	//Add a gameobject
-	bool Add(XMFLOAT3 position, XMFLOAT3 rotation, System::Type type, int subType, string textureReference);
-	GameObject* Add(System::Blueprint* blueprint, int textureId, const XMFLOAT3& position, const XMFLOAT3& rotation, const bool placeOnTilemap = true);
+	GameObject* Add(System::Blueprint* blueprint, int textureId, const XMFLOAT3& position, const XMFLOAT3& rotation, const bool placeOnTilemap = true, AI::Vec2D direction = { 1, 0 });
 
 	bool Remove(int ID);
 	bool Remove(System::Type type, int ID);
@@ -115,10 +117,11 @@ public:
 	void MinimizeTileMap();
 	void EnlargeTilemap(int offset);
 	Grid* GetBuildingGrid();
+	RenderObject* GetBackgroundObject();
 
 	Level::LevelHeader* GetCurrentLevelHeader();
-	void SetCurrentLevelHeader(Level::LevelHeader levelheader);
-	bool LoadLevel(std::string levelBinaryFilePath);
+	void SetCurrentLevelHeader(const Level::LevelHeader& levelheader);
+	bool LoadLevel(const std::string& levelBinaryFilePath);
 	bool LoadLevel(Level::LevelBinary &levelData);
 
 	void UnloadLevel();
@@ -131,7 +134,7 @@ public:
 
 	vector<System::Blueprint>* GetBlueprints();
 	std::vector<std::vector<System::Blueprint*>>* GetBlueprintsOrderedByType();
-	System::Blueprint* GetBlueprintByName(string name);
+	System::Blueprint* GetBlueprintByName(const std::string& name);
 	System::Blueprint* GetBlueprintByType(int type, int subType = 0);
 	std::vector<std::string>* GetCurrentAvailableUnits();
 	int GetRemainingToSpawn();

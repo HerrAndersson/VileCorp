@@ -24,9 +24,9 @@ private:
 	float _nextTime;
 	float _lerpPercent;
 	unsigned _lastFrame, _boneCount;
-	XMMATRIX* toRootTransforms;
-	XMMATRIX* toParentTransforms;
-	XMMATRIX* finalTransforms;
+	XMMATRIX* _toRootTransforms;
+	XMMATRIX* _toParentTransforms;
+	XMMATRIX* _finalTransforms;
 	Skeleton* _skeleton;
 	float _animTime;
 	int _currentCycle, _currentAction;
@@ -47,12 +47,13 @@ public:
 	int GetBoneCount() const;
 	bool GetisFinished();
 	float GetLength(int animation);
+
 	static void* Animation::operator new(size_t i)
 	{
 		return _mm_malloc(i, 16);
 	}
 
-		static void Animation::operator delete(void* p)
+	static void Animation::operator delete(void* p)
 	{
 		_mm_free(p);
 	}

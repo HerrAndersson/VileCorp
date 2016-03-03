@@ -42,6 +42,7 @@ Tilemap::Tilemap(const Tilemap& copy)
 	_height = copy._height;
 	_width = copy._width;
 	_map = new Tile*[copy._width];
+	_nrOfLoot = copy._nrOfLoot;
 
 	for (int i = 0; i < copy._width; i++)
 	{
@@ -228,23 +229,14 @@ int Tilemap::GetNrOfLoot() const
 	return _nrOfLoot;
 }
 
-std::vector<GameObject*> Tilemap::GetAllObjectsOnTile(AI::Vec2D tileCoords) const
+std::vector<GameObject*>* Tilemap::GetAllObjectsOnTile(AI::Vec2D tileCoords) const
 {
-	std::vector<GameObject*> objectsOnTile;
-	objectsOnTile.reserve(Tile::OBJECT_CAPACITY);
+	return &_map[tileCoords._x][tileCoords._y]._objectsOnTile;
+}
 
-	if (IsValid(tileCoords))
-	{
-		for (int i = 0; i < Tile::OBJECT_CAPACITY; i++)
-		{
-			if (_map[tileCoords._x][tileCoords._y]._objectsOnTile[i] != nullptr)
-			{
-				objectsOnTile.push_back(_map[tileCoords._x][tileCoords._y]._objectsOnTile[i]);
-			}
-		}
-	}
-
-	return objectsOnTile;
+std::vector<GameObject*>* Tilemap::GetAllObjectsOnTile(int xCoord, int yCoord) const
+{
+	return &_map[xCoord][yCoord]._objectsOnTile;
 }
 
 GameObject * Tilemap::GetObjectOnTile(AI::Vec2D pos, System::Type type) const

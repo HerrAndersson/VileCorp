@@ -51,7 +51,7 @@ std::vector<std::vector<System::Blueprint*>>* Blueprints::GetBlueprintsOrderedBy
 	return &_blueprintsByType;
 }
 
-System::Blueprint* Blueprints::GetBlueprintByName(std::string name)
+System::Blueprint* Blueprints::GetBlueprintByName(const std::string& name)
 {
 	for (int i = 0; i < _blueprintsByName.size(); i++)
 	{

@@ -59,9 +59,9 @@ namespace System
 		MouseCoord GetClickedCoord();
 		void SetClickedCoord(MouseCoord pos);
 
-		void SetCurrentText(std::wstring text);
+		void SetCurrentText(const std::wstring& text);
 		std::wstring GetCurrentText() const;
-		void SetIsTextInputMode(std::wstring currentText, bool breakOnEsc = false, bool breakOnCarriageReturn = false, bool breakOnTab = false, int characterLimit = 1000, bool onlyNumbers = true);
+		void SetIsTextInputMode(const std::wstring& currentText, bool breakOnEsc = false, bool breakOnCarriageReturn = false, bool breakOnTab = false, int characterLimit = 1000, bool onlyNumbers = true);
 		void ResetTextInputMode();
 		bool GetIsTextInputMode() const;
 	};

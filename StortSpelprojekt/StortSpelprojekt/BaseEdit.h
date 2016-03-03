@@ -91,5 +91,8 @@ public:
 	// Returns the blueprint of an deleted game object
 	System::Blueprint* GetDeletedObjectBlueprint();
 
+	//Updates the local tilemap variable. Used when a new level is loaded.
+	void RefreshTileMap();
+
 	void Update();
 };

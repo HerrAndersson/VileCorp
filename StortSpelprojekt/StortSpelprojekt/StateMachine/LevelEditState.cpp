@@ -136,9 +136,9 @@ void LevelEditState::OnStateEnter()
 
 	_levelHeader = Level::LevelHeader();
 	_levelBinary = Level::LevelBinary();
+	_currentLevelFileName.clear();
 	AddSpawnWaveAndSelectIt();
 
-	_currentLevelFileName = "";
 	_isNewLevel = true;
 
 	_objectHandler->EnlargeTilemap(50);
@@ -1094,7 +1094,8 @@ void LevelEditState::LoadLevel(std::string headerFileName)
 	HRESULT success = _assetManager->ParseLevelBinary(&_levelBinary, levelPath + _levelHeader._levelBinaryFilename);
 
 	result = _objectHandler->LoadLevel(_levelBinary);
-
+	_baseEdit->RefreshTileMap();
+	
 	_budgetTextNode->SetText(std::to_wstring(_levelHeader._budget));
 	_storyTitleTextNode->SetText(System::StringToWstring(_levelHeader._storyTitle));
 	_storyTextNode->SetText(System::StringToWstring(_levelHeader._storyBody));

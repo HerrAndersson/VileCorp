@@ -39,6 +39,8 @@ private:
 	int _nrOfAOETiles;
 	int _areaOfEffectArrayCapacity;
 
+	int _sawBladeDirection;				//Checks which way the sawblade is moving
+
 	int CalculateCircle(int radius, AI::Vec2D basePosition, AI::Vec2D* arr);
 	int CalculateLine(int length, AI::Vec2D basePosition, AI::Vec2D* arr);
 	int CalculateRectangle(int length, int width, AI::Vec2D basePosition, AI::Vec2D* arr);
@@ -49,7 +51,6 @@ private:
 					Unit::StatusEffect statusEffect, int statusTimer, int statusInterval, int triggerTimer = 0, int ammunition = 1);							/*Initialize adds any characteristics specific to the subtype*/
 	void SetTiles();
 public:
-	Trap();
 	Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject * renderObject, System::SoundModule* soundModule,
 		 const Tilemap* tileMap, int trapType = ANVIL, AI::Vec2D direction = {1,0});
 	virtual ~Trap();
@@ -72,7 +73,7 @@ public:
 	// Overloaded function
 	void SetTilePosition(AI::Vec2D pos);
 	AI::Vec2D GetDirection();
-	void SetDirection(const AI::Vec2D direction);
+	void SetDirection(const AI::Vec2D& direction);
 	enum Anim { IDLEANIM, ACTIVATEANIM, DISABLEANIM, FIXANIM, NR_OF_ANIM/*Has to be last*/ };
 	void Animate(Anim anim);
 

@@ -1,17 +1,17 @@
 {
 	"Units": {
-		"position": [-0.5, -0.855],
-		"scale": [1.2, 0.2],
-		"texture": "../Menues/PlacementStateGUI/placementUnits1.png",
+		"position": [0.0, -0.855],
+		"scale": [1.0, 0.23],
+		"texture": "../Menues/PlacementStateGUI/placement.png",
 
 		"UnitList":
 		{
-		"position": [-0.25, 0.0],
+		"position": [-0.70, -0.0],
 		
 			"Guard": {
 				"position": [-0.18, 0.057],
 				"scale": [0.048, 0.083],
-				"texture": "../Menues/LevelEdit/Units/MaleGuardButton.png",
+				"texture": "../Menues/PlacementStateGUI/units/MaleGuardButton.png",
 				"type" : 6,
 				"subType": 0,
 				"textureId" : 0,
@@ -31,7 +31,7 @@
 					
 					"GuardCost":
 					{
-						"position" : [0.025, 0.075],
+						"position" : [0.01, 0.075],
 						"scale": [0.09, 0.02],
 						"text": "Cost: 100",
 						"fontsize" : 18.0
@@ -42,7 +42,7 @@
 			{
 				"position": [-0.06, 0.057],
 				"scale": [0.048, 0.083],
-				"texture": "../Menues/LevelEdit/Units/femaleEngineerButton.png",
+				"texture": "../Menues/PlacementStateGUI/units/femaleEngineerButton.png",
 				"type" : 6,
 				"subType": 1,
 				"textureId" : 0,
@@ -63,7 +63,7 @@
 					
 					"EngineerCost":
 					{
-						"position" : [0.0, 0.075],
+						"position" : [0.01, 0.075],
 						"scale": [0.09, 0.02],
 						"text": "Cost: 100",
 						"fontsize" : 18.0
@@ -95,7 +95,7 @@
 					
 					"CameraCost":
 					{
-						"position" : [0.0, 0.075],
+						"position" : [0.01, 0.075],
 						"scale": [0.09, 0.02],
 						"text": "Cost: 100",
 						"fontsize" : 18.0
@@ -127,7 +127,7 @@
 					
 					"AnvilCost":
 					{
-						"position" : [0.0, 0.075],
+						"position" : [0.01, 0.075],
 						"scale": [0.09, 0.02],
 						"text": "Cost: 100",
 						"fontsize" : 18.0
@@ -159,7 +159,7 @@
 					
 					"BearCost":
 					{
-						"position" : [0.0, 0.075],
+						"position" : [0.01, 0.075],
 						"scale": [0.09, 0.02],
 						"text": "Cost: 100",
 						"fontsize" : 18.0
@@ -191,7 +191,7 @@
 					
 					"SawCost":
 					{
-						"position" : [0.0, 0.075],
+						"position" : [0.01, 0.075],
 						"scale": [0.09, 0.02],
 						"text": "Cost: 100",
 						"fontsize" : 18.0
@@ -223,7 +223,7 @@
 					
 					"MachineGunCost":
 					{
-						"position" : [0.0, 0.075],
+						"position" : [0.01, 0.075],
 						"scale": [0.09, 0.02],
 						"text": "Cost: 100",
 						"fontsize" : 18.0
@@ -255,7 +255,7 @@
 					
 					"FlameThrowerCost":
 					{
-						"position" : [0.0, 0.075],
+						"position" : [0.01, 0.075],
 						"scale": [0.09, 0.02],
 						"text": "Cost: 100",
 						"fontsize" : 18.0
@@ -267,7 +267,7 @@
 			{
 				"position": [ 0.78, 0.057 ],
 				"scale": [ 0.048, 0.083 ],
-				"texture": "../Menues/PlacementStateGUI/units/FlameThrowerbutton1.png",
+				"texture": "../Menues/PlacementStateGUI/units/WatergunButton1.png",
 				"type": 4,
 				"subType": 8,
 				"textureId": 0,
@@ -276,7 +276,7 @@
 				{
 					"position": [ 0.0, -0.173 ],
 					"scale": [ 0.068, 0.083 ],
-					"text": "Water gun: Not Finished\n  80$",
+					"text": "Water gun\n  80$",
 					"color": "FF000000",
 					"fontsize": 18.0,
 					"centered": true
@@ -289,7 +289,7 @@
 					
 					"WaterGunCost":
 					{
-						"position" : [0.0, 0.075],
+						"position" : [0.01, 0.075],
 						"scale": [0.09, 0.02],
 						"text": "Cost: 100",
 						"fontsize" : 18.0
@@ -321,7 +321,7 @@
 					
 					"TeslaCost":
 					{
-						"position" : [0.0, 0.075],
+						"position" : [0.01, 0.075],
 						"scale": [0.09, 0.02],
 						"text": "Cost: 100",
 						"fontsize" : 18.0
@@ -340,7 +340,7 @@
 				{
 					"position": [0.0, -0.173],
 					"scale": [0.068, 0.083],
-					"text": "Spinning Tile\n  150$",
+					"text": "Spin Trap\n  150$",
 					"color": "FF000000",
 					"fontsize": 18.0,
 					"centered": true
@@ -353,7 +353,7 @@
 					
 					"SpinCost":
 					{
-						"position" : [0.0, 0.075],
+						"position" : [0.01, 0.075],
 						"scale": [0.09, 0.02],
 						"text": "Cost: 100",
 						"fontsize" : 18.0
@@ -373,7 +373,7 @@
 				{
 					"position": [0.0, -0.173],
 					"scale": [0.068, 0.083],
-					"text": "Sugar Bomb\n  100$",
+					"text": "Sugar Bomb\n  80$",
 					"color": "FF000000",
 					"fontsize": 18.0,
 					"centered": true
@@ -386,7 +386,7 @@
 					
 					"CakeCost":
 					{
-						"position" : [0.0, 0.075],
+						"position" : [0.01, 0.075],
 						"scale": [0.09, 0.02],
 						"text": "Cost: 100",
 						"fontsize" : 18.0
@@ -405,7 +405,7 @@
 				{
 					"position": [0.0, -0.173],
 					"scale": [0.068, 0.083],
-					"text": "Shark Trap\n  200$",
+					"text": "Shark Trap\n  250$",
 					"color": "FF000000",
 					"fontsize": 18.0,
 					"centered": true
@@ -418,7 +418,7 @@
 					
 					"SharkCost":
 					{
-						"position" : [0.0, 0.075],
+						"position" : [0.01, 0.075],
 						"scale": [0.09, 0.02],
 						"text": "Cost: 100",
 						"fontsize" : 18.0
@@ -536,7 +536,7 @@
 				"": {
 					"position": [0.0, 0.0],
 					"scale": [0.15, 0.15],
-					"texture": "../Menues/LevelEdit/Units/Enemy.png"
+					"texture": "../Menues/LevelEdit/Units/TutorialThief.png"
 				}
 			}
 		},
@@ -547,13 +547,13 @@
 			"": {
 				"position": [0, -0.15],
 				"scale": [0.15, 0.6],
-				"text": "Guards\n\nGuards are units that you can control! Make use of them to hunt the thieves down.\n\n You can direct your guard towards the thief, which will make your guard attack.\n However, be weary! Unattended guards might get hurt by thieves, sneaking up from behind them.",
+				"text": "Guards\n\nGuards are units that you can control by selecting them with box selecting\n(LEFT MOUSE)! Make use of them to hunt the thieves down by pressing the RIGHT MOUSE.\n\n You can direct your guard towards the thief, which will make your guard attack.\n However, be weary! Unattended guards might get hurt by thieves, sneaking up from behind them.",
 				"color": "FF000000",
 				"centered": true,
 				"fontsize": 24.0
 			},
 			"": {
-				"position": [0, -1],
+				"position": [0, -1.08],
 				"scale": [0.2, 0.6],
 				"text": "Press Enter to Continue.",
 				"color": "FF000000",
@@ -571,7 +571,7 @@
 				"text": "Click on the guard and\nmove it to a position of your choice!",
 				"color": "FF000000",
 				"centered": true,
-				"fontsize": 20.0
+				"fontsize": 24.0
 			}
 		},
 		"anvilexplained": {
@@ -584,7 +584,7 @@
 				"text": "The Anvil\n\nAnvils are single tile traps, that will, as they do, fall upon thieves beneath it.\n\nBut be aware, some types of thieves have learned how to deal with simplistic traps such as these.",
 				"color": "FF000000",
 				"centered": true,
-				"fontsize": 26.0
+				"fontsize": 24.0
 			},
 			"": {
 				"position": [0, -1],
@@ -605,7 +605,7 @@
 				"text": "Click on the anvil and\nmove it to a position of your choice!",
 				"color": "FF000000",
 				"centered": true,
-				"fontsize": 20.0
+				"fontsize": 24.0
 			}
 		},
 		"teslaexplained": {
@@ -618,7 +618,7 @@
 				"text": "The Tesla Coil\n\nUnlike the Anvil, this trap affects an area around it.\nIt will be activated by entering the inner circle, but within the outer circle its effect will fall upon both friend or foe. ",
 				"color": "FF000000",
 				"centered": true,
-				"fontsize": 26.0
+				"fontsize": 24.0
 			},
 			"": {
 				"position": [0, -1],
@@ -639,7 +639,7 @@
 				"text": "Click on the Tesla Coil Trap and\nmove it to a position of your choice!",
 				"color": "FF000000",
 				"centered": true,
-				"fontsize": 20.0
+				"fontsize": 24.0
 			}
 		},
 		"securitycameraexplained": {
@@ -652,7 +652,7 @@
 				"text": "The Security Camera\n\nSecurity Cameras provide visibility of any thieves within their range. They are cheap but unlike a guard or trap, they do not cause any harm.",
 				"color": "FF000000",
 				"centered": true,
-				"fontsize": 26.0
+				"fontsize": 24.0
 			},
 			"": {
 				"position": [0, -1],
@@ -670,10 +670,10 @@
 			"": {
 				"position": [0, -0.15],
 				"scale": [0.15, 0.6],
-				"text": "Click on the security camera and\nmove it to a position of your choice!\nYou can also rotate objects like these with R and T.",
+				"text": "Click on the security camera and mount it to a wall.\nYou can also rotate objects like these with R and T.",
 				"color": "FF000000",
 				"centered": true,
-				"fontsize": 20.0
+				"fontsize": 24.0
 			}
 		},
 		"budgetexplained": {
@@ -683,10 +683,10 @@
 			"": {
 				"position": [0, -0.15],
 				"scale": [0.15, 0.6],
-				"text": "You probably noticed already, but in the top left the budget allowed for this job is visible. As you buy items, their cost will be deducted from it.\n\n You can refund units to increase your budget again, by selecting them and pressing DELETE.",
+				"text": "You probably noticed already, but in the top left the budget allowed for this job is visible. As you buy items, their cost will be deducted from it.\n\n You can refund units to increase your budget again, by selecting them and pressing RIGHT MOUSE.",
 				"color": "FF000000",
 				"centered": true,
-				"fontsize": 26.0
+				"fontsize": 24.0
 			},
 			"": {
 				"position": [0, -1],
@@ -707,7 +707,7 @@
 				"text": "Once you feel ready, press Play in the top right to start.",
 				"color": "FF000000",
 				"centered": true,
-				"fontsize": 26.0
+				"fontsize": 24.0
 			},
 			"": {
 				"position": [0, -1],
