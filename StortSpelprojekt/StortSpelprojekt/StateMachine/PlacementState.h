@@ -17,11 +17,6 @@ protected:
 	BaseEdit* _baseEdit;
 	
 	int _budget;
-	int _costOfAnvilTrap;
-	int _costOfTeslaCoil;
-	int _costOfCamera;
-	int _costOfGuard;
-	//TODO: Remove all _costOfX --Victor
 
 	DirectX::XMFLOAT3* _ambientLight;
 
