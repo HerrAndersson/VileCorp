@@ -555,10 +555,8 @@ void Trap::Update(float deltaTime)
 			{
 				_sawBladeDirection = -_sawBladeDirection;
 			}
-			_tileMap->GetObjectOnTile(_areaOfEffect[0], System::FLOOR)->SetColorOffset({ 0.0f,0.0f,0.0f });
 			_triggerTiles[0] = _occupiedTiles[i + _sawBladeDirection];
 			_areaOfEffect[0] = _triggerTiles[0];
-			_tileMap->GetObjectOnTile(_areaOfEffect[0], System::FLOOR)->SetColorOffset({0.0f,0.0f,3.0f});
 
 		}
 		if (_tileMap->IsEnemyOnTile(_triggerTiles[0]))
