@@ -244,7 +244,7 @@
 				"saw"
 			],
 			"_thumbnails": [
-				"saw"
+				"../Menues/PlacementStateGUI/units/sawButton"
 			]
 		}, {
 			"_mesh": "Cupcake-27.bin",
@@ -256,7 +256,7 @@
 				"cuppycake"
 			],
 			"_thumbnails": [
-				"cuppycake"
+				"../Menues/PlacementStateGUI/units/cupcakeButton"
 			]
 		}, {
 			"_mesh": "JuliaBear-27.bin",
@@ -271,13 +271,13 @@
 				"../Menues/PlacementStateGUI/units/Bearbutton"
 			]
 		}, {
-			"_mesh": "flamethrowerTrap-29.bin",
+			"_mesh": "waterGunTrap-29.bin",
 			"_name": "Flame Trap",
 			"_type": 4,
 			"_subType": 7,
 			"_tooltip": "SampleText",
 			"_textures": [
-				"GunText"
+				"waterGun"
 			],
 			"_thumbnails": [
 				"../Menues/PlacementStateGUI/units/FlameThrowerbutton1"
@@ -304,7 +304,7 @@
 				"confuseTrap"
 			],
 			"_thumbnails": [
-				"confuseTrap"
+				"../Menues/PlacementStateGUI/units/confusiontrapButton"
 			]
 		}, {
 			"_mesh": "SecurityCamera-27.bin",

@@ -170,7 +170,7 @@
 			{
 				"position": [0.42, 0.057],
 				"scale": [0.048, 0.083],
-				"texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png",
+				"texture": "../Menues/PlacementStateGUI/units/sawButton.png",
 				"type" : 4,
 				"subType": 4,
 				"textureId" : 0,
@@ -332,7 +332,7 @@
 			{
 				"position": [1.02, 0.057],
 				"scale": [0.048, 0.083],
-				"texture": "../Menues/PlacementStateGUI/units/ConfuseTrapButton.png",
+				"texture": "../Menues/PlacementStateGUI/units/confusiontrapButton.png",
 				"type" : 4,
 				"subType": 9,
 				"textureId" : 0,
@@ -364,7 +364,7 @@
 			{
 				"position": [1.14, 0.057],
 				"scale": [0.048, 0.083],
-				"texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png",
+				"texture": "../Menues/PlacementStateGUI/units/cupcakeButton.png",
 				"type" : 4,
 				"subType": 5,
 				"textureId" : 0,
