@@ -307,10 +307,7 @@ Tilemap * ObjectHandler::GetTileMap() const
 
 void ObjectHandler::SetTileMap(Tilemap * tilemap)
 {
-	if (_tilemap != nullptr)
-	{
-		delete _tilemap;
-	}
+	delete _tilemap;
 	_tilemap = tilemap;
 }
 
@@ -578,7 +575,9 @@ void ObjectHandler::Update(float deltaTime)
 				GameObject* heldObject = unit->GetHeldObject();
 				if (heldObject != nullptr && heldObject->GetPickUpState() == HELD)
 				{
-					heldObject->SetPosition(DirectX::XMFLOAT3(unit->GetPosition().x, unit->GetPosition().y + 2, unit->GetPosition().z));
+					XMFLOAT3 unitPosition = unit->GetPosition();
+					unitPosition.y += 2;
+					heldObject->SetPosition(unitPosition);
 					heldObject->SetTilePosition(AI::Vec2D(heldObject->GetPosition().x, heldObject->GetPosition().z));
 				}
 

@@ -113,12 +113,8 @@ Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 Unit::~Unit()
 {
 	delete _aStar;
-	_aStar = nullptr;
 	delete _visionCone;
-	if (_animation != nullptr)
-	{
-		delete _animation;
-	}
+	delete _animation;
 }
 
 int Unit::GetPathLength() const
