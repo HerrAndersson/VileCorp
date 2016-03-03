@@ -24,15 +24,15 @@ namespace Renderer
 		delete _shaderHandler;
 		delete _shadowMap;
 
-		delete _screenQuad;
-		delete _matrixBufferPerObject;
-		delete _matrixBufferPerSkinnedObject;
-		delete _matrixBufferPerFrame;
-		delete _matrixBufferHUD;
-		delete _matrixBufferLightPassPerFrame;
-		delete _matrixBufferLightPassPerSpotlight;
-		delete _matrixBufferLightPassPerPointlight;
-		delete _matrixBufferParticles;
+		_screenQuad->Release();
+		_matrixBufferPerObject->Release();
+		_matrixBufferPerSkinnedObject->Release();
+		_matrixBufferPerFrame->Release();
+		_matrixBufferHUD->Release();
+		_matrixBufferLightPassPerFrame->Release();
+		_matrixBufferLightPassPerSpotlight->Release();
+		_matrixBufferLightPassPerPointlight->Release();
+		_matrixBufferParticles->Release();
 	}
 
 	void RenderModule::InitializeScreenQuadBuffer()

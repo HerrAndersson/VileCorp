@@ -110,7 +110,7 @@ private:
 	Mesh* ScanModel28();
 	Mesh* ScanModel29();
 	Mesh* ScanModel(const std::string& name);
-	Texture* ScanTexture(std::string name);
+	Texture* ScanTexture(const std::string& name);
 	Mesh* GetModel(const std::string& name);
 	Skeleton* LoadSkeleton(const std::string& name);
 	ID3D11Buffer* CreateVertexBuffer(vector<WeightedVertex> *weightedVertices, vector<Vertex> *vertices, int skeleton);
@@ -123,6 +123,6 @@ public:
 	RenderObject* GetRenderObject(const std::string& meshName, const std::string& textureName);
 	HRESULT ParseLevelHeader(Level::LevelHeader* outputLevelHead, const std::string& levelHeaderFilePath);
 	HRESULT ParseLevelBinary(Level::LevelBinary* outputLevelBin, const std::string& levelBinaryFilePath);
-	Texture* GetTexture(const std::string& name);
+	Texture* GetTexture(std::string name);
 	void Clean();
 };

@@ -91,7 +91,7 @@ HRESULT Texture::LoadTexture(ID3D11Device* device)
 }
 
 //Loads a model to the GPU
-bool AssetManager::LoadModel(const std::string& name, Mesh* mesh) {
+bool AssetManager::LoadModel(const std::string& name, Mesh* mesh) 
 {
 
 	string file_path = System::MODEL_FOLDER_PATH;
@@ -125,7 +125,7 @@ bool AssetManager::LoadModel(const std::string& name, Mesh* mesh) {
 	return true;
 }
 
-Texture* AssetManager::ScanTexture(std::string name)
+Texture* AssetManager::ScanTexture(const std::string& name)
 {
 	if (name.empty())
 	{
@@ -551,7 +551,7 @@ HRESULT AssetManager::ParseLevelBinary(Level::LevelBinary* outputLevelBin, const
 	return S_OK;
 }
 
-Texture* AssetManager::GetTexture(const std::string& name)
+Texture* AssetManager::GetTexture(std::string name)
 {
 	if (name.find(".png") != std::string::npos)
 	{

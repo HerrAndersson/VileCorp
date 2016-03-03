@@ -172,7 +172,7 @@ struct RenderObject
 		}
 		if (_mesh && _mesh->DecrementUsers())
 		{
-			SAFE_DELETE(_mesh);
+			delete _mesh;
 		}
 	}
 
