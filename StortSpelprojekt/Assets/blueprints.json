@@ -147,6 +147,30 @@
 				"../Menues/LevelEdit/Loot/diamond9"
 			]
 		}, {
+			"_mesh": "moneyBriefcaseLoot-28.bin",
+			"_name": "MoneyBriefcase",
+			"_type": 2,
+			"_subType": 1,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"moneyBriefcase"
+			],
+			"_thumbnails": [
+				"../Menues/LevelEdit/Loot/moneybriefcaseButton"
+			]
+		}, {
+			"_mesh": "moneyBagLoot-28.bin",
+			"_name": "MoneyBag",
+			"_type": 2,
+			"_subType": 2,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"moneyBag"
+			],
+			"_thumbnails": [
+				"../Menues/LevelEdit/Loot/moneybagButton"
+			]
+		}, {
 			"_mesh": "windowDoubleSpawn-28.bin",
 			"_name": "Window",
 			"_type": 3,
@@ -169,8 +193,7 @@
 				"doubledoorsopen"
 			],
 			"_thumbnails": [
-				"doubledoors",
-				"doubledoorsopen"
+				"../Menues/LevelEdit/Entry/door1Button"
 			]
 		}, {
 			"_mesh": "doubleDoorSide2Spawn-28.bin",
@@ -183,8 +206,7 @@
 				"doubledoorsopen"
 			],
 			"_thumbnails": [
-				"doubledoors",
-				"doubledoorsopen"
+				"../Menues/LevelEdit/Entry/door2Button"
 			]
 		}, {
 			"_mesh": "anvilTrap-29.bin",
@@ -235,18 +257,6 @@
 				"../Menues/PlacementStateGUI/units/Gunbutton1"
 			]
 		}, {
-			"_mesh": "JuliaBear-27.bin",
-			"_name": "Bear Trap",
-			"_type": 4,
-			"_subType": 6,
-			"_tooltip": "SampleText",
-			"_textures": [
-				"bear"
-			],
-			"_thumbnails": [
-				"../Menues/PlacementStateGUI/units/Bearbutton"
-			]
-		}, {
 			"_mesh": "sawGroundTrap-29.bin",
 			"_name": "Saw Trap",
 			"_type": 4,
@@ -256,7 +266,7 @@
 				"saw"
 			],
 			"_thumbnails": [
-				"saw"
+				"../Menues/PlacementStateGUI/units/sawButton"
 			]
 		}, {
 			"_mesh": "Cupcake-27.bin",
@@ -268,19 +278,31 @@
 				"cuppycake"
 			],
 			"_thumbnails": [
-				"cuppycake"
+				"../Menues/PlacementStateGUI/units/cupcakeButton"
 			]
 		}, {
-			"_mesh": "flamethrowerTrap-29.bin",
+			"_mesh": "bearTrap-29.bin",
+			"_name": "Bear Trap",
+			"_type": 4,
+			"_subType": 6,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"bear"
+			],
+			"_thumbnails": [
+				"../Menues/PlacementStateGUI/units/Bearbutton"
+			]
+		}, {
+			"_mesh": "waterGunTrap-29.bin",
 			"_name": "Flame Trap",
 			"_type": 4,
 			"_subType": 7,
 			"_tooltip": "SampleText",
 			"_textures": [
-				"GunText"
+				"waterGun"
 			],
 			"_thumbnails": [
-				"../Menues/PlacementStateGUI/units/FlameThrowerbutton1"
+				"../Menues/LevelEdit/Traps/WatergunButton1"
 			]
 		}, {
 			"_mesh": "sawRoofTrap-28.bin",
@@ -289,22 +311,10 @@
 			"_subType": 8,
 			"_tooltip": "SampleText",
 			"_textures": [
-				"sawRoofTrap"
+				"saw"
 			],
 			"_thumbnails": [
-				"sawRoofTrap"
-			]
-		}, {
-			"_mesh": "sawRoofTrap-28.bin",
-			"_name": "Roof Saw Trap",
-			"_type": 4,
-			"_subType": 10,
-			"_tooltip": "SampleText",
-			"_textures": [
-				"sawRoofTrap"
-			],
-			"_thumbnails": [
-				"sawRoofTrap"
+				"../Menues/LevelEdit/Traps/roofsawButton"
 			]
 		}, {
 			"_mesh": "confuseTrap-29.bin",
@@ -316,7 +326,7 @@
 				"confuseTrap"
 			],
 			"_thumbnails": [
-				"confuseTrap"
+				"../Menues/PlacementStateGUI/units/confusiontrapButton"
 			]
 		}, {
 			"_mesh": "SecurityCamera-27.bin",
@@ -340,19 +350,19 @@
 				"textureblue"
 			],
 			"_thumbnails": [
-				"../Menues/PlacementStateGUI/units/Guardbutton1"
+				"../Menues/LevelEdit/Units/MaleGuardButton"
 			]
 		}, {
-			"_mesh": "Basewoman-27.bin",
+			"_mesh": "engineer-29.bin",
 			"_name": "Engineer",
 			"_type": 6,
 			"_subType": 1,
 			"_tooltip": "SampleText",
 			"_textures": [
-				"basewomancolors"
+				"engineer1"
 			],
 			"_thumbnails": [
-				"basewomancolors"
+				"../Menues/LevelEdit/Units/FemaleEngineerButton"
 			]
 		}, {
 			"_mesh": "enemy1-29.bin",
@@ -364,7 +374,31 @@
 				"texturered2"
 			],
 			"_thumbnails": [
-				"Enemy"
+				"../Menues/LevelEdit/Units/FemaleThiefButton"
+			]
+		}, {
+			"_mesh": "enemy1-29.bin",
+			"_name": "Demolisher",
+			"_type": 7,
+			"_subType": 1,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"texturered2"
+			],
+			"_thumbnails": [
+				"../Menues/LevelEdit/Units/MaleDemolisherButton"
+			]
+		}, {
+			"_mesh": "enemy1-29.bin",
+			"_name": "Assassin",
+			"_type": 7,
+			"_subType": 2,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"texturered2"
+			],
+			"_thumbnails": [
+				"../Menues/LevelEdit/Units/FemaleAssassinButton"
 			]
 		}, {
 			"_mesh": "chairDecoration-28.bin",
@@ -382,7 +416,7 @@
 			"_mesh": "pedestalDecoration-28.bin",
 			"_name": "Pedistal",
 			"_type": 8,
-			"_subType": 0,
+			"_subType": 1,
 			"_tooltip": "SampleText",
 			"_textures": [
 				"pillowpedestal"
@@ -394,7 +428,7 @@
 			"_mesh": "paintingDecoration-28.bin",
 			"_name": "Painting",
 			"_type": 8,
-			"_subType": 0,
+			"_subType": 2,
 			"_tooltip": "SampleText",
 			"_textures": [
 				"painting"
@@ -406,7 +440,7 @@
 			"_mesh": "lionStatueDecoration-28.bin",
 			"_name": "Lion Statue",
 			"_type": 8,
-			"_subType": 0,
+			"_subType": 3,
 			"_tooltip": "SampleText",
 			"_textures": [
 				"lionstatue"
@@ -418,7 +452,7 @@
 			"_mesh": "grandfatherClockDecoration-28.bin",
 			"_name": "Grand Father Clock",
 			"_type": 8,
-			"_subType": 0,
+			"_subType": 4,
 			"_tooltip": "SampleText",
 			"_textures": [
 				"grandpaclock"
@@ -430,7 +464,7 @@
 			"_mesh": "glassTableDecoration-28.bin",
 			"_name": "Glass Table",
 			"_type": 8,
-			"_subType": 0,
+			"_subType": 5,
 			"_tooltip": "SampleText",
 			"_textures": [
 				"glasstable"
@@ -442,7 +476,7 @@
 			"_mesh": "generatorDecoration-28.bin",
 			"_name": "Generator",
 			"_type": 8,
-			"_subType": 0,
+			"_subType": 6,
 			"_tooltip": "SampleText",
 			"_textures": [
 				"generator"
@@ -454,31 +488,31 @@
 			"_mesh": "frontDeskDecoration-28.bin",
 			"_name": "Front Desk",
 			"_type": 8,
-			"_subType": 0,
+			"_subType": 7,
 			"_tooltip": "SampleText",
 			"_textures": [
 				"frontdesk"
 			],
 			"_thumbnails": [
-				"frontdesk"
+				"../Menues/LevelEdit/Decorations/frontdeskButton"
 			]
 		}, {
 			"_mesh": "floorLampDecoration-28.bin",
 			"_name": "Floor Lamp",
 			"_type": 8,
-			"_subType": 0,
+			"_subType": 8,
 			"_tooltip": "SampleText",
 			"_textures": [
 				"floorlamp"
 			],
 			"_thumbnails": [
-				"floorlamp"
+				"../Menues/LevelEdit/Decorations/floorlampButton"
 			]
 		}, {
 			"_mesh": "armlesStatueDecoration-28.bin",
 			"_name": "Armless Statue",
 			"_type": 8,
-			"_subType": 0,
+			"_subType": 9,
 			"_tooltip": "SampleText",
 			"_textures": [
 				"armlessstatue"
@@ -490,7 +524,7 @@
 			"_mesh": "museumFenceDecoration-28.bin",
 			"_name": "Museum Fence",
 			"_type": 8,
-			"_subType": 0,
+			"_subType": 10,
 			"_tooltip": "SampleText",
 			"_textures": [
 				"fences"
@@ -502,13 +536,109 @@
 			"_mesh": "museumFenceCornerDecoration-28.bin",
 			"_name": "Museum Fence",
 			"_type": 8,
-			"_subType": 0,
+			"_subType": 11,
 			"_tooltip": "SampleText",
 			"_textures": [
 				"fences"
 			],
 			"_thumbnails": [
 				"../Menues/LevelEdit/Decorations/cornerfenceButton"
+			]
+		}, {
+			"_mesh": "cupboardDecoration-28.bin",
+			"_name": "Cupboard",
+			"_type": 8,
+			"_subType": 12,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"cupboardtexture"
+			],
+			"_thumbnails": [
+				"../Menues/LevelEdit/Decorations/cupboardButton"
+			]
+		}, {
+			"_mesh": "tableEndsectionDecoration-28.bin",
+			"_name": "Table",
+			"_type": 8,
+			"_subType": 13,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"table2leg"
+			],
+			"_thumbnails": [
+				"../Menues/LevelEdit/Decorations/tableend2Button"
+			]
+		}, {
+			"_mesh": "tableEndsectionSingleLegDecoration-28.bin",
+			"_name": "Table",
+			"_type": 8,
+			"_subType": 14,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"table1leg"
+			],
+			"_thumbnails": [
+				"../Menues/LevelEdit/Decorations/tableend1Button"
+			]
+		}, {
+			"_mesh": "tableMidsectionDecoration-28.bin",
+			"_name": "Table",
+			"_type": 8,
+			"_subType": 15,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"tablemid"
+			],
+			"_thumbnails": [
+				"../Menues/LevelEdit/Decorations/tablemiddleButton"
+			]
+		}, {
+			"_mesh": "counterFlatDecoration-28.bin",
+			"_name": "Counter",
+			"_type": 8,
+			"_subType": 16,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"flatcounter"
+			],
+			"_thumbnails": [
+				"../Menues/LevelEdit/Decorations/flatcounter"
+			]
+		}, {
+			"_mesh": "counterRoundDecoration-28.bin",
+			"_name": "Counter",
+			"_type": 8,
+			"_subType": 17,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"roundcounter"
+			],
+			"_thumbnails": [
+				"../Menues/LevelEdit/Decorations/roundcounter"
+			]
+		}, {
+			"_mesh": "vase1Decoration-28.bin",
+			"_name": "Vase",
+			"_type": 8,
+			"_subType": 18,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"vase1"
+			],
+			"_thumbnails": [
+				"../Menues/LevelEdit/Decorations/vase1Button"
+			]
+		}, {
+			"_mesh": "vase2Decoration-28.bin",
+			"_name": "Vase",
+			"_type": 8,
+			"_subType": 19,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"vase2"
+			],
+			"_thumbnails": [
+				"../Menues/LevelEdit/Decorations/vase2Button"
 			]
 		}]
 	}

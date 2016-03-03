@@ -40,6 +40,19 @@
 			}
 		}
 	},
+	"SelectedBox": {
+		"position": [0.0, 0.965],
+		"scale": [0.15, 0.1],
+		"texture": "../Menues/LevelEdit/GUI/SelectedTextBox.png",
+		"SelectedUnitText": {
+			"position": [0.0, -0.095],
+			"scale": [0.15, 0.1],
+			"centered": true,
+			"text": "Write Selected Unit Name here",
+			"color": "FF000000",
+			"fontsize": 24.0
+		}
+	},
 	"Otherbuttons": {
 		"MapButton": {
 			"position": [0.965, -0.465],
@@ -341,50 +354,115 @@
 					"fontsize": 20.0
 				},
 				"": {
-					"position": [0.0, -0.04],
+					"position": [0.0, -0.015],
 					"scale": [0.05, 0.05],
 					"centered": true,
-					"text": "Freeze Trap",
+					"text": "Saw Trap",
+					"color": "FF000000",
+					"fontsize": 20.0
+				},
+				"": {
+					"position": [0.0, -0.015],
+					"scale": [0.05, 0.05],
+					"centered": true,
+					"text": "Cupcake Trap",
+					"color": "FF000000",
+					"fontsize": 20.0
+				},
+				"": {
+					"position": [0.0, -0.015],
+					"scale": [0.05, 0.05],
+					"centered": true,
+					"text": "Bear Trap",
+					"color": "FF000000",
+					"fontsize": 20.0
+				},
+				"": {
+					"position": [0.0, -0.015],
+					"scale": [0.05, 0.05],
+					"centered": true,
+					"text": "Flame Thrower",
+					"color": "FF000000",
+					"fontsize": 20.0
+				},
+				"": {
+					"position": [0.0, -0.015],
+					"scale": [0.05, 0.05],
+					"centered": true,
+					"text": "Water Gun Trap",
+					"color": "FF000000",
+					"fontsize": 20.0
+				},
+				"": {
+					"position": [0.0, -0.015],
+					"scale": [0.05, 0.05],
+					"centered": true,
+					"text": "Confusion Trap",
 					"color": "FF000000",
 					"fontsize": 20.0
 				}
 			},
 			"UnitLockButtons": {
 				"position": [0.055, 0.0],
-				"GuardButton": {
-					"position": [-0.0875, 0.185],
+				"Guard": {
+					"position": [-0.1175, 0.18],
 					"scale": [0.032, 0.051],
 					"texture": "../Menues/PlacementStateGUI/units/Guardbutton1"
 				},
-				"EngineerButton": {
-					"position": [0.0, 0.185],
+				"Engineer": {
+					"position": [-0.044, 0.18],
 					"scale": [0.032, 0.051],
 					"texture": "../Menues/PlacementStateGUI/units/Guardbutton1"
 				},
-				"AnvilButton": {
-					"position": [-0.0875, 0.05],
+				"AnvilTrap": {
+					"position": [0.03, 0.18],
 					"scale": [0.032, 0.051],
 					"texture": "../Menues/PlacementStateGUI/units/Anvilbutton1"
 				},
-				"TeslaButton": {
-					"position": [0.0, 0.05],
+				"TeslaTrap": {
+					"position": [-0.1175, 0.055],
 					"scale": [0.032, 0.051],
 					"texture": "../Menues/PlacementStateGUI/units/Teslabutton1"
 				},
-				"SharkButton": {
-					"position": [-0.0875, -0.085],
+				"SharkTrap": {
+					"position": [-0.044, 0.055],
 					"scale": [0.032, 0.051],
 					"texture": "../Menues/PlacementStateGUI/units/Sharkbutton1"
 				},
-				"MachineGunButton": {
-					"position": [0.0, -0.085],
+				"MachineGunTrap": {
+					"position": [0.03, 0.055],
 					"scale": [0.032, 0.051],
 					"texture": "../Menues/PlacementStateGUI/units/Gunbutton1"
 				},
-				"FreezeTrap": {
-					"position": [-0.0875, -0.22],
+				"SawTrap": {
+					"position": [0.03, -0.195],
 					"scale": [0.032, 0.051],
-					"texture": "../Menues/PlacementStateGUI/units/Anvilbutton1"
+					"texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png"
+				},
+				"CupCakeTrap": {
+					"position": [-0.1175, -0.195],
+					"scale": [0.032, 0.051],
+					"texture": "../Menues/PlacementStateGUI/units/Gunbutton1"
+				},
+				"BearTrap": {
+					"position": [-0.044, -0.07],
+					"scale": [0.032, 0.051],
+					"texture": "../Menues/PlacementStateGUI/units/Bearbutton.png"
+				},
+				"FlameThrowerTrap": {
+					"position": [-0.1175, -0.07],
+					"scale": [0.032, 0.051],
+					"texture": "../Menues/PlacementStateGUI/units/FlameThrowerbutton1.png"
+				},
+				"WaterGunTrap": {
+					"position": [-0.044, -0.195],
+					"scale": [0.032, 0.051],
+					"texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png"
+				},
+				"ConfusionTrap": {
+					"position": [0.03, -0.07],
+					"scale": [0.032, 0.051],
+					"texture": "../Menues/PlacementStateGUI/units/confusetrapButton.png"
 				}
 			}
 		}
@@ -422,7 +500,14 @@
 					"ThiefInformation": {
 						"position": [0.04, 0.33],
 						"scale": [0.035, 0.02],
-						"text": "Wave 1",
+						"text": "Wave",
+						"color": "FF000000",
+						"fontsize": 18.0
+					},
+					"WaveNumber": {
+						"position": [0.0725, 0.33],
+						"scale": [0.02, 0.02],
+						"text": "1",
 						"color": "FF000000",
 						"fontsize": 18.0
 					},
@@ -443,24 +528,24 @@
 					"ThiefTypes2": {
 						"position": [0.17, 0.17],
 						"scale": [0.05, 0.06],
-						"text": "Assasssin",
+						"text": "Assassin",
 						"color": "FF000000",
 						"fontsize": 18.0
 					}
 				},
 				"ThiefBox": {
-					"UnitTypeBox": {
-						"ThiefActiveBox": {
+					"SpawnTypesRadioButton": {
+						"BurglarRadioButton": {
 							"position": [-0.075, 0.21],
 							"scale": [0.021, 0.036],
 							"texture": "../Menues/LevelEdit/GUI/buttonOn"
 						},
-						"ThiefInactiveBox": {
+						"DemolisherRadioButton": {
 							"position": [-0.075, 0.1275],
 							"scale": [0.021, 0.036],
 							"texture": "../Menues/LevelEdit/GUI/buttonOff"
 						},
-						"ThiefInactiveBox2": {
+						"AssassinRadioButton": {
 							"position": [0.085, 0.21],
 							"scale": [0.021, 0.036],
 							"texture": "../Menues/LevelEdit/GUI/buttonOff"
@@ -675,6 +760,124 @@
 		"position": [-0.925, -0.01],
 		"scale": [0.03, 0.0525],
 		"texture": "../Menues/LevelEdit/GUI/button2"
+	},
+	"ExportMapList": {
+		"position": [0.0, 0.3],
+		"scale": [0.2, 0.14],
+		"texture": "../Menues/Pause Menu/pause-button.png",
+
+		"ExportMapText": {
+			"position": [0.0, 0.09],
+			"scale": [0.18, 0.025],
+			"centered": true,
+			"text": "Export/save Level",
+			"color": "FF000000",
+			"fontsize": 22.0
+		},
+		"": {
+			"position": [-0.105, 0.025],
+			"scale": [0.18, 0.025],
+			"centered": true,
+			"text": "Export/Save:",
+			"color": "FF000000",
+			"fontsize": 20.0
+		},
+		"SaveLevelBox": {
+			"position": [0.06, 0.025],
+			"scale": [0.105, 0.025],
+			"texture": "../Menues/LevelEdit/GUI/leveledit4-newloadsave-button2.png",
+
+			"SaveLevelText": {
+				"position": [0.0, 0.0],
+				"scale": [0.1, 0.025],
+				"text": "levelname",
+				"color": "FF000000",
+				"fontsize": 20.0
+			}
+		},
+		"ExportYes": {
+			"position": [-0.0875, -0.06],
+			"scale": [0.07, 0.026],
+			"texture": "../Menues/LevelEdit/GUI/leveledit4-newloadsave-button.png",
+			"centered": true,
+			"text": "Save",
+			"color": "FF000000",
+			"fontsize": 18.0
+		},
+		"ExportNo": {
+			"position": [0.095, -0.06],
+			"scale": [0.07, 0.026],
+			"texture": "../Menues/LevelEdit/GUI/leveledit4-newloadsave-button.png",
+			"centered": true,
+			"text": "Cancel",
+			"color": "FF000000",
+			"fontsize": 18.0
+		}
+	},
+	"ImportMapList": {
+		"position": [0.0, 0.3],
+		"scale": [0.2, 0.14],
+		"texture": "../Menues/Pause Menu/pause-button.png",
+
+		"LeaveMapText": {
+			"position": [0.0, 0.09],
+			"scale": [0.18, 0.025],
+			"centered": true,
+			"text": "Import/Load Level",
+			"color": "FF000000",
+			"fontsize": 22.0
+		},
+		"": {
+			"position": [-0.105, 0.025],
+			"scale": [0.18, 0.025],
+			"centered": true,
+			"text": "Import/Load:",
+			"color": "FF000000",
+			"fontsize": 20.0
+		},
+		"LoadedLevelBox": {
+			"position": [0.06, 0.025],
+			"scale": [0.105, 0.025],
+			"texture": "../Menues/LevelEdit/GUI/leveledit4-newloadsave-button2.png",
+
+			"LoadedLevelText": {
+				"position": [0.0, 0.0],
+				"scale": [0.1, 0.025],
+				"text": "levelname",
+				"color": "FF000000",
+				"fontsize": 20.0
+			}
+		},
+		"ImportYes": {
+			"position": [-0.11, -0.06],
+			"scale": [0.07, 0.026],
+			"texture": "../Menues/LevelEdit/GUI/leveledit4-newloadsave-button.png",
+			"centered": true,
+			"text": "Load",
+			"color": "FF000000",
+			"fontsize": 18.0
+		},
+		"ImportNo": {
+			"position": [0.045, -0.06],
+			"scale": [0.07, 0.026],
+			"texture": "../Menues/LevelEdit/GUI/leveledit4-newloadsave-button.png",
+			"centered": true,
+			"text": "Cancel",
+			"color": "FF000000",
+			"fontsize": 18.0
+		},
+		"ChangeLevelPage": {
+			"LevelUp": {
+				"position": [0.14, 0.084],
+				"scale": [0.0115, 0.026],
+				"texture": "../Menues/LevelEdit/GUI/upButton.png"
+			},
+			"LevelDown": {
+				"position": [0.14, -0.034],
+				"scale": [0.0115, 0.026],
+				"texture": "../Menues/LevelEdit/GUI/downButton.png"
+			}
+		}
 	},
 	"LeaveMap": {
 		"position": [0.0, 0.3],

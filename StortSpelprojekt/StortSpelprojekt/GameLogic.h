@@ -1,4 +1,5 @@
 #pragma once
+#include <DirectXMath.h>
 #include "..\System\SoundModule.h"
 #include "ObjectHandler.h"
 #include "Camera.h"
@@ -9,6 +10,7 @@
 #include "..\System\JsonParser.h"
 #include "UITree.h"
 #include "AssetManager.h"
+#include "InputDevice.h"
 
 class GameLogic
 {
@@ -38,10 +40,6 @@ private:
 	void HandlePatrol();
 	void HandleUnitMove();
 	void PlayMoveSound(GuardType guardType);
-	void HandleCamMode();
-	void HandleCamZoom();
-	void HandleCamRot();
-	void HandleCamMove(float deltaTime);
 	void HandleWinLoseDialog(float deltaTime);
 	bool CheckGameStatus();
 public:

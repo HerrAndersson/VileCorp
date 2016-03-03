@@ -3,7 +3,6 @@
 #include <DirectXMath.h>
 #include <sstream>
 
-
 // local function
 bool compareFloat3(XMFLOAT3 a, XMFLOAT3 b)
 {
@@ -110,14 +109,14 @@ void BaseEdit::MarkerMoveEvent()
 		p.x = pickedTile._x;
 		p.z = pickedTile._y;
 
-		// Check validity of placement
-		_movingGhostImage._placeable = CheckValidity(pickedTile, _movingGhostImage._g->GetType());
-
 		// Move marker graphically
 		_movingGhostImage._g->SetPosition(p);
 
 		// Move marker logically but unconnected
 		_movingGhostImage._g->SetTilePosition(pickedTile);
+
+		// Check validity of placement
+		_movingGhostImage._placeable = CheckValidity(pickedTile, _movingGhostImage._g);
 
 		// Change color to represent placement validity
 		if (!_movingGhostImage._placeable)
@@ -160,7 +159,7 @@ void BaseEdit::DropEvent()
 	_modeLock = false;
 	_movingGhostImage._g->SetColorOffset(XMFLOAT3(0.0f, 0.0f, 0.0f));
 	XMFLOAT3 p = XMFLOAT3(_movingGhostImage._g->GetPosition());
-	
+
 	if (!_movingGhostImage._placeable)
 	{
 		//Redirect position to old pos
@@ -172,7 +171,7 @@ void BaseEdit::DropEvent()
 	}
 
 	// Special camera non floating fix
-	if (_movingGhostImage._g->GetType() == System::CAMERA)
+	if (_movingGhostImage._g->GetType() == System::CAMERA || _movingGhostImage._g->GetType())
 	{
 		if (_movingGhostImage._g->GetDirection()._x != 0 && _movingGhostImage._g->GetDirection()._y != 0)
 		{
@@ -184,8 +183,19 @@ void BaseEdit::DropEvent()
 	}
 
 	// Bind position logically
-	_tileMap->AddObjectToTile(p.x, p.z, _movingGhostImage._g);
-
+	if (_movingGhostImage._g->GetType() == System::TRAP)
+	{
+		AI::Vec2D* tempTiles = static_cast<Trap*>(_movingGhostImage._g)->GetTiles();
+		for (int i = 0; i < static_cast<Trap*>(_movingGhostImage._g)->GetNrOfOccupiedTiles(); i++)
+		{
+			_tileMap->AddObjectToTile(tempTiles[i], _movingGhostImage._g);
+		}
+	}
+	else
+	{
+		_tileMap->AddObjectToTile(p.x, p.z, _movingGhostImage._g);
+	}
+	
 	if (_movingGhostImage._g != nullptr && _isPlace)
 	{
 		_droppedObject = true;
@@ -226,76 +236,78 @@ void BaseEdit::DropEvent()
 
 void BaseEdit::BoxEvent()
 {
+
 	if ((_controls->IsFunctionKeyUp("MOUSE:SELECT") && _isPlace) || (_controls->IsFunctionKeyUp("MOUSE:DESELECT") && !_isPlace))
 	{
-		_modeLock = false;
+		if (_sB->_blueprint->_type != System::Type::TRAP)
+		{
+			_modeLock = false;
 
-		_movingGhostImage._origPos = _movingGhostImage._g->GetTilePosition();
+			_movingGhostImage._origPos = _movingGhostImage._g->GetTilePosition();
 
-		// Identify min and max
-		int minX, maxX;
-		if (_baseGhostImage._origPos._x < _movingGhostImage._origPos._x)
-		{
-			minX = _baseGhostImage._origPos._x;
-			maxX = _movingGhostImage._origPos._x;
-		}
-		else
-		{
-			minX = _movingGhostImage._origPos._x;
-			maxX = _baseGhostImage._origPos._x;
-		}
-		int minY, maxY;
-		if (_baseGhostImage._origPos._y < _movingGhostImage._origPos._y)
-		{
-			minY = _baseGhostImage._origPos._y;
-			maxY = _movingGhostImage._origPos._y;
-		}
-		else
-		{
-			minY = _movingGhostImage._origPos._y;
-			maxY = _baseGhostImage._origPos._y;
-		}
+			// Identify min and max
+			int minX, maxX;
+			if (_baseGhostImage._origPos._x < _movingGhostImage._origPos._x)
+			{
+				minX = _baseGhostImage._origPos._x;
+				maxX = _movingGhostImage._origPos._x;
+			}
+			else
+			{
+				minX = _movingGhostImage._origPos._x;
+				maxX = _baseGhostImage._origPos._x;
+			}
+			int minY, maxY;
+			if (_baseGhostImage._origPos._y < _movingGhostImage._origPos._y)
+			{
+				minY = _baseGhostImage._origPos._y;
+				maxY = _movingGhostImage._origPos._y;
+			}
+			else
+			{
+				minY = _movingGhostImage._origPos._y;
+				maxY = _baseGhostImage._origPos._y;
+			}
 
+			// Check tiles
+			GameObject* objectOnTile;
+			if (_isPlace) // Place
+			{
+				for (int x = minX; x <= maxX; x++)
+				{
+					for (int y = minY; y <= maxY; y++)
+					{
+						if (CheckValidity(AI::Vec2D(x, y), _movingGhostImage._g))
+						{
+							// Add to valid place
+							_objectHandler->Add(_sB->_blueprint, _sB->_textureId, XMFLOAT3(x, 0, y), XMFLOAT3(0.0f, 0.0f, 0.0f), true);
+						}
+					}
+				}
+			}
+			else // Remove
+			{
+				for (int x = minX; x <= maxX; x++)
+				{
+					for (int y = minY; y <= maxY; y++)
+					{
+						GameObject* objectOnTile = _tileMap->GetObjectOnTile(x, y, _sB->_blueprint->_type);
+						if (objectOnTile != nullptr && _sB->_blueprint->_type == objectOnTile->GetType())
+						{
+							// Remove
+							_objectHandler->Remove(objectOnTile);
+						}
+					}
+				}
+			}
+
+			_isSelectionMode = true;
+			_isDragAndPlaceMode = false;
+
+			_isDragAndDropMode = false;
+			_isPlace = false;
+		}
 		RemoveGhostImage();
-
-		// Check tiles
-		GameObject* objectOnTile;
-		if (_isPlace) // Place
-		{
-			for (int x = minX; x <= maxX; x++)
-			{
-				for (int y = minY; y <= maxY; y++)
-				{
-					if (CheckValidity(AI::Vec2D(x, y), _sB->_blueprint->_type))
-					{
-						// Add to valid place
-						_objectHandler->Add(_sB->_blueprint, _sB->_textureId, XMFLOAT3(x, 0, y), XMFLOAT3(0.0f, 0.0f, 0.0f), true);
-					}
-				}
-			}
-		}
-		else // Remove
-		{
-			for (int x = minX; x <= maxX; x++)
-			{
-				for (int y = minY; y <= maxY; y++)
-				{
-					GameObject* objectOnTile = _tileMap->GetObjectOnTile(x, y, _sB->_blueprint->_type);
-					if (objectOnTile != nullptr && _sB->_blueprint->_type == objectOnTile->GetType())
-					{
-						// Remove
-						_objectHandler->Remove(objectOnTile);
-					}
-				}
-			}
-		}
-
-		_isSelectionMode = true;
-		_isDragAndPlaceMode = false;
-
-		_isDragAndDropMode = false;
-		_isPlace = false;
-
 	}
 }
 
@@ -419,7 +431,7 @@ void BaseEdit::HandleMouseInput()
 			{
 				DropEvent();
 			}
-			else if ( !_isObjectButtonReleased && _controls->IsFunctionKeyUp("MOUSE:SELECT"))
+			else if (!_isObjectButtonReleased && _controls->IsFunctionKeyUp("MOUSE:SELECT"))
 			{
 				_isObjectButtonReleased = true;
 			}
@@ -473,8 +485,9 @@ void BaseEdit::HandleKeyInput()
 
 // Other functions
 
-bool BaseEdit::CheckValidity(AI::Vec2D tile, System::Type type)
+bool BaseEdit::CheckValidity(AI::Vec2D tile, GameObject* gameObject)
 {
+	System::Type type = gameObject->GetType();
 	GameObject* objectOnTile = _tileMap->GetObjectOnTile(tile._x, tile._y, type);
 
 	bool valid = true;
@@ -498,12 +511,17 @@ bool BaseEdit::CheckValidity(AI::Vec2D tile, System::Type type)
 				}
 				else if (type == System::TRAP)
 				{
-					if (_tileMap->UnitsOnTile(tile) || _tileMap->IsTypeOnTile(tile, System::CAMERA))
+					AI::Vec2D* tempTiles = static_cast<Trap*>(gameObject)->GetTiles();
+					for (int i = 0; i < static_cast<Trap*>(gameObject)->GetNrOfOccupiedTiles() && valid; i++)
 					{
-						valid = false;
+						if (!_tileMap->IsPlaceable(tempTiles[i], type) || !_tileMap->IsFloorOnTile(tempTiles[i]) || _tileMap->UnitsOnTile(tempTiles[i]) )
+						{
+							valid = false;
+						}
 					}
+					
 				}
-				else if (type == System::CAMERA)
+				else if (type == System::CAMERA || type == System::SPAWN)
 				{
 					if (!_tileMap->IsWallOnTile(tile - _movingGhostImage._g->GetDirection()))
 					{
@@ -568,6 +586,11 @@ GameObject * BaseEdit::GetCreatedObject()
 System::Blueprint * BaseEdit::GetDeletedObjectBlueprint()
 {
 	return _deletedObjectBlueprint;
+}
+
+void BaseEdit::RefreshTileMap()
+{
+	_tileMap = _objectHandler->GetTileMap();
 }
 
 void BaseEdit::Update()

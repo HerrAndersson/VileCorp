@@ -68,18 +68,21 @@ void AssetManager::Flush()
 HRESULT Texture::LoadTexture(ID3D11Device* device)
 {
 	HRESULT res = S_OK;
+
 	if (!_loaded)
 	{
 		wstring _filePath = System::TEXTURE_FOLDER_PATH_W;
 		_filePath.append(_name.begin(), _name.end());
 //		res = DirectX::CreateWICTextureFromFile(device, _filePath.c_str(), nullptr, &_data, 0);
 //		DirectX::CreateDDSTextureFromFile(device, (_filePath.substr(0,_filePath.size()-3) + L"dds").c_str(), nullptr, &_data, 0);
-		res = DirectX::CreateDDSTextureFromFileEx(device, _filePath.c_str(), 0, D3D11_USAGE_IMMUTABLE, D3D11_BIND_SHADER_RESOURCE, 0, 0, false, nullptr, &_data,0);
+		res = DirectX::CreateDDSTextureFromFileEx(device, (_filePath + L".dds").c_str(), 0, D3D11_USAGE_IMMUTABLE, D3D11_BIND_SHADER_RESOURCE, 0, 0, false, nullptr, &_data,0);
 
-		if (_data == nullptr)
+		if (res != S_OK)
 		{
- 			string filenameString(_filePath.begin(), _filePath.end());
-			throw std::runtime_error("Texture " + filenameString + " not found");
+			string filenameString(_filePath.begin(), _filePath.end());
+			std::string errorMessage = "On Load Texture: " + _name + ",";
+			errorMessage += res;
+			throw std::runtime_error(errorMessage);
 		}
 		_loaded = true;
 	}
@@ -94,7 +97,8 @@ bool Mesh::DecrementUsers()
 }
 
 //Loads a model to the GPU
-bool AssetManager::LoadModel(string name, Mesh* mesh) {
+bool AssetManager::LoadModel(string name, Mesh* mesh)
+{
 
 	string file_path = System::MODEL_FOLDER_PATH;
 
@@ -110,7 +114,7 @@ bool AssetManager::LoadModel(string name, Mesh* mesh) {
 	vector<WeightedVertex> weightedVertices;
 
 	_infile->seekg(mesh->_toMesh);
-	if(mesh->_isSkinned)
+	if (mesh->_isSkinned)
 	{
 		weightedVertices.resize(mesh->_vertexBufferSize);
 		_infile->read((char*)weightedVertices.data(), mesh->_vertexBufferSize*sizeof(WeightedVertex));
@@ -129,14 +133,13 @@ bool AssetManager::LoadModel(string name, Mesh* mesh) {
 
 Texture* AssetManager::ScanTexture(string name)
 {
-	Texture* texture = new Texture;
-
-	if (name.substr(name.size() - 4) == string(".png"))//TODO remove - Fredrik
+	if (name.empty())
 	{
-		name.resize(name.size() - 4);
+		throw exception("ScanTexture: Name is empty");
 	}
 
-	texture->_name = name + ".dds";
+	Texture* texture = new Texture;
+	texture->_name = name;
 	_textures->push_back(texture);
 	return texture;
 }
@@ -167,27 +170,27 @@ Mesh* AssetManager::ScanModel(string name)
 	mesh->_name = name;
 
 	_infile->close();
-/*
-	MatHeader matHeader;
-	_infile->read((char*)&matHeader, sizeof(MatHeader));
-	_infile->read((char*)&renderObject->_diffuse, 16);
-	_infile->read((char*)&renderObject->_specular, 16);
+	/*
+		MatHeader matHeader;
+		_infile->read((char*)&matHeader, sizeof(MatHeader));
+		_infile->read((char*)&renderObject->_diffuse, 16);
+		_infile->read((char*)&renderObject->_specular, 16);
 
-	string diffFile, specFile;
-	diffFile.resize(matHeader._diffuseNameLength);
-	specFile.resize(matHeader._specularNameLength);
-	_infile->read((char*)diffFile.data(), matHeader._diffuseNameLength);
-	_infile->read((char*)specFile.data(), matHeader._specularNameLength);
+		string diffFile, specFile;
+		diffFile.resize(matHeader._diffuseNameLength);
+		specFile.resize(matHeader._specularNameLength);
+		_infile->read((char*)diffFile.data(), matHeader._diffuseNameLength);
+		_infile->read((char*)specFile.data(), matHeader._specularNameLength);
 
-	if (matHeader._diffuseNameLength)
-	{
-		renderObject->_diffuseTexture = ScanTexture(diffFile);
-	}
-	if (matHeader._specularNameLength)
-	{
-		renderObject->_specularTexture = ScanTexture(specFile);
-	}
-	*/
+		if (matHeader._diffuseNameLength)
+		{
+			renderObject->_diffuseTexture = ScanTexture(diffFile);
+		}
+		if (matHeader._specularNameLength)
+		{
+			renderObject->_specularTexture = ScanTexture(specFile);
+		}
+		*/
 
 	if (mesh->_isSkinned)
 	{
@@ -515,6 +518,7 @@ RenderObject* AssetManager::GetRenderObject(string meshName, string textureName)
 	RenderObject* renderObject = new RenderObject;
 	renderObject->_mesh = GetModel(meshName);
 	renderObject->_diffuseTexture = GetTexture(textureName);
+	renderObject->_id = _idCounter++;
 	_renderObjects->push_back(renderObject);
 	return renderObject;
 }
@@ -539,7 +543,7 @@ HRESULT AssetManager::ParseLevelBinary(Level::LevelBinary* outputLevelBin, std::
 {
 	try
 	{
-		std::ifstream in(levelBinaryFilePath);
+		std::ifstream in(levelBinaryFilePath, std::ios::binary);
 		cereal::BinaryInputArchive archive(in);
 		archive(*outputLevelBin);
 		in.close();
@@ -553,6 +557,10 @@ HRESULT AssetManager::ParseLevelBinary(Level::LevelBinary* outputLevelBin, std::
 
 Texture* AssetManager::GetTexture(string name)
 {
+	if (name.find(".png") != std::string::npos)
+	{
+		name.resize(name.size() - 4);
+	}
 	for (Texture* texture : *_textures)
 	{
 		if (texture->_name == name)
@@ -647,7 +655,7 @@ Skeleton* AssetManager::LoadSkeleton(string name)
 			skeleton->_actions[a]._bones[b]._frameTime.resize(frames);
 			_infile->read((char*)skeleton->_actions[a]._bones[b]._frameTime.data(), frames * sizeof(int));
 			skeleton->_actions[a]._bones[b]._frames = (Frame*)_aligned_malloc(sizeof(Frame) * frames, 16);
-			
+
 			for (int i = 0; i < frames; i++)
 			{
 				_infile->read((char*)&translation, sizeof(XMFLOAT3));

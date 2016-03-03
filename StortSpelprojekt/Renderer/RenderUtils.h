@@ -139,6 +139,10 @@ struct Texture
 			_data->Release();
 		}
 	}
+	void IncrementUsers()
+	{
+		_activeUsers++;
+	}
 };
 
 struct RenderObject
@@ -146,6 +150,7 @@ struct RenderObject
 	Texture* _diffuseTexture = nullptr;
 	Texture* _specularTexture = nullptr;
 	Mesh* _mesh = nullptr;
+	int _id;
 	~RenderObject()
 	{
 		if (_diffuseTexture != nullptr)
@@ -163,29 +168,7 @@ struct RenderObject
 	}
 	bool operator==(const RenderObject& other) 
 	{
-		if (this->_diffuseTexture != nullptr && other._diffuseTexture != nullptr)
-		{
-			if (this->_diffuseTexture->_name != other._diffuseTexture->_name)
-			{
-				return false;
-			}
-		}
-		else if (this->_diffuseTexture != other._diffuseTexture)
-		{
-			return false;
-		}
-		if (this->_mesh != nullptr && other._mesh != nullptr)
-		{
-			if (this->_mesh->_name != other._mesh->_name)
-			{
-				return false;
-			}
-		}
-		else if (this->_mesh != other._mesh)
-		{
-			return false;
-		}
-		return true;
+		return _id == other._id;
 	}
 	bool operator!=(const RenderObject& other) 
 	{
