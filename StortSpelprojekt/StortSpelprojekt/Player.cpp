@@ -99,11 +99,6 @@ vector<Unit*> Player::GetSelectedUnits()
 		{
 			units.push_back(unit);
 		}
-		else
-		{
-			/*ParticleUpdateMessage* msg = new ParticleUpdateMessage(_selectedUnits.at(i), false);
-			_objectHandler->GetParticleEventQueue()->Insert(msg);*/
-		}
 	}
 
 	return units;
@@ -120,7 +115,6 @@ void Player::MoveUnits(AI::Vec2D movePoint)
 			//If a patrolling unit is told to move it will break its patrolroute
 			if (unit->GetType() == System::GUARD)
 			{
-				//RemovePatrolIcons((Guard*)unit);
 				((Guard*)unit)->RemovePatrol();
 			}
 			unit->SetGoalTilePosition(movePoint);
@@ -138,9 +132,7 @@ void Player::PatrolUnits(AI::Vec2D patrolPoint)
 		{
 			if (unit->GetType() == System::GUARD)
 			{
-				//RemovePatrolIcons((Guard*)unit);
 				((Guard*)unit)->SetPatrolPoint(patrolPoint);
-				//AddPatrolIcons((Guard*)unit);
 			}
 		}
 	}
