@@ -86,11 +86,10 @@ void BaseState::HandleCamZoom()
 		else if (_controls->IsFunctionKeyDown("CAMERA:ZOOM_CAMERA_OUT") &&
 			(_camera->GetPosition().y) < ZOOM_MAX)
 		{
-			XMFLOAT3 negForward = XMFLOAT3(
-				_camera->GetForwardVector().x * -1,
-				_camera->GetForwardVector().y * -1,
-				_camera->GetForwardVector().z * -1);
-
+			XMFLOAT3 negForward = _camera->GetForwardVector();
+			negForward.x *= -1.0f;
+			negForward.y *= -1.0f;
+			negForward.z *= -1.0f;
 			_camera->Move(negForward, camStepSize);
 		}
 	}

@@ -15,6 +15,7 @@ GameObject::GameObject(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::X
 	_subType = 0;
 	_active = true;
 	_soundModule = soundModule;
+	_animation = nullptr;
 
 	CalculateMatrix();
 }

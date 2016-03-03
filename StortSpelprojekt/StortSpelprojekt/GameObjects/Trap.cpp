@@ -415,10 +415,7 @@ Trap::~Trap()
 	_occupiedTiles = nullptr;
 	delete[] _triggerTiles;
 	_triggerTiles = nullptr;
-	if (_animation != nullptr)
-	{
-		delete _animation;
-	}
+	delete _animation;
 }
 
 AI::Vec2D * Trap::GetTiles() const

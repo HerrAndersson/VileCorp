@@ -338,11 +338,9 @@ static const bool Collision(Vec2 &point, Square &square)
 
 static const bool Collision(Vec2 &point, Triangle &triangle)
 {
-	Vec2 p0, p1, p2;
-
-	p0 = Vec2(triangle._pos1._x, triangle._pos1._z);
-	p1 = Vec2(triangle._pos2._x, triangle._pos2._z);
-	p2 = Vec2(triangle._pos3._x, triangle._pos3._z);
+	Vec2 p0 = Vec2(triangle._pos1._x, triangle._pos1._z);
+	Vec2 p1 = Vec2(triangle._pos2._x, triangle._pos2._z);
+	Vec2 p2 = Vec2(triangle._pos3._x, triangle._pos3._z);
 
 	float area = (float)1 / 2 * (-p1._y*p2._x + p0._y*(-p1._x + p2._x) + p0._x*(p1._y - p2._y) + p1._x*p2._y);
 

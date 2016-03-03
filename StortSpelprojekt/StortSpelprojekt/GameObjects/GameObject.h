@@ -34,7 +34,7 @@ protected:
 	bool _visible;
 	bool _active;
 	RenderObject* _renderObject;
-	Animation* _animation = nullptr;
+	Animation* _animation;
 
 	System::SoundModule* _soundModule;
 
