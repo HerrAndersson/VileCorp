@@ -12,8 +12,8 @@
 enum ParticleType { SPLASH, SMOKE, ELECTRICITY, FIRE, MUZZLE_FLASH, ICON };
 
 //Determines how it looks
-enum ParticleSubType { BLOOD_SUBTYPE, WATER_SUBTYPE, SPARK_SUBTYPE, SMOKE_SUBTYPE, FIRE_SUBTYPE, MUZZLE_FLASH_SUBTYPE, EXCLAMATIONMARK_SUBTYPE, QUESTIONMARK_SUBTYPE }; //Icons have to be last
-enum ParticleIconType { ICON_EXCLAMATIONMARK, ICON_QUESTIONMARK }; //Used for loading and using icon textures
+enum ParticleSubType { BLOOD_SUBTYPE, WATER_SUBTYPE, SPARK_SUBTYPE, SMOKE_SUBTYPE, FIRE_SUBTYPE, MUZZLE_FLASH_SUBTYPE, EXCLAMATIONMARK_SUBTYPE, QUESTIONMARK_SUBTYPE, SELECTED_SUBTYPE, PATROL_SUBTYPE, HEALTH_SUBTYPE, WRENCH_SUBTYPE, NOPLACEMENT_SUBTYPE, OCCUPIED_SUBTYPE}; //Icons have to be last
+enum ParticleIconType { ICON_EXCLAMATIONMARK, ICON_QUESTIONMARK, ICON_SELECTED, ICON_PATROL, ICON_HEALTH, ICON_WRENCH, ICON_NOPLACEMENT, ICON_OCCUPIED }; //Used for loading and using icon textures
 
 struct ParticleMessage
 {
@@ -84,7 +84,7 @@ struct ParticleUpdateMessage : ParticleMessage
 //Has to be set in the BillboardingPS shader aswell. The array there has to be of hard-coded length, 
 //so "dynamic" number of textures is not possible if more than the hard-coded number
 static const int PARTICLE_TEXTURE_COUNT = 4;
-static const int ICON_TEXTURE_COUNT = 2;
+static const int ICON_TEXTURE_COUNT = 8;
 
 struct ParticleTextures
 {

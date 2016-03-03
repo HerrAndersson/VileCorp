@@ -184,6 +184,43 @@ namespace Renderer
 				icon = _textures->_iconTextures[ICON_QUESTIONMARK];
 				break;
 			}
+
+			case ParticleSubType::SELECTED_SUBTYPE:
+			{
+				icon = _textures->_iconTextures[ICON_SELECTED];
+				break;
+			}
+
+			case ParticleSubType::PATROL_SUBTYPE:
+			{
+				icon = _textures->_iconTextures[ICON_PATROL];
+				break;
+			}
+
+			case ParticleSubType::HEALTH_SUBTYPE:
+			{
+				icon = _textures->_iconTextures[ICON_HEALTH];
+				break;
+			}
+
+			case ParticleSubType::WRENCH_SUBTYPE:
+			{
+				icon = _textures->_iconTextures[ICON_WRENCH];
+				break;
+			}
+
+			case ParticleSubType::NOPLACEMENT_SUBTYPE:
+			{
+				icon = _textures->_iconTextures[ICON_NOPLACEMENT];
+				break;
+			}
+
+			case ParticleSubType::OCCUPIED_SUBTYPE:
+			{
+				icon = _textures->_iconTextures[ICON_OCCUPIED];
+				break;
+			}
+
 			default:
 			{
 				break;
