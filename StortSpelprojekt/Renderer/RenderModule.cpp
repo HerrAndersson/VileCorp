@@ -19,19 +19,19 @@ namespace Renderer
 
 	RenderModule::~RenderModule()
 	{
-		SAFE_DELETE(_d3d);
-		SAFE_DELETE(_shaderHandler);
-		SAFE_DELETE(_shadowMap);
+		delete _d3d;
+		delete _shaderHandler;
+		delete _shadowMap;
 
-		SAFE_RELEASE(_screenQuad);
-		SAFE_RELEASE(_matrixBufferPerObject);
-		SAFE_RELEASE(_matrixBufferPerSkinnedObject);
-		SAFE_RELEASE(_matrixBufferPerFrame);
-		SAFE_RELEASE(_matrixBufferHUD);
-		SAFE_RELEASE(_matrixBufferLightPassPerFrame);
-		SAFE_RELEASE(_matrixBufferLightPassPerSpotlight);
-		SAFE_RELEASE(_matrixBufferLightPassPerPointlight);
-		SAFE_RELEASE(_matrixBufferParticles);
+		delete _screenQuad;
+		delete _matrixBufferPerObject;
+		delete _matrixBufferPerSkinnedObject;
+		delete _matrixBufferPerFrame;
+		delete _matrixBufferHUD;
+		delete _matrixBufferLightPassPerFrame;
+		delete _matrixBufferLightPassPerSpotlight;
+		delete _matrixBufferLightPassPerPointlight;
+		delete _matrixBufferParticles;
 	}
 
 	void RenderModule::InitializeScreenQuadBuffer()

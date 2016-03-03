@@ -46,16 +46,16 @@ Game::Game(HINSTANCE hInstance, int nCmdShow):
 
 Game::~Game()
 {
-	SAFE_DELETE(_objectHandler);
-	SAFE_DELETE(_window);
-	SAFE_DELETE(_renderModule);
-	SAFE_DELETE(_camera);
-	SAFE_DELETE(_SM);
-	SAFE_DELETE(_controls);
-	SAFE_DELETE(_pickingDevice);
-	SAFE_DELETE(_fontWrapper);
-	SAFE_DELETE(_particleHandler);
-	SAFE_DELETE(_assetManager);
+	delete _objectHandler;
+	delete _window;
+	delete _renderModule;
+	delete _camera;
+	delete _SM;
+	delete _controls;
+	delete _pickingDevice;
+	delete _fontWrapper;
+	delete _particleHandler;
+	delete _assetManager;
 }
 
 void Game::ResizeResources(System::Settings* settings)

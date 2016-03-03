@@ -16,14 +16,15 @@ namespace Renderer
 
 	ParticleHandler::~ParticleHandler()
 	{
-		SAFE_DELETE(_requestQueue);
+		delete _requestQueue;
+		_requestQueue = nullptr;
 		_queue.clear();
 		_device = nullptr;
 		_deviceContext = nullptr;
 
 		for (ParticleEmitter* p : _particleEmitters)
 		{
-			SAFE_DELETE(p);
+			delete p;
 		}
 		delete _textures;
 		_particleEmitters.clear();
