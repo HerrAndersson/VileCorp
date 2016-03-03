@@ -387,7 +387,7 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 		Initialize(999, 1, 1, 1, 90, 60, 280, 140, Unit::StatusEffect::NO_EFFECT, 0, 0);
 		break;
 	case BEAR:																						//Another one tile trap. Easy to disarm to lure enemies into wasting time on it
-		Initialize(60, 1, 1, 1, 10, 20, 140, 280, Unit::StatusEffect::NO_EFFECT, 0, 0);
+		Initialize(80, 1, 1, 1, 10, 20, 140, 280, Unit::StatusEffect::NO_EFFECT, 0, 0);
 		break;
 	case FLAMETHROWER:																				//Shorter range and less direct damage than a gun, but does damage over time.
 		Initialize(10, 6, 6, 6, 60, 60, 140, 140, Unit::StatusEffect::BURNING, 300, 60, 80, 8);

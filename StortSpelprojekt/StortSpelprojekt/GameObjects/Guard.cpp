@@ -28,14 +28,18 @@ Guard::Guard(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 ro
 		_trapInteractionTime = 2;
 		break;
 	case ENGINEER:
-		_health = 70;
-		_baseDamage = 20;
+		_health = 50;
+		_baseDamage = 0;
 		_trapInteractionTime = 1;
+		_visionRadius = 7;
+		_moveSpeed = 0.035;
 		break;
 	case MARKSMAN:
 		_health = 100;
 		_baseDamage = 50;
 		_trapInteractionTime = 2;
+		_visionRadius = 5;
+		_moveSpeed = 0.025;
 		break;
 	default:
 		break;
@@ -65,10 +69,11 @@ void Guard::EvaluateTile(GameObject * obj)
 		case System::CAMERA:				//Guards don't react to these
 			break;
 		case System::ENEMY:
-			_soundModule->SetSoundPosition("guard_react", _position.x, 0.0f, _position.z);
-			_soundModule->Play("guard_react");
 			static_cast<Enemy*>(obj)->ResetVisibilityTimer();
-			tempPriority = 10;
+			if (_subType != ENGINEER)
+			{
+				tempPriority = 10;
+			}
 			break;
 		default:
 			break;
