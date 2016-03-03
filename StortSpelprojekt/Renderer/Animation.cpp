@@ -138,15 +138,18 @@ void Animation::Freeze(bool freeze)
 	_frozen = freeze;
 }
 
-void Animation::PlayAction(int action, bool freeze, bool lastFrame)
+void Animation::PlayAction(int action, bool freeze, bool lastFrame, bool reset)
 {
 	_frozen = false;
-	_animTime = 0.0f;
 	_currentAction = action;
 	_isFinished = false;
 	if (freeze)
 	{
 		_inactive = true;
+	}
+	if (reset)
+	{
+		_animTime = 0.0f;
 	}
 	_lastFrameRender = lastFrame;
 }

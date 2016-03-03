@@ -27,6 +27,8 @@ private:
 	int _repairTime;					//Amount of frames needed before modifiers to repair the trap
 	int _disarmTime;					//Amount of frames needed before modifiers to disarm the trap
 
+	bool _resetAnimTime;				//Resets the animation time on play action
+
 	const Tilemap* _tileMap;
 
 	AI::Vec2D* _occupiedTiles;			//Physical area taken up by the trap

@@ -247,7 +247,7 @@
 				"../Menues/PlacementStateGUI/units/Bearbutton"
 			]
 		}, {
-			"_mesh": "sawGroundTrap-29.bin",
+			"_mesh": "sawGround2-29.bin",
 			"_name": "Saw Trap",
 			"_type": 4,
 			"_subType": 4,

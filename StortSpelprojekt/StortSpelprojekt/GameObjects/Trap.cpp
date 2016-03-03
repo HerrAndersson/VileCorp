@@ -365,6 +365,7 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	int radius = 0;
 
 	bool frozen = true;
+	_resetAnimTime = true;
 	switch (_subType)
 	{
 	case SPIKE:																						//Basic one tile, damage only, trap
@@ -382,6 +383,8 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 		break;
 	case SAW:																						//Goes back and forth in a line. doesn't need to be reset unless an enemy disarms it.
 		Initialize(40, 3, 1, 1, 30, 80, 140, 140, Unit::StatusEffect::NO_EFFECT, 0, 0, 60, -1);
+		frozen = false;
+		_resetAnimTime = false;
 		break;
 	case CAKEBOMB:																					//Instant kill on one tile. TODO: Make it seem easier to disarm than it is
 		Initialize(999, 1, 1, 1, 90, 60, 280, 140, Unit::StatusEffect::NO_EFFECT, 0, 0);
@@ -612,7 +615,7 @@ void Trap::Animate(Anim anim)
 			_animation->SetActionAsCycle(IDLEANIM);
 			break;
 		case ACTIVATEANIM:
-			_animation->PlayAction(ACTIVATEANIM, true, true);
+			_animation->PlayAction(ACTIVATEANIM, true, true, _resetAnimTime);
 			break;
 		case DISABLEANIM:
 			_animation->PlayAction(DISABLEANIM, true, true);
