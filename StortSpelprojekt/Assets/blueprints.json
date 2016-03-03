@@ -355,6 +355,30 @@
 				"Enemy"
 			]
 		}, {
+			"_mesh": "enemy1-29.bin",
+			"_name": "Demolisher",
+			"_type": 7,
+			"_subType": 1,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"texturered2"
+			],
+			"_thumbnails": [
+				"Enemy"
+			]
+		}, {
+			"_mesh": "enemy1-29.bin",
+			"_name": "Assassin",
+			"_type": 7,
+			"_subType": 2,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"texturered2"
+			],
+			"_thumbnails": [
+				"Enemy"
+			]
+		}, {
 			"_mesh": "chairDecoration-28.bin",
 			"_name": "Chair",
 			"_type": 8,
