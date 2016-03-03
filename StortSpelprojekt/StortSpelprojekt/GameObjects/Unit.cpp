@@ -448,7 +448,7 @@ void Unit::ActivateStatus()
 	case StatusEffect::NO_EFFECT:
 		break;
 	case StatusEffect::BURNING:
-		TakeDamage(10);
+		TakeDamage(8);
 		break;
 	case StatusEffect::SLOWED:
 		_moveSpeed /= 2.0f;
