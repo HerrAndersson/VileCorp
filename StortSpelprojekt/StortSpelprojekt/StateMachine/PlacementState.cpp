@@ -141,11 +141,11 @@ void PlacementState::OnStateEnter()
 	//MACHINE GUN TRAP
 	_uiTree.GetNode("MachineGunCost")->SetText(L"Damage: Medium Low\nUses: 10\nAtk. Speed: Fast\nEffect: None");
 	//FLAMETHROWER TRAP
-	_uiTree.GetNode("FlameThrowerCost")->SetText(L"Damage: Low\nUses: 8\nAtk. Speed: Fast\nEffect: Burn damage");
+	_uiTree.GetNode("FlameThrowerCost")->SetText(L"Damage: Low\nUses: 5\nAtk. Speed: Fast\nEffect: Burn damage");
 	//WATER GUN TRAP
-	_uiTree.GetNode("WaterGunCost")->SetText(L"Damage: None\nUses: 5\nAtk. Speed: Medium\nEffect: Slow");
+	_uiTree.GetNode("WaterGunCost")->SetText(L"Damage: None\nUses: 10\nAtk. Speed: Medium\nEffect: Slow");
 	//TESLA TRAP
-	_uiTree.GetNode("TeslaCost")->SetText(L"Damage: Low\nUses: 3\nAtk. Speed: Slow\nEffect: Stun");
+	_uiTree.GetNode("TeslaCost")->SetText(L"Damage: Medium Low\nUses: 3\nAtk. Speed: Slow\nEffect: Stun");
 	//SPIN TRAP
 	_uiTree.GetNode("SpinCost")->SetText(L"Damage: None\nUses: Infinite\nAtk. Speed: Very Slow\nEffect: Confusion");
 	//CAKE TRAP
