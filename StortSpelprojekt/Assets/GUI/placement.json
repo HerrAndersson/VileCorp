@@ -1,7 +1,7 @@
 {
 	"Units": {
 		"position": [-0.5, -0.855],
-		"scale": [0.8, 0.2],
+		"scale": [1.2, 0.2],
 		"texture": "../Menues/PlacementStateGUI/placementUnits1.png",
 
 		"UnitList":
@@ -25,74 +25,93 @@
 				},
 				"GuardDescription":
 				{
-					"position" : [0.0, 0.20],
-					"scale": [0.1, 0.07],
+					"position" : [0.0, 0.25],
+					"scale": [0.1, 0.12],
 					"texture": "../Menues/General/wide-button-thin.png",
 					
 					"GuardCost":
 					{
-						"position" : [0.0, 0.0],
-						"scale": [0.05, 0.02],
+						"position" : [0.025, 0.075],
+						"scale": [0.09, 0.02],
 						"text": "Cost: 100",
-						"centered": true,
 						"fontsize" : 18.0
 					}
 				}
 			},
-			"Engineer": {
+			"Engineer": 
+			{
 				"position": [-0.06, 0.057],
 				"scale": [0.048, 0.083],
 				"texture": "../Menues/PlacementStateGUI/units/Guardbutton1.png",
 				"type" : 6,
 				"subType": 1,
 				"textureId" : 0,
-				"GuardText": {
+				"EngineerText": 
+				{
 					"position": [0.0, -0.173],
 					"scale": [0.068, 0.083],
-					"text": "Engineer\n  200$",
+					"text": "Engineer\n  100$",
 					"color": "FF000000",
 					"fontsize": 18.0,
 					"centered": true
+				},
+				"EngineerDescription":
+				{
+					"position" : [0.0, 0.25],
+					"scale": [0.1, 0.12],
+					"texture": "../Menues/General/wide-button-thin.png",
+					
+					"EngineerCost":
+					{
+						"position" : [0.0, 0.075],
+						"scale": [0.09, 0.02],
+						"text": "Cost: 100",
+						"fontsize" : 18.0
+					}
 				}
 			},
-			"Camera": {
+			"Camera": 
+			{
 				"position": [0.06, 0.057],
 				"scale": [0.048, 0.083],
 				"texture": "../Menues/PlacementStateGUI/units/Camerabutton1.png",
 				"type" : 5,
 				"subType": 0,
 				"textureId" : 0,
-				"CameraText": {
+				"CameraText": 
+				{
 					"position": [0.0, -0.173],
 					"scale": [0.068, 0.083],
-					"text": "Camera\n  80$",
+					"text": "Camera\n  20$",
 					"color": "FF000000",
 					"fontsize": 18.0,
 					"centered": true
 				},
 				"CameraDescription":
 				{
-					"position" : [0.0, 0.20],
-					"scale": [0.1, 0.07],
+					"position" : [0.0, 0.25],
+					"scale": [0.1, 0.12],
 					"texture": "../Menues/General/wide-button-thin.png",
 					
 					"CameraCost":
 					{
-						"position" : [0.0, 0.0],
-						"scale": [0.05, 0.02],
+						"position" : [0.0, 0.075],
+						"scale": [0.09, 0.02],
 						"text": "Cost: 100",
 						"fontsize" : 18.0
 					}
 				}
 			},
-			"AnvilTrap": {
+			"AnvilTrap": 
+			{
 				"position": [0.18, 0.057],
 				"scale": [0.048, 0.083],
 				"texture": "../Menues/PlacementStateGUI/units/Anvilbutton1.png",
 				"type" : 4,
 				"subType": 0,
 				"textureId" : 0,
-				"AnvilText": {
+				"AnvilText": 
+				{
 					"position": [0.0, -0.173],
 					"scale": [0.068, 0.083],
 					"text": "Anvil Trap\n  50$",
@@ -102,142 +121,308 @@
 				},
 				"AnvilDescription":
 				{
-					"position" : [0.0, 0.20],
-					"scale": [0.1, 0.07],
+					"position" : [0.0, 0.25],
+					"scale": [0.1, 0.12],
 					"texture": "../Menues/General/wide-button-thin.png",
 					
 					"AnvilCost":
 					{
-						"position" : [0.0, 0.0],
-						"scale": [0.05, 0.02],
+						"position" : [0.0, 0.075],
+						"scale": [0.09, 0.02],
 						"text": "Cost: 100",
-						"centered": true,
 						"fontsize" : 18.0
 					}
 				}
 			},
-			"TeslaTrap": {
+			"BearTrap": 
+			{
 				"position": [0.30, 0.057],
-				"scale": [0.048, 0.083],
-				"texture": "../Menues/PlacementStateGUI/units/Teslabutton1.png",
-				"type" : 4,
-				"subType": 1,
-				"textureId" : 0,
-				"TeslaText": {
-					"position": [0.03, -0.173],
-					"scale": [0.068, 0.083],
-					"text": "Tesla Trap\n  100$",
-					"color": "FF000000",
-					"fontsize" : 18.0
-					},
-				"TeslaDescription":
+				"scale": [ 0.048, 0.083 ],
+				"texture": "../Menues/PlacementStateGUI/units/Bearbutton.png",
+				"type": 4,
+				"subType": 6,
+				"textureId": 0,
+				"BearText": 
 				{
-					"position" : [0.0, 0.20],
-					"scale": [0.1, 0.07],
+					"position": [ 0.0, -0.173 ],
+					"scale": [ 0.068, 0.083 ],
+					"text": "Bear Trap\n  80$",
+					"color": "FF000000",
+					"fontsize": 18.0,
+					"centered": true
+				},
+				"BearDescription":
+				{
+					"position" : [0.0, 0.25],
+					"scale": [0.1, 0.12],
 					"texture": "../Menues/General/wide-button-thin.png",
 					
-					"TeslaCost":
+					"BearCost":
 					{
-						"position" : [0.0, 0.0],
-						"scale": [0.05, 0.02],
+						"position" : [0.0, 0.075],
+						"scale": [0.09, 0.02],
 						"text": "Cost: 100",
-						"centered": true,
 						"fontsize" : 18.0
 					}
 				}
 			},
-			"MachineGunTrap" :{
+			"SawTrap" :
+			{
 				"position": [0.42, 0.057],
+				"scale": [0.048, 0.083],
+				"texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png",
+				"type" : 4,
+				"subType": 4,
+				"textureId" : 0,
+				"SawText":
+				{
+					"position": [0.0, -0.173],
+					"scale": [0.068, 0.083],
+					"text": "Sawblade\n  X$",
+					"color": "FF000000",
+					"fontsize": 18.0,
+					"centered": true
+				},
+				"SawDescription":
+				{
+					"position" : [0.0, 0.25],
+					"scale": [0.1, 0.12],
+					"texture": "../Menues/General/wide-button-thin.png",
+					
+					"SawCost":
+					{
+						"position" : [0.0, 0.075],
+						"scale": [0.09, 0.02],
+						"text": "Cost: 100",
+						"fontsize" : 18.0
+					}
+				}
+			},
+			"MachineGunTrap" :
+			{
+				"position": [0.54, 0.057],
 				"scale": [0.048, 0.083],
 				"texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png",
 				"type" : 4,
 				"subType": 3,
 				"textureId" : 0,
-				"TeslaText":
+				"MachineGunText":
 				{
 					"position": [0.0, -0.173],
 					"scale": [0.068, 0.083],
 					"text": "Machine Gun\n  200$",
-				"color": "FF000000",
-				"fontsize": 18.0,
-				"centered": true
+					"color": "FF000000",
+					"fontsize": 18.0,
+					"centered": true
 				},
 				"MachineGunDescription":
 				{
-					"position" : [0.0, 0.20],
-					"scale": [0.1, 0.07],
+					"position" : [0.0, 0.25],
+					"scale": [0.1, 0.12],
 					"texture": "../Menues/General/wide-button-thin.png",
 					
 					"MachineGunCost":
 					{
-						"position" : [0.0, 0.0],
-						"scale": [0.05, 0.02],
+						"position" : [0.0, 0.075],
+						"scale": [0.09, 0.02],
 						"text": "Cost: 100",
-						"centered": true,
 						"fontsize" : 18.0
 					}
 				}
 			},
-			"SharkTrap" :{
-				"position": [0.54, 0.057],
+			"FlameThrowerTrap": 
+			{
+				"position": [ 0.66, 0.057 ],
+				"scale": [ 0.048, 0.083 ],
+				"texture": "../Menues/PlacementStateGUI/units/FlameThrowerbutton1.png",
+				"type": 4,
+				"subType": 7,
+				"textureId": 0,
+				"FlameThrowerText": 
+				{
+					"position": [ 0.0, -0.173 ],
+					"scale": [ 0.068, 0.083 ],
+					"text": "Flamethrower\n  X$",
+					"color": "FF000000",
+					"fontsize": 18.0,
+					"centered": true
+				},
+				"FlameThrowerDescription":
+				{
+					"position" : [0.0, 0.25],
+					"scale": [0.1, 0.12],
+					"texture": "../Menues/General/wide-button-thin.png",
+					
+					"FlameThrowerCost":
+					{
+						"position" : [0.0, 0.075],
+						"scale": [0.09, 0.02],
+						"text": "Cost: 100",
+						"fontsize" : 18.0
+					}
+				}
+				
+			},
+			"WaterGunTrap": 
+			{
+				"position": [ 0.78, 0.057 ],
+				"scale": [ 0.048, 0.083 ],
+				"texture": "../Menues/PlacementStateGUI/units/FlameThrowerbutton1.png",
+				"type": 4,
+				"subType": 8,
+				"textureId": 0,
+
+				"WaterGunText": 
+				{
+					"position": [ 0.0, -0.173 ],
+					"scale": [ 0.068, 0.083 ],
+					"text": "Water gun: Not Finished\n  X$",
+					"color": "FF000000",
+					"fontsize": 18.0,
+					"centered": true
+				},
+				"WaterGunDescription":
+				{
+					"position" : [0.0, 0.25],
+					"scale": [0.1, 0.12],
+					"texture": "../Menues/General/wide-button-thin.png",
+					
+					"WaterGunCost":
+					{
+						"position" : [0.0, 0.075],
+						"scale": [0.09, 0.02],
+						"text": "Cost: 100",
+						"fontsize" : 18.0
+					}
+				}
+			},
+			"TeslaTrap": 
+			{
+				"position": [ 0.90, 0.057 ],
+				"scale": [0.048, 0.083],
+				"texture": "../Menues/PlacementStateGUI/units/Teslabutton1.png",
+				"type" : 4,
+				"subType": 1,
+				"textureId" : 0,
+				"TeslaText": 
+				{
+					"position": [0.0, -0.173],
+					"scale": [0.068, 0.083],
+					"text": "Tesla Trap\n  100$",
+					"color": "FF000000",
+					"fontsize" : 18.0,
+					"centered": true
+				},
+				"TeslaDescription":
+				{
+					"position" : [0.0, 0.25],
+					"scale": [0.1, 0.12],
+					"texture": "../Menues/General/wide-button-thin.png",
+					
+					"TeslaCost":
+					{
+						"position" : [0.0, 0.075],
+						"scale": [0.09, 0.02],
+						"text": "Cost: 100",
+						"fontsize" : 18.0
+					}
+				}
+			},
+			"SpinTrap" :
+			{
+				"position": [1.02, 0.057],
+				"scale": [0.048, 0.083],
+				"texture": "../Menues/PlacementStateGUI/units/ConfuseTrapButton.png",
+				"type" : 4,
+				"subType": 9,
+				"textureId" : 0,
+				"SpinText":
+				{
+					"position": [0.0, -0.173],
+					"scale": [0.068, 0.083],
+					"text": "Spinning Tile\n  150$",
+					"color": "FF000000",
+					"fontsize": 18.0,
+					"centered": true
+				},
+				"SpinDescription":
+				{
+					"position" : [0.0, 0.25],
+					"scale": [0.1, 0.12],
+					"texture": "../Menues/General/wide-button-thin.png",
+					
+					"SpinCost":
+					{
+						"position" : [0.0, 0.075],
+						"scale": [0.09, 0.02],
+						"text": "Cost: 100",
+						"fontsize" : 18.0
+					}
+				}
+			},
+			"CakeTrap" :
+			{
+				"position": [1.14, 0.057],
+				"scale": [0.048, 0.083],
+				"texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png",
+				"type" : 4,
+				"subType": 5,
+				"textureId" : 0,
+				
+				"CakeText":
+				{
+					"position": [0.0, -0.173],
+					"scale": [0.068, 0.083],
+					"text": "Sugar Bomb\n  100$",
+					"color": "FF000000",
+					"fontsize": 18.0,
+					"centered": true
+				},
+				"CakeDescription":
+				{
+					"position" : [0.0, 0.25],
+					"scale": [0.1, 0.12],
+					"texture": "../Menues/General/wide-button-thin.png",
+					
+					"CakeCost":
+					{
+						"position" : [0.0, 0.075],
+						"scale": [0.09, 0.02],
+						"text": "Cost: 100",
+						"fontsize" : 18.0
+					}
+				}
+			},
+			"SharkTrap" :
+			{
+				"position": [1.26, 0.057],
 				"scale": [0.048, 0.083],
 				"texture": "../Menues/PlacementStateGUI/units/Sharkbutton1.png",
 				"type" : 4,
 				"subType": 2,
 				"textureId" : 0,
-				"TeslaText":
+				"SharkText":
 				{
 					"position": [0.0, -0.173],
 					"scale": [0.068, 0.083],
 					"text": "Shark Trap\n  300$",
-				"color": "FF000000",
-				"fontsize": 18.0,
-				"centered": true
-				}
-			},
-			"XTrap" :{
-				"position": [0.66, 0.057],
-				"scale": [0.048, 0.083],
-				"texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png",
-				
-				"TeslaText":
+					"color": "FF000000",
+					"fontsize": 18.0,
+					"centered": true
+				},
+				"SharkDescription":
 				{
-					"position": [0.0, -0.173],
-					"scale": [0.068, 0.083],
-					"text": "Future Trap\n  X$",
-				"color": "FF000000",
-				"fontsize": 18.0,
-				"centered": true
-				}
-			},
-			"XTrap" :{
-				"position": [0.78, 0.057],
-				"scale": [0.048, 0.083],
-				"texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png",
-				
-				"TeslaText":
-				{
-					"position": [0.0, -0.173],
-					"scale": [0.068, 0.083],
-					"text": "Future Trap\n  X$",
-				"color": "FF000000",
-				"fontsize": 18.0,
-				"centered": true
-				}
-			},
-			"XTrap" :{
-				"position": [0.90, 0.057],
-				"scale": [0.048, 0.083],
-				"texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png",
-				
-				"TeslaText":
-				{
-					"position": [0.0, -0.173],
-					"scale": [0.068, 0.083],
-					"text": "Future Trap\n  X$",
-				"color": "FF000000",
-				"fontsize": 18.0,
-				"centered": true
+					"position" : [0.0, 0.25],
+					"scale": [0.1, 0.12],
+					"texture": "../Menues/General/wide-button-thin.png",
+					
+					"SharkCost":
+					{
+						"position" : [0.0, 0.075],
+						"scale": [0.09, 0.02],
+						"text": "Cost: 100",
+						"fontsize" : 18.0
+					}
 				}
 			}
 		}

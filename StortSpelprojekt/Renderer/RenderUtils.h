@@ -22,12 +22,12 @@ struct Frame
 	DirectX::XMVECTOR _rotation;
 	DirectX::XMVECTOR _scale;
 
-	void* Frame::operator new(size_t i)
+	static void* Frame::operator new(size_t i)
 	{
 		return _mm_malloc(i, 16);
 	}
 
-	void Frame::operator delete(void* p)
+	static void Frame::operator delete(void* p)
 	{
 		_mm_free(p);
 	}
@@ -37,7 +37,7 @@ struct BoneFrames
 {
 	int _frameCount;
 	std::vector<float> _frameTime;
-	std::vector<Frame> _frames;
+	Frame* _frames;
 };
 
 struct Action
@@ -96,15 +96,16 @@ struct Point
 
 struct Mesh
 {
-	ID3D11Buffer* _vertexBuffer;
-	bool _meshLoaded;
-	System::Hitbox* _hitbox = nullptr;
-	bool _isSkinned = false;
 	short _activeUsers = 0;
-	std::string _skeletonName;
-	Skeleton* _skeleton;
+	bool _meshLoaded;
+	bool _isSkinned = false;
 	int _vertexBufferSize, _toMesh;
+	float _particleSpawnerPos[3], _iconPos[3];
+	System::Hitbox* _hitbox = nullptr;
+	Skeleton* _skeleton;
+	ID3D11Buffer* _vertexBuffer;
 	std::string _name;
+	std::string _skeletonName;
 	std::vector<PointlightData> _pointLights;
 	std::vector<SpotlightData> _spotLights;
 	~Mesh()
@@ -136,17 +137,19 @@ struct Texture
 	bool _loaded = false;
 	std::string _name;
 	ID3D11ShaderResourceView* _data = nullptr;
-
-	bool DecrementUsers()
+	void DecrementUsers()
 	{
 		_activeUsers--;
-		return (!_activeUsers);
+		if (!_activeUsers)
+		{
+			_loaded = false;
+			_data->Release();
+		}
 	}
 };
 
 struct RenderObject
 {
-	System::Type _type = System::Type::FLOOR;
 	Texture* _diffuseTexture = nullptr;
 	Texture* _specularTexture = nullptr;
 	Mesh* _mesh = nullptr;
@@ -173,10 +176,6 @@ struct RenderObject
 
 	bool operator==(const RenderObject& other) 
 	{
-		if (this->_type != other._type)
-		{
-			return false;
-		}
 		if (this->_diffuseTexture != nullptr && other._diffuseTexture != nullptr)
 		{
 			if (this->_diffuseTexture->_name != other._diffuseTexture->_name)

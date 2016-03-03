@@ -28,7 +28,7 @@ ObjectHandler::~ObjectHandler()
 	SAFE_DELETE(_backgroundObject);
 }
 
-bool ObjectHandler::Add(System::Blueprint* blueprint, int textureId, const XMFLOAT3& position, const XMFLOAT3& rotation, const bool placeOnTilemap)
+GameObject* ObjectHandler::Add(System::Blueprint* blueprint, int textureId, const XMFLOAT3& position, const XMFLOAT3& rotation, const bool placeOnTilemap)
 {
 	GameObject* object = nullptr;
 	System::Type type = (System::Type)blueprint->_type;
@@ -45,7 +45,7 @@ bool ObjectHandler::Add(System::Blueprint* blueprint, int textureId, const XMFLO
 		object = new Architecture(_idCount, position, rotation, tilepos, type, renderObject, _soundModule);
 		break;
 	case  System::SPAWN:
-		object = new SpawnPoint(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, 66, 6);
+		object = new SpawnPoint(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, 66, 1);
 		break;
 	case  System::TRAP:
 		object = new Trap(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, _tilemap, blueprint->_subType);
@@ -78,7 +78,7 @@ bool ObjectHandler::Add(System::Blueprint* blueprint, int textureId, const XMFLO
 	{
 		addedObject = true;
 	}
-	if (type == System::TRAP && addedObject && !placeOnTilemap)
+	if (type == System::TRAP && addedObject && placeOnTilemap)
 	{
 		Trap* trap = static_cast<Trap*>(object);
 		int i = 0;
@@ -146,9 +146,9 @@ bool ObjectHandler::Add(System::Blueprint* blueprint, int textureId, const XMFLO
 		//	_spotlights[object] = new Renderer::Spotlight(_device, i, 0.1f, 1000.0f);
 		//}
 		_objectCount++;
-		return true;
+		return object;
 	}
-	return false;
+	return nullptr;
 }
 
 bool ObjectHandler::Remove(int ID)
@@ -298,6 +298,11 @@ vector<vector<GameObject*>>* ObjectHandler::GetGameObjects()
 int ObjectHandler::GetObjectCount() const
 {
 	return _objectCount;
+}
+
+int ObjectHandler::GetIdCount()const
+{
+	return _idCount;
 }
 
 Tilemap * ObjectHandler::GetTileMap() const
@@ -593,8 +598,22 @@ void ObjectHandler::Update(float deltaTime)
 					heldObject->SetTilePosition(AI::Vec2D(heldObject->GetPosition().x, heldObject->GetPosition().z));
 				}
 
-				if (unit->GetHealth() <= 0)
+				//Show Unit Lifebar
+				if (unit->GetHealth() > 0 && unit->IsVisible())
 				{
+					XMFLOAT3 pos = unit->GetPosition();
+					pos.y += 2.5f;
+
+					ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::EXCLAMATIONMARK_SUBTYPE, -1, pos, XMFLOAT3(0, 0, 0), 1.0f, 1, unit->GetHealth()*0.0025f, true, true);
+					GetParticleEventQueue()->Insert(msg);
+				}
+
+				if (unit->GetHealth() <= 0 && unit->GetAnimisFinished())
+				{
+					if (unit->IsSwitchingTile())
+					{
+						unit->SetTilePosition(unit->GetNextTile());
+					}
 					if (heldObject != nullptr)
 					{
 						bool lootRemoved = false;
@@ -647,6 +666,12 @@ void ObjectHandler::Update(float deltaTime)
 					_tilemap->RemoveObjectFromTile(unit->GetTilePosition(), g);
 					_tilemap->AddObjectToTile(unit->GetNextTile(), g);
 				}
+
+
+
+
+
+				
 			}
 			else if (g->GetType() == System::SPAWN)															//Manage enemy spawning
 			{
@@ -797,7 +822,6 @@ void ObjectHandler::CreateBackgroundObject(const float& sizeX, const float& size
 
 	_backgroundObject->_diffuseTexture = _assetManager->GetTexture(textureName);
 	_backgroundObject->_specularTexture = nullptr;
-	_backgroundObject->_type = System::FLOOR;
 	_backgroundObject->_mesh = mesh;
 }
 
@@ -815,7 +839,6 @@ void ObjectHandler::ReleaseGameObjects()
 	_idCount = 0;
 	_objectCount = 0;
 }
-
 
 Renderer::ParticleEventQueue* ObjectHandler::GetParticleEventQueue()
 {

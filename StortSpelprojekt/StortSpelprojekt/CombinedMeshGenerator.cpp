@@ -106,7 +106,6 @@ void CombinedMeshGenerator::CreateRenderObject(RenderObject* copy, RenderObject*
 	copy->_mesh = mesh;
 	copy->_specularTexture = orig->_specularTexture;
 	copy->_diffuseTexture = orig->_diffuseTexture;
-	copy->_type = orig->_type;
 
 	if (orig->_diffuseTexture)
 	{

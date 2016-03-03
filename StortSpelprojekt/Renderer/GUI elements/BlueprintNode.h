@@ -21,7 +21,7 @@ namespace GUI
 			DirectX::XMFLOAT2 position = DirectX::XMFLOAT2(0.0f, 0.0f),
 			DirectX::XMFLOAT2 scale = DirectX::XMFLOAT2(1.0f, 1.0f),
 			DirectX::XMFLOAT4 colorOffset = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f),
-			ID3D11ShaderResourceView* texture = nullptr,
+			Texture* texture = nullptr,
 			const std::string& id = "parent",
 			const std::wstring& text = L"",
 			UINT32 color = 0xFF0000FF,

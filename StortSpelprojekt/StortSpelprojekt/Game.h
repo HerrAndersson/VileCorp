@@ -37,7 +37,6 @@ private:
 	AssetManager*				_assetManager;
 	FontWrapper*				_fontWrapper;
 	PickingDevice*				_pickingDevice;
-	PlayerInfo					_playerInfo;
 	SettingInfo					_gameSettings;
 	System::SettingsReader		_settingsReader;
 	GameObjectInfo				_data;

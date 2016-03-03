@@ -5,16 +5,18 @@
 #include "../JsonStructs.h"
 #include "jsonparser.h"
 #include "Assetmanager.h"
-#include "../TutorialLogic.h"
-
+//#include "../TutorialLogic.h"
 #include "../ToPlace.h"
+
+#include "../Player.h"
+#include "CommonUtils.h"
+#include "../System/Settings/Profile.h"
 
 class PlacementState : public BaseState
 {
 private:
-	TutorialLogic* _tutorialLogic;
+	//TutorialLogic* _tutorialLogic;
 	BaseEdit* _baseEdit;
-	bool _trapChosen = false;
 	
 	int _budget;
 	int _costOfAnvilTrap;
@@ -22,14 +24,16 @@ private:
 	int _costOfCamera;
 	int _costOfGuard;
 
-	int _currentPlayer = 0;
 	DirectX::XMFLOAT3* _ambientLight;
 
-	std::vector<PlayerInfo> _playerProfile;
-	std::vector<string> _playerProfilesPath;
+	System::Profile* _profile;
+	Player* _player;
 
 	// Temp, should be replaced with blueprint
 	ToPlace _toPlace;
+
+	//GUI::NodeBar _unitBar;
+	std::vector<GUI::Node*>* _buttons;
 
 	void EvaluateGoldCost();
 	void HandleDescriptions();

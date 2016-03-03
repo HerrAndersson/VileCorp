@@ -185,7 +185,7 @@ RenderObject * GameObject::GetRenderObject() const
 
 Animation * GameObject::GetAnimation() const
 {
-	if (_renderObject->_mesh->_isSkinned)
+	if (_animation != nullptr)
 	{
 		return _animation;
 	}
@@ -231,4 +231,16 @@ void GameObject::operator delete(void* p)
 bool GameObject::operator<(const GameObject& other)
 {
 	return (this->_renderObject < other._renderObject);
+}
+
+int GameObject::GetAnimLength(int layer)
+{
+	if (_animation != nullptr)
+	{
+		return _animation->GetLength(layer);
+	}
+	else
+	{
+		return 0;
+	}
 }

@@ -100,5 +100,7 @@ public:
 	void operator delete(void* p);
 
 	bool operator<(const GameObject& other);
+	// Returns 0 if _animation = nullptr
+	int GetAnimLength(int layer);
 };
 

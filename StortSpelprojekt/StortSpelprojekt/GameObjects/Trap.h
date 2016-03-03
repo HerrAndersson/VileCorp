@@ -3,7 +3,7 @@
 #include "Unit.h"
 #include <memory>
 
-enum TrapType{ SPIKE, TESLACOIL, SHARK, GUN, SAW, CAKEBOMB, BEAR, FLAMETHROWER};
+enum TrapType{ SPIKE, TESLACOIL, SHARK, GUN, SAW, CAKEBOMB, BEAR, FLAMETHROWER, WATER_GUN, SPIN_TRAP};
 enum Anim{IDLE, ACTIVATE, NR_OF_ANIM/*Has to be last*/};
 
 class Trap : public GameObject
@@ -22,7 +22,10 @@ private:
 	int _triggerTimer;					//Used either for moving triggers around (e.g. spinning sawblade) or time between automatic reloads (e.g. firearms)
 	int	_maxTimeToTrigger;				//What _triggerTime resets to
 	int _maxAmmunition;
-	int _currentAmmunition;					//Number of times the traps can trigger before needing a guard to reset it. -1 = infinite
+	int _currentAmmunition;				//Number of times the traps can trigger before needing a guard to reset it. -1 = infinite
+
+	int _repairTime;					//Amount of frames needed before modifiers to repair the trap
+	int _disarmTime;					//Amount of frames needed before modifiers to disarm the trap
 
 	const Tilemap* _tileMap;
 
@@ -40,13 +43,13 @@ private:
 	bool IsUnblocked(AI::Vec2D pos);
 	AI::Vec2D ConvertOctant(int octant, AI::Vec2D pos, bool in = true);
 
-	void Initialize(int damage, int tileSize, int triggerSize, int AOESize, int detectDifficulty, int disarmDifficulty,
+	void Initialize(int damage, int tileSize, int triggerSize, int AOESize, int detectDifficulty, int disarmDifficulty, int repairTime, int disarmTime,
 					Unit::StatusEffect statusEffect, int statusTimer, int statusInterval, int triggerTimer = 0, int ammunition = 1);							/*Initialize adds any characteristics specific to the subtype*/
 	void SetTiles();
 public:
 	Trap();
 	Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject * renderObject, System::SoundModule* soundModule,
-		 const Tilemap* tileMap, int trapType = SPIKE, AI::Vec2D direction = {-1,0});
+		 const Tilemap* tileMap, int trapType = SPIKE, AI::Vec2D direction = {1,0});
 	virtual ~Trap();
 
 	AI::Vec2D* GetTiles()const;
@@ -68,6 +71,7 @@ public:
 	void SetTilePosition(AI::Vec2D pos);
 	AI::Vec2D GetDirection();
 	void SetDirection(const AI::Vec2D direction);
+	enum Anim { IDLEANIM, ACTIVATEANIM, DISABLEANIM, FIXANIM, NR_OF_ANIM/*Has to be last*/ };
 	void Animate(Anim anim);
 
 	//Sound

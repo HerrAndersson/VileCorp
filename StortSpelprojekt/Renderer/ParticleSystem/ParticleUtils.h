@@ -6,6 +6,7 @@
 #include <cereal\archives\json.hpp>
 #include <cereal\types\string.hpp>
 #include <cereal\types\vector.hpp>
+#include "../RenderUtils.h"
 
 //Determines how it moves
 enum ParticleType { SPLASH, SMOKE, ELECTRICITY, FIRE, MUZZLE_FLASH, ICON };
@@ -13,6 +14,11 @@ enum ParticleType { SPLASH, SMOKE, ELECTRICITY, FIRE, MUZZLE_FLASH, ICON };
 //Determines how it looks
 enum ParticleSubType { BLOOD_SUBTYPE, WATER_SUBTYPE, SPARK_SUBTYPE, SMOKE_SUBTYPE, FIRE_SUBTYPE, MUZZLE_FLASH_SUBTYPE, EXCLAMATIONMARK_SUBTYPE, QUESTIONMARK_SUBTYPE }; //Icons have to be last
 enum ParticleIconType { ICON_EXCLAMATIONMARK, ICON_QUESTIONMARK }; //Used for loading and using icon textures
+
+//Has to be set in the BillboardingPS shader as well. The array there has to be of hard-coded length, 
+//so "dynamic" number of textures is not possible if more than the hard-coded number
+static const int PARTICLE_TEXTURE_COUNT = 4;
+static const int ICON_TEXTURE_COUNT = 2;
 
 struct ParticleMessage
 {
@@ -80,20 +86,15 @@ struct ParticleUpdateMessage : ParticleMessage
 	}
 };
 
-//Has to be set in the BillboardingPS shader aswell. The array there has to be of hard-coded length, 
-//so "dynamic" number of textures is not possible if more than the hard-coded number
-static const int PARTICLE_TEXTURE_COUNT = 4;
-static const int ICON_TEXTURE_COUNT = 2;
-
 struct ParticleTextures
 {
-	ID3D11ShaderResourceView* _bloodTextures[PARTICLE_TEXTURE_COUNT];
-	ID3D11ShaderResourceView* _waterTextures[PARTICLE_TEXTURE_COUNT];
-	ID3D11ShaderResourceView* _smokeTextures[PARTICLE_TEXTURE_COUNT];
-	ID3D11ShaderResourceView* _sparkTextures[PARTICLE_TEXTURE_COUNT];
-	ID3D11ShaderResourceView* _fireTextures[PARTICLE_TEXTURE_COUNT];
-	ID3D11ShaderResourceView* _muzzleFlashTextures[PARTICLE_TEXTURE_COUNT];
-	ID3D11ShaderResourceView* _iconTextures[ICON_TEXTURE_COUNT];
+	Texture* _bloodTextures[PARTICLE_TEXTURE_COUNT];
+	Texture* _waterTextures[PARTICLE_TEXTURE_COUNT];
+	Texture* _smokeTextures[PARTICLE_TEXTURE_COUNT];
+	Texture* _sparkTextures[PARTICLE_TEXTURE_COUNT];
+	Texture* _fireTextures[PARTICLE_TEXTURE_COUNT];
+	Texture* _muzzleFlashTextures[PARTICLE_TEXTURE_COUNT];
+	Texture* _iconTextures[ICON_TEXTURE_COUNT];
 
 	ParticleTextures()
 	{
@@ -104,11 +105,50 @@ struct ParticleTextures
 			_smokeTextures[i] = nullptr;
 			_sparkTextures[i] = nullptr;
 			_fireTextures[i] = nullptr;
+			_muzzleFlashTextures[i] = nullptr;
 		}
 
 		for (int i = 0; i < ICON_TEXTURE_COUNT; i++)
 		{
 			_iconTextures[i] = nullptr;
+		}
+	}
+	~ParticleTextures()
+	{
+		for (int i = 0; i < PARTICLE_TEXTURE_COUNT; i++)
+		{
+			if (_bloodTextures[i])
+			{
+				_bloodTextures[i]->DecrementUsers();
+			}
+			if (_waterTextures[i])
+			{
+				_waterTextures[i]->DecrementUsers();
+			}
+			if (_smokeTextures[i])
+			{
+				_smokeTextures[i]->DecrementUsers();
+			}
+			if (_sparkTextures[i])
+			{
+				_sparkTextures[i]->DecrementUsers();
+			}
+			if (_fireTextures[i])
+			{
+				_fireTextures[i]->DecrementUsers();
+			}
+			if (_muzzleFlashTextures[i])
+			{
+				_muzzleFlashTextures[i]->DecrementUsers();
+			}
+		}
+
+		for (int i = 0; i < ICON_TEXTURE_COUNT; i++)
+		{
+			if (_iconTextures[i])
+			{
+				_iconTextures[i]->DecrementUsers();
+			}
 		}
 	}
 };

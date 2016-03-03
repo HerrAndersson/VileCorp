@@ -526,6 +526,9 @@ namespace Renderer
 	void DirectXHandler::EndScene()
 	{
 		//V-Sync enabled
+		//_swapChain->Present(1, 0);
+
+		//V-Sync disabled
 		_swapChain->Present(0, 0);
 	}
 }

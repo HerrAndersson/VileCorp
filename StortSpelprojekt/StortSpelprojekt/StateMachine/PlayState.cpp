@@ -10,7 +10,7 @@ PlayState::PlayState(System::Controls* controls, ObjectHandler* objectHandler, S
 	Add all sounds used in playstate (even though they might not be played in this class)
 	*/
 	//Music
-	_soundModule->AddSound("in_game_2", 0.2f, 1.0f, true, true);
+	_soundModule->AddSound("in_game_2", 0.2f, 1.0f, true, true, true);
 	//Unit
 	_soundModule->AddSound("unit_select", 0.5f, 1.0f, true, false);
 	_soundModule->AddSound("unit_move", 0.5f, 1.0f, true, false);
@@ -68,10 +68,10 @@ void PlayState::OnStateEnter()
 	_soundModule->Play("in_game_2");
 
 	//TODO: Check this more! /Jonas
-	std::vector<std::vector<GameObject*>>* gos = _objectHandler->GetGameObjects();
-	for (auto& gv : *gos)
+	std::vector<std::vector<GameObject*>>* gameObjects = _objectHandler->GetGameObjects();
+	for (auto& gameObjectVector : *gameObjects)
 	{
-		std::sort(gv.begin(), gv.end(),
+		std::sort(gameObjectVector.begin(), gameObjectVector.end(),
 			[](GameObject* first, GameObject* second)
 		{
 			return *first < *second;

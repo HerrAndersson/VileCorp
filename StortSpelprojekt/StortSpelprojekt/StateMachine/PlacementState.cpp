@@ -3,28 +3,26 @@
 PlacementState::PlacementState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule, DirectX::XMFLOAT3* ambientLight)
 	: BaseState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settingsReader, soundModule)
 {
-	_playerProfile.resize(1);
-	_tutorialLogic = new TutorialLogic(&_uiTree, _controls);
-	_baseEdit = nullptr;
+	_player = new Player(_objectHandler, pickingDevice);
+	_buttons = _uiTree.GetNode("UnitList")->GetChildren();
+	_profile = settingsReader->GetProfile();
+	//_tutorialLogic = new TutorialLogic(&_uiTree, _controls, _player, _buttons, &_ghostImage, objectHandler, pickingDevice, _profile);
 
 	//Money
 	_costOfAnvilTrap	= 50;
 	_costOfTeslaCoil	= 100;
 	_costOfCamera		= 80;
 	_costOfGuard		= 200;
-	//load all player profiles
-	GetFilenamesInDirectory("Assets/PlayerProfiles/", ".json", _playerProfilesPath);
 
-	//rezise vector that stores player profiles
-	_playerProfile.resize(_playerProfilesPath.size());
 	_controls = controls;
 	_objectHandler = objectHandler;
 	_camera = camera;
 	_pickingDevice = pickingDevice;
 	_ambientLight = ambientLight;
+	_baseEdit = nullptr;
 
 	//Add sound
-	_soundModule->AddSound("in_game_1", 0.2f, 1.0f, true, true);
+	_soundModule->AddSound("in_game_1", 0.2f, 1.0f, true, true, true);
 }
 
 void PlacementState::EvaluateGoldCost()
@@ -34,23 +32,44 @@ void PlacementState::EvaluateGoldCost()
 PlacementState::~PlacementState()
 {
 	delete _baseEdit;
-	_baseEdit = nullptr;
-	delete _tutorialLogic;
-	_tutorialLogic = nullptr;
+	delete _player;
+
+	//delete _tutorialLogic;
+	//_tutorialLogic = nullptr;
 }
 
 void PlacementState::Update(float deltaTime)
 {
+
+	if (_controls->IsFunctionKeyDown("MENU:MENU"))
+	{
+		ChangeState(PAUSESTATE);
+	}
+
 	System::MouseCoord coord = _controls->GetMouseCoord();
 	//if tutorial mode. Then bypass normal baseEdit update loops.
 	if (_tutorialState != TutorialState::NOTUTORIAL)
 	{
 		//bypass the normal UI interface to interface the tutorial elements into it.
-		_tutorialLogic->Update(deltaTime, _baseEdit, _toPlace, _playerProfile.at(_currentPlayer));
-		if (_tutorialLogic->IsTutorialCompleted())
+		//_tutorialLogic->Update(deltaTime, _baseEdit, _toPlace, _profile);
+		//if (_tutorialLogic->IsTutorialCompleted())
+		//{
+		//	ChangeState(State::PLAYSTATE);
+		//	_tutorialState = TutorialState::NOTUTORIAL;
+		//}
+
+		//Menu - We keep this outside of tutorial due to the changestate function.
+		if (_controls->IsFunctionKeyDown("MENU:MENU"))
 		{
-			ChangeState(State::PLAYSTATE);
-			_tutorialState = TutorialState::NOTUTORIAL;
+			//if (_ghostImage.IsGhostImageActive() || _player->IsSelectedObjects())
+			//{
+			//	_ghostImage.RemoveGhostImage();
+			//	_player->DeselectObjects();
+			//}
+			//else
+			//{
+			//	ChangeState(PAUSESTATE);
+			//}
 		}
 	}
 	else
@@ -64,7 +83,7 @@ void PlacementState::Update(float deltaTime)
 	HandleCam(deltaTime);
 
 	//baseEdit update handles basic controls.
-	_baseEdit->Update(deltaTime, false);
+	_baseEdit->Update();
 }
 
 void PlacementState::OnStateEnter()
@@ -73,15 +92,10 @@ void PlacementState::OnStateEnter()
 	_ambientLight->y = AMBIENT_LIGHT_DAY.y;
 	_ambientLight->z = AMBIENT_LIGHT_DAY.z;
 
-	for (int i = 0; i < _playerProfilesPath.size(); i++)
-	{
-		System::loadJSON(&_playerProfile[i], _playerProfilesPath[i]);
-	}
 	_budget = _objectHandler->GetCurrentLevelHeader()->_budget;
 	
 	//Fix so that budgetvalue won't get read if we go into pause state! We don't want the players to cheat themselves back to their budget money by pressing pause, resume, pause etc.. Enbom
 	_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_budget));
-	_baseEdit = new BaseEdit(_objectHandler, _controls, _pickingDevice, _camera, false);
 	_objectHandler->DisableSpawnPoints();
 
 	XMFLOAT3 campos;
@@ -93,33 +107,56 @@ void PlacementState::OnStateEnter()
 	_buttonHighlights.clear();
 	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("Play")));
 
-	//std::vector<GUI::Node*>* units = _uiTree.GetNode("UnitList")->GetChildren();
-	//for (int i = 0; i < units->size(); i++)
-	//{
-	//	GUI::BlueprintNode* newUnit = new GUI::BlueprintNode(*units->at(i), _objectHandler->GetBlueprintByName(units->at(i)->GetId()), 0);
-	//	delete units->at(i);
-	//	units->at(i) = (GUI::Node*)newUnit;
-	//	_buttonHighlights.push_back(GUI::HighlightNode(units->at(i), XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f)));
-	//}
+	//Hide all descs
+	_uiTree.GetNode("GuardDescription")->SetHidden(true);
+	_uiTree.GetNode("EngineerDescription")->SetHidden(true);
+	_uiTree.GetNode("CameraDescription")->SetHidden(true);
+	_uiTree.GetNode("AnvilDescription")->SetHidden(true);
+	_uiTree.GetNode("BearDescription")->SetHidden(true);
+	_uiTree.GetNode("SawDescription")->SetHidden(true);
+	_uiTree.GetNode("MachineGunDescription")->SetHidden(true);
+	_uiTree.GetNode("FlameThrowerDescription")->SetHidden(true);
+	_uiTree.GetNode("WaterGunDescription")->SetHidden(true);
+	_uiTree.GetNode("TeslaDescription")->SetHidden(true);
+	_uiTree.GetNode("SpinDescription")->SetHidden(true);
+	_uiTree.GetNode("CakeDescription")->SetHidden(true);
+	_uiTree.GetNode("SharkDescription")->SetHidden(true);
 
 	//TODO: Move hardcoded costs and description to logical location /Rikhard
-	_uiTree.GetNode("GuardDescription")->SetHidden(true);
-	_uiTree.GetNode("GuardCost")->SetText(L"Cost: " + to_wstring(200) + L"$");
-	_uiTree.GetNode("AnvilDescription")->SetHidden(true);
-	_uiTree.GetNode("AnvilCost")->SetText(L"Cost: " + to_wstring(50) + L"$");
-	_uiTree.GetNode("TeslaDescription")->SetHidden(true);
-	_uiTree.GetNode("TeslaCost")->SetText(L"Cost: " + to_wstring(100) + L"$");
-	_uiTree.GetNode("MachineGunDescription")->SetHidden(true);
-	_uiTree.GetNode("MachineGunCost")->SetText(L"Cost: " + to_wstring(120) + L"$");
-	//_uiTree.GetNode("SharkDescription")->SetHidden(true);
-	//_uiTree.GetNode("SharkCost")->SetText(L"Cost: " + to_wstring(150) + L"$");
-	_uiTree.GetNode("CameraDescription")->SetHidden(true);
-	_uiTree.GetNode("CameraCost")->SetText(L"Cost: " + to_wstring(80) + L"$");
+	/*
+	Set text for descriptions
+	*/
+	//GUARD
+	_uiTree.GetNode("GuardCost")->SetText(L"Damage: Medium\nHP: " + to_wstring(100) + L"\nSpeed: Medium\nEffect: Average Joe");
+	//ENGINEER
+	_uiTree.GetNode("EngineerCost")->SetText(L"Damage: Low\nHP: " + to_wstring(50) + L"\nSpeed: Fast\nEffect: Fast repair");
+	//CAMERA
+	_uiTree.GetNode("CameraCost")->SetText(L"Damage: None\nUses: Infinite\nAtk. Speed: None\nEffect: Vision");
+	//ANVIL TRAP
+	_uiTree.GetNode("AnvilCost")->SetText(L"Damage: High\nUses: 3\nAtk. Speed: Medium\nEffect: Cheap");
+	//BEAR TRAP
+	_uiTree.GetNode("BearCost")->SetText(L"Damage: High\nUses: 1\nAtk. Speed: Medium\nEffect: Distraction");
+	//SAWBLADE TRAP (FLOOR)
+	_uiTree.GetNode("SawCost")->SetText(L"Damage: Medium\nUses: Infinite\nAtk. Speed: Medium\nEffect: Traversing");
+	//MACHINE GUN TRAP
+	_uiTree.GetNode("MachineGunCost")->SetText(L"Damage: Medium Low\nUses: 10\nAtk. Speed: Fast\nEffect: None");
+	//FLAMETHROWER TRAP
+	_uiTree.GetNode("FlameThrowerCost")->SetText(L"Damage: Low\nUses: 10\nAtk. Speed: Fast\nEffect: Burn");
+	//WATER GUN TRAP
+	_uiTree.GetNode("WaterGunCost")->SetText(L"Damage: None\nUses: 10\nAtk. Speed: Fast\nEffect: Slow");
+	//TESLA TRAP
+	_uiTree.GetNode("TeslaCost")->SetText(L"Damage: Low\nUses: 2\nAtk. Speed: Medium\nEffect: Big Area, Stun");
+	//SPIN TRAP
+	_uiTree.GetNode("SpinCost")->SetText(L"Damage: None\nUses: Infinite\nAtk. Speed: Slow\nEffect: Confusion");
+	//CAKE TRAP
+	_uiTree.GetNode("CakeCost")->SetText(L"Damage: Very High\nUses: 1\nAtk. Speed: Slow\nEffect: Slow repair");
+	//SHARK TRAP
+	_uiTree.GetNode("SharkCost")->SetText(L"Damage: Very Haj\nUses: 1\nAtk. Speed: Slow\nEffect: Big area");
 
 	if (_tutorialState == TutorialState::NEWTUTORIAL)
 	{
 		_uiTree.GetNode("Tutorial")->SetHidden(false);
-		_tutorialLogic->ResetUiTree();
+		//_tutorialLogic->ResetUiTree();
 	}
 	//Coming back from pause state
 	else if (_tutorialState == TutorialState::OLDTUTORIAL)
@@ -131,6 +168,8 @@ void PlacementState::OnStateEnter()
 		_uiTree.GetNode("Tutorial")->SetHidden(true);
 	}
 
+	_baseEdit = new BaseEdit(_objectHandler, _controls, _pickingDevice, false);
+
 	//Play music
 	_soundModule->Play("in_game_1");
 }
@@ -139,6 +178,7 @@ void PlacementState::OnStateExit()
 {
 	delete _baseEdit;
 	_baseEdit = nullptr;
+
 	//if the tutorialstage is anything other than no tutorial. Hide it. We want to reset on entry, not exit.
 	if (_tutorialState != NOTUTORIAL)
 	{
@@ -151,43 +191,22 @@ void PlacementState::OnStateExit()
 
 void PlacementState::HandleInput()
 {
-	if (_controls->IsFunctionKeyDown("MENU:MENU"))
+	if (_baseEdit->IsObjectDropValid())
 	{
-		ChangeState(PAUSESTATE);
-	}
-
-	/*
-	if (_baseEdit->GetMarkedObject() != nullptr)
-		{
-		_toPlace._type = _baseEdit->GetMarkedObject()->GetType();
-		_toPlace._subType =_baseEdit->GetMarkedObject()->GetSubType();
-		_toPlace._blueprintID = _baseEdit->GetMarkedObject()->GetID();
-			EvaluateGoldCost();
-			if (_controls->IsFunctionKeyDown("MAP_EDIT:DELETE_UNIT"))
-			{
-				_playerProfile[_currentPlayer]._gold += _toPlace._goldCost;
-				_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_playerProfile[_currentPlayer]._gold));
-			_baseEdit->DeleteMarkedObject();
-				_toPlace.ResetTemps();
-			}
-		}
-	*/
-	if (_baseEdit->DroppedObject())
-	{
-		if (_budget >= _toPlace._goldCost && _baseEdit->CreatedObject() != nullptr)
+		if (_budget >= _toPlace._goldCost && _baseEdit->GetCreatedObject() != nullptr)
 		{
 			_budget -= _toPlace._goldCost;
 			_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_budget));
 		}
 		else
 		{
-			_objectHandler->Remove(_baseEdit->CreatedObject());
+			_objectHandler->Remove(_baseEdit->GetCreatedObject());
 		}
 	}
 
-	if (_baseEdit->DeletedObjectBlueprint() != nullptr)
+	if (_baseEdit->GetDeletedObjectBlueprint() != nullptr)
 	{
-		_toPlace._sB._blueprint = _baseEdit->DeletedObjectBlueprint();
+		_toPlace._sB._blueprint = _baseEdit->GetDeletedObjectBlueprint();
 		EvaluateGoldCost();
 		_budget += _toPlace._goldCost;
 		_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_budget));
@@ -207,33 +226,25 @@ void PlacementState::HandleButtons()
 
 	System::MouseCoord coord = _controls->GetMouseCoord();
 
-	/*
-	//Tutorial image
-	if (_uiTree.IsButtonColliding("Tutorial", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
-	{
-		//Hide how to screen when clicked
-		_uiTree.GetNode("Tutorial")->SetHidden(true);
-	}
-	*/
+	////Menu
+	//if (_controls->IsFunctionKeyDown("MENU:MENU"))
+	//{
+	//	if (_ghostImage.IsGhostImageActive() || _player->IsSelectedObjects())
+	//	{
+	//		_ghostImage.RemoveGhostImage();
+	//		_player->DeselectObjects();
+	//	}
+	//	else
+	//	{
+	//		ChangeState(PAUSESTATE);
+	//	}
+	//}
 
 	//Play
 	if (_uiTree.IsButtonColliding("Play", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
 		ChangeState(PLAYSTATE);
 	}
-
-	//Item UI
-	//if (_uiTree.IsButtonColliding("Guard", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
-	//{
-	//	// Temp, should be replaced with blueprint
-	//	_toPlace._type = GUARD;
-	//	_toPlace._name = "guard_proto";
-
-	//	if (_baseEdit->IsSelection() && !_baseEdit->IsPlace())
-	//	{
-	//		create = true;
-	//	}
-	//}
 
 	if(_controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
@@ -256,88 +267,140 @@ void PlacementState::HandleButtons()
 	{
 		EvaluateGoldCost();
 		_baseEdit->HandleBlueprint(&_toPlace._sB);
-		_toPlace._blueprintID = _baseEdit->GetMarkedObject()->GetID();
-
-		//if (_budget >= _toPlace._goldCost)
-		//{
-		//	_baseEdit->HandleBlueprint(&_toPlace._sB);
-		//	_budget -= _toPlace._goldCost;
-		//	_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_budget));
-		//	_toPlace._markerID = _baseEdit->GetMarkedObject()->GetID();
-		//}
-		//else
-		//{
-		//	_toPlace._goldCost = -1;
-		//}
+		_toPlace._blueprintID = _baseEdit->GetCreatedObject()->GetID();
 	}
 }
 
 void PlacementState::HandleDescriptions()
 {
 	System::MouseCoord coord = _controls->GetMouseCoord();
+	//GUARD
 	if (_uiTree.IsButtonColliding("Guard", coord._pos.x, coord._pos.y))
 	{
 		_uiTree.GetNode("GuardDescription")->SetHidden(false);
-
-		// Add description
 	}
 	else
 	{
 		_uiTree.GetNode("GuardDescription")->SetHidden(true);
 	}
 
+	//ENGINEER
+	if (_uiTree.IsButtonColliding("Engineer", coord._pos.x, coord._pos.y))
+	{
+		_uiTree.GetNode("EngineerDescription")->SetHidden(false);
+	}
+	else
+	{
+		_uiTree.GetNode("EngineerDescription")->SetHidden(true);
+	}
+
+	//CAMERA
+	if (_uiTree.IsButtonColliding("Camera", coord._pos.x, coord._pos.y))
+	{
+		_uiTree.GetNode("CameraDescription")->SetHidden(false);
+	}
+	else
+	{
+		_uiTree.GetNode("CameraDescription")->SetHidden(true);
+	}
+
+	//ANVIL TRAP
 	if (_uiTree.IsButtonColliding("AnvilTrap", coord._pos.x, coord._pos.y))
 	{
 		_uiTree.GetNode("AnvilDescription")->SetHidden(false);
-
-		// Add description
 	}
 	else
 	{
 		_uiTree.GetNode("AnvilDescription")->SetHidden(true);
 	}
 
-	if (_uiTree.IsButtonColliding("TeslaTrap", coord._pos.x, coord._pos.y))
+	//BEAR TRAP
+	if (_uiTree.IsButtonColliding("BearTrap", coord._pos.x, coord._pos.y))
 	{
-		_uiTree.GetNode("TeslaDescription")->SetHidden(false);
-
-		// Add description
+		_uiTree.GetNode("BearDescription")->SetHidden(false);
 	}
 	else
 	{
-		_uiTree.GetNode("TeslaDescription")->SetHidden(true);
+		_uiTree.GetNode("BearDescription")->SetHidden(true);
 	}
 
+	//SAWBLADE TRAP
+	if (_uiTree.IsButtonColliding("SawTrap", coord._pos.x, coord._pos.y))
+	{
+		_uiTree.GetNode("SawDescription")->SetHidden(false);
+	}
+	else
+	{
+		_uiTree.GetNode("SawDescription")->SetHidden(true);
+	}
+
+	//MACHINE GUN TRAP
 	if (_uiTree.IsButtonColliding("MachineGunTrap", coord._pos.x, coord._pos.y))
 	{
 		_uiTree.GetNode("MachineGunDescription")->SetHidden(false);
-
-		// Add description
 	}
 	else
 	{
 		_uiTree.GetNode("MachineGunDescription")->SetHidden(true);
 	}
 
-	//if (_uiTree.IsButtonColliding("SharkTrap", coord._pos.x, coord._pos.y))
-	//{
-	//	_uiTree.GetNode("SharkDescription")->SetHidden(false);
-
-	//	// Add description
-	//}
-	//else
-	//{
-	//	_uiTree.GetNode("SharkDescription")->SetHidden(true);
-	//}
-
-	if (_uiTree.IsButtonColliding("Camera", coord._pos.x, coord._pos.y))
+	//FLAMETHROWER TRAP
+	if (_uiTree.IsButtonColliding("FlameThrowerTrap", coord._pos.x, coord._pos.y))
 	{
-		_uiTree.GetNode("CameraDescription")->SetHidden(false);
-
-		// Add description
+		_uiTree.GetNode("FlameThrowerDescription")->SetHidden(false);
 	}
 	else
 	{
-		_uiTree.GetNode("CameraDescription")->SetHidden(true);
+		_uiTree.GetNode("FlameThrowerDescription")->SetHidden(true);
+	}
+
+	//WATER GUN TRAP
+	if (_uiTree.IsButtonColliding("WaterGunTrap", coord._pos.x, coord._pos.y))
+	{
+		_uiTree.GetNode("WaterGunDescription")->SetHidden(false);
+	}
+	else
+	{
+		_uiTree.GetNode("WaterGunDescription")->SetHidden(true);
+	}
+
+	//TESLA TRAP
+	if (_uiTree.IsButtonColliding("TeslaTrap", coord._pos.x, coord._pos.y))
+	{
+		_uiTree.GetNode("TeslaDescription")->SetHidden(false);
+	}
+	else
+	{
+		_uiTree.GetNode("TeslaDescription")->SetHidden(true);
+	}
+
+	//SPIN TRAP
+	if (_uiTree.IsButtonColliding("SpinTrap", coord._pos.x, coord._pos.y))
+	{
+		_uiTree.GetNode("SpinDescription")->SetHidden(false);
+	}
+	else
+	{
+		_uiTree.GetNode("SpinDescription")->SetHidden(true);
+	}
+
+	//SUGAR BOMB
+	if (_uiTree.IsButtonColliding("CakeTrap", coord._pos.x, coord._pos.y))
+	{
+		_uiTree.GetNode("CakeDescription")->SetHidden(false);
+	}
+	else
+	{
+		_uiTree.GetNode("CakeDescription")->SetHidden(true);
+	}
+
+	//SHARK TRAP
+	if (_uiTree.IsButtonColliding("SharkTrap", coord._pos.x, coord._pos.y))
+	{
+		_uiTree.GetNode("SharkDescription")->SetHidden(false);
+	}
+	else
+	{
+		_uiTree.GetNode("SharkDescription")->SetHidden(true);
 	}
 }

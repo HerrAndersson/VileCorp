@@ -7,7 +7,7 @@
 #include <vector>
 #include <DirectXMath.h>
 #include <fstream>
-#include "WICTextureLoader.h"
+#include "DDSTextureLoader.h"
 #include "RenderUtils.h"
 #include "LevelFormat.h"
 #include "CommonUtils.h"
@@ -25,6 +25,11 @@ struct MeshHeader24
 };
 
 struct MeshHeader26
+{
+	int _numberOfVertices, _numberPointLights, _numberSpotLights;
+};
+
+struct MeshHeader29
 {
 	int _numberOfVertices, _numberPointLights, _numberSpotLights;
 };
@@ -104,6 +109,7 @@ private:
 	Mesh* ScanModel26();
 	Mesh* ScanModel27();
 	Mesh* ScanModel28();
+	Mesh* ScanModel29();
 	Mesh* ScanModel(string name);
 	Texture* ScanTexture(string name);
 	Mesh* GetModel(string name);
@@ -119,4 +125,5 @@ public:
 	HRESULT ParseLevelHeader(Level::LevelHeader* outputLevelHead, std::string levelHeaderFilePath);
 	HRESULT ParseLevelBinary(Level::LevelBinary* outputLevelBin, std::string levelBinaryFilePath);
 	Texture* GetTexture(string name);
+	void Clean();
 };
