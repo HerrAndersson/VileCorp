@@ -131,9 +131,12 @@ Texture* AssetManager::ScanTexture(string name)
 {
 	Texture* texture = new Texture;
 
-	if (name.substr(name.size() - 4) == string(".png"))//TODO remove - Fredrik
+	if (name.size() > 4)
 	{
-		name.resize(name.size() - 4);
+		if (name.substr(name.size() - 4) == string(".png"))//TODO remove - Fredrik
+		{
+			name.resize(name.size() - 4);
+		}
 	}
 
 	texture->_name = name + ".dds";
