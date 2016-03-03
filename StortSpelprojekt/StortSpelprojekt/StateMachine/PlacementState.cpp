@@ -251,9 +251,10 @@ void PlacementState::HandleInput()
 
 		//Check if we picked anything
 		vector<vector<GameObject*>> pickedUnits;
-		pickedUnits.push_back(_pickingDevice->PickObjects(_controls->GetMouseCoord()._pos, *_objectHandler->GetAllByType(System::GUARD)));
-		pickedUnits.push_back(_pickingDevice->PickObjects(_controls->GetMouseCoord()._pos, *_objectHandler->GetAllByType(System::TRAP)));
-		pickedUnits.push_back(_pickingDevice->PickObjects(_controls->GetMouseCoord()._pos, *_objectHandler->GetAllByType(System::CAMERA)));
+		POINT pos = _controls->GetMouseCoord()._pos;
+		pickedUnits.push_back(_pickingDevice->PickObjects(pos, *_objectHandler->GetAllByType(System::GUARD)));
+		pickedUnits.push_back(_pickingDevice->PickObjects(pos, *_objectHandler->GetAllByType(System::TRAP)));
+		pickedUnits.push_back(_pickingDevice->PickObjects(pos, *_objectHandler->GetAllByType(System::CAMERA)));
 
 		//Then Select it
 		_player->SelectObjects(pickedUnits);
