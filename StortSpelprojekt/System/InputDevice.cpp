@@ -26,7 +26,7 @@ namespace System
 
 		_lockedCursor = false;
 
-		_currentText = L"";
+		_currentText.clear();
 		_isTextInputMode = false;
 		_breakOnEsc = false;
 		_breakOnCarriageReturn = false;

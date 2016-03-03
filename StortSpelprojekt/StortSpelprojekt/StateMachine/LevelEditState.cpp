@@ -86,7 +86,7 @@ void LevelEditState::OnStateEnter()
 	_uiTree.GetNode("listbuttons")->SetHidden(true);
 
 	_levelHeader = Level::LevelHeader();
-	_currentLevelFileName = "";
+	_currentLevelFileName.clear();
 	_isNewLevel = true;
 
 	_objectHandler->EnlargeTilemap(50);
