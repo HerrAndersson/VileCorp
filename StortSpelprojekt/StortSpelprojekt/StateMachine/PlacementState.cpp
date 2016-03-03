@@ -7,11 +7,7 @@ PlacementState::PlacementState(System::Controls* controls, ObjectHandler* object
 	_profile = settingsReader->GetProfile();
 
 	//Money
-	_budget = 0;
-	_costOfAnvilTrap	= 50;
-	_costOfTeslaCoil	= 100;
-	_costOfCamera		= 80;
-	_costOfGuard		= 200;
+	_budget = -1;
 
 	_controls = controls;
 	_objectHandler = objectHandler;
@@ -26,6 +22,62 @@ PlacementState::PlacementState(System::Controls* controls, ObjectHandler* object
 
 void PlacementState::EvaluateGoldCost()
 {
+	int mainType = _toPlace._sB._blueprint->_type;
+	int subType = -1;
+
+	if (mainType == System::Type::GUARD)
+	{
+		subType = _toPlace._sB._blueprint->_subType;
+		switch (subType)
+		{
+		case GuardType::BASICGUARD:
+			_toPlace._goldCost = 200;		//GUARD COST
+			break;
+		case GuardType::ENGINEER:
+			_toPlace._goldCost = 100;		//ENGINEER COST
+			break;
+		}
+	}
+	else if (mainType == System::Type::CAMERA)
+	{
+		_toPlace._goldCost = 20;			//CAMERA COST
+	}
+	else if (mainType == System::Type::TRAP)
+	{
+		subType = _toPlace._sB._blueprint->_subType;
+		switch (_toPlace._sB._blueprint->_subType)
+		{
+		case TrapType::ANVIL:
+			_toPlace._goldCost = 50;		//ANVIL COST
+			break;
+		case TrapType::BEAR:
+			_toPlace._goldCost = 80;		//BEAR COST
+			break;
+		case TrapType::SAW:
+			_toPlace._goldCost = 150;		//SAW COST
+			break;
+		case TrapType::GUN:
+			_toPlace._goldCost = 100;		//MACHIENE GUN COST
+			break;
+		case TrapType::FLAMETHROWER:
+			_toPlace._goldCost = 120;		//FLAMETHROWER COST
+			break;
+		case TrapType::WATER_GUN:
+			_toPlace._goldCost = 80;		//WATER GUN COST
+			break;
+		case TrapType::TESLACOIL:
+			_toPlace._goldCost = 100;		//TESLA COST
+			break;
+		case TrapType::SPIN_TRAP:
+			_toPlace._goldCost = 150;		//SPINTRAP COST
+			break;
+		case TrapType::CAKEBOMB:
+			_toPlace._goldCost = 80;		//SUGARBOMB COST
+		case TrapType::SHARK:
+			_toPlace._goldCost = 250;		//SHARK COST
+			break;
+		}
+	}
 }
 
 PlacementState::~PlacementState()
@@ -61,16 +113,19 @@ void PlacementState::OnStateEnter()
 	_ambientLight->y = AMBIENT_LIGHT_DAY.y;
 	_ambientLight->z = AMBIENT_LIGHT_DAY.z;
 
-	_budget = _objectHandler->GetCurrentLevelHeader()->_budget;
-	
-	//Fix so that budgetvalue won't get read if we go into pause state! We don't want the players to cheat themselves back to their budget money by pressing pause, resume, pause etc.. Enbom
-	_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_budget));
+	//Do only when you don't come from pause state
+	if (GetOldState() != State::PAUSESTATE)
+	{
+		_budget = _objectHandler->GetCurrentLevelHeader()->_budget;
 
-	XMFLOAT3 campos;
-	campos.x = (float)_objectHandler->GetTileMap()->GetWidth() / 2.0f;
-	campos.y = 15.0f;
-	campos.z = (float)_objectHandler->GetTileMap()->GetHeight() / 2.0f - 10.0f;
-	_camera->SetPosition(campos);
+		XMFLOAT3 campos;
+		campos.x = (float)_objectHandler->GetTileMap()->GetWidth() / 2.0f;
+		campos.y = 15.0f;
+		campos.z = (float)_objectHandler->GetTileMap()->GetHeight() / 2.0f - 10.0f;
+		_camera->SetPosition(campos);
+	}
+
+	_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_budget));
 
 	_buttonHighlights.clear();
 	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("Play")));
