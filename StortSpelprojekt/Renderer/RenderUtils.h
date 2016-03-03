@@ -116,10 +116,7 @@ struct Mesh
 		{
 			_vertexBuffer->Release();
 		}
-		if (_hitbox != nullptr)
-		{
-			delete _hitbox;
-		}
+		delete _hitbox;
 	}
 };
 
