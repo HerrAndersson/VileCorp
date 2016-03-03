@@ -129,11 +129,11 @@ void PlacementState::OnStateEnter()
 	//GUARD
 	_uiTree.GetNode("GuardCost")->SetText(L"Damage: Medium\nHP: " + to_wstring(100) + L"\nSpeed: Medium\nEffect: Average Joe");
 	//ENGINEER
-	_uiTree.GetNode("EngineerCost")->SetText(L"Damage: Low\nHP: " + to_wstring(50) + L"\nSpeed: Fast\nEffect: Fast repair");
+	_uiTree.GetNode("EngineerCost")->SetText(L"Damage: Low\nHP: " + to_wstring(50) + L"\nSpeed: Fast\nEffect: Fast repair, Passive");
 	//CAMERA
 	_uiTree.GetNode("CameraCost")->SetText(L"Damage: None\nUses: Infinite\nAtk. Speed: None\nEffect: Vision");
 	//ANVIL TRAP
-	_uiTree.GetNode("AnvilCost")->SetText(L"Damage: High\nUses: 3\nAtk. Speed: Medium\nEffect: Cheap");
+	_uiTree.GetNode("AnvilCost")->SetText(L"Damage: High\nUses: 3\nAtk. Speed: Slow\nEffect: Cheap");
 	//BEAR TRAP
 	_uiTree.GetNode("BearCost")->SetText(L"Damage: High\nUses: 1\nAtk. Speed: Medium\nEffect: Distraction");
 	//SAWBLADE TRAP (FLOOR)
@@ -141,17 +141,17 @@ void PlacementState::OnStateEnter()
 	//MACHINE GUN TRAP
 	_uiTree.GetNode("MachineGunCost")->SetText(L"Damage: Medium Low\nUses: 10\nAtk. Speed: Fast\nEffect: None");
 	//FLAMETHROWER TRAP
-	_uiTree.GetNode("FlameThrowerCost")->SetText(L"Damage: Low\nUses: 10\nAtk. Speed: Fast\nEffect: Burn");
+	_uiTree.GetNode("FlameThrowerCost")->SetText(L"Damage: Low\nUses: 8\nAtk. Speed: Fast\nEffect: Burn damage");
 	//WATER GUN TRAP
-	_uiTree.GetNode("WaterGunCost")->SetText(L"Damage: None\nUses: 10\nAtk. Speed: Fast\nEffect: Slow");
+	_uiTree.GetNode("WaterGunCost")->SetText(L"Damage: None\nUses: 5\nAtk. Speed: Medium\nEffect: Slow");
 	//TESLA TRAP
-	_uiTree.GetNode("TeslaCost")->SetText(L"Damage: Low\nUses: 2\nAtk. Speed: Medium\nEffect: Big Area, Stun");
+	_uiTree.GetNode("TeslaCost")->SetText(L"Damage: Low\nUses: 3\nAtk. Speed: Slow\nEffect: Stun");
 	//SPIN TRAP
-	_uiTree.GetNode("SpinCost")->SetText(L"Damage: None\nUses: Infinite\nAtk. Speed: Slow\nEffect: Confusion");
+	_uiTree.GetNode("SpinCost")->SetText(L"Damage: None\nUses: Infinite\nAtk. Speed: Very Slow\nEffect: Confusion");
 	//CAKE TRAP
-	_uiTree.GetNode("CakeCost")->SetText(L"Damage: Very High\nUses: 1\nAtk. Speed: Slow\nEffect: Slow repair");
+	_uiTree.GetNode("CakeCost")->SetText(L"Damage: Very High\nUses: 1\nAtk. Speed: Very Slow\nEffect: Slow repair");
 	//SHARK TRAP
-	_uiTree.GetNode("SharkCost")->SetText(L"Damage: Very Haj\nUses: 1\nAtk. Speed: Slow\nEffect: Big area");
+	_uiTree.GetNode("SharkCost")->SetText(L"Damage: Very Haj\nUses: Infinite\nAtk. Speed: Very Slow\nEffect: Big area");
 
 	if (_tutorialState == TutorialState::NEWTUTORIAL)
 	{
