@@ -588,6 +588,11 @@ System::Blueprint * BaseEdit::GetDeletedObjectBlueprint()
 	return _deletedObjectBlueprint;
 }
 
+void BaseEdit::RefreshTileMap()
+{
+	_tileMap = _objectHandler->GetTileMap();
+}
+
 void BaseEdit::Update()
 {
 	_droppedObject = false;
