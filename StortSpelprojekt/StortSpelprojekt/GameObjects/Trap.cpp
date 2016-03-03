@@ -281,9 +281,9 @@ void Trap::SetTiles()
 		_nrOfAOETiles = CalculateCircle(3, _tilePosition, _areaOfEffect);
 		break;
 	case SHARK:
-		_nrOfOccupiedTiles = CalculateRectangle(5, 2, _tilePosition - AI::Vec2D(_direction._y, _direction._x), _occupiedTiles);
-		_nrOfTriggers = CalculateRectangle(1, 2, _tilePosition - AI::Vec2D(_direction._y, _direction._x), _triggerTiles);
-		_nrOfAOETiles = CalculateRectangle(1, 2, _tilePosition - AI::Vec2D(_direction._y, _direction._x), _areaOfEffect);
+		_nrOfOccupiedTiles = CalculateRectangle(5, 2, _tilePosition - AI::Vec2D(-_direction._y, _direction._x), _occupiedTiles);
+		_nrOfTriggers = CalculateRectangle(1, 2, _tilePosition - AI::Vec2D(-_direction._y, _direction._x), _triggerTiles);
+		_nrOfAOETiles = CalculateRectangle(1, 2, _tilePosition - AI::Vec2D(-_direction._y, _direction._x), _areaOfEffect);
 		break;
 	case GUN:
 		_nrOfOccupiedTiles = CalculateLine(10, _tilePosition, _occupiedTiles);
