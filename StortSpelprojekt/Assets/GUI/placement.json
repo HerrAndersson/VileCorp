@@ -276,7 +276,7 @@
 				{
 					"position": [ 0.0, -0.173 ],
 					"scale": [ 0.068, 0.083 ],
-					"text": "Water gun: Not Finished\n  80$",
+					"text": "Water gun\n  80$",
 					"color": "FF000000",
 					"fontsize": 18.0,
 					"centered": true
@@ -340,7 +340,7 @@
 				{
 					"position": [0.0, -0.173],
 					"scale": [0.068, 0.083],
-					"text": "Spinning Tile\n  150$",
+					"text": "Spin Trap\n  150$",
 					"color": "FF000000",
 					"fontsize": 18.0,
 					"centered": true
