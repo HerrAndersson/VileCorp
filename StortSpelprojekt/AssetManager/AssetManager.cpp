@@ -94,7 +94,7 @@ bool Mesh::DecrementUsers()
 }
 
 //Loads a model to the GPU
-bool AssetManager::LoadModel(string name, Mesh* mesh) {
+bool AssetManager::LoadModel(const std::string& name, Mesh* mesh) {
 
 	string file_path = System::MODEL_FOLDER_PATH;
 
@@ -127,7 +127,7 @@ bool AssetManager::LoadModel(string name, Mesh* mesh) {
 	return true;
 }
 
-Texture* AssetManager::ScanTexture(string name)
+Texture* AssetManager::ScanTexture(std::string name)
 {
 	Texture* texture = new Texture;
 
@@ -142,7 +142,7 @@ Texture* AssetManager::ScanTexture(string name)
 }
 
 //Creates a RenderObject for the specified model without loading it
-Mesh* AssetManager::ScanModel(string name)
+Mesh* AssetManager::ScanModel(const std::string& name)
 {
 
 	string file_path = System::MODEL_FOLDER_PATH;
@@ -346,22 +346,24 @@ Mesh* AssetManager::ScanModel26()
 	mesh->_pointLights.resize(meshHeader._numberPointLights);
 	for (int i = 0; i < meshHeader._numberPointLights; i++)
 	{
-		_infile->read((char*)&mesh->_pointLights[i]._bone, 1);
-		_infile->read((char*)&mesh->_pointLights[i]._pos, 12);
-		_infile->read((char*)&mesh->_pointLights[i]._col, 12);
-		_infile->read((char*)&mesh->_pointLights[i]._intensity, 4);
-		mesh->_pointLights[i]._range = 100;
+		auto* pointLight = &mesh->_pointLights[i];
+		_infile->read((char*)&pointLight->_bone, 1);
+		_infile->read((char*)&pointLight->_pos, 12);
+		_infile->read((char*)&pointLight->_col, 12);
+		_infile->read((char*)&pointLight->_intensity, 4);
+		pointLight->_range = 100;
 	}
 
 	mesh->_spotLights.resize(meshHeader._numberSpotLights);
 	for (int i = 0; i < meshHeader._numberSpotLights; i++)
 	{
-		_infile->read((char*)&mesh->_spotLights[i]._bone, 1);
-		_infile->read((char*)&mesh->_spotLights[i]._pos, 12);
-		_infile->read((char*)&mesh->_spotLights[i]._color, 12);
-		_infile->read((char*)&mesh->_spotLights[i]._intensity, 4);
-		_infile->read((char*)&mesh->_spotLights[i]._angle, 4);
-		_infile->read((char*)&mesh->_spotLights[i]._direction, 12);
+		auto* spotLight = &mesh->_spotLights[i];
+		_infile->read((char*)&spotLight->_bone, 1);
+		_infile->read((char*)&spotLight->_pos, 12);
+		_infile->read((char*)&spotLight->_color, 12);
+		_infile->read((char*)&spotLight->_intensity, 4);
+		_infile->read((char*)&spotLight->_angle, 4);
+		_infile->read((char*)&spotLight->_direction, 12);
 		mesh->_spotLights[i]._range = 100;
 	}
 	mesh->_vertexBufferSize = meshHeader._numberOfVertices;
@@ -502,7 +504,7 @@ RenderObject* AssetManager::GetRenderObject(int index)
 	return renderObject;
 }
 
-RenderObject* AssetManager::GetRenderObject(string meshName, string textureName)
+RenderObject* AssetManager::GetRenderObject(const std::string& meshName, const std::string& textureName)
 {
 	for (RenderObject* renderObject : *_renderObjects)
 	{
@@ -519,7 +521,7 @@ RenderObject* AssetManager::GetRenderObject(string meshName, string textureName)
 	return renderObject;
 }
 
-HRESULT AssetManager::ParseLevelHeader(Level::LevelHeader* outputLevelHead, std::string levelHeaderFilePath)
+HRESULT AssetManager::ParseLevelHeader(Level::LevelHeader* outputLevelHead, const std::string& levelHeaderFilePath)
 {
 	try
 	{
@@ -535,7 +537,7 @@ HRESULT AssetManager::ParseLevelHeader(Level::LevelHeader* outputLevelHead, std:
 	return S_OK;
 }
 
-HRESULT AssetManager::ParseLevelBinary(Level::LevelBinary* outputLevelBin, std::string levelBinaryFilePath)
+HRESULT AssetManager::ParseLevelBinary(Level::LevelBinary* outputLevelBin, const std::string& levelBinaryFilePath)
 {
 	try
 	{
@@ -551,7 +553,7 @@ HRESULT AssetManager::ParseLevelBinary(Level::LevelBinary* outputLevelBin, std::
 	return S_OK;
 }
 
-Texture* AssetManager::GetTexture(string name)
+Texture* AssetManager::GetTexture(const std::string& name)
 {
 	for (Texture* texture : *_textures)
 	{
@@ -579,7 +581,7 @@ void AssetManager::Clean()
 	}
 }
 
-Mesh* AssetManager::GetModel(string name)
+Mesh* AssetManager::GetModel(const std::string& name)
 {
 	for (Mesh* mesh : *_meshes)
 	{
@@ -595,7 +597,7 @@ Mesh* AssetManager::GetModel(string name)
 	return mesh;
 }
 
-Skeleton* AssetManager::LoadSkeleton(string name)
+Skeleton* AssetManager::LoadSkeleton(const std::string& name)
 {
 	for (Skeleton* skeleton : *_skeletons)
 	{
@@ -653,9 +655,10 @@ Skeleton* AssetManager::LoadSkeleton(string name)
 				_infile->read((char*)&translation, sizeof(XMFLOAT3));
 				_infile->read((char*)&rotation, sizeof(XMFLOAT4));
 				_infile->read((char*)&scale, sizeof(XMFLOAT3));
-				skeleton->_actions[a]._bones[b]._frames[i]._translation = XMLoadFloat3(&translation);
-				skeleton->_actions[a]._bones[b]._frames[i]._rotation = XMLoadFloat4(&rotation);
-				skeleton->_actions[a]._bones[b]._frames[i]._scale = XMLoadFloat3(&scale);
+				auto& frame = skeleton->_actions[a]._bones[b]._frames[i];
+				frame._translation = XMLoadFloat3(&translation);
+				frame._rotation = XMLoadFloat4(&rotation);
+				frame._scale = XMLoadFloat3(&scale);
 			}
 		}
 	}
