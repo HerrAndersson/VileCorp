@@ -147,6 +147,8 @@ bool Game::Update(double deltaTime)
 		_objectHandler->UpdateLights();
 	}
 
+	bool run = true;
+
 	//Apply settings if they has changed
 	if (_settingsReader.GetSettingsChanged())
 	{
@@ -298,7 +300,7 @@ void Game::RenderGameObjects(int forShaderStage, std::vector<std::vector<GameObj
 		if (gameObjectVector.size() > 0)
 		{
 			//The floors in the gameObjects vector should not be rendered, as these are combined in a single mesh to reduce draw calls
-			if ((_SM->GetState() == PLACEMENTSTATE || _SM->GetState() == PLAYSTATE || _SM->GetState() == TUTORIALSTATE || _SM->GetState() == PAUSESTATE) && (gameObjectVector.at(0)->GetType() == System::FLOOR || gameObjectVector.at(0)->GetType() == System::WALL))
+			if ((_SM->GetState() == PLACEMENTSTATE || _SM->GetState() == PLAYSTATE) && (gameObjectVector.at(0)->GetType() == System::FLOOR || gameObjectVector.at(0)->GetType() == System::WALL))
 			{
 				continue;
 			}
