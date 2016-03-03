@@ -56,7 +56,13 @@
     "_iconTexturePaths": 
     [
       "Particles/icon_exclamationmark",
-      "Particles/icon_questionmark"
+      "Particles/icon_questionmark",
+            "Particles/icon_selected",
+      "Particles/icon_patrol",
+            "Particles/icon_health",
+      "Particles/icon_wrench",
+            "Particles/icon_noplacement",
+      "Particles/icon_occupied"
     ]
   }
 }

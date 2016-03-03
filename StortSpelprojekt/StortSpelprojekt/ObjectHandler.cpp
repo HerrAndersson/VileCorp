@@ -578,7 +578,7 @@ void ObjectHandler::Update(float deltaTime)
 					XMFLOAT3 pos = unit->GetPosition();
 					pos.y += 2.5f;
 
-					ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::EXCLAMATIONMARK_SUBTYPE, -1, pos, XMFLOAT3(0, 0, 0), 1.0f, 1, unit->GetHealth()*0.0025f, true, true);
+					ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::HEALTH_SUBTYPE, -1, pos, XMFLOAT3(0, 0, 0), 1.0f, 1, unit->GetHealth()*0.0025f, true, true);
 					GetParticleEventQueue()->Insert(msg);
 				}
 

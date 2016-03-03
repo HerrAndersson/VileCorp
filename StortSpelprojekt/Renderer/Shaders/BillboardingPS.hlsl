@@ -44,7 +44,7 @@ PS_OUT main(GS_OUT input)
 		color = textures[3].Sample(samplerWrap, input.tex);
 	}
 
-	if (color.a < 1.0f)
+	if (color.a < 0.5f)
 	{
 		discard;
 	}
