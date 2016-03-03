@@ -368,17 +368,17 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	switch (_subType)
 	{
 	case SPIKE:																						//Basic one tile, damage only, trap
-		Initialize(40, 1, 1, 1, 50, 50, 140, 140, Unit::StatusEffect::NO_EFFECT, 0, 0);
+		Initialize(60, 1, 1, 1, 70, 40, 140, 140, Unit::StatusEffect::NO_EFFECT, 0, 0, 200, 3);
 		break;
 	case TESLACOIL:																					//AOE that stuns for a few seconds and does a small amount of damage
-		Initialize(30, 9, 9, 37, 80, 80, 140, 140, Unit::StatusEffect::STUNNED, 120, 120, 60, 2);
+		Initialize(20, 9, 9, 37, 80, 80, 140, 140, Unit::StatusEffect::STUNNED, 120, 120, 150, 2);
 		frozen = false;
 		break;
 	case SHARK:																						//Takes up a lot of space, but is an instant kill if it hits.
 		Initialize(999, 12, 2, 2, 60, 80, 140, 140, Unit::StatusEffect::NO_EFFECT, 0, 0);
 		break;
 	case GUN:																						//Mid tier standard damage dealer. Damage is done in a straight line. Can trigger multiple times
-		Initialize(60, 10, 10, 10, 40, 90, 140, 140, Unit::StatusEffect::NO_EFFECT, 0, 0, 60, 5);
+		Initialize(60, 10, 10, 10, 40, 90, 140, 140, Unit::StatusEffect::NO_EFFECT, 0, 0, 80, 5);
 		break;
 	case SAW:																						//Goes back and forth in a line. doesn't need to be reset unless an enemy disarms it.
 		Initialize(60, 3, 1, 1, 30, 80, 140, 140, Unit::StatusEffect::NO_EFFECT, 0, 0, 60, -1);
@@ -390,13 +390,13 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 		Initialize(50, 1, 1, 1, 10, 20, 140, 280, Unit::StatusEffect::NO_EFFECT, 0, 0);
 		break;
 	case FLAMETHROWER:																				//Shorter range and less direct damage than a gun, but does damage over time.
-		Initialize(20, 7, 7, 7, 60, 60, 140, 140, Unit::StatusEffect::BURNING, 300, 60, 60, 3);
+		Initialize(20, 7, 7, 7, 60, 60, 140, 140, Unit::StatusEffect::BURNING, 300, 60, 80, 3);
 		break;
 	case WATER_GUN:																					//No damage, but inflicts slow for a long time. Range is the same as the flamethrower
-		Initialize(0, 7, 7, 7, 60, 60, 140, 140, Unit::StatusEffect::SLOWED, 450, 450, 60, 5);
+		Initialize(0, 7, 7, 7, 60, 60, 140, 140, Unit::StatusEffect::SLOWED, 450, 450, 80, 5);
 		break;
 	case SPIN_TRAP:																					//No damage, but inflicts confusion, which cause the enemy to move randomly for the duration.
-		Initialize(0, 1, 1, 1, 70, 90, 140, 140, Unit::StatusEffect::CONFUSED, 300, 300, 0, -1);
+		Initialize(0, 1, 1, 1, 70, 90, 140, 140, Unit::StatusEffect::CONFUSED, 240, 240, 480, -1);
 		break;
 	default:
 		_areaOfEffect = nullptr;
