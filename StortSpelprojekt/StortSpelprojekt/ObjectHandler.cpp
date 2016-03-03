@@ -1,7 +1,8 @@
 #include "ObjectHandler.h"
 #include "stdafx.h"
 
-ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data, System::Settings* settings, Renderer::ParticleEventQueue* particleEventQueue, System::SoundModule*	soundModule)
+ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data, System::Settings* settings, Renderer::ParticleEventQueue* particleEventQueue, System::SoundModule*	soundModule):
+	_currentLevelHeader()
 {
 	_settings = settings;
 	_idCount = 0;
@@ -324,10 +325,7 @@ Tilemap * ObjectHandler::GetTileMap() const
 
 void ObjectHandler::SetTileMap(Tilemap * tilemap)
 {
-	if (_tilemap != nullptr)
-	{
-		delete _tilemap;
-	}
+	delete _tilemap;
 	_tilemap = tilemap;
 }
 
@@ -470,12 +468,12 @@ Level::LevelHeader * ObjectHandler::GetCurrentLevelHeader()
 	return &_currentLevelHeader;
 }
 
-void ObjectHandler::SetCurrentLevelHeader(Level::LevelHeader levelheader)
+void ObjectHandler::SetCurrentLevelHeader(const Level::LevelHeader& levelheader)
 {
 	_currentLevelHeader = levelheader;
 }
 
-bool ObjectHandler::LoadLevel(std::string levelBinaryFilePath)
+bool ObjectHandler::LoadLevel(const std::string& levelBinaryFilePath)
 {
 	bool result = false;
 	Level::LevelBinary levelData;
@@ -568,7 +566,9 @@ void ObjectHandler::Update(float deltaTime)
 				GameObject* heldObject = unit->GetHeldObject();
 				if (heldObject != nullptr && heldObject->GetPickUpState() == HELD)
 				{
-					heldObject->SetPosition(DirectX::XMFLOAT3(unit->GetPosition().x, unit->GetPosition().y + 2, unit->GetPosition().z));
+					XMFLOAT3 unitPosition = unit->GetPosition();
+					unitPosition.y += 2;
+					heldObject->SetPosition(unitPosition);
 					heldObject->SetTilePosition(AI::Vec2D(heldObject->GetPosition().x, heldObject->GetPosition().z));
 				}
 
@@ -578,7 +578,7 @@ void ObjectHandler::Update(float deltaTime)
 					XMFLOAT3 pos = unit->GetPosition();
 					pos.y += 2.5f;
 
-					ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::EXCLAMATIONMARK_SUBTYPE, -1, pos, XMFLOAT3(0, 0, 0), 1.0f, 1, unit->GetHealth()*0.0025f, true, true);
+					ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::HEALTH_SUBTYPE, -1, pos, XMFLOAT3(0, 0, 0), 1.0f, 1, unit->GetHealth()*0.0025f, true, true);
 					GetParticleEventQueue()->Insert(msg);
 				}
 
@@ -755,7 +755,7 @@ std::vector<std::vector<System::Blueprint*>>* ObjectHandler::GetBlueprintsOrdere
 	return _blueprints.GetBlueprintsOrderedByType();
 }
 
-System::Blueprint* ObjectHandler::GetBlueprintByName(string name)
+System::Blueprint* ObjectHandler::GetBlueprintByName(const std::string& name)
 {
 	return _blueprints.GetBlueprintByName(name);
 }

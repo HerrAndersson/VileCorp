@@ -119,9 +119,25 @@ void GameLogic::HandleUnitSelect()
 	for (auto u : _player->GetSelectedUnits())
 	{
 		XMFLOAT3 pos = u->GetPosition();
-		pos.y += 2.5f;
-		ParticleUpdateMessage* msg = new ParticleUpdateMessage(u->GetID(), true, pos);
+		pos.y += 3.0f;
+
+		ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::SELECTED_SUBTYPE, -1, pos, XMFLOAT3(0, 0, 0), 1.0f, 1, 0.25f, true, true);
 		_objectHandler->GetParticleEventQueue()->Insert(msg);
+
+		if (u->GetType() == System::GUARD)
+		{
+			for (auto p : ((Guard*)u)->GetPatrolRoute())
+			{
+				pos = XMFLOAT3(p._x, 0.5, p._y);
+
+				msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::PATROL_SUBTYPE, -1, pos, XMFLOAT3(0, 0, 0), 1.0f, 1, 0.25f, true, true);
+				_objectHandler->GetParticleEventQueue()->Insert(msg);
+			}
+
+		}
+
+
+
 	}
 }
 
@@ -183,7 +199,7 @@ void GameLogic::HandleUnitMove()
 		{
 			_player->MoveUnits(selectedTile);
 			//Play sound
-			PlayMoveSound((GuardType)(((Guard*)units.at(0))->GetSubType()));
+			PlayMoveSound(static_cast<GuardType>(units.at(0)->GetSubType()));
 		}
 	}
 }

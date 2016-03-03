@@ -7,6 +7,7 @@ PlacementState::PlacementState(System::Controls* controls, ObjectHandler* object
 	_profile = settingsReader->GetProfile();
 
 	//Money
+	_budget = 0;
 	_costOfAnvilTrap	= 50;
 	_costOfTeslaCoil	= 100;
 	_costOfCamera		= 80;
@@ -66,9 +67,9 @@ void PlacementState::OnStateEnter()
 	_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_budget));
 
 	XMFLOAT3 campos;
-	campos.x = _objectHandler->GetTileMap()->GetWidth() / 2;
-	campos.y = 15;
-	campos.z = _objectHandler->GetTileMap()->GetHeight() / 2 - 10;
+	campos.x = (float)_objectHandler->GetTileMap()->GetWidth() / 2.0f;
+	campos.y = 15.0f;
+	campos.z = (float)_objectHandler->GetTileMap()->GetHeight() / 2.0f - 10.0f;
 	_camera->SetPosition(campos);
 
 	_buttonHighlights.clear();
@@ -212,133 +213,17 @@ void PlacementState::HandleButtons()
 void PlacementState::HandleDescriptions()
 {
 	System::MouseCoord coord = _controls->GetMouseCoord();
-	//GUARD
-	if (_uiTree.IsButtonColliding("Guard", coord._pos.x, coord._pos.y))
-	{
-		_uiTree.GetNode("GuardDescription")->SetHidden(false);
-	}
-	else
-	{
-		_uiTree.GetNode("GuardDescription")->SetHidden(true);
-	}
-
-	//ENGINEER
-	if (_uiTree.IsButtonColliding("Engineer", coord._pos.x, coord._pos.y))
-	{
-		_uiTree.GetNode("EngineerDescription")->SetHidden(false);
-	}
-	else
-	{
-		_uiTree.GetNode("EngineerDescription")->SetHidden(true);
-	}
-
-	//CAMERA
-	if (_uiTree.IsButtonColliding("Camera", coord._pos.x, coord._pos.y))
-	{
-		_uiTree.GetNode("CameraDescription")->SetHidden(false);
-	}
-	else
-	{
-		_uiTree.GetNode("CameraDescription")->SetHidden(true);
-	}
-
-	//ANVIL TRAP
-	if (_uiTree.IsButtonColliding("AnvilTrap", coord._pos.x, coord._pos.y))
-	{
-		_uiTree.GetNode("AnvilDescription")->SetHidden(false);
-	}
-	else
-	{
-		_uiTree.GetNode("AnvilDescription")->SetHidden(true);
-	}
-
-	//BEAR TRAP
-	if (_uiTree.IsButtonColliding("BearTrap", coord._pos.x, coord._pos.y))
-	{
-		_uiTree.GetNode("BearDescription")->SetHidden(false);
-	}
-	else
-	{
-		_uiTree.GetNode("BearDescription")->SetHidden(true);
-	}
-
-	//SAWBLADE TRAP
-	if (_uiTree.IsButtonColliding("SawTrap", coord._pos.x, coord._pos.y))
-	{
-		_uiTree.GetNode("SawDescription")->SetHidden(false);
-	}
-	else
-	{
-		_uiTree.GetNode("SawDescription")->SetHidden(true);
-	}
-
-	//MACHINE GUN TRAP
-	if (_uiTree.IsButtonColliding("MachineGunTrap", coord._pos.x, coord._pos.y))
-	{
-		_uiTree.GetNode("MachineGunDescription")->SetHidden(false);
-	}
-	else
-	{
-		_uiTree.GetNode("MachineGunDescription")->SetHidden(true);
-	}
-
-	//FLAMETHROWER TRAP
-	if (_uiTree.IsButtonColliding("FlameThrowerTrap", coord._pos.x, coord._pos.y))
-	{
-		_uiTree.GetNode("FlameThrowerDescription")->SetHidden(false);
-	}
-	else
-	{
-		_uiTree.GetNode("FlameThrowerDescription")->SetHidden(true);
-	}
-
-	//WATER GUN TRAP
-	if (_uiTree.IsButtonColliding("WaterGunTrap", coord._pos.x, coord._pos.y))
-	{
-		_uiTree.GetNode("WaterGunDescription")->SetHidden(false);
-	}
-	else
-	{
-		_uiTree.GetNode("WaterGunDescription")->SetHidden(true);
-	}
-
-	//TESLA TRAP
-	if (_uiTree.IsButtonColliding("TeslaTrap", coord._pos.x, coord._pos.y))
-	{
-		_uiTree.GetNode("TeslaDescription")->SetHidden(false);
-	}
-	else
-	{
-		_uiTree.GetNode("TeslaDescription")->SetHidden(true);
-	}
-
-	//SPIN TRAP
-	if (_uiTree.IsButtonColliding("SpinTrap", coord._pos.x, coord._pos.y))
-	{
-		_uiTree.GetNode("SpinDescription")->SetHidden(false);
-	}
-	else
-	{
-		_uiTree.GetNode("SpinDescription")->SetHidden(true);
-	}
-
-	//SUGAR BOMB
-	if (_uiTree.IsButtonColliding("CakeTrap", coord._pos.x, coord._pos.y))
-	{
-		_uiTree.GetNode("CakeDescription")->SetHidden(false);
-	}
-	else
-	{
-		_uiTree.GetNode("CakeDescription")->SetHidden(true);
-	}
-
-	//SHARK TRAP
-	if (_uiTree.IsButtonColliding("SharkTrap", coord._pos.x, coord._pos.y))
-	{
-		_uiTree.GetNode("SharkDescription")->SetHidden(false);
-	}
-	else
-	{
-		_uiTree.GetNode("SharkDescription")->SetHidden(true);
-	}
+	_uiTree.GetNode("GuardDescription")->SetHidden(!_uiTree.IsButtonColliding("Guard", coord._pos.x, coord._pos.y));
+	_uiTree.GetNode("EngineerDescription")->SetHidden(!_uiTree.IsButtonColliding("Engineer", coord._pos.x, coord._pos.y));
+	_uiTree.GetNode("CameraDescription")->SetHidden(!_uiTree.IsButtonColliding("Camera", coord._pos.x, coord._pos.y));
+	_uiTree.GetNode("AnvilDescription")->SetHidden(!_uiTree.IsButtonColliding("AnvilTrap", coord._pos.x, coord._pos.y));
+	_uiTree.GetNode("BearDescription")->SetHidden(!_uiTree.IsButtonColliding("BearTrap", coord._pos.x, coord._pos.y));
+	_uiTree.GetNode("SawDescription")->SetHidden(!_uiTree.IsButtonColliding("SawTrap", coord._pos.x, coord._pos.y));
+	_uiTree.GetNode("MachineGunDescription")->SetHidden(!_uiTree.IsButtonColliding("MachineGunTrap", coord._pos.x, coord._pos.y));
+	_uiTree.GetNode("FlameThrowerDescription")->SetHidden(!_uiTree.IsButtonColliding("FlameThrowerTrap", coord._pos.x, coord._pos.y));
+	_uiTree.GetNode("WaterGunDescription")->SetHidden(!_uiTree.IsButtonColliding("WaterGunTrap", coord._pos.x, coord._pos.y));
+	_uiTree.GetNode("TeslaDescription")->SetHidden(!_uiTree.IsButtonColliding("TeslaTrap", coord._pos.x, coord._pos.y));
+	_uiTree.GetNode("SpinDescription")->SetHidden(!_uiTree.IsButtonColliding("SpinTrap", coord._pos.x, coord._pos.y));
+	_uiTree.GetNode("CakeDescription")->SetHidden(!_uiTree.IsButtonColliding("CakeTrap", coord._pos.x, coord._pos.y));
+	_uiTree.GetNode("SharkDescription")->SetHidden(!_uiTree.IsButtonColliding("SharkTrap", coord._pos.x, coord._pos.y));
 }

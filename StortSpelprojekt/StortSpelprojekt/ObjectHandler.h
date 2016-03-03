@@ -120,8 +120,8 @@ public:
 	RenderObject* GetBackgroundObject();
 
 	Level::LevelHeader* GetCurrentLevelHeader();
-	void SetCurrentLevelHeader(Level::LevelHeader levelheader);
-	bool LoadLevel(std::string levelBinaryFilePath);
+	void SetCurrentLevelHeader(const Level::LevelHeader& levelheader);
+	bool LoadLevel(const std::string& levelBinaryFilePath);
 	bool LoadLevel(Level::LevelBinary &levelData);
 
 	void UnloadLevel();
@@ -134,7 +134,7 @@ public:
 
 	vector<System::Blueprint>* GetBlueprints();
 	std::vector<std::vector<System::Blueprint*>>* GetBlueprintsOrderedByType();
-	System::Blueprint* GetBlueprintByName(string name);
+	System::Blueprint* GetBlueprintByName(const std::string& name);
 	System::Blueprint* GetBlueprintByType(int type, int subType = 0);
 	std::vector<std::string>* GetCurrentAvailableUnits();
 	int GetRemainingToSpawn();

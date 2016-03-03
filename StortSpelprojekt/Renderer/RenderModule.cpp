@@ -20,19 +20,19 @@ namespace Renderer
 
 	RenderModule::~RenderModule()
 	{
-		SAFE_DELETE(_d3d);
-		SAFE_DELETE(_shaderHandler);
-		SAFE_DELETE(_shadowMap);
+		delete _d3d;
+		delete _shaderHandler;
+		delete _shadowMap;
 
-		SAFE_RELEASE(_screenQuad);
-		SAFE_RELEASE(_matrixBufferPerObject);
-		SAFE_RELEASE(_matrixBufferPerSkinnedObject);
-		SAFE_RELEASE(_matrixBufferPerFrame);
-		SAFE_RELEASE(_matrixBufferHUD);
-		SAFE_RELEASE(_matrixBufferLightPassPerFrame);
-		SAFE_RELEASE(_matrixBufferLightPassPerSpotlight);
-		SAFE_RELEASE(_matrixBufferLightPassPerPointlight);
-		SAFE_RELEASE(_matrixBufferParticles);
+		_screenQuad->Release();
+		_matrixBufferPerObject->Release();
+		_matrixBufferPerSkinnedObject->Release();
+		_matrixBufferPerFrame->Release();
+		_matrixBufferHUD->Release();
+		_matrixBufferLightPassPerFrame->Release();
+		_matrixBufferLightPassPerSpotlight->Release();
+		_matrixBufferLightPassPerPointlight->Release();
+		_matrixBufferParticles->Release();
 	}
 
 	void RenderModule::InitializeScreenQuadBuffer()
@@ -565,12 +565,12 @@ namespace Renderer
 		_antialiasingEnabled = enabled;
 	}
 
-	void RenderModule::BeginScene(float red, float green, float blue, float alpha)
+	void RenderModule::BeginScene(float red, float green, float blue, float alpha, bool clearBackBuffer)
 	{
 		_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::DISABLE);
 		_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::BACK);
 		_d3d->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		_d3d->BeginScene(red, green, blue, alpha);
+		_d3d->BeginScene(red, green, blue, alpha, clearBackBuffer);
 	}
 
 	void RenderModule::Render(DirectX::XMMATRIX* world, int vertexBufferSize, const DirectX::XMFLOAT3& colorOffset)

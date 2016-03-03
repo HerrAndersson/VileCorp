@@ -115,19 +115,18 @@ void OptionsState::Update(float deltaTime)
 	}
 	if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
-		bool showApplyButton = false;
-		showApplyButton = showApplyButton || HandleOptionSwitch("res_left", "res_right", "res_content", _resolutionOption, _resolution, RESOLUTION_MAX);
-		showApplyButton = showApplyButton || HandleOptionSwitch("win_left", "win_right", "win_content", _windowOption, _window, WINDOW_MAX);
-		showApplyButton = showApplyButton || HandleOptionSwitch("aa_left", "aa_right", "aa_content", _aaOption, _aa, AA_MAX);
-		showApplyButton = showApplyButton || HandleOptionSwitch("shadow_left", "shadow_right", "shadow_content", _shadowmapOption, _shadowmap, SHADOWMAP_MAX);
+		_showApplyButton = _showApplyButton || HandleOptionSwitch("res_left", "res_right", "res_content", _resolutionOption, _resolution, RESOLUTION_MAX);
+		_showApplyButton = _showApplyButton || HandleOptionSwitch("win_left", "win_right", "win_content", _windowOption, _window, WINDOW_MAX);
+		_showApplyButton = _showApplyButton || HandleOptionSwitch("aa_left", "aa_right", "aa_content", _aaOption, _aa, AA_MAX);
+		_showApplyButton = _showApplyButton || HandleOptionSwitch("shadow_left", "shadow_right", "shadow_content", _shadowmapOption, _shadowmap, SHADOWMAP_MAX);
 
 		//Handle volume option
-		showApplyButton = showApplyButton || HandleOptionSwitch("sound_left", "sound_right", "sound_content", _volume, nullptr, 11, false);
+		_showApplyButton = _showApplyButton || HandleOptionSwitch("sound_left", "sound_right", "sound_content", _volume, nullptr, 11, false);
 		GUI::Node* text = _uiTree.GetNode("sound_content");
 		text->SetText(std::to_wstring(_volume * 10) + L"%");
 
 
-		_uiTree.GetNode("apply")->SetHidden(!showApplyButton);
+		_uiTree.GetNode("apply")->SetHidden(!_showApplyButton);
 
 		//Check it the apply button was pressed and change settings file and update the window resolution if needed
 		if (_uiTree.IsButtonColliding("apply", coord._pos.x, coord._pos.y))
@@ -217,6 +216,8 @@ void OptionsState::OnStateEnter()
 	_volume = settings->_volume / 10;
 	GUI::Node* text = _uiTree.GetNode("sound_content");
 	text->SetText(std::to_wstring(_volume * 10) + L"%");
+
+	_showApplyButton = false;
 }
 
 void OptionsState::OnStateExit()

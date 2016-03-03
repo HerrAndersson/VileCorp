@@ -5,10 +5,10 @@ namespace System
 {
 	Profile::Profile()
 	{
-		std::string _name = "Player";
-		int _money = 0;
-		int _level = 0;
-		bool _firstTime = true;
+		_name = "Player";
+		_money = 0;
+		_level = 0;
+		_firstTime = true;
 	}
 
 
