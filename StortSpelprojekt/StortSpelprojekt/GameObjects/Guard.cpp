@@ -199,7 +199,7 @@ void Guard::Act(GameObject* obj)
 			if(System::FrameCountdown(_interactionTime, _animation->GetLength(FIGHTANIM)))
 			{
 				Unit* enemy = static_cast<Unit*>(obj);
-				enemy->TakeDamage(1);
+				enemy->TakeDamage(_baseDamage);
 				enemy->Animate(HURTANIM);
 				if (enemy->GetHealth() <= 0)
 				{
