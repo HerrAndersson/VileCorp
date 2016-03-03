@@ -37,6 +37,11 @@ struct BoneFrames
 	int _frameCount;
 	std::vector<float> _frameTime;
 	Frame* _frames;
+
+	~BoneFrames()
+	{
+		_aligned_free(_frames);
+	}
 };
 
 struct Action
