@@ -235,6 +235,30 @@
 				"../Menues/PlacementStateGUI/units/Gunbutton1"
 			]
 		}, {
+			"_mesh": "sawGroundTrap-29.bin",
+			"_name": "Saw Trap",
+			"_type": 4,
+			"_subType": 4,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"saw"
+			],
+			"_thumbnails": [
+				"../Menues/PlacementStateGUI/units/sawButton"
+			]
+		}, {
+			"_mesh": "Cupcake-27.bin",
+			"_name": "Cupcake Trap",
+			"_type": 4,
+			"_subType": 5,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"cuppycake"
+			],
+			"_thumbnails": [
+				"../Menues/PlacementStateGUI/units/cupcakeButton"
+			]
+		}, {
 			"_mesh": "JuliaBear-27.bin",
 			"_name": "Bear Trap",
 			"_type": 4,
@@ -247,46 +271,10 @@
 				"../Menues/PlacementStateGUI/units/Bearbutton"
 			]
 		}, {
-			"_mesh": "sawGroundTrap-29.bin",
-			"_name": "Saw Trap",
-			"_type": 4,
-			"_subType": 4,
-			"_tooltip": "SampleText",
-			"_textures": [
-				"saw"
-			],
-			"_thumbnails": [
-				"../Menues/PlacementStateGUI/units/SawGroundbutton"
-			]
-		}, {
-			"_mesh": "Cupcake-27.bin",
-			"_name": "Cupcake Trap",
-			"_type": 4,
-			"_subType": 5,
-			"_tooltip": "SampleText",
-			"_textures": [
-				"cuppycake"
-			],
-			"_thumbnails": [
-				"cuppycake"
-			]
-		}, {
-			"_mesh": "flamethrowerTrap-29.bin",
+			"_mesh": "waterGunTrap-29.bin",
 			"_name": "Flame Trap",
 			"_type": 4,
 			"_subType": 7,
-			"_tooltip": "SampleText",
-			"_textures": [
-				"GunText"
-			],
-			"_thumbnails": [
-				"../Menues/PlacementStateGUI/units/FlameThrowerbutton1"
-			]
-		}, {
-			"_mesh": "waterGunTrap-29.bin",
-			"_name": "Water Gun Trap",
-			"_type": 4,
-			"_subType": 8,
 			"_tooltip": "SampleText",
 			"_textures": [
 				"waterGun"
@@ -296,9 +284,9 @@
 			]
 		}, {
 			"_mesh": "sawRoofTrap-28.bin",
-			"_name": "Roof Saw Trap",
+			"_name": "Water Gun Trap",
 			"_type": 4,
-			"_subType": 10,
+			"_subType": 8,
 			"_tooltip": "SampleText",
 			"_textures": [
 				"sawRoofTrap"
@@ -316,7 +304,7 @@
 				"confuseTrap"
 			],
 			"_thumbnails": [
-				"../Menues/PlacementStateGUI/units/confusetrapbutton"
+				"../Menues/PlacementStateGUI/units/confusiontrapButton"
 			]
 		}, {
 			"_mesh": "SecurityCamera-27.bin",
@@ -367,6 +355,30 @@
 				"Enemy"
 			]
 		}, {
+			"_mesh": "enemy1-29.bin",
+			"_name": "Demolisher",
+			"_type": 7,
+			"_subType": 1,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"texturered2"
+			],
+			"_thumbnails": [
+				"Enemy"
+			]
+		}, {
+			"_mesh": "enemy1-29.bin",
+			"_name": "Assassin",
+			"_type": 7,
+			"_subType": 2,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"texturered2"
+			],
+			"_thumbnails": [
+				"Enemy"
+			]
+		}, {
 			"_mesh": "chairDecoration-28.bin",
 			"_name": "Chair",
 			"_type": 8,
@@ -382,7 +394,7 @@
 			"_mesh": "pedestalDecoration-28.bin",
 			"_name": "Pedistal",
 			"_type": 8,
-			"_subType": 0,
+			"_subType": 1,
 			"_tooltip": "SampleText",
 			"_textures": [
 				"pillowpedestal"
@@ -394,7 +406,7 @@
 			"_mesh": "paintingDecoration-28.bin",
 			"_name": "Painting",
 			"_type": 8,
-			"_subType": 0,
+			"_subType": 2,
 			"_tooltip": "SampleText",
 			"_textures": [
 				"painting"
@@ -406,7 +418,7 @@
 			"_mesh": "lionStatueDecoration-28.bin",
 			"_name": "Lion Statue",
 			"_type": 8,
-			"_subType": 0,
+			"_subType": 3,
 			"_tooltip": "SampleText",
 			"_textures": [
 				"lionstatue"
@@ -418,7 +430,7 @@
 			"_mesh": "grandfatherClockDecoration-28.bin",
 			"_name": "Grand Father Clock",
 			"_type": 8,
-			"_subType": 0,
+			"_subType": 4,
 			"_tooltip": "SampleText",
 			"_textures": [
 				"grandpaclock"
@@ -430,7 +442,7 @@
 			"_mesh": "glassTableDecoration-28.bin",
 			"_name": "Glass Table",
 			"_type": 8,
-			"_subType": 0,
+			"_subType": 5,
 			"_tooltip": "SampleText",
 			"_textures": [
 				"glasstable"
@@ -442,7 +454,7 @@
 			"_mesh": "generatorDecoration-28.bin",
 			"_name": "Generator",
 			"_type": 8,
-			"_subType": 0,
+			"_subType": 6,
 			"_tooltip": "SampleText",
 			"_textures": [
 				"generator"
@@ -454,7 +466,7 @@
 			"_mesh": "frontDeskDecoration-28.bin",
 			"_name": "Front Desk",
 			"_type": 8,
-			"_subType": 0,
+			"_subType": 7,
 			"_tooltip": "SampleText",
 			"_textures": [
 				"frontdesk"
@@ -466,7 +478,7 @@
 			"_mesh": "floorLampDecoration-28.bin",
 			"_name": "Floor Lamp",
 			"_type": 8,
-			"_subType": 0,
+			"_subType": 8,
 			"_tooltip": "SampleText",
 			"_textures": [
 				"floorlamp"
@@ -478,7 +490,7 @@
 			"_mesh": "armlesStatueDecoration-28.bin",
 			"_name": "Armless Statue",
 			"_type": 8,
-			"_subType": 0,
+			"_subType": 9,
 			"_tooltip": "SampleText",
 			"_textures": [
 				"armlessstatue"
@@ -490,7 +502,7 @@
 			"_mesh": "museumFenceDecoration-28.bin",
 			"_name": "Museum Fence",
 			"_type": 8,
-			"_subType": 0,
+			"_subType": 10,
 			"_tooltip": "SampleText",
 			"_textures": [
 				"fences"
@@ -502,7 +514,7 @@
 			"_mesh": "museumFenceCornerDecoration-28.bin",
 			"_name": "Museum Fence",
 			"_type": 8,
-			"_subType": 0,
+			"_subType": 11,
 			"_tooltip": "SampleText",
 			"_textures": [
 				"fences"

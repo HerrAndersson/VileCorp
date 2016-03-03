@@ -11,7 +11,7 @@ Game::Game(HINSTANCE hInstance, int nCmdShow):
 	System::Settings* settings = _settingsReader.GetSettings();
 
 	_gameHandle = this;
-	_window = new System::Window("Amazing game", hInstance, settings, WndProc);
+	_window = new System::Window("Vile Corp.", hInstance, settings, WndProc);
 	_timer = System::Timer();
 	_renderModule = new Renderer::RenderModule(_window->GetHWND(), settings);
 	
@@ -291,12 +291,12 @@ void Game::RenderGameObjects(int forShaderStage, std::vector<std::vector<GameObj
 		}
 	}
 
-	for (auto& i : *gameObjects)
+	for (auto& gameObjectVector : *gameObjects)
 	{
-		if (i.size() > 0)
+		if (gameObjectVector.size() > 0)
 		{
 			//The floors in the gameObjects vector should not be rendered, as these are combined in a single mesh to reduce draw calls
-			if ((_SM->GetState() == PLACEMENTSTATE || _SM->GetState() == PLAYSTATE) && (i.at(0)->GetType() == System::FLOOR || i.at(0)->GetType() == System::WALL))
+			if ((_SM->GetState() == PLACEMENTSTATE || _SM->GetState() == PLAYSTATE) && (gameObjectVector.at(0)->GetType() == System::FLOOR || gameObjectVector.at(0)->GetType() == System::WALL))
 			{
 				continue;
 			}
@@ -304,9 +304,9 @@ void Game::RenderGameObjects(int forShaderStage, std::vector<std::vector<GameObj
 			GameObject* lastGameObject = nullptr;
 			RenderObject* lastRenderObject = nullptr;
 			int vertexBufferSize = 0;
-			for (int j = 0; j < i.size(); j++)
+			for (int j = 0; j < gameObjectVector.size(); j++)
 			{
-				GameObject* gameObject = i.at(j);
+				GameObject* gameObject = gameObjectVector[j];
 				RenderObject* renderObject = gameObject->GetRenderObject();
 
 				if ((forShaderStage == Renderer::RenderModule::ShaderStage::GEO_PASS && renderObject->_mesh->_isSkinned)
@@ -531,10 +531,10 @@ int Game::Run()
 					if (run)
 					{
 						Render();
-
+#ifdef _DEBUG
 						string s = to_string(_timer.GetFrameTime()) + " " + to_string(_timer.GetFPS());
 						SetWindowText(_window->GetHWND(), s.c_str());
-
+#endif // DEBUG
 						_timer.Reset();
 					}
 				}

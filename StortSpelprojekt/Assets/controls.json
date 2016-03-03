@@ -31,8 +31,7 @@
     "REDO": [ "Y", "ctrl" ],
     "SAVE": [ "S", "ctrl" ],
     "DELETE_UNIT": [ "delete" ],
-	"REMOVE": ["rightmouse"], 
-    "NEWLEVEL": [ "C" ]
+	"REMOVE": ["rightmouse"]
   },
   "PLAY": {
     "SET_PATROL": [ "rightmouse", "shift" ],

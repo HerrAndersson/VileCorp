@@ -60,6 +60,7 @@ Tilemap::~Tilemap()
 		delete[] _map[i];
 	}
 	delete[] _map;
+	_map = nullptr;
 }
 
 bool Tilemap::AddObjectToTile(AI::Vec2D pos, GameObject * obj)

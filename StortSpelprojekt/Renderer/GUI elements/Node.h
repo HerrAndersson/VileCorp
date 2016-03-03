@@ -85,6 +85,7 @@ namespace GUI
 		void SetColor(UINT32 color);
 		void SetFontSize(float fontSize);
 		void SetTexture(Texture* texture);
+		void SwapTexture(Node* otherNode);
 		void SetColorOffset(const DirectX::XMFLOAT4& colorOffset);
 		void SetAlpha(float alpha);
 		void SetCentered(bool centered);
@@ -105,6 +106,7 @@ namespace GUI
 		bool GetCentered() const;
 		bool GetHidden() const;
 		Node* GetParent() const;
+		DirectX::XMFLOAT2 GetSize() const;
 
 		DirectX::XMMATRIX* Node::GetModelMatrix();
 		std::vector<GUI::Node*>* GetChildren();

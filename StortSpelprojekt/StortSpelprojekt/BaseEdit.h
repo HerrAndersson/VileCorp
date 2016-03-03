@@ -10,6 +10,7 @@
 #include "../PickingDevice.h"
 #include "../System/Camera.h"
 #include "CommonUtils.h"
+#include "Trap.h"
 
 class BaseEdit
 {
@@ -64,7 +65,7 @@ private:
 	void HandleKeyInput();
 
 
-	bool CheckValidity(AI::Vec2D tile, System::Type type);
+	bool CheckValidity(AI::Vec2D tile, GameObject* gameObject);
 	void AddGhostImage();	// Used for Drag&Drop and Click
 	void AddBoxGhostImage(); 	// Used for Drag&Place
 
@@ -89,6 +90,9 @@ public:
 
 	// Returns the blueprint of an deleted game object
 	System::Blueprint* GetDeletedObjectBlueprint();
+
+	//Updates the local tilemap variable. Used when a new level is loaded.
+	void RefreshTileMap();
 
 	void Update();
 };
