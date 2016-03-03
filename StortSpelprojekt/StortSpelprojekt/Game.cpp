@@ -3,7 +3,7 @@
 #include <DirectXMath.h>
 #include <sstream>
 
-Game::Game(HINSTANCE hInstance, int nCmdShow):
+Game::Game(HINSTANCE hInstance, int nCmdShow) :
 	_settingsReader("Assets/settings.xml", "Assets/profile.xml"),
 	_soundModule(_settingsReader.GetSettings(), "Assets/Sounds/", ".ogg")
 {
@@ -14,7 +14,7 @@ Game::Game(HINSTANCE hInstance, int nCmdShow):
 	_window = new System::Window("Vile Corp.", hInstance, settings, WndProc);
 	_timer = System::Timer();
 	_renderModule = new Renderer::RenderModule(_window->GetHWND(), settings);
-	
+
 	_assetManager = new AssetManager(_renderModule->GetDevice());
 	_combinedMeshGenerator = new CombinedMeshGenerator(_renderModule->GetDevice(), _renderModule->GetDeviceContext());
 	_controls = new System::Controls(_window->GetHWND());
@@ -37,7 +37,7 @@ Game::Game(HINSTANCE hInstance, int nCmdShow):
 
 	_enemiesHasSpawned = false;
 
-	_ambientLight = _renderModule->GetAmbientLight();	
+	_ambientLight = _renderModule->GetAmbientLight();
 	ResizeResources(settings);//This fixes a bug which offsets mousepicking, do not touch! //Markus
 	_renderModule->SetAntialiasingEnabled(settings->_antialiasing);
 
@@ -50,17 +50,17 @@ Game::Game(HINSTANCE hInstance, int nCmdShow):
 
 Game::~Game()
 {
-	SAFE_DELETE(_objectHandler);
-	SAFE_DELETE(_window);
-	SAFE_DELETE(_renderModule);
-	SAFE_DELETE(_camera);
-	SAFE_DELETE(_SM);
-	SAFE_DELETE(_controls);
-	SAFE_DELETE(_pickingDevice);
-	SAFE_DELETE(_fontWrapper);
-	SAFE_DELETE(_particleHandler);
-	SAFE_DELETE(_combinedMeshGenerator);
-	SAFE_DELETE(_assetManager);
+	delete _objectHandler;
+	delete _window;
+	delete _renderModule;
+	delete _camera;
+	delete _SM;
+	delete _controls;
+	delete _pickingDevice;
+	delete _fontWrapper;
+	delete _particleHandler;
+	delete _combinedMeshGenerator;
+	delete _assetManager;
 }
 
 void Game::ResizeResources(System::Settings* settings)
@@ -140,14 +140,12 @@ void Game::LoadParticleSystemData(ParticleTextures& particleTextures, ParticleMo
 
 bool Game::Update(double deltaTime)
 {
-	_soundModule.Update(_camera->GetPosition().x, _camera->GetPosition().y, _camera->GetPosition().z);
+	_soundModule.Update(_camera->GetPosition());
 
 	if (_SM->GetState() == PLACEMENTSTATE)
 	{
 		_objectHandler->UpdateLights();
 	}
-
-	bool run = true;
 
 	//Apply settings if they has changed
 	if (_settingsReader.GetSettingsChanged())
@@ -160,7 +158,7 @@ bool Game::Update(double deltaTime)
 	}
 
 	_controls->Update();
-	run = _SM->Update(deltaTime);
+	bool run = _SM->Update(deltaTime);
 
 	if (_controls->IsFunctionKeyDown("DEBUG:REQUEST_PARTICLE"))
 	{
@@ -186,13 +184,13 @@ bool Game::Update(double deltaTime)
 void Game::Render()
 {
 	_renderModule->SetAmbientLight(_ambientLight);
-	_renderModule->BeginScene(0.0f, 0.5f, 0.5f, 1.0f);
+	_renderModule->BeginScene(0.0f, 0.5f, 0.5f, 1.0f, _SM->GetState() == LEVELEDITSTATE);
 	_renderModule->SetDataPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
 
 	/*///////////////////////////////////////////////////////  Geometry pass  ////////////////////////////////////////////////////////////
 	Render the objects to the diffuse and normal resource views. Camera depth is also generated here.									*/
 	std::vector<std::vector<GameObject*>>* gameObjects = _objectHandler->GetGameObjects();
-	
+
 	/*-------------------------------------------------  Render non-skinned objects  ---------------------------------------------------*/
 	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::GEO_PASS);
 	RenderGameObjects(Renderer::RenderModule::ShaderStage::GEO_PASS, gameObjects);
@@ -219,12 +217,12 @@ void Game::Render()
 			_renderModule->RenderLineStrip(&matrix, gr->GetNrOfPoints(), gr->GetColorOffset());
 		}
 	}
-	
+
 	////////////////////////////////////////////////////////////  Light pass  //////////////////////////////////////////////////////////////
 	if (_SM->GetState() == PLAYSTATE || _SM->GetState() == PLACEMENTSTATE)
 	{
 		/*------------------------------------------------------  Spotlights  --------------------------------------------------------------
-		Generate the shadow map for each spotlight, then apply the lighting/shadowing to the render target with additive blending.        */ 
+		Generate the shadow map for each spotlight, then apply the lighting/shadowing to the render target with additive blending.        */
 
 		_renderModule->SetLightDataPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
 
@@ -270,25 +268,28 @@ void Game::RenderGameObjects(int forShaderStage, std::vector<std::vector<GameObj
 {
 	if (forShaderStage == Renderer::RenderModule::ShaderStage::GEO_PASS)
 	{
-		//Render the combined objects
-		std::vector<std::vector<CombinedMesh>>* combinedMeshes = _combinedMeshGenerator->GetCombinedMeshes();
-		for (auto& objVector : *combinedMeshes)
+		if (_SM->GetState() != LEVELEDITSTATE)
 		{
-			for (auto& obj : objVector)
+			//Render the combined objects
+			std::vector<std::vector<CombinedMesh>>* combinedMeshes = _combinedMeshGenerator->GetCombinedMeshes();
+			for (auto& objVector : *combinedMeshes)
 			{
-				XMMATRIX m = XMMatrixIdentity();
-				_renderModule->SetDataPerObjectType(obj._combinedObject);
-				_renderModule->Render(&m, obj._vertexCount);
+				for (auto& obj : objVector)
+				{
+					XMMATRIX m = XMMatrixIdentity();
+					_renderModule->SetDataPerObjectType(obj._combinedObject);
+					_renderModule->Render(&m, obj._vertexCount);
+				}
 			}
-		}
 
-		RenderObject* backgroundObject = _objectHandler->GetBackgroundObject();
-		if (backgroundObject)
-		{
-			_renderModule->SetDataPerObjectType(backgroundObject);
-			int vertexBufferSize = backgroundObject->_mesh->_vertexBufferSize;
-			XMMATRIX m = XMMatrixIdentity();
-			_renderModule->Render(&m, vertexBufferSize);
+			RenderObject* backgroundObject = _objectHandler->GetBackgroundObject();
+			if (backgroundObject)
+			{
+				_renderModule->SetDataPerObjectType(backgroundObject);
+				int vertexBufferSize = backgroundObject->_mesh->_vertexBufferSize;
+				XMMATRIX m = XMMatrixIdentity();
+				_renderModule->Render(&m, vertexBufferSize);
+			}
 		}
 	}
 
@@ -450,7 +451,7 @@ void Game::RenderParticles()
 						XMFLOAT3 emitterPosition = emitter->GetPosition();
 						bool isMarker = (subType == ParticleSubType::QUESTIONMARK_SUBTYPE);
 						if (isMarker)
-						{	
+						{
 							campos = emitterPosition;
 							campos.y += 1.0f;
 						}

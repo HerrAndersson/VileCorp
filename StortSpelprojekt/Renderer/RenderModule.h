@@ -190,7 +190,7 @@ namespace Renderer
 		void SetAmbientLight(const DirectX::XMFLOAT3 &ambientLight);
 		void SetAntialiasingEnabled(bool enabled);
 
-		void BeginScene(float red, float green, float blue, float alpha);
+		void BeginScene(float red, float green, float blue, float alpha, bool clearBackBuffer);
 		void Render(DirectX::XMMATRIX* world, int vertexBufferSize, const DirectX::XMFLOAT3& colorOffset = DirectX::XMFLOAT3(0, 0, 0));
 		void RenderAnimation(DirectX::XMMATRIX* world, int vertexBufferSize, DirectX::XMMATRIX* extra, int bonecount, const DirectX::XMFLOAT3& colorOffset = DirectX::XMFLOAT3(0, 0, 0));
 		void Render(GUI::Node* root, FontWrapper* fontWrapper);

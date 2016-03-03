@@ -11,25 +11,20 @@ namespace Renderer
 		_emitterCount = 0;
 		_textures = textures;
 		_modifiers = modifiers;
-
-		for (int i = 0; i < _emitterCount; i++)
-		{
-			_particleEmitters.push_back(new ParticleEmitter(device, deviceContext, &_modifiers));
-		}
-
 		_requestQueue = new ParticleEventQueue(&_queue);
 	}
 
 	ParticleHandler::~ParticleHandler()
 	{
-		SAFE_DELETE(_requestQueue);
+		delete _requestQueue;
+		_requestQueue = nullptr;
 		_queue.clear();
 		_device = nullptr;
 		_deviceContext = nullptr;
 
 		for (ParticleEmitter* p : _particleEmitters)
 		{
-			SAFE_DELETE(p);
+			delete p;
 		}
 		delete _textures;
 		_particleEmitters.clear();
@@ -184,6 +179,43 @@ namespace Renderer
 				icon = _textures->_iconTextures[ICON_QUESTIONMARK];
 				break;
 			}
+
+			case ParticleSubType::SELECTED_SUBTYPE:
+			{
+				icon = _textures->_iconTextures[ICON_SELECTED];
+				break;
+			}
+
+			case ParticleSubType::PATROL_SUBTYPE:
+			{
+				icon = _textures->_iconTextures[ICON_PATROL];
+				break;
+			}
+
+			case ParticleSubType::HEALTH_SUBTYPE:
+			{
+				icon = _textures->_iconTextures[ICON_HEALTH];
+				break;
+			}
+
+			case ParticleSubType::WRENCH_SUBTYPE:
+			{
+				icon = _textures->_iconTextures[ICON_WRENCH];
+				break;
+			}
+
+			case ParticleSubType::NOPLACEMENT_SUBTYPE:
+			{
+				icon = _textures->_iconTextures[ICON_NOPLACEMENT];
+				break;
+			}
+
+			case ParticleSubType::OCCUPIED_SUBTYPE:
+			{
+				icon = _textures->_iconTextures[ICON_OCCUPIED];
+				break;
+			}
+
 			default:
 			{
 				break;

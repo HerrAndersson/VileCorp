@@ -211,15 +211,15 @@ struct GameObjectInfo
 	GameObjectInfo()
 	{
 		_objects.resize(System::NR_OF_TYPES);
-		_objects[System::FLOOR] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectFloorInfo*>;
-		_objects[System::WALL] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectWallInfo*>;
-		_objects[System::LOOT] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectLootInfo*>;
-		_objects[System::SPAWN] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectSpawnInfo*>;
-		_objects[System::TRAP] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectTrapInfo*>;
-		_objects[System::CAMERA] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectCameraInfo*>;
-		_objects[System::GUARD] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectGuardInfo*>;
-		_objects[System::ENEMY] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectEnemyInfo*>;
-		_objects[System::FURNITURE] = (std::vector<GameObjectBaseInfo*>*)new std::vector<GameObjectFurnitureInfo*>;
+		_objects[System::FLOOR] =		new std::vector<GameObjectBaseInfo*>;
+		_objects[System::WALL] =		new std::vector<GameObjectBaseInfo*>;
+		_objects[System::LOOT] =		new std::vector<GameObjectBaseInfo*>;
+		_objects[System::SPAWN] =		new std::vector<GameObjectBaseInfo*>;
+		_objects[System::TRAP] =		new std::vector<GameObjectBaseInfo*>;
+		_objects[System::CAMERA] =		new std::vector<GameObjectBaseInfo*>;
+		_objects[System::GUARD] =		new std::vector<GameObjectBaseInfo*>;
+		_objects[System::ENEMY] =		new std::vector<GameObjectBaseInfo*>;
+		_objects[System::FURNITURE] =	new std::vector<GameObjectBaseInfo*>;
 	}
 	~GameObjectInfo()
 	{
@@ -237,7 +237,7 @@ struct GameObjectInfo
 	{
 		if (_objects[System::FLOOR]->size() < i + 1)
 		{
-			_objects[System::FLOOR]->push_back((GameObjectBaseInfo*)new GameObjectFloorInfo());
+			_objects[System::FLOOR]->push_back(new GameObjectFloorInfo());
 		}
 		return (GameObjectFloorInfo*)_objects[System::FLOOR]->at(i);
 	}
@@ -245,7 +245,7 @@ struct GameObjectInfo
 	{
 		if (_objects[System::WALL]->size() < i + 1)
 		{
-			_objects[System::WALL]->push_back((GameObjectBaseInfo*)new GameObjectWallInfo());
+			_objects[System::WALL]->push_back(new GameObjectWallInfo());
 		}
 		return (GameObjectWallInfo*)_objects[System::WALL]->at(i);
 	}
@@ -253,7 +253,7 @@ struct GameObjectInfo
 	{
 		if (_objects[System::FURNITURE]->size() < i + 1)
 		{
-			_objects[System::FURNITURE]->push_back((GameObjectBaseInfo*)new GameObjectFurnitureInfo());
+			_objects[System::FURNITURE]->push_back(new GameObjectFurnitureInfo());
 		}
 		return (GameObjectFurnitureInfo*)_objects[System::FURNITURE]->at(i);
 	}
@@ -261,7 +261,7 @@ struct GameObjectInfo
 	{
 		if (_objects[System::LOOT]->size() < i + 1)
 		{
-			_objects[System::LOOT]->push_back((GameObjectBaseInfo*)new GameObjectLootInfo());
+			_objects[System::LOOT]->push_back(new GameObjectLootInfo());
 		}
 		return (GameObjectLootInfo*)_objects[System::LOOT]->at(i);
 	}
@@ -269,7 +269,7 @@ struct GameObjectInfo
 	{
 		if (_objects[System::SPAWN]->size() < i + 1)
 		{
-			_objects[System::SPAWN]->push_back((GameObjectBaseInfo*)new GameObjectSpawnInfo());
+			_objects[System::SPAWN]->push_back(new GameObjectSpawnInfo());
 		}
 		return (GameObjectSpawnInfo*)_objects[System::SPAWN]->at(i);
 	}
@@ -277,7 +277,7 @@ struct GameObjectInfo
 	{
 		if (_objects[System::TRAP]->size() < i + 1)
 		{
-			_objects[System::TRAP]->push_back((GameObjectBaseInfo*)new GameObjectTrapInfo());
+			_objects[System::TRAP]->push_back(new GameObjectTrapInfo());
 		}
 		return (GameObjectTrapInfo*)_objects[System::TRAP]->at(i);
 	}
@@ -285,7 +285,7 @@ struct GameObjectInfo
 	{
 		if (_objects[System::CAMERA]->size() < i + 1)
 		{
-			_objects[System::CAMERA]->push_back((GameObjectBaseInfo*)new GameObjectCameraInfo());
+			_objects[System::CAMERA]->push_back(new GameObjectCameraInfo());
 		}
 		return (GameObjectCameraInfo*)_objects[System::CAMERA]->at(i);
 	}
@@ -293,7 +293,7 @@ struct GameObjectInfo
 	{
 		if (_objects[System::GUARD]->size() < i + 1)
 		{
-			_objects[System::GUARD]->push_back((GameObjectBaseInfo*)new GameObjectGuardInfo());
+			_objects[System::GUARD]->push_back(new GameObjectGuardInfo());
 		}
 		return (GameObjectGuardInfo*)_objects[System::GUARD]->at(i);
 	}
@@ -301,7 +301,7 @@ struct GameObjectInfo
 	{
 		if (_objects[System::ENEMY]->size() < i + 1)
 		{
-			_objects[System::ENEMY]->push_back((GameObjectBaseInfo*)new GameObjectEnemyInfo());
+			_objects[System::ENEMY]->push_back(new GameObjectEnemyInfo());
 		}
 		return (GameObjectEnemyInfo*)_objects[System::ENEMY]->at(i);
 	}

@@ -121,10 +121,7 @@ struct Mesh
 		{
 			_vertexBuffer->Release();
 		}
-		if (_hitbox != nullptr)
-		{
-			delete _hitbox;
-		}
+		delete _hitbox;
 	}
 
 	bool DecrementUsers()
@@ -175,7 +172,7 @@ struct RenderObject
 		}
 		if (_mesh && _mesh->DecrementUsers())
 		{
-			SAFE_DELETE(_mesh);
+			delete _mesh;
 		}
 	}
 
