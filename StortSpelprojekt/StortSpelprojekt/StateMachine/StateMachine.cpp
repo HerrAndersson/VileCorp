@@ -18,6 +18,7 @@ StateMachine::StateMachine(System::Controls* controls,
 	_baseStates.push_back(new MenuState(controls, objectHandler, camera, pickingDevice, "Assets/GUI/menu.json", assetManager, fontWrapper, settingsReader, soundModule));
 	_baseStates.push_back(new PlayState(controls, objectHandler, camera, pickingDevice, "Assets/GUI/play.json", assetManager, fontWrapper, settingsReader, soundModule, ambientLight));
 	_baseStates.push_back(new PlacementState(controls, objectHandler, camera, pickingDevice, "Assets/GUI/placement.json", assetManager, fontWrapper, settingsReader, soundModule, ambientLight));
+	_baseStates.push_back(new TutorialState(controls, objectHandler, camera, pickingDevice, "Assets/GUI/placement.json", assetManager, fontWrapper, settingsReader, soundModule, ambientLight));
 	_baseStates.push_back(new LevelEditState(controls, objectHandler, camera, pickingDevice, System::LEVELEDIT_GUI_PATH, assetManager, fontWrapper, settingsReader, soundModule, ambientLight));
 	_baseStates.push_back(new LevelSelectState(controls, objectHandler, camera, pickingDevice, "Assets/GUI/levelselect.json", assetManager, fontWrapper, settingsReader, soundModule));
 	_baseStates.push_back(new OptionsState(controls, objectHandler, camera, pickingDevice, "Assets/GUI/options.json", assetManager, fontWrapper, settingsReader, soundModule));
