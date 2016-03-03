@@ -88,9 +88,7 @@ namespace System
 
 		if (_initiated)
 		{
-			std::string name = fileName;
-
-			auto it = _allSounds->find(name);
+			auto it = _allSounds->find(fileName);
 			if (it != _allSounds->end())
 			{
 				delete it->second;
@@ -102,14 +100,14 @@ namespace System
 		return answer;
 	}
 
-	void SoundModule::Update(float listenerX, float listenerY, float listenerZ)
+	void SoundModule::Update(const DirectX::XMFLOAT3& position)
 	{
 		if (_initiated)
 		{
 			/*
 			Updates the position of the listener to keep it synced with camera position
 			*/
-			YSE::Listener().setPosition(YSE::Vec(listenerX / OFFSET, listenerY / OFFSET, listenerZ / OFFSET));
+			YSE::Listener().setPosition(YSE::Vec(position.x / OFFSET, position.y / OFFSET, position.z / OFFSET));
 			YSE::System().update();
 		}
 	}
@@ -164,7 +162,6 @@ namespace System
 			{
 				(*_allSounds)[fileName]->stop();
 				answer = (*_allSounds)[fileName]->isStopped();
-				answer = true;
 			}
 		}
 
@@ -214,7 +211,7 @@ namespace System
 		return answer;
 	}
 
-	void SoundModule::SetSoundPosition(const std::string &fileName,float x, float y, float z)
+	void SoundModule::SetSoundPosition(const std::string &fileName, float x, float y, float z)
 	{
 		if (_initiated)
 		{

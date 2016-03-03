@@ -135,14 +135,12 @@ void Game::LoadParticleSystemData(ParticleTextures& particleTextures, ParticleMo
 
 bool Game::Update(double deltaTime)
 {
-	_soundModule.Update(_camera->GetPosition().x, _camera->GetPosition().y, _camera->GetPosition().z);
+	_soundModule.Update(_camera->GetPosition());
 
 	if (_SM->GetState() == PLACEMENTSTATE)
 	{
 		_objectHandler->UpdateLights();
 	}
-
-	bool run = true;
 
 	//Apply settings if they has changed
 	if (_settingsReader.GetSettingsChanged())
@@ -154,7 +152,7 @@ bool Game::Update(double deltaTime)
 	}
 
 	_controls->Update();
-	run = _SM->Update(deltaTime);
+	bool run = _SM->Update(deltaTime);
 
 	if (_controls->IsFunctionKeyDown("DEBUG:REQUEST_PARTICLE"))
 	{

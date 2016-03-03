@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 #include <mmdeviceapi.h>
+#include <DirectXMath.h>
 
 #include "Settings\Settings.h"
 
@@ -49,7 +50,7 @@ namespace System
 		bool AddSound(const std::string &fileName, float volume = 1.0f, float speed = 1.0f, bool relative = true, bool looping = false, bool streaming = false);
 		bool RemoveSound(const std::string &fileName);   //Not needed but good to have
 
-		void Update(float listenerX, float listenerY, float listenerZ);
+		void Update(const DirectX::XMFLOAT3& position);
 		bool Play(const std::string &fileName);
 		bool Pause(const std::string &fileName);
 		bool Stop(const std::string &fileName);
