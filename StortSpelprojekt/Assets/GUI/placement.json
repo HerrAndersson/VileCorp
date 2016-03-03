@@ -31,7 +31,7 @@
 					
 					"GuardCost":
 					{
-						"position" : [0.025, 0.075],
+						"position" : [0.01, 0.075],
 						"scale": [0.09, 0.02],
 						"text": "Cost: 100",
 						"fontsize" : 18.0
@@ -63,7 +63,7 @@
 					
 					"EngineerCost":
 					{
-						"position" : [0.0, 0.075],
+						"position" : [0.01, 0.075],
 						"scale": [0.09, 0.02],
 						"text": "Cost: 100",
 						"fontsize" : 18.0
@@ -95,7 +95,7 @@
 					
 					"CameraCost":
 					{
-						"position" : [0.0, 0.075],
+						"position" : [0.01, 0.075],
 						"scale": [0.09, 0.02],
 						"text": "Cost: 100",
 						"fontsize" : 18.0
@@ -127,7 +127,7 @@
 					
 					"AnvilCost":
 					{
-						"position" : [0.0, 0.075],
+						"position" : [0.01, 0.075],
 						"scale": [0.09, 0.02],
 						"text": "Cost: 100",
 						"fontsize" : 18.0
@@ -159,7 +159,7 @@
 					
 					"BearCost":
 					{
-						"position" : [0.0, 0.075],
+						"position" : [0.01, 0.075],
 						"scale": [0.09, 0.02],
 						"text": "Cost: 100",
 						"fontsize" : 18.0
@@ -191,7 +191,7 @@
 					
 					"SawCost":
 					{
-						"position" : [0.0, 0.075],
+						"position" : [0.01, 0.075],
 						"scale": [0.09, 0.02],
 						"text": "Cost: 100",
 						"fontsize" : 18.0
@@ -223,7 +223,7 @@
 					
 					"MachineGunCost":
 					{
-						"position" : [0.0, 0.075],
+						"position" : [0.01, 0.075],
 						"scale": [0.09, 0.02],
 						"text": "Cost: 100",
 						"fontsize" : 18.0
@@ -255,7 +255,7 @@
 					
 					"FlameThrowerCost":
 					{
-						"position" : [0.0, 0.075],
+						"position" : [0.01, 0.075],
 						"scale": [0.09, 0.02],
 						"text": "Cost: 100",
 						"fontsize" : 18.0
@@ -276,7 +276,7 @@
 				{
 					"position": [ 0.0, -0.173 ],
 					"scale": [ 0.068, 0.083 ],
-					"text": "Water gun: Not Finished\n  80$",
+					"text": "Water gun\n  80$",
 					"color": "FF000000",
 					"fontsize": 18.0,
 					"centered": true
@@ -289,7 +289,7 @@
 					
 					"WaterGunCost":
 					{
-						"position" : [0.0, 0.075],
+						"position" : [0.01, 0.075],
 						"scale": [0.09, 0.02],
 						"text": "Cost: 100",
 						"fontsize" : 18.0
@@ -321,7 +321,7 @@
 					
 					"TeslaCost":
 					{
-						"position" : [0.0, 0.075],
+						"position" : [0.01, 0.075],
 						"scale": [0.09, 0.02],
 						"text": "Cost: 100",
 						"fontsize" : 18.0
@@ -340,7 +340,7 @@
 				{
 					"position": [0.0, -0.173],
 					"scale": [0.068, 0.083],
-					"text": "Spinning Tile\n  150$",
+					"text": "Spin Trap\n  150$",
 					"color": "FF000000",
 					"fontsize": 18.0,
 					"centered": true
@@ -353,7 +353,7 @@
 					
 					"SpinCost":
 					{
-						"position" : [0.0, 0.075],
+						"position" : [0.01, 0.075],
 						"scale": [0.09, 0.02],
 						"text": "Cost: 100",
 						"fontsize" : 18.0
@@ -373,7 +373,7 @@
 				{
 					"position": [0.0, -0.173],
 					"scale": [0.068, 0.083],
-					"text": "Sugar Bomb\n  100$",
+					"text": "Sugar Bomb\n  80$",
 					"color": "FF000000",
 					"fontsize": 18.0,
 					"centered": true
@@ -386,7 +386,7 @@
 					
 					"CakeCost":
 					{
-						"position" : [0.0, 0.075],
+						"position" : [0.01, 0.075],
 						"scale": [0.09, 0.02],
 						"text": "Cost: 100",
 						"fontsize" : 18.0
@@ -405,7 +405,7 @@
 				{
 					"position": [0.0, -0.173],
 					"scale": [0.068, 0.083],
-					"text": "Shark Trap\n  200$",
+					"text": "Shark Trap\n  250$",
 					"color": "FF000000",
 					"fontsize": 18.0,
 					"centered": true
@@ -418,7 +418,7 @@
 					
 					"SharkCost":
 					{
-						"position" : [0.0, 0.075],
+						"position" : [0.01, 0.075],
 						"scale": [0.09, 0.02],
 						"text": "Cost: 100",
 						"fontsize" : 18.0
