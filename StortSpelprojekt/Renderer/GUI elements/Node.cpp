@@ -150,6 +150,13 @@ namespace GUI
 		_texture = texture;
 	}
 
+	void Node::SwapTexture(Node* otherNode)
+	{
+		Texture* temp = _texture;
+		_texture = otherNode->_texture;
+		otherNode->_texture = temp;
+	}
+
 	void Node::SetColorOffset(const DirectX::XMFLOAT4& colorOffset)
 	{
 		_colorOffset = colorOffset;
@@ -237,6 +244,11 @@ namespace GUI
 	Node* Node::GetParent() const
 	{
 		return _parent;
+	}
+
+	DirectX::XMFLOAT2 Node::GetSize() const
+	{
+		return { _scale.x * _info->_windowWidth, _scale.y * _info->_windowHeight };
 	}
 
 	DirectX::XMMATRIX* Node::GetModelMatrix()

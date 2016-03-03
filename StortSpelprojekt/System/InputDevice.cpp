@@ -249,6 +249,12 @@ namespace System
 	{
 		if (_isTextInputMode)
 		{
+			bool overCharacterLimit = false;
+			if (_currentText.size() >= _characterLimit)
+			{
+				overCharacterLimit = true;
+			}
+
 			switch (wparam)
 			{
 			case 0x08: //Process a backspace
@@ -275,7 +281,10 @@ namespace System
 				}
 				else
 				{
-					_currentText += wparam;
+					if (!overCharacterLimit)
+					{
+						_currentText += wparam;
+					}
 				}
 				break;
 			}
@@ -287,15 +296,26 @@ namespace System
 				}
 				else
 				{
-					_currentText += wparam;
+					if (!overCharacterLimit)
+					{
+						_currentText += wparam;
+					}
 				}
 				break;
 			}
 			default: //Process displayable characters
 			{
+
 				if (iswprint(wparam))
 				{
-					_currentText += wparam;
+					if (wparam <= 0x39 && wparam >= 0x30 || _onlyNumbers== false)
+					{
+						
+						if (!overCharacterLimit)
+						{
+							_currentText += wparam;
+						}
+					}
 				}
 				break;
 			}
@@ -371,13 +391,15 @@ namespace System
 		return _currentText;
 	}
 
-	void InputDevice::SetIsTextInputMode(std::wstring currentText, bool breakOnEsc, bool breakOnCarriageReturn, bool breakOnTab)
+	void InputDevice::SetIsTextInputMode(std::wstring currentText, bool breakOnEsc, bool breakOnCarriageReturn, bool breakOnTab, int characterLimit, bool onlyNumbers)
 	{
 		_isTextInputMode = true;
 		_currentText = currentText;
 		_breakOnEsc = breakOnEsc;
 		_breakOnCarriageReturn = breakOnCarriageReturn;
 		_breakOnTab = breakOnTab;
+		_characterLimit = characterLimit;
+		_onlyNumbers = onlyNumbers;
 	}
 	void InputDevice::ResetTextInputMode()
 	{

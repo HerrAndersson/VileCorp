@@ -52,6 +52,7 @@ public:
 	~Blueprints();
 
 	std::vector<System::Blueprint>* GetBlueprints();
+	std::vector<std::vector<System::Blueprint*>>* GetBlueprintsOrderedByType();
 	System::Blueprint* GetBlueprintByName(std::string name);
 	System::Blueprint* GetBlueprintByType(int type, int subType = 0);
 

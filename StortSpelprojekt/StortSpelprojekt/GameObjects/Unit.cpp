@@ -386,7 +386,6 @@ void Unit::SwitchingNode()
 	//}
 	if (_status == StatusEffect::CONFUSED)
 	{
-		srand((int)time(NULL));
 		int randDir = rand() % 8;
 		_direction = AI::NEIGHBOUR_OFFSETS[randDir];
 		_nextTile = _tilePosition + _direction;
