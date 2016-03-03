@@ -27,6 +27,7 @@ private:
 	float _time;
 	bool _light;
 	bool _objectPlaced;
+	GUI::Node* _currentButton;			//The button the tutorial allows you to click
 
 	void ChangeTutorialStages(bool forward = true);
 	void PlacementGuideCheck(std::string nodeName, System::Type type, int subType = 0);
@@ -39,5 +40,6 @@ public:
 	void OnStateEnter();
 	void ResetUiTree();
 	bool IsTutorialCompleted()const;
+	void HandleButtons();
 };
 

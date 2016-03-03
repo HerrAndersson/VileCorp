@@ -443,7 +443,7 @@
 			"": {
 				"position": [0, -0.15],
 				"scale": [0.15, 0.6],
-				"text": "Click and drag a guard\nto a position of your choice!",
+				"text": "Click on the guard and\nmove it to a position of your choice!",
 				"color": "FF000000",
 				"centered": true,
 				"fontsize": 20.0
@@ -477,7 +477,7 @@
 			"": {
 				"position": [0, -0.15],
 				"scale": [0.15, 0.6],
-				"text": "Click and drag an anvil\nto a position of your choice!",
+				"text": "Click on the anvil and\nmove it to a position of your choice!",
 				"color": "FF000000",
 				"centered": true,
 				"fontsize": 20.0
@@ -511,7 +511,7 @@
 			"": {
 				"position": [0, -0.15],
 				"scale": [0.15, 0.6],
-				"text": "Click and drag a Tesla Coil Trap\nto a position of your choice!",
+				"text": "Click on the Tesla Coil Trap and\nmove it to a position of your choice!",
 				"color": "FF000000",
 				"centered": true,
 				"fontsize": 20.0
@@ -545,18 +545,10 @@
 			"": {
 				"position": [0, -0.15],
 				"scale": [0.15, 0.6],
-				"text": "Click and drag the security camera\nto a position of your choice!\nYou can also rotate objects like these with R and T.",
+				"text": "Click on the security camera and\nmove it to a position of your choice!\nYou can also rotate objects like these with R and T.",
 				"color": "FF000000",
 				"centered": true,
 				"fontsize": 20.0
-			},
-			"": {
-				"position": [0, -1],
-				"scale": [0.2, 0.6],
-				"text": "Press Enter to Continue.",
-				"color": "FF000000",
-				"centered": true,
-				"fontsize": 24.0
 			}
 		},
 		"budgetexplained": {

@@ -44,6 +44,6 @@ public:
 	virtual void OnStateExit();
 
 	void HandleInput();
-	void HandleButtons();
+	virtual void HandleButtons();
 };
 

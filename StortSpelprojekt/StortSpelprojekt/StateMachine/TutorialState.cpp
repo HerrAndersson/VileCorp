@@ -9,14 +9,19 @@ void TutorialState::ChangeTutorialStages(bool forward/* = true*/)
 
 void TutorialState::PlacementGuideCheck(std::string nodeName, System::Type type, int subType /*= 0*/)
 {
+	if (_currentButton == nullptr)
+	{
+		_currentButton = _uiTree.GetNode(nodeName);
+	}
+
 	//Blink button
 	if (_light)
 	{
-		_uiTree.GetNode(nodeName)->SetColorOffset(DirectX::XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f));
+		_currentButton->SetColorOffset(DirectX::XMFLOAT4(0.6f, 0.6f, 0.0f, 1.0f));
 	}
 	else
 	{
-		_uiTree.GetNode(nodeName)->SetColorOffset(DirectX::XMFLOAT4(0, 0, 0, 1.0f));
+		_currentButton->SetColorOffset(DirectX::XMFLOAT4(0, 0, 0, 1.0f));
 	}
 
 	//TODO: Add inputhandling to only accept the correct button --Victor / Zache
@@ -29,11 +34,10 @@ void TutorialState::PlacementGuideCheck(std::string nodeName, System::Type type,
 	{
 		ChangeTutorialStages();
 		_objectPlaced = false;
+		_currentButton = nullptr;
 		_uiTree.GetNode(nodeName)->SetColorOffset(DirectX::XMFLOAT4(0, 0, 0, 1.0f));
-
+		_baseEdit->RemoveGhostImage();
 	}
-
-
 }
 
 TutorialState::TutorialState(System::Controls * controls, ObjectHandler * objectHandler, System::Camera * camera, PickingDevice * pickingDevice, const std::string & filename, AssetManager * assetManager, FontWrapper * fontWrapper, 
@@ -43,8 +47,9 @@ TutorialState::TutorialState(System::Controls * controls, ObjectHandler * object
 	_sCameraPlaced = false;
 	_tutorialCompleted = false;
 	_time = 0;
-	_light = false;
+	_light = true;
 	_objectPlaced = false;
+	_currentButton = nullptr;
 	ResetUiTree();
 }
 
@@ -57,6 +62,13 @@ TutorialState::~TutorialState()
 
 void TutorialState::Update(float deltaTime)
 {
+	_time += deltaTime;
+	//icon blink speed
+	if (_time > 800)
+	{
+		_time = 0;
+		_light = !_light;
+	}
 	PlacementState::Update(deltaTime);
 	System::MouseCoord coord = _controls->GetMouseCoord();
 
@@ -143,4 +155,27 @@ void TutorialState::ResetUiTree()
 bool TutorialState::IsTutorialCompleted() const
 {
 	return _tutorialCompleted;
+}
+
+void TutorialState::HandleButtons()
+{
+	if (_controls->IsFunctionKeyDown("MOUSE:SELECT") && _currentButton != nullptr)
+	{
+		bool create = false;
+		System::MouseCoord coord = _controls->GetMouseCoord();
+
+		if (_uiTree.IsButtonColliding(_currentButton, coord._pos.x, coord._pos.y))
+		{
+			GUI::BlueprintNode* currentBlueprintButton = static_cast<GUI::BlueprintNode*>(_currentButton);
+			_toPlace._sB._blueprint = _objectHandler->GetBlueprintByType(currentBlueprintButton->GetType(), currentBlueprintButton->GetSubType());
+			_toPlace._sB._textureId = currentBlueprintButton->GetTextureId();
+			create = true;
+		}
+		if (create)
+		{
+			EvaluateGoldCost();
+			_baseEdit->HandleBlueprint(&_toPlace._sB);
+			_toPlace._blueprintID = _baseEdit->GetCreatedObject()->GetID();
+		}
+	}
 }
