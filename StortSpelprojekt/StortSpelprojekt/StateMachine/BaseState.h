@@ -8,7 +8,6 @@
 #include "../PickingDevice.h"
 #include "../UITree.h"
 #include "../../System/SettingsReader.h"
-#include "../TutorialLogic.h"
 #include "GUI elements/HighlightNode.h"
 
 
@@ -19,7 +18,6 @@ private:
 	static State _oldState; //To make us able to return from pause state back to correct state.
 
 protected:
-	static TutorialState	_tutorialState;
 	System::Controls*		_controls;
 	ObjectHandler*			_objectHandler;
 	AssetManager*			_assetManager;

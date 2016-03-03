@@ -49,6 +49,7 @@
     <ClCompile Include="StateMachine\SplashState.cpp" />
     <ClCompile Include="StateMachine\StateMachine.cpp" />
     <ClCompile Include="Tilemap.cpp" />
+    <ClCompile Include="StateMachine\TutorialState.cpp" />
     <ClCompile Include="UITree.cpp" />
     <ClCompile Include="VisionCone.cpp" />
   </ItemGroup>
@@ -86,6 +87,7 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Tilemap.h" />
     <ClInclude Include="ToPlace.h" />
+    <ClInclude Include="StateMachine\TutorialState.h" />
     <ClInclude Include="UITree.h" />
     <ClInclude Include="VisionCone.h" />
   </ItemGroup>
