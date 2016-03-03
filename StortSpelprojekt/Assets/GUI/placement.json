@@ -11,7 +11,7 @@
 			"Guard": {
 				"position": [-0.18, 0.057],
 				"scale": [0.048, 0.083],
-				"texture": "../Menues/PlacementStateGUI/units/Guardbutton1.png",
+				"texture": "../Menues/LevelEdit/Units/MaleGuardButton.png",
 				"type" : 6,
 				"subType": 0,
 				"textureId" : 0,
@@ -42,7 +42,7 @@
 			{
 				"position": [-0.06, 0.057],
 				"scale": [0.048, 0.083],
-				"texture": "../Menues/PlacementStateGUI/units/Guardbutton1.png",
+				"texture": "../Menues/LevelEdit/Units/femaleEngineerButton.png",
 				"type" : 6,
 				"subType": 1,
 				"textureId" : 0,

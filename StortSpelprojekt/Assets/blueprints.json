@@ -235,7 +235,7 @@
 				"../Menues/PlacementStateGUI/units/Gunbutton1"
 			]
 		}, {
-			"_mesh": "JuliaBear-27.bin",
+			"_mesh": "bearTrap-29.bin",
 			"_name": "Bear Trap",
 			"_type": 4,
 			"_subType": 6,
@@ -349,7 +349,7 @@
 			"_subType": 1,
 			"_tooltip": "SampleText",
 			"_textures": [
-				"basewomancolors"
+				"engineer1"
 			],
 			"_thumbnails": [
 				"basewomancolors"
