@@ -63,8 +63,12 @@ private:
 
 	void LoadParticleSystemData(ParticleTextures& particleTextures, ParticleModifierOffsets& modifiers);
 
-	bool tempTestCombinedStuff = false;
-	bool tempAlreadyCombined = false;
+
+
+
+
+
+	std::vector<Renderer::Spotlight*> spotlights;
 
 public:
 

@@ -6,6 +6,7 @@
 #include <cereal\archives\json.hpp>
 #include <cereal\types\string.hpp>
 #include <cereal\types\vector.hpp>
+#include "../RenderUtils.h"
 
 //Has to be set in the BillboardingPS shader aswell. The array there has to be of hard-coded length, 
 //so "dynamic" number of textures is not possible if more than the hard-coded number
@@ -16,8 +17,13 @@ static const int ICON_TEXTURE_COUNT = 5;
 enum ParticleType { SPLASH, SMOKE, ELECTRICITY, FIRE, MUZZLE_FLASH, ICON, STATIC_ICON };
 
 //Determines how it looks
-enum ParticleSubType { BLOOD_SUBTYPE, WATER_SUBTYPE, SPARK_SUBTYPE, SMOKE_SUBTYPE, FIRE_SUBTYPE, MUZZLE_FLASH_SUBTYPE, EXCLAMATIONMARK_SUBTYPE, QUESTIONMARK_SUBTYPE, WRENCH_SUBTYPE, NO_PLACEMENT_SUBTYPE, OCCUPIED_SUBTYPE }; //Icons have to be last
-enum ParticleIconType { ICON_EXCLAMATIONMARK, ICON_QUESTIONMARK, ICON_WRENCH, ICON_NOPLACMENT, ICON_OCCUPIED }; //Used for loading and using icon textures
+enum ParticleSubType { BLOOD_SUBTYPE, WATER_SUBTYPE, SPARK_SUBTYPE, SMOKE_SUBTYPE, FIRE_SUBTYPE, MUZZLE_FLASH_SUBTYPE, EXCLAMATIONMARK_SUBTYPE, QUESTIONMARK_SUBTYPE, SELECTED_SUBTYPE, PATROL_SUBTYPE, HEALTH_SUBTYPE, WRENCH_SUBTYPE, NOPLACEMENT_SUBTYPE, OCCUPIED_SUBTYPE}; //Icons have to be last
+enum ParticleIconType { ICON_EXCLAMATIONMARK, ICON_QUESTIONMARK, ICON_SELECTED, ICON_PATROL, ICON_HEALTH, ICON_WRENCH, ICON_NOPLACEMENT, ICON_OCCUPIED }; //Used for loading and using icon textures
+
+//Has to be set in the BillboardingPS shader as well. The array there has to be of hard-coded length, 
+//so "dynamic" number of textures is not possible if more than the hard-coded number
+static const int PARTICLE_TEXTURE_COUNT = 4;
+static const int ICON_TEXTURE_COUNT = 8;
 
 struct ParticleMessage
 {
@@ -104,11 +110,29 @@ struct ParticleTextures
 			_smokeTextures[i] = nullptr;
 			_sparkTextures[i] = nullptr;
 			_fireTextures[i] = nullptr;
+			_muzzleFlashTextures[i] = nullptr;
 		}
 
 		for (int i = 0; i < ICON_TEXTURE_COUNT; i++)
 		{
 			_iconTextures[i] = nullptr;
+		}
+	}
+	~ParticleTextures()
+	{
+		for (int i = 0; i < PARTICLE_TEXTURE_COUNT; i++)
+		{
+			SAFE_RELEASE(_bloodTextures[i]);
+			SAFE_RELEASE(_waterTextures[i]);
+			SAFE_RELEASE(_smokeTextures[i]);
+			SAFE_RELEASE(_sparkTextures[i]);
+			SAFE_RELEASE(_fireTextures[i]);
+			SAFE_RELEASE(_muzzleFlashTextures[i]);
+		}
+
+		for (int i = 0; i < ICON_TEXTURE_COUNT; i++)
+		{
+			SAFE_RELEASE(_iconTextures[i]);
 		}
 	}
 };

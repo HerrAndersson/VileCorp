@@ -1,17 +1,7 @@
 #include "Guard.h"
 
-Guard::Guard()
-	: Unit()
-{
-	_health = 100;
-	_baseDamage = 30;
-
-	_isSelected = false;
-	_currentPatrolGoal = -1;
-}
-
-Guard::Guard(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject * renderObject, System::SoundModule* soundModule, const Tilemap * tileMap, int guardType)
-	: Unit(ID, position, rotation, tilePosition, type, renderObject, soundModule, tileMap)
+Guard::Guard(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject * renderObject, System::SoundModule* soundModule, const Tilemap * tileMap, int guardType, AI::Vec2D direction)
+	: Unit(ID, position, rotation, tilePosition, type, renderObject, soundModule, tileMap, direction)
 {
 	_subType = guardType;
 	_isSelected = false;
@@ -160,7 +150,10 @@ void Guard::Update(float deltaTime)
 			break;
 		case MoveState::MOVING:
 			Moving();
-			Animate(WALKANIM);
+			if (_moveState == MoveState::MOVING)
+			{
+				Animate(WALKANIM);
+			}
 			break;
 		case MoveState::SWITCHING_NODE:
 			SwitchingNode();

@@ -1,20 +1,22 @@
-#include"Animation.h"
+#include "Animation.h"
 
 Animation::Animation(Skeleton* skeleton, bool firstFrame, bool frozen)
 {
 	_skeleton = skeleton;
 	_boneCount = _skeleton->_parents.size();
-	toRootTransforms = (XMMATRIX*)_aligned_malloc(sizeof(XMMATRIX) * _boneCount, 16);
-	toParentTransforms = (XMMATRIX*)_aligned_malloc(sizeof(XMMATRIX) * _boneCount, 16);
-	finalTransforms = (XMMATRIX*)_aligned_malloc(sizeof(XMMATRIX) * _boneCount, 16);
-	finalFloats.resize(_boneCount);
+
+	_toRootTransforms.resize(_boneCount);
+	_toParentTransforms.resize(_boneCount);
+	_finalTransforms.resize(_boneCount);
 
 	_animTime = 0.0f;
 	_currentAction = -1;
 	_currentCycle = 0;
 	_inactive = false;
-	_lastFrame = false;
+	_lastFrame = 0;
 	_isFinished = true;
+	_time = 0.0f;
+	_lastFrameRender = false;
 
 	if (firstFrame)
 	{
@@ -26,21 +28,22 @@ Animation::Animation(Skeleton* skeleton, bool firstFrame, bool frozen)
 	{
 		for (unsigned i = 0; i < _boneCount; i++)
 		{
-			finalTransforms[i] = XMMatrixIdentity();
-			XMStoreFloat4x4(&finalFloats[i], XMMatrixIdentity());
+			_finalTransforms[i] = XMMatrixIdentity();
 		}
 	}
-	for (int i = 0; i < _skeleton->_actions.size(); i++)
+	unsigned int actionsSize = _skeleton->_actions.size();
+	_length.resize(actionsSize);
+
+	for (unsigned i = 0; i < actionsSize; i++)
 	{
-		_length.push_back(int());
 		float maxTime = 0.0f;
-		for (int j = 0; j < _boneCount; j++)
+		for (unsigned j = 0; j < _boneCount; j++)
 		{
-			for (int k = 0; k < _skeleton->_actions[i]._bones[j]._frameTime.size(); k++)
+			for (auto k: _skeleton->_actions[i]._bones[j]._frameTime)
 			{
-				if (_skeleton->_actions[i]._bones[j]._frameTime[k] > maxTime)
+				if (k > maxTime)
 				{
-					_length[i] = _skeleton->_actions[i]._bones[j]._frameTime[k] * 60;
+					_length[i] = static_cast<int>(k * 60.0f);
 				}
 			}
 		}
@@ -51,9 +54,7 @@ Animation::Animation(Skeleton* skeleton, bool firstFrame, bool frozen)
 
 Animation::~Animation()
 {
-	_aligned_free(toRootTransforms);
-	_aligned_free(toParentTransforms);
-	_aligned_free(finalTransforms);
+
 }
 
 void Animation::Update(float time)
@@ -86,7 +87,7 @@ void Animation::Update(float time)
 		{
 			for (unsigned i = 0; i < _boneCount; i++)
 			{
-				toParentTransforms[i] = Interpolate(i, _currentAction);
+				_toParentTransforms[i] = Interpolate(i, _currentAction);
 			}
 		}
 	}
@@ -98,34 +99,29 @@ void Animation::Update(float time)
 		}
 		for (unsigned i = 0; i < _boneCount; i++)
 		{
-			toParentTransforms[i] = Interpolate(i, _currentCycle);
+			_toParentTransforms[i] = Interpolate(i, _currentCycle);
 		}
 	}
 
-	toRootTransforms[0] = toParentTransforms[0];
+	_toRootTransforms[0] = _toParentTransforms[0];
 
 	for (unsigned i = 1; i < _boneCount; i++)
 	{
 		// Current bone transform relative to its parent
-		toRootTransforms[i] = toParentTransforms[i] * toRootTransforms[_skeleton->_parents[i]];
+		_toRootTransforms[i] = _toParentTransforms[i] * _toRootTransforms[_skeleton->_parents[i]];
 	}
 
 	for (unsigned i = 0; i < _boneCount; i++)
 	{
-		finalTransforms[i] = XMMatrixTranspose(_skeleton->_bindposes[i] * toRootTransforms[i]);
-		XMStoreFloat4x4(&finalFloats[i], finalTransforms[i]);
+		_finalTransforms[i] = XMMatrixTranspose(_skeleton->_bindposes[i] * _toRootTransforms[i]);
 	}
 }
 
 XMMATRIX* Animation::GetTransforms()
 {
-	return finalTransforms;
+	return _finalTransforms.data();
 }
 
-std::vector<XMFLOAT4X4>* Animation::GetFloats()
-{
-	return &finalFloats;
-}
 int Animation::GetBoneCount() const
 {
 	return _boneCount;
@@ -145,7 +141,7 @@ void Animation::Freeze(bool freeze)
 	_frozen = freeze;
 }
 
-void Animation::PlayAction(int action, bool freeze, bool lastFrame)
+void Animation::PlayAction(int action, bool freeze, bool lastFrame, bool reset)
 {
 	_frozen = false;
 	_animTime = 0.0f;
@@ -154,6 +150,10 @@ void Animation::PlayAction(int action, bool freeze, bool lastFrame)
 	if (freeze)
 	{
 		_inactive = true;
+	}
+	if (reset)
+	{
+		_animTime = 0.0f;
 	}
 	_lastFrameRender = lastFrame;
 }
@@ -165,8 +165,7 @@ bool Animation::GetisFinished()
 
 float Animation::GetLength(int animation)
 {
-	int test = _length[animation];
-	return test;
+	return static_cast<float>(_length[animation]);
 }
 
 XMMATRIX Animation::Interpolate(unsigned boneID, int action)
@@ -201,23 +200,6 @@ XMMATRIX Animation::Interpolate(unsigned boneID, int action)
 			if (_animTime >= _currTime && _animTime <= _nextTime)
 			{
 				_lerpPercent = (_animTime - _currTime) / (_nextTime - _currTime);
-				/*
-				XMVECTOR s0 = boneptr->_frames[i]._scale;
-				XMVECTOR s1 = boneptr->_frames[i + 1]._scale;
-
-				XMVECTOR p0 = boneptr->_frames[i]._translation;
-				XMVECTOR p1 = boneptr->_frames[i + 1]._translation;
-
-				XMVECTOR q0 = boneptr->_frames[i]._rotation;
-				XMVECTOR q1 = boneptr->_frames[i + 1]._rotation;
-
-				XMVECTOR s = XMVectorLerp(s0, s1, _lerpPercent);
-				XMVECTOR p = XMVectorLerp(p0, p1, _lerpPercent);
-				XMVECTOR q = XMQuaternionSlerp(q0, q1, _lerpPercent);
-
-				matrix = XMMatrixAffineTransformation(s, _zeroVector, q, p);
-				*/
-
 				matrix = XMMatrixAffineTransformation(XMVectorLerp(boneptr->_frames[i]._scale, boneptr->_frames[i + 1]._scale, _lerpPercent),
 					_zeroVector,
 					XMQuaternionSlerp(boneptr->_frames[i]._rotation, boneptr->_frames[i + 1]._rotation, _lerpPercent),

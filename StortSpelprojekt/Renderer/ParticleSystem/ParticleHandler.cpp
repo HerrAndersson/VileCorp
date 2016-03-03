@@ -4,33 +4,29 @@
 namespace Renderer
 {
 
-	ParticleHandler::ParticleHandler(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const ParticleTextures& textures, const ParticleModifierOffsets& modifiers)
+	ParticleHandler::ParticleHandler(ID3D11Device* device, ID3D11DeviceContext* deviceContext, ParticleTextures* textures, const ParticleModifierOffsets& modifiers)
 	{
 		_device = device;
 		_deviceContext = deviceContext;
 		_emitterCount = 0;
 		_textures = textures;
 		_modifiers = modifiers;
-
-		for (int i = 0; i < _emitterCount; i++)
-		{
-			_particleEmitters.push_back(new ParticleEmitter(device, deviceContext, &_modifiers));
-		}
-
 		_requestQueue = new ParticleEventQueue(&_queue);
 	}
 
 	ParticleHandler::~ParticleHandler()
 	{
-		SAFE_DELETE(_requestQueue);
+		delete _requestQueue;
+		_requestQueue = nullptr;
 		_queue.clear();
 		_device = nullptr;
 		_deviceContext = nullptr;
 
 		for (ParticleEmitter* p : _particleEmitters)
 		{
-			SAFE_DELETE(p);
+			delete p;
 		}
+		delete _textures;
 		_particleEmitters.clear();
 	}
 
@@ -125,37 +121,37 @@ namespace Renderer
 			case ParticleSubType::BLOOD_SUBTYPE:
 			{
 				count = PARTICLE_TEXTURE_COUNT;
-				textures = _textures._bloodTextures;
+				textures = _textures->_bloodTextures;
 				break;
 			}
 			case ParticleSubType::WATER_SUBTYPE:
 			{
 				count = PARTICLE_TEXTURE_COUNT;
-				textures = _textures._waterTextures;
+				textures = _textures->_waterTextures;
 				break;
 			}
 			case ParticleSubType::SPARK_SUBTYPE:
 			{
 				count = PARTICLE_TEXTURE_COUNT;
-				textures = _textures._sparkTextures;
+				textures = _textures->_sparkTextures;
 				break;
 			}
 			case ParticleSubType::SMOKE_SUBTYPE:
 			{
 				count = PARTICLE_TEXTURE_COUNT;
-				textures = _textures._smokeTextures;
+				textures = _textures->_smokeTextures;
 				break;
 			}
 			case ParticleSubType::FIRE_SUBTYPE:
 			{
 				count = PARTICLE_TEXTURE_COUNT;
-				textures = _textures._fireTextures;
+				textures = _textures->_fireTextures;
 				break;
 			}
 			case ParticleSubType::MUZZLE_FLASH_SUBTYPE:
 			{
 				count = PARTICLE_TEXTURE_COUNT;
-				textures = _textures._muzzleFlashTextures;
+				textures = _textures->_muzzleFlashTextures;
 				break;
 			}
 			default:
@@ -174,13 +170,13 @@ namespace Renderer
 		{
 			case ParticleSubType::EXCLAMATIONMARK_SUBTYPE:
 			{
-				icon = _textures._iconTextures[ICON_EXCLAMATIONMARK];
+				icon = _textures->_iconTextures[ICON_EXCLAMATIONMARK];
 				break;
 			}
 
 			case ParticleSubType::QUESTIONMARK_SUBTYPE:
 			{
-				icon = _textures._iconTextures[ICON_QUESTIONMARK];
+				icon = _textures->_iconTextures[ICON_QUESTIONMARK];
 				break;
 			}
 			case ParticleSubType::WRENCH_SUBTYPE:
@@ -198,6 +194,43 @@ namespace Renderer
 				icon = _textures._iconTextures[ICON_OCCUPIED];
 				break;
 			}
+
+			case ParticleSubType::SELECTED_SUBTYPE:
+			{
+				icon = _textures->_iconTextures[ICON_SELECTED];
+				break;
+			}
+
+			case ParticleSubType::PATROL_SUBTYPE:
+			{
+				icon = _textures->_iconTextures[ICON_PATROL];
+				break;
+			}
+
+			case ParticleSubType::HEALTH_SUBTYPE:
+			{
+				icon = _textures->_iconTextures[ICON_HEALTH];
+				break;
+			}
+
+			case ParticleSubType::WRENCH_SUBTYPE:
+			{
+				icon = _textures->_iconTextures[ICON_WRENCH];
+				break;
+			}
+
+			case ParticleSubType::NOPLACEMENT_SUBTYPE:
+			{
+				icon = _textures->_iconTextures[ICON_NOPLACEMENT];
+				break;
+			}
+
+			case ParticleSubType::OCCUPIED_SUBTYPE:
+			{
+				icon = _textures->_iconTextures[ICON_OCCUPIED];
+				break;
+			}
+
 			default:
 			{
 				break;

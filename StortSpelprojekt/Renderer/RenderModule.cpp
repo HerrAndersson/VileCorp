@@ -10,6 +10,7 @@ namespace Renderer
 		_d3d = new DirectXHandler(hwnd, settings);
 		_settings = settings;
 		_shaderHandler = new ShaderHandler(_d3d->GetDevice());
+		_antialiasingEnabled = 0;
 
 		InitializeScreenQuadBuffer();
 		InitializeConstantBuffers();
@@ -19,19 +20,19 @@ namespace Renderer
 
 	RenderModule::~RenderModule()
 	{
-		SAFE_DELETE(_d3d);
-		SAFE_DELETE(_shaderHandler);
-		SAFE_DELETE(_shadowMap);
+		delete _d3d;
+		delete _shaderHandler;
+		delete _shadowMap;
 
-		SAFE_RELEASE(_screenQuad);
-		SAFE_RELEASE(_matrixBufferPerObject);
-		SAFE_RELEASE(_matrixBufferPerSkinnedObject);
-		SAFE_RELEASE(_matrixBufferPerFrame);
-		SAFE_RELEASE(_matrixBufferHUD);
-		SAFE_RELEASE(_matrixBufferLightPassPerFrame);
-		SAFE_RELEASE(_matrixBufferLightPassPerSpotlight);
-		SAFE_RELEASE(_matrixBufferLightPassPerPointlight);
-		SAFE_RELEASE(_matrixBufferParticles);
+		_screenQuad->Release();
+		_matrixBufferPerObject->Release();
+		_matrixBufferPerSkinnedObject->Release();
+		_matrixBufferPerFrame->Release();
+		_matrixBufferHUD->Release();
+		_matrixBufferLightPassPerFrame->Release();
+		_matrixBufferLightPassPerSpotlight->Release();
+		_matrixBufferLightPassPerPointlight->Release();
+		_matrixBufferParticles->Release();
 	}
 
 	void RenderModule::InitializeScreenQuadBuffer()
@@ -162,7 +163,7 @@ namespace Renderer
 		deviceContext->VSSetConstantBuffers(0, 1, &_matrixBufferPerFrame);
 	}
 
-	void RenderModule::SetDataPerSkinnedObject(XMMATRIX* world, std::vector<DirectX::XMFLOAT4X4>* extra, const DirectX::XMFLOAT3& colorOffset)
+	void RenderModule::SetDataPerSkinnedObject(XMMATRIX* world, DirectX::XMMATRIX* extra, int bonecount, const DirectX::XMFLOAT3& colorOffset)
 	{
 		HRESULT result;
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -180,7 +181,7 @@ namespace Renderer
 
 		MatrixBufferPerSkinnedObject* dataPtr = static_cast<MatrixBufferPerSkinnedObject*>(mappedResource.pData);
 
-		memcpy(&dataPtr->_bones, extra->data(), sizeof(DirectX::XMFLOAT4X4) * extra->size());
+		memcpy(&dataPtr->_bones, extra, sizeof(DirectX::XMMATRIX) * bonecount);
 		
 		deviceContext->Unmap(_matrixBufferPerSkinnedObject, 0);
 
@@ -271,7 +272,6 @@ namespace Renderer
 		{
 			deviceContext->PSSetShaderResources(0, textureCount, textures);
 		}
-
 	}
 
 	void RenderModule::SetDataPerMesh(ID3D11Buffer* vertexBuffer, int vertexSize)
@@ -312,7 +312,7 @@ namespace Renderer
 		SetDataPerMesh(renderObject->_mesh->_vertexBuffer, vertexSize);
 	}
 
-	void RenderModule::RenderShadowMap(DirectX::XMMATRIX* world, int vertexBufferSize, std::vector<DirectX::XMFLOAT4X4>* animTransformData)
+	void RenderModule::RenderShadowMap(DirectX::XMMATRIX* world, int vertexBufferSize, DirectX::XMMATRIX* animTransformData, int bonecount)
 	{
 		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
 
@@ -330,7 +330,7 @@ namespace Renderer
 			}
 
 			MatrixBufferPerSkinnedObject* dataPtr = static_cast<MatrixBufferPerSkinnedObject*>(mappedResource.pData);
-			memcpy(&dataPtr->_bones, animTransformData->data(), sizeof(DirectX::XMFLOAT4X4) * animTransformData->size());
+			memcpy(&dataPtr->_bones, animTransformData, sizeof(DirectX::XMFLOAT4X4) * bonecount);
 			deviceContext->Unmap(_matrixBufferPerSkinnedObject, 0);
 			deviceContext->VSSetConstantBuffers(5, 1, &_matrixBufferPerSkinnedObject);
 		}
@@ -448,7 +448,6 @@ namespace Renderer
 		}
 		case ANIM_SHADOW_GENERATION:
 		{
-			//Topology has to be set here because GRID_STAGE, which is the previous stage, will change to LINELIST
 			deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 			_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::DISABLE);
 			_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::FRONT);
@@ -459,7 +458,8 @@ namespace Renderer
 		}
 		case GEO_PASS:
 		{
-			//_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::WIREFRAME);
+			_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::DISABLE);
+			_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::BACK);
 			deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 			_d3d->SetGeometryStage();
 			_shaderHandler->SetGeometryStageShaders(deviceContext);
@@ -473,7 +473,7 @@ namespace Renderer
 			_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::DISABLE);
 			_d3d->SetAntiAliasingState();
 
-			_shaderHandler->SetFXAAPassShaders(deviceContext);
+			_shaderHandler->SetFXAAPassShaders(deviceContext, _antialiasingEnabled);
 			break;
 		}
 		case SHADOW_GENERATION:
@@ -560,12 +560,17 @@ namespace Renderer
 		_ambientLight = ambientLight;
 	}
 
-	void RenderModule::BeginScene(float red, float green, float blue, float alpha)
+	void RenderModule::SetAntialiasingEnabled(bool enabled)
+	{
+		_antialiasingEnabled = enabled;
+	}
+
+	void RenderModule::BeginScene(float red, float green, float blue, float alpha, bool clearBackBuffer)
 	{
 		_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::DISABLE);
 		_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::BACK);
 		_d3d->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		_d3d->BeginScene(red, green, blue, alpha);
+		_d3d->BeginScene(red, green, blue, alpha, clearBackBuffer);
 	}
 
 	void RenderModule::Render(DirectX::XMMATRIX* world, int vertexBufferSize, const DirectX::XMFLOAT3& colorOffset)
@@ -574,9 +579,9 @@ namespace Renderer
 		_d3d->GetDeviceContext()->Draw(vertexBufferSize, 0);
 	}
 
-	void RenderModule::RenderAnimation(DirectX::XMMATRIX* world, int vertexBufferSize, std::vector<DirectX::XMFLOAT4X4>* extra, const DirectX::XMFLOAT3& colorOffset)
+	void RenderModule::RenderAnimation(DirectX::XMMATRIX* world, int vertexBufferSize, DirectX::XMMATRIX* extra, int bonecount, const DirectX::XMFLOAT3& colorOffset)
 	{
-		SetDataPerSkinnedObject(world, extra, colorOffset);
+		SetDataPerSkinnedObject(world, extra, bonecount, colorOffset);
 		_d3d->GetDeviceContext()->Draw(vertexBufferSize, 0);
 	}
 
@@ -593,7 +598,7 @@ namespace Renderer
 	{
 		if (!current->GetHidden())
 		{
-			ID3D11ShaderResourceView* tex = current->GetTexture();
+			Texture* tex = current->GetTexture();
 			if (tex)
 			{
 				D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -618,7 +623,7 @@ namespace Renderer
 				deviceContext->Unmap(_matrixBufferHUD, 0);
 
 				deviceContext->VSSetConstantBuffers(1, 1, &_matrixBufferHUD);
-				deviceContext->PSSetShaderResources(0, 1, &tex);
+				deviceContext->PSSetShaderResources(0, 1, &tex->_data);
 
 				deviceContext->Draw(6, 0);
 			}
@@ -656,19 +661,16 @@ namespace Renderer
 		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
 
 		SetDataPerObject(world, colorOffset);
-
 		deviceContext->Draw(nrOfPoints, 0);
 	}
 
 	void RenderModule::RenderScreenQuad()
 	{
 		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
-
 		UINT32 vertexSize = sizeof(ScreenQuadVertex);
 		UINT32 offset = 0;
 
 		deviceContext->IASetVertexBuffers(0, 1, &_screenQuad, &vertexSize, &offset);
-
 		deviceContext->Draw(6, 0);
 	}
 

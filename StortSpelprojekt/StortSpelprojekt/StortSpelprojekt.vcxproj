@@ -33,7 +33,6 @@
     <ClCompile Include="GameObjects\SpawnPoint.cpp" />
     <ClCompile Include="GameObjects\Trap.cpp" />
     <ClCompile Include="GameObjects\Unit.cpp" />
-    <ClCompile Include="GhostImage.cpp" />
     <ClCompile Include="LightCulling.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ObjectHandler.cpp" />
@@ -51,7 +50,7 @@
     <ClCompile Include="StateMachine\SplashState.cpp" />
     <ClCompile Include="StateMachine\StateMachine.cpp" />
     <ClCompile Include="Tilemap.cpp" />
-    <ClCompile Include="TutorialLogic.cpp" />
+    <ClCompile Include="StateMachine\TutorialState.cpp" />
     <ClCompile Include="UITree.cpp" />
     <ClCompile Include="VisionCone.cpp" />
   </ItemGroup>
@@ -70,7 +69,6 @@
     <ClInclude Include="GameObjects\SpawnPoint.h" />
     <ClInclude Include="GameObjects\Trap.h" />
     <ClInclude Include="GameObjects\Unit.h" />
-    <ClInclude Include="GhostImage.h" />
     <ClInclude Include="LightCulling.h" />
     <ClInclude Include="QuadTree.h" />
     <ClInclude Include="ObjectHandler.h" />
@@ -91,7 +89,7 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Tilemap.h" />
     <ClInclude Include="ToPlace.h" />
-    <ClInclude Include="TutorialLogic.h" />
+    <ClInclude Include="StateMachine\TutorialState.h" />
     <ClInclude Include="UITree.h" />
     <ClInclude Include="VisionCone.h" />
   </ItemGroup>

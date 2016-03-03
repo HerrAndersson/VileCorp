@@ -29,7 +29,7 @@ void Enemy::Flee()
 		else
 		{
 			AI::Vec2D offset = _tilePosition - _pursuer->GetTilePosition();
-			AI::Vec2D bestDir = {0,0};
+			AI::Vec2D bestDir = { 0,0 };
 			float bestDist = 0;
 			float tempDist = 0;
 			for (int i = 0; i < 8; i++)
@@ -61,7 +61,6 @@ void Enemy::Flee()
 
 bool Enemy::SafeToAttack(AI::Vec2D direction)
 {
-	srand((int)time(NULL));
 	int weight = 0;
 	if (direction == _direction)
 	{
@@ -84,7 +83,6 @@ bool Enemy::SafeToAttack(AI::Vec2D direction)
 
 bool Enemy::TryToDisarm(Trap* trap)
 {
-	srand((int)time(NULL));
 	return trap->IsTrapActive() && (_disarmSkill - trap->GetDisarmDifficulty() > (rand() % 50) - 25);
 }
 
@@ -92,7 +90,6 @@ bool Enemy::SpotTrap(Trap * trap)
 {
 	if (!trap->IsVisibleToEnemies())
 	{
-		srand((int)time(NULL));
 		int detectRoll = rand() % 100;
 		if (detectRoll + _detectionSkill - trap->GetDetectionDifficulty() >= 50)
 		{
@@ -107,7 +104,6 @@ void Enemy::DisarmTrap(Trap * trap)
 {
 	if (trap->IsTrapActive())
 	{
-		srand((int)time(NULL));
 		int disarmRoll = rand() % 100;
 		if (disarmRoll + _disarmSkill - trap->GetDisarmDifficulty() >= 50)
 		{
@@ -120,24 +116,14 @@ void Enemy::DisarmTrap(Trap * trap)
 	}
 }
 
-Enemy::Enemy()
-	: Unit()
-{
-	_subType = BASICENEMY;
-	SetVisibility(false);
-	_visibilityTimer = TIME_TO_HIDE;
-	_detectionSkill = 50;
-	_disarmSkill = 50;
-	_pursuer = nullptr;
-}
-
-Enemy::Enemy(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject * renderObject, System::SoundModule* soundModule, const Tilemap * tileMap, int enemyType)
-	: Unit(ID, position, rotation, tilePosition, type, renderObject, soundModule, tileMap)
+Enemy::Enemy(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject * renderObject, System::SoundModule* soundModule, const Tilemap * tileMap, int enemyType, AI::Vec2D direction)
+	: Unit(ID, position, rotation, tilePosition, type, renderObject, soundModule, tileMap, direction)
 {
 	_subType = enemyType;
 	_visibilityTimer = TIME_TO_HIDE;
 	_pursuer = nullptr;
 	_moveSpeed = 0.025;
+	InitializePathFinding();
 	switch (_subType)
 	{
 	case BASICENEMY:
@@ -228,7 +214,7 @@ void Enemy::EvaluateTile(GameObject* obj)
 				}
 			}
 		}
-			break;	
+		break;
 		case  System::GUARD:
 			if (static_cast<Unit*>(obj)->GetHealth() > 0)
 			{
@@ -252,7 +238,7 @@ void Enemy::EvaluateTile(GameObject* obj)
 
 		//Head to the objective
 		if (tempPriority > 0 &&
- 			obj->GetTilePosition() != _tilePosition && 
+			obj->GetTilePosition() != _tilePosition &&
 			(_objective == nullptr || tempPriority * GetApproxDistance(obj->GetTilePosition()) < _goalPriority * GetApproxDistance(GetGoalTilePosition())))
 		{
 			SetGoalTilePosition(obj->GetTilePosition());
@@ -280,6 +266,7 @@ void Enemy::Act(GameObject* obj)
 					obj->SetVisibility(_visible);
 					ClearObjective();
 				}
+
 			}
 			break;
 		case  System::SPAWN:
@@ -352,7 +339,10 @@ void Enemy::Update(float deltaTime)
 			break;
 		case MoveState::MOVING:
 			Moving();
-			Animate(WALKANIM);
+			if (_moveState == MoveState::MOVING)
+			{
+				Animate(WALKANIM);
+			}
 			break;
 		case MoveState::SWITCHING_NODE:
 			SwitchingNode();

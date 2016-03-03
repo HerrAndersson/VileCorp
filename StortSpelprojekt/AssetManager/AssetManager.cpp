@@ -26,7 +26,6 @@ AssetManager::~AssetManager()
 	{
 		delete _renderObjects->at(i);
 	}
-//	Clean();
 	for (Texture* texture : *_textures)
 	{
 		delete texture;
@@ -69,18 +68,21 @@ void AssetManager::Flush()
 HRESULT Texture::LoadTexture(ID3D11Device* device)
 {
 	HRESULT res = S_OK;
+
 	if (!_loaded)
 	{
 		wstring _filePath = System::TEXTURE_FOLDER_PATH_W;
 		_filePath.append(_name.begin(), _name.end());
-		res = DirectX::CreateWICTextureFromFile(device, _filePath.c_str(), nullptr, &_data, 0);
+//		res = DirectX::CreateWICTextureFromFile(device, _filePath.c_str(), nullptr, &_data, 0);
 //		DirectX::CreateDDSTextureFromFile(device, (_filePath.substr(0,_filePath.size()-3) + L"dds").c_str(), nullptr, &_data, 0);
-//		res = DirectX::CreateDDSTextureFromFileEx(device, (_filePath.substr(0, _filePath.size() - 3) + L"dds").c_str(), 0, D3D11_USAGE_IMMUTABLE, D3D11_BIND_SHADER_RESOURCE, 0, 0, false, nullptr, &_data,0);
+		res = DirectX::CreateDDSTextureFromFileEx(device, (_filePath + L".dds").c_str(), 0, D3D11_USAGE_IMMUTABLE, D3D11_BIND_SHADER_RESOURCE, 0, 0, false, nullptr, &_data,0);
 
-		if (_data == nullptr)
+		if (res != S_OK)
 		{
- 			string filenameString(_filePath.begin(), _filePath.end());
-			throw std::runtime_error("Texture " + filenameString + " not found");
+			string filenameString(_filePath.begin(), _filePath.end());
+			std::string errorMessage = "On Load Texture: " + _name + ",";
+			errorMessage += res;
+			throw std::runtime_error(errorMessage);
 		}
 		_loaded = true;
 	}
@@ -89,7 +91,8 @@ HRESULT Texture::LoadTexture(ID3D11Device* device)
 }
 
 //Loads a model to the GPU
-bool AssetManager::LoadModel(string name, Mesh* mesh) {
+bool AssetManager::LoadModel(const std::string& name, Mesh* mesh) 
+{
 
 	string file_path = System::MODEL_FOLDER_PATH;
 
@@ -105,7 +108,7 @@ bool AssetManager::LoadModel(string name, Mesh* mesh) {
 	vector<WeightedVertex> weightedVertices;
 
 	_infile->seekg(mesh->_toMesh);
-	if(mesh->_isSkinned)
+	if (mesh->_isSkinned)
 	{
 		weightedVertices.resize(mesh->_vertexBufferSize);
 		_infile->read((char*)weightedVertices.data(), mesh->_vertexBufferSize*sizeof(WeightedVertex));
@@ -122,8 +125,13 @@ bool AssetManager::LoadModel(string name, Mesh* mesh) {
 	return true;
 }
 
-Texture* AssetManager::ScanTexture(string name)
+Texture* AssetManager::ScanTexture(const std::string& name)
 {
+	if (name.empty())
+	{
+		throw exception("ScanTexture: Name is empty");
+	}
+
 	Texture* texture = new Texture;
 	texture->_name = name;
 	_textures->push_back(texture);
@@ -131,7 +139,7 @@ Texture* AssetManager::ScanTexture(string name)
 }
 
 //Creates a RenderObject for the specified model without loading it
-Mesh* AssetManager::ScanModel(string name)
+Mesh* AssetManager::ScanModel(const std::string& name)
 {
 
 	string file_path = System::MODEL_FOLDER_PATH;
@@ -156,27 +164,27 @@ Mesh* AssetManager::ScanModel(string name)
 	mesh->_name = name;
 
 	_infile->close();
-/*
-	MatHeader matHeader;
-	_infile->read((char*)&matHeader, sizeof(MatHeader));
-	_infile->read((char*)&renderObject->_diffuse, 16);
-	_infile->read((char*)&renderObject->_specular, 16);
+	/*
+		MatHeader matHeader;
+		_infile->read((char*)&matHeader, sizeof(MatHeader));
+		_infile->read((char*)&renderObject->_diffuse, 16);
+		_infile->read((char*)&renderObject->_specular, 16);
 
-	string diffFile, specFile;
-	diffFile.resize(matHeader._diffuseNameLength);
-	specFile.resize(matHeader._specularNameLength);
-	_infile->read((char*)diffFile.data(), matHeader._diffuseNameLength);
-	_infile->read((char*)specFile.data(), matHeader._specularNameLength);
+		string diffFile, specFile;
+		diffFile.resize(matHeader._diffuseNameLength);
+		specFile.resize(matHeader._specularNameLength);
+		_infile->read((char*)diffFile.data(), matHeader._diffuseNameLength);
+		_infile->read((char*)specFile.data(), matHeader._specularNameLength);
 
-	if (matHeader._diffuseNameLength)
-	{
-		renderObject->_diffuseTexture = ScanTexture(diffFile);
-	}
-	if (matHeader._specularNameLength)
-	{
-		renderObject->_specularTexture = ScanTexture(specFile);
-	}
-	*/
+		if (matHeader._diffuseNameLength)
+		{
+			renderObject->_diffuseTexture = ScanTexture(diffFile);
+		}
+		if (matHeader._specularNameLength)
+		{
+			renderObject->_specularTexture = ScanTexture(specFile);
+		}
+		*/
 
 	if (mesh->_isSkinned)
 	{
@@ -335,22 +343,24 @@ Mesh* AssetManager::ScanModel26()
 	mesh->_pointLights.resize(meshHeader._numberPointLights);
 	for (int i = 0; i < meshHeader._numberPointLights; i++)
 	{
-		_infile->read((char*)&mesh->_pointLights[i]._bone, 1);
-		_infile->read((char*)&mesh->_pointLights[i]._pos, 12);
-		_infile->read((char*)&mesh->_pointLights[i]._col, 12);
-		_infile->read((char*)&mesh->_pointLights[i]._intensity, 4);
-		mesh->_pointLights[i]._range = 100;
+		auto* pointLight = &mesh->_pointLights[i];
+		_infile->read((char*)&pointLight->_bone, 1);
+		_infile->read((char*)&pointLight->_pos, 12);
+		_infile->read((char*)&pointLight->_col, 12);
+		_infile->read((char*)&pointLight->_intensity, 4);
+		pointLight->_range = 100;
 	}
 
 	mesh->_spotLights.resize(meshHeader._numberSpotLights);
 	for (int i = 0; i < meshHeader._numberSpotLights; i++)
 	{
-		_infile->read((char*)&mesh->_spotLights[i]._bone, 1);
-		_infile->read((char*)&mesh->_spotLights[i]._pos, 12);
-		_infile->read((char*)&mesh->_spotLights[i]._color, 12);
-		_infile->read((char*)&mesh->_spotLights[i]._intensity, 4);
-		_infile->read((char*)&mesh->_spotLights[i]._angle, 4);
-		_infile->read((char*)&mesh->_spotLights[i]._direction, 12);
+		auto* spotLight = &mesh->_spotLights[i];
+		_infile->read((char*)&spotLight->_bone, 1);
+		_infile->read((char*)&spotLight->_pos, 12);
+		_infile->read((char*)&spotLight->_color, 12);
+		_infile->read((char*)&spotLight->_intensity, 4);
+		_infile->read((char*)&spotLight->_angle, 4);
+		_infile->read((char*)&spotLight->_direction, 12);
 		mesh->_spotLights[i]._range = 100;
 	}
 	mesh->_vertexBufferSize = meshHeader._numberOfVertices;
@@ -369,7 +379,7 @@ Mesh* AssetManager::ScanModel24()
 	skeletonName.resize(skeletonStringLength);
 	_infile->read((char*)skeletonName.data(), skeletonStringLength);
 
-	mesh->_isSkinned = skeletonName.data() == "Unrigged";
+	mesh->_isSkinned = skeletonName == "Unrigged";
 	_infile->read((char*)&mesh->_toMesh, 4);
 
 	for (int i = 0; i < meshes; i++)
@@ -491,7 +501,7 @@ RenderObject* AssetManager::GetRenderObject(int index)
 	return renderObject;
 }
 
-RenderObject* AssetManager::GetRenderObject(string meshName, string textureName)
+RenderObject* AssetManager::GetRenderObject(const std::string& meshName, const std::string& textureName)
 {
 	for (RenderObject* renderObject : *_renderObjects)
 	{
@@ -504,11 +514,12 @@ RenderObject* AssetManager::GetRenderObject(string meshName, string textureName)
 	RenderObject* renderObject = new RenderObject;
 	renderObject->_mesh = GetModel(meshName);
 	renderObject->_diffuseTexture = GetTexture(textureName);
+	renderObject->_id = _idCounter++;
 	_renderObjects->push_back(renderObject);
 	return renderObject;
 }
 
-HRESULT AssetManager::ParseLevelHeader(Level::LevelHeader* outputLevelHead, std::string levelHeaderFilePath)
+HRESULT AssetManager::ParseLevelHeader(Level::LevelHeader* outputLevelHead, const std::string& levelHeaderFilePath)
 {
 	try
 	{
@@ -524,7 +535,7 @@ HRESULT AssetManager::ParseLevelHeader(Level::LevelHeader* outputLevelHead, std:
 	return S_OK;
 }
 
-HRESULT AssetManager::ParseLevelBinary(Level::LevelBinary* outputLevelBin, std::string levelBinaryFilePath)
+HRESULT AssetManager::ParseLevelBinary(Level::LevelBinary* outputLevelBin, const std::string& levelBinaryFilePath)
 {
 	try
 	{
@@ -540,28 +551,30 @@ HRESULT AssetManager::ParseLevelBinary(Level::LevelBinary* outputLevelBin, std::
 	return S_OK;
 }
 
-Texture* AssetManager::GetTexture(string name)
+Texture* AssetManager::GetTexture(std::string name)
 {
+	if (name.find(".png") != std::string::npos)
+	{
+		name.resize(name.size() - 4);
+	}
 	for (Texture* texture : *_textures)
 	{
 		if (texture->_name == name)
 		{
-			if (!texture->_activeUsers)
-			{
-				texture->LoadTexture(_device);
-			}
-			texture->_activeUsers++;
+			texture->LoadTexture(_device);
+
 			return texture;
 		}
 	}
 	Texture* texture = ScanTexture(name);
 	texture->LoadTexture(_device);
+	texture->_id = _textureIdCounter++;
 	return texture;
 }
 
 void AssetManager::Clean()
 {
-	for (int i = 0; i < _textures->size(); i++)
+	for (uint i = 0; i < _textures->size(); i++)
 	{
 		if (!_textures->at(i)->_activeUsers)
 		{
@@ -571,7 +584,7 @@ void AssetManager::Clean()
 	}
 }
 
-Mesh* AssetManager::GetModel(string name)
+Mesh* AssetManager::GetModel(const std::string& name)
 {
 	for (Mesh* mesh : *_meshes)
 	{
@@ -587,7 +600,7 @@ Mesh* AssetManager::GetModel(string name)
 	return mesh;
 }
 
-Skeleton* AssetManager::LoadSkeleton(string name)
+Skeleton* AssetManager::LoadSkeleton(const std::string& name)
 {
 	for (Skeleton* skeleton : *_skeletons)
 	{
@@ -638,16 +651,17 @@ Skeleton* AssetManager::LoadSkeleton(string name)
 			skeleton->_actions[a]._bones[b]._frameCount = frames;
 			skeleton->_actions[a]._bones[b]._frameTime.resize(frames);
 			_infile->read((char*)skeleton->_actions[a]._bones[b]._frameTime.data(), frames * sizeof(int));
-			skeleton->_actions[a]._bones[b]._frames.resize(frames);
-			
+			skeleton->_actions[a]._bones[b]._frames = (Frame*)_aligned_malloc(sizeof(Frame) * frames, 16);
+
 			for (int i = 0; i < frames; i++)
 			{
 				_infile->read((char*)&translation, sizeof(XMFLOAT3));
 				_infile->read((char*)&rotation, sizeof(XMFLOAT4));
 				_infile->read((char*)&scale, sizeof(XMFLOAT3));
-				skeleton->_actions[a]._bones[b]._frames[i]._translation = XMLoadFloat3(&translation);
-				skeleton->_actions[a]._bones[b]._frames[i]._rotation = XMLoadFloat4(&rotation);
-				skeleton->_actions[a]._bones[b]._frames[i]._scale = XMLoadFloat3(&scale);
+				auto& frame = skeleton->_actions[a]._bones[b]._frames[i];
+				frame._translation = XMLoadFloat3(&translation);
+				frame._rotation = XMLoadFloat4(&rotation);
+				frame._scale = XMLoadFloat3(&scale);
 			}
 		}
 	}

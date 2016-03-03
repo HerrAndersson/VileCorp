@@ -1,7 +1,7 @@
 #include "Node.h"
 namespace GUI
 {
-	Node::Node(NodeInfo* info, DirectX::XMFLOAT2 position, DirectX::XMFLOAT2 scale, DirectX::XMFLOAT4 colorOffset, ID3D11ShaderResourceView* texture,
+	Node::Node(NodeInfo* info, DirectX::XMFLOAT2 position, DirectX::XMFLOAT2 scale, DirectX::XMFLOAT4 colorOffset, Texture* texture,
 		const std::string& id, const std::wstring& text, UINT32 color, float fontSize, bool centered, bool hidden)
 	{
 		_info = info;
@@ -27,7 +27,6 @@ namespace GUI
 		_positionFinal = copy._positionFinal;
 		_scale = copy._scale;
 		_colorOffset = copy._colorOffset;
-		_texture = copy._texture;
 		_id = copy._id;
 		_text = copy._text;
 		_color = copy._color;
@@ -41,6 +40,10 @@ namespace GUI
 
 	Node::~Node()
 	{
+		if (_texture)
+		{
+			_texture->DecrementUsers();
+		}
 	}
 
 	void Node::UpdateMatrix()
@@ -138,9 +141,20 @@ namespace GUI
 		_fontSize = fontSize;
 		UpdateFont();
 	}
-	void Node::SetTexture(ID3D11ShaderResourceView* texture)
+	void Node::SetTexture(Texture* texture)
 	{
+		if (_texture)
+		{
+			_texture->DecrementUsers();
+		}
 		_texture = texture;
+	}
+
+	void Node::SwapTexture(Node* otherNode)
+	{
+		Texture* temp = _texture;
+		_texture = otherNode->_texture;
+		otherNode->_texture = temp;
 	}
 
 	void Node::SetColorOffset(const DirectX::XMFLOAT4& colorOffset)
@@ -212,7 +226,7 @@ namespace GUI
 		return &_font;
 	}
 
-	ID3D11ShaderResourceView* Node::GetTexture()
+	Texture* Node::GetTexture()
 	{
 		return _texture;
 	}
@@ -230,6 +244,11 @@ namespace GUI
 	Node* Node::GetParent() const
 	{
 		return _parent;
+	}
+
+	DirectX::XMFLOAT2 Node::GetSize() const
+	{
+		return { _scale.x * _info->_windowWidth, _scale.y * _info->_windowHeight };
 	}
 
 	DirectX::XMMATRIX* Node::GetModelMatrix()

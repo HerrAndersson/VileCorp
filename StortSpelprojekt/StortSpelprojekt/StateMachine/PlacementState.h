@@ -1,48 +1,49 @@
 #pragma once
 
 #include "BaseState.h"
+#include "../BaseEdit.h"
 #include "../JsonStructs.h"
 #include "jsonparser.h"
 #include "Assetmanager.h"
+#include "../ToPlace.h"
+
 #include "../Player.h"
-#include "../TutorialLogic.h"
 #include "CommonUtils.h"
-#include "../GhostImage.h"
 #include "../System/Settings/Profile.h"
 
 class PlacementState : public BaseState
 {
-private:
-	TutorialLogic* _tutorialLogic;
-	bool _trapChosen = false;
+protected:
+	BaseEdit* _baseEdit;
 	
 	int _budget;
 	int _costOfAnvilTrap;
 	int _costOfTeslaCoil;
 	int _costOfCamera;
 	int _costOfGuard;
+	//TODO: Remove all _costOfX --Victor
 
-	int _currentPlayer = 0;
 	DirectX::XMFLOAT3* _ambientLight;
 
 	System::Profile* _profile;
 
-	Player* _player;
-	System::SpecificBlueprint _selectedBlueprint;
+	ToPlace _toPlace;
+
+	//GUI::NodeBar _unitBar;
 	std::vector<GUI::Node*>* _buttons;
-	GhostImage _ghostImage;
 
 	void EvaluateGoldCost();
 	void HandleDescriptions();
 
 public:
 	PlacementState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule, DirectX::XMFLOAT3* ambientLight);
-	~PlacementState();
+	virtual ~PlacementState();
 
-	void Update(float deltaTime);
-	void OnStateEnter();
-	void OnStateExit();
+	virtual void Update(float deltaTime);
+	virtual void OnStateEnter();
+	virtual void OnStateExit();
 
 	void HandleInput();
+	virtual void HandleButtons();
 };
 

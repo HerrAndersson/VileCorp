@@ -4,7 +4,7 @@
 #include "ParticleSystem\ParticleEventQueue.h"
 #include <memory>
 
-enum TrapType{ SPIKE, TESLACOIL, SHARK, GUN, SAW, CAKEBOMB, BEAR, FLAMETHROWER, WATER_GUN, SPIN_TRAP};
+enum TrapType{ ANVIL, TESLACOIL, SHARK, GUN, SAW, CAKEBOMB, BEAR, FLAMETHROWER, WATER_GUN, SPIN_TRAP};
 enum Anim{IDLE, ACTIVATE, NR_OF_ANIM/*Has to be last*/};
 
 class Trap : public GameObject
@@ -28,6 +28,8 @@ private:
 	int _repairTime;					//Amount of frames needed before modifiers to repair the trap
 	int _disarmTime;					//Amount of frames needed before modifiers to disarm the trap
 
+	bool _resetAnimTime;				//Resets the animation time on play action
+
 	const Tilemap* _tileMap;
 
 	AI::Vec2D* _occupiedTiles;			//Physical area taken up by the trap
@@ -48,9 +50,8 @@ private:
 					Unit::StatusEffect statusEffect, int statusTimer, int statusInterval, int triggerTimer = 0, int ammunition = 1);							/*Initialize adds any characteristics specific to the subtype*/
 	void SetTiles();
 public:
-	Trap();
 	Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject * renderObject, System::SoundModule* soundModule,
-		 const Tilemap* tileMap, int trapType = SPIKE, AI::Vec2D direction = {-1,0});
+		 const Tilemap* tileMap, int trapType = ANVIL, AI::Vec2D direction = {1,0});
 	virtual ~Trap();
 
 	AI::Vec2D* GetTiles()const;
@@ -73,7 +74,7 @@ public:
 	// Overloaded function
 	void SetTilePosition(AI::Vec2D pos);
 	AI::Vec2D GetDirection();
-	void SetDirection(const AI::Vec2D direction);
+	void SetDirection(const AI::Vec2D& direction);
 	enum Anim { IDLEANIM, ACTIVATEANIM, DISABLEANIM, FIXANIM, NR_OF_ANIM/*Has to be last*/ };
 	
 	void Animate(Anim anim);
