@@ -116,8 +116,8 @@ void Enemy::DisarmTrap(Trap * trap)
 	}
 }
 
-Enemy::Enemy(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject * renderObject, System::SoundModule* soundModule, const Tilemap * tileMap, int enemyType)
-	: Unit(ID, position, rotation, tilePosition, type, renderObject, soundModule, tileMap)
+Enemy::Enemy(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject * renderObject, System::SoundModule* soundModule, const Tilemap * tileMap, int enemyType, AI::Vec2D direction)
+	: Unit(ID, position, rotation, tilePosition, type, renderObject, soundModule, tileMap, direction)
 {
 	_subType = enemyType;
 	_visibilityTimer = TIME_TO_HIDE;

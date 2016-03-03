@@ -15,10 +15,6 @@ private:
 	bool _drag;
 	AI::Vec2D _dragOrigin;
 	
-	void AddGuardIcon(Unit* unit);
-	void AddPatrolIcons(Guard* guard);
-	void RemoveGuardIcon(short guardID);
-	void RemovePatrolIcons(Guard* guard);
 	void ColorObject(GameObject* obj);
 	void DecolorObject(GameObject* obj);
 

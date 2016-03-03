@@ -29,7 +29,7 @@ ObjectHandler::~ObjectHandler()
 	SAFE_DELETE(_backgroundObject);
 }
 
-GameObject* ObjectHandler::Add(System::Blueprint* blueprint, int textureId, const XMFLOAT3& position, const XMFLOAT3& rotation, const bool placeOnTilemap)
+GameObject* ObjectHandler::Add(System::Blueprint* blueprint, int textureId, const XMFLOAT3& position, const XMFLOAT3& rotation, const bool placeOnTilemap, AI::Vec2D direction)
 {
 	GameObject* object = nullptr;
 	System::Type type = (System::Type)blueprint->_type;
@@ -43,22 +43,22 @@ GameObject* ObjectHandler::Add(System::Blueprint* blueprint, int textureId, cons
 	case System::FLOOR:
 	case System::FURNITURE:
 	case System::LOOT:
-		object = new Architecture(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, blueprint->_subType);
+		object = new Architecture(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, blueprint->_subType, direction);
 		break;
 	case  System::SPAWN:
-		object = new SpawnPoint(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, blueprint->_subType);
+		object = new SpawnPoint(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, blueprint->_subType, direction);
 		break;
 	case  System::TRAP:
-		object = new Trap(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, _tilemap, blueprint->_subType);
+		object = new Trap(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, _tilemap, blueprint->_subType, direction);
 		break;
 	case  System::CAMERA:
-		object = new SecurityCamera(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, _tilemap);
+		object = new SecurityCamera(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, _tilemap, direction);
 		break;
 	case  System::ENEMY:
-		object = new Enemy(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, _tilemap, blueprint->_subType);
+		object = new Enemy(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, _tilemap, blueprint->_subType, direction);
 		break;
 	case  System::GUARD:
-		object = new Guard(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, _tilemap, blueprint->_subType);
+		object = new Guard(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, _tilemap, blueprint->_subType, direction);
 		break;
 	default:
 		break;
@@ -499,7 +499,9 @@ bool ObjectHandler::LoadLevel(Level::LevelBinary &levelData)
 		//Rotation
 		float rotY = (formattedGameObject->at(5) * DirectX::XM_PI) / 180.0f;
 
-		Add(blueprint, formattedGameObject->at(2), DirectX::XMFLOAT3(posX, 0, posZ), DirectX::XMFLOAT3(0, rotY, 0), true);
+		AI::Vec2D direction = AI::CLOCKWISE_ROTATION[(formattedGameObject->at(5) * static_cast<int>(8.0f / 360) + 4) % 8];
+
+		Add(blueprint, formattedGameObject->at(2), DirectX::XMFLOAT3(posX, 0, posZ), DirectX::XMFLOAT3(0, rotY, 0), true, direction);
 	}
 
 	_currentAvailableUnits = levelData._availableUnits;
@@ -576,7 +578,7 @@ void ObjectHandler::Update(float deltaTime)
 					XMFLOAT3 pos = unit->GetPosition();
 					pos.y += 2.5f;
 
-					ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::EXCLAMATIONMARK_SUBTYPE, -1, pos, XMFLOAT3(0, 0, 0), 1.0f, 1, unit->GetHealth()*0.0025f, true, true);
+					ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::HEALTH_SUBTYPE, -1, pos, XMFLOAT3(0, 0, 0), 1.0f, 1, unit->GetHealth()*0.0025f, true, true);
 					GetParticleEventQueue()->Insert(msg);
 				}
 

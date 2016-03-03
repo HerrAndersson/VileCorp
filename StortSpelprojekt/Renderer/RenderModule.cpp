@@ -565,12 +565,12 @@ namespace Renderer
 		_antialiasingEnabled = enabled;
 	}
 
-	void RenderModule::BeginScene(float red, float green, float blue, float alpha)
+	void RenderModule::BeginScene(float red, float green, float blue, float alpha, bool clearBackBuffer)
 	{
 		_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::DISABLE);
 		_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::BACK);
 		_d3d->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		_d3d->BeginScene(red, green, blue, alpha);
+		_d3d->BeginScene(red, green, blue, alpha, clearBackBuffer);
 	}
 
 	void RenderModule::Render(DirectX::XMMATRIX* world, int vertexBufferSize, const DirectX::XMFLOAT3& colorOffset)
