@@ -189,6 +189,8 @@ Animation * GameObject::GetAnimation() const
 	{
 		return _animation;
 	}
+	
+	return nullptr;
 }
 
 void GameObject::SetPickUpState(PickUpState state)

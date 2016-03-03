@@ -40,6 +40,12 @@ Game::Game(HINSTANCE hInstance, int nCmdShow):
 	_ambientLight = _renderModule->GetAmbientLight();	
 	ResizeResources(settings);//This fixes a bug which offsets mousepicking, do not touch! //Markus
 	_renderModule->SetAntialiasingEnabled(settings->_antialiasing);
+
+
+	for (int i = 0; i < 10; i++)
+	{
+		//spotlights.push_back(new Renderer::Spotlight)
+	}
 }
 
 Game::~Game()
@@ -82,37 +88,37 @@ void Game::LoadParticleSystemData(ParticleTextures& particleTextures, ParticleMo
 
 	for (unsigned int i = 0; i < data._subtypeTexturePaths.at(ParticleSubType::BLOOD_SUBTYPE).size(); i++)
 	{
-		particleTextures._bloodTextures[i] = _assetManager->GetTexture(data._subtypeTexturePaths.at(ParticleSubType::BLOOD_SUBTYPE).at(i));
+		particleTextures._bloodTextures[i] = _assetManager->GetTexture(data._subtypeTexturePaths.at(ParticleSubType::BLOOD_SUBTYPE).at(i))->_data;
 	}
 
 	for (unsigned int i = 0; i < data._subtypeTexturePaths.at(ParticleSubType::WATER_SUBTYPE).size(); i++)
 	{
-		particleTextures._waterTextures[i] = _assetManager->GetTexture(data._subtypeTexturePaths.at(ParticleSubType::WATER_SUBTYPE).at(i));
+		particleTextures._waterTextures[i] = _assetManager->GetTexture(data._subtypeTexturePaths.at(ParticleSubType::WATER_SUBTYPE).at(i))->_data;
 	}
 
 	for (unsigned int i = 0; i < data._subtypeTexturePaths.at(ParticleSubType::SPARK_SUBTYPE).size(); i++)
 	{
-		particleTextures._sparkTextures[i] = _assetManager->GetTexture(data._subtypeTexturePaths.at(ParticleSubType::SPARK_SUBTYPE).at(i));
+		particleTextures._sparkTextures[i] = _assetManager->GetTexture(data._subtypeTexturePaths.at(ParticleSubType::SPARK_SUBTYPE).at(i))->_data;
 	}
 
 	for (unsigned int i = 0; i < data._subtypeTexturePaths.at(ParticleSubType::SMOKE_SUBTYPE).size(); i++)
 	{
-		particleTextures._smokeTextures[i] = _assetManager->GetTexture(data._subtypeTexturePaths.at(ParticleSubType::SMOKE_SUBTYPE).at(i));
+		particleTextures._smokeTextures[i] = _assetManager->GetTexture(data._subtypeTexturePaths.at(ParticleSubType::SMOKE_SUBTYPE).at(i))->_data;
 	}
 
 	for (unsigned int i = 0; i < data._subtypeTexturePaths.at(ParticleSubType::FIRE_SUBTYPE).size(); i++)
 	{
-		particleTextures._fireTextures[i] = _assetManager->GetTexture(data._subtypeTexturePaths.at(ParticleSubType::FIRE_SUBTYPE).at(i));
+		particleTextures._fireTextures[i] = _assetManager->GetTexture(data._subtypeTexturePaths.at(ParticleSubType::FIRE_SUBTYPE).at(i))->_data;
 	}
 
 	for (unsigned int i = 0; i < data._subtypeTexturePaths.at(ParticleSubType::MUZZLE_FLASH_SUBTYPE).size(); i++)
 	{
-		particleTextures._muzzleFlashTextures[i] = _assetManager->GetTexture(data._subtypeTexturePaths.at(ParticleSubType::MUZZLE_FLASH_SUBTYPE).at(i));
+		particleTextures._muzzleFlashTextures[i] = _assetManager->GetTexture(data._subtypeTexturePaths.at(ParticleSubType::MUZZLE_FLASH_SUBTYPE).at(i))->_data;
 	}
 
 	for (unsigned int i = 0; i < data._iconTexturePaths.size(); i++)
 	{
-		particleTextures._iconTextures[i] = _assetManager->GetTexture(data._iconTexturePaths.at(i));
+		particleTextures._iconTextures[i] = _assetManager->GetTexture(data._iconTexturePaths.at(i))->_data;
 	}
 
 	modifiers._splashPositionOffset = data._splashPositionOffset;
@@ -448,7 +454,7 @@ void Game::RenderParticles()
 							campos.y += 1.0f;
 						}
 						textureCount = 1;
-						Texture* textures[1];
+						ID3D11ShaderResourceView* textures[1];
 						textures[0] = _particleHandler->GetIconTexture(emitter->GetSubType());
 
 						_renderModule->SetDataPerParticleEmitter(emitterPosition, _camera->GetViewMatrix(), _camera->GetProjectionMatrix(), campos, emitter->GetParticleScale(), textures, textureCount, (int)!isMarker);
@@ -456,7 +462,7 @@ void Game::RenderParticles()
 					}
 					else
 					{
-						Texture** textures = _particleHandler->GetTextures(textureCount, emitter->GetSubType());
+						ID3D11ShaderResourceView** textures = _particleHandler->GetTextures(textureCount, emitter->GetSubType());
 						_renderModule->SetDataPerParticleEmitter(emitter->GetPosition(), _camera->GetViewMatrix(), _camera->GetProjectionMatrix(), _camera->GetPosition(), emitter->GetParticleScale(), textures, textureCount, 0);
 
 						_renderModule->RenderParticles(vertexBuffer, emitter->GetParticleCount(), emitter->GetVertexSize());

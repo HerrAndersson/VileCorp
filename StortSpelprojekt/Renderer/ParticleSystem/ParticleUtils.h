@@ -88,13 +88,13 @@ struct ParticleUpdateMessage : ParticleMessage
 
 struct ParticleTextures
 {
-	Texture* _bloodTextures[PARTICLE_TEXTURE_COUNT];
-	Texture* _waterTextures[PARTICLE_TEXTURE_COUNT];
-	Texture* _smokeTextures[PARTICLE_TEXTURE_COUNT];
-	Texture* _sparkTextures[PARTICLE_TEXTURE_COUNT];
-	Texture* _fireTextures[PARTICLE_TEXTURE_COUNT];
-	Texture* _muzzleFlashTextures[PARTICLE_TEXTURE_COUNT];
-	Texture* _iconTextures[ICON_TEXTURE_COUNT];
+	ID3D11ShaderResourceView* _bloodTextures[PARTICLE_TEXTURE_COUNT];
+	ID3D11ShaderResourceView* _waterTextures[PARTICLE_TEXTURE_COUNT];
+	ID3D11ShaderResourceView* _smokeTextures[PARTICLE_TEXTURE_COUNT];
+	ID3D11ShaderResourceView* _sparkTextures[PARTICLE_TEXTURE_COUNT];
+	ID3D11ShaderResourceView* _fireTextures[PARTICLE_TEXTURE_COUNT];
+	ID3D11ShaderResourceView* _muzzleFlashTextures[PARTICLE_TEXTURE_COUNT];
+	ID3D11ShaderResourceView* _iconTextures[ICON_TEXTURE_COUNT];
 
 	ParticleTextures()
 	{
@@ -117,38 +117,17 @@ struct ParticleTextures
 	{
 		for (int i = 0; i < PARTICLE_TEXTURE_COUNT; i++)
 		{
-			if (_bloodTextures[i])
-			{
-				_bloodTextures[i]->DecrementUsers();
-			}
-			if (_waterTextures[i])
-			{
-				_waterTextures[i]->DecrementUsers();
-			}
-			if (_smokeTextures[i])
-			{
-				_smokeTextures[i]->DecrementUsers();
-			}
-			if (_sparkTextures[i])
-			{
-				_sparkTextures[i]->DecrementUsers();
-			}
-			if (_fireTextures[i])
-			{
-				_fireTextures[i]->DecrementUsers();
-			}
-			if (_muzzleFlashTextures[i])
-			{
-				_muzzleFlashTextures[i]->DecrementUsers();
-			}
+			SAFE_RELEASE(_bloodTextures[i]);
+			SAFE_RELEASE(_waterTextures[i]);
+			SAFE_RELEASE(_smokeTextures[i]);
+			SAFE_RELEASE(_sparkTextures[i]);
+			SAFE_RELEASE(_fireTextures[i]);
+			SAFE_RELEASE(_muzzleFlashTextures[i]);
 		}
 
 		for (int i = 0; i < ICON_TEXTURE_COUNT; i++)
 		{
-			if (_iconTextures[i])
-			{
-				_iconTextures[i]->DecrementUsers();
-			}
+			SAFE_RELEASE(_iconTextures[i]);
 		}
 	}
 };

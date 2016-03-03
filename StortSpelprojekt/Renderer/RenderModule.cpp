@@ -243,7 +243,7 @@ namespace Renderer
 	}
 
 	void RenderModule::SetDataPerParticleEmitter(const XMFLOAT3& position, XMMATRIX* camView, XMMATRIX* camProjection,
-												 const XMFLOAT3& camPos, float scale, Texture** textures, int textureCount, int isIcon)
+												 const XMFLOAT3& camPos, float scale, ID3D11ShaderResourceView** textures, int textureCount, int isIcon)
 	{
 		HRESULT result;
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -270,12 +270,7 @@ namespace Renderer
 
 		if (textures)
 		{
-			ID3D11ShaderResourceView* textureData[PARTICLE_TEXTURE_COUNT];
-			for (int i = 0; i < textureCount; i++)
-			{
-				textureData[i] = textures[i]->_data;
-			}
-			deviceContext->PSSetShaderResources(0, textureCount, textureData);
+			deviceContext->PSSetShaderResources(0, textureCount, textures);
 		}
 	}
 

@@ -63,6 +63,13 @@ private:
 
 	void LoadParticleSystemData(ParticleTextures& particleTextures, ParticleModifierOffsets& modifiers);
 
+
+
+
+
+
+	std::vector<Renderer::Spotlight*> spotlights;
+
 public:
 
 	Game(HINSTANCE hInstance, int nCmdShow);
