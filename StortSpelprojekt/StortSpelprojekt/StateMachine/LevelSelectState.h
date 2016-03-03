@@ -1,7 +1,6 @@
 #pragma once
 #include "BaseState.h"
 #include "JsonParser.h"
-#include "../CombinedMeshGenerator.h"
 
 #define TUTORIAL 0
 
@@ -38,11 +37,9 @@ private:
 	void SelectedLevelHeaderToGUI();
 	void UpdateButtonsNextPreviousVisability();
 	void SwitchLevelSelectionMode();
-
-	CombinedMeshGenerator* _combinedMeshGenerator;
 	
 public:
-	LevelSelectState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule, CombinedMeshGenerator* combinedMeshGenerator);
+	LevelSelectState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule);
 	~LevelSelectState();
 
 	void Update(float deltaTime);
