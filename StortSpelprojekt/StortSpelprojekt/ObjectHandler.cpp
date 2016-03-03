@@ -468,23 +468,13 @@ bool ObjectHandler::LoadLevel(std::string levelBinaryFilePath)
 	bool result = false;
 	Level::LevelBinary levelData;
 	HRESULT success = _assetManager->ParseLevelBinary(&levelData, levelBinaryFilePath);
-
-	if (success == S_OK)
-	{
-		bool result = LoadLevel(levelData);
-	}
-	else
-	{
-		delete _tilemap;
-		_tilemap = new Tilemap();
-	}
+	result = LoadLevel(levelData);
 	return result;
 }
 
 bool ObjectHandler::LoadLevel(Level::LevelBinary &levelData)
 {
 	bool result = true;
-	delete _tilemap;
 	_tilemap = new Tilemap(AI::Vec2D(levelData._tileMapSizeX, levelData._tileMapSizeZ));
 
 	for (int i = 0; i < levelData._gameObjectData.size() && result; i++)

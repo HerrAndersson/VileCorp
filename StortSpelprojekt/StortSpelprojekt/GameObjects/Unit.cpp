@@ -235,9 +235,18 @@ void Unit::SetTilePosition(AI::Vec2D pos)
 
 void Unit::SetStatusEffect(StatusEffect effect, int intervalTime, int totalTime)
 {
-	_status = effect;
-	_statusTimer = totalTime;
-	_statusInterval = intervalTime;
+	if (_status != effect)
+	{
+		_status = effect;
+		_statusInterval = intervalTime;
+		_statusTimer = totalTime;
+	}
+	else if (_status == effect)
+	{
+		_statusTimer = totalTime;
+		_statusTimer--;
+	}
+	
 }
 
 bool Unit::IsSwitchingTile() const

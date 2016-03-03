@@ -677,7 +677,6 @@ bool LevelEditState::HandleButtonsForDialogWindows(System::MouseCoord &coord, bo
 			if (_levelHeaderFilenames.size() > 0)
 			{
 				_uiTree.GetNode("ImportMapList")->SetHidden(true);
-				ResetLevel();
 				LoadLevel(_levelHeaderFilenames[_loadLevelSelectedIndex]);
 			}
 			_dialogWindowLock = false;
@@ -745,7 +744,7 @@ void LevelEditState::ResetLevel()
 	_levelHeader = Level::LevelHeader();
 
 	_objectHandler->UnloadLevel();
-	_objectHandler->SetTileMap(new Tilemap());
+	_objectHandler->SetTileMap(new Tilemap(AI::Vec2D(110,110)));
 
 	for (unsigned i = 0; i < _toggleButtons.size(); i++)
 	{
@@ -763,7 +762,6 @@ void LevelEditState::ResetLevel()
 	_currentLevelFileName = "";
 	_isNewLevel = true;
 
-	_objectHandler->EnlargeTilemap(50);
 	_baseEdit = new BaseEdit(_objectHandler, _controls, _pickingDevice, true);
 }
 
@@ -1074,6 +1072,11 @@ void LevelEditState::ExportLevel()
 
 void LevelEditState::LoadLevel(std::string headerFileName)
 {
+	_levelBinary = Level::LevelBinary();
+	_levelHeader = Level::LevelHeader();
+
+	_objectHandler->UnloadLevel();
+
 	std::string levelPath;
 #ifdef _DEBUG
 	char userPath[MAX_PATH];
@@ -1090,15 +1093,7 @@ void LevelEditState::LoadLevel(std::string headerFileName)
 	bool result = false;
 	HRESULT success = _assetManager->ParseLevelBinary(&_levelBinary, levelPath + _levelHeader._levelBinaryFilename);
 
-	if (success == S_OK)
-	{
-		bool result = _objectHandler->LoadLevel(_levelBinary);
-	}
-	else
-	{
-		delete _objectHandler->GetTileMap();
-		_objectHandler->SetTileMap(new Tilemap());
-	}
+	result = _objectHandler->LoadLevel(_levelBinary);
 
 	_budgetTextNode->SetText(std::to_wstring(_levelHeader._budget));
 	_storyTitleTextNode->SetText(System::StringToWstring(_levelHeader._storyTitle));

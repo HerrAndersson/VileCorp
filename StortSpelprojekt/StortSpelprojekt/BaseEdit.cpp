@@ -3,7 +3,6 @@
 #include <DirectXMath.h>
 #include <sstream>
 
-
 // local function
 bool compareFloat3(XMFLOAT3 a, XMFLOAT3 b)
 {
@@ -172,7 +171,7 @@ void BaseEdit::DropEvent()
 	}
 
 	// Special camera non floating fix
-	if (_movingGhostImage._g->GetType() == System::CAMERA)
+	if (_movingGhostImage._g->GetType() == System::CAMERA || _movingGhostImage._g->GetType())
 	{
 		if (_movingGhostImage._g->GetDirection()._x != 0 && _movingGhostImage._g->GetDirection()._y != 0)
 		{
@@ -522,7 +521,7 @@ bool BaseEdit::CheckValidity(AI::Vec2D tile, GameObject* gameObject)
 					}
 					
 				}
-				else if (type == System::CAMERA)
+				else if (type == System::CAMERA || type == System::SPAWN)
 				{
 					if (!_tileMap->IsWallOnTile(tile - _movingGhostImage._g->GetDirection()))
 					{
