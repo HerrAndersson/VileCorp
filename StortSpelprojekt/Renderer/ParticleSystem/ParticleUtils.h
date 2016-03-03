@@ -8,11 +8,6 @@
 #include <cereal\types\vector.hpp>
 #include "../RenderUtils.h"
 
-//Has to be set in the BillboardingPS shader aswell. The array there has to be of hard-coded length, 
-//so "dynamic" number of textures is not possible if more than the hard-coded number
-static const int PARTICLE_TEXTURE_COUNT = 4;
-static const int ICON_TEXTURE_COUNT = 5;
-
 //Determines how it moves
 enum ParticleType { SPLASH, SMOKE, ELECTRICITY, FIRE, MUZZLE_FLASH, ICON, STATIC_ICON };
 

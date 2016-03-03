@@ -517,7 +517,7 @@ void Trap::RequestParticleByType(Unit* unit)
 
 	switch (GetSubType())
 	{
-	case SPIKE:
+	case ANVIL:
 	{
 		_particleEventQueue->Insert(new ParticleRequestMessage(ParticleType::SPLASH, ParticleSubType::BLOOD_SUBTYPE, -1, particlePos, XMFLOAT3(0, 1, 0), 300.0f, 20, 0.1f, true));
 		break;
@@ -558,7 +558,13 @@ void Trap::RequestParticleByType(Unit* unit)
 	{
 		AI::Vec2D objectDir = GetDirection();
 		XMFLOAT3 dir(objectDir._x, 0, objectDir._y);
-		_particleEventQueue->Insert(new ParticleRequestMessage(ParticleType::FIRE, ParticleSubType::FIRE_SUBTYPE, -1, pos, dir, 1000.0f, 50, 0.1f, true));
+		for (int i = 0; i < _nrOfAOETiles; i++)
+		{
+			pos.x += dir.x;
+			pos.z += dir.z;
+			_particleEventQueue->Insert(new ParticleRequestMessage(ParticleType::FIRE, ParticleSubType::FIRE_SUBTYPE, -1, pos, dir, 1500.0f, 75, 0.5f, true));
+		}
+		
 		break;
 	}
 	case WATER_GUN:
