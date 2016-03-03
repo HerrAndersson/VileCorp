@@ -267,7 +267,7 @@
 			{
 				"position": [ 0.78, 0.057 ],
 				"scale": [ 0.048, 0.083 ],
-				"texture": "../Menues/PlacementStateGUI/units/FlameThrowerbutton1.png",
+				"texture": "../Menues/PlacementStateGUI/units/WatergunButton1.png",
 				"type": 4,
 				"subType": 8,
 				"textureId": 0,
