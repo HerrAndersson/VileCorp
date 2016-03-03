@@ -1,7 +1,7 @@
 #include "ObjectHandler.h"
 #include "stdafx.h"
 
-ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data, System::Settings* settings, Renderer::ParticleEventQueue* particleEventQueue, System::SoundModule*	soundModule):
+ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data, System::Settings* settings, Renderer::ParticleEventQueue* particleEventQueue, System::SoundModule*	soundModule) :
 	_currentLevelHeader()
 {
 	_settings = settings;
@@ -36,14 +36,30 @@ GameObject* ObjectHandler::Add(System::Blueprint* blueprint, int textureId, cons
 	RenderObject* renderObject = _assetManager->GetRenderObject(blueprint->_mesh, blueprint->_textures[textureId]);
 
 	AI::Vec2D tilepos(position.x, position.z);
+	XMFLOAT3 lootPos;
+	GameObject* loot;
 
 	switch (type)
 	{
 	case System::WALL:
 	case System::FLOOR:
 	case System::FURNITURE:
-	case System::LOOT:
+		if (_tilemap->IsTypeOnTile(tilepos, System::LOOT))
+		{
+			loot = _tilemap->GetObjectOnTile(tilepos, System::LOOT);
+			lootPos = loot->GetPosition();
+			lootPos.y += 1.2f;
+			loot->SetPosition(lootPos);
+		}
 		object = new Architecture(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, blueprint->_subType, direction);
+		break;
+	case System::LOOT:
+		lootPos = position;
+		if (_tilemap->IsTypeOnTile(tilepos, System::FURNITURE))
+		{
+			lootPos.y += 1.2f;
+		}
+		object = new Architecture(_idCount, lootPos, rotation, tilepos, type, renderObject, _soundModule, blueprint->_subType, direction);
 		break;
 	case  System::SPAWN:
 		object = new SpawnPoint(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, blueprint->_subType, direction);
