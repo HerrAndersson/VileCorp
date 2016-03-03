@@ -8,10 +8,14 @@
 */
 class Architecture : public GameObject
 {
+private:
+	bool _isNoPlacementZone;
 public:
 	Architecture(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject* renderObject, System::SoundModule* soundModule, int subType = 0, AI::Vec2D direction = { 1, 0 });
 	~Architecture();
 	void Update(float deltaTime);
 	void Release();
 	bool InRange(AI::Vec2D pos)const;
+	bool GetNoPlacementZone() const;
+	void SetNoPlacementZone(bool val);
 };

@@ -212,16 +212,16 @@ bool ObjectHandler::Remove(System::Type type, int ID)
 			if (type == System::TRAP)
 			{
 				AI::Vec2D* tempTiles = static_cast<Trap*>(_gameObjects[type][i])->GetTiles();
- 				for (int j = 0; j < static_cast<Trap*>(_gameObjects[type][i])->GetNrOfOccupiedTiles(); j++)
+				for (int j = 0; j < static_cast<Trap*>(_gameObjects[type][i])->GetNrOfOccupiedTiles(); j++)
 				{
 					_tilemap->RemoveObjectFromTile(tempTiles[j], _gameObjects[type][i]);
 				}
-			} 
+			}
 			else
 			{
 				_tilemap->RemoveObjectFromTile(_gameObjects[type].at(i));
 			}
-			
+
 			_gameObjects[type][i]->Release();
 
 			if (_spotlights.count(_gameObjects[type][i]))
@@ -517,7 +517,13 @@ bool ObjectHandler::LoadLevel(Level::LevelBinary &levelData)
 
 		AI::Vec2D direction = AI::CLOCKWISE_ROTATION[(formattedGameObject->at(5) * static_cast<int>(8.0f / 360) + 4) % 8];
 
-		Add(blueprint, formattedGameObject->at(2), DirectX::XMFLOAT3(posX, 0, posZ), DirectX::XMFLOAT3(0, rotY, 0), true, direction);
+		GameObject* addedObject = Add(blueprint, formattedGameObject->at(2), DirectX::XMFLOAT3(posX, 0, posZ), DirectX::XMFLOAT3(0, rotY, 0), true, direction);
+
+		//Set no placement zones on floors
+		if (addedObject != nullptr && formattedGameObject->at(0) == System::Type::FLOOR && formattedGameObject->size() >= 7)
+		{
+			static_cast<Architecture*>(addedObject)->SetNoPlacementZone(formattedGameObject->at(6));
+		}
 	}
 
 	_currentAvailableUnits = levelData._availableUnits;
@@ -526,10 +532,10 @@ bool ObjectHandler::LoadLevel(Level::LevelBinary &levelData)
 
 	_lightCulling = new LightCulling(_tilemap);
 
-		SAFE_DELETE(_backgroundObject);
-		int sizeX = _tilemap->GetWidth() * 3;
-		int sizeY = _tilemap->GetHeight() * 3;
-		CreateBackgroundObject(sizeX, sizeY, "grass1.png", sizeX/3, sizeY/3);
+	SAFE_DELETE(_backgroundObject);
+	int sizeX = _tilemap->GetWidth() * 3;
+	int sizeY = _tilemap->GetHeight() * 3;
+	CreateBackgroundObject(sizeX, sizeY, "grass1.png", sizeX / 3, sizeY / 3);
 	return result;
 }
 
