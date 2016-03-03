@@ -175,6 +175,11 @@ GameObject * Unit::GetHeldObject() const
 	return _heldObject;
 }
 
+GameObject* Unit::GetObjective() const
+{
+	return _objective;
+}
+
 Unit::MoveState Unit::GetMoveState() const
 {
 	return _moveState;
@@ -496,9 +501,22 @@ void Unit::TakeDamage(int damage)
 	}
 	else if (_health > 0)
 	{
-		Animate(DEATHANIM);
+		if (!_isAtSpawn)
+		{
+			Animate(DEATHANIM);
+		}
 		_health -= damage;
 	}
+}
+
+void Unit::SetIsAtSpawn(bool isAtSpawn)
+{
+	_isAtSpawn = isAtSpawn;
+}
+
+bool Unit::GetIsAtSpawn() const
+{
+	return _isAtSpawn;
 }
 
 void Unit::Animate(Anim anim)

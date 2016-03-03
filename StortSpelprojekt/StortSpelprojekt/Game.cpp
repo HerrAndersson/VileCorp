@@ -278,8 +278,9 @@ void Game::RenderGameObjects(int forShaderStage, std::vector<std::vector<GameObj
 			{
 				for (auto& obj : objVector)
 				{
+					XMMATRIX m = obj._world;
 					_renderModule->SetDataPerObjectType(obj._combinedObject);
-					_renderModule->Render(&obj._world, obj._vertexCount);
+					_renderModule->Render(&m, obj._vertexCount);
 				}
 			}
 

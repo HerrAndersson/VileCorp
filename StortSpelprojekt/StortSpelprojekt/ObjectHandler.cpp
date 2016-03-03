@@ -560,6 +560,7 @@ void ObjectHandler::Update(float deltaTime)
 			{
 				_tilemap->AddObjectToTile(g->GetTilePosition(), g);
 				g->SetPickUpState(ONTILE);
+				((Architecture*)g)->SetTargeted(false);
 			}
 
 			if (g->GetType() == System::GUARD || g->GetType() == System::ENEMY)
@@ -568,8 +569,22 @@ void ObjectHandler::Update(float deltaTime)
 				GameObject* heldObject = unit->GetHeldObject();
 				if (heldObject != nullptr && heldObject->GetPickUpState() == HELD)
 				{
-					heldObject->SetPosition(DirectX::XMFLOAT3(unit->GetPosition().x, unit->GetPosition().y + 2, unit->GetPosition().z));
+					heldObject->SetPosition(DirectX::XMFLOAT3(unit->GetPosition().x, unit->GetPosition().y + 2.0f, unit->GetPosition().z));
 					heldObject->SetTilePosition(AI::Vec2D(heldObject->GetPosition().x, heldObject->GetPosition().z));
+				}
+
+				bool inRangeOfSpawn = false;
+				for (uint k = 0; k < _gameObjects[System::SPAWN].size() && !inRangeOfSpawn; k++)
+				{
+					if (!_gameObjects[System::SPAWN][k]->InRange(unit->GetTilePosition()))
+					{
+						static_cast<Enemy*>(unit)->SetIsAtSpawn(false);
+					}
+					else
+					{
+						static_cast<Enemy*>(unit)->SetIsAtSpawn(true);
+						inRangeOfSpawn = true;
+					}
 				}
 
 				//Show Unit Lifebar
@@ -578,7 +593,7 @@ void ObjectHandler::Update(float deltaTime)
 					XMFLOAT3 pos = unit->GetPosition();
 					pos.y += 2.5f;
 
-					ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::HEALTH_SUBTYPE, -1, pos, XMFLOAT3(0, 0, 0), 1.0f, 1, unit->GetHealth()*0.0025f, true, true);
+					ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::EXCLAMATIONMARK_SUBTYPE, -1, pos, XMFLOAT3(0, 0, 0), 1.0f, 1, unit->GetHealth()*0.0025f, true, true);
 					GetParticleEventQueue()->Insert(msg);
 				}
 
@@ -588,17 +603,21 @@ void ObjectHandler::Update(float deltaTime)
 					{
 						unit->SetTilePosition(unit->GetNextTile());
 					}
+
 					if (heldObject != nullptr)
 					{
 						bool lootRemoved = false;
-
 						for (uint k = 0; k < _gameObjects[System::SPAWN].size() && !lootRemoved; k++)
 						{
 							//If the enemy is at the despawn point with an objective, remove the objective and the enemy, Aron
 							if (_gameObjects[System::SPAWN][k]->InRange(unit->GetTilePosition()))
 							{
 								lootRemoved = Remove(heldObject);
-								_enemySpawnVector.push_back(std::array<int, 2>{_enemySpawnVector.back()[0] + 1, (int)unit->GetSubType()});
+
+								if (_tilemap->GetNrOfLoot() > 0)
+								{
+									_enemySpawnVector.push_back(std::array<int, 2>{_enemySpawnVector.back()[0] + 1, (int)unit->GetSubType()});
+								}
 							}
 						}
 
@@ -609,23 +628,49 @@ void ObjectHandler::Update(float deltaTime)
 						}
 					}
 
-					//Bloodparticles on death
-					ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::SPLASH, ParticleSubType::BLOOD_SUBTYPE, -1, unit->GetPosition(), XMFLOAT3(0, 1, 0), 300.0f, 200, 0.1f, true);
-					GetParticleEventQueue()->Insert(msg);
-
-
-					//Play death sound
-					float x = g->GetPosition().x;
-					float z = g->GetPosition().z;
-					if (g->GetType() == System::ENEMY)
+					//Avoids the case where the Guard tries to attack a scrap value when the Enemy has been taken care of, Aron
+					for (uint k = 0; k < _gameObjects[System::GUARD].size(); k++)
 					{
-						_soundModule->SetSoundPosition("enemy_death", x, 0.0f, z);
-						_soundModule->Play("enemy_death");
+						if (((Guard*)_gameObjects[System::GUARD][k])->GetObjective() != nullptr)
+						{
+							if (((Guard*)_gameObjects[System::GUARD][k])->GetObjective()->GetID() == g->GetID())
+							{
+								((Guard*)_gameObjects[System::GUARD][k])->ClearObjective();
+							}
+						}
 					}
-					else if (g->GetType() == System::GUARD)
+
+					//Avoids the case where the Enemy tries to attack a scrap value when the Guard has been taken care of, Aron
+					for (uint k = 0; k < _gameObjects[System::ENEMY].size(); k++)
 					{
-						_soundModule->SetSoundPosition("guard_death", x, 0.0f, z);
-						_soundModule->Play("guard_death");
+						if (((Enemy*)_gameObjects[System::ENEMY][k])->GetObjective() != nullptr)
+						{
+							if (((Enemy*)_gameObjects[System::ENEMY][k])->GetObjective()->GetID() == g->GetID())
+							{
+								((Enemy*)_gameObjects[System::ENEMY][k])->ClearObjective();
+							}
+						}
+					}
+
+					if (!static_cast<Enemy*>(unit)->GetIsAtSpawn())
+					{
+						//Bloodparticles on death
+						ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::SPLASH, ParticleSubType::BLOOD_SUBTYPE, -1, unit->GetPosition(), XMFLOAT3(0, 1, 0), 300.0f, 200, 0.1f, true);
+						GetParticleEventQueue()->Insert(msg);
+
+						//Play death sound
+						float x = g->GetPosition().x;
+						float z = g->GetPosition().z;
+						if (g->GetType() == System::ENEMY)
+						{
+							_soundModule->SetSoundPosition("enemy_death", x, 0.0f, z);
+							_soundModule->Play("enemy_death");
+						}
+						else if (g->GetType() == System::GUARD)
+						{
+							_soundModule->SetSoundPosition("guard_death", x, 0.0f, z);
+							_soundModule->Play("guard_death");
+						}
 					}
 
 					//Remove object
@@ -638,6 +683,31 @@ void ObjectHandler::Update(float deltaTime)
 				{
 					_tilemap->RemoveObjectFromTile(unit->GetTilePosition(), g);
 					_tilemap->AddObjectToTile(unit->GetNextTile(), g);
+
+					//If all the objectives are looted and the enemy is at a (de)spawn point, despawn them.
+					bool allLootIsCarried = true;
+					for (uint k = 0; k < _gameObjects[System::SPAWN].size() && !allLootIsCarried; k++)
+					{
+						for (uint l = 0; l < _gameObjects[System::LOOT].size() && allLootIsCarried; l++)
+						{
+							if (_gameObjects[System::LOOT][l]->GetPickUpState() == ONTILE || _gameObjects[System::LOOT][l]->GetPickUpState() == DROPPING)
+							{
+								allLootIsCarried = false;
+							}
+						}
+
+						if (unit->GetType() == System::ENEMY &&
+							(_gameObjects[System::LOOT].size() == 0 || allLootIsCarried) &&
+							_gameObjects[System::SPAWN][k]->InRange(unit->GetTilePosition()))
+						{
+							unit->TakeDamage(unit->GetHealth());
+						}
+					}
+
+					if (allLootIsCarried && unit->GetHeldObject() == nullptr && static_cast<Enemy*>(unit)->GetMoveState() != Unit::MoveState::FLEEING)
+					{
+						static_cast<Enemy*>(unit)->CheckAllTiles();
+					}
 				}
 			}
 		}
