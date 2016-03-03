@@ -329,6 +329,18 @@
 				"../Menues/PlacementStateGUI/units/confusiontrapButton"
 			]
 		}, {
+			"_mesh": "flamethrowerTrap-29.bin",
+			"_name": "Flamethrower Trap",
+			"_type": 4,
+			"_subType": 10,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"GunText"
+			],
+			"_thumbnails": [
+				"../Menues/LevelEdit/Traps/FlameThrowerbutton1"
+			]
+		}, {
 			"_mesh": "SecurityCamera-27.bin",
 			"_name": "Camera",
 			"_type": 5,
@@ -425,22 +437,10 @@
 				"../Menues/LevelEdit/Decorations/pedestalButton"
 			]
 		}, {
-			"_mesh": "paintingDecoration-28.bin",
-			"_name": "Painting",
-			"_type": 8,
-			"_subType": 2,
-			"_tooltip": "SampleText",
-			"_textures": [
-				"painting"
-			],
-			"_thumbnails": [
-				"../Menues/LevelEdit/Decorations/paintingButton"
-			]
-		}, {
 			"_mesh": "lionStatueDecoration-28.bin",
 			"_name": "Lion Statue",
 			"_type": 8,
-			"_subType": 3,
+			"_subType": 2,
 			"_tooltip": "SampleText",
 			"_textures": [
 				"lionstatue"
@@ -452,7 +452,7 @@
 			"_mesh": "grandfatherClockDecoration-28.bin",
 			"_name": "Grand Father Clock",
 			"_type": 8,
-			"_subType": 4,
+			"_subType": 3,
 			"_tooltip": "SampleText",
 			"_textures": [
 				"grandpaclock"
@@ -464,7 +464,7 @@
 			"_mesh": "glassTableDecoration-28.bin",
 			"_name": "Glass Table",
 			"_type": 8,
-			"_subType": 5,
+			"_subType": 4,
 			"_tooltip": "SampleText",
 			"_textures": [
 				"glasstable"
@@ -476,7 +476,7 @@
 			"_mesh": "generatorDecoration-28.bin",
 			"_name": "Generator",
 			"_type": 8,
-			"_subType": 6,
+			"_subType": 5,
 			"_tooltip": "SampleText",
 			"_textures": [
 				"generator"
@@ -488,7 +488,7 @@
 			"_mesh": "frontDeskDecoration-28.bin",
 			"_name": "Front Desk",
 			"_type": 8,
-			"_subType": 7,
+			"_subType": 6,
 			"_tooltip": "SampleText",
 			"_textures": [
 				"frontdesk"
@@ -500,7 +500,7 @@
 			"_mesh": "floorLampDecoration-28.bin",
 			"_name": "Floor Lamp",
 			"_type": 8,
-			"_subType": 8,
+			"_subType": 7,
 			"_tooltip": "SampleText",
 			"_textures": [
 				"floorlamp"
@@ -512,7 +512,7 @@
 			"_mesh": "armlesStatueDecoration-28.bin",
 			"_name": "Armless Statue",
 			"_type": 8,
-			"_subType": 9,
+			"_subType": 8,
 			"_tooltip": "SampleText",
 			"_textures": [
 				"armlessstatue"
@@ -524,7 +524,7 @@
 			"_mesh": "museumFenceDecoration-28.bin",
 			"_name": "Museum Fence",
 			"_type": 8,
-			"_subType": 10,
+			"_subType": 9,
 			"_tooltip": "SampleText",
 			"_textures": [
 				"fences"
@@ -536,7 +536,7 @@
 			"_mesh": "museumFenceCornerDecoration-28.bin",
 			"_name": "Museum Fence",
 			"_type": 8,
-			"_subType": 11,
+			"_subType": 10,
 			"_tooltip": "SampleText",
 			"_textures": [
 				"fences"
@@ -548,7 +548,7 @@
 			"_mesh": "cupboardDecoration-28.bin",
 			"_name": "Cupboard",
 			"_type": 8,
-			"_subType": 12,
+			"_subType": 11,
 			"_tooltip": "SampleText",
 			"_textures": [
 				"cupboardtexture"
@@ -560,7 +560,7 @@
 			"_mesh": "tableEndsectionDecoration-28.bin",
 			"_name": "Table",
 			"_type": 8,
-			"_subType": 13,
+			"_subType": 12,
 			"_tooltip": "SampleText",
 			"_textures": [
 				"table2leg"
@@ -572,7 +572,7 @@
 			"_mesh": "tableEndsectionSingleLegDecoration-28.bin",
 			"_name": "Table",
 			"_type": 8,
-			"_subType": 14,
+			"_subType": 13,
 			"_tooltip": "SampleText",
 			"_textures": [
 				"table1leg"
@@ -584,7 +584,7 @@
 			"_mesh": "tableMidsectionDecoration-28.bin",
 			"_name": "Table",
 			"_type": 8,
-			"_subType": 15,
+			"_subType": 14,
 			"_tooltip": "SampleText",
 			"_textures": [
 				"tablemid"
@@ -596,7 +596,7 @@
 			"_mesh": "counterFlatDecoration-28.bin",
 			"_name": "Counter",
 			"_type": 8,
-			"_subType": 16,
+			"_subType": 15,
 			"_tooltip": "SampleText",
 			"_textures": [
 				"flatcounter"
@@ -608,7 +608,7 @@
 			"_mesh": "counterRoundDecoration-28.bin",
 			"_name": "Counter",
 			"_type": 8,
-			"_subType": 17,
+			"_subType": 16,
 			"_tooltip": "SampleText",
 			"_textures": [
 				"roundcounter"
@@ -620,7 +620,7 @@
 			"_mesh": "vase1Decoration-28.bin",
 			"_name": "Vase",
 			"_type": 8,
-			"_subType": 18,
+			"_subType": 17,
 			"_tooltip": "SampleText",
 			"_textures": [
 				"vase1"
@@ -632,13 +632,125 @@
 			"_mesh": "vase2Decoration-28.bin",
 			"_name": "Vase",
 			"_type": 8,
-			"_subType": 19,
+			"_subType": 18,
 			"_tooltip": "SampleText",
 			"_textures": [
 				"vase2"
 			],
 			"_thumbnails": [
 				"../Menues/LevelEdit/Decorations/vase2Button"
+			]
+		}, {
+			"_mesh": "paintingDecoration-28.bin",
+			"_name": "Painting",
+			"_type": 8,
+			"_subType": 19,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"painting"
+			],
+			"_thumbnails": [
+				"../Menues/LevelEdit/Decorations/paintingButton"
+			]
+		}, {
+			"_mesh": "PaintingLarge-29.bin",
+			"_name": "Painting",
+			"_type": 8,
+			"_subType": 20,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"PaintingLarge"
+			],
+			"_thumbnails": [
+				"../Menues/LevelEdit/Decorations/PaintingLarge"
+			]
+		}, {
+			"_mesh": "PaintingHouse-29.bin",
+			"_name": "Painting",
+			"_type": 8,
+			"_subType": 21,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"PaintingHouse"
+			],
+			"_thumbnails": [
+				"../Menues/LevelEdit/Decorations/PaintingHouse"
+			]
+		}, {
+			"_mesh": "PaintingGold-29.bin",
+			"_name": "Painting",
+			"_type": 8,
+			"_subType": 22,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"PaintingGold"
+			],
+			"_thumbnails": [
+				"../Menues/LevelEdit/Decorations/PaintingGold"
+			]
+		}, {
+			"_mesh": "Photos-29.bin",
+			"_name": "Photographs",
+			"_type": 8,
+			"_subType": 23,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"Photos"
+			],
+			"_thumbnails": [
+				"../Menues/LevelEdit/Decorations/Photos"
+			]
+		}, {
+			"_mesh": "mirrorSmallDecoration-29.bin",
+			"_name": "Mirror",
+			"_type": 8,
+			"_subType": 24,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"MirrorSmall",
+				"MirrorSmall2"
+			],
+			"_thumbnails": [
+				"../Menues/LevelEdit/Decorations/MirrorSmall",
+				"../Menues/LevelEdit/Decorations/MirrorSmall2"
+			]
+		}, {
+			"_mesh": "mirrorDecoration-28.bin",
+			"_name": "Mirror",
+			"_type": 8,
+			"_subType": 25,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"mirror",
+				"mirror2"
+			],
+			"_thumbnails": [
+				"../Menues/LevelEdit/Decorations/mirror",
+				"../Menues/LevelEdit/Decorations/mirror2"
+			]
+		}, {
+			"_mesh": "rabbitDecoration-29.bin",
+			"_name": "Mounted Head",
+			"_type": 8,
+			"_subType": 26,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"rabbitText"
+			],
+			"_thumbnails": [
+				"rabbitText"
+			]
+		}, {
+			"_mesh": "GiraffeDecoration-29.bin",
+			"_name": "Mounted Head",
+			"_type": 8,
+			"_subType": 27,
+			"_tooltip": "SampleText",
+			"_textures": [
+				"giraffeTexture"
+			],
+			"_thumbnails": [
+				"giraffeTexture"
 			]
 		}]
 	}

@@ -14,15 +14,21 @@ ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, G
 	_gameObjects.resize(System::NR_OF_TYPES);
 	_particleEventQueue = particleEventQueue;
 	_soundModule = soundModule;
+	_backgroundObject = nullptr;
+
+	int sizeX = 100;
+	int sizeY = 100;
+	CreateBackgroundObject(sizeX, sizeY, "grass1.png", sizeX, sizeY);
 }
 
 ObjectHandler::~ObjectHandler()
 {
 	UnloadLevel();
 	SAFE_DELETE(_buildingGrid);
+	SAFE_DELETE(_backgroundObject);
 }
 
-GameObject* ObjectHandler::Add(System::Blueprint* blueprint, int textureId, const XMFLOAT3& position, const XMFLOAT3& rotation, const bool placeOnTilemap)
+GameObject* ObjectHandler::Add(System::Blueprint* blueprint, int textureId, const XMFLOAT3& position, const XMFLOAT3& rotation, const bool placeOnTilemap, AI::Vec2D direction)
 {
 	GameObject* object = nullptr;
 	System::Type type = (System::Type)blueprint->_type;
@@ -36,22 +42,22 @@ GameObject* ObjectHandler::Add(System::Blueprint* blueprint, int textureId, cons
 	case System::FLOOR:
 	case System::FURNITURE:
 	case System::LOOT:
-		object = new Architecture(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, blueprint->_subType);
+		object = new Architecture(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, blueprint->_subType, direction);
 		break;
 	case  System::SPAWN:
-		object = new SpawnPoint(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, blueprint->_subType);
+		object = new SpawnPoint(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, blueprint->_subType, direction);
 		break;
 	case  System::TRAP:
-		object = new Trap(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, _tilemap, blueprint->_subType);
+		object = new Trap(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, _tilemap, blueprint->_subType, direction);
 		break;
 	case  System::CAMERA:
-		object = new SecurityCamera(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, _tilemap);
+		object = new SecurityCamera(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, _tilemap, direction);
 		break;
 	case  System::ENEMY:
-		object = new Enemy(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, _tilemap, blueprint->_subType);
+		object = new Enemy(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, _tilemap, blueprint->_subType, direction);
 		break;
 	case  System::GUARD:
-		object = new Guard(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, _tilemap, blueprint->_subType);
+		object = new Guard(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, _tilemap, blueprint->_subType, direction);
 		break;
 	default:
 		break;
@@ -386,15 +392,18 @@ void ObjectHandler::MinimizeTileMap()
 				pos._x = x + minX;
 				pos._y = y + minY;
 
-				std::vector<GameObject*> temp = _tilemap->GetAllObjectsOnTile(pos);
+				std::vector<GameObject*> temp = *_tilemap->GetAllObjectsOnTile(pos);
 
 				for (GameObject* g : temp)
 				{
-					// Update real pos
-					g->SetPosition(XMFLOAT3(x, g->GetPosition().y, y));
+					if (g)
+					{
+						// Update real pos
+						g->SetPosition(XMFLOAT3(x, g->GetPosition().y, y));
 
-					// Update tile
-					minimized->AddObjectToTile(x, y, g);
+						// Update tile
+						minimized->AddObjectToTile(x, y, g);
+					}
 				}
 			}
 		}
@@ -428,15 +437,18 @@ void ObjectHandler::EnlargeTilemap(int offset)
 				AI::Vec2D pos;
 				pos._x = x - offset;
 				pos._y = y - offset;
-				std::vector<GameObject*> temp = _tilemap->GetAllObjectsOnTile(pos);
+				std::vector<GameObject*> temp = *_tilemap->GetAllObjectsOnTile(pos);
 
 				for (GameObject* g : temp)
 				{
-					// Update real pos
-					g->SetPosition(XMFLOAT3(x, g->GetPosition().y, y));
+					if (g)
+					{
+						// Update real pos
+						g->SetPosition(XMFLOAT3(x, g->GetPosition().y, y));
 
-					// Update tile
-					large->AddObjectToTile(x, y, g);
+						// Update tile
+						large->AddObjectToTile(x, y, g);
+					}
 				}
 			}
 		}
@@ -489,7 +501,9 @@ bool ObjectHandler::LoadLevel(Level::LevelBinary &levelData)
 		//Rotation
 		float rotY = (formattedGameObject->at(5) * DirectX::XM_PI) / 180.0f;
 
-		Add(blueprint, formattedGameObject->at(2), DirectX::XMFLOAT3(posX, 0, posZ), DirectX::XMFLOAT3(0, rotY, 0), true);
+		AI::Vec2D direction = AI::CLOCKWISE_ROTATION[(formattedGameObject->at(5) * static_cast<int>(8.0f / 360) + 4) % 8];
+
+		Add(blueprint, formattedGameObject->at(2), DirectX::XMFLOAT3(posX, 0, posZ), DirectX::XMFLOAT3(0, rotY, 0), true, direction);
 	}
 
 	_currentAvailableUnits = levelData._availableUnits;
@@ -497,6 +511,11 @@ bool ObjectHandler::LoadLevel(Level::LevelBinary &levelData)
 	_enemySpawnIndex = 0;
 
 	_lightCulling = new LightCulling(_tilemap);
+
+		SAFE_DELETE(_backgroundObject);
+		int sizeX = _tilemap->GetWidth() * 3;
+		int sizeY = _tilemap->GetHeight() * 3;
+		CreateBackgroundObject(sizeX, sizeY, "grass1.png", sizeX/3, sizeY/3);
 	return result;
 }
 
@@ -769,6 +788,59 @@ map<GameObject*, Renderer::Pointlight*>* ObjectHandler::GetPointlights()
 vector<vector<GameObject*>>* ObjectHandler::GetObjectsInLight(Renderer::Spotlight* spotlight)
 {
 	return _lightCulling->GetObjectsInSpotlight(spotlight);
+}
+
+RenderObject* ObjectHandler::GetBackgroundObject()
+{
+	return _backgroundObject;
+}
+
+//If the texture should repeat for every tile, set texRepeatCountX = sizeX and texRepeatCountY = sizeY
+void ObjectHandler::CreateBackgroundObject(const float& sizeX, const float& sizeY, const std::string& textureName, const int& texRepeatCountX, const int& texRepeatCountY)
+{
+	_backgroundObject = new RenderObject();
+
+	float left = -1 * sizeX;
+	float right = 1 * sizeY;
+	float top = 1 * sizeY;
+	float bottom = -1 * sizeY;
+	XMFLOAT3 normal = XMFLOAT3(0, 1, 0);
+
+	Vertex quad[] =
+	{ { XMFLOAT3(left, -0.01f, top), normal, XMFLOAT2(0.0f, 0.0f) },
+	{ XMFLOAT3(right, -0.01f, bottom), normal, XMFLOAT2(texRepeatCountX, texRepeatCountY) },
+	{ XMFLOAT3(left, -0.01f, bottom), normal, XMFLOAT2(0.0f, texRepeatCountY) },
+	{ XMFLOAT3(left, -0.01f, top), normal, XMFLOAT2(0.0f, 0.0f) },
+	{ XMFLOAT3(right, -0.01f, top), normal, XMFLOAT2(texRepeatCountX, 0.0f) },
+	{ XMFLOAT3(right, -0.01f, bottom), normal, XMFLOAT2(texRepeatCountX, texRepeatCountY) } };
+
+	D3D11_BUFFER_DESC bufferDesc;
+	ZeroMemory(&bufferDesc, sizeof(bufferDesc));
+	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	bufferDesc.ByteWidth = sizeof(Vertex) * 6;
+
+	Mesh* mesh = new Mesh();
+
+	D3D11_SUBRESOURCE_DATA data;
+	data.pSysMem = quad;
+	HRESULT result = _device->CreateBuffer(&bufferDesc, &data, &mesh->_vertexBuffer);
+
+	mesh->_activeUsers = 1;
+	mesh->_hitbox = nullptr;
+	mesh->_isSkinned = false;
+	mesh->_meshLoaded = true;
+	mesh->_name = "background";
+	mesh->_pointLights.clear();
+	mesh->_skeleton = nullptr;
+	mesh->_skeletonName = "nullptr";
+	mesh->_spotLights.clear();
+	mesh->_toMesh = 1;
+	mesh->_vertexBufferSize = 6;
+
+	_backgroundObject->_diffuseTexture = _assetManager->GetTexture(textureName);
+	_backgroundObject->_specularTexture = nullptr;
+	_backgroundObject->_mesh = mesh;
 }
 
 void ObjectHandler::ReleaseGameObjects()

@@ -36,7 +36,6 @@ Texture2D camDepthMap : register(t3);
 Texture2D lightDepthMap : register(t4);
 
 SamplerState samplerWrap : register(s0);
-SamplerState samplerClamp : register(s1);
 SamplerState samplerPoint : register(s2);
 
 float3 ReconstructWorldFromCamDepth(float2 uv)

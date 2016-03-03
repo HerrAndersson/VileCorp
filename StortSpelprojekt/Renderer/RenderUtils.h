@@ -5,6 +5,7 @@
 #include <DirectXMath.h>
 #include <map>
 #include "CommonUtils.h"
+#include "stdafx.h"
 
 static const DirectX::XMFLOAT3 AMBIENT_LIGHT_NIGHT = DirectX::XMFLOAT3(0.14f, 0.15f, 0.2f);
 static const DirectX::XMFLOAT3 AMBIENT_LIGHT_DAY = DirectX::XMFLOAT3(0.5f, 0.5f, 0.5f);
@@ -37,6 +38,11 @@ struct BoneFrames
 	int _frameCount;
 	std::vector<float> _frameTime;
 	Frame* _frames;
+
+	~BoneFrames()
+	{
+		_aligned_free(_frames);
+	}
 };
 
 struct Action
@@ -98,7 +104,6 @@ struct Mesh
 	short _activeUsers = 0;
 	bool _meshLoaded;
 	bool _isSkinned = false;
-	bool DecrementUsers();
 	int _vertexBufferSize, _toMesh;
 	float _particleSpawnerPos[3], _iconPos[3];
 	System::Hitbox* _hitbox = nullptr;
@@ -121,11 +126,18 @@ struct Mesh
 			delete _hitbox;
 		}
 	}
+
+	bool DecrementUsers()
+	{
+		_activeUsers--;
+		return (!_activeUsers);
+	}
 };
 
 struct Texture
 {
 	HRESULT LoadTexture(ID3D11Device* device);
+	int _id = 0;
 	short _activeUsers = 0;
 	bool _loaded = false;
 	std::string _name;
@@ -161,15 +173,22 @@ struct RenderObject
 		{
 			_specularTexture->DecrementUsers();
 		}
-		if (_mesh->DecrementUsers())
+		if (_mesh && _mesh->DecrementUsers())
 		{
-			delete _mesh;
+			SAFE_DELETE(_mesh);
 		}
 	}
+
+	bool operator<(const RenderObject& other)
+	{
+		return (this->_diffuseTexture->_id < other._diffuseTexture->_id);
+	}
+
 	bool operator==(const RenderObject& other) 
 	{
 		return _id == other._id;
 	}
+
 	bool operator!=(const RenderObject& other) 
 	{
 		return !(*this == other);
