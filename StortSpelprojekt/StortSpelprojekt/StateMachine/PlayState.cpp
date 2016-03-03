@@ -28,6 +28,9 @@ PlayState::PlayState(System::Controls* controls, ObjectHandler* objectHandler, S
 	_soundModule->AddSound("bomb_activate", 1.0f, 1.0f, false, false);
 	_soundModule->AddSound("bear_activate", 0.8f, 1.0f, false, false);
 	_soundModule->AddSound("flame_activate", 1.0f, 1.0f, false, false);
+	_soundModule->AddSound("shark_activate", 1.0f, 1.0f, false, false);
+	_soundModule->AddSound("water_activate", 1.0f, 1.0f, false, false);
+	_soundModule->AddSound("spin_activate", 1.0f, 1.0f, false, false);
 }
 
 PlayState::~PlayState()
