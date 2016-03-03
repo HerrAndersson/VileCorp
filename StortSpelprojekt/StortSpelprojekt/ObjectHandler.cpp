@@ -589,7 +589,7 @@ void ObjectHandler::Update(float deltaTime)
 							if (_gameObjects[System::SPAWN][k]->InRange(unit->GetTilePosition()))
 							{
 								lootRemoved = Remove(heldObject);
-								_enemySpawnVector.push_back(std::array<int, 2>{(_spawnTimer / 60) + 1, (int)unit->GetSubType()});
+								_enemySpawnVector.push_back(std::array<int, 2>{_enemySpawnVector.back()[0] + 1, (int)unit->GetSubType()});
 							}
 						}
 

@@ -677,6 +677,7 @@ bool LevelEditState::HandleButtonsForDialogWindows(System::MouseCoord &coord, bo
 			if (_levelHeaderFilenames.size() > 0)
 			{
 				_uiTree.GetNode("ImportMapList")->SetHidden(true);
+				ResetLevel();
 				LoadLevel(_levelHeaderFilenames[_loadLevelSelectedIndex]);
 			}
 			_dialogWindowLock = false;
@@ -700,7 +701,7 @@ bool LevelEditState::HandleButtonsForDialogWindows(System::MouseCoord &coord, bo
 		else if (_uiTree.IsButtonColliding("LevelDown", coord) && !_uiTree.IsNodeHidden("LevelDown"))
 		{
 			clickedOnGUI = true;
-			if (!(_loadLevelSelectedIndex >= _levelHeaderFilenames.size()))
+			if ((_loadLevelSelectedIndex < _levelHeaderFilenames.size()))
 			{
 				_loadLevelSelectedIndex++;
 				_loadLevelTextNode->SetText(System::StringToWstring(_levelHeaderFilenames[_loadLevelSelectedIndex]));

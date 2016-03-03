@@ -363,6 +363,9 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	_triggerTiles = nullptr;
 	_subType = trapType;
 	int radius = 0;
+	_nrOfOccupiedTiles = 0;
+	_nrOfTriggers = 0;
+	_nrOfAOETiles = 0;
 
 	bool frozen = true;
 	switch (_subType)

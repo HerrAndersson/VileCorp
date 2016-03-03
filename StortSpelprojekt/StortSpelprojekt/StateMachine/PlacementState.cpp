@@ -152,6 +152,9 @@ void PlacementState::OnStateEnter()
 	//SHARK TRAP
 	_uiTree.GetNode("SharkCost")->SetText(L"Damage: Very Haj\nUses: 1\nAtk. Speed: Slow\nEffect: Big area");
 
+	//TODO: Remove this. hard coded.
+	_tutorialState = TutorialState::NOTUTORIAL;
+
 	if (_tutorialState == TutorialState::NEWTUTORIAL)
 	{
 		_uiTree.GetNode("Tutorial")->SetHidden(false);

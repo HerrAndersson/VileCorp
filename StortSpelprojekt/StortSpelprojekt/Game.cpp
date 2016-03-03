@@ -11,7 +11,7 @@ Game::Game(HINSTANCE hInstance, int nCmdShow):
 	System::Settings* settings = _settingsReader.GetSettings();
 
 	_gameHandle = this;
-	_window = new System::Window("Amazing game", hInstance, settings, WndProc);
+	_window = new System::Window("Vile Corp.", hInstance, settings, WndProc);
 
 
 	_timer = System::Timer();
@@ -553,10 +553,10 @@ int Game::Run()
 					if (run)
 					{
 						Render();
-
+#ifdef _DEBUG
 						string s = to_string(_timer.GetFrameTime()) + " " + to_string(_timer.GetFPS());
 						SetWindowText(_window->GetHWND(), s.c_str());
-
+#endif // DEBUG
 						_timer.Reset();
 					}
 				}
