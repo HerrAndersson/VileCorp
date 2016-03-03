@@ -96,6 +96,14 @@ bool OptionsState::HandleOptionSwitch(const std::string& leftId, const std::stri
 	{
 		UpdateText(contentId, optionValue, options);
 	}
+	if (leftClicked)
+	{
+		_buttonClicked = leftClicked;
+	}
+	else if (rightClicked)
+	{
+		_buttonClicked = rightClicked;
+	}
 	return leftClicked || rightClicked;
 }
 
@@ -115,6 +123,8 @@ void OptionsState::Update(float deltaTime)
 	}
 	if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
+		_showApplyButton = false;
+
 		_showApplyButton = _showApplyButton || HandleOptionSwitch("res_left", "res_right", "res_content", _resolutionOption, _resolution, RESOLUTION_MAX);
 		_showApplyButton = _showApplyButton || HandleOptionSwitch("win_left", "win_right", "win_content", _windowOption, _window, WINDOW_MAX);
 		_showApplyButton = _showApplyButton || HandleOptionSwitch("aa_left", "aa_right", "aa_content", _aaOption, _aa, AA_MAX);
@@ -126,7 +136,7 @@ void OptionsState::Update(float deltaTime)
 		text->SetText(std::to_wstring(_volume * 10) + L"%");
 
 
-		_uiTree.GetNode("apply")->SetHidden(!_showApplyButton);
+		_uiTree.GetNode("apply")->SetHidden(!_buttonClicked);
 
 		//Check it the apply button was pressed and change settings file and update the window resolution if needed
 		if (_uiTree.IsButtonColliding("apply", coord._pos.x, coord._pos.y))
@@ -218,6 +228,7 @@ void OptionsState::OnStateEnter()
 	text->SetText(std::to_wstring(_volume * 10) + L"%");
 
 	_showApplyButton = false;
+	_buttonClicked = false;
 }
 
 void OptionsState::OnStateExit()
