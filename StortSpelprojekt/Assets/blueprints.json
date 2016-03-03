@@ -738,10 +738,10 @@
 				"rabbitText"
 			],
 			"_thumbnails": [
-				"rabbitText"
+				"../Menues/LevelEdit/Decorations/RabbitButton"
 			]
 		}, {
-			"_mesh": "GiraffeDecoration-29.bin",
+			"_mesh": "GiraffeDecorations-29.bin",
 			"_name": "Mounted Head",
 			"_type": 8,
 			"_subType": 27,
@@ -750,7 +750,7 @@
 				"giraffeTexture"
 			],
 			"_thumbnails": [
-				"giraffeTexture"
+				"../Menues/LevelEdit/Decorations/giraffeButton"
 			]
 		}]
 	}
