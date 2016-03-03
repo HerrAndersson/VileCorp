@@ -66,14 +66,14 @@ void LevelSelectState::Update(float deltaTime)
 				{
 					levelBinaryPath = System::CAMPAIGN_FOLDER_PATH;
 					//if we have selected the tutorial map
-					if (_campaignSelection == TUTORIAL)
-					{
-						_tutorialState = TutorialState::NEWTUTORIAL;
-					}
-					else
-					{
-						_tutorialState = TutorialState::NOTUTORIAL;
-					}
+					//if (_campaignSelection == TUTORIAL)
+					//{
+					//	_tutorialState = TutorialState::NEWTUTORIAL;
+					//}
+					//else
+					//{
+					//	_tutorialState = TutorialState::NOTUTORIAL;
+					//}
 				}
 				else
 				{
