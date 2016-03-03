@@ -11,11 +11,12 @@ private:
 	struct Tile
 	{
 		static const int OBJECT_CAPACITY = 6;
-		GameObject* _objectsOnTile[OBJECT_CAPACITY];					//0 = floor or wall, 1 = enemy, 2 = guard, 3 = trap or spawnpoint, 4 = furniture, 5 = thief objectives 
+		std::vector<GameObject*> _objectsOnTile;					//0 = floor or wall, 1 = enemy, 2 = guard, 3 = trap or spawnpoint, 4 = furniture, 5 = thief objectives 
 		bool _isVisible;
 		bool _lock;
 		Tile()
 		{
+			_objectsOnTile.resize(OBJECT_CAPACITY);
 			for (int i = 0; i < OBJECT_CAPACITY; i++)
 			{
 				_objectsOnTile[i] = nullptr;
@@ -65,8 +66,9 @@ public:
 	GameObject* GetObjectOnTile(AI::Vec2D pos, System::Type type) const;
 	GameObject* GetObjectOnTile(int x, int z, System::Type type) const;
 
-	std::vector<GameObject*> GetAllObjectsOnTile(AI::Vec2D tileCoords) const;
-	
+	std::vector<GameObject*>* GetAllObjectsOnTile(AI::Vec2D tileCoords) const;
+	std::vector<GameObject*>* GetAllObjectsOnTile(int xCoord, int yCoord) const;
+
 	bool IsValid(AI::Vec2D pos) const;
 	bool IsValid(int x, int z) const;
 

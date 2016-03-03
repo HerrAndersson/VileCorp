@@ -351,7 +351,7 @@ namespace Renderer
 		ZeroMemory(&bufferDesc, sizeof(bufferDesc));
 		bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 		bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-		bufferDesc.ByteWidth = _vertexSize * particleCount;;
+		bufferDesc.ByteWidth = _vertexSize * particleCount;
 		bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
 		D3D11_SUBRESOURCE_DATA data;

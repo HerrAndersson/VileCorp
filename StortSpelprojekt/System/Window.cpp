@@ -96,21 +96,18 @@ namespace System
 			style = _defaultStyle & ~(WS_CAPTION | WS_MINIMIZE | WS_MAXIMIZE | WS_SYSMENU | WS_POPUP | WS_BORDER);
 			exStyle = _defaultExStyle & ~(WS_EX_DLGMODALFRAME | WS_EX_CLIENTEDGE | WS_EX_STATICEDGE);
 		}
-		else //This is a window with borders - adjust the window size acordingly
+		else //This is a window with borders - adjust the window size accordingly
 		{
 			RECT rect = { 0, 0, windowWidth, windowHeight };
 			AdjustWindowRect(&rect, style, FALSE);
 			windowWidth = rect.right - rect.left;
 			windowHeight = rect.bottom - rect.top;
 		}
-		
-		int windowPositionX = (systemWidth - windowWidth) / 2;
-		int windowPositionY = (systemHeight - windowHeight) / 2;
 
 		SetWindowLong(_hwnd, GWL_STYLE, style);
 		SetWindowLong(_hwnd, GWL_EXSTYLE, exStyle);
 
-		SetWindowPos(_hwnd, HWND_TOP, windowPositionX, windowPositionY, windowWidth, windowHeight, SWP_FRAMECHANGED);
+		SetWindowPos(_hwnd, HWND_TOP, 0, 0, windowWidth, windowHeight, SWP_FRAMECHANGED);
 		SetFocus(_hwnd);
 		ShowCursor(_settings->_showMouseCursor);
 		ShowWindow(_hwnd, SW_SHOW);
