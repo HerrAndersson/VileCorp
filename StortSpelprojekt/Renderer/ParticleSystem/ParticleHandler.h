@@ -39,8 +39,8 @@ namespace Renderer
 
 		int GetEmitterCount() const;
 		ParticleEmitter* GetEmitter(int index);
-		Texture** GetTextures(int& count, const ParticleSubType& subType);
-		Texture* GetIconTexture(const ParticleSubType& subType);
+		ID3D11ShaderResourceView** GetTextures(int& count, const ParticleSubType& subType);
+		ID3D11ShaderResourceView* GetIconTexture(const ParticleSubType& subType);
 		
 		void DeactivateAllEmitters();
 

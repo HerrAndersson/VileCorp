@@ -78,6 +78,9 @@ private:
 
 	Renderer::ParticleEventQueue* _particleEventQueue;
 
+	RenderObject* _backgroundObject;
+	void CreateBackgroundObject(const float& sizeX, const float& sizeY, const std::string& textureName, const int& texRepeatCountX, const int& texRepeatCountY);
+
 	void ReleaseGameObjects();
 	void SpawnEnemies();
 
@@ -115,6 +118,7 @@ public:
 	void MinimizeTileMap();
 	void EnlargeTilemap(int offset);
 	Grid* GetBuildingGrid();
+	RenderObject* GetBackgroundObject();
 
 	Level::LevelHeader* GetCurrentLevelHeader();
 	void SetCurrentLevelHeader(Level::LevelHeader levelheader);

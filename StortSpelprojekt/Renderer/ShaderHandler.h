@@ -1,7 +1,7 @@
 #ifndef SHADERHANDLER_H
 #define SHADERHANDLER_H
 #include <d3d11.h>
-
+#include <string>
 #include "stdafx.h"
 
 namespace Renderer
@@ -47,6 +47,7 @@ namespace Renderer
 		ID3D11PixelShader*		_hudPassPS;
 		ID3D11PixelShader*		_fxaaPassPS;
 		ID3D11PixelShader*		_billboardingPS;
+		ID3D11PixelShader*		_noFxaaPS;
 
 		//Geometry shaders
 		ID3D11GeometryShader*   _billboardingGS;
@@ -57,13 +58,13 @@ namespace Renderer
 		ID3D11SamplerState*		_samplerCLAMP;
 		ID3D11SamplerState*		_samplerCMP;
 
-		VertexShaderData* CreateVertexShader(ID3D11Device* device, LPCWSTR fileName, D3D11_INPUT_ELEMENT_DESC* inputDesc, int inputDescSize);
+		VertexShaderData* CreateVertexShader(ID3D11Device* device, const std::wstring& fileName, D3D11_INPUT_ELEMENT_DESC* inputDesc, int inputDescSize);
 
-		ID3D11HullShader* CreateHullShader(ID3D11Device* device, LPCWSTR fileName);
-		ID3D11GeometryShader* CreateGeometryShader(ID3D11Device* device, LPCWSTR fileName);
-		ID3D11DomainShader* CreateDomainShader(ID3D11Device* device, LPCWSTR fileName);
-		ID3D11PixelShader* CreatePixelShader(ID3D11Device* device, LPCWSTR fileName);
-		ID3D11ComputeShader* CreateComputeShader(ID3D11Device* device, LPCWSTR fileName);
+		ID3D11HullShader* CreateHullShader(ID3D11Device* device, const std::wstring& fileName);
+		ID3D11GeometryShader* CreateGeometryShader(ID3D11Device* device, const std::wstring& fileName);
+		ID3D11DomainShader* CreateDomainShader(ID3D11Device* device, const std::wstring& fileName);
+		ID3D11PixelShader* CreatePixelShader(ID3D11Device* device, const std::wstring& fileName);
+		ID3D11ComputeShader* CreateComputeShader(ID3D11Device* device, const std::wstring& fileName);
 
 	public:
 
@@ -78,7 +79,7 @@ namespace Renderer
 		void SetSpotlightApplicationShaders(ID3D11DeviceContext* deviceContext);
 		void SetPointlightApplicationShaders(ID3D11DeviceContext* deviceContext);
 		void SetHUDPassShaders(ID3D11DeviceContext* deviceContext);
-		void SetFXAAPassShaders(ID3D11DeviceContext* deviceContext);
+		void SetFXAAPassShaders(ID3D11DeviceContext* deviceContext, bool enabled);
 		void SetBillboardingStageShaders(ID3D11DeviceContext* deviceContext);
 	};
 }

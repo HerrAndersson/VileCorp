@@ -12,6 +12,7 @@
 #include "GUI elements/Node.h"
 #include "FontWrapper.h"
 #include "../System/Settings/settings.h"
+#include "ParticleSystem/ParticleUtils.h"
 
 /*
 
@@ -148,6 +149,7 @@ namespace Renderer
 		System::Settings*	_settings;
 
 		DirectX::XMFLOAT3	_ambientLight;
+		bool				_antialiasingEnabled;
 
 		void InitializeConstantBuffers();
 		void InitializeScreenQuadBuffer();
@@ -173,7 +175,7 @@ namespace Renderer
 		void SetDataPerObjectType(RenderObject* renderObject);
 		void SetDataPerLineList(ID3D11Buffer* lineList, int vertexSize);
 		void SetDataPerParticleEmitter(const DirectX::XMFLOAT3& position, DirectX::XMMATRIX* camView, DirectX::XMMATRIX* camProjection, 
-									   const DirectX::XMFLOAT3& camPos, float scale, Texture** textures, int textureCount, int isIcon);
+									   const DirectX::XMFLOAT3& camPos, float scale, ID3D11ShaderResourceView** textures, int textureCount, int isIcon);
 
 		void SetShadowMapDataPerObjectType(RenderObject* renderObject);
 		void SetShadowMapDataPerSpotlight(DirectX::XMMATRIX* lightView, DirectX::XMMATRIX* lightProjection);
@@ -186,6 +188,7 @@ namespace Renderer
 
 		DirectX::XMFLOAT3 GetAmbientLight() const;
 		void SetAmbientLight(const DirectX::XMFLOAT3 &ambientLight);
+		void SetAntialiasingEnabled(bool enabled);
 
 		void BeginScene(float red, float green, float blue, float alpha);
 		void Render(DirectX::XMMATRIX* world, int vertexBufferSize, const DirectX::XMFLOAT3& colorOffset = DirectX::XMFLOAT3(0, 0, 0));
@@ -195,7 +198,7 @@ namespace Renderer
 		void RenderShadowMap(DirectX::XMMATRIX* world, int vertexBufferSize, DirectX::XMMATRIX* animTransformData = nullptr, int bonecount = 0);
 		void RenderScreenQuad();
 		void RenderParticles(ID3D11Buffer* particlePointsBuffer, int vertexCount, int vertexSize);
-		void RenderLightVolume(ID3D11Buffer* volume, DirectX::XMMATRIX* world, int vertexCount, int vertexSize);
+		void RenderVertexBuffer(ID3D11Buffer* vertexBuffer, DirectX::XMMATRIX* world, int vertexCount, int vertexSize);
 		void EndScene();
 
 		ID3D11Device* GetDevice() const;

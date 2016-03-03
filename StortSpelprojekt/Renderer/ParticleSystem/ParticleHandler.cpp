@@ -116,9 +116,9 @@ namespace Renderer
 		return _requestQueue;
 	}
 
-	Texture** ParticleHandler::GetTextures(int& count, const ParticleSubType& subType)
+	ID3D11ShaderResourceView** ParticleHandler::GetTextures(int& count, const ParticleSubType& subType)
 	{
-		Texture** textures = nullptr;
+		ID3D11ShaderResourceView** textures = nullptr;
 		count = -1;
 
 		switch (subType)
@@ -168,9 +168,9 @@ namespace Renderer
 		return textures;
 	}
 
-	Texture* ParticleHandler::GetIconTexture(const ParticleSubType& subType)
+	ID3D11ShaderResourceView* ParticleHandler::GetIconTexture(const ParticleSubType& subType)
 	{
-		Texture* icon = nullptr;
+		ID3D11ShaderResourceView* icon = nullptr;
 		switch (subType)
 		{
 			case ParticleSubType::EXCLAMATIONMARK_SUBTYPE:

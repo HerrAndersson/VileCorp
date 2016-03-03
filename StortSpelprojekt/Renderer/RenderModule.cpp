@@ -10,6 +10,7 @@ namespace Renderer
 		_d3d = new DirectXHandler(hwnd, settings);
 		_settings = settings;
 		_shaderHandler = new ShaderHandler(_d3d->GetDevice());
+		_antialiasingEnabled = 0;
 
 		InitializeScreenQuadBuffer();
 		InitializeConstantBuffers();
@@ -242,7 +243,7 @@ namespace Renderer
 	}
 
 	void RenderModule::SetDataPerParticleEmitter(const XMFLOAT3& position, XMMATRIX* camView, XMMATRIX* camProjection,
-												 const XMFLOAT3& camPos, float scale, Texture** textures, int textureCount, int isIcon)
+												 const XMFLOAT3& camPos, float scale, ID3D11ShaderResourceView** textures, int textureCount, int isIcon)
 	{
 		HRESULT result;
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -269,10 +270,7 @@ namespace Renderer
 
 		if (textures)
 		{
-			for (int i = 0; i < textureCount; i++)
-			{
-				deviceContext->PSSetShaderResources(i, 1, &textures[i]->_data);
-			}
+			deviceContext->PSSetShaderResources(0, textureCount, textures);
 		}
 	}
 
@@ -450,7 +448,6 @@ namespace Renderer
 		}
 		case ANIM_SHADOW_GENERATION:
 		{
-			//Topology has to be set here because GRID_STAGE, which is the previous stage, will change to LINELIST
 			deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 			_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::DISABLE);
 			_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::FRONT);
@@ -461,6 +458,8 @@ namespace Renderer
 		}
 		case GEO_PASS:
 		{
+			_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::DISABLE);
+			_d3d->SetCullingState(Renderer::DirectXHandler::CullingState::BACK);
 			deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 			_d3d->SetGeometryStage();
 			_shaderHandler->SetGeometryStageShaders(deviceContext);
@@ -474,7 +473,7 @@ namespace Renderer
 			_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::DISABLE);
 			_d3d->SetAntiAliasingState();
 
-			_shaderHandler->SetFXAAPassShaders(deviceContext);
+			_shaderHandler->SetFXAAPassShaders(deviceContext, _antialiasingEnabled);
 			break;
 		}
 		case SHADOW_GENERATION:
@@ -559,6 +558,11 @@ namespace Renderer
 	void RenderModule::SetAmbientLight(const DirectX::XMFLOAT3 &ambientLight)
 	{
 		_ambientLight = ambientLight;
+	}
+
+	void RenderModule::SetAntialiasingEnabled(bool enabled)
+	{
+		_antialiasingEnabled = enabled;
 	}
 
 	void RenderModule::BeginScene(float red, float green, float blue, float alpha)
@@ -657,23 +661,20 @@ namespace Renderer
 		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
 
 		SetDataPerObject(world, colorOffset);
-
 		deviceContext->Draw(nrOfPoints, 0);
 	}
 
 	void RenderModule::RenderScreenQuad()
 	{
 		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
-
 		UINT32 vertexSize = sizeof(ScreenQuadVertex);
 		UINT32 offset = 0;
 
 		deviceContext->IASetVertexBuffers(0, 1, &_screenQuad, &vertexSize, &offset);
-
 		deviceContext->Draw(6, 0);
 	}
 
-	void RenderModule::RenderLightVolume(ID3D11Buffer* volume, DirectX::XMMATRIX* world, int vertexCount, int vertexSize)
+	void RenderModule::RenderVertexBuffer(ID3D11Buffer* vertexBuffer, DirectX::XMMATRIX* world, int vertexCount, int vertexSize)
 	{
 		HRESULT result;
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -696,7 +697,7 @@ namespace Renderer
 		UINT32 vtxs = vertexSize;
 		UINT32 offset = 0;
 
-		deviceContext->IASetVertexBuffers(0, 1, &volume, &vtxs, &offset);
+		deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &vtxs, &offset);
 
 		deviceContext->Draw(vertexCount, 0);
 	}

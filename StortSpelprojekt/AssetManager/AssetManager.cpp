@@ -90,12 +90,6 @@ HRESULT Texture::LoadTexture(ID3D11Device* device)
 	return res;
 }
 
-bool Mesh::DecrementUsers()
-{
-	_activeUsers--;
-	return (!_activeUsers);
-}
-
 //Loads a model to the GPU
 bool AssetManager::LoadModel(string name, Mesh* mesh)
 {
@@ -572,6 +566,7 @@ Texture* AssetManager::GetTexture(string name)
 	}
 	Texture* texture = ScanTexture(name);
 	texture->LoadTexture(_device);
+	texture->_id = _textureIdCounter++;
 	return texture;
 }
 

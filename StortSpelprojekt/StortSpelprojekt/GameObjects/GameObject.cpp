@@ -189,6 +189,8 @@ Animation * GameObject::GetAnimation() const
 	{
 		return _animation;
 	}
+	
+	return nullptr;
 }
 
 void GameObject::SetPickUpState(PickUpState state)
@@ -226,6 +228,11 @@ void* GameObject::operator new(size_t i)
 void GameObject::operator delete(void* p)
 {
 	_mm_free(p);
+}
+
+bool GameObject::operator<(const GameObject& other)
+{
+	return (this->_renderObject < other._renderObject);
 }
 
 int GameObject::GetAnimLength(int layer)
