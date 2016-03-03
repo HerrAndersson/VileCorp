@@ -114,7 +114,6 @@ Unit::~Unit()
 {
 	delete _aStar;
 	delete _visionCone;
-	delete _animation;
 }
 
 int Unit::GetPathLength() const
