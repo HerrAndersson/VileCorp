@@ -18,7 +18,7 @@ LevelSelectState::LevelSelectState(System::Controls* controls, ObjectHandler* ob
 	_campaignTabNode = _uiTree.GetNode("CampaignTab");
 	_skirmishTabNode = _uiTree.GetNode("SkirmishTab");
 
-	_campaignSelectionMin = TUTORIAL;
+	_campaignSelectionMin = 0;
 	_skirmishSelectedIndex = 1;
 
 	for (unsigned i = 0; i < _uiTree.GetNode("LevelSelectionTabs")->GetChildren()->size(); i++)
@@ -29,7 +29,7 @@ LevelSelectState::LevelSelectState(System::Controls* controls, ObjectHandler* ob
 	}
 
 	_combinedMeshGenerator = combinedMeshGenerator;
-	
+
 	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("nextlevel")));
 	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("prevlevel")));
 	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("playbutton")));
@@ -43,8 +43,7 @@ LevelSelectState::LevelSelectState(System::Controls* controls, ObjectHandler* ob
 }
 
 LevelSelectState::~LevelSelectState()
-{
-}
+{}
 
 void LevelSelectState::Update(float deltaTime)
 {
@@ -70,10 +69,13 @@ void LevelSelectState::Update(float deltaTime)
 				std::string levelBinaryPath;
 				if (_isCampaignMode)
 				{
+					_selectedLevelHeader._isCampaignMode = true;
+					_selectedLevelHeader._campaignLevelIndex = _campaignSelection;
 					levelBinaryPath = System::CAMPAIGN_FOLDER_PATH;
 				}
 				else
 				{
+					_selectedLevelHeader._isCampaignMode = false;
 					levelBinaryPath = System::SKIRMISH_FOLDER_PATH;
 				}
 				levelBinaryPath += _selectedLevelHeader._levelBinaryFilename;
@@ -178,20 +180,26 @@ void LevelSelectState::OnStateEnter()
 	//Load level information into respektive variables.
 	_skirmishHeaderFilenames.clear();
 	GetFilenamesInDirectory(const_cast<char*>(System::SKIRMISH_FOLDER_PATH.c_str()), ".json", _skirmishHeaderFilenames, false);
-	_campaignSelectionMax = _campaignSelection = _profile->_level;
-	//if player havent completed the tutorial before. Show tutorial first.
-	if (_profile->_firstTime && _campaignSelectionMin == TUTORIAL)
+	std::vector<std::string> campaignHeaderFilenames;
+	GetFilenamesInDirectory(const_cast<char*>(System::CAMPAIGN_FOLDER_PATH.c_str()), ".json", campaignHeaderFilenames, false);
+	
+	if (_profile->_level > campaignHeaderFilenames.size() - 1)
 	{
-		_campaignSelection = TUTORIAL;
+		_campaignSelection = _campaignSelectionMax = _profile->_level = campaignHeaderFilenames.size() - 1;
+		_settingsReader->ApplyProfileSettings();
 	}
+	else
+	{
+		_campaignSelection = _campaignSelectionMax = _profile->_level;
+	}
+
 	LoadLevelHeader(_campaignSelection, &_selectedLevelHeader);
 	SelectedLevelHeaderToGUI();
 	UpdateButtonsNextPreviousVisability();
 }
 
 void LevelSelectState::OnStateExit()
-{
-}
+{}
 
 void LevelSelectState::LoadLevelHeader(int levelFilename, Level::LevelHeader * headerToLoad)
 {
