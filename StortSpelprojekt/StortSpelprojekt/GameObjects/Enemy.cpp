@@ -303,7 +303,7 @@ void Enemy::Act(GameObject* obj)
 		break;
 		case  System::GUARD:
 			Animate(FIGHTANIM);
-			if(System::FrameCountdown(_interactionTime, _animation->GetLength(FIGHTANIM)))
+		if(System::FrameCountdown(_interactionTime, _animation->GetLength(FIGHTANIM)))
 			{
 				Unit* guard = static_cast<Unit*>(obj);
 				guard->TakeDamage(_baseDamage);

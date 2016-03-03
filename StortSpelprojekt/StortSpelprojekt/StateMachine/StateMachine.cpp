@@ -19,7 +19,7 @@ StateMachine::StateMachine
 	_currentState = State::SPLASHSTATE;
 
 	_baseStates.push_back(new SplashState(controls, objectHandler, camera, pickingDevice, "Assets/GUI/splash.json", assetManager, fontWrapper, settingsReader, soundModule));
-	_baseStates.push_back(new MenuState(controls, objectHandler, camera, pickingDevice, "Assets/GUI/menu.json", assetManager, fontWrapper, settingsReader, soundModule));
+	_baseStates.push_back(new MenuState(controls, objectHandler, camera, pickingDevice, "Assets/GUI/menu.json", assetManager, fontWrapper, settingsReader, soundModule, combinedMeshGenerator));
 	_baseStates.push_back(new PlayState(controls, objectHandler, camera, pickingDevice, "Assets/GUI/play.json", assetManager, fontWrapper, settingsReader, soundModule, ambientLight));
 	_baseStates.push_back(new PlacementState(controls, objectHandler, camera, pickingDevice, "Assets/GUI/placement.json", assetManager, fontWrapper, settingsReader, soundModule, ambientLight));
 	_baseStates.push_back(new TutorialState(controls, objectHandler, camera, pickingDevice, "Assets/GUI/placement.json", assetManager, fontWrapper, settingsReader, soundModule, ambientLight));
