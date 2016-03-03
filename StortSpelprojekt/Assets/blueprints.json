@@ -256,7 +256,7 @@
 				"saw"
 			],
 			"_thumbnails": [
-				"saw"
+				"../Menues/PlacementStateGUI/units/SawGroundbutton"
 			]
 		}, {
 			"_mesh": "Cupcake-27.bin",
@@ -283,16 +283,16 @@
 				"../Menues/PlacementStateGUI/units/FlameThrowerbutton1"
 			]
 		}, {
-			"_mesh": "sawRoofTrap-28.bin",
+			"_mesh": "waterGunTrap-29.bin",
 			"_name": "Water Gun Trap",
 			"_type": 4,
 			"_subType": 8,
 			"_tooltip": "SampleText",
 			"_textures": [
-				"sawRoofTrap"
+				"waterGun"
 			],
 			"_thumbnails": [
-				"sawRoofTrap"
+				"../Menues/PlacementStateGUI/units/FlameThrowerbutton1"
 			]
 		}, {
 			"_mesh": "sawRoofTrap-28.bin",
@@ -316,7 +316,7 @@
 				"confuseTrap"
 			],
 			"_thumbnails": [
-				"confuseTrap"
+				"../Menues/PlacementStateGUI/units/confusetrapbutton"
 			]
 		}, {
 			"_mesh": "SecurityCamera-27.bin",

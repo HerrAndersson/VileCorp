@@ -306,14 +306,14 @@ void Trap::SetTiles()
 		_areaOfEffect[_nrOfAOETiles++] = _tilePosition;
 		break;
 	case FLAMETHROWER:
-		_nrOfOccupiedTiles = CalculateLine(7, _tilePosition, _occupiedTiles);
-		_nrOfAOETiles = CalculateLine(7, _tilePosition, _areaOfEffect);
-		_nrOfTriggers = CalculateLine(7, _tilePosition, _triggerTiles);
+		_nrOfOccupiedTiles = CalculateLine(6, _tilePosition, _occupiedTiles);
+		_nrOfAOETiles = CalculateLine(6, _tilePosition, _areaOfEffect);
+		_nrOfTriggers = CalculateLine(6, _tilePosition, _triggerTiles);
 		break;
 	case WATER_GUN:
-		_nrOfOccupiedTiles = CalculateLine(7, _tilePosition, _occupiedTiles);
-		_nrOfAOETiles = CalculateLine(7, _tilePosition, _areaOfEffect);
-		_nrOfTriggers = CalculateLine(7, _tilePosition, _triggerTiles);
+		_nrOfOccupiedTiles = CalculateLine(6, _tilePosition, _occupiedTiles);
+		_nrOfAOETiles = CalculateLine(6, _tilePosition, _areaOfEffect);
+		_nrOfTriggers = CalculateLine(6, _tilePosition, _triggerTiles);
 		break;
 	case SPIN_TRAP:
 		_occupiedTiles[_nrOfOccupiedTiles++] = _tilePosition;
