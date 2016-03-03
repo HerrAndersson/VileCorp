@@ -315,7 +315,7 @@
         "_subType": 7,
         "_tooltip": "SampleText",
         "_textures": [
-          "waterGun"
+          "GunText"
         ],
         "_thumbnails": [
           "../Menues/LevelEdit/Traps/FlameThrowerbutton1"
@@ -328,7 +328,7 @@
         "_subType": 8,
         "_tooltip": "SampleText",
         "_textures": [
-          "saw"
+          "waterGun"
         ],
         "_thumbnails": [
           "../Menues/LevelEdit/Traps/WatergunButton1"
