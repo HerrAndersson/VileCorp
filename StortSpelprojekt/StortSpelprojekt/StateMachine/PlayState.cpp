@@ -66,6 +66,18 @@ void PlayState::OnStateEnter()
 
 	//Play music
 	_soundModule->Play("in_game_2");
+
+	//TODO: Check this more! /Jonas
+	std::vector<std::vector<GameObject*>>* gos = _objectHandler->GetGameObjects();
+	for (auto& gv : *gos)
+	{
+		std::sort(gv.begin(), gv.end(),
+			[](GameObject* first, GameObject* second)
+		{
+			return *first < *second;
+		}
+		);
+	}
 }
 
 void PlayState::OnStateExit()

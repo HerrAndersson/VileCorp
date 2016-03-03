@@ -132,6 +132,7 @@ void Game::LoadParticleSystemData(ParticleTextures& particleTextures, ParticleMo
 	modifiers._lightningRepeatTime = data._lightningRepeatTime;
 }
 
+bool temp = false;
 bool Game::Update(double deltaTime)
 {
 	_soundModule.Update(_camera->GetPosition().x, _camera->GetPosition().y, _camera->GetPosition().z);
@@ -160,6 +161,8 @@ bool Game::Update(double deltaTime)
 	{
 		//_combinedMeshGenerator->CombineAndOptimizeMeshes(_objectHandler->GetTileMap(), System::FLOOR);
 		//_combinedMeshGenerator->CombineMeshes(_objectHandler->GetTileMap(), System::WALL);
+		_renderModule->SetAntialiasingEnabled(temp);
+		temp = !temp;
 	}
 
 	_particleHandler->Update(deltaTime);
@@ -285,7 +288,6 @@ void Game::RenderGameObjects(int forShaderStage, std::vector<std::vector<GameObj
 			_renderModule->Render(&m, vertexBufferSize);
 		}
 	}
-
 
 	for (auto& i : *gameObjects)
 	{

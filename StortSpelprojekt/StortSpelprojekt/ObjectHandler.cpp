@@ -106,14 +106,6 @@ bool ObjectHandler::Add(System::Blueprint* blueprint, int textureId, const XMFLO
 		_idCount++;
 		_gameObjects[type].push_back(object);
 
-		//TODO: sort when entering playstate!
-		std::sort(_gameObjects[type].begin(), _gameObjects[type].end(), 
-			[](GameObject* first, GameObject* second)
-			{
-				return *first < *second;
-			}
-		);
-
 		//TODO: remove when proper loading can be done /Jonas
 		if (type == System::GUARD)
 		{
