@@ -131,7 +131,7 @@ GameObject* ObjectHandler::Add(System::Blueprint* blueprint, int textureId, cons
 			d._bone = -1;
 			d._color = XMFLOAT3(0.9f, 0.9f, 0.9f);
 			d._direction = XMFLOAT3(1, 0, 1);
-			d._intensity = 1.0f;
+			d._intensity = 2.5f;
 			d._pos = XMFLOAT3(0, 0, 0);
 			d._range = (float)static_cast<Unit*>(object)->GetVisionRadius();
 			_spotlights[object] = new Renderer::Spotlight(_device, d, 0.1f, 1000.0f);
@@ -143,7 +143,7 @@ GameObject* ObjectHandler::Add(System::Blueprint* blueprint, int textureId, cons
 			d._bone = -1;
 			d._color = XMFLOAT3(0.9f, 0.6f, 0.6f);
 			d._direction = XMFLOAT3(1, 0, 1);
-			d._intensity = 1.0f;
+			d._intensity = 2.5f;
 			d._pos = XMFLOAT3(0, 0, 0);
 			d._range = (float)static_cast<SecurityCamera*>(object)->GetVisionRadius();
 			_spotlights[object] = new Renderer::Spotlight(_device, d, 0.1f, 1000.0f);
@@ -153,7 +153,7 @@ GameObject* ObjectHandler::Add(System::Blueprint* blueprint, int textureId, cons
 			PointlightData d;
 			d._pos = XMFLOAT3(object->GetPosition().x, 2, object->GetPosition().z);
 			d._range = 6.0f;
-			d._intensity = 0.8f;
+			d._intensity = 1.5f;
 			d._col = XMFLOAT3(0.9f, 0.5f, 0.5f);
 			_pointligths[object] = new Renderer::Pointlight(_device, d._pos, d._range, d._intensity, d._col);
 		}
