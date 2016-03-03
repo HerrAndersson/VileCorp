@@ -65,15 +65,6 @@ void LevelSelectState::Update(float deltaTime)
 				if (_isCampaignMode)
 				{
 					levelBinaryPath = System::CAMPAIGN_FOLDER_PATH;
-					//if we have selected the tutorial map
-					//if (_campaignSelection == TUTORIAL)
-					//{
-					//	_tutorialState = TutorialState::NEWTUTORIAL;
-					//}
-					//else
-					//{
-					//	_tutorialState = TutorialState::NOTUTORIAL;
-					//}
 				}
 				else
 				{
@@ -86,9 +77,9 @@ void LevelSelectState::Update(float deltaTime)
 
 
 				//Combining objects into bigger meshes used for rendering to reduce draw calls
-				//_combinedMeshGenerator->Reset();
-				//_combinedMeshGenerator->CombineAndOptimizeMeshes(_objectHandler->GetTileMap(), System::FLOOR);
-				//_combinedMeshGenerator->CombineMeshes(_objectHandler->GetTileMap(), System::WALL);
+				_combinedMeshGenerator->Reset();
+				_combinedMeshGenerator->CombineAndOptimizeMeshes(_objectHandler->GetTileMap(), System::FLOOR);
+				_combinedMeshGenerator->CombineMeshes(_objectHandler->GetTileMap(), System::WALL);
 
 
 				ChangeState(State::PLACEMENTSTATE);
