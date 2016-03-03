@@ -86,9 +86,9 @@ void LevelSelectState::Update(float deltaTime)
 
 
 				//Combining objects into bigger meshes used for rendering to reduce draw calls
-				_combinedMeshGenerator->Reset();
-				_combinedMeshGenerator->CombineAndOptimizeMeshes(_objectHandler->GetTileMap(), System::FLOOR);
-				_combinedMeshGenerator->CombineMeshes(_objectHandler->GetTileMap(), System::WALL);
+				//_combinedMeshGenerator->Reset();
+				//_combinedMeshGenerator->CombineAndOptimizeMeshes(_objectHandler->GetTileMap(), System::FLOOR);
+				//_combinedMeshGenerator->CombineMeshes(_objectHandler->GetTileMap(), System::WALL);
 
 
 				ChangeState(State::PLACEMENTSTATE);

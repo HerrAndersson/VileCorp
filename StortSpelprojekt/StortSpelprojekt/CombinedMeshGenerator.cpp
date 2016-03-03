@@ -188,7 +188,17 @@ void CombinedMeshGenerator::CombineAndOptimizeMeshes(Tilemap* tilemap, const Typ
 			{
 				thisRenderObject = object->GetRenderObject();
 
-				if (!contains(renderObjects, thisRenderObject))
+				bool found = false;
+				for (auto& renderObject : renderObjects)
+				{
+					if (*renderObject == *thisRenderObject)
+					{
+						found = true;
+						break;
+					}
+				}
+
+				if (!found)
 				{
 					prevRenderObject = thisRenderObject;
 					renderObjects.push_back(thisRenderObject);
@@ -201,12 +211,11 @@ void CombinedMeshGenerator::CombineAndOptimizeMeshes(Tilemap* tilemap, const Typ
 	}
 
 	//Scan the tilemap to find all objects of the given "subtypes" that was found above
+	std::vector<Vertex> singleObjectDataVector;
+	LoadVertexBufferData(&singleObjectDataVector, prevRenderObject->_mesh);
 	int combinedCount = 0;
 	for (auto& renderObject : renderObjects)
 	{
-		std::vector<Vertex> singleObjectDataVector;
-		LoadVertexBufferData(&singleObjectDataVector, prevRenderObject->_mesh);
-
 		std::vector<Vertex> combinedMeshDataVector;
 
 		for (int x = 0; x < width; x++)
@@ -358,7 +367,17 @@ void CombinedMeshGenerator::CombineMeshes(Tilemap* tilemap, const System::Type& 
 			{
 				RenderObject* thisRenderObject = object->GetRenderObject();
 
-				if (!contains(renderObjects, thisRenderObject))
+				bool found = false;
+				for (auto& renderObject : renderObjects)
+				{
+					if (*renderObject == *thisRenderObject)
+					{
+						found = true;
+						break;
+					}
+				}
+
+				if (!found)
 				{
 					prevRenderObject = thisRenderObject;
 					renderObjects.push_back(thisRenderObject);
@@ -371,12 +390,11 @@ void CombinedMeshGenerator::CombineMeshes(Tilemap* tilemap, const System::Type& 
 	}
 
 	//Scan the tilemap to find all objects of the given "subtypes" that was found above
+	std::vector<Vertex> singleObjectDataVector;
+	LoadVertexBufferData(&singleObjectDataVector, prevRenderObject->_mesh);
 	int combinedCount = 0;
 	for (auto& renderObject : renderObjects)
 	{
-		std::vector<Vertex> singleObjectDataVector;
-		LoadVertexBufferData(&singleObjectDataVector, prevRenderObject->_mesh);
-
 		std::vector<Vertex> combinedMeshDataVector;
 
 		for (int x = 0; x < width; x++)

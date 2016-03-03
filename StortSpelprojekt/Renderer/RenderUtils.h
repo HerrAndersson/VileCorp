@@ -200,6 +200,7 @@ struct RenderObject
 		}
 		return true;
 	}
+
 	bool operator!=(const RenderObject& other) 
 	{
 		return !(*this == other);
