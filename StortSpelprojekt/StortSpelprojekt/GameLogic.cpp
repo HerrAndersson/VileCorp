@@ -199,7 +199,7 @@ void GameLogic::HandleUnitMove()
 		{
 			_player->MoveUnits(selectedTile);
 			//Play sound
-			PlayMoveSound((GuardType)(((Guard*)units.at(0))->GetSubType()));
+			PlayMoveSound(static_cast<GuardType>(units.at(0)->GetSubType()));
 		}
 	}
 }
@@ -300,8 +300,19 @@ void GameLogic::HandleWinLoseDialog(float deltaTime)
 		if (time <= 0 && _uiTree->IsButtonColliding("winbutton", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
 		{
 			_returnToMenu = true;
-			_settingsReader->GetProfile()->_level += 1;
-			_settingsReader->ApplyProfileSettings();
+			Level::LevelHeader* currentLevelHeader = _objectHandler->GetCurrentLevelHeader();
+			if (currentLevelHeader->_isCampaignMode)
+			{
+				System::Profile* playerProfile = _settingsReader->GetProfile();
+
+				int currentCampaignLevelIndex = currentLevelHeader->_campaignLevelIndex;
+				int profileCampaignLevelIndex = playerProfile->_level;
+				if (currentCampaignLevelIndex >= profileCampaignLevelIndex)
+				{
+					playerProfile->_level = currentCampaignLevelIndex + 1;
+					_settingsReader->ApplyProfileSettings();
+				}
+			}
 		}
 		_buttonReady -= deltaTime;
 	}

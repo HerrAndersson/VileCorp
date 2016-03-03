@@ -136,9 +136,9 @@ void LevelEditState::OnStateEnter()
 
 	_levelHeader = Level::LevelHeader();
 	_levelBinary = Level::LevelBinary();
+	_currentLevelFileName.clear();
 	AddSpawnWaveAndSelectIt();
 
-	_currentLevelFileName = "";
 	_isNewLevel = true;
 
 	_objectHandler->EnlargeTilemap(50);

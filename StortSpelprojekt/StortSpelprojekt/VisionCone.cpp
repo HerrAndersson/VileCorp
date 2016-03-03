@@ -271,7 +271,7 @@ int VisionCone::GetNrOfVisibleTiles() const
 	return _nrOfVisibleTiles;
 }
 
-void VisionCone::ColorVisibleTiles(DirectX::XMFLOAT3 color)
+void VisionCone::ColorVisibleTiles(const DirectX::XMFLOAT3& color)
 {
 	for (int i = 0; i < _nrOfVisibleTiles; i++)
 	{

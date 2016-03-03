@@ -116,17 +116,6 @@ void Enemy::DisarmTrap(Trap * trap)
 	}
 }
 
-Enemy::Enemy()
-	: Unit()
-{
-	_subType = BASICENEMY;
-	SetVisibility(false);
-	_visibilityTimer = TIME_TO_HIDE;
-	_detectionSkill = 50;
-	_disarmSkill = 50;
-	_pursuer = nullptr;
-}
-
 Enemy::Enemy(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject * renderObject, System::SoundModule* soundModule, const Tilemap * tileMap, int enemyType, AI::Vec2D direction)
 	: Unit(ID, position, rotation, tilePosition, type, renderObject, soundModule, tileMap, direction)
 {
@@ -303,7 +292,7 @@ void Enemy::Act(GameObject* obj)
 		break;
 		case  System::GUARD:
 			Animate(FIGHTANIM);
-			if(System::FrameCountdown(_interactionTime, _animation->GetLength(FIGHTANIM)))
+		if(System::FrameCountdown(_interactionTime, _animation->GetLength(FIGHTANIM)))
 			{
 				Unit* guard = static_cast<Unit*>(obj);
 				guard->TakeDamage(_baseDamage);

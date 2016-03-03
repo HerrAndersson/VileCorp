@@ -80,6 +80,7 @@ std::wstring GUI::TextBox::GetText() const
 		}
 		return _textNode->GetText();
 	}
+	return L"";
 }
 
 void GUI::TextBox::SetText(std::wstring text)

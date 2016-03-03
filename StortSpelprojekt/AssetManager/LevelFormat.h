@@ -22,6 +22,8 @@ namespace Level
 		int _gameMode = 0;
 		int _surviveForSeconds = 0; //Specifically for the survival gamemode 
 		std::string _levelBinaryFilename = "";
+		bool _isCampaignMode = false;
+		int _campaignLevelIndex = 0;
 
 		template<class A>
 		void serialize(A& a)

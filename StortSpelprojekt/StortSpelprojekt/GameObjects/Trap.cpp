@@ -343,14 +343,6 @@ void Trap::SetTiles()
 	}
 }
 
-Trap::Trap()
-	:GameObject()
-{
-	_areaOfEffect = nullptr;
-	_occupiedTiles = nullptr;
-	_triggerTiles = nullptr;
-}
-
 Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject * renderObject, System::SoundModule* soundModule, 
 		  const Tilemap* tileMap, int trapType, AI::Vec2D direction)
 	: GameObject(ID, position, rotation, tilePosition, type, renderObject, soundModule)
@@ -362,8 +354,11 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	_isVisibleToEnemies = false;
 	_areaOfEffect = nullptr;
 	_occupiedTiles = nullptr;
+	_nrOfOccupiedTiles = 0;
 	_triggerTiles = nullptr;
+	_nrOfTriggers = 0;
 	_subType = trapType;
+	_nrOfAOETiles = 0;
 	int radius = 0;
 	_nrOfOccupiedTiles = 0;
 	_nrOfTriggers = 0;
@@ -444,10 +439,7 @@ Trap::~Trap()
 	_occupiedTiles = nullptr;
 	delete[] _triggerTiles;
 	_triggerTiles = nullptr;
-	if (_animation != nullptr)
-	{
-		delete _animation;
-	}
+	delete _animation;
 }
 
 AI::Vec2D * Trap::GetTiles() const
@@ -627,7 +619,7 @@ AI::Vec2D Trap::GetDirection()
 	return _direction;
 }
 
-void Trap::SetDirection(const AI::Vec2D direction)
+void Trap::SetDirection(const AI::Vec2D& direction)
 {
 	_direction = direction;
 	SetTiles();
