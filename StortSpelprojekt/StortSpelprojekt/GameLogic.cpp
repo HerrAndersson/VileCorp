@@ -93,6 +93,11 @@ void GameLogic::HandleUnitSelect()
 	if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
 		_pickingDevice->SetFirstBoxPoint(_controls->GetMouseCoord()._pos);
+		_controls->SetClickedCoord(_controls->GetMouseCoord());
+	}
+	else if (_controls->IsFunctionKeyUp("MOUSE:DRAG"))
+	{
+		_controls->SetClickedCoord(_controls->GetMouseCoord());
 	}
 
 	if (_controls->IsFunctionKeyUp("MOUSE:SELECT"))

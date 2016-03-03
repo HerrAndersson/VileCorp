@@ -720,7 +720,7 @@ namespace Renderer
 		}
 		MatrixBufferHud* dataPtr = static_cast<MatrixBufferHud*>(mappedResource.pData);
 		dataPtr->_model = XMMatrixTranspose(DirectX::XMMatrixIdentity());
-		dataPtr->_colorOffset = DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 0.5f);
+		dataPtr->_colorOffset = DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 0.1f);
 		dataPtr->_hasTexture = 0;
 
 		deviceContext->Unmap(_matrixBufferHUD, 0);

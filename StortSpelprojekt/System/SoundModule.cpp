@@ -21,7 +21,7 @@ namespace System
 		if (nrOfDevices > 0)
 		{
 			YSE::System().init();
-			_initiated = false;
+			_initiated = true;
 			SetVolume(settings->_volume / 100.0f, CHMASTER);
 		}
 	}

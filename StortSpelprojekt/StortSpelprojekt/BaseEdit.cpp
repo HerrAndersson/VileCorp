@@ -309,14 +309,6 @@ void BaseEdit::BoxEvent()
 
 void BaseEdit::HandleMouseInput()
 {
-	if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
-	{
-		_controls->SetClickedCoord(_controls->GetMouseCoord());
-	}
-	else if(_controls->IsFunctionKeyUp("MOUSE:DRAG"))
-	{
-		_controls->SetClickedCoord(_controls->GetMouseCoord());
-	}
 	if (_extendedMode)
 	{
 		if (_controls->IsFunctionKeyDown("MAP_EDIT:UNDO"))
