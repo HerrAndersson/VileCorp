@@ -170,7 +170,7 @@
 			{
 				"position": [0.42, 0.057],
 				"scale": [0.048, 0.083],
-				"texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png",
+				"texture": "../Menues/PlacementStateGUI/units/SawGroundbutton1.png",
 				"type" : 4,
 				"subType": 4,
 				"textureId" : 0,
