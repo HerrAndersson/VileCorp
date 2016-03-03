@@ -109,10 +109,6 @@ void PlacementState::Update(float deltaTime)
 
 void PlacementState::OnStateEnter()
 {
-	_ambientLight->x = AMBIENT_LIGHT_DAY.x;
-	_ambientLight->y = AMBIENT_LIGHT_DAY.y;
-	_ambientLight->z = AMBIENT_LIGHT_DAY.z;
-
 	//Do only when you don't come from pause state
 	if (GetOldState() != State::PAUSESTATE)
 	{
@@ -124,6 +120,10 @@ void PlacementState::OnStateEnter()
 		campos.z = (float)_objectHandler->GetTileMap()->GetHeight() / 2.0f - 10.0f;
 		_camera->SetPosition(campos);
 	}
+
+	_ambientLight->x = AMBIENT_LIGHT_DAY.x;
+	_ambientLight->y = AMBIENT_LIGHT_DAY.y;
+	_ambientLight->z = AMBIENT_LIGHT_DAY.z;
 
 	_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_budget));
 

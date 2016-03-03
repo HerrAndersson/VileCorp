@@ -8,6 +8,7 @@ class PlayState : public BaseState
 private:
 	GameLogic* _gameLogic;
 	DirectX::XMFLOAT3* _ambientLight;
+	int _nrOfLoot;
 public:
 	PlayState(System::Controls * controls, ObjectHandler * objectHandler, System::Camera * camera, PickingDevice * pickingDevice, const std::string & filename, AssetManager * assetManager, FontWrapper * fontWrapper, System::SettingsReader * settingsReader, System::SoundModule * soundModule, DirectX::XMFLOAT3* ambientLight);
 	virtual ~PlayState();

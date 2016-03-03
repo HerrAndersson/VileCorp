@@ -60,11 +60,20 @@ void PlayState::Update(float deltaTime)
 
 void PlayState::OnStateEnter()
 {
+	_gameLogic = new GameLogic(_objectHandler, _camera, _controls, _pickingDevice, &_uiTree, _assetManager, _settingsReader, _soundModule);
+
+	//Done only if not coming from pause menu
+	if (GetOldState() != State::PAUSESTATE)
+	{
+		_nrOfLoot = _objectHandler->GetAllByType(System::LOOT)->size();
+		_uiTree.GetNode("Tutorial")->SetHidden(false);
+	}
+	_gameLogic->SetNrOfLoot(_nrOfLoot);
+
 	_ambientLight->x = AMBIENT_LIGHT_NIGHT.x;
 	_ambientLight->y = AMBIENT_LIGHT_NIGHT.y;
 	_ambientLight->z = AMBIENT_LIGHT_NIGHT.z;
-	_uiTree.GetNode("Tutorial")->SetHidden(false);
-	_gameLogic = new GameLogic(_objectHandler, _camera, _controls, _pickingDevice, &_uiTree, _assetManager, _settingsReader, _soundModule);
+
 
 	//Play music
 	_soundModule->Play("in_game_2");

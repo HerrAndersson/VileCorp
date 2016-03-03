@@ -58,6 +58,11 @@ bool GameLogic::GoToMenu() const
 	return _returnToMenu;
 }
 
+void GameLogic::SetNrOfLoot(int nrOfLoot)
+{
+	_nrOfLoot = nrOfLoot;
+}
+
 /*
 Private functions
 */
@@ -265,7 +270,7 @@ void GameLogic::ShowSelectedInfo()
 
 void GameLogic::HandleWinLoseDialog(float deltaTime)
 {
-	if (_objectHandler->GetAllByType(System::LOOT)->size() <= 0)				//You lost
+	if (_objectHandler->GetAllByType(System::LOOT)->size() < _nrOfLoot)				//You lost
 	{
 		_uiTree->GetNode("losescreen")->SetHidden(false);
 		System::MouseCoord coord = _controls->GetMouseCoord();
