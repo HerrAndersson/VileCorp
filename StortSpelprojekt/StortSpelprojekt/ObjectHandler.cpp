@@ -350,46 +350,46 @@ void ObjectHandler::MinimizeTileMap()
 	if (_tilemap)
 	{
 		int minY = -1, maxY = -1;
-		for (int y = 0; y < _tilemap->GetHeight(); y++)
+		for (int y = 0; y < _tilemap->GetHeight() && minY == -1; y++)
 		{
 			for (int x = 0; x < _tilemap->GetWidth() && minY == -1; x++)
 			{
 				if (!_tilemap->IsTileEmpty(x, y))
 				{
-					minY = y;
+					minY = y-1;
 				}
 			}
 		}
-		for (int y = _tilemap->GetHeight() - 1; y >= minY; y--)
+		for (int y = _tilemap->GetHeight() - 1; y >= minY && maxY == -1; y--)
 		{
 			for (int x = 0; x < _tilemap->GetWidth() && maxY == -1; x++)
 			{
 				if (!_tilemap->IsTileEmpty(x, y))
 				{
-					maxY = y + 1;
+					maxY = y + 2;
 				}
 			}
 		}
 
 		int minX = -1, maxX = -1;
-		for (int x = 0; x < _tilemap->GetWidth(); x++)
+		for (int x = 0; x < _tilemap->GetWidth() && minX == -1; x++)
 		{
 			for (int y = minY; y < maxY && minX == -1; y++)
 			{
 				if (!_tilemap->IsTileEmpty(x, y))
 				{
-					minX = x;
+					minX = x-1;
 				}
 			}
 		}
 
-		for (int x = _tilemap->GetWidth() - 1; x >= minX; x--)
+		for (int x = _tilemap->GetWidth() - 1; x >= minX && maxX == -1; x--)
 		{
 			for (int y = minY; y < maxY && maxX == -1; y++)
 			{
 				if (!_tilemap->IsTileEmpty(x, y))
 				{
-					maxX = x + 1;
+					maxX = x + 2;
 				}
 			}
 		}
@@ -422,7 +422,7 @@ void ObjectHandler::MinimizeTileMap()
 			}
 		}
 
-		delete _tilemap;
+		SAFE_DELETE(_tilemap);
 		_tilemap = minimized;
 
 		_buildingGrid->ChangeGridSize(_tilemap->GetWidth(), _tilemap->GetHeight(), 1);
@@ -495,6 +495,7 @@ bool ObjectHandler::LoadLevel(const std::string& levelBinaryFilePath)
 	Level::LevelBinary levelData;
 	HRESULT success = _assetManager->ParseLevelBinary(&levelData, levelBinaryFilePath);
 	result = LoadLevel(levelData);
+	MinimizeTileMap();
 	return result;
 }
 
