@@ -147,8 +147,6 @@ bool Game::Update(double deltaTime)
 		_objectHandler->UpdateLights();
 	}
 
-	bool run = true;
-
 	//Apply settings if they has changed
 	if (_settingsReader.GetSettingsChanged())
 	{
