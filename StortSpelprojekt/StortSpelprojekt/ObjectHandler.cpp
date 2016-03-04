@@ -341,7 +341,10 @@ Tilemap * ObjectHandler::GetTileMap() const
 
 void ObjectHandler::SetTileMap(Tilemap * tilemap)
 {
-	delete _tilemap;
+	if (_tilemap != nullptr)
+	{
+		delete _tilemap;
+	}
 	_tilemap = tilemap;
 }
 
@@ -350,50 +353,78 @@ void ObjectHandler::MinimizeTileMap()
 	if (_tilemap)
 	{
 		int minY = -1, maxY = -1;
-		for (int y = 0; y < _tilemap->GetHeight(); y++)
+		for (int y = 0; y < _tilemap->GetHeight() && minY == -1; y++)
 		{
 			for (int x = 0; x < _tilemap->GetWidth() && minY == -1; x++)
 			{
 				if (!_tilemap->IsTileEmpty(x, y))
 				{
-					minY = y;
+					if (y > 0)
+					{
+						minY = y - 1;
+					}
+					else
+					{
+						minY = 0;
+					}
 				}
 			}
 		}
-		for (int y = _tilemap->GetHeight() - 1; y >= minY; y--)
+		if (minY == -1)
+		{
+			minY = 0;
+		}
+		for (int y = _tilemap->GetHeight() - 1; y >= minY && maxY == -1; y--)
 		{
 			for (int x = 0; x < _tilemap->GetWidth() && maxY == -1; x++)
 			{
 				if (!_tilemap->IsTileEmpty(x, y))
 				{
-					maxY = y + 1;
+					maxY = y + 2;
 				}
 			}
 		}
+		if (maxY == -1)
+		{
+			maxY = _tilemap->GetHeight();
+		}
 
 		int minX = -1, maxX = -1;
-		for (int x = 0; x < _tilemap->GetWidth(); x++)
+		for (int x = 0; x < _tilemap->GetWidth() && minX == -1; x++)
 		{
 			for (int y = minY; y < maxY && minX == -1; y++)
 			{
 				if (!_tilemap->IsTileEmpty(x, y))
 				{
-					minX = x;
+					if (x > 0)
+					{
+						minX = x - 1;
+					}
+					else
+					{
+						minX = 0;
+					}
 				}
 			}
 		}
-
-		for (int x = _tilemap->GetWidth() - 1; x >= minX; x--)
+		if (minX == -1)
+		{
+			minX = 0;
+		}
+		for (int x = _tilemap->GetWidth() - 1; x >= minX && maxX == -1; x--)
 		{
 			for (int y = minY; y < maxY && maxX == -1; y++)
 			{
 				if (!_tilemap->IsTileEmpty(x, y))
 				{
-					maxX = x + 1;
+					maxX = x + 2;
 				}
 			}
 		}
-
+		if (maxX == -1)
+		{
+			maxX = _tilemap->GetWidth();
+		}
 		int newXMax = maxX - minX;
 		int newYMax = maxY - minY;
 
@@ -422,7 +453,7 @@ void ObjectHandler::MinimizeTileMap()
 			}
 		}
 
-		delete _tilemap;
+		SAFE_DELETE(_tilemap);
 		_tilemap = minimized;
 
 		_buildingGrid->ChangeGridSize(_tilemap->GetWidth(), _tilemap->GetHeight(), 1);
@@ -495,6 +526,7 @@ bool ObjectHandler::LoadLevel(const std::string& levelBinaryFilePath)
 	Level::LevelBinary levelData;
 	HRESULT success = _assetManager->ParseLevelBinary(&levelData, levelBinaryFilePath);
 	result = LoadLevel(levelData);
+//	MinimizeTileMap();
 	return result;
 }
 
@@ -580,6 +612,7 @@ void ObjectHandler::Update(float deltaTime)
 			{
 				_tilemap->AddObjectToTile(g->GetTilePosition(), g);
 				g->SetPickUpState(ONTILE);
+				((Architecture*)g)->SetTargeted(false);
 			}
 
 			if (g->GetType() == System::GUARD || g->GetType() == System::ENEMY)
@@ -588,10 +621,22 @@ void ObjectHandler::Update(float deltaTime)
 				GameObject* heldObject = unit->GetHeldObject();
 				if (heldObject != nullptr && heldObject->GetPickUpState() == HELD)
 				{
-					XMFLOAT3 unitPosition = unit->GetPosition();
-					unitPosition.y += 2;
-					heldObject->SetPosition(unitPosition);
+					heldObject->SetPosition(DirectX::XMFLOAT3(unit->GetPosition().x, unit->GetPosition().y + 2.0f, unit->GetPosition().z));
 					heldObject->SetTilePosition(AI::Vec2D(heldObject->GetPosition().x, heldObject->GetPosition().z));
+				}
+
+				bool inRangeOfSpawn = false;
+				for (uint k = 0; k < _gameObjects[System::SPAWN].size() && !inRangeOfSpawn; k++)
+				{
+					if (!_gameObjects[System::SPAWN][k]->InRange(unit->GetTilePosition()))
+					{
+						static_cast<Enemy*>(unit)->SetIsAtSpawn(false);
+					}
+					else
+					{
+						static_cast<Enemy*>(unit)->SetIsAtSpawn(true);
+						inRangeOfSpawn = true;
+					}
 				}
 
 				//Show Unit Lifebar
@@ -610,17 +655,21 @@ void ObjectHandler::Update(float deltaTime)
 					{
 						unit->SetTilePosition(unit->GetNextTile());
 					}
+
 					if (heldObject != nullptr)
 					{
 						bool lootRemoved = false;
-
 						for (uint k = 0; k < _gameObjects[System::SPAWN].size() && !lootRemoved; k++)
 						{
 							//If the enemy is at the despawn point with an objective, remove the objective and the enemy, Aron
 							if (_gameObjects[System::SPAWN][k]->InRange(unit->GetTilePosition()))
 							{
 								lootRemoved = Remove(heldObject);
-								_enemySpawnVector.push_back(std::array<int, 2>{_enemySpawnVector.back()[0] + 1, (int)unit->GetSubType()});
+
+								if (_tilemap->GetNrOfLoot() > 0)
+								{
+									_enemySpawnVector.push_back(std::array<int, 2>{_enemySpawnVector.back()[0] + 1, (int)unit->GetSubType()});
+								}
 							}
 						}
 
@@ -631,23 +680,49 @@ void ObjectHandler::Update(float deltaTime)
 						}
 					}
 
-					//Bloodparticles on death
-					ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::SPLASH, ParticleSubType::BLOOD_SUBTYPE, -1, unit->GetPosition(), XMFLOAT3(0, 1, 0), 300.0f, 200, 0.1f, true);
-					GetParticleEventQueue()->Insert(msg);
-
-
-					//Play death sound
-					float x = g->GetPosition().x;
-					float z = g->GetPosition().z;
-					if (g->GetType() == System::ENEMY)
+					//Avoids the case where the Guard tries to attack a scrap value when the Enemy has been taken care of, Aron
+					for (uint k = 0; k < _gameObjects[System::GUARD].size(); k++)
 					{
-						_soundModule->SetSoundPosition("enemy_death", x, 0.0f, z);
-						_soundModule->Play("enemy_death");
+						if (((Guard*)_gameObjects[System::GUARD][k])->GetObjective() != nullptr)
+						{
+							if (((Guard*)_gameObjects[System::GUARD][k])->GetObjective()->GetID() == g->GetID())
+							{
+								((Guard*)_gameObjects[System::GUARD][k])->ClearObjective();
+							}
+						}
 					}
-					else if (g->GetType() == System::GUARD)
+
+					//Avoids the case where the Enemy tries to attack a scrap value when the Guard has been taken care of, Aron
+					for (uint k = 0; k < _gameObjects[System::ENEMY].size(); k++)
 					{
-						_soundModule->SetSoundPosition("guard_death", x, 0.0f, z);
-						_soundModule->Play("guard_death");
+						if (((Enemy*)_gameObjects[System::ENEMY][k])->GetObjective() != nullptr)
+						{
+							if (((Enemy*)_gameObjects[System::ENEMY][k])->GetObjective()->GetID() == g->GetID())
+							{
+								((Enemy*)_gameObjects[System::ENEMY][k])->ClearObjective();
+							}
+						}
+					}
+
+					if (!static_cast<Enemy*>(unit)->GetIsAtSpawn())
+					{
+						//Bloodparticles on death
+						ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::SPLASH, ParticleSubType::BLOOD_SUBTYPE, -1, unit->GetPosition(), XMFLOAT3(0, 1, 0), 300.0f, 200, 0.1f, true);
+						GetParticleEventQueue()->Insert(msg);
+
+						//Play death sound
+						float x = g->GetPosition().x;
+						float z = g->GetPosition().z;
+						if (g->GetType() == System::ENEMY)
+						{
+							_soundModule->SetSoundPosition("enemy_death", x, 0.0f, z);
+							_soundModule->Play("enemy_death");
+						}
+						else if (g->GetType() == System::GUARD)
+						{
+							_soundModule->SetSoundPosition("guard_death", x, 0.0f, z);
+							_soundModule->Play("guard_death");
+						}
 					}
 
 					//Remove object
@@ -660,6 +735,31 @@ void ObjectHandler::Update(float deltaTime)
 				{
 					_tilemap->RemoveObjectFromTile(unit->GetTilePosition(), g);
 					_tilemap->AddObjectToTile(unit->GetNextTile(), g);
+
+					//If all the objectives are looted and the enemy is at a (de)spawn point, despawn them.
+					bool allLootIsCarried = true;
+					for (uint k = 0; k < _gameObjects[System::SPAWN].size() && !allLootIsCarried; k++)
+					{
+						for (uint l = 0; l < _gameObjects[System::LOOT].size() && allLootIsCarried; l++)
+						{
+							if (_gameObjects[System::LOOT][l]->GetPickUpState() == ONTILE || _gameObjects[System::LOOT][l]->GetPickUpState() == DROPPING)
+							{
+								allLootIsCarried = false;
+							}
+						}
+
+						if (unit->GetType() == System::ENEMY &&
+							(_gameObjects[System::LOOT].size() == 0 || allLootIsCarried) &&
+							_gameObjects[System::SPAWN][k]->InRange(unit->GetTilePosition()))
+						{
+							unit->TakeDamage(unit->GetHealth());
+						}
+					}
+
+					if (allLootIsCarried && unit->GetHeldObject() == nullptr && static_cast<Enemy*>(unit)->GetMoveState() != Unit::MoveState::FLEEING)
+					{
+						static_cast<Enemy*>(unit)->CheckAllTiles();
+					}
 				}
 			}
 		}
