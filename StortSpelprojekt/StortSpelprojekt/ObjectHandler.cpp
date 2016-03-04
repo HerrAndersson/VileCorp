@@ -359,9 +359,20 @@ void ObjectHandler::MinimizeTileMap()
 			{
 				if (!_tilemap->IsTileEmpty(x, y))
 				{
-					minY = y-1;
+					if (y > 0)
+					{
+						minY = y - 1;
+					}
+					else
+					{
+						minY = 0;
+					}
 				}
 			}
+		}
+		if (minY == -1)
+		{
+			minY = 0;
 		}
 		for (int y = _tilemap->GetHeight() - 1; y >= minY && maxY == -1; y--)
 		{
@@ -373,6 +384,10 @@ void ObjectHandler::MinimizeTileMap()
 				}
 			}
 		}
+		if (maxY == -1)
+		{
+			maxY = _tilemap->GetHeight();
+		}
 
 		int minX = -1, maxX = -1;
 		for (int x = 0; x < _tilemap->GetWidth() && minX == -1; x++)
@@ -381,11 +396,21 @@ void ObjectHandler::MinimizeTileMap()
 			{
 				if (!_tilemap->IsTileEmpty(x, y))
 				{
-					minX = x-1;
+					if (x > 0)
+					{
+						minX = x - 1;
+					}
+					else
+					{
+						minX = 0;
+					}
 				}
 			}
 		}
-
+		if (minX == -1)
+		{
+			minX = 0;
+		}
 		for (int x = _tilemap->GetWidth() - 1; x >= minX && maxX == -1; x--)
 		{
 			for (int y = minY; y < maxY && maxX == -1; y++)
@@ -396,7 +421,10 @@ void ObjectHandler::MinimizeTileMap()
 				}
 			}
 		}
-
+		if (maxX == -1)
+		{
+			maxX = _tilemap->GetWidth();
+		}
 		int newXMax = maxX - minX;
 		int newYMax = maxY - minY;
 
@@ -498,7 +526,7 @@ bool ObjectHandler::LoadLevel(const std::string& levelBinaryFilePath)
 	Level::LevelBinary levelData;
 	HRESULT success = _assetManager->ParseLevelBinary(&levelData, levelBinaryFilePath);
 	result = LoadLevel(levelData);
-	MinimizeTileMap();
+//	MinimizeTileMap();
 	return result;
 }
 
