@@ -7,11 +7,7 @@ PlacementState::PlacementState(System::Controls* controls, ObjectHandler* object
 	_profile = settingsReader->GetProfile();
 
 	//Money
-	_budget = 0;
-	_costOfAnvilTrap	= 50;
-	_costOfTeslaCoil	= 100;
-	_costOfCamera		= 80;
-	_costOfGuard		= 200;
+	_budget = -1;
 
 	_controls = controls;
 	_objectHandler = objectHandler;
@@ -26,6 +22,62 @@ PlacementState::PlacementState(System::Controls* controls, ObjectHandler* object
 
 void PlacementState::EvaluateGoldCost()
 {
+	int mainType = _toPlace._sB._blueprint->_type;
+	int subType = -1;
+
+	if (mainType == System::Type::GUARD)
+	{
+		subType = _toPlace._sB._blueprint->_subType;
+		switch (subType)
+		{
+		case GuardType::BASICGUARD:
+			_toPlace._goldCost = 200;		//GUARD COST
+			break;
+		case GuardType::ENGINEER:
+			_toPlace._goldCost = 100;		//ENGINEER COST
+			break;
+		}
+	}
+	else if (mainType == System::Type::CAMERA)
+	{
+		_toPlace._goldCost = 20;			//CAMERA COST
+	}
+	else if (mainType == System::Type::TRAP)
+	{
+		subType = _toPlace._sB._blueprint->_subType;
+		switch (_toPlace._sB._blueprint->_subType)
+		{
+		case TrapType::ANVIL:
+			_toPlace._goldCost = 50;		//ANVIL COST
+			break;
+		case TrapType::BEAR:
+			_toPlace._goldCost = 80;		//BEAR COST
+			break;
+		case TrapType::SAW:
+			_toPlace._goldCost = 150;		//SAW COST
+			break;
+		case TrapType::GUN:
+			_toPlace._goldCost = 100;		//MACHIENE GUN COST
+			break;
+		case TrapType::FLAMETHROWER:
+			_toPlace._goldCost = 120;		//FLAMETHROWER COST
+			break;
+		case TrapType::WATER_GUN:
+			_toPlace._goldCost = 80;		//WATER GUN COST
+			break;
+		case TrapType::TESLACOIL:
+			_toPlace._goldCost = 100;		//TESLA COST
+			break;
+		case TrapType::SPIN_TRAP:
+			_toPlace._goldCost = 150;		//SPINTRAP COST
+			break;
+		case TrapType::CAKEBOMB:
+			_toPlace._goldCost = 80;		//SUGARBOMB COST
+		case TrapType::SHARK:
+			_toPlace._goldCost = 250;		//SHARK COST
+			break;
+		}
+	}
 }
 
 PlacementState::~PlacementState()
@@ -61,16 +113,19 @@ void PlacementState::OnStateEnter()
 	_ambientLight->y = AMBIENT_LIGHT_DAY.y;
 	_ambientLight->z = AMBIENT_LIGHT_DAY.z;
 
-	_budget = _objectHandler->GetCurrentLevelHeader()->_budget;
-	
-	//Fix so that budgetvalue won't get read if we go into pause state! We don't want the players to cheat themselves back to their budget money by pressing pause, resume, pause etc.. Enbom
-	_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_budget));
+	//Do only when you don't come from pause state
+	if (GetOldState() != State::PAUSESTATE)
+	{
+		_budget = _objectHandler->GetCurrentLevelHeader()->_budget;
 
-	XMFLOAT3 campos;
-	campos.x = (float)_objectHandler->GetTileMap()->GetWidth() / 2.0f;
-	campos.y = 15.0f;
-	campos.z = (float)_objectHandler->GetTileMap()->GetHeight() / 2.0f - 10.0f;
-	_camera->SetPosition(campos);
+		XMFLOAT3 campos;
+		campos.x = (float)_objectHandler->GetTileMap()->GetWidth() / 2.0f;
+		campos.y = 15.0f;
+		campos.z = (float)_objectHandler->GetTileMap()->GetHeight() / 2.0f - 10.0f;
+		_camera->SetPosition(campos);
+	}
+
+	_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_budget));
 
 	_buttonHighlights.clear();
 	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("Play")));
@@ -97,29 +152,29 @@ void PlacementState::OnStateEnter()
 	//GUARD
 	_uiTree.GetNode("GuardCost")->SetText(L"Damage: Medium\nHP: " + to_wstring(100) + L"\nSpeed: Medium\nEffect: Average Joe");
 	//ENGINEER
-	_uiTree.GetNode("EngineerCost")->SetText(L"Damage: Low\nHP: " + to_wstring(50) + L"\nSpeed: Fast\nEffect: Fast repair");
+	_uiTree.GetNode("EngineerCost")->SetText(L"Damage: None\nHP: " + to_wstring(50) + L"\nSpeed: Fast\nEffect: Fast repair, Passive");
 	//CAMERA
 	_uiTree.GetNode("CameraCost")->SetText(L"Damage: None\nUses: Infinite\nAtk. Speed: None\nEffect: Vision");
 	//ANVIL TRAP
-	_uiTree.GetNode("AnvilCost")->SetText(L"Damage: High\nUses: 3\nAtk. Speed: Medium\nEffect: Cheap");
+	_uiTree.GetNode("AnvilCost")->SetText(L"Damage: Medium high\nUses: 3\nAtk. Speed: Slow\nEffect: Cheap");
 	//BEAR TRAP
 	_uiTree.GetNode("BearCost")->SetText(L"Damage: High\nUses: 1\nAtk. Speed: Medium\nEffect: Distraction");
 	//SAWBLADE TRAP (FLOOR)
-	_uiTree.GetNode("SawCost")->SetText(L"Damage: Medium\nUses: Infinite\nAtk. Speed: Medium\nEffect: Traversing");
+	_uiTree.GetNode("SawCost")->SetText(L"Damage: Super low\nUses: Infinite\nAtk. Speed: Super fast\nEffect: Traversing");
 	//MACHINE GUN TRAP
 	_uiTree.GetNode("MachineGunCost")->SetText(L"Damage: Medium Low\nUses: 10\nAtk. Speed: Fast\nEffect: None");
 	//FLAMETHROWER TRAP
-	_uiTree.GetNode("FlameThrowerCost")->SetText(L"Damage: Low\nUses: 10\nAtk. Speed: Fast\nEffect: Burn");
+	_uiTree.GetNode("FlameThrowerCost")->SetText(L"Damage: Low\nUses: 5\nAtk. Speed: Fast\nEffect: Burn damage");
 	//WATER GUN TRAP
-	_uiTree.GetNode("WaterGunCost")->SetText(L"Damage: None\nUses: 10\nAtk. Speed: Fast\nEffect: Slow");
+	_uiTree.GetNode("WaterGunCost")->SetText(L"Damage: None\nUses: 10\nAtk. Speed: Medium\nEffect: Slow");
 	//TESLA TRAP
-	_uiTree.GetNode("TeslaCost")->SetText(L"Damage: Low\nUses: 2\nAtk. Speed: Medium\nEffect: Big Area, Stun");
+	_uiTree.GetNode("TeslaCost")->SetText(L"Damage: Medium low\nUses: 3\nAtk. Speed: Slow\nEffect: Stun");
 	//SPIN TRAP
-	_uiTree.GetNode("SpinCost")->SetText(L"Damage: None\nUses: Infinite\nAtk. Speed: Slow\nEffect: Confusion");
+	_uiTree.GetNode("SpinCost")->SetText(L"Damage: None\nUses: Infinite\nAtk. Speed: Very slow\nEffect: Confusion");
 	//CAKE TRAP
-	_uiTree.GetNode("CakeCost")->SetText(L"Damage: Very High\nUses: 1\nAtk. Speed: Slow\nEffect: Slow repair");
+	_uiTree.GetNode("CakeCost")->SetText(L"Damage: Very high\nUses: 1\nAtk. Speed: Very slow\nEffect: Slow repair");
 	//SHARK TRAP
-	_uiTree.GetNode("SharkCost")->SetText(L"Damage: Very Haj\nUses: 1\nAtk. Speed: Slow\nEffect: Big area");
+	_uiTree.GetNode("SharkCost")->SetText(L"Damage: Very haj\nUses: Infinite\nAtk. Speed: Very slow\nEffect: Big area");
 
 	std::vector<GUI::Node*>* tutorialNodes = _uiTree.GetNode("Tutorial")->GetChildren();
 	for (int i = 0; i < tutorialNodes->size(); i++)

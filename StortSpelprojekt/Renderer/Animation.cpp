@@ -5,9 +5,9 @@ Animation::Animation(Skeleton* skeleton, bool firstFrame, bool frozen)
 	_skeleton = skeleton;
 	_boneCount = _skeleton->_parents.size();
 
-	_toRootTransforms.resize(_boneCount);
-	_toParentTransforms.resize(_boneCount);
-	_finalTransforms.resize(_boneCount);
+	_toRootTransforms = (XMMATRIX*)_aligned_malloc(sizeof(XMMATRIX) * _boneCount, 16);
+	_toParentTransforms = (XMMATRIX*)_aligned_malloc(sizeof(XMMATRIX) * _boneCount, 16);
+	_finalTransforms = (XMMATRIX*)_aligned_malloc(sizeof(XMMATRIX) * _boneCount, 16);
 
 	_animTime = 0.0f;
 	_currentAction = -1;
@@ -54,7 +54,9 @@ Animation::Animation(Skeleton* skeleton, bool firstFrame, bool frozen)
 
 Animation::~Animation()
 {
-
+	_aligned_free(_toRootTransforms);
+	_aligned_free(_toParentTransforms);
+	_aligned_free(_finalTransforms);
 }
 
 void Animation::Update(float time)
@@ -108,7 +110,7 @@ void Animation::Update(float time)
 	for (unsigned i = 1; i < _boneCount; i++)
 	{
 		// Current bone transform relative to its parent
-		_toRootTransforms[i] = _toParentTransforms[i] * _toRootTransforms[_skeleton->_parents[i]];
+		_toRootTransforms[i] = XMMatrixMultiply(_toParentTransforms[i], _toRootTransforms[_skeleton->_parents[i]]);
 	}
 
 	for (unsigned i = 0; i < _boneCount; i++)
@@ -119,7 +121,7 @@ void Animation::Update(float time)
 
 XMMATRIX* Animation::GetTransforms()
 {
-	return _finalTransforms.data();
+	return _finalTransforms;
 }
 
 int Animation::GetBoneCount() const

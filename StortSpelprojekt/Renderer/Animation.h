@@ -24,9 +24,9 @@ private:
 	float _nextTime;
 	float _lerpPercent;
 	unsigned _lastFrame, _boneCount;
-	std::vector<XMMATRIX> _toRootTransforms;
-	std::vector<XMMATRIX> _toParentTransforms;
-	std::vector<XMMATRIX> _finalTransforms;
+	XMMATRIX* _toRootTransforms;
+	XMMATRIX* _toParentTransforms;
+	XMMATRIX* _finalTransforms;
 	Skeleton* _skeleton;
 	float _animTime;
 	int _currentCycle, _currentAction;

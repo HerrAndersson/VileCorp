@@ -40,6 +40,8 @@ private:
 	int _nrOfAOETiles;
 	int _areaOfEffectArrayCapacity;
 
+	int _sawBladeDirection;				//Checks which way the sawblade is moving
+
 	int CalculateCircle(int radius, AI::Vec2D basePosition, AI::Vec2D* arr);
 	int CalculateLine(int length, AI::Vec2D basePosition, AI::Vec2D* arr);
 	int CalculateRectangle(int length, int width, AI::Vec2D basePosition, AI::Vec2D* arr);

@@ -4,6 +4,7 @@
 #pragma once
 
 #include "GameObject.h"
+#include "Architecture.h"
 
 class Tilemap
 {
@@ -101,4 +102,6 @@ public:
 	bool IsTileVisible(AI::Vec2D pos) const;
 	bool IsTileEmpty(int x, int z) const;
 	bool IsTileEmpty(AI::Vec2D pos) const;
+	bool IsTileNoPlacementZone(int x, int z) const;
+	bool IsTileNoPlacementZone(AI::Vec2D pos) const;
 };

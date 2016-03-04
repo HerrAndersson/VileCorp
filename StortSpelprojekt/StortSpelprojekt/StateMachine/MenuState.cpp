@@ -1,6 +1,6 @@
 #include "MenuState.h"
 
-MenuState::MenuState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule)
+MenuState::MenuState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule, CombinedMeshGenerator* combinedMeshGenerator)
 	: BaseState (controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settingsReader, soundModule)
 {
 	_soundModule->AddSound("theme", 0.4f, 1.0f, true, true, true);
@@ -12,6 +12,8 @@ MenuState::MenuState(System::Controls* controls, ObjectHandler* objectHandler, S
 	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("leveleditbutton"), color, _uiTree.GetNode("leveledit")));
 	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("optionsbutton"), color, _uiTree.GetNode("options")));
 	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("exitbutton"), color, _uiTree.GetNode("exit")));
+
+	_combinedMeshGenerator = combinedMeshGenerator;
 }
 
 MenuState::~MenuState()
@@ -41,6 +43,10 @@ void MenuState::Update(float deltaTime)
 			levelBinaryPath += "tutorial1.bin";
 			_objectHandler->LoadLevel(levelBinaryPath);
 
+			//Combining objects into bigger meshes used for rendering to reduce draw calls
+			_combinedMeshGenerator->Reset();
+			_combinedMeshGenerator->CombineAndOptimizeMeshes(_objectHandler->GetTileMap(), System::FLOOR);
+			_combinedMeshGenerator->CombineMeshes(_objectHandler->GetTileMap(), System::WALL);
 			ChangeState(State::TUTORIALSTATE);
 		}
 		if (_uiTree.IsButtonColliding("playbutton", coord._pos.x, coord._pos.y))

@@ -179,22 +179,6 @@ namespace Renderer
 				icon = _textures->_iconTextures[ICON_QUESTIONMARK];
 				break;
 			}
-			case ParticleSubType::WRENCH_SUBTYPE:
-			{
-				icon = _textures._iconTextures[ICON_WRENCH];
-				break;
-			}
-			case ParticleSubType::NO_PLACEMENT_SUBTYPE:
-			{
-				icon = _textures._iconTextures[ICON_NOPLACMENT];
-				break;
-			}
-			case ParticleSubType::OCCUPIED_SUBTYPE:
-			{
-				icon = _textures._iconTextures[ICON_OCCUPIED];
-				break;
-			}
-
 			case ParticleSubType::SELECTED_SUBTYPE:
 			{
 				icon = _textures->_iconTextures[ICON_SELECTED];
