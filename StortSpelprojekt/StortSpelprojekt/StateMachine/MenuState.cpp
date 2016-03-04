@@ -39,6 +39,10 @@ void MenuState::Update(float deltaTime)
 			_soundModule->Stop("theme");
 			_soundModule->Play("page");
 
+			Level::LevelHeader tutorialHeader;
+			System::loadJSON(&tutorialHeader, System::SKIRMISH_FOLDER_PATH + "tutorial1.json");
+			_objectHandler->SetCurrentLevelHeader(tutorialHeader);
+
 			std::string levelBinaryPath = System::SKIRMISH_FOLDER_PATH;
 			levelBinaryPath += "tutorial1.bin";
 			_objectHandler->LoadLevel(levelBinaryPath);
