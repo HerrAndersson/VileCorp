@@ -16,3 +16,8 @@ void SpawnPoint::Update(float deltaTime)
 void SpawnPoint::Release()
 {
 }
+
+bool SpawnPoint::InRange(AI::Vec2D pos)const
+{
+	return _tilePosition == pos;
+}

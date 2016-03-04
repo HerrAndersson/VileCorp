@@ -18,11 +18,11 @@ namespace AI
 		}
 		~Vec2D()
 		{}
-		bool operator==(const Vec2D& comp)
+		bool operator==(const Vec2D& comp) const
 		{
 			return _x == comp._x && _y == comp._y;
 		}
-		bool operator!=(const Vec2D& comp)
+		bool operator!=(const Vec2D& comp) const
 		{
 			return _x != comp._x || _y != comp._y;
 		}

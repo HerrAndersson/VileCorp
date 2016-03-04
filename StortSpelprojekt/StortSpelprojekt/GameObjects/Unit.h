@@ -36,6 +36,7 @@ protected:
 	StatusEffect _status;
 	int _statusInterval;			//Time between status activations
 	int _statusTimer;				//Time until the status ends
+	bool _isAtSpawn;
 	
 	//Movement state variables
 	MoveState _moveState;
@@ -61,6 +62,7 @@ public:
 	AI::Vec2D GetNextTile()const;
 	int GetHealth();
 	GameObject* GetHeldObject()const;
+	GameObject* GetObjective() const;
 	MoveState GetMoveState()const;
 	int GetVisionRadius()const;
 	bool GetAnimisFinished();
@@ -92,7 +94,9 @@ public:
 	//Damage and status effects
 	void ActivateStatus();											//Called whenever status triggers (once for everything but burning)
 	void DeactivateStatus();										//Called when status wears off.
-	void TakeDamage(int damage);	
+	void TakeDamage(int damage);
+	bool GetIsAtSpawn() const;
+	void SetIsAtSpawn(bool isAtSpawn);
 
 	void Animate(Anim anim);
 };
