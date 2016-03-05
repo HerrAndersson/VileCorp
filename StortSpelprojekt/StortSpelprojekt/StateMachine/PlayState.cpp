@@ -49,10 +49,6 @@ void PlayState::Update(float deltaTime)
 	{
 		ChangeState(State::MENUSTATE);
 	}
-	if (_controls->IsFunctionKeyDown("MOUSE:SELECT") && !_uiTree.GetNode("Tutorial")->GetHidden())
-	{
-		_uiTree.GetNode("Tutorial")->SetHidden(true);
-	}
 
 	_gameLogic->Update(deltaTime);
 	HandleCam(deltaTime);
@@ -63,7 +59,6 @@ void PlayState::OnStateEnter()
 	_ambientLight->x = AMBIENT_LIGHT_NIGHT.x;
 	_ambientLight->y = AMBIENT_LIGHT_NIGHT.y;
 	_ambientLight->z = AMBIENT_LIGHT_NIGHT.z;
-	_uiTree.GetNode("Tutorial")->SetHidden(false);
 	_gameLogic = new GameLogic(_objectHandler, _camera, _controls, _pickingDevice, &_uiTree, _assetManager, _settingsReader, _soundModule);
 
 	//Play music
