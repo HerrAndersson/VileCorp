@@ -122,6 +122,7 @@ Enemy::Enemy(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 ro
 	_subType = enemyType;
 	_visibilityTimer = TIME_TO_HIDE;
 	_pursuer = nullptr;
+	_checkAllTilesTimer = -1;
 	_moveSpeed = 0.025;
 	InitializePathFinding();
 	switch (_subType)
@@ -341,11 +342,21 @@ void Enemy::Update(float deltaTime)
 		case MoveState::IDLE:
 		{
 			srand((int)time(NULL));
-			int temp = rand() % 40;
-			if (System::FrameCountdown(_interactionTime, 20 + temp))
+
+			if (_checkAllTilesTimer < 0)
+			{
+				_checkAllTilesTimer = rand() % 40;
+			}
+			else
+			{
+				_checkAllTilesTimer--;
+			}
+			
+			if (System::FrameCountdown(_interactionTime, 20 + _checkAllTilesTimer))
 			{
 				ClearObjective();
 				CheckAllTiles();
+				_checkAllTilesTimer = -1;
 			}
 
 			Animate(IDLEANIM);

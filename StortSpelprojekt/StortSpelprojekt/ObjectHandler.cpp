@@ -756,7 +756,8 @@ void ObjectHandler::Update(float deltaTime)
 						}
 					}
 
-					if (allLootIsCarried && unit->GetHeldObject() == nullptr && static_cast<Enemy*>(unit)->GetMoveState() != Unit::MoveState::FLEEING)
+					if ( unit->GetObjective() == nullptr && allLootIsCarried && unit->GetHeldObject() == nullptr && 
+						static_cast<Enemy*>(unit)->GetMoveState() != Unit::MoveState::FLEEING)
 					{
 						static_cast<Enemy*>(unit)->CheckAllTiles();
 					}
@@ -764,7 +765,7 @@ void ObjectHandler::Update(float deltaTime)
 			}
 		}
 	}
-	if (_spawnTimer % 60 == 0)
+	if (_spawnTimer % 60 == 0 && _gameObjects[System::LOOT].size() > 0)
 	{
 		SpawnEnemies();
 	}

@@ -68,6 +68,21 @@ void Unit::SetGoal(AI::Vec2D goal)
 	}
 }
 
+void Unit::ExpandArray(GameObject** &arr, int &sizeOfArray)
+{
+	int increment = 5;
+	GameObject** temp = new GameObject*[sizeOfArray + increment];
+
+	for (int i = 0; i < sizeOfArray; i++)
+	{
+		temp[i] = arr[i];
+	}
+
+	sizeOfArray += increment;
+	delete[] arr;
+	arr = temp;
+}
+
 void Unit::SetGoal(GameObject * objective)
 {
 
@@ -258,27 +273,53 @@ void Unit::CheckVisibleTiles()
 
 void Unit::CheckAllTiles()
 {
-	for (int i = 0; i < _tileMap->GetWidth(); i++)
+	for (int i = 0; i < _nrOfLoot; i++)
 	{
-		for (int j = 0; j < _tileMap->GetHeight(); j++)
-		{
-			//Handle objectives
-			if (_tileMap->IsObjectiveOnTile(AI::Vec2D(i, j)))
-			{
-				_aStar->SetTileCost({ i, j }, 1);
-				EvaluateTile(_tileMap->GetObjectOnTile(AI::Vec2D(i, j), System::LOOT));
-			}
-			else if (_tileMap->IsTypeOnTile(AI::Vec2D(i, j), System::SPAWN))
-			{
-				EvaluateTile(_tileMap->GetObjectOnTile(AI::Vec2D(i, j), System::SPAWN));
-			}
-		}
+		EvaluateTile(_allLoot[i]);
 	}
-	//_aStar->printMap();
+
+	for (int i = 0; i < _nrOfSpawnPoints; i++)
+	{
+		EvaluateTile(_allSpawnPoints[i]);
+	}
+
+	//for (int i = 0; i < _tileMap->GetWidth(); i++)
+	//{
+	//	for (int j = 0; j < _tileMap->GetHeight(); j++)
+	//	{
+	//		//Handle objectives
+	//		if (_tileMap->IsObjectiveOnTile(AI::Vec2D(i, j)))
+	//		{
+	//			_aStar->SetTileCost({ i, j }, 1);
+	//			EvaluateTile(_tileMap->GetObjectOnTile(AI::Vec2D(i, j), System::LOOT));
+	//		}
+	//		else if (_tileMap->IsTypeOnTile(AI::Vec2D(i, j), System::SPAWN))
+	//		{
+	//			EvaluateTile(_tileMap->GetObjectOnTile(AI::Vec2D(i, j), System::SPAWN));
+	//		}
+	//	}
+	//}
+	////_aStar->printMap();
 }
 
 void Unit::InitializePathFinding()
 {
+	int lootCounter = 10/*_tileMap->GetNrOfLoot()*/;
+	_nrOfLoot = 0;
+	_allLoot = new GameObject*[lootCounter];
+	int spawnPointCounter = 10;
+	_nrOfSpawnPoints = 0;
+	_allSpawnPoints = new GameObject*[spawnPointCounter];
+
+	for (int i = 0; i < lootCounter; i++)
+	{
+		_allLoot[i] = nullptr;
+	}
+	for (int i = 0; i < spawnPointCounter; i++)
+	{
+		_allSpawnPoints[i] = nullptr;
+	}
+
 	for (int i = 0; i < _tileMap->GetWidth(); i++)
 	{
 		for (int j = 0; j < _tileMap->GetHeight(); j++)
@@ -295,6 +336,24 @@ void Unit::InitializePathFinding()
 			else
 			{
 				_aStar->SetTileCost({i, j}, 1);
+			}
+
+			//Used for Enemy AI for faster scan of objectives
+			if (_tileMap->IsObjectiveOnTile(i, j))
+			{
+				if (_nrOfLoot >= lootCounter)
+				{
+					ExpandArray(_allLoot, lootCounter);
+				}
+				_allLoot[_nrOfLoot++] = _tileMap->GetObjectOnTile({ i, j }, System::LOOT);
+			}
+			else if (_tileMap->IsSpawnOnTile(i, j))
+			{
+				while (_nrOfSpawnPoints >= spawnPointCounter)
+				{
+					ExpandArray(_allSpawnPoints, spawnPointCounter);
+				}
+				_allSpawnPoints[_nrOfSpawnPoints++] = _tileMap->GetObjectOnTile({ i, j }, System::SPAWN);
 			}
 		}
 	}
