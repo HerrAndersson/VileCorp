@@ -10,7 +10,8 @@ namespace Renderer
 		_d3d = new DirectXHandler(hwnd, settings);
 		_settings = settings;
 		_shaderHandler = new ShaderHandler(_d3d->GetDevice());
-		_antialiasingEnabled = 0;
+		_antialiasingEnabled = true;
+		_shadowsEnabled = true;
 
 		InitializeScreenQuadBuffer();
 		InitializeConstantBuffers();
@@ -495,7 +496,7 @@ namespace Renderer
 
 			int nrOfSRVs = _d3d->SetLightStage();
 
-			_shaderHandler->SetSpotlightApplicationShaders(deviceContext);
+			_shaderHandler->SetSpotlightApplicationShaders(deviceContext, _shadowsEnabled);
 			ID3D11ShaderResourceView* shadowMapSRV = _shadowMap->GetShadowSRV();
 			_d3d->GetDeviceContext()->PSSetShaderResources(nrOfSRVs, 1, &shadowMapSRV);
 
@@ -563,6 +564,11 @@ namespace Renderer
 	void RenderModule::SetAntialiasingEnabled(bool enabled)
 	{
 		_antialiasingEnabled = enabled;
+	}
+
+	void RenderModule::SetShadowsEnabled(bool enabled)
+	{
+		_shadowsEnabled = enabled;
 	}
 
 	void RenderModule::BeginScene(float red, float green, float blue, float alpha, bool clearBackBuffer)

@@ -90,6 +90,7 @@ struct SpotlightData
 	unsigned char _bone;
 	float _intensity, _angle, _range;
 	DirectX::XMFLOAT3 _pos, _color, _direction;
+	bool _shadowsEnabled = true;
 };
 
 struct Point

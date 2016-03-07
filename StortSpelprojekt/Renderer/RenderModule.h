@@ -150,6 +150,7 @@ namespace Renderer
 
 		DirectX::XMFLOAT3	_ambientLight;
 		bool				_antialiasingEnabled;
+		bool				_shadowsEnabled;
 
 		void InitializeConstantBuffers();
 		void InitializeScreenQuadBuffer();
@@ -189,6 +190,7 @@ namespace Renderer
 		DirectX::XMFLOAT3 GetAmbientLight() const;
 		void SetAmbientLight(const DirectX::XMFLOAT3 &ambientLight);
 		void SetAntialiasingEnabled(bool enabled);
+		void SetShadowsEnabled(bool enabled);
 
 		void BeginScene(float red, float green, float blue, float alpha, bool clearBackBuffer);
 		void Render(DirectX::XMMATRIX* world, int vertexBufferSize, const DirectX::XMFLOAT3& colorOffset = DirectX::XMFLOAT3(0, 0, 0));
