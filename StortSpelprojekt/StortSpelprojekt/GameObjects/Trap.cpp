@@ -422,7 +422,7 @@ Trap::~Trap()
 		if (floorTile != nullptr)
 		{
 			floorTile->SetColorOffset({ 0.0f, 0.0f, 0.0f });
-		}	
+		}
 	}
 	for (int i = 0; i < _nrOfOccupiedTiles; i++)
 	{
@@ -442,6 +442,7 @@ Trap::~Trap()
 	delete _animation;
 	_particleEventQueue->Insert(new ParticleUpdateMessage(GetID(), false, GetPosition()));
 	_hasParticleEffect = false;
+}
 
 AI::Vec2D * Trap::GetTiles() const
 {
