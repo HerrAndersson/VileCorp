@@ -1,6 +1,7 @@
 #pragma once
 #include "GameObject.h"
 #include "Unit.h"
+#include "ParticleSystem\ParticleEventQueue.h"
 #include <memory>
 
 enum TrapType{ ANVIL, TESLACOIL, SHARK, GUN, SAW, CAKEBOMB, BEAR, FLAMETHROWER, WATER_GUN, SPIN_TRAP};
@@ -63,6 +64,8 @@ public:
 	bool IsTrapActive() const;
 	void SetTrapActive(bool active);
 
+	void RequestParticleByType(Unit* unit);
+
 	void Activate();
 	void Update(float deltaTime);
 	void Release();
@@ -75,6 +78,7 @@ public:
 	AI::Vec2D GetDirection();
 	void SetDirection(const AI::Vec2D& direction);
 	enum Anim { IDLEANIM, ACTIVATEANIM, DISABLEANIM, FIXANIM, NR_OF_ANIM/*Has to be last*/ };
+	
 	void Animate(Anim anim);
 
 	//Sound

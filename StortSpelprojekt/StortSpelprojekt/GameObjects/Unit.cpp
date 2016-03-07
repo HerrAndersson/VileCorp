@@ -426,6 +426,7 @@ void Unit::ActivateStatus()
 		break;
 	case StatusEffect::BURNING:
 		TakeDamage(8);
+		_particleEventQueue->Insert(new ParticleRequestMessage(ParticleType::FIRE, ParticleSubType::FIRE_SUBTYPE, -1, XMFLOAT3(_position.x, _position.y + 1.5f, _position.z), XMFLOAT3(0,1,0), 1500.0f, 15, 0.2f, true));
 		break;
 	case StatusEffect::SLOWED:
 		_moveSpeed /= 2.0f;
