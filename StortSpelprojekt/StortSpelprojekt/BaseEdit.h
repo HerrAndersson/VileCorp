@@ -74,8 +74,6 @@ public:
 	BaseEdit(ObjectHandler* objectHandler, System::Controls* controls, PickingDevice* pickingDevice, bool extendedMode);
 	~BaseEdit();
 
-	//GameObject* GetMarkedObject();
-
 	// Removes the ghost image in objectHandler
 	void RemoveGhostImage();
 
