@@ -318,7 +318,7 @@
           "GunText"
         ],
         "_thumbnails": [
-          "../Menues/LevelEdit/Traps/FlameThrowerbutton1"
+          "../Menues/PlacementStateGUI/units/FlameThrowerbutton1"
         ]
       },
       {
@@ -331,7 +331,7 @@
           "waterGun"
         ],
         "_thumbnails": [
-          "../Menues/LevelEdit/Traps/WatergunButton1"
+          "../Menues/PlacementStateGUI/units/WatergunButton1"
         ]
       },
       {
@@ -357,7 +357,7 @@
           "GunText"
         ],
         "_thumbnails": [
-          "../Menues/LevelEdit/Traps/roofsawButton"
+          "../Menues/PlacementStateGUI/units/roofsawButton"
         ]
       },
       {
@@ -383,7 +383,7 @@
           "textureblue"
         ],
         "_thumbnails": [
-          "../Menues/LevelEdit/Units/MaleGuardButton"
+          "../Menues/PlacementStateGUI/units/MaleGuardButton"
         ]
       },
       {

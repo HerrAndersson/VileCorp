@@ -73,6 +73,7 @@ void PlacementState::EvaluateGoldCost()
 			break;
 		case TrapType::CAKEBOMB:
 			_toPlace._goldCost = 80;		//SUGARBOMB COST
+			break;
 		case TrapType::SHARK:
 			_toPlace._goldCost = 250;		//SHARK COST
 			break;
