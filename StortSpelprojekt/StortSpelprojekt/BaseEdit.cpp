@@ -38,7 +38,6 @@ BaseEdit::~BaseEdit()
 	RemoveGhostImage();
 }
 
-
 // Marker functions
 
 void BaseEdit::AddBoxGhostImage()

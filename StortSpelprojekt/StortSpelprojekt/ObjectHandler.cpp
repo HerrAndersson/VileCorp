@@ -353,50 +353,78 @@ void ObjectHandler::MinimizeTileMap()
 	if (_tilemap)
 	{
 		int minY = -1, maxY = -1;
-		for (int y = 0; y < _tilemap->GetHeight(); y++)
+		for (int y = 0; y < _tilemap->GetHeight() && minY == -1; y++)
 		{
 			for (int x = 0; x < _tilemap->GetWidth() && minY == -1; x++)
 			{
 				if (!_tilemap->IsTileEmpty(x, y))
 				{
-					minY = y;
+					if (y > 0)
+					{
+						minY = y - 1;
+					}
+					else
+					{
+						minY = 0;
+					}
 				}
 			}
 		}
-		for (int y = _tilemap->GetHeight() - 1; y >= minY; y--)
+		if (minY == -1)
+		{
+			minY = 0;
+		}
+		for (int y = _tilemap->GetHeight() - 1; y >= minY && maxY == -1; y--)
 		{
 			for (int x = 0; x < _tilemap->GetWidth() && maxY == -1; x++)
 			{
 				if (!_tilemap->IsTileEmpty(x, y))
 				{
-					maxY = y + 1;
+					maxY = y + 2;
 				}
 			}
 		}
+		if (maxY == -1)
+		{
+			maxY = _tilemap->GetHeight();
+		}
 
 		int minX = -1, maxX = -1;
-		for (int x = 0; x < _tilemap->GetWidth(); x++)
+		for (int x = 0; x < _tilemap->GetWidth() && minX == -1; x++)
 		{
 			for (int y = minY; y < maxY && minX == -1; y++)
 			{
 				if (!_tilemap->IsTileEmpty(x, y))
 				{
-					minX = x;
+					if (x > 0)
+					{
+						minX = x - 1;
+					}
+					else
+					{
+						minX = 0;
+					}
 				}
 			}
 		}
-
-		for (int x = _tilemap->GetWidth() - 1; x >= minX; x--)
+		if (minX == -1)
+		{
+			minX = 0;
+		}
+		for (int x = _tilemap->GetWidth() - 1; x >= minX && maxX == -1; x--)
 		{
 			for (int y = minY; y < maxY && maxX == -1; y++)
 			{
 				if (!_tilemap->IsTileEmpty(x, y))
 				{
-					maxX = x + 1;
+					maxX = x + 2;
 				}
 			}
 		}
-
+		if (maxX == -1)
+		{
+			maxX = _tilemap->GetWidth();
+		}
 		int newXMax = maxX - minX;
 		int newYMax = maxY - minY;
 
@@ -425,7 +453,7 @@ void ObjectHandler::MinimizeTileMap()
 			}
 		}
 
-		delete _tilemap;
+		SAFE_DELETE(_tilemap);
 		_tilemap = minimized;
 
 		_buildingGrid->ChangeGridSize(_tilemap->GetWidth(), _tilemap->GetHeight(), 1);
@@ -498,6 +526,7 @@ bool ObjectHandler::LoadLevel(const std::string& levelBinaryFilePath)
 	Level::LevelBinary levelData;
 	HRESULT success = _assetManager->ParseLevelBinary(&levelData, levelBinaryFilePath);
 	result = LoadLevel(levelData);
+//	MinimizeTileMap();
 	return result;
 }
 
@@ -616,7 +645,7 @@ void ObjectHandler::Update(float deltaTime)
 					XMFLOAT3 pos = unit->GetPosition();
 					pos.y += 2.5f;
 
-					ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::EXCLAMATIONMARK_SUBTYPE, -1, pos, XMFLOAT3(0, 0, 0), 1.0f, 1, unit->GetHealth()*0.0025f, true, true);
+					ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::HEALTH_SUBTYPE, -1, pos, XMFLOAT3(0, 0, 0), 1.0f, 1, unit->GetHealth()*0.0025f, true, true);
 					GetParticleEventQueue()->Insert(msg);
 				}
 

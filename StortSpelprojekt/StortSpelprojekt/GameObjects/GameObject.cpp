@@ -217,14 +217,14 @@ DirectX::XMFLOAT3 GameObject::GetColorOffset() const
 
 void GameObject::SetColorOffset(const DirectX::XMFLOAT3& colorOffset)
 {
-	_colorOffset = colorOffset;
+//	_colorOffset = colorOffset;
 }
 
 void GameObject::AddColorOffset(const DirectX::XMFLOAT3& colorOffset)
 {
-	_colorOffset.x += colorOffset.x;
-	_colorOffset.y += colorOffset.y;
-	_colorOffset.z += colorOffset.z;
+	//_colorOffset.x += colorOffset.x;
+	//_colorOffset.y += colorOffset.y;
+	//_colorOffset.z += colorOffset.z;
 }
 
 void* GameObject::operator new(size_t i)

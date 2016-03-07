@@ -709,10 +709,10 @@ bool LevelEditState::HandleButtonsForDialogWindows(System::MouseCoord &coord, bo
 		else if (_uiTree.IsButtonColliding("LevelDown", coord) && !_uiTree.IsNodeHidden("LevelDown"))
 		{
 			clickedOnGUI = true;
-			if ((_loadLevelSelectedIndex < _levelHeaderFilenames.size()))
+			if (_loadLevelSelectedIndex < _levelHeaderFilenames.size())
 			{
-				_loadLevelSelectedIndex++;
 				_loadLevelTextNode->SetText(System::StringToWstring(_levelHeaderFilenames[_loadLevelSelectedIndex]));
+				_loadLevelSelectedIndex++;
 			}
 		}
 		//New Map Functions

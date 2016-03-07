@@ -81,11 +81,5 @@
 				"fontsize": 35.0
 			}
 		}
-	},
-	"Tutorial": {
-		"position": [0.0, -0.0],
-		"scale": [0.75, 0.90],
-		"texture": "../Menues/PlacementStateGUI/tutorialplay.png",
-		"fontsize": 25.0
 	}
 }

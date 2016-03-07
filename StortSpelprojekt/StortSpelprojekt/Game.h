@@ -55,7 +55,7 @@ private:
 	void Render();
 
 	void RenderGameObjects(int forShaderStage, std::vector<std::vector<GameObject*>>* gameObjects);
-	void GenerateShadowMap(Renderer::Spotlight* spotlight, unsigned short ownerID);
+	void GenerateShadowMap(Renderer::RenderModule::ShaderStage renderStage, Renderer::Spotlight* spotlight, unsigned short ownerID);
 	void RenderParticles();
 
 	std::vector<GameObject*> _enemies;
