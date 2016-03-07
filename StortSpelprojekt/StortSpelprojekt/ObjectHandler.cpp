@@ -758,7 +758,7 @@ void ObjectHandler::Update(float deltaTime)
 
 					if (allLootIsCarried && unit->GetHeldObject() == nullptr && static_cast<Enemy*>(unit)->GetMoveState() != Unit::MoveState::FLEEING)
 					{
-						static_cast<Enemy*>(unit)->CheckAllTiles();
+						static_cast<Enemy*>(unit)->CheckLootAndSpawns(&_gameObjects[System::LOOT], &_gameObjects[System::SPAWN]);
 					}
 				}
 			}

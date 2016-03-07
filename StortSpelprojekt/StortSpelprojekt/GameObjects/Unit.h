@@ -79,6 +79,7 @@ public:
 	//Decision making
 	void CheckVisibleTiles();																	//Checks for targets in vision cone. Typically done after switching tile.
 	void CheckAllTiles();																		//Checks the whole map. Typically done by idle enemies to find loot or an exit point.
+	void CheckLootAndSpawns(std::vector<GameObject*>* loot, std::vector<GameObject*>* spawns);	//Checks only loot and spawnpoints. Typically done by idle enemies.
 	void InitializePathFinding();																//Transfers map info to the pathfinding. Done once the tilemap is fully loaded.
 	virtual void EvaluateTile(System::Type objective, AI::Vec2D tile) = 0;
 	virtual void EvaluateTile(GameObject* obj) = 0;												//Decide priority of potential targets

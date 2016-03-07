@@ -277,6 +277,19 @@ void Unit::CheckAllTiles()
 	//_aStar->printMap();
 }
 
+void Unit::CheckLootAndSpawns(std::vector<GameObject*>* loot, std::vector<GameObject*>* spawns)
+{
+	for (auto const& singleLoot : *loot)
+	{
+		_aStar->SetTileCost(singleLoot->GetTilePosition(), 1);
+		EvaluateTile(singleLoot);
+	}
+	for (auto const& singleSpawn : *spawns)
+	{
+		EvaluateTile(singleSpawn);
+	}
+}
+
 void Unit::InitializePathFinding()
 {
 	for (int i = 0; i < _tileMap->GetWidth(); i++)
