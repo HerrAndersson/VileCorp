@@ -29,6 +29,25 @@ class CombinedMeshGenerator
 
 private:
 
+	struct RotatedRenderObject
+	{
+		RenderObject* _renderObject;
+		DirectX::XMFLOAT3 _rotation;
+		float epsilon = std::numeric_limits<float>::epsilon();
+
+		bool operator==(const RotatedRenderObject& other)
+		{
+			if (*_renderObject == *other._renderObject && 
+				fabs(this->_rotation.x - other._rotation.x) < epsilon && 
+				fabs(this->_rotation.y - other._rotation.y) < epsilon && 
+				fabs(this->_rotation.z - other._rotation.z) < epsilon)
+			{
+				return true;
+			}
+			return false;
+		}
+	};
+
 	ID3D11Device* _device;
 	ID3D11DeviceContext* _deviceContext;
 	ID3D11Buffer* _bufferCopy;

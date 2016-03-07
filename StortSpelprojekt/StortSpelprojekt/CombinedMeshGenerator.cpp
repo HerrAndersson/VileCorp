@@ -162,10 +162,10 @@ void CombinedMeshGenerator::CombineAndOptimizeMeshes(Tilemap* tilemap, const Typ
 	int width = tilemap->GetWidth();
 	int height = tilemap->GetHeight();
 
-	RenderObject* prevRenderObject = nullptr;
-	RenderObject* thisRenderObject = nullptr;
+	RotatedRenderObject prevRenderObject;
+	RotatedRenderObject thisRenderObject;
 
-	std::vector<RenderObject*> renderObjects;
+	std::vector<RotatedRenderObject> renderObjects;
 	std::vector<int> numberPerRenderObject; //Holds how many objects that share a single render object. The indexes are directly mapped between renderObjects and numberPerRenderObject
 	int index = -1;
 
@@ -186,12 +186,13 @@ void CombinedMeshGenerator::CombineAndOptimizeMeshes(Tilemap* tilemap, const Typ
 			GameObject* object = tilemap->GetObjectOnTile(x, y, typeToCombine);
 			if (object)
 			{
-				thisRenderObject = object->GetRenderObject();
+				thisRenderObject._renderObject = object->GetRenderObject();
+				thisRenderObject._rotation = object->GetRotation();
 
 				bool found = false;
 				for (auto& renderObject : renderObjects)
 				{
-					if (*renderObject == *thisRenderObject)
+					if (renderObject == thisRenderObject)
 					{
 						found = true;
 						break;
@@ -217,7 +218,7 @@ void CombinedMeshGenerator::CombineAndOptimizeMeshes(Tilemap* tilemap, const Typ
 		std::vector<Vertex> combinedMeshDataVector;
 
 		std::vector<Vertex> singleObjectDataVector;
-		LoadVertexBufferData(&singleObjectDataVector, renderObject->_mesh);
+		LoadVertexBufferData(&singleObjectDataVector, renderObject._renderObject->_mesh);
 
 		for (int x = 0; x < width; x++)
 		{
@@ -226,7 +227,7 @@ void CombinedMeshGenerator::CombineAndOptimizeMeshes(Tilemap* tilemap, const Typ
 				GameObject* object = tilemap->GetObjectOnTile(x, y, typeToCombine);
 				if (object && !_tileIsCombined[x][y])
 				{
-					if (*object->GetRenderObject() == *renderObject)
+					if (*object->GetRenderObject() == *renderObject._renderObject)
 					{
 						XMFLOAT3 basePos = object->GetPosition();
 						int offsetX = 0;
@@ -244,7 +245,7 @@ void CombinedMeshGenerator::CombineAndOptimizeMeshes(Tilemap* tilemap, const Typ
 						{
 							//Check if the tile holds an object of the type that is being combined
 							GameObject* xObject = tilemap->GetObjectOnTile(x + offsetX, y, typeToCombine);
-							if (xObject && *xObject->GetRenderObject() == *renderObject && !_tileIsCombined[x + offsetX][y])
+							if (xObject && *xObject->GetRenderObject() == *renderObject._renderObject && !_tileIsCombined[x + offsetX][y])
 							{
 								foundX = true;
 								_tileIsCombined[x + offsetX][y] = true;
@@ -253,7 +254,7 @@ void CombinedMeshGenerator::CombineAndOptimizeMeshes(Tilemap* tilemap, const Typ
 								while (!stopY && (y + offsetY) < height)
 								{
 									GameObject* yObject = tilemap->GetObjectOnTile(x + offsetX, y + offsetY, typeToCombine);
-									if (yObject && *yObject->GetRenderObject() == *renderObject && !_tileIsCombined[x + offsetX][y+offsetY])
+									if (yObject && *yObject->GetRenderObject() == *renderObject._renderObject && !_tileIsCombined[x + offsetX][y+offsetY])
 									{
 										pos = yObject->GetPosition();
 										foundY = true;
@@ -306,9 +307,17 @@ void CombinedMeshGenerator::CombineAndOptimizeMeshes(Tilemap* tilemap, const Typ
 						float scaleX = maxX - basePos.x + 1;
 						float scaleY = maxY - basePos.z + 1;
 
+						XMMATRIX rotation = XMMatrixRotationRollPitchYaw(renderObject._rotation.x, renderObject._rotation.y, renderObject._rotation.z);
+						XMMATRIX rotateUV = XMMatrixIdentity();
+
+						if (renderObject._rotation.x < 0 || renderObject._rotation.y < 0 || renderObject._rotation.z < 0)
+						{
+							rotateUV = XMMatrixRotationRollPitchYaw(XMConvertToRadians(0.0f), XMConvertToRadians(90.0f), 0.0f);
+						}
+
 						XMMATRIX scaleTranslation = XMMatrixScaling(scaleX, 1.0f, scaleY);
 						XMMATRIX scaleUV = XMMatrixScaling(scaleX, scaleY, 1.0f);
-						 
+
 						XMMATRIX translation = scaleTranslation * XMMatrixTranslation(basePos.x + scaleX / 2.0f - 0.5f, basePos.y, basePos.z + scaleY / 2.0f - 0.5f);
 
 						//Translating the mesh data by the object translation
@@ -316,13 +325,13 @@ void CombinedMeshGenerator::CombineAndOptimizeMeshes(Tilemap* tilemap, const Typ
 						{
 							Vertex vert = vertex;
 
-							//Transform the position
 							XMVECTOR posV = XMLoadFloat3(&vert._position);
+							//posV = XMVector3TransformCoord(posV, rotation);
 							posV = XMVector3TransformCoord(posV, translation);
 							XMStoreFloat3(&vert._position, posV);
 
-							//Scale the uv-coords according to the same scaling as the position
 							XMVECTOR uvV = XMLoadFloat2(&vert._uv);
+							//uvV = XMVector2TransformCoord(uvV, rotation);
 							uvV = XMVector2TransformCoord(uvV, scaleUV);
 							XMStoreFloat2(&vert._uv, uvV);
 
@@ -336,7 +345,7 @@ void CombinedMeshGenerator::CombineAndOptimizeMeshes(Tilemap* tilemap, const Typ
 		}
 
 		//Combine all meshes of the give type
-		CreateCombinedMesh(combinedMeshDataVector, renderObject, _combinedTypes);
+		CreateCombinedMesh(combinedMeshDataVector, renderObject._renderObject, _combinedTypes);
 		combinedMeshDataVector.clear();
 	}
 
