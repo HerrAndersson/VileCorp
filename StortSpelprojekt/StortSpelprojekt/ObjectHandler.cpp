@@ -756,7 +756,7 @@ void ObjectHandler::Update(float deltaTime)
 						}
 					}
 
-					if ( unit->GetObjective() == nullptr && allLootIsCarried && unit->GetHeldObject() == nullptr && 
+					if (unit->GetObjective() == nullptr && allLootIsCarried && unit->GetHeldObject() == nullptr && 
 						static_cast<Enemy*>(unit)->GetMoveState() != Unit::MoveState::FLEEING)
 					{
 						static_cast<Enemy*>(unit)->CheckAllTiles();

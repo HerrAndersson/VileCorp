@@ -45,7 +45,8 @@ void Enemy::Flee()
 					tempDist = (float)pow(offset._x + AI::NEIGHBOUR_OFFSETS[i]._x, 2) + (float)pow(offset._y + AI::NEIGHBOUR_OFFSETS[i]._y, 2);
 				}
 
-				if (_tileMap->IsFloorOnTile(_tilePosition + AI::NEIGHBOUR_OFFSETS[i]) && !_tileMap->IsEnemyOnTile(_tilePosition + AI::NEIGHBOUR_OFFSETS[i]) && tempDist > bestDist)
+				if (_tileMap->IsFloorOnTile(_tilePosition + AI::NEIGHBOUR_OFFSETS[i]) && !_tileMap->IsEnemyOnTile(_tilePosition + AI::NEIGHBOUR_OFFSETS[i]) && 
+					!_tileMap->IsFurnitureOnTile(_tilePosition + AI::NEIGHBOUR_OFFSETS[i]) && tempDist > bestDist)
 				{
 					bestDist = tempDist;
 					bestDir = AI::NEIGHBOUR_OFFSETS[i];

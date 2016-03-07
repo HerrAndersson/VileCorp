@@ -331,7 +331,15 @@ void Unit::InitializePathFinding()
 			}
 			else if (_tileMap->IsFurnitureOnTile(AI::Vec2D(i, j)))
 			{
-				_aStar->SetTileCost({i, j}, SHRT_MAX/2);					//Needs to be reachable in case objective is on a furniture tile, but it's still high enough that units almost always avoid it.
+				//Make an exception for enemies trying to reach loot
+				if (_type == System::ENEMY && _tileMap->IsObjectiveOnTile(i,j))			
+				{
+					_aStar->SetTileCost({ i, j }, 20);
+				}
+				else
+				{
+					_aStar->SetTileCost({ i, j }, -1);
+				}
 			}
 			else
 			{
