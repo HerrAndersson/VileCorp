@@ -33,7 +33,7 @@ private:
 
 	AI::Vec2D* _occupiedTiles;			//Physical area taken up by the trap
 	int _nrOfOccupiedTiles;
-	AI::Vec2D* _triggerTiles;			//Tiles that when walked on by an enemy, will activate the trap. Do not place on tile that is not also included in _occupiedTiles
+	AI::Vec2D* _triggerTiles;			//Tiles that when walked on by an enemy, will activate the trap. Things will get weird if _tilePosition is not a trigger.
 	int _nrOfTriggers;
 	AI::Vec2D* _areaOfEffect;			//Tiles that will be affected by the activated trap
 	int _nrOfAOETiles;
@@ -57,6 +57,10 @@ public:
 
 	AI::Vec2D* GetTiles()const;
 	int GetNrOfOccupiedTiles()const;
+	AI::Vec2D* GetTriggers()const;
+	int GetNrOfTriggerTiles()const;
+	AI::Vec2D* GetAOE()const;
+	int GetNrOfAOETiles()const;
 	int GetDetectionDifficulty()const;
 	int GetDisarmDifficulty()const;
 	bool InRange(AI::Vec2D pos) const;
