@@ -17,7 +17,7 @@ GameLogic::GameLogic(ObjectHandler* objectHandler, System::Camera* camera, Syste
 
 	_uiTree = uiTree;
 	_assetManager = assetManager;
-	_guardTexture = _assetManager->GetTexture("../Menues/PlacementStateGUI/units/Guardbutton1.png");
+	_guardTexture = _assetManager->GetTexture("../Menues/PlacementStateGUI/units/MaleGuardButton.png");
 	_uiTree->GetNode("winscreen")->SetHidden(true);
 	_uiTree->GetNode("losescreen")->SetHidden(true);
 	_gameOver = false;
