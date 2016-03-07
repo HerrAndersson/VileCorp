@@ -168,82 +168,85 @@ void Enemy::EvaluateTile(System::Type objective, AI::Vec2D tile)
 void Enemy::EvaluateTile(GameObject* obj)
 {
 	int tempPriority = 0;
-	if (obj != nullptr && obj->GetPickUpState() == ONTILE)
+	if (obj != nullptr)
 	{
-		switch (obj->GetType())
+		if (obj->GetPickUpState() == ONTILE)
 		{
-		case  System::LOOT:
-			if (_heldObject == nullptr)
+			switch (obj->GetType())
 			{
-				tempPriority = 2;
-			}
-			break;
-		case  System::SPAWN:
-			if (_heldObject != nullptr || _tileMap->GetNrOfLoot() <= 0)
-			{
-				tempPriority = 2;
-			}
-			break;
-		case  System::TRAP:
-		{
-			Trap* trap = static_cast<Trap*>(obj);
-			if (SpotTrap(trap))
-			{
-				if (TryToDisarm(trap))
+			case System::LOOT:
+				if (_heldObject == nullptr)
 				{
-					tempPriority = 1;
+					tempPriority = 2;
 				}
-				else
+				break;
+			case System::SPAWN:
+				if (_heldObject != nullptr || _tileMap->GetNrOfLoot() <= 0)
 				{
-					bool changeRoute = false;
-					for (int i = 0; i < trap->GetNrOfOccupiedTiles(); i++)
+					tempPriority = 2;
+				}
+				break;
+			case System::TRAP:
+			{
+				Trap* trap = static_cast<Trap*>(obj);
+				if (SpotTrap(trap))
+				{
+					if (TryToDisarm(trap))
 					{
-						AI::Vec2D pos = trap->GetTiles()[i];
-						if (_aStar->GetTileCost(pos) != 15)					//Arbitrary cost. Just make sure the getter and setter use the same number
+						tempPriority = 1;
+					}
+					else
+					{
+						bool changeRoute = false;
+						for (int i = 0; i < trap->GetNrOfOccupiedTiles(); i++)
 						{
-							_aStar->SetTileCost(trap->GetTiles()[i], 15);
-							changeRoute = true;
+							AI::Vec2D pos = trap->GetTiles()[i];
+							if (_aStar->GetTileCost(pos) != 15)					//Arbitrary cost. Just make sure the getter and setter use the same number
+							{
+								_aStar->SetTileCost(trap->GetTiles()[i], 15);
+								changeRoute = true;
+							}
+						}
+						if (changeRoute)
+						{
+							GameObject* temp = _objective;
+							SetGoalTilePosition(_goalTilePosition);					//resets pathfinding to goal
+							_objective = temp;
 						}
 					}
-					if (changeRoute)
+				}
+			}
+			break;
+			case System::GUARD:
+				if (static_cast<Unit*>(obj)->GetHealth() > 0)
+				{
+					if (SafeToAttack(static_cast<Unit*>(obj)->GetDirection()))
 					{
-						GameObject* temp = _objective;
-						SetGoalTilePosition(_goalTilePosition);					//resets pathfinding to goal
-						_objective = temp;
+						tempPriority = 100 / _baseDamage;
+					}
+					else if (obj != _objective && _visible)
+					{
+						_pursuer = static_cast<Unit*>(obj);
+						ClearObjective();
+						_moveState = MoveState::MOVING;
 					}
 				}
+				break;
+			case System::ENEMY:
+				break;
+			default:
+				break;
 			}
-		}
-		break;
-		case  System::GUARD:
-			if (static_cast<Unit*>(obj)->GetHealth() > 0)
-			{
-				if (SafeToAttack(static_cast<Unit*>(obj)->GetDirection()))
-				{
-					tempPriority = 100 / _baseDamage;
-				}
-				else if (obj != _objective && _visible)
-				{
-					_pursuer = static_cast<Unit*>(obj);
-					ClearObjective();
-					_moveState = MoveState::MOVING;
-				}
-			}
-			break;
-		case  System::ENEMY:
-			break;
-		default:
-			break;
-		}
 
-		//Head to the objective
-		if (tempPriority > 0 &&
-			obj->GetTilePosition() != _tilePosition &&
-			(_objective == nullptr || tempPriority * GetApproxDistance(obj->GetTilePosition()) < _goalPriority * GetApproxDistance(GetGoalTilePosition())))
-		{
-			SetGoalTilePosition(obj->GetTilePosition());
-			_objective = obj;
-			_goalPriority = tempPriority;
+			//Head to the objective
+			if (tempPriority > 0 &&
+				obj->GetTilePosition() != _tilePosition &&
+				(_objective == nullptr || tempPriority * GetApproxDistance(obj->GetTilePosition()) < _goalPriority * GetApproxDistance(GetGoalTilePosition())))
+			{
+				SetGoalTilePosition(obj->GetTilePosition());
+				_objective = obj;
+				_goalPriority = tempPriority;
+			}
 		}
 	}
 }
@@ -254,26 +257,31 @@ void Enemy::Act(GameObject* obj)
 	{
 		switch (obj->GetType())
 		{
-		case  System::LOOT:
-			if (_heldObject == nullptr)
+		case System::LOOT:
+			if (_heldObject == nullptr && !((GameObject*)obj)->IsTargeted())
 			{
-				obj->SetPickUpState(PICKINGUP);
+				obj->SetPickUpState(PICKEDUP);
 				Animate(PICKUPOBJECTANIM);
 				if (System::FrameCountdown(_interactionTime, _animation->GetLength(PICKUPOBJECTANIM)))
 				{
 					obj->SetPickUpState(PICKEDUP);
+					obj->SetTargeted(true);
 					_heldObject = obj;
 					obj->SetVisibility(_visible);
 					ClearObjective();
 				}
-
 			}
+			else
+			{
+				ClearObjective();
+			}
+
 			break;
-		case  System::SPAWN:
-				TakeDamage(_health);						//TODO: Right now despawn is done by killing the unit. This should be changed to reflect that it's escaping --Victor
-															//^ This will also make the guard_death sound not play if it's an escape -- Sebastian
+		case System::SPAWN:
+			TakeDamage(_health);						//TODO: Right now despawn is done by killing the unit. This should be changed to reflect that it's escaping --Victor
+														//^ This will also make the guard_death sound not play if it's an escape -- Sebastian
 			break;
-		case  System::TRAP:
+		case System::TRAP:
 		{
 			if (static_cast<Trap*>(obj)->IsTrapActive())
 			{
@@ -290,29 +298,32 @@ void Enemy::Act(GameObject* obj)
 			}
 		}
 		break;
-		case  System::GUARD:
+		case System::GUARD:
 			Animate(FIGHTANIM);
-		if(System::FrameCountdown(_interactionTime, _animation->GetLength(FIGHTANIM)))
+			if (System::FrameCountdown(_interactionTime, _animation->GetLength(FIGHTANIM)))
 			{
-				Unit* guard = static_cast<Unit*>(obj);
-				guard->TakeDamage(_baseDamage);
-				guard->Animate(HURTANIM);
-				if (guard->GetHealth() <= 0)
+				if (static_cast<Unit*>(obj)->GetHealth() > 0 && InRange(obj->GetTilePosition()))
+				{
+					Unit* guard = static_cast<Unit*>(obj);
+					guard->TakeDamage(_baseDamage);
+					guard->Animate(HURTANIM);
+				}
+				else if (static_cast<Unit*>(obj)->GetHealth() <= 0 || !InRange(obj->GetTilePosition()))
 				{
 					ClearObjective();
 				}
-			}
-			break;
-		case  System::ENEMY:
+				break;
+		case System::ENEMY:
 			break;
 		default:
 			break;
+			}
 		}
-		if (_objective == nullptr)
-		{
-			_moveState = MoveState::MOVING;
-			Animate(WALKANIM);
-		}
+	}
+	else if (_objective == nullptr)
+	{
+		_moveState = MoveState::MOVING;
+		Animate(WALKANIM);
 	}
 }
 
@@ -328,8 +339,17 @@ void Enemy::Update(float deltaTime)
 		switch (_moveState)
 		{
 		case MoveState::IDLE:
-			CheckAllTiles();
+		{
+			srand((int)time(NULL));
+			int temp = rand() % 40;
+			if (System::FrameCountdown(_interactionTime, 20 + temp))
+			{
+				ClearObjective();
+				CheckAllTiles();
+			}
+
 			Animate(IDLEANIM);
+		}
 			break;
 		case MoveState::FINDING_PATH:
 			if (_objective != nullptr)

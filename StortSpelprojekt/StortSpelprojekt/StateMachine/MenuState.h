@@ -2,6 +2,7 @@
 #include "../CombinedMeshGenerator.h"
 #include "BaseState.h"
 #include "GUI elements\HighlightNode.h"
+#include "JsonParser.h"
 
 class MenuState : public BaseState
 {

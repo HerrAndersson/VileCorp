@@ -43,7 +43,6 @@ Game::Game(HINSTANCE hInstance, int nCmdShow) :
 	ResizeResources(settings);//This fixes a bug which offsets mousepicking, do not touch! //Markus
 	_renderModule->SetAntialiasingEnabled(settings->_antialiasing);
 
-
 	for (int i = 0; i < 10; i++)
 	{
 		//spotlights.push_back(new Renderer::Spotlight)
@@ -233,7 +232,8 @@ void Game::Render()
 		{
 			if (spot.second != nullptr && spot.second->IsActive() && spot.first->IsActive())
 			{
-				GenerateShadowMap(spot.second, spot.first->GetID());
+				GenerateShadowMap(Renderer::RenderModule::ShaderStage::SHADOW_GENERATION, spot.second, spot.first->GetID());
+				GenerateShadowMap(Renderer::RenderModule::ShaderStage::ANIM_SHADOW_GENERATION, spot.second, spot.first->GetID());
 
 				_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::LIGHT_APPLICATION_SPOTLIGHT);
 				_renderModule->SetLightDataPerSpotlight(spot.second);
@@ -300,7 +300,7 @@ void Game::RenderGameObjects(int forShaderStage, std::vector<std::vector<GameObj
 		if (gameObjectVector.size() > 0)
 		{
 			//The floors in the gameObjects vector should not be rendered, as these are combined in a single mesh to reduce draw calls
-			if ((_SM->GetState() == PLACEMENTSTATE || _SM->GetState() == PLAYSTATE || _SM->GetState() == TUTORIALSTATE || _SM->GetState() == PAUSESTATE) && (gameObjectVector.at(0)->GetType() == System::FLOOR || gameObjectVector.at(0)->GetType() == System::WALL))
+			if ((_SM->GetState() == PLACEMENTSTATE || _SM->GetState() == PLAYSTATE || _SM->GetState() == TUTORIAL || _SM->GetState() == PAUSESTATE) && (gameObjectVector.at(0)->GetType() == System::FLOOR || gameObjectVector.at(0)->GetType() == System::WALL))
 			{
 				continue;
 			}
@@ -344,52 +344,14 @@ void Game::RenderGameObjects(int forShaderStage, std::vector<std::vector<GameObj
 	}
 }
 
-void Game::GenerateShadowMap(Renderer::Spotlight* spotlight, unsigned short ownerID)
+void Game::GenerateShadowMap(Renderer::RenderModule::ShaderStage shaderStage, Renderer::Spotlight* spotlight, unsigned short ownerID)
 {
-	//Static objects
-	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::SHADOW_GENERATION);
-	_renderModule->SetShadowMapDataPerSpotlight(spotlight->GetViewMatrix(), spotlight->GetProjectionMatrix());
-
 	vector<vector<GameObject*>>* inLight = _objectHandler->GetObjectsInLight(spotlight);
 	GameObject* lastGameObject = nullptr;
 	RenderObject* lastRenderObject = nullptr;
 	int vertexBufferSize = 0;
 
-	for (auto j : *inLight)
-	{
-		if (j.size() > 0)
-		{
-			vertexBufferSize = 0;
-
-			for (int i = 0; i < j.size(); i++)
-			{
-				GameObject* obj = j.at(i);
-				RenderObject* renderObject = obj->GetRenderObject();
-
-				if (!renderObject->_mesh->_isSkinned)
-				{
-					//If the current object and the previous object are different, set the new data
-					unsigned int thisSubType = obj->GetSubType();
-					if (lastGameObject == nullptr || *lastRenderObject != *renderObject || lastGameObject->GetSubType() != obj->GetSubType())
-					{
-						_renderModule->SetShadowMapDataPerObjectType(renderObject);
-						vertexBufferSize = renderObject->_mesh->_vertexBufferSize;
-						lastRenderObject = renderObject;
-						lastGameObject = obj;
-					}
-
-					//Render the visible objects, but skip the owner itself
-					if (obj->IsVisible() && obj->GetID() != ownerID)
-					{
-						_renderModule->RenderShadowMap(obj->GetMatrix(), vertexBufferSize);
-					}
-				}
-			}
-		}
-	}
-
-	//Animated/skinned objects
-	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::ANIM_SHADOW_GENERATION);
+	_renderModule->SetShaderStage(shaderStage);
 	_renderModule->SetShadowMapDataPerSpotlight(spotlight->GetViewMatrix(), spotlight->GetProjectionMatrix());
 
 	for (auto j : *inLight)
@@ -402,9 +364,15 @@ void Game::GenerateShadowMap(Renderer::Spotlight* spotlight, unsigned short owne
 			{
 				GameObject* obj = j.at(i);
 				RenderObject* renderObject = obj->GetRenderObject();
-				Animation* anim = obj->GetAnimation();
+				Animation* anim;
 
-				if (renderObject->_mesh->_isSkinned && anim)
+				if (shaderStage == Renderer::RenderModule::ShaderStage::ANIM_SHADOW_GENERATION)
+				{
+					anim = obj->GetAnimation();
+				}
+				
+				if ((shaderStage == Renderer::RenderModule::ShaderStage::SHADOW_GENERATION && !renderObject->_mesh->_isSkinned) ||
+					(shaderStage == Renderer::RenderModule::ShaderStage::ANIM_SHADOW_GENERATION && renderObject->_mesh->_isSkinned && anim))
 				{
 					//If the current object and the previous object are different, set the new data
 					unsigned int thisSubType = obj->GetSubType();
@@ -419,7 +387,14 @@ void Game::GenerateShadowMap(Renderer::Spotlight* spotlight, unsigned short owne
 					//Render the visible objects, but skip the owner itself
 					if (obj->IsVisible() && obj->GetID() != ownerID)
 					{
-						_renderModule->RenderShadowMap(obj->GetMatrix(), vertexBufferSize, anim->GetTransforms(), anim->GetBoneCount());
+						if (shaderStage == Renderer::RenderModule::ShaderStage::ANIM_SHADOW_GENERATION)
+						{
+							_renderModule->RenderShadowMap(obj->GetMatrix(), vertexBufferSize, anim->GetTransforms(), anim->GetBoneCount());
+						}
+						else
+						{
+							_renderModule->RenderShadowMap(obj->GetMatrix(), vertexBufferSize);
+						}
 					}
 				}
 			}

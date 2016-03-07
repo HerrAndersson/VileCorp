@@ -13,6 +13,7 @@ GameObject::GameObject(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::X
 	_type = type;
 	_renderObject = renderObject;
 	_pickUpState = ONTILE;
+	_isTargeted = false;
 	_visible = true;
 	_subType = subType;
 	_hasParticleEffect = false;
@@ -114,6 +115,16 @@ AI::Vec2D GameObject::GetDirection() const
 	return _direction;
 }
 
+bool GameObject::IsTargeted() const
+{
+	return _isTargeted;
+}
+
+void GameObject::SetTargeted(bool targeted)
+{
+	_isTargeted = targeted;
+}
+
 void GameObject::SetTilePosition(AI::Vec2D pos)
 {
 	_tilePosition = pos;
@@ -184,7 +195,12 @@ RenderObject * GameObject::GetRenderObject() const
 
 Animation * GameObject::GetAnimation() const
 {
-	return _animation;
+	if (_animation != nullptr)
+	{
+		return _animation;
+	}
+	
+	return nullptr;
 }
 
 void GameObject::SetPickUpState(PickUpState state)
@@ -204,14 +220,14 @@ DirectX::XMFLOAT3 GameObject::GetColorOffset() const
 
 void GameObject::SetColorOffset(const DirectX::XMFLOAT3& colorOffset)
 {
-	_colorOffset = colorOffset;
+//	_colorOffset = colorOffset;
 }
 
 void GameObject::AddColorOffset(const DirectX::XMFLOAT3& colorOffset)
 {
-	_colorOffset.x += colorOffset.x;
-	_colorOffset.y += colorOffset.y;
-	_colorOffset.z += colorOffset.z;
+	//_colorOffset.x += colorOffset.x;
+	//_colorOffset.y += colorOffset.y;
+	//_colorOffset.z += colorOffset.z;
 }
 
 void* GameObject::operator new(size_t i)

@@ -41,7 +41,7 @@ protected:
 	System::SoundModule* _soundModule;
 
 	PickUpState _pickUpState;
-
+	bool _isTargeted;
 	void CalculateMatrix();
 
 public:
@@ -71,6 +71,9 @@ public:
 
 	AI::Vec2D GetTilePosition()const;
 	AI::Vec2D GetDirection()const;
+
+	bool IsTargeted() const;
+	void SetTargeted(bool targeted);
 
 	virtual void SetTilePosition(AI::Vec2D dir);
 	virtual void SetDirection(const AI::Vec2D pos);
