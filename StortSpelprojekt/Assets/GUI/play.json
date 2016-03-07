@@ -2,7 +2,7 @@
 	"unitinfo": {
 		"position": [-0.7, -0.855],
 		"scale": [0.3, 0.2],
-		"texture": "../Menues/PlacementStateGUI/placementUnits1.png",
+		"texture": "../Menues/PlayState GUI/placementUnits1.png",
 
 		"unitinfocontainer": {
 			"unitpicture": {
@@ -49,12 +49,12 @@
 	"winscreen": {
 		"position": [0.0, 0.1],
 		"scale": [0.35, 0.35],
-		"texture": "../Menues/Win/win3.png",
+		"texture": "../Menues/PlayState GUI/win3.png",
 
 		"winbutton": {
 			"position": [0.0, -0.23],
 			"scale": [0.1, 0.1],
-			"texture": "../Menues/General/placementResources.png",
+			"texture": "../Menues/PlacementStateGUI/placementResources.png",
 			"winbuttontext": {
 				"position": [0.0, -0.96],
 				"text": "Continue",
@@ -67,12 +67,12 @@
 	"losescreen": {
 		"position": [0.0, 0.2],
 		"scale": [0.6, 0.6],
-		"texture": "../Menues/Lose/lose4.png",
+		"texture": "../Menues/PlayState GUI/lose4.png",
 
 		"losebutton": {
 			"position": [0.0, -0.23],
 			"scale": [0.1, 0.1],
-			"texture": "../Menues/General/placementResources.png",
+			"texture": "../Menues/PlacementStateGUI/placementResources.png",
 			"losebuttontext": {
 				"position": [0.0, -0.96],
 				"text": "Continue",
