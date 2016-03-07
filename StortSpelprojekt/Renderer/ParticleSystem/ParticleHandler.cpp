@@ -179,7 +179,6 @@ namespace Renderer
 				icon = _textures->_iconTextures[ICON_QUESTIONMARK];
 				break;
 			}
-
 			case ParticleSubType::SELECTED_SUBTYPE:
 			{
 				icon = _textures->_iconTextures[ICON_SELECTED];

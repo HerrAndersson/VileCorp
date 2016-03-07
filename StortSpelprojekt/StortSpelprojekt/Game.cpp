@@ -32,7 +32,9 @@ Game::Game(HINSTANCE hInstance, int nCmdShow) :
 	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager, &_data, _settingsReader.GetSettings(), _particleHandler->GetParticleEventQueue(), &_soundModule);
 	_pickingDevice = new PickingDevice(_camera, settings);
 
+	GameObject::_particleEventQueue = _particleHandler->GetParticleEventQueue();
 	_SM = new StateMachine(_controls, _objectHandler, _camera, _pickingDevice, "Assets/gui.json", _assetManager, _fontWrapper, settings, &_settingsReader, &_soundModule, &_ambientLight, _combinedMeshGenerator);
+
 	_SM->Update(_timer.GetFrameTime());
 
 	_enemiesHasSpawned = false;
@@ -419,12 +421,11 @@ void Game::RenderParticles()
 				if (type != ParticleType::ELECTRICITY)
 				{
 					int textureCount = PARTICLE_TEXTURE_COUNT;
-					if (type == ParticleType::ICON)
+					if (type == ParticleType::ICON || type == ParticleType::STATIC_ICON)
 					{
-						ParticleSubType subType = emitter->GetSubType();
 						XMFLOAT3 campos = _camera->GetPosition();
 						XMFLOAT3 emitterPosition = emitter->GetPosition();
-						bool isMarker = (subType == ParticleSubType::QUESTIONMARK_SUBTYPE);
+						bool isMarker = (type == ParticleType::STATIC_ICON);
 						if (isMarker)
 						{
 							campos = emitterPosition;
