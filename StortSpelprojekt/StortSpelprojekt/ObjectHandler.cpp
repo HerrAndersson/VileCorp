@@ -17,9 +17,9 @@ ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, G
 	_soundModule = soundModule;
 	_backgroundObject = nullptr;
 
-	int sizeX = 100;
-	int sizeY = 100;
-	CreateBackgroundObject(sizeX, sizeY, "grass1.png", sizeX, sizeY);
+	const int sizeX = 100;
+	const int sizeY = 100;
+	CreateBackgroundObject((const float)sizeX, (const float)sizeY, "grass1.png", sizeX, sizeY);
 }
 
 ObjectHandler::~ObjectHandler()
@@ -35,7 +35,7 @@ GameObject* ObjectHandler::Add(System::Blueprint* blueprint, int textureId, cons
 	System::Type type = (System::Type)blueprint->_type;
 	RenderObject* renderObject = _assetManager->GetRenderObject(blueprint->_mesh, blueprint->_textures[textureId]);
 
-	AI::Vec2D tilepos(position.x, position.z);
+	AI::Vec2D tilepos((int)position.x, (int)position.z);
 	XMFLOAT3 lootPos;
 	GameObject* loot;
 
@@ -353,163 +353,6 @@ void ObjectHandler::SetTileMap(Tilemap * tilemap)
 	_tilemap = tilemap;
 }
 
-void ObjectHandler::MinimizeTileMap()
-{
-	if (_tilemap)
-	{
-		int minY = -1, maxY = -1;
-		for (int y = 0; y < _tilemap->GetHeight() && minY == -1; y++)
-		{
-			for (int x = 0; x < _tilemap->GetWidth() && minY == -1; x++)
-			{
-				if (!_tilemap->IsTileEmpty(x, y))
-				{
-					if (y > 0)
-					{
-						minY = y - 1;
-					}
-					else
-					{
-						minY = 0;
-					}
-				}
-			}
-		}
-		if (minY == -1)
-		{
-			minY = 0;
-		}
-		for (int y = _tilemap->GetHeight() - 1; y >= minY && maxY == -1; y--)
-		{
-			for (int x = 0; x < _tilemap->GetWidth() && maxY == -1; x++)
-			{
-				if (!_tilemap->IsTileEmpty(x, y))
-				{
-					maxY = y + 2;
-				}
-			}
-		}
-		if (maxY == -1)
-		{
-			maxY = _tilemap->GetHeight();
-		}
-
-		int minX = -1, maxX = -1;
-		for (int x = 0; x < _tilemap->GetWidth() && minX == -1; x++)
-		{
-			for (int y = minY; y < maxY && minX == -1; y++)
-			{
-				if (!_tilemap->IsTileEmpty(x, y))
-				{
-					if (x > 0)
-					{
-						minX = x - 1;
-					}
-					else
-					{
-						minX = 0;
-					}
-				}
-			}
-		}
-		if (minX == -1)
-		{
-			minX = 0;
-		}
-		for (int x = _tilemap->GetWidth() - 1; x >= minX && maxX == -1; x--)
-		{
-			for (int y = minY; y < maxY && maxX == -1; y++)
-			{
-				if (!_tilemap->IsTileEmpty(x, y))
-				{
-					maxX = x + 2;
-				}
-			}
-		}
-		if (maxX == -1)
-		{
-			maxX = _tilemap->GetWidth();
-		}
-		int newXMax = maxX - minX;
-		int newYMax = maxY - minY;
-
-		Tilemap* minimized = new Tilemap(AI::Vec2D(newXMax, newYMax));
-		for (int x = 0; x < newXMax; x++)
-		{
-			for (int y = 0; y < newYMax; y++)
-			{
-				AI::Vec2D pos;
-				pos._x = x + minX;
-				pos._y = y + minY;
-
-				std::vector<GameObject*> temp = *_tilemap->GetAllObjectsOnTile(pos);
-
-				for (GameObject* g : temp)
-				{
-					if (g)
-					{
-						// Update real pos
-						g->SetPosition(XMFLOAT3(x, g->GetPosition().y, y));
-
-						// Update tile
-						minimized->AddObjectToTile(x, y, g);
-					}
-				}
-			}
-		}
-
-		SAFE_DELETE(_tilemap);
-		_tilemap = minimized;
-
-		_buildingGrid->ChangeGridSize(_tilemap->GetWidth(), _tilemap->GetHeight(), 1);
-	}
-	else
-	{
-		throw std::runtime_error("ObjectHandler::MinimizeTileMap: _tilemap is nullptr");
-	}
-}
-
-void ObjectHandler::EnlargeTilemap(int offset)
-{
-	if (!_tilemap)
-	{
-		_tilemap = new Tilemap();
-	}
-	if (offset > 0)
-	{
-		int o = 2 * offset;
-		Tilemap* large = new Tilemap(AI::Vec2D(_tilemap->GetWidth() + o, _tilemap->GetHeight() + o));
-
-		for (int x = offset; x < _tilemap->GetWidth() + offset; x++)
-		{
-			for (int y = offset; y < _tilemap->GetHeight() + offset; y++)
-			{
-				AI::Vec2D pos;
-				pos._x = x - offset;
-				pos._y = y - offset;
-				std::vector<GameObject*> temp = *_tilemap->GetAllObjectsOnTile(pos);
-
-				for (GameObject* g : temp)
-				{
-					if (g)
-					{
-						// Update real pos
-						g->SetPosition(XMFLOAT3(x, g->GetPosition().y, y));
-
-						// Update tile
-						large->AddObjectToTile(x, y, g);
-					}
-				}
-			}
-		}
-
-		delete _tilemap;
-		_tilemap = large;
-
-		_buildingGrid->ChangeGridSize(large->GetWidth(), large->GetHeight(), 1);
-	}
-}
-
 Grid * ObjectHandler::GetBuildingGrid()
 {
 	return _buildingGrid;
@@ -540,7 +383,7 @@ bool ObjectHandler::LoadLevel(Level::LevelBinary &levelData)
 	bool result = true;
 	_tilemap = new Tilemap(AI::Vec2D(levelData._tileMapSizeX, levelData._tileMapSizeZ));
 
-	for (int i = 0; i < levelData._gameObjectData.size() && result; i++)
+	for (int i = 0; i < (int)levelData._gameObjectData.size() && result; i++)
 	{
 		std::vector<int>* formattedGameObject = &levelData._gameObjectData[i]; //Structure: { type, subType, textureID, posX, posZ, rot }
 		System::Blueprint* blueprint = GetBlueprintByType(formattedGameObject->at(0), formattedGameObject->at(1));
@@ -559,7 +402,7 @@ bool ObjectHandler::LoadLevel(Level::LevelBinary &levelData)
 		//Set no placement zones on floors
 		if (addedObject != nullptr && formattedGameObject->at(0) == System::Type::FLOOR && formattedGameObject->size() >= 7)
 		{
-			static_cast<Architecture*>(addedObject)->SetNoPlacementZone(formattedGameObject->at(6));
+			static_cast<Architecture*>(addedObject)->SetNoPlacementZone((bool)formattedGameObject->at(6));
 		}
 	}
 
@@ -570,9 +413,9 @@ bool ObjectHandler::LoadLevel(Level::LevelBinary &levelData)
 	_lightCulling = new LightCulling(_tilemap);
 
 	SAFE_DELETE(_backgroundObject);
-	int sizeX = _tilemap->GetWidth() * 3;
-	int sizeY = _tilemap->GetHeight() * 3;
-	CreateBackgroundObject(sizeX, sizeY, "grass1.png", sizeX / 3, sizeY / 3);
+	const int sizeX = _tilemap->GetWidth() * 3;
+	const int sizeY = _tilemap->GetHeight() * 3;
+	CreateBackgroundObject((const float)sizeX, (const float)sizeY, "grass1.png", sizeX / 3, sizeY / 3);
 	return result;
 }
 
@@ -627,7 +470,7 @@ void ObjectHandler::Update(float deltaTime)
 				if (heldObject != nullptr && heldObject->GetPickUpState() == HELD)
 				{
 					heldObject->SetPosition(DirectX::XMFLOAT3(unit->GetPosition().x, unit->GetPosition().y + 2.0f, unit->GetPosition().z));
-					heldObject->SetTilePosition(AI::Vec2D(heldObject->GetPosition().x, heldObject->GetPosition().z));
+					heldObject->SetTilePosition(AI::Vec2D((int)heldObject->GetPosition().x, (int)heldObject->GetPosition().z));
 				}
 
 				bool inRangeOfSpawn = false;
@@ -780,7 +623,7 @@ void ObjectHandler::Update(float deltaTime)
 
 void ObjectHandler::SpawnEnemies()
 {
-	if (_enemySpawnVector.size() > 0 && _enemySpawnIndex < _enemySpawnVector.size())
+	if ((int)_enemySpawnVector.size() > 0 && _enemySpawnIndex < (int)_enemySpawnVector.size())
 	{
 		int nextEnemySpawnTime = _enemySpawnVector[_enemySpawnIndex][0];
 
@@ -802,12 +645,15 @@ void ObjectHandler::SpawnEnemies()
 				GameObject* selectedSpawnPoint = _gameObjects[System::Type::SPAWN][currentSpawnPointIndex];
 				if (!_tilemap->IsEnemyOnTile(selectedSpawnPoint->GetTilePosition()))
 				{
-					enemyAdded = Add(nextEnemyBlueprint, 0, selectedSpawnPoint->GetPosition(), selectedSpawnPoint->GetRotation(), true);
+					if (Add(nextEnemyBlueprint, 0, selectedSpawnPoint->GetPosition(), selectedSpawnPoint->GetRotation(), true))
+					{
+						enemyAdded = true;
+					}
 				}
 				else
 				{
 					currentSpawnPointIndex++;
-					if (_gameObjects[System::Type::SPAWN].size() <= currentSpawnPointIndex)
+					if ((int)_gameObjects[System::Type::SPAWN].size() <= currentSpawnPointIndex)
 					{
 						currentSpawnPointIndex = 0;
 					}
@@ -940,11 +786,11 @@ void ObjectHandler::CreateBackgroundObject(const float& sizeX, const float& size
 
 	Vertex quad[] =
 	{ { XMFLOAT3(left, -0.01f, top), normal, XMFLOAT2(0.0f, 0.0f) },
-	{ XMFLOAT3(right, -0.01f, bottom), normal, XMFLOAT2(texRepeatCountX, texRepeatCountY) },
-	{ XMFLOAT3(left, -0.01f, bottom), normal, XMFLOAT2(0.0f, texRepeatCountY) },
+	{ XMFLOAT3(right, -0.01f, bottom), normal, XMFLOAT2((float)texRepeatCountX, (float)texRepeatCountY) },
+	{ XMFLOAT3(left, -0.01f, bottom), normal, XMFLOAT2(0.0f, (float)texRepeatCountY) },
 	{ XMFLOAT3(left, -0.01f, top), normal, XMFLOAT2(0.0f, 0.0f) },
-	{ XMFLOAT3(right, -0.01f, top), normal, XMFLOAT2(texRepeatCountX, 0.0f) },
-	{ XMFLOAT3(right, -0.01f, bottom), normal, XMFLOAT2(texRepeatCountX, texRepeatCountY) } };
+	{ XMFLOAT3(right, -0.01f, top), normal, XMFLOAT2((float)texRepeatCountX, 0.0f) },
+	{ XMFLOAT3(right, -0.01f, bottom), normal, XMFLOAT2((float)texRepeatCountX, (float)texRepeatCountY) } };
 
 	D3D11_BUFFER_DESC bufferDesc;
 	ZeroMemory(&bufferDesc, sizeof(bufferDesc));

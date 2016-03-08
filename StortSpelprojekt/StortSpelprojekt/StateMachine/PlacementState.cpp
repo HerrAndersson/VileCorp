@@ -178,7 +178,7 @@ void PlacementState::OnStateEnter()
 	_uiTree.GetNode("SharkCost")->SetText(L"Damage: Very haj\nUses: Infinite\nAtk. Speed: Very slow\nEffect: Big area");
 
 	std::vector<GUI::Node*>* tutorialNodes = _uiTree.GetNode("Tutorial")->GetChildren();
-	for (int i = 0; i < tutorialNodes->size(); i++)
+	for (int i = 0; i < (int)tutorialNodes->size(); i++)
 	{
 		tutorialNodes->at(i)->SetHidden(true);
 	}

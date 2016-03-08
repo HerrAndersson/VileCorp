@@ -246,7 +246,7 @@ int GameObject::GetAnimLength(int layer)
 {
 	if (_animation != nullptr)
 	{
-		return _animation->GetLength(layer);
+		return (int)_animation->GetLength(layer);
 	}
 	else
 	{

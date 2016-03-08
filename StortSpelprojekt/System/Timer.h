@@ -10,12 +10,12 @@ namespace System
 	private:
 
 		INT64 _frequency;
-		double _ticksPerMs;
+		float _ticksPerMs;
 		INT64 _startTime;
 
-		double _tempTime;
-		double _frameTime;   //Time since last frame
-		double _gameTime;	//Time since the beginning of the game
+		float _tempTime;
+		float _frameTime;   //Time since last frame
+		float _gameTime;	//Time since the beginning of the game
 
 	public:
 
@@ -24,8 +24,8 @@ namespace System
 
 		void Update();
 
-		double GetFrameTime();
-		double GetGameTime();
+		float GetFrameTime();
+		float GetGameTime();
 
 		int GetFPS();
 

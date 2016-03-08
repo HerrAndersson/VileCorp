@@ -116,7 +116,7 @@ Enemy::Enemy(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 ro
 	_visibilityTimer = TIME_TO_HIDE;
 	_pursuer = nullptr;
 	_checkAllTilesTimer = -1;
-	_moveSpeed = 0.025;
+	_moveSpeed = 0.025f;
 	InitializePathFinding();
 	switch (_subType)
 	{
@@ -256,7 +256,7 @@ void Enemy::Act(GameObject* obj)
 			{
 				obj->SetPickUpState(PICKEDUP);
 				Animate(PICKUPOBJECTANIM);
-				if (System::FrameCountdown(_interactionTime, _animation->GetLength(PICKUPOBJECTANIM)))
+				if (System::FrameCountdown(_interactionTime, (int)_animation->GetLength(PICKUPOBJECTANIM)))
 				{
 					obj->SetPickUpState(PICKEDUP);
 					obj->SetTargeted(true);
@@ -280,7 +280,7 @@ void Enemy::Act(GameObject* obj)
 			if (static_cast<Trap*>(obj)->IsTrapActive())
 			{
 				Animate(DISABLETRAPANIM);
-				if (System::FrameCountdown(_interactionTime, _animation->GetLength(DISABLETRAPANIM)))
+				if (System::FrameCountdown(_interactionTime, (int)_animation->GetLength(DISABLETRAPANIM)))
 				{
 					DisarmTrap(static_cast<Trap*>(obj));
 					ClearObjective();
@@ -294,7 +294,7 @@ void Enemy::Act(GameObject* obj)
 		break;
 		case System::GUARD:
 			Animate(FIGHTANIM);
-			if (System::FrameCountdown(_interactionTime, _animation->GetLength(FIGHTANIM)))
+			if (System::FrameCountdown(_interactionTime, (int)_animation->GetLength(FIGHTANIM)))
 			{
 				if (static_cast<Unit*>(obj)->GetHealth() > 0 && InRange(obj->GetTilePosition()))
 				{
