@@ -93,7 +93,6 @@ Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	_waiting = -1;
 	_pathLength = 0;
 	_path = nullptr;
-	_direction = {0, 1};
 	_nextTile = _tilePosition;
 	_isSwitchingTile = false;
 	Rotate();
