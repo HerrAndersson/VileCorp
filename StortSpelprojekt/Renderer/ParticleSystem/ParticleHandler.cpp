@@ -215,6 +215,31 @@ namespace Renderer
 				break;
 			}
 
+			case ParticleSubType::LOOT_SUBTYPE:
+			{
+				icon = _textures->_iconTextures[ICON_LOOT];
+				break;
+			}
+			case ParticleSubType::SPAWN_SUBTYPE:
+			{
+				icon = _textures->_iconTextures[ICON_SPAWN];
+				break;
+			}
+			case ParticleSubType::AOE_RED_SUBTYPE:
+			{
+				icon = _textures->_iconTextures[ICON_AOE_RED];
+				break;
+			}
+			case ParticleSubType::AOE_YELLOW_SUBTYPE:
+			{
+				icon = _textures->_iconTextures[ICON_AOE_YELLOW];
+				break;
+			}
+			case ParticleSubType::AOE_GREEN_SUBTYPE:
+			{
+				icon = _textures->_iconTextures[ICON_AOE_GREEN];
+				break;
+			}
 			default:
 			{
 				break;
