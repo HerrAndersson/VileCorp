@@ -29,7 +29,7 @@ Game::Game(HINSTANCE hInstance, int nCmdShow) :
 	LoadParticleSystemData(*particleTextures, modifiers);
 	_particleHandler = new Renderer::ParticleHandler(_renderModule->GetDevice(), _renderModule->GetDeviceContext(), particleTextures, modifiers);
 
-	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager, &_data, _settingsReader.GetSettings(), _particleHandler->GetParticleEventQueue(), &_soundModule);
+	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager, &_data, _settingsReader.GetSettings(), _particleHandler->GetParticleEventQueue(), &_soundModule, &_ambientLight);
 	_pickingDevice = new PickingDevice(_camera, settings);
 
 	_SM = new StateMachine(_controls, _objectHandler, _camera, _pickingDevice, "Assets/gui.json", _assetManager, _fontWrapper, settings, &_settingsReader, &_soundModule, &_ambientLight, _combinedMeshGenerator);
@@ -38,7 +38,9 @@ Game::Game(HINSTANCE hInstance, int nCmdShow) :
 
 	_enemiesHasSpawned = false;
 
-	_ambientLight = _renderModule->GetAmbientLight();
+	//Set brightness
+	_ambientLight.SetScale(_settingsReader.GetSettings()->_brightness);
+
 	ResizeResources(settings);//This fixes a bug which offsets mousepicking, do not touch! //Markus
 	_renderModule->SetAntialiasingEnabled(settings->_antialiasing);
 
@@ -157,6 +159,8 @@ bool Game::Update(double deltaTime)
 		_soundModule.SetVolume(settings->_volume / 100.0f, CHMASTER);
 		_settingsReader.SetSettingsChanged(false);
 		_renderModule->SetAntialiasingEnabled(settings->_antialiasing);
+		_ambientLight.SetScale(settings->_brightness);
+		_objectHandler->UpdateLightIntensity();
 	}
 
 	_controls->Update();
@@ -185,7 +189,7 @@ bool Game::Update(double deltaTime)
 
 void Game::Render()
 {
-	_renderModule->SetAmbientLight(_ambientLight);
+	_renderModule->SetAmbientLight(_ambientLight.GetAmbientLight());
 	_renderModule->BeginScene(0.0f, 0.5f, 0.5f, 1.0f, _SM->GetState() == LEVELEDITSTATE);
 	_renderModule->SetDataPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
 
@@ -262,7 +266,7 @@ void Game::Render()
 
 	///////////////////////////////////////////////////////  HUD and other 2D   ////////////////////////////////////////////////////////////
 	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::HUD_STAGE);
-	_renderModule->Render(_SM->GetCurrentStatePointer()->GetUITree()->GetRootNode(), _fontWrapper);
+	_renderModule->Render(_SM->GetCurrentStatePointer()->GetUITree()->GetRootNode(), _fontWrapper, _ambientLight.GetScale());
 
 	_renderModule->EndScene();
 }

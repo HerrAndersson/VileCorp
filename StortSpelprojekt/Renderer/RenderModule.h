@@ -159,7 +159,7 @@ namespace Renderer
 		void SetDataPerMesh(ID3D11Buffer* vertexBuffer, int vertexSize);
 		void SetShadowMapDataPerObject(DirectX::XMMATRIX* world);
 
-		void Render(GUI::Node* current, DirectX::XMMATRIX* transform, FontWrapper* fontWrapper);
+		void Render(GUI::Node* current, DirectX::XMMATRIX* transform, FontWrapper* fontWrapper, int brightness);
 
 		ShadowMap* _shadowMap;
 
@@ -193,7 +193,7 @@ namespace Renderer
 		void BeginScene(float red, float green, float blue, float alpha, bool clearBackBuffer);
 		void Render(DirectX::XMMATRIX* world, int vertexBufferSize, const DirectX::XMFLOAT3& colorOffset = DirectX::XMFLOAT3(0, 0, 0));
 		void RenderAnimation(DirectX::XMMATRIX* world, int vertexBufferSize, DirectX::XMMATRIX* extra, int bonecount, const DirectX::XMFLOAT3& colorOffset = DirectX::XMFLOAT3(0, 0, 0));
-		void Render(GUI::Node* root, FontWrapper* fontWrapper);
+		void Render(GUI::Node* root, FontWrapper* fontWrapper, int brightness);
 		void RenderLineStrip(DirectX::XMMATRIX* world, int nrOfPoints, const DirectX::XMFLOAT3& colorOffset = DirectX::XMFLOAT3(0,0,0));
 		void RenderShadowMap(DirectX::XMMATRIX* world, int vertexBufferSize, DirectX::XMMATRIX* animTransformData = nullptr, int bonecount = 0);
 		void RenderScreenQuad();
