@@ -21,6 +21,7 @@ namespace System
 		bool _borderless;
 		bool _showMouseCursor;
 		bool _antialiasing;
+		unsigned int _brightness;
 	public:
 		Settings();
 		~Settings();
@@ -40,7 +41,8 @@ namespace System
 				CEREAL_NVP(_farClip),
 				CEREAL_NVP(_fov),
 				CEREAL_NVP(_antialiasing),
-				CEREAL_NVP(_volume)
+				CEREAL_NVP(_volume),
+				CEREAL_NVP(_brightness)
 				);
 		}
 	};

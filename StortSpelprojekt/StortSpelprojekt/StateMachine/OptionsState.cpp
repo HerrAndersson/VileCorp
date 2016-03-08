@@ -31,6 +31,7 @@ OptionsState::OptionsState(System::Controls* controls, ObjectHandler* objectHand
 	_aaOption = 0;
 
 	_volume = 10;
+	_brightness = 5;
 
 	XMFLOAT4 color(0.1f, 0.1f, 0.1f, 1.0f);
 	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("res_left"), color));
@@ -71,7 +72,7 @@ void OptionsState::UpdateText(const std::string& contentId, int optionValue, Opt
 	text->SetText(options[optionValue]._text);
 }
 
-bool OptionsState::HandleOptionSwitch(const std::string& leftId, const std::string& rightId, const std::string& contentId, int& optionValue, Options* options, int optionsMax, bool updateContent)
+bool OptionsState::HandleOptionSwitch(const std::string& leftId, const std::string& rightId, const std::string& contentId, int& optionValue, Options* options, int optionsMin, int optionsMax, bool updateContent)
 {
 	System::MouseCoord coord = _controls->GetMouseCoord();
 	bool leftClicked = _uiTree.IsButtonColliding(leftId, coord._pos.x, coord._pos.y);
@@ -84,13 +85,13 @@ bool OptionsState::HandleOptionSwitch(const std::string& leftId, const std::stri
 	{
 		optionValue++;
 	}
-	if (optionValue == -1)
+	if (optionValue == optionsMin-1)
 	{
 		optionValue = optionsMax - 1;
 	}
 	else if (optionValue == optionsMax)
 	{
-		optionValue = 0;
+		optionValue = optionsMin;
 	}
 	if (updateContent && (leftClicked || rightClicked))
 	{
@@ -125,16 +126,20 @@ void OptionsState::Update(float deltaTime)
 	{
 		_showApplyButton = false;
 
-		_showApplyButton = _showApplyButton || HandleOptionSwitch("res_left", "res_right", "res_content", _resolutionOption, _resolution, RESOLUTION_MAX);
-		_showApplyButton = _showApplyButton || HandleOptionSwitch("win_left", "win_right", "win_content", _windowOption, _window, WINDOW_MAX);
-		_showApplyButton = _showApplyButton || HandleOptionSwitch("aa_left", "aa_right", "aa_content", _aaOption, _aa, AA_MAX);
-		_showApplyButton = _showApplyButton || HandleOptionSwitch("shadow_left", "shadow_right", "shadow_content", _shadowmapOption, _shadowmap, SHADOWMAP_MAX);
+		_showApplyButton = _showApplyButton || HandleOptionSwitch("res_left", "res_right", "res_content", _resolutionOption, _resolution, 0, RESOLUTION_MAX);
+		_showApplyButton = _showApplyButton || HandleOptionSwitch("win_left", "win_right", "win_content", _windowOption, _window, 0, WINDOW_MAX);
+		_showApplyButton = _showApplyButton || HandleOptionSwitch("aa_left", "aa_right", "aa_content", _aaOption, _aa, 0, AA_MAX);
+		_showApplyButton = _showApplyButton || HandleOptionSwitch("shadow_left", "shadow_right", "shadow_content", _shadowmapOption, _shadowmap, 0, SHADOWMAP_MAX);
 
 		//Handle volume option
-		_showApplyButton = _showApplyButton || HandleOptionSwitch("sound_left", "sound_right", "sound_content", _volume, nullptr, 11, false);
+		_showApplyButton = _showApplyButton || HandleOptionSwitch("sound_left", "sound_right", "sound_content", _volume, nullptr, 0, 11, false);
 		GUI::Node* text = _uiTree.GetNode("sound_content");
 		text->SetText(std::to_wstring(_volume * 10) + L"%");
 
+		//Handle brightness option
+		_showApplyButton = _showApplyButton || HandleOptionSwitch("brightness_left", "brightness_right", "brightness_content", _brightness, nullptr, 1, 11, false);
+		GUI::Node* bText = _uiTree.GetNode("brightness_content");
+		bText->SetText(std::to_wstring(_brightness));
 
 		_uiTree.GetNode("apply")->SetHidden(!_buttonClicked);
 
@@ -226,6 +231,10 @@ void OptionsState::OnStateEnter()
 	_volume = settings->_volume / 10;
 	GUI::Node* text = _uiTree.GetNode("sound_content");
 	text->SetText(std::to_wstring(_volume * 10) + L"%");
+
+	_brightness = settings->_brightness;
+	GUI::Node* bText = _uiTree.GetNode("brightness_content");
+	bText->SetText(std::to_wstring(_brightness));
 
 	_showApplyButton = false;
 	_buttonClicked = false;

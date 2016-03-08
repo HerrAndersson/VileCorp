@@ -15,6 +15,7 @@ namespace System
 		_fov = 1.57079f; //almost PI/2;
 		_antialiasing = true;
 		_volume = 100;
+		_brightness = 5;
 	}
 
 	Settings::~Settings()
