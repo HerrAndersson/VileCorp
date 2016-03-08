@@ -383,6 +383,7 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 		break;
 	case SAW:																						//Goes back and forth in a line. doesn't need to be reset unless an enemy disarms it.
 		Initialize(1, 3, 1, 1, 30, 80, 140, 140, Unit::StatusEffect::NO_EFFECT, 0, 0, 100, -1);
+		frozen = false;
 		_resetAnimTime = false;
 		break;
 	case CAKEBOMB:																					//Instant kill on one tile. TODO: Make it seem easier to disarm than it is
