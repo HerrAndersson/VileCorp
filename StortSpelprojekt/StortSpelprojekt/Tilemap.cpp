@@ -22,8 +22,8 @@ Tilemap::Tilemap(AI::Vec2D size)
 {
 	if (size._x > 0 && size._y > 0)
 	{
-		_height = size._x;
-		_width = size._y;
+		_height = size._y;
+		_width = size._x;
 		_nrOfLoot = 0;
 		_map = new Tile*[_width];
 		for (int i = 0; i < _width; i++)
