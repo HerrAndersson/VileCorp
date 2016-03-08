@@ -219,7 +219,7 @@ bool ObjectHandler::Remove(System::Type type, int ID)
 			}
 			else
 			{
-				_tilemap->RemoveObjectFromTile(_gameObjects[type].at(i));
+				_tilemap->RemoveObjectFromTile(_gameObjects[type].at(i)->GetTilePosition(), _gameObjects[type].at(i));
 			}
 
 			_gameObjects[type][i]->Release();
@@ -605,7 +605,7 @@ void ObjectHandler::Update(float deltaTime)
 
 			if (g->GetPickUpState() == PICKEDUP)
 			{
-				_tilemap->RemoveObjectFromTile(g);
+				_tilemap->RemoveObjectFromTile(g->GetTilePosition(), g);
 				g->SetPickUpState(HELD);
 			}
 			else if (g->GetPickUpState() == DROPPING)

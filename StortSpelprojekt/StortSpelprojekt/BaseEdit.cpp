@@ -139,8 +139,19 @@ void BaseEdit::DragEvent(System::Type type)
 			_movingGhostImage._origRot = _movingGhostImage._g->GetRotation();
 			_movingGhostImage._origDir = _movingGhostImage._g->GetDirection();
 
-			// Remove logically from old tile
-			_tileMap->RemoveObjectFromTile(_movingGhostImage._g);
+			// Remove logically from old tile/tiles
+			if (type == System::TRAP)
+			{
+				AI::Vec2D* tempTiles = static_cast<Trap*>(_movingGhostImage._g)->GetTiles();
+				for (int i = 0; i < static_cast<Trap*>(_movingGhostImage._g)->GetNrOfOccupiedTiles(); i++)
+				{
+					_tileMap->RemoveObjectFromTile(tempTiles[i], _movingGhostImage._g);
+				}
+			}
+			else
+			{
+				_tileMap->RemoveObjectFromTile(_movingGhostImage._g->GetTilePosition(), _movingGhostImage._g);
+			}
 
 			_isDragAndDropMode = true;
 		}
@@ -158,13 +169,14 @@ void BaseEdit::DropEvent()
 		//Redirect position to old pos
 		p.x = _movingGhostImage._origPos._x;
 		p.z = _movingGhostImage._origPos._y;
+		_movingGhostImage._g->SetTilePosition(AI::Vec2D(p.x, p.z));
 		_movingGhostImage._g->SetPosition(p);
 		_movingGhostImage._g->SetRotation(_movingGhostImage._origRot);
 		_movingGhostImage._g->SetDirection(_movingGhostImage._origDir);
 	}
 
 	// Special camera non floating fix
-	if (_movingGhostImage._g->GetType() == System::CAMERA || _movingGhostImage._g->GetType())
+	if (_movingGhostImage._g->GetType() == System::CAMERA)
 	{
 		if (_movingGhostImage._g->GetDirection()._x != 0 && _movingGhostImage._g->GetDirection()._y != 0)
 		{
@@ -175,21 +187,6 @@ void BaseEdit::DropEvent()
 		}
 	}
 
-	// Bind position logically
-	if (_movingGhostImage._g->GetType() == System::TRAP)
-	{
-		AI::Vec2D* tempTiles = static_cast<Trap*>(_movingGhostImage._g)->GetTiles();
-		for (int i = 0; i < static_cast<Trap*>(_movingGhostImage._g)->GetNrOfOccupiedTiles(); i++)
-		{
-			_tileMap->AddObjectToTile(tempTiles[i], _movingGhostImage._g);
-			static_cast<Trap*> (_movingGhostImage._g)->HideAreaOfEffect();
-		}
-	}
-	else
-	{
-		_tileMap->AddObjectToTile(p.x, p.z, _movingGhostImage._g);
-	}
-	
 	if (_movingGhostImage._g != nullptr && _isPlace)
 	{
 		_droppedObject = true;
@@ -202,6 +199,20 @@ void BaseEdit::DropEvent()
 
 	if (_isDragAndDropMode)
 	{
+		//	 Bind position logically
+		if (_movingGhostImage._g->GetType() == System::TRAP)
+		{
+			AI::Vec2D* tempTiles = static_cast<Trap*>(_movingGhostImage._g)->GetTiles();
+			for (int i = 0; i < static_cast<Trap*>(_movingGhostImage._g)->GetNrOfOccupiedTiles(); i++)
+			{
+				_tileMap->AddObjectToTile(tempTiles[i], _movingGhostImage._g);
+			}
+		}
+		else
+		{
+			_tileMap->AddObjectToTile(p.x, p.z, _movingGhostImage._g);
+		}
+
 		_movingGhostImage.Reset();
 		_isPlace = false;
 		_isDragAndDropMode = false;
@@ -210,8 +221,19 @@ void BaseEdit::DropEvent()
 	{
 		if (_droppedObject)
 		{
-			_tileMap->RemoveObjectFromTile(_movingGhostImage._g);
 			_createdObject = _objectHandler->Add(_sB->_blueprint, _sB->_textureId, _movingGhostImage._g->GetPosition(), _movingGhostImage._g->GetRotation(), true, _movingGhostImage._g->GetDirection());
+			if (_createdObject->GetType() == System::TRAP)
+			{
+				AI::Vec2D* tempTiles = static_cast<Trap*>(_createdObject)->GetTiles();
+				for (int i = 0; i < static_cast<Trap*>(_createdObject)->GetNrOfOccupiedTiles(); i++)
+				{
+					_tileMap->AddObjectToTile(tempTiles[i], _createdObject);
+				}
+			}
+			else
+			{
+				_tileMap->AddObjectToTile(p.x, p.z, _createdObject);
+			}
 		}
 
 		// Disables multiplacement with mouse in placement state
