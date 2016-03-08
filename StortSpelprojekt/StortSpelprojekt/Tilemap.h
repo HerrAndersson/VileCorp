@@ -3,7 +3,6 @@
 
 #pragma once
 
-#include "GameObject.h"
 #include "Architecture.h"
 
 class Tilemap
@@ -53,7 +52,7 @@ public:
 	bool AddObjectToTile(int x, int z, GameObject* obj);
 
 	bool RemoveObjectFromTile(AI::Vec2D pos, GameObject* obj);
-	bool RemoveObjectFromTile(GameObject* obj);
+	bool RemoveObjectFromTile(int x, int z, GameObject* obj);
 	void ClearTile(AI::Vec2D pos);
 
 	void LockTile(AI::Vec2D pos);
