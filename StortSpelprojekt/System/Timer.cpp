@@ -33,8 +33,8 @@ namespace System
 	{
 		INT64 currentTime;
 		QueryPerformanceCounter((LARGE_INTEGER*)&currentTime);		//Query the current time
-		double timeDifference = (double)(currentTime - _startTime); 	//Difference in time since the last time-query 
-		_tempTime = timeDifference / _ticksPerMs;						//Time difference over the timer speed resolution give frameTime
+		float timeDifference = (float)(currentTime - _startTime); 	//Difference in time since the last time-query 
+		_tempTime = timeDifference / _ticksPerMs;					//Time difference over the timer speed resolution give frameTime
 		_startTime = currentTime; 									//Restart the timer
 
 		_frameTime += _tempTime;
@@ -47,12 +47,12 @@ namespace System
 	}
 
 	// Seconds
-	double Timer::GetFrameTime()
+	float Timer::GetFrameTime()
 	{
 		return _frameTime;
 	}
 
-	double Timer::GetGameTime()
+	float Timer::GetGameTime()
 	{
 		return _gameTime;
 	}

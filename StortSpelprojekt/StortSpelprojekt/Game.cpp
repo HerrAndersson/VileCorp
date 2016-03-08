@@ -7,7 +7,7 @@ Game::Game(HINSTANCE hInstance, int nCmdShow) :
 	_settingsReader("Assets/settings.xml", "Assets/profile.xml"),
 	_soundModule(_settingsReader.GetSettings(), "Assets/Sounds/", ".ogg")
 {
-	srand(time(NULL));
+	srand((unsigned int)time(NULL));
 	System::Settings* settings = _settingsReader.GetSettings();
 
 	_gameHandle = this;
@@ -142,7 +142,7 @@ void Game::LoadParticleSystemData(ParticleTextures& particleTextures, ParticleMo
 	modifiers._lightningRepeatTime = data._lightningRepeatTime;
 }
 
-bool Game::Update(double deltaTime)
+bool Game::Update(float deltaTime)
 {
 	_soundModule.Update(_camera->GetPosition());
 
@@ -313,7 +313,7 @@ void Game::RenderGameObjects(int forShaderStage, std::vector<std::vector<GameObj
 			GameObject* lastGameObject = nullptr;
 			RenderObject* lastRenderObject = nullptr;
 			int vertexBufferSize = 0;
-			for (int j = 0; j < gameObjectVector.size(); j++)
+			for (uint j = 0; j < gameObjectVector.size(); j++)
 			{
 				GameObject* gameObject = gameObjectVector[j];
 				RenderObject* renderObject = gameObject->GetRenderObject();
@@ -330,7 +330,7 @@ void Game::RenderGameObjects(int forShaderStage, std::vector<std::vector<GameObj
 						_renderModule->SetDataPerObjectType(renderObject);
 						vertexBufferSize = renderObject->_mesh->_vertexBufferSize;
 					}
-					if (gameObject->IsVisible())
+					//if (gameObject->IsVisible())
 					{
 						if (forShaderStage == Renderer::RenderModule::ShaderStage::GEO_PASS)
 						{
@@ -365,7 +365,7 @@ void Game::GenerateShadowMap(Renderer::RenderModule::ShaderStage shaderStage, Re
 		{
 			vertexBufferSize = 0;
 
-			for (int i = 0; i < j.size(); i++)
+			for (uint i = 0; i < j.size(); i++)
 			{
 				GameObject* obj = j.at(i);
 				RenderObject* renderObject = obj->GetRenderObject();
@@ -390,7 +390,7 @@ void Game::GenerateShadowMap(Renderer::RenderModule::ShaderStage shaderStage, Re
 					}
 
 					//Render the visible objects, but skip the owner itself
-					if (obj->IsVisible() && obj->GetID() != ownerID)
+					//if (obj->IsVisible() && obj->GetID() != ownerID)
 					{
 						if (shaderStage == Renderer::RenderModule::ShaderStage::ANIM_SHADOW_GENERATION)
 						{

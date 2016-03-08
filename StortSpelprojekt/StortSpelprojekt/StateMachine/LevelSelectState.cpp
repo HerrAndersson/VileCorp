@@ -183,7 +183,7 @@ void LevelSelectState::OnStateEnter()
 	std::vector<std::string> campaignHeaderFilenames;
 	GetFilenamesInDirectory(const_cast<char*>(System::CAMPAIGN_FOLDER_PATH.c_str()), ".json", campaignHeaderFilenames, false);
 	
-	if (_profile->_level > campaignHeaderFilenames.size() - 1)
+	if (_profile->_level > (int)campaignHeaderFilenames.size() - 1)
 	{
 		_campaignSelection = _campaignSelectionMax = _profile->_level = campaignHeaderFilenames.size() - 1;
 		_settingsReader->ApplyProfileSettings();
@@ -269,7 +269,7 @@ void LevelSelectState::UpdateButtonsNextPreviousVisability()
 		_previousLevelButtonNode->SetHidden(isHidden);
 
 		isHidden = true;
-		if (_skirmishSelectedIndex < _skirmishHeaderFilenames.size() - 1)
+		if (_skirmishSelectedIndex < (int)_skirmishHeaderFilenames.size() - 1)
 		{
 			isHidden = false;
 		}

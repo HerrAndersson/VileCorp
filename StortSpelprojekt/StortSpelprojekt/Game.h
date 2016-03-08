@@ -50,7 +50,7 @@ private:
 	//Resizing window, directx resources, camera
 	void ResizeResources(System::Settings* settings);
 
-	bool Update(double deltaTime);
+	bool Update(float deltaTime);
 	void Render();
 
 	void RenderGameObjects(int forShaderStage, std::vector<std::vector<GameObject*>>* gameObjects);

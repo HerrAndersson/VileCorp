@@ -116,8 +116,6 @@ public:
 
 	Tilemap* GetTileMap() const;
 	void SetTileMap(Tilemap* tilemap);
-	void MinimizeTileMap();
-	void EnlargeTilemap(int offset);
 	Grid* GetBuildingGrid();
 	RenderObject* GetBackgroundObject();
 

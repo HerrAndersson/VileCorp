@@ -250,7 +250,7 @@ namespace System
 		if (_isTextInputMode)
 		{
 			bool overCharacterLimit = false;
-			if (_currentText.size() >= _characterLimit)
+			if ((int)_currentText.size() >= _characterLimit)
 			{
 				overCharacterLimit = true;
 			}
