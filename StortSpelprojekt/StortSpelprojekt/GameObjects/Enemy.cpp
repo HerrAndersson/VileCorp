@@ -5,15 +5,7 @@ Decides the best direction to run away from a foe.
 */
 void Enemy::Flee()
 {
-	//if (_tileMap->IsFloorOnTile(_tilePosition))
-	//{
-	//	_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,0});
-	//}
 	_tilePosition = _nextTile;
-	//if (_tileMap->IsFloorOnTile(_tilePosition))
-	//{
-	//	_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,4});
-	//}
 	if (_pursuer == nullptr)
 	{
 		_moveState = MoveState::IDLE;
@@ -116,8 +108,8 @@ void Enemy::DisarmTrap(Trap * trap)
 	}
 }
 
-Enemy::Enemy(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject * renderObject, System::SoundModule* soundModule, const Tilemap * tileMap, int enemyType, AI::Vec2D direction)
-	: Unit(ID, position, rotation, tilePosition, type, renderObject, soundModule, tileMap, direction)
+Enemy::Enemy(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject * renderObject, System::SoundModule* soundModule, Renderer::ParticleEventQueue* particleEventQueue, const Tilemap * tileMap, int enemyType, AI::Vec2D direction)
+	: Unit(ID, position, rotation, tilePosition, type, renderObject, soundModule, particleEventQueue, tileMap, direction)
 {
 	_subType = enemyType;
 	_visibilityTimer = TIME_TO_HIDE;

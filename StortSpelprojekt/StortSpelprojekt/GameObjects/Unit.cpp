@@ -6,13 +6,6 @@ void Unit::CalculatePath()
 	{
 		_path = _aStar->GetPath();
 		_pathLength = _aStar->GetPathLength();
-		//for (int i = 0; i < _pathLength; i++)
-		//{
-		//	/*if (_tileMap->IsFloorOnTile(_path[i]))
-		//	{
-		//		_tileMap->GetObjectOnTile(_path[i], FLOOR)->SetColorOffset({0,4,0});
-		//	}*/
-		//}
 	}
 	else
 	{
@@ -79,8 +72,8 @@ void Unit::SetGoal(GameObject * objective)
 	CalculatePath();
 }
 
-Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject* renderObject, System::SoundModule* soundModule, const Tilemap* tileMap, AI::Vec2D direction)
-	: GameObject(ID, position, rotation, tilePosition, type, renderObject, soundModule, DirectX::XMFLOAT3(0, 0, 0), 0, direction)
+Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject* renderObject, System::SoundModule* soundModule, Renderer::ParticleEventQueue* particleEventQueue, const Tilemap* tileMap, AI::Vec2D direction)
+	: GameObject(ID, position, rotation, tilePosition, type, renderObject, soundModule, particleEventQueue, DirectX::XMFLOAT3(0, 0, 0), 0, direction)
 {
 	_goalPriority = -1;
 	_visionRadius = 6;
@@ -112,6 +105,7 @@ Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 Unit::~Unit()
 {
 	delete _aStar;
+	HideAreaOfEffect();
 	delete _visionCone;
 }
 
@@ -180,6 +174,7 @@ void Unit::SetDirection(const AI::Vec2D& direction)
 {
 	_direction = direction;
 	Rotate();
+	ShowAreaOfEffect();
 	//_visionCone->FindVisibleTiles(_tilePosition, _direction);
 }
 
@@ -207,6 +202,7 @@ void Unit::SetTilePosition(AI::Vec2D pos)
 	{
 		_nextTile = pos;
 	}
+	ShowAreaOfEffect();
 }
 
 void Unit::SetStatusEffect(StatusEffect effect, int intervalTime, int totalTime)
@@ -351,15 +347,7 @@ void Unit::Moving()
 
 void Unit::SwitchingNode()
 {
-	//if (_tileMap->IsFloorOnTile(_tilePosition))
-	//{
-	//	_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,0});
-	//}
 	_tilePosition = _nextTile;
-	//if (_tileMap->IsFloorOnTile(_tilePosition))
-	//{
-	//	_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,4});
-	//}
 	if (_status == StatusEffect::CONFUSED)
 	{
 		int randDir = rand() % 8;
@@ -425,6 +413,7 @@ void Unit::ActivateStatus()
 		break;
 	case StatusEffect::BURNING:
 		TakeDamage(8);
+		_particleEventQueue->Insert(new ParticleRequestMessage(ParticleType::FIRE, ParticleSubType::FIRE_SUBTYPE, -1, XMFLOAT3(_position.x, _position.y + 1.5f, _position.z), XMFLOAT3(0,1,0), 1500.0f, 15, 0.2f, true));
 		break;
 	case StatusEffect::SLOWED:
 		_moveSpeed /= 2.0f;
@@ -526,3 +515,31 @@ void Unit::Animate(Anim anim)
 		_lastAnimState = anim;
 	}
 }
+
+
+//Info colors
+void Unit::ShowAreaOfEffect()
+{
+	HideAreaOfEffect();
+	ParticleRequestMessage* msg;
+
+	XMFLOAT3 pos = this->_position;
+	pos.y += 0.04f;
+	msg = new ParticleRequestMessage(ParticleType::STATIC_ICON, ParticleSubType::AOE_RED_SUBTYPE, _ID, pos, XMFLOAT3(0, 1, 0), 1.0f, 1, 0.27f, true, true);
+	_particleEventQueue->Insert(msg);
+
+	for (int i = 0; i < _visionCone->GetNrOfVisibleTiles(); i++)
+	{
+		AI::Vec2D tile = _visionCone->GetVisibleTiles()[i];
+		XMFLOAT3 pos = XMFLOAT3(tile._x, 0.04f, tile._y);
+
+		msg = new ParticleRequestMessage(ParticleType::STATIC_ICON, ParticleSubType::AOE_YELLOW_SUBTYPE, _ID, pos, XMFLOAT3(0, 1, 0), 1.0f, 1, 0.27f, true, true);
+		_particleEventQueue->Insert(msg);
+	}
+}
+
+void Unit::HideAreaOfEffect()
+{
+	_particleEventQueue->Insert(new ParticleUpdateMessage(_ID, false));
+}
+

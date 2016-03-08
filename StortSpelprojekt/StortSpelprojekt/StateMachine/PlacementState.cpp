@@ -183,8 +183,14 @@ void PlacementState::OnStateEnter()
 
 	_baseEdit = new BaseEdit(_objectHandler, _controls, _pickingDevice, false);
 
+	//Add icons for noplacement, entries and loot
+	_informationOverlayIDs = std::vector<short>();
+	AddInformationOverlay();
+
+
 	//Play music
 	_soundModule->Play("in_game_1");
+
 }
 
 void PlacementState::OnStateExit()
@@ -192,6 +198,7 @@ void PlacementState::OnStateExit()
 	delete _baseEdit;
 	_baseEdit = nullptr;
 
+	RemoveInformationOverlay();
 	//Pause music
 	_soundModule->Pause("in_game_1");
 }
@@ -281,3 +288,49 @@ void PlacementState::HandleDescriptions()
 	_uiTree.GetNode("CakeDescription")->SetHidden(!_uiTree.IsButtonColliding("CakeTrap", coord._pos.x, coord._pos.y));
 	_uiTree.GetNode("SharkDescription")->SetHidden(!_uiTree.IsButtonColliding("SharkTrap", coord._pos.x, coord._pos.y));
 }
+
+void PlacementState::AddInformationOverlay()
+{
+	for (auto f : *_objectHandler->GetAllByType(System::FLOOR))
+	{
+		if (static_cast<Architecture*>(f)->GetNoPlacementZone())
+		{
+			_informationOverlayIDs.push_back(f->GetID());
+			XMFLOAT3 pos = f->GetPosition();
+
+			pos.y += 0.01f;
+			ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::STATIC_ICON, ParticleSubType::NOPLACEMENT_SUBTYPE, f->GetID(), pos, XMFLOAT3(0, 1, 0), 1.0f, 1, 0.5f, true, false);
+			_objectHandler->GetParticleEventQueue()->Insert(msg);	
+		}
+	}
+
+	for (auto l : *_objectHandler->GetAllByType(System::LOOT))
+	{
+		_informationOverlayIDs.push_back(l->GetID());
+		XMFLOAT3 pos = l->GetPosition();
+
+		pos.y += 4.0f;
+		ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::LOOT_SUBTYPE, l->GetID(), pos, XMFLOAT3(0, 0, 0), 1.0f, 1, 0.5f, true, false);
+		_objectHandler->GetParticleEventQueue()->Insert(msg);
+	}
+
+	for (auto s : *_objectHandler->GetAllByType(System::SPAWN))
+	{
+		_informationOverlayIDs.push_back(s->GetID());
+		XMFLOAT3 pos = s->GetPosition();
+
+		pos.y += 4.0f;
+		ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::SPAWN_SUBTYPE, s->GetID(), pos, XMFLOAT3(0, 0, 0), 1.0f, 1, 0.5f, true, false);
+		_objectHandler->GetParticleEventQueue()->Insert(msg);
+	}
+
+}
+
+void PlacementState::RemoveInformationOverlay()
+{
+	for (auto ID : _informationOverlayIDs)
+	{
+		_objectHandler->GetParticleEventQueue()->Insert(new ParticleUpdateMessage(ID, false));
+	}
+}
+

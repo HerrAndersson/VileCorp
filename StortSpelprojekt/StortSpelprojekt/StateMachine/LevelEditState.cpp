@@ -49,7 +49,7 @@ void LevelEditState::OnStateEnter()
 	_currentPage = 0;
 
 	_objectHandler->UnloadLevel();
-	_objectHandler->SetTileMap(new Tilemap());
+	_objectHandler->SetTileMap(new Tilemap(AI::Vec2D(110,110)));
 
 	_controls->ResetInputBuffers();
 
@@ -147,8 +147,6 @@ void LevelEditState::OnStateEnter()
 	AddSpawnWaveAndSelectIt();
 
 	_isNewLevel = true;
-
-	_objectHandler->EnlargeTilemap(50);
 
 	_baseEdit = new BaseEdit(_objectHandler, _controls, _pickingDevice, true);
 
@@ -684,6 +682,9 @@ bool LevelEditState::HandleButtonsForDialogWindows(System::MouseCoord &coord, bo
 			if (_levelHeaderFilenames.size() > 0)
 			{
 				_uiTree.GetNode("ImportMapList")->SetHidden(true);
+				_currentLevelFileName = _levelHeaderFilenames[_loadLevelSelectedIndex];
+				_currentLevelFileName.resize(_currentLevelFileName.size() - 5);
+				_saveLevelNameTextNode->SetText(System::StringToWstring(_currentLevelFileName));
 				LoadLevel(_levelHeaderFilenames[_loadLevelSelectedIndex]);
 			}
 			_dialogWindowLock = false;
@@ -707,10 +708,10 @@ bool LevelEditState::HandleButtonsForDialogWindows(System::MouseCoord &coord, bo
 		else if (_uiTree.IsButtonColliding("LevelDown", coord) && !_uiTree.IsNodeHidden("LevelDown"))
 		{
 			clickedOnGUI = true;
-			if (_loadLevelSelectedIndex < _levelHeaderFilenames.size())
+			if (_loadLevelSelectedIndex < _levelHeaderFilenames.size() - 1)
 			{
-				_loadLevelTextNode->SetText(System::StringToWstring(_levelHeaderFilenames[_loadLevelSelectedIndex]));
 				_loadLevelSelectedIndex++;
+				_loadLevelTextNode->SetText(System::StringToWstring(_levelHeaderFilenames[_loadLevelSelectedIndex]));
 			}
 		}
 		//New Map Functions
@@ -944,8 +945,10 @@ void LevelEditState::ExportLevel()
 	////Fill Level Binary:
 	//Tilemap size
 	Tilemap* tileMap = _objectHandler->GetTileMap();
-	_levelBinary._tileMapSizeX = tileMap->GetWidth();
-	_levelBinary._tileMapSizeZ = tileMap->GetHeight();
+	_levelBinary._tileMapMinX = tileMap->GetWidth();
+	_levelBinary._tileMapMinZ = tileMap->GetHeight();
+	_levelBinary._tileMapMaxX = 0;
+	_levelBinary._tileMapMaxZ = 0;
 
 	//Game objects
 	std::vector<std::vector<GameObject*>>* gameObjects = _objectHandler->GetGameObjects();
@@ -983,6 +986,23 @@ void LevelEditState::ExportLevel()
 			formattedGameObject->at(3) = static_cast<int>(position._x);
 			formattedGameObject->at(4) = static_cast<int>(position._y);
 
+			if (formattedGameObject->at(3) > _levelBinary._tileMapMaxX)
+			{
+				_levelBinary._tileMapMaxX = formattedGameObject->at(3);
+			}
+			if(formattedGameObject->at(3) < _levelBinary._tileMapMinX)
+			{
+				_levelBinary._tileMapMinX = formattedGameObject->at(3);
+			}
+			if (formattedGameObject->at(4) > _levelBinary._tileMapMaxZ)
+			{
+				_levelBinary._tileMapMaxZ = formattedGameObject->at(4);
+			}
+			if (formattedGameObject->at(4) < _levelBinary._tileMapMinZ)
+			{
+				_levelBinary._tileMapMinZ = formattedGameObject->at(4);
+			}
+
 			//Rotation
 			float rotYRadians = gameObject->GetRotation().y;
 			int rotYDegrees = static_cast<int>((rotYRadians / DirectX::XM_PI) * 180.0);
@@ -999,7 +1019,6 @@ void LevelEditState::ExportLevel()
 	}
 
 	//Convert spawn wave data to spawn wave map
-
 	_levelBinary._enemyOrderedSpawnVector = std::vector<std::array<int, 2>>();
 	for (int i = 0; i < _levelBinary._enemyWavesGUIData.size(); i++)
 	{
@@ -1081,6 +1100,7 @@ void LevelEditState::LoadLevel(std::string headerFileName)
 	_levelHeader = Level::LevelHeader();
 
 	_objectHandler->UnloadLevel();
+	_objectHandler->SetTileMap(new Tilemap(AI::Vec2D(110, 110)));
 
 	std::string levelPath;
 #ifdef _DEBUG
@@ -1098,7 +1118,7 @@ void LevelEditState::LoadLevel(std::string headerFileName)
 	bool result = false;
 	HRESULT success = _assetManager->ParseLevelBinary(&_levelBinary, levelPath + _levelHeader._levelBinaryFilename);
 
-	result = _objectHandler->LoadLevel(_levelBinary);
+	result = _objectHandler->LoadLevel(_levelBinary, false);
 	_baseEdit->RefreshTileMap();
 
 	_budgetTextNode->SetText(std::to_wstring(_levelHeader._budget));

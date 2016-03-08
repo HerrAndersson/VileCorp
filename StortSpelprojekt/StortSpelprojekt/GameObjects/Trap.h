@@ -1,6 +1,7 @@
 #pragma once
 #include "GameObject.h"
 #include "Unit.h"
+#include "ParticleSystem\ParticleEventQueue.h"
 #include <memory>
 
 enum TrapType{ ANVIL, TESLACOIL, SHARK, GUN, SAW, CAKEBOMB, BEAR, FLAMETHROWER, WATER_GUN, SPIN_TRAP};
@@ -51,7 +52,7 @@ private:
 					Unit::StatusEffect statusEffect, int statusTimer, int statusInterval, int triggerTimer = 0, int ammunition = 1);							/*Initialize adds any characteristics specific to the subtype*/
 	void SetTiles();
 public:
-	Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject * renderObject, System::SoundModule* soundModule,
+	Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject * renderObject, System::SoundModule* soundModule, Renderer::ParticleEventQueue* particleEventQueue,
 		 const Tilemap* tileMap, int trapType = ANVIL, AI::Vec2D direction = {1,0});
 	virtual ~Trap();
 
@@ -67,6 +68,8 @@ public:
 	bool IsTrapActive() const;
 	void SetTrapActive(bool active);
 
+	void RequestParticleByType(Unit* unit);
+
 	void Activate();
 	void Update(float deltaTime);
 	void Release();
@@ -79,7 +82,11 @@ public:
 	AI::Vec2D GetDirection();
 	void SetDirection(const AI::Vec2D& direction);
 	enum Anim { IDLEANIM, ACTIVATEANIM, DISABLEANIM, FIXANIM, NR_OF_ANIM/*Has to be last*/ };
+	
 	void Animate(Anim anim);
+
+	void ShowAreaOfEffect();
+	void HideAreaOfEffect();
 
 	//Sound
 	void PlayActivateSound();

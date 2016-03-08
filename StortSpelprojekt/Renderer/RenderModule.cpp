@@ -619,9 +619,9 @@ namespace Renderer
 				MatrixBufferHud* dataPtr = static_cast<MatrixBufferHud*>(mappedResource.pData);
 				dataPtr->_model = XMMatrixTranspose(t);
 				XMFLOAT4 offset;
-				offset.x = current->GetColorOffset().x + 0.1f * brightness - 0.5f;
-				offset.y = current->GetColorOffset().y + 0.1f * brightness - 0.5f;
-				offset.z = current->GetColorOffset().z + 0.1f * brightness - 0.5f;
+				offset.x = current->GetColorOffset().x + 0.04f * brightness - 0.20f;
+				offset.y = current->GetColorOffset().y + 0.04f * brightness - 0.20f;
+				offset.z = current->GetColorOffset().z + 0.04f * brightness - 0.20f;
 				offset.w = current->GetColorOffset().w;
 				dataPtr->_colorOffset = offset;
 

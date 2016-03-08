@@ -11,7 +11,7 @@ int Trap::CalculateCircle(int radius, AI::Vec2D basePosition, AI::Vec2D* arr)
 	int y = 0;
 	int D = 1 - x;   // Decision criterion divided by 2 evaluated at x=r, y=0
 	int size = 0;
-	AI::Vec2D pos = {0,0};
+	AI::Vec2D pos = { 0,0 };
 	//_nrOfAOETiles = 0;
 	while (y <= x)
 	{
@@ -19,14 +19,14 @@ int Trap::CalculateCircle(int radius, AI::Vec2D basePosition, AI::Vec2D* arr)
 		{
 			for (int i = -x; i <= x; i++)
 			{
-				pos = {y, i};
+				pos = { y, i };
 				if (IsUnblocked(pos))
 				{
 					arr[size++] = pos + basePosition;
 				}
 				if (y != 0)
 				{
-					pos = {-y, i};
+					pos = { -y, i };
 					if (IsUnblocked(pos))
 					{
 						arr[size++] = pos + basePosition;
@@ -43,14 +43,14 @@ int Trap::CalculateCircle(int radius, AI::Vec2D basePosition, AI::Vec2D* arr)
 		{
 			for (int i = -y + 1; i < y; i++)
 			{
-				pos = {x, i};
+				pos = { x, i };
 				if (IsUnblocked(pos))
 				{
 					arr[size++] = pos + basePosition;
 				}
 				if (x != 0)			//If x = 0, -x is also 0
 				{
-					pos = {-x, i};
+					pos = { -x, i };
 					if (IsUnblocked(pos))
 					{
 						arr[size++] = pos + basePosition;
@@ -97,7 +97,7 @@ int Trap::CalculateRectangle(int length, int width, AI::Vec2D basePosition, AI::
 	{
 		for (int j = 0; j < width; j++)
 		{
-			AI::Vec2D offset = {_direction._y * (-j),  _direction._x * j};
+			AI::Vec2D offset = { _direction._y * (-j),  _direction._x * j };
 			arr[size++] = basePosition + (_direction * i) + offset;
 		}
 	}
@@ -106,7 +106,7 @@ int Trap::CalculateRectangle(int length, int width, AI::Vec2D basePosition, AI::
 }
 
 //Check that there's an unblocked Bresenham line to the centre of the trap
-bool Trap::IsUnblocked( AI::Vec2D pos)
+bool Trap::IsUnblocked(AI::Vec2D pos)
 {
 	int octant = 0;
 
@@ -124,14 +124,14 @@ bool Trap::IsUnblocked( AI::Vec2D pos)
 	}
 	else if (pos._y * pos._x < 0)				//checks if y and x are signed differently
 	{
-		octant+= 3;
+		octant += 3;
 	}
 
 	pos = ConvertOctant(octant, pos);
 	int size = max(pos._x, pos._y);
 	AI::Vec2D* line = new AI::Vec2D[size + 1];
 	//std::unique_ptr<AI::Vec2D[]> line(new AI::Vec2D[max(pos._x, pos._y)]);
-	line[0] = {0,0};
+	line[0] = { 0,0 };
 	int lineLength = 1;
 	int D = 2 * pos._y - pos._x;
 	int y = 0;
@@ -142,7 +142,7 @@ bool Trap::IsUnblocked( AI::Vec2D pos)
 	}
 	for (int x = 0; x < pos._x; x++)
 	{
-		AI::Vec2D outPos = ConvertOctant(octant, {x + 1, y}, false);
+		AI::Vec2D outPos = ConvertOctant(octant, { x + 1, y }, false);
 		line[lineLength++] = outPos;
 		D += 2 * pos._y;
 		if (D > 0)
@@ -172,39 +172,39 @@ AI::Vec2D Trap::ConvertOctant(int octant, AI::Vec2D pos, bool in)
 		convertedPos = pos;
 		break;
 	case 1:
-		convertedPos = {pos._y, pos._x};
+		convertedPos = { pos._y, pos._x };
 		break;
 	case 2:
 		if (in)
 		{
-			convertedPos = {pos._y, -pos._x};
+			convertedPos = { pos._y, -pos._x };
 		}
 		else
 		{
-			convertedPos = {-pos._y, pos._x};
+			convertedPos = { -pos._y, pos._x };
 		}
 		break;
 	case 3:
-		convertedPos = {-pos._x, pos._y};
+		convertedPos = { -pos._x, pos._y };
 		break;
 	case 4:
-		convertedPos = {-pos._x, -pos._y};
+		convertedPos = { -pos._x, -pos._y };
 		break;
 	case 5:
-		convertedPos = {-pos._y, -pos._x};
+		convertedPos = { -pos._y, -pos._x };
 		break;
 	case 6:
 		if (in)
 		{
-			convertedPos = {-pos._y, pos._x};
+			convertedPos = { -pos._y, pos._x };
 		}
 		else
 		{
-			convertedPos = {pos._y, -pos._x};
+			convertedPos = { pos._y, -pos._x };
 		}
 		break;
 	case 7:
-		convertedPos = {pos._x, -pos._y};
+		convertedPos = { pos._x, -pos._y };
 		break;
 	default:
 		convertedPos = pos;
@@ -249,22 +249,6 @@ void Trap::Initialize(int damage, int tileSize, int triggerSize, int AOESize, in
 */
 void Trap::SetTiles()
 {
-	//Coloring
-	for (int i = 0; i < _nrOfAOETiles; i++)
-	{
-		if (_tileMap->IsFloorOnTile(_areaOfEffect[i]))
-		{
-			_tileMap->GetObjectOnTile(_areaOfEffect[i], System::FLOOR)->SetColorOffset({0.0f,0.0f,0.0f});
-		}
-	}
-	for (int i = 0; i < _nrOfOccupiedTiles; i++)
-	{
-		if (_tileMap->IsFloorOnTile(_occupiedTiles[i]))
-		{
-			_tileMap->GetObjectOnTile(_occupiedTiles[i], System::FLOOR)->SetColorOffset({0,0,0});
-		}
-	}
-
 	_nrOfOccupiedTiles = 0;
 	_nrOfTriggers = 0;
 	_nrOfAOETiles = 0;
@@ -326,26 +310,11 @@ void Trap::SetTiles()
 		_areaOfEffect = nullptr;
 		break;
 	}
-
-	for (int i = 0; i < _nrOfAOETiles; i++)
-	{
-		if (_tileMap->IsFloorOnTile(_areaOfEffect[i]))
-		{
-			_tileMap->GetObjectOnTile(_areaOfEffect[i], System::FLOOR)->SetColorOffset({ 3.0f,1.0f,0.0f });
-		}
-	}
-	for (int i = 0; i < _nrOfOccupiedTiles; i++)
-	{
-		if (_tileMap->IsFloorOnTile(_occupiedTiles[i]))
-		{
-			_tileMap->GetObjectOnTile(_occupiedTiles[i], System::FLOOR)->SetColorOffset({ 2,2,0 });
-		}
-	}
 }
 
-Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject * renderObject, System::SoundModule* soundModule, 
-		  const Tilemap* tileMap, int trapType, AI::Vec2D direction)
-	: GameObject(ID, position, rotation, tilePosition, type, renderObject, soundModule)
+Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject * renderObject, System::SoundModule* soundModule, Renderer::ParticleEventQueue* particleEventQueue,
+	const Tilemap* tileMap, int trapType, AI::Vec2D direction)
+	: GameObject(ID, position, rotation, tilePosition, type, renderObject, soundModule, particleEventQueue )
 {
 	_isActive = true;
 	_direction = direction;
@@ -420,18 +389,10 @@ Trap::~Trap()
 	for (int i = 0; i < _nrOfAOETiles; i++)
 	{
 		GameObject* floorTile = _tileMap->GetObjectOnTile(_areaOfEffect[i], System::FLOOR);
-		if (floorTile != nullptr)
-		{
-			floorTile->SetColorOffset({ 0.0f, 0.0f, 0.0f });
-		}	
 	}
 	for (int i = 0; i < _nrOfOccupiedTiles; i++)
 	{
 		GameObject* floorTile = _tileMap->GetObjectOnTile(_occupiedTiles[i], System::FLOOR);
-		if (floorTile != nullptr)
-		{
-			floorTile->SetColorOffset({ 0.0f, 0.0f, 0.0f });
-		}
 	}
 
 	delete[] _areaOfEffect;
@@ -440,6 +401,8 @@ Trap::~Trap()
 	_occupiedTiles = nullptr;
 	delete[] _triggerTiles;
 	_triggerTiles = nullptr;
+	_particleEventQueue->Insert(new ParticleUpdateMessage(GetID(), false, GetPosition()));
+	_hasParticleEffect = false;
 }
 
 AI::Vec2D * Trap::GetTiles() const
@@ -504,16 +467,101 @@ bool Trap::IsTrapActive() const
 void Trap::SetTrapActive(bool active)
 {
 	_isActive = active;
-	if (active)
+	if (!active)
 	{
-		SetColorOffset({0,0,0});
 		_currentAmmunition = _maxAmmunition;
+
+		XMFLOAT3 pos = GetPosition();
+		XMFLOAT3 iconPos;
+		iconPos.x = _renderObject->_mesh->_iconPos[0] + pos.x;
+		iconPos.y = _renderObject->_mesh->_iconPos[1] + pos.y;
+		iconPos.z = _renderObject->_mesh->_iconPos[2] + pos.z;
+		_particleEventQueue->Insert(new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::WRENCH_SUBTYPE, GetID(), iconPos, XMFLOAT3(0, 0, 0), 0.0f, 1, 0.25f, true, false));
+		_hasParticleEffect = true;
+
 		Animate(FIXANIM);
 	}
 	else
 	{
-		SetColorOffset({4,0,0});
+		_particleEventQueue->Insert(new ParticleUpdateMessage(GetID(), false, GetPosition()));
+		_hasParticleEffect = false;
 		Animate(DISABLEANIM);
+	}
+}
+
+void Trap::RequestParticleByType(Unit* unit)
+{
+	XMFLOAT3 pos = GetPosition();
+	XMFLOAT3 particlePos;
+	particlePos.x = _renderObject->_mesh->_particleSpawnerPos[0] + pos.x;
+	particlePos.y = _renderObject->_mesh->_particleSpawnerPos[1] + pos.y;
+	particlePos.z = _renderObject->_mesh->_particleSpawnerPos[2] + pos.z;
+
+	switch (GetSubType())
+	{
+	case ANVIL:
+	{
+		_particleEventQueue->Insert(new ParticleRequestMessage(ParticleType::SPLASH, ParticleSubType::BLOOD_SUBTYPE, -1, particlePos, XMFLOAT3(0, 1, 0), 300.0f, 20, 0.1f, true));
+		break;
+	}
+	case TESLACOIL:
+	{
+		_particleEventQueue->Insert(new ParticleRequestMessage(ParticleType::ELECTRICITY, ParticleSubType::SPARK_SUBTYPE, -1, particlePos, XMFLOAT3(0, 0, 0), 1000.0f, 20, 0.3f, true, true, unit->GetPosition()));
+		break;
+	}
+	case SHARK:
+	{
+		_particleEventQueue->Insert(new ParticleRequestMessage(ParticleType::SPLASH, ParticleSubType::WATER_SUBTYPE, -1, pos, XMFLOAT3(0, 1, 0), 400.0f, 20, 0.1f, true));
+		break;
+	}
+	case GUN:
+	{
+		AI::Vec2D objectDir = GetDirection();
+		XMFLOAT3 dir(objectDir._x, 0, objectDir._y);
+		_particleEventQueue->Insert(new ParticleRequestMessage(ParticleType::MUZZLE_FLASH, ParticleSubType::MUZZLE_FLASH_SUBTYPE, -1, particlePos, dir, 200.0f, 100.0f, 0.1f, true));
+		break;
+	}
+	case SAW:
+	{
+		_particleEventQueue->Insert(new ParticleRequestMessage(ParticleType::SPLASH, ParticleSubType::BLOOD_SUBTYPE, -1, particlePos, XMFLOAT3(0, 1, 0), 300.0f, 20, 0.1f, true));
+		break;
+	}
+	case CAKEBOMB:
+	{
+		_particleEventQueue->Insert(new ParticleRequestMessage(ParticleType::FIRE, ParticleSubType::FIRE_SUBTYPE, -1, pos, XMFLOAT3(0, 1, 0), 1000.0f, 50, 0.1f, true));
+		break;
+	}
+	case BEAR:
+	{
+		_particleEventQueue->Insert(new ParticleRequestMessage(ParticleType::SPLASH, ParticleSubType::BLOOD_SUBTYPE, -1, particlePos, XMFLOAT3(0, 1, 0), 300.0f, 20, 0.1f, true));
+		break;
+	}
+	case FLAMETHROWER:
+	{
+		AI::Vec2D objectDir = GetDirection();
+		XMFLOAT3 dir(objectDir._x, 0, objectDir._y);
+		for (int i = 0; i < _nrOfAOETiles; i++)
+		{
+			pos.x += dir.x;
+			pos.z += dir.z;
+			_particleEventQueue->Insert(new ParticleRequestMessage(ParticleType::FIRE, ParticleSubType::FIRE_SUBTYPE, -1, pos, dir, 1500.0f, 75, 0.5f, true));
+		}
+		
+		break;
+	}
+	case WATER_GUN:
+	{
+		AI::Vec2D objectDir = GetDirection();
+		XMFLOAT3 dir(objectDir._x, 0, objectDir._y);
+		_particleEventQueue->Insert(new ParticleRequestMessage(ParticleType::SPLASH, ParticleSubType::WATER_SUBTYPE, -1, pos, dir, 400.0f, 20, 0.1f, true));
+		break;
+	}
+	case SPIN_TRAP:
+	{
+		break;
+	}
+	default:
+		break;
 	}
 }
 
@@ -523,13 +571,24 @@ void Trap::Activate()
 	{
 		if (_tileMap->IsEnemyOnTile(_areaOfEffect[i]))
 		{
-			static_cast<Unit*>(_tileMap->GetObjectOnTile(_areaOfEffect[i], System::ENEMY))->TakeDamage(_damage);
-			static_cast<Unit*>(_tileMap->GetObjectOnTile(_areaOfEffect[i], System::ENEMY))->SetStatusEffect(_statusEffect, _statusInterval, _statusTimer);
+			Unit* unit = static_cast<Unit*>(_tileMap->GetObjectOnTile(_areaOfEffect[i], System::ENEMY));
+
+			if (unit)
+			{
+				unit->TakeDamage(_damage);
+				unit->SetStatusEffect(_statusEffect, _statusInterval, _statusTimer);
+				RequestParticleByType(unit);
+			}
 		}
 		if (_tileMap->IsGuardOnTile(_areaOfEffect[i]))
 		{
-			static_cast<Unit*>(_tileMap->GetObjectOnTile(_areaOfEffect[i], System::GUARD))->TakeDamage(_damage);
-			static_cast<Unit*>(_tileMap->GetObjectOnTile(_areaOfEffect[i], System::GUARD))->SetStatusEffect(_statusEffect, _statusInterval, _statusTimer);
+			Unit* unit = static_cast<Unit*>(_tileMap->GetObjectOnTile(_areaOfEffect[i], System::GUARD));
+			if (unit)
+			{
+				unit->SetStatusEffect(_statusEffect, _statusInterval, _statusTimer);
+				unit->TakeDamage(_damage);
+				RequestParticleByType(unit);
+			}
 		}
 	}
 	Animate(ACTIVATEANIM);
@@ -546,11 +605,12 @@ void Trap::Activate()
 }
 
 void Trap::Update(float deltaTime)
-{	
+{
 	if (_animation != nullptr)
 	{
 		_animation->Update(deltaTime);
 	}
+
 	bool triggered = false;
 
 	if (_subType == TrapType::SAW )
@@ -599,14 +659,6 @@ void Trap::Update(float deltaTime)
 		Activate();
 	}
 
-	if (_isActive)
-	{
-		SetColorOffset({0,3,0});
-	}
-	else
-	{
-		SetColorOffset({3,0,0});
-	}
 }
 
 void Trap::Release()
@@ -630,8 +682,9 @@ void Trap::SetTilePosition(AI::Vec2D pos)
 {
 	//_nrOfAOETiles = 0;
 	int radius = 0;
-	GameObject::SetTilePosition(pos);	
+	GameObject::SetTilePosition(pos);
 	SetTiles();
+	ShowAreaOfEffect();
 }
 
 AI::Vec2D Trap::GetDirection()
@@ -643,6 +696,7 @@ void Trap::SetDirection(const AI::Vec2D& direction)
 {
 	_direction = direction;
 	SetTiles();
+	ShowAreaOfEffect();
 }
 
 void Trap::Animate(Anim anim)
@@ -669,6 +723,37 @@ void Trap::Animate(Anim anim)
 	}
 
 }
+
+void Trap::ShowAreaOfEffect()
+{
+	HideAreaOfEffect();
+	ParticleRequestMessage* msg;
+
+	for (int i = 0; i < _nrOfAOETiles; i++)
+	{
+		AI::Vec2D tile = _areaOfEffect[i];
+		XMFLOAT3 pos = XMFLOAT3(tile._x, 0.02f, tile._y);
+
+		msg = new ParticleRequestMessage(ParticleType::STATIC_ICON, ParticleSubType::AOE_GREEN_SUBTYPE, _ID, pos, XMFLOAT3(0, 1, 0), 1.0f, 1, 0.25f, true, true);
+		_particleEventQueue->Insert(msg);
+	}
+
+	for (int i = 0; i < _nrOfOccupiedTiles; i++)
+	{
+		AI::Vec2D tile = _occupiedTiles[i];
+		XMFLOAT3 pos = XMFLOAT3(tile._x, 0.03f, tile._y);
+
+		msg = new ParticleRequestMessage(ParticleType::STATIC_ICON, ParticleSubType::AOE_RED_SUBTYPE, _ID, pos, XMFLOAT3(0, 1, 0), 1.0f, 1, 0.26f, true, true);
+		_particleEventQueue->Insert(msg);
+	}
+}
+
+void Trap::HideAreaOfEffect()
+{
+	_particleEventQueue->Insert(new ParticleUpdateMessage(_ID, false));
+}
+
+
 
 //Sound
 void Trap::PlayActivateSound()

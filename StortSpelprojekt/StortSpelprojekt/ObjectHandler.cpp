@@ -17,10 +17,6 @@ ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, G
 	_soundModule = soundModule;
 	_backgroundObject = nullptr;
 	_ambientLight = ambientLight;
-
-	int sizeX = 100;
-	int sizeY = 100;
-	CreateBackgroundObject(sizeX, sizeY, "grass1.png", sizeX, sizeY);
 }
 
 ObjectHandler::~ObjectHandler()
@@ -52,7 +48,7 @@ GameObject* ObjectHandler::Add(System::Blueprint* blueprint, int textureId, cons
 			lootPos.y += 1.2f;
 			loot->SetPosition(lootPos);
 		}
-		object = new Architecture(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, blueprint->_subType, direction);
+		object = new Architecture(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, _particleEventQueue, blueprint->_subType, direction);
 		break;
 	case System::LOOT:
 		lootPos = position;
@@ -60,22 +56,22 @@ GameObject* ObjectHandler::Add(System::Blueprint* blueprint, int textureId, cons
 		{
 			lootPos.y += 1.2f;
 		}
-		object = new Architecture(_idCount, lootPos, rotation, tilepos, type, renderObject, _soundModule, blueprint->_subType, direction);
+		object = new Architecture(_idCount, lootPos, rotation, tilepos, type, renderObject, _soundModule, _particleEventQueue, blueprint->_subType, direction);
 		break;
 	case  System::SPAWN:
-		object = new SpawnPoint(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, blueprint->_subType, direction);
+		object = new SpawnPoint(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, _particleEventQueue, blueprint->_subType, direction);
 		break;
 	case  System::TRAP:
-		object = new Trap(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, _tilemap, blueprint->_subType, direction);
+		object = new Trap(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, _particleEventQueue, _tilemap, blueprint->_subType, direction);
 		break;
 	case  System::CAMERA:
-		object = new SecurityCamera(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, _tilemap, direction);
+		object = new SecurityCamera(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, _particleEventQueue, _tilemap, direction);
 		break;
 	case  System::ENEMY:
-		object = new Enemy(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, _tilemap, blueprint->_subType, direction);
+		object = new Enemy(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, _particleEventQueue, _tilemap, blueprint->_subType, direction);
 		break;
 	case  System::GUARD:
-		object = new Guard(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, _tilemap, blueprint->_subType, direction);
+		object = new Guard(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, _particleEventQueue, _tilemap, blueprint->_subType, direction);
 		break;
 	default:
 		break;
@@ -220,7 +216,7 @@ bool ObjectHandler::Remove(System::Type type, int ID)
 			}
 			else
 			{
-				_tilemap->RemoveObjectFromTile(_gameObjects[type].at(i));
+				_tilemap->RemoveObjectFromTile(_gameObjects[type].at(i)->GetTilePosition(), _gameObjects[type].at(i));
 			}
 
 			_gameObjects[type][i]->Release();
@@ -347,6 +343,8 @@ void ObjectHandler::SetTileMap(Tilemap * tilemap)
 		delete _tilemap;
 	}
 	_tilemap = tilemap;
+
+	_buildingGrid->ChangeGridSize(_tilemap->GetWidth() - 1, _tilemap->GetHeight() - 1, 1);
 }
 
 void ObjectHandler::MinimizeTileMap()
@@ -526,15 +524,18 @@ bool ObjectHandler::LoadLevel(const std::string& levelBinaryFilePath)
 	bool result = false;
 	Level::LevelBinary levelData;
 	HRESULT success = _assetManager->ParseLevelBinary(&levelData, levelBinaryFilePath);
-	result = LoadLevel(levelData);
-//	MinimizeTileMap();
+	result = LoadLevel(levelData, true);
 	return result;
 }
 
-bool ObjectHandler::LoadLevel(Level::LevelBinary &levelData)
+bool ObjectHandler::LoadLevel(Level::LevelBinary &levelData, bool resizeTileMap)
 {
 	bool result = true;
-	_tilemap = new Tilemap(AI::Vec2D(levelData._tileMapSizeX, levelData._tileMapSizeZ));
+
+	if (resizeTileMap)
+	{
+		_tilemap = new Tilemap(AI::Vec2D(levelData._tileMapMaxX - levelData._tileMapMinX + 4, levelData._tileMapMaxZ - levelData._tileMapMinZ + 4));
+	}
 
 	for (int i = 0; i < levelData._gameObjectData.size() && result; i++)
 	{
@@ -544,6 +545,12 @@ bool ObjectHandler::LoadLevel(Level::LevelBinary &levelData)
 		//Position
 		float posX = static_cast<float>(formattedGameObject->at(3));
 		float posZ = static_cast<float>(formattedGameObject->at(4));
+
+		if (resizeTileMap)
+		{
+			posX += 1 - levelData._tileMapMinX;
+			posZ += 1 - levelData._tileMapMinZ;
+		}
 
 		//Rotation
 		float rotY = (formattedGameObject->at(5) * DirectX::XM_PI) / 180.0f;
@@ -566,8 +573,9 @@ bool ObjectHandler::LoadLevel(Level::LevelBinary &levelData)
 	_lightCulling = new LightCulling(_tilemap);
 
 	SAFE_DELETE(_backgroundObject);
-	int sizeX = _tilemap->GetWidth() * 3;
-	int sizeY = _tilemap->GetHeight() * 3;
+	int sizeX = 90 + _tilemap->GetWidth();
+	int sizeY = 90 + _tilemap->GetHeight();
+
 	CreateBackgroundObject(sizeX, sizeY, "grass1.png", sizeX / 3, sizeY / 3);
 	return result;
 }
@@ -606,7 +614,7 @@ void ObjectHandler::Update(float deltaTime)
 
 			if (g->GetPickUpState() == PICKEDUP)
 			{
-				_tilemap->RemoveObjectFromTile(g);
+				_tilemap->RemoveObjectFromTile(g->GetTilePosition(), g);
 				g->SetPickUpState(HELD);
 			}
 			else if (g->GetPickUpState() == DROPPING)

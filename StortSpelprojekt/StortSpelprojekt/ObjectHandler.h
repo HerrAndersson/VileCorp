@@ -124,7 +124,7 @@ public:
 	Level::LevelHeader* GetCurrentLevelHeader();
 	void SetCurrentLevelHeader(const Level::LevelHeader& levelheader);
 	bool LoadLevel(const std::string& levelBinaryFilePath);
-	bool LoadLevel(Level::LevelBinary &levelData);
+	bool LoadLevel(Level::LevelBinary &levelData, bool resizeTileMap);
 
 	void UnloadLevel();
 
