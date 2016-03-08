@@ -723,6 +723,7 @@ void Trap::SetTilePosition(AI::Vec2D pos)
 	int radius = 0;
 	GameObject::SetTilePosition(pos);
 	SetTiles();
+	ShowAreaOfEffect();
 }
 
 AI::Vec2D Trap::GetDirection()
@@ -734,6 +735,7 @@ void Trap::SetDirection(const AI::Vec2D& direction)
 {
 	_direction = direction;
 	SetTiles();
+	ShowAreaOfEffect();
 }
 
 void Trap::Animate(Anim anim)
@@ -760,6 +762,37 @@ void Trap::Animate(Anim anim)
 	}
 
 }
+
+void Trap::ShowAreaOfEffect()
+{
+	HideAreaOfEffect();
+	ParticleRequestMessage* msg;
+
+	for (int i = 0; i < _nrOfAOETiles; i++)
+	{
+		AI::Vec2D tile = _areaOfEffect[i];
+		XMFLOAT3 pos = XMFLOAT3(tile._x, 0.02f, tile._y);
+
+		msg = new ParticleRequestMessage(ParticleType::STATIC_ICON, ParticleSubType::AOE_GREEN_SUBTYPE, _ID, pos, XMFLOAT3(0, 1, 0), 1.0f, 1, 0.25f, true, true);
+		_particleEventQueue->Insert(msg);
+	}
+
+	for (int i = 0; i < _nrOfOccupiedTiles; i++)
+	{
+		AI::Vec2D tile = _occupiedTiles[i];
+		XMFLOAT3 pos = XMFLOAT3(tile._x, 0.03f, tile._y);
+
+		msg = new ParticleRequestMessage(ParticleType::STATIC_ICON, ParticleSubType::AOE_RED_SUBTYPE, _ID, pos, XMFLOAT3(0, 1, 0), 1.0f, 1, 0.26f, true, true);
+		_particleEventQueue->Insert(msg);
+	}
+}
+
+void Trap::HideAreaOfEffect()
+{
+	_particleEventQueue->Insert(new ParticleUpdateMessage(_ID, false));
+}
+
+
 
 //Sound
 void Trap::PlayActivateSound()

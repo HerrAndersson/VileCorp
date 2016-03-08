@@ -300,8 +300,8 @@ void PlacementState::AddInformationOverlay()
 			_informationOverlayIDs.push_back(f->GetID());
 			XMFLOAT3 pos = f->GetPosition();
 
-			pos.y += 0.0001f;
-			ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::NOPLACEMENT_SUBTYPE, f->GetID(), pos, XMFLOAT3(0, 1, 0), 1.0f, 1, 0.5f, true, false);
+			pos.y += 0.01f;
+			ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::STATIC_ICON, ParticleSubType::NOPLACEMENT_SUBTYPE, f->GetID(), pos, XMFLOAT3(0, 1, 0), 1.0f, 1, 0.5f, true, false);
 			_objectHandler->GetParticleEventQueue()->Insert(msg);	
 		}
 	}
@@ -312,7 +312,7 @@ void PlacementState::AddInformationOverlay()
 		XMFLOAT3 pos = l->GetPosition();
 
 		pos.y += 4.0f;
-		ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::LOOT_SUBTYPE, l->GetID(), pos, XMFLOAT3(0, 1, 0), 1.0f, 1, 0.5f, true, false);
+		ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::LOOT_SUBTYPE, l->GetID(), pos, XMFLOAT3(0, 0, 0), 1.0f, 1, 0.5f, true, false);
 		_objectHandler->GetParticleEventQueue()->Insert(msg);
 	}
 
@@ -322,7 +322,7 @@ void PlacementState::AddInformationOverlay()
 		XMFLOAT3 pos = s->GetPosition();
 
 		pos.y += 4.0f;
-		ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::SPAWN_SUBTYPE, s->GetID(), pos, XMFLOAT3(0, 1, 0), 1.0f, 1, 0.5f, true, false);
+		ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::SPAWN_SUBTYPE, s->GetID(), pos, XMFLOAT3(0, 0, 0), 1.0f, 1, 0.5f, true, false);
 		_objectHandler->GetParticleEventQueue()->Insert(msg);
 	}
 

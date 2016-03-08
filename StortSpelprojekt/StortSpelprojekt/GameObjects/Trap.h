@@ -85,6 +85,9 @@ public:
 	
 	void Animate(Anim anim);
 
+	void ShowAreaOfEffect();
+	void HideAreaOfEffect();
+
 	//Sound
 	void PlayActivateSound();
 };

@@ -182,6 +182,7 @@ void BaseEdit::DropEvent()
 		for (int i = 0; i < static_cast<Trap*>(_movingGhostImage._g)->GetNrOfOccupiedTiles(); i++)
 		{
 			_tileMap->AddObjectToTile(tempTiles[i], _movingGhostImage._g);
+			static_cast<Trap*> (_movingGhostImage._g)->HideAreaOfEffect();
 		}
 	}
 	else
