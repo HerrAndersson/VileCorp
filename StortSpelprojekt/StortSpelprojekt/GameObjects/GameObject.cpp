@@ -255,3 +255,11 @@ int GameObject::GetAnimLength(int layer)
 		return 0;
 	}
 }
+
+void GameObject::ShowAreaOfEffect()
+{
+}
+
+void GameObject::HideAreaOfEffect()
+{
+}

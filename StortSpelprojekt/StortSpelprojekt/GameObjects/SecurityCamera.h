@@ -22,5 +22,11 @@ public:
 	void Release();
 	void SetTilePosition(AI::Vec2D pos);
 	int GetVisionRadius()const;
+
+	//Info colors
+	void ShowAreaOfEffect();
+	void HideAreaOfEffect();
+
+
 };
 

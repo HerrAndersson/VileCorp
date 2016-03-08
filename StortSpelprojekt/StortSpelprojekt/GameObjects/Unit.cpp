@@ -105,6 +105,7 @@ Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 Unit::~Unit()
 {
 	delete _aStar;
+	HideAreaOfEffect();
 	delete _visionCone;
 }
 
@@ -173,6 +174,7 @@ void Unit::SetDirection(const AI::Vec2D& direction)
 {
 	_direction = direction;
 	Rotate();
+	ShowAreaOfEffect();
 	//_visionCone->FindVisibleTiles(_tilePosition, _direction);
 }
 
@@ -200,6 +202,7 @@ void Unit::SetTilePosition(AI::Vec2D pos)
 	{
 		_nextTile = pos;
 	}
+	ShowAreaOfEffect();
 }
 
 void Unit::SetStatusEffect(StatusEffect effect, int intervalTime, int totalTime)
@@ -512,3 +515,31 @@ void Unit::Animate(Anim anim)
 		_lastAnimState = anim;
 	}
 }
+
+
+//Info colors
+void Unit::ShowAreaOfEffect()
+{
+	HideAreaOfEffect();
+	ParticleRequestMessage* msg;
+
+	XMFLOAT3 pos = this->_position;
+	pos.y += 0.04f;
+	msg = new ParticleRequestMessage(ParticleType::STATIC_ICON, ParticleSubType::AOE_RED_SUBTYPE, _ID, pos, XMFLOAT3(0, 1, 0), 1.0f, 1, 0.27f, true, true);
+	_particleEventQueue->Insert(msg);
+
+	for (int i = 0; i < _visionCone->GetNrOfVisibleTiles(); i++)
+	{
+		AI::Vec2D tile = _visionCone->GetVisibleTiles()[i];
+		XMFLOAT3 pos = XMFLOAT3(tile._x, 0.04f, tile._y);
+
+		msg = new ParticleRequestMessage(ParticleType::STATIC_ICON, ParticleSubType::AOE_YELLOW_SUBTYPE, _ID, pos, XMFLOAT3(0, 1, 0), 1.0f, 1, 0.27f, true, true);
+		_particleEventQueue->Insert(msg);
+	}
+}
+
+void Unit::HideAreaOfEffect()
+{
+	_particleEventQueue->Insert(new ParticleUpdateMessage(_ID, false));
+}
+

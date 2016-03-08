@@ -99,5 +99,9 @@ public:
 	void SetIsAtSpawn(bool isAtSpawn);
 
 	void Animate(Anim anim);
+
+	//Info colors
+	void ShowAreaOfEffect();
+	void HideAreaOfEffect();
 };
 

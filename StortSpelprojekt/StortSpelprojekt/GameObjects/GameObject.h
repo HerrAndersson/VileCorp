@@ -106,5 +106,10 @@ public:
 	bool operator<(const GameObject& other);
 	// Returns 0 if _animation = nullptr
 	int GetAnimLength(int layer);
+
+
+	//Info colors
+	void ShowAreaOfEffect();
+	void HideAreaOfEffect();
 };
 
