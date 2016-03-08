@@ -76,7 +76,7 @@ int Trap::CalculateLine(int length, AI::Vec2D basePosition, AI::Vec2D* arr)
 	int size = 0;
 	AI::Vec2D pos = basePosition;
 
-	for (int i = 0; i < length && !_tileMap->IsWallOnTile(pos); i++)
+	for (int i = 0; i < length && !_tileMap->IsWallOnTile(pos) && !_tileMap->IsSpawnOnTile(pos) && !_tileMap->IsFurnitureOnTile(pos); i++)
 	{
 		arr[size++] = pos;
 		pos += _direction;
@@ -154,7 +154,7 @@ bool Trap::IsUnblocked(AI::Vec2D pos)
 	bool result = true;
 	for (int i = 0; i < lineLength && result; i++)
 	{
-		if (_tileMap->IsWallOnTile(_tilePosition + line[i]))
+		if (_tileMap->IsWallOnTile(_tilePosition + line[i]) || _tileMap->IsSpawnOnTile(_tilePosition + line[i]) || _tileMap->IsFurnitureOnTile(_tilePosition + line[i]))
 		{
 			result = false;
 		}
@@ -287,7 +287,7 @@ void Trap::SetTiles()
 		_nrOfAOETiles = CalculateRectangle(1, 2, _tilePosition - AI::Vec2D(-_direction._y, _direction._x), _areaOfEffect);
 		break;
 	case GUN:
-		_nrOfOccupiedTiles = CalculateLine(10, _tilePosition, _occupiedTiles);
+		_occupiedTiles[_nrOfOccupiedTiles++] = _tilePosition;
 		_nrOfAOETiles = CalculateLine(10, _tilePosition, _areaOfEffect);
 		_nrOfTriggers = CalculateLine(10, _tilePosition, _triggerTiles);
 		break;
@@ -308,12 +308,12 @@ void Trap::SetTiles()
 		_areaOfEffect[_nrOfAOETiles++] = _tilePosition;
 		break;
 	case FLAMETHROWER:
-		_nrOfOccupiedTiles = CalculateLine(6, _tilePosition, _occupiedTiles);
+		_occupiedTiles[_nrOfOccupiedTiles++] = _tilePosition;
 		_nrOfAOETiles = CalculateLine(6, _tilePosition, _areaOfEffect);
 		_nrOfTriggers = CalculateLine(6, _tilePosition, _triggerTiles);
 		break;
 	case WATER_GUN:
-		_nrOfOccupiedTiles = CalculateLine(8, _tilePosition, _occupiedTiles);
+		_occupiedTiles[_nrOfOccupiedTiles++] = _tilePosition;
 		_nrOfAOETiles = CalculateLine(8, _tilePosition, _areaOfEffect);
 		_nrOfTriggers = CalculateLine(8, _tilePosition, _triggerTiles);
 		break;
@@ -379,10 +379,11 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 		Initialize(999, 10, 2, 2, 60, 80, 140, 140, Unit::StatusEffect::NO_EFFECT, 0, 0, 480, -1);
 		break;
 	case GUN:																						//Mid tier standard damage dealer. Damage is done in a straight line. Can trigger multiple times
-		Initialize(20, 10, 10, 10, 40, 90, 140, 140, Unit::StatusEffect::NO_EFFECT, 0, 0, 80, 10);
+		Initialize(20, 1, 10, 10, 40, 90, 140, 140, Unit::StatusEffect::NO_EFFECT, 0, 0, 80, 10);
 		break;
 	case SAW:																						//Goes back and forth in a line. doesn't need to be reset unless an enemy disarms it.
 		Initialize(1, 3, 1, 1, 30, 80, 140, 140, Unit::StatusEffect::NO_EFFECT, 0, 0, 100, -1);
+		frozen = false;
 		_resetAnimTime = false;
 		break;
 	case CAKEBOMB:																					//Instant kill on one tile. TODO: Make it seem easier to disarm than it is
@@ -392,10 +393,10 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 		Initialize(80, 1, 1, 1, 10, 20, 140, 280, Unit::StatusEffect::NO_EFFECT, 0, 0);
 		break;
 	case FLAMETHROWER:																				//Shorter range and less direct damage than a gun, but does damage over time.
-		Initialize(10, 6, 6, 6, 60, 60, 140, 140, Unit::StatusEffect::BURNING, 300, 60, 80, 5);
+		Initialize(10, 1, 6, 6, 60, 60, 140, 140, Unit::StatusEffect::BURNING, 300, 60, 80, 5);
 		break;
 	case WATER_GUN:																					//No damage, but inflicts slow for a long time. Range is the same as the flamethrower
-		Initialize(0, 8, 8, 8, 60, 60, 140, 140, Unit::StatusEffect::SLOWED, 450, 450, 100, 10);
+		Initialize(0, 1, 8, 8, 60, 60, 140, 140, Unit::StatusEffect::SLOWED, 450, 450, 100, 10);
 		break;
 	case SPIN_TRAP:																					//No damage, but inflicts confusion, which cause the enemy to move randomly for the duration.
 		Initialize(0, 1, 1, 1, 70, 90, 140, 140, Unit::StatusEffect::CONFUSED, 240, 240, 480, -1);
@@ -453,6 +454,26 @@ int Trap::GetNrOfOccupiedTiles() const
 	return _nrOfOccupiedTiles;
 }
 
+AI::Vec2D * Trap::GetTriggers() const
+{
+	return _triggerTiles;
+}
+
+int Trap::GetNrOfTriggerTiles() const
+{
+	return _nrOfTriggers;
+}
+
+AI::Vec2D * Trap::GetAOE() const
+{
+	return _areaOfEffect;
+}
+
+int Trap::GetNrOfAOETiles() const
+{
+	return _nrOfAOETiles;
+}
+
 int Trap::GetDetectionDifficulty() const
 {
 	return _detectDifficulty;
@@ -467,11 +488,11 @@ int Trap::GetDisarmDifficulty() const
 bool Trap::InRange(AI::Vec2D pos) const
 {
 	bool result = false;
-	for (int i = 0; i < _nrOfOccupiedTiles && !result; i++)
+	for (int i = 0; i < _nrOfTriggers && !result; i++)
 	{
 		for (int j = 0; j < 8 && !result; j++)
 		{
-			result = (_occupiedTiles[i] + AI::NEIGHBOUR_OFFSETS[j] == pos);
+			result = (_triggerTiles[i] + AI::NEIGHBOUR_OFFSETS[j] == pos);
 		}
 	}
 	return result;

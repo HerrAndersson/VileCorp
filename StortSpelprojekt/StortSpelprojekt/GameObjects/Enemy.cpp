@@ -198,12 +198,12 @@ void Enemy::EvaluateTile(GameObject* obj)
 					else
 					{
 						bool changeRoute = false;
-						for (int i = 0; i < trap->GetNrOfOccupiedTiles(); i++)
+						AI::Vec2D* triggers = trap->GetTriggers();
+						for (int i = 0; i < trap->GetNrOfTriggerTiles(); i++)
 						{
-							AI::Vec2D pos = trap->GetTiles()[i];
-							if (_aStar->GetTileCost(pos) != 15)					//Arbitrary cost. Just make sure the getter and setter use the same number
+							if (_aStar->GetTileCost(triggers[i]) != 15)					//Arbitrary cost. Just make sure the getter and setter use the same number
 							{
-								_aStar->SetTileCost(trap->GetTiles()[i], 15);
+								_aStar->SetTileCost(triggers[i], 15);
 								changeRoute = true;
 							}
 						}
