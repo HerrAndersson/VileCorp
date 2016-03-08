@@ -439,7 +439,6 @@ Trap::~Trap()
 	_occupiedTiles = nullptr;
 	delete[] _triggerTiles;
 	_triggerTiles = nullptr;
-	delete _animation;
 	_particleEventQueue->Insert(new ParticleUpdateMessage(GetID(), false, GetPosition()));
 	_hasParticleEffect = false;
 }
