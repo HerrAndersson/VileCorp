@@ -113,8 +113,3 @@ void SecurityCamera::ShowAreaOfEffect()
 		_particleEventQueue->Insert(msg);
 	}
 }
-
-void SecurityCamera::HideAreaOfEffect()
-{
-	_particleEventQueue->Insert(new ParticleUpdateMessage(_ID, false));
-}
