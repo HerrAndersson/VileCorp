@@ -158,6 +158,7 @@ void BaseEdit::DropEvent()
 		//Redirect position to old pos
 		p.x = _movingGhostImage._origPos._x;
 		p.z = _movingGhostImage._origPos._y;
+		_movingGhostImage._g->SetTilePosition(AI::Vec2D(p.x, p.z));
 		_movingGhostImage._g->SetPosition(p);
 		_movingGhostImage._g->SetRotation(_movingGhostImage._origRot);
 		_movingGhostImage._g->SetDirection(_movingGhostImage._origDir);
@@ -176,7 +177,7 @@ void BaseEdit::DropEvent()
 	}
 
 	// Bind position logically
-	if (_movingGhostImage._g->GetType() == System::TRAP)
+	if (_movingGhostImage._g->GetType() == System::TRAP && _movingGhostImage._placeable)
 	{
 		AI::Vec2D* tempTiles = static_cast<Trap*>(_movingGhostImage._g)->GetTiles();
 		for (int i = 0; i < static_cast<Trap*>(_movingGhostImage._g)->GetNrOfOccupiedTiles(); i++)
