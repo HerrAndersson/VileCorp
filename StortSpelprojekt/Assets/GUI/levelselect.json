@@ -67,12 +67,12 @@
 			"nextlevel": {
 				"position": [0.285, -0.7],
 				"scale": [0.08, 0.08],
-				"texture": "../Menues/settings/settings6-arrow.png"
+				"texture": "../Menues/General/settings6-arrow.png"
 			},
 			"prevlevel": {
 				"position": [-0.255, -0.7],
 				"scale": [0.08, 0.08],
-				"texture": "../Menues/settings/settings6-arrow2.png"
+				"texture": "../Menues/General/settings6-arrow2.png"
 			}
 		},
 		"GameModeText": {

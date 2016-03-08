@@ -49,11 +49,13 @@ Game::Game(HINSTANCE hInstance, int nCmdShow) :
 
 Game::~Game()
 {
+	// _SM over _objecthandler, contains pointers to game objects
+	delete _SM;
 	delete _objectHandler;
+
 	delete _window;
 	delete _renderModule;
 	delete _camera;
-	delete _SM;
 	delete _controls;
 	delete _pickingDevice;
 	delete _fontWrapper;

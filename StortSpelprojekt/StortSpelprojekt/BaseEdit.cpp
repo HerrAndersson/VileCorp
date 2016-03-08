@@ -68,14 +68,8 @@ void BaseEdit::AddGhostImage()
 	_movingGhostImage._origRot = _movingGhostImage._g->GetRotation();
 	_movingGhostImage._origDir = _movingGhostImage._g->GetDirection();
 	_movingGhostImage._created = false;
-	_isPlace = true;
 	_isObjectButtonReleased = false;
 }
-
-//GameObject* BaseEdit::GetMarkedObject()
-//{
-//	return _movingGhostImage._g;
-//}
 
 void BaseEdit::RemoveGhostImage()
 {
@@ -222,7 +216,6 @@ void BaseEdit::DropEvent()
 		// Disables multiplacement with mouse in placement state
 		if (!_extendedMode)
 		{
-			//RemoveGhostImage();
 			_isPlace = false;
 			_isDragAndDropMode = false;
 		}
@@ -234,8 +227,8 @@ void BaseEdit::BoxEvent()
 
 	if ((_controls->IsFunctionKeyUp("MOUSE:SELECT") && _isPlace) || (_controls->IsFunctionKeyUp("MOUSE:DESELECT") && !_isPlace))
 	{
-		if (_sB->_blueprint->_type != System::Type::TRAP)
-		{
+		//if (_sB->_blueprint->_type != System::Type::TRAP)
+		//{
 			_modeLock = false;
 
 			_movingGhostImage._origPos = _movingGhostImage._g->GetTilePosition();
@@ -301,7 +294,7 @@ void BaseEdit::BoxEvent()
 
 			_isDragAndDropMode = false;
 			_isPlace = false;
-		}
+		//}
 		RemoveGhostImage();
 	}
 }
@@ -316,6 +309,8 @@ void BaseEdit::HandleMouseInput()
 		}
 		if (_isInvalidateFloor)
 		{
+			// "No placement zone" defining
+
 			AI::Vec2D pickedTile = _pickingDevice->PickTile(_controls->GetMouseCoord()._pos);
 			if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
 			{
@@ -330,18 +325,7 @@ void BaseEdit::HandleMouseInput()
 		}
 		else
 		{
-			if (_controls->IsFunctionKeyDown("MOUSE:BOX_PLACE") || _controls->IsFunctionKeyDown("MOUSE:BOX_DELETE"))
-			{
-				if (!_modeLock && _isSelectionMode)
-				{
-					_isSelectionMode = false;
-					_isDragAndPlaceMode = true;
-
-					_isDragAndDropMode = false;
-					_isPlace = false;
-				}
-			}
-
+			// Drag mechanics for everything
 			if (_isSelectionMode)
 			{
 				if (_movingGhostImage._g == nullptr)
@@ -357,39 +341,42 @@ void BaseEdit::HandleMouseInput()
 						}
 					}
 				}
-				//else
-				//{
-				//	// For buttons
-				//	DragEvent(_marker._g->GetType());
-				//}
 			}
-			else
-			{
-				if (_sB != nullptr)
-				{
-					if (!_modeLock)
-					{
-						if (_controls->IsFunctionKeyDown("MOUSE:BOX_PLACE"))
-						{
-							AddBoxGhostImage();
-							_isPlace = true;
-						}
 
-						// Not really diselect but activates remove mode (temp)
-						if (_controls->IsFunctionKeyDown("MOUSE:BOX_DELETE"))
-						{
-							AddBoxGhostImage();
-							_isPlace = false;
-						}
-					}
-					BoxEvent();
+			// Box placing mechanic
+			if (!_modeLock)
+			{
+				bool pressed = false;
+				if (_controls->IsFunctionKeyDown("MOUSE:BOX_PLACE"))
+				{
+					pressed = true;
+					_isPlace = true;
+				}
+				if (_controls->IsFunctionKeyDown("MOUSE:BOX_DELETE"))
+				{
+					pressed = true;
+					_isPlace = false;
+				}
+
+				if (pressed && _isSelectionMode && _sB != nullptr)
+				{
+					_isSelectionMode = false;
+					_isDragAndPlaceMode = true;
+					_isDragAndDropMode = false;
+
+					AddBoxGhostImage();
 				}
 			}
+			if (_isDragAndPlaceMode && _sB != nullptr)
+			{
+				BoxEvent();
+			}
+
 		}
 	}
 	else
 	{
-
+		// Drag mechanics for game thing
 		if (_isSelectionMode && _movingGhostImage._g == nullptr)
 		{
 			DragEvent(System::TRAP);
@@ -410,6 +397,9 @@ void BaseEdit::HandleMouseInput()
 			{
 				_deletedObjectBlueprint = _objectHandler->GetBlueprintByType(_movingGhostImage._g->GetType(), _movingGhostImage._g->GetSubType());
 			}
+
+			// Empty the memory of game objects and blueprints
+			_sB = nullptr;
 			RemoveGhostImage();
 			_isPlace = false;
 			_isDragAndDropMode = false;
@@ -499,7 +489,7 @@ bool BaseEdit::CheckValidity(AI::Vec2D tile, GameObject* gameObject)
 			{
 				if (type == System::GUARD || type == System::ENEMY)
 				{
-					if (_tileMap->UnitsOnTile(tile) || _tileMap->IsTrapOnTile(tile) || _tileMap->IsTypeOnTile(tile, System::CAMERA) || _tileMap->IsTileNoPlacementZone(tile))
+					if (_tileMap->UnitsOnTile(tile) || _tileMap->IsTrapOnTile(tile) || _tileMap->IsTypeOnTile(tile, System::CAMERA) || _tileMap->IsTileNoPlacementZone(tile) || _tileMap->IsFurnitureOnTile(tile))
 					{
 						valid = false;
 					}
@@ -509,7 +499,7 @@ bool BaseEdit::CheckValidity(AI::Vec2D tile, GameObject* gameObject)
 					AI::Vec2D* tempTiles = static_cast<Trap*>(gameObject)->GetTiles();
 					for (int i = 0; i < static_cast<Trap*>(gameObject)->GetNrOfOccupiedTiles() && valid; i++)
 					{
-						if (!_tileMap->IsPlaceable(tempTiles[i], type) || !_tileMap->IsFloorOnTile(tempTiles[i]) || _tileMap->UnitsOnTile(tempTiles[i]) || _tileMap->IsTileNoPlacementZone(tile))
+						if (!_tileMap->IsPlaceable(tempTiles[i], type) || !_tileMap->IsFloorOnTile(tempTiles[i]) || _tileMap->UnitsOnTile(tempTiles[i]) || _tileMap->IsTileNoPlacementZone(tempTiles[i]) ||_tileMap->IsFurnitureOnTile(tempTiles[i]))
 						{
 							valid = false;
 						}
@@ -556,7 +546,6 @@ void BaseEdit::HandleBlueprint(System::SpecificBlueprint* sB)
 		AddGhostImage();
 		_createdObject = _movingGhostImage._g;
 		_isPlace = false;
-		//_modeLock = true;
 	}
 	else
 	{
@@ -595,4 +584,10 @@ void BaseEdit::Update()
 	_deletedObjectBlueprint = nullptr;
 	HandleMouseInput();
 	HandleKeyInput();
+
+	// To make sure a ghost object is always shown when it´s supposed to
+	if (_movingGhostImage._g == nullptr && _sB != nullptr)
+	{
+		AddGhostImage();
+	}
 }

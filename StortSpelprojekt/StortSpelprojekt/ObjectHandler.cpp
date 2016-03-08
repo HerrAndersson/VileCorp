@@ -976,7 +976,7 @@ void ObjectHandler::ReleaseGameObjects()
 		for (GameObject* g : _gameObjects[i])
 		{
 			g->Release();
-			delete g;
+			SAFE_DELETE(g);
 		}
 		_gameObjects[i].clear();
 	}
