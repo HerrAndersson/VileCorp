@@ -330,7 +330,7 @@ void Game::RenderGameObjects(int forShaderStage, std::vector<std::vector<GameObj
 						_renderModule->SetDataPerObjectType(renderObject);
 						vertexBufferSize = renderObject->_mesh->_vertexBufferSize;
 					}
-					//if (gameObject->IsVisible())
+					if (gameObject->IsVisible())
 					{
 						if (forShaderStage == Renderer::RenderModule::ShaderStage::GEO_PASS)
 						{
@@ -390,7 +390,7 @@ void Game::GenerateShadowMap(Renderer::RenderModule::ShaderStage shaderStage, Re
 					}
 
 					//Render the visible objects, but skip the owner itself
-					//if (obj->IsVisible() && obj->GetID() != ownerID)
+					if (obj->IsVisible() && obj->GetID() != ownerID)
 					{
 						if (shaderStage == Renderer::RenderModule::ShaderStage::ANIM_SHADOW_GENERATION)
 						{
