@@ -176,7 +176,7 @@ void BaseEdit::DropEvent()
 	}
 
 	// Special camera non floating fix
-	if (_movingGhostImage._g->GetType() == System::CAMERA || _movingGhostImage._g->GetType())
+	if (_movingGhostImage._g->GetType() == System::CAMERA /*|| _movingGhostImage._g->GetType()*/)
 	{
 		if (_movingGhostImage._g->GetDirection()._x != 0 && _movingGhostImage._g->GetDirection()._y != 0)
 		{
