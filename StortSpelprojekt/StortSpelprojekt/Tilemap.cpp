@@ -168,16 +168,9 @@ bool Tilemap::RemoveObjectFromTile(AI::Vec2D pos, GameObject * obj)
 	return result;
 }
 
-bool Tilemap::RemoveObjectFromTile(GameObject* obj)
+bool Tilemap::RemoveObjectFromTile(int x, int z, GameObject * obj)
 {
-	if (obj != nullptr)
-	{
-		return RemoveObjectFromTile(obj->GetTilePosition(), obj);
-	}
-	else
-	{
-		return false;
-	}
+	return RemoveObjectFromTile(AI::Vec2D(x, z), obj);
 }
 
 void Tilemap::ClearTile(AI::Vec2D pos)
