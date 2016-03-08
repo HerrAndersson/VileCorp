@@ -249,22 +249,6 @@ void Trap::Initialize(int damage, int tileSize, int triggerSize, int AOESize, in
 */
 void Trap::SetTiles()
 {
-	//Coloring
-	for (int i = 0; i < _nrOfAOETiles; i++)
-	{
-		if (_tileMap->IsFloorOnTile(_areaOfEffect[i]))
-		{
-			_tileMap->GetObjectOnTile(_areaOfEffect[i], System::FLOOR)->SetColorOffset({0.0f,0.0f,0.0f});
-		}
-	}
-	for (int i = 0; i < _nrOfOccupiedTiles; i++)
-	{
-		if (_tileMap->IsFloorOnTile(_occupiedTiles[i]))
-		{
-			_tileMap->GetObjectOnTile(_occupiedTiles[i], System::FLOOR)->SetColorOffset({0,0,0});
-		}
-	}
-
 	_nrOfOccupiedTiles = 0;
 	_nrOfTriggers = 0;
 	_nrOfAOETiles = 0;
@@ -325,21 +309,6 @@ void Trap::SetTiles()
 	default:
 		_areaOfEffect = nullptr;
 		break;
-	}
-
-	for (int i = 0; i < _nrOfAOETiles; i++)
-	{
-		if (_tileMap->IsFloorOnTile(_areaOfEffect[i]))
-		{
-			_tileMap->GetObjectOnTile(_areaOfEffect[i], System::FLOOR)->SetColorOffset({ 3.0f,1.0f,0.0f });
-		}
-	}
-	for (int i = 0; i < _nrOfOccupiedTiles; i++)
-	{
-		if (_tileMap->IsFloorOnTile(_occupiedTiles[i]))
-		{
-			_tileMap->GetObjectOnTile(_occupiedTiles[i], System::FLOOR)->SetColorOffset({ 2,2,0 });
-		}
 	}
 }
 
@@ -420,18 +389,10 @@ Trap::~Trap()
 	for (int i = 0; i < _nrOfAOETiles; i++)
 	{
 		GameObject* floorTile = _tileMap->GetObjectOnTile(_areaOfEffect[i], System::FLOOR);
-		if (floorTile != nullptr)
-		{
-			floorTile->SetColorOffset({ 0.0f, 0.0f, 0.0f });
-		}	
 	}
 	for (int i = 0; i < _nrOfOccupiedTiles; i++)
 	{
 		GameObject* floorTile = _tileMap->GetObjectOnTile(_occupiedTiles[i], System::FLOOR);
-		if (floorTile != nullptr)
-		{
-			floorTile->SetColorOffset({ 0.0f, 0.0f, 0.0f });
-		}
 	}
 
 	delete[] _areaOfEffect;
