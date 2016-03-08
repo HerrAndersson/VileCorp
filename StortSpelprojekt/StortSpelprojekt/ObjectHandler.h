@@ -23,6 +23,7 @@
 #include "Blueprints.h"
 #include "ParticleSystem\ParticleUtils.h"
 #include "ParticleSystem\ParticleEventQueue.h"
+#include "AmbientLight.h"
 
 /*
 ObjectHandler
@@ -67,6 +68,7 @@ private:
 	map<GameObject*, Renderer::Spotlight*> _spotlights;
 	map<GameObject*, Renderer::Pointlight*> _pointligths;
 	LightCulling* _lightCulling;
+	AmbientLight* _ambientLight;
 
 	//Currently loaded level information
 	Level::LevelHeader _currentLevelHeader;
@@ -85,7 +87,7 @@ private:
 	void SpawnEnemies();
 
 public:
-	ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data, System::Settings* settings, Renderer::ParticleEventQueue* particleReque, System::SoundModule*	soundModule);
+	ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data, System::Settings* settings, Renderer::ParticleEventQueue* particleReque, System::SoundModule*	soundModule, AmbientLight* ambientLight);
 	~ObjectHandler();
 
 	//Add a gameobject
@@ -131,6 +133,7 @@ public:
 	//Update gamelogic of all objects
 	void Update(float deltaTime);
 	void UpdateLights();
+	void UpdateLightIntensity();
 
 	vector<System::Blueprint>* GetBlueprints();
 	std::vector<std::vector<System::Blueprint*>>* GetBlueprintsOrderedByType();

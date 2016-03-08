@@ -333,6 +333,11 @@ namespace Renderer
 		return _intensity;
 	}
 
+	void Pointlight::SetIntensity(float intensity)
+	{
+		_intensity = intensity;
+	}
+
 	int Pointlight::GetVertexCount() const
 	{
 		return _vertexCount;

@@ -1,7 +1,7 @@
 #include "ObjectHandler.h"
 #include "stdafx.h"
 
-ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data, System::Settings* settings, Renderer::ParticleEventQueue* particleEventQueue, System::SoundModule*	soundModule) :
+ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data, System::Settings* settings, Renderer::ParticleEventQueue* particleEventQueue, System::SoundModule*	soundModule, AmbientLight* ambientLight) :
 	_currentLevelHeader()
 {
 	_settings = settings;
@@ -16,6 +16,7 @@ ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, G
 	_particleEventQueue = particleEventQueue;
 	_soundModule = soundModule;
 	_backgroundObject = nullptr;
+	_ambientLight = ambientLight;
 
 	int sizeX = 100;
 	int sizeY = 100;
@@ -131,7 +132,7 @@ GameObject* ObjectHandler::Add(System::Blueprint* blueprint, int textureId, cons
 			d._bone = -1;
 			d._color = XMFLOAT3(0.9f, 0.9f, 0.9f);
 			d._direction = XMFLOAT3(1, 0, 1);
-			d._intensity = 1.0f;
+			d._intensity = 1.0f + _ambientLight->GetScale()*0.06f; //Note! I hardcoded this value also in the UpdateLightIntensity() /Alex
 			d._pos = XMFLOAT3(0, 0, 0);
 			d._range = (float)static_cast<Unit*>(object)->GetVisionRadius();
 			_spotlights[object] = new Renderer::Spotlight(_device, d, 0.1f, 1000.0f);
@@ -143,7 +144,7 @@ GameObject* ObjectHandler::Add(System::Blueprint* blueprint, int textureId, cons
 			d._bone = -1;
 			d._color = XMFLOAT3(0.9f, 0.6f, 0.6f);
 			d._direction = XMFLOAT3(1, 0, 1);
-			d._intensity = 1.0f;
+			d._intensity = 1.0f + _ambientLight->GetScale()*0.06f; //Note! I hardcoded this value also in the UpdateLightIntensity() /Alex
 			d._pos = XMFLOAT3(0, 0, 0);
 			d._range = (float)static_cast<SecurityCamera*>(object)->GetVisionRadius();
 			_spotlights[object] = new Renderer::Spotlight(_device, d, 0.1f, 1000.0f);
@@ -153,7 +154,7 @@ GameObject* ObjectHandler::Add(System::Blueprint* blueprint, int textureId, cons
 			PointlightData d;
 			d._pos = XMFLOAT3(object->GetPosition().x, 2, object->GetPosition().z);
 			d._range = 6.0f;
-			d._intensity = 0.8f;
+			d._intensity = 0.8f + _ambientLight->GetScale()*0.06f; //Note! I hardcoded this value also in the UpdateLightIntensity() /Alex
 			d._col = XMFLOAT3(0.9f, 0.5f, 0.5f);
 			_pointligths[object] = new Renderer::Pointlight(_device, d._pos, d._range, d._intensity, d._col);
 		}
@@ -867,6 +868,28 @@ void ObjectHandler::UpdateLights()
 			{
 				point.second->SetActive(false);
 			}
+		}
+	}
+}
+
+void ObjectHandler::UpdateLightIntensity()
+{
+	for (pair<GameObject*, Renderer::Spotlight*> spot : _spotlights)
+	{
+		if (spot.first->GetType() == System::GUARD)
+		{
+			spot.second->SetIntensity(1.0f + _ambientLight->GetScale()*0.06f);		
+		}
+		if (spot.first->GetType() == System::CAMERA)
+		{
+			spot.second->SetIntensity(1.0f + _ambientLight->GetScale()*0.06f);
+		}
+	}
+	for (pair<GameObject*, Renderer::Pointlight*> point : _pointligths)
+	{
+		if (point.first->GetType() == System::LOOT)
+		{
+			point.second->SetIntensity(0.8f + _ambientLight->GetScale()*0.06f);
 		}
 	}
 }

@@ -29,7 +29,7 @@ Game::Game(HINSTANCE hInstance, int nCmdShow) :
 	LoadParticleSystemData(*particleTextures, modifiers);
 	_particleHandler = new Renderer::ParticleHandler(_renderModule->GetDevice(), _renderModule->GetDeviceContext(), particleTextures, modifiers);
 
-	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager, &_data, _settingsReader.GetSettings(), _particleHandler->GetParticleEventQueue(), &_soundModule);
+	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager, &_data, _settingsReader.GetSettings(), _particleHandler->GetParticleEventQueue(), &_soundModule, &_ambientLight);
 	_pickingDevice = new PickingDevice(_camera, settings);
 
 	_SM = new StateMachine(_controls, _objectHandler, _camera, _pickingDevice, "Assets/gui.json", _assetManager, _fontWrapper, settings, &_settingsReader, &_soundModule, &_ambientLight, _combinedMeshGenerator);
@@ -159,6 +159,7 @@ bool Game::Update(double deltaTime)
 		_settingsReader.SetSettingsChanged(false);
 		_renderModule->SetAntialiasingEnabled(settings->_antialiasing);
 		_ambientLight.SetScale(settings->_brightness);
+		_objectHandler->UpdateLightIntensity();
 	}
 
 	_controls->Update();

@@ -27,3 +27,8 @@ DirectX::XMFLOAT3 AmbientLight::GetAmbientLight()const
 {
 	return _ambientLight;
 }
+
+int AmbientLight::GetScale()const
+{
+	return _scale;
+}

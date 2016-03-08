@@ -17,4 +17,5 @@ public:
 	void SetScale(int scale);
 
 	DirectX::XMFLOAT3 GetAmbientLight()const;
+	int GetScale()const;
 };
