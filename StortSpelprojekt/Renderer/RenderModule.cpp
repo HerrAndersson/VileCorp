@@ -585,16 +585,16 @@ namespace Renderer
 		_d3d->GetDeviceContext()->Draw(vertexBufferSize, 0);
 	}
 
-	void RenderModule::Render(GUI::Node* root, FontWrapper* fontWrapper)
+	void RenderModule::Render(GUI::Node* root, FontWrapper* fontWrapper, int brightness)
 	{
 		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
 		UINT32 vertexSize = sizeof(ScreenQuadVertex);
 
 		SetDataPerMesh(_screenQuad, vertexSize);
-		Render(root, root->GetModelMatrix(), fontWrapper);
+		Render(root, root->GetModelMatrix(), fontWrapper, brightness);
 	}
 
-	void RenderModule::Render(GUI::Node* current, XMMATRIX* transform, FontWrapper* fontWrapper)
+	void RenderModule::Render(GUI::Node* current, XMMATRIX* transform, FontWrapper* fontWrapper, int brightness)
 	{
 		if (!current->GetHidden())
 		{
@@ -618,7 +618,12 @@ namespace Renderer
 
 				MatrixBufferHud* dataPtr = static_cast<MatrixBufferHud*>(mappedResource.pData);
 				dataPtr->_model = XMMatrixTranspose(t);
-				dataPtr->_colorOffset = current->GetColorOffset();
+				XMFLOAT4 offset;
+				offset.x = current->GetColorOffset().x + 0.1f * brightness - 0.5f;
+				offset.y = current->GetColorOffset().y + 0.1f * brightness - 0.5f;
+				offset.z = current->GetColorOffset().z + 0.1f * brightness - 0.5f;
+				offset.w = current->GetColorOffset().w;
+				dataPtr->_colorOffset = offset;
 
 				deviceContext->Unmap(_matrixBufferHUD, 0);
 
@@ -651,7 +656,7 @@ namespace Renderer
 			{
 				XMMATRIX a = *(i->GetModelMatrix());
 				XMMATRIX t = XMMatrixMultiply(*transform, a);
-				Render(i, &t, fontWrapper);
+				Render(i, &t, fontWrapper, brightness);
 			}
 		}
 	}

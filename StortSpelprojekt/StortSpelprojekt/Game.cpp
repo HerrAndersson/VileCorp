@@ -265,7 +265,7 @@ void Game::Render()
 
 	///////////////////////////////////////////////////////  HUD and other 2D   ////////////////////////////////////////////////////////////
 	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::HUD_STAGE);
-	_renderModule->Render(_SM->GetCurrentStatePointer()->GetUITree()->GetRootNode(), _fontWrapper);
+	_renderModule->Render(_SM->GetCurrentStatePointer()->GetUITree()->GetRootNode(), _fontWrapper, _ambientLight.GetScale());
 
 	_renderModule->EndScene();
 }
