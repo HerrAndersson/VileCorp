@@ -109,7 +109,7 @@ public:
 
 
 	//Info colors
-	void ShowAreaOfEffect();
+	virtual void ShowAreaOfEffect();
 	void HideAreaOfEffect();
 };
 

@@ -746,12 +746,6 @@ void Trap::ShowAreaOfEffect()
 	}
 }
 
-void Trap::HideAreaOfEffect()
-{
-	_particleEventQueue->Insert(new ParticleUpdateMessage(_ID, false));
-}
-
-
 
 //Sound
 void Trap::PlayActivateSound()

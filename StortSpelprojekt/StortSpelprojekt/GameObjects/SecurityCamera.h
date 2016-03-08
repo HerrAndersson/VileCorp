@@ -23,10 +23,8 @@ public:
 	void SetTilePosition(AI::Vec2D pos);
 	int GetVisionRadius()const;
 
-	//Info colors
+	//// Overloaded because of visibility
 	void ShowAreaOfEffect();
-	void HideAreaOfEffect();
-
 
 };
 
