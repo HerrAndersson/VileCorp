@@ -57,6 +57,14 @@ protected:
 	void SetGoal(AI::Vec2D goal);
 	void SetGoal(GameObject* objective);				//Does the things necessary to change the pathfinding to a new goal
 	void ExpandArray(GameObject** &arr, int &sizeOfArray);
+
+	void CheckVisibleTiles();																	//Checks for targets in vision cone. Typically done after switching tile.
+	virtual void Moving();											//Update function when unit is not dead center on a tile.
+	virtual void SwitchingNode();									//Update function when unit is on a tile center and needs to decide next tile to move to.
+	virtual void EvaluateTile(System::Type objective, AI::Vec2D tile) = 0;
+	virtual void EvaluateTile(GameObject* obj) = 0;												//Decide priority of potential targets
+	virtual void Act(GameObject* obj) = 0;														//Act on target within range
+
 public:
 	Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject* renderObject, System::SoundModule* soundModule, const Tilemap* tileMap, AI::Vec2D direction = { 1, 0 });
 	virtual ~Unit();
@@ -82,17 +90,13 @@ public:
 	bool IsSwitchingTile()const;
 
 	//Decision making
-	void CheckVisibleTiles();																	//Checks for targets in vision cone. Typically done after switching tile.
-	void CheckAllTiles();																		//Checks the whole map. Typically done by idle enemies to find loot or an exit point.
+																	//Checks the whole map. Typically done by idle enemies to find loot or an exit point.
 	void InitializePathFinding();																//Transfers map info to the pathfinding. Done once the tilemap is fully loaded.
-	virtual void EvaluateTile(System::Type objective, AI::Vec2D tile) = 0;
-	virtual void EvaluateTile(GameObject* obj) = 0;												//Decide priority of potential targets
-	virtual void Act(GameObject* obj) = 0;														//Act on target within range
+	void CheckAllTiles();
 
 	//Update related actions
 	virtual void Update(float deltaTime);							//Checks MoveState for appropriate update function
-	virtual void Moving();											//Update function when unit is not dead center on a tile.
-	virtual void SwitchingNode();									//Update function when unit is on a tile center and needs to decide next tile to move to.
+	
 	void ClearObjective();											//Cleaning function for when objective is lost.
 	virtual void Release();
 

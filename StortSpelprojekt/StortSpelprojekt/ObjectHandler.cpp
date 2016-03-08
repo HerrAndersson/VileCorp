@@ -112,7 +112,6 @@ GameObject* ObjectHandler::Add(System::Blueprint* blueprint, int textureId, cons
 			for (int i = 0; i < trap->GetNrOfOccupiedTiles() && addedObject; i++)
 			{
 				_tilemap->AddObjectToTile(arr[i], object);
-				//	_tilemap->GetObjectOnTile(arr[i], FLOOR)->AddColorOffset({2,0,0});
 			}
 		}
 
@@ -228,6 +227,12 @@ bool ObjectHandler::Remove(System::Type type, int ID)
 			{
 				delete _spotlights[_gameObjects[type][i]];
 				_spotlights.erase(_gameObjects[type][i]);
+			}
+
+			if (_pointligths.count(_gameObjects[type][i]))
+			{
+				delete _pointligths[_gameObjects[type][i]];
+				_pointligths.erase(_gameObjects[type][i]);
 			}
 
 			delete _gameObjects[type][i];

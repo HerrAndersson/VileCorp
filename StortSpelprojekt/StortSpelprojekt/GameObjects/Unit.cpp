@@ -6,13 +6,6 @@ void Unit::CalculatePath()
 	{
 		_path = _aStar->GetPath();
 		_pathLength = _aStar->GetPathLength();
-		//for (int i = 0; i < _pathLength; i++)
-		//{
-		//	/*if (_tileMap->IsFloorOnTile(_path[i]))
-		//	{
-		//		_tileMap->GetObjectOnTile(_path[i], FLOOR)->SetColorOffset({0,4,0});
-		//	}*/
-		//}
 	}
 	else
 	{
@@ -39,9 +32,7 @@ void Unit::Rotate()
 		}
 		CalculateMatrix();
 	}
-	//_visionCone->ColorVisibleTiles({0,0,0});
 	_visionCone->FindVisibleTiles(_tilePosition, _direction);
-	//_visionCone->ColorVisibleTiles({0,0,3});
 }
 
 int Unit::GetApproxDistance(AI::Vec2D target) const
@@ -216,9 +207,7 @@ void Unit::SetVisibility(bool visible)
 void Unit::SetTilePosition(AI::Vec2D pos)
 {
 	GameObject::SetTilePosition(pos);
-	//_visionCone->ColorVisibleTiles({0,0,0});
 	_visionCone->FindVisibleTiles(_tilePosition, _direction);
-	//_visionCone->ColorVisibleTiles({0,0,3});
 	if (_moveState == MoveState::IDLE)
 	{
 		_nextTile = pos;
@@ -419,15 +408,7 @@ void Unit::Moving()
 
 void Unit::SwitchingNode()
 {
-	//if (_tileMap->IsFloorOnTile(_tilePosition))
-	//{
-	//	_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,0});
-	//}
 	_tilePosition = _nextTile;
-	//if (_tileMap->IsFloorOnTile(_tilePosition))
-	//{
-	//	_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,4});
-	//}
 	if (_status == StatusEffect::CONFUSED)
 	{
 		int randDir = rand() % 8;
