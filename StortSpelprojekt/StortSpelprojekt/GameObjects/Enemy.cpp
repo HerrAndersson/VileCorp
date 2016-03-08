@@ -5,15 +5,7 @@ Decides the best direction to run away from a foe.
 */
 void Enemy::Flee()
 {
-	//if (_tileMap->IsFloorOnTile(_tilePosition))
-	//{
-	//	_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,0});
-	//}
 	_tilePosition = _nextTile;
-	//if (_tileMap->IsFloorOnTile(_tilePosition))
-	//{
-	//	_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,4});
-	//}
 	if (_pursuer == nullptr)
 	{
 		_moveState = MoveState::IDLE;

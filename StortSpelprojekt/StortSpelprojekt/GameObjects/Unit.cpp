@@ -6,13 +6,6 @@ void Unit::CalculatePath()
 	{
 		_path = _aStar->GetPath();
 		_pathLength = _aStar->GetPathLength();
-		//for (int i = 0; i < _pathLength; i++)
-		//{
-		//	/*if (_tileMap->IsFloorOnTile(_path[i]))
-		//	{
-		//		_tileMap->GetObjectOnTile(_path[i], FLOOR)->SetColorOffset({0,4,0});
-		//	}*/
-		//}
 	}
 	else
 	{
@@ -351,15 +344,7 @@ void Unit::Moving()
 
 void Unit::SwitchingNode()
 {
-	//if (_tileMap->IsFloorOnTile(_tilePosition))
-	//{
-	//	_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,0});
-	//}
 	_tilePosition = _nextTile;
-	//if (_tileMap->IsFloorOnTile(_tilePosition))
-	//{
-	//	_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,4});
-	//}
 	if (_status == StatusEffect::CONFUSED)
 	{
 		int randDir = rand() % 8;
