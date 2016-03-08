@@ -709,7 +709,7 @@ void Trap::Animate(Anim anim)
 			_animation->SetActionAsCycle(IDLEANIM);
 			break;
 		case ACTIVATEANIM:
-			_animation->PlayAction(ACTIVATEANIM, true, true, _resetAnimTime);
+			_animation->PlayAction(ACTIVATEANIM, _resetAnimTime, true, _resetAnimTime);
 			break;
 		case DISABLEANIM:
 			_animation->PlayAction(DISABLEANIM, true, true);
