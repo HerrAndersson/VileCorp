@@ -16,10 +16,6 @@ ObjectHandler::ObjectHandler(ID3D11Device* device, AssetManager* assetManager, G
 	_particleEventQueue = particleEventQueue;
 	_soundModule = soundModule;
 	_backgroundObject = nullptr;
-
-	int sizeX = 100;
-	int sizeY = 100;
-	CreateBackgroundObject(sizeX, sizeY, "grass1.png", sizeX, sizeY);
 }
 
 ObjectHandler::~ObjectHandler()
@@ -346,6 +342,8 @@ void ObjectHandler::SetTileMap(Tilemap * tilemap)
 		delete _tilemap;
 	}
 	_tilemap = tilemap;
+
+	_buildingGrid->ChangeGridSize(_tilemap->GetWidth() - 1, _tilemap->GetHeight() - 1, 1);
 }
 
 void ObjectHandler::MinimizeTileMap()
@@ -525,15 +523,18 @@ bool ObjectHandler::LoadLevel(const std::string& levelBinaryFilePath)
 	bool result = false;
 	Level::LevelBinary levelData;
 	HRESULT success = _assetManager->ParseLevelBinary(&levelData, levelBinaryFilePath);
-	result = LoadLevel(levelData);
-//	MinimizeTileMap();
+	result = LoadLevel(levelData, true);
 	return result;
 }
 
-bool ObjectHandler::LoadLevel(Level::LevelBinary &levelData)
+bool ObjectHandler::LoadLevel(Level::LevelBinary &levelData, bool resizeTileMap)
 {
 	bool result = true;
-	_tilemap = new Tilemap(AI::Vec2D(levelData._tileMapSizeX, levelData._tileMapSizeZ));
+
+	if (resizeTileMap)
+	{
+		_tilemap = new Tilemap(AI::Vec2D(levelData._tileMapMaxX - levelData._tileMapMinX + 4, levelData._tileMapMaxZ - levelData._tileMapMinZ + 4));
+	}
 
 	for (int i = 0; i < levelData._gameObjectData.size() && result; i++)
 	{
@@ -543,6 +544,12 @@ bool ObjectHandler::LoadLevel(Level::LevelBinary &levelData)
 		//Position
 		float posX = static_cast<float>(formattedGameObject->at(3));
 		float posZ = static_cast<float>(formattedGameObject->at(4));
+
+		if (resizeTileMap)
+		{
+			posX += 1 - levelData._tileMapMinX;
+			posZ += 1 - levelData._tileMapMinZ;
+		}
 
 		//Rotation
 		float rotY = (formattedGameObject->at(5) * DirectX::XM_PI) / 180.0f;
@@ -565,8 +572,9 @@ bool ObjectHandler::LoadLevel(Level::LevelBinary &levelData)
 	_lightCulling = new LightCulling(_tilemap);
 
 	SAFE_DELETE(_backgroundObject);
-	int sizeX = _tilemap->GetWidth() * 3;
-	int sizeY = _tilemap->GetHeight() * 3;
+	int sizeX = 90 + _tilemap->GetWidth();
+	int sizeY = 90 + _tilemap->GetHeight();
+
 	CreateBackgroundObject(sizeX, sizeY, "grass1.png", sizeX / 3, sizeY / 3);
 	return result;
 }
