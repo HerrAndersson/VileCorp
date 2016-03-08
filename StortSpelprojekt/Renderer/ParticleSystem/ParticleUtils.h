@@ -120,7 +120,6 @@ struct ParticleTextures
 			SAFE_RELEASE(_bloodTextures[i]);
 			SAFE_RELEASE(_waterTextures[i]);
 			SAFE_RELEASE(_smokeTextures[i]);
-			SAFE_RELEASE(_sparkTextures[i]);
 			SAFE_RELEASE(_fireTextures[i]);
 			SAFE_RELEASE(_muzzleFlashTextures[i]);
 		}
