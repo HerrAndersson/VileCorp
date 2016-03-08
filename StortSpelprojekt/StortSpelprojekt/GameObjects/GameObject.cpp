@@ -1,6 +1,6 @@
 #include "GameObject.h"
 
-GameObject::GameObject(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation,  AI::Vec2D tilePosition, System::Type type, RenderObject * renderObject, System::SoundModule* soundModule, DirectX::XMFLOAT3 colorOffset, int subType, AI::Vec2D direction)
+GameObject::GameObject(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation,  AI::Vec2D tilePosition, System::Type type, RenderObject * renderObject, System::SoundModule* soundModule, Renderer::ParticleEventQueue* particleEventQueue, DirectX::XMFLOAT3 colorOffset, int subType, AI::Vec2D direction)
 {
 	_ID = ID;
 	_position = position;
@@ -14,11 +14,13 @@ GameObject::GameObject(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::X
 	_isTargeted = false;
 	_visible = true;
 	_subType = subType;
+	_hasParticleEffect = false;
 	_active = true;
 	_soundModule = soundModule;
 	_direction = direction;
 	CalculateMatrix();
 	_animation = nullptr;
+	_particleEventQueue = particleEventQueue;
 }
 
 GameObject::~GameObject()
@@ -252,4 +254,12 @@ int GameObject::GetAnimLength(int layer)
 	{
 		return 0;
 	}
+}
+
+void GameObject::ShowAreaOfEffect()
+{
+}
+
+void GameObject::HideAreaOfEffect()
+{
 }

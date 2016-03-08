@@ -53,7 +53,7 @@ protected:
 	void SetGoal(AI::Vec2D goal);
 	void SetGoal(GameObject* objective);				//Does the things necessary to change the pathfinding to a new goal
 public:
-	Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject* renderObject, System::SoundModule* soundModule, const Tilemap* tileMap, AI::Vec2D direction = { 1, 0 });
+	Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject* renderObject, System::SoundModule* soundModule, Renderer::ParticleEventQueue* particleEventQueue, const Tilemap* tileMap, AI::Vec2D direction = { 1, 0 });
 	virtual ~Unit();
 
 	int GetPathLength()const;
@@ -99,5 +99,9 @@ public:
 	void SetIsAtSpawn(bool isAtSpawn);
 
 	void Animate(Anim anim);
+
+	//Info colors
+	void ShowAreaOfEffect();
+	void HideAreaOfEffect();
 };
 

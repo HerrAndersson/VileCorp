@@ -139,7 +139,7 @@ void BaseEdit::DragEvent(System::Type type)
 			_movingGhostImage._origRot = _movingGhostImage._g->GetRotation();
 			_movingGhostImage._origDir = _movingGhostImage._g->GetDirection();
 
-			// Remove logically from old tile/tiles
+			// Remove logically from old tile
 			if (type == System::TRAP)
 			{
 				AI::Vec2D* tempTiles = static_cast<Trap*>(_movingGhostImage._g)->GetTiles();
@@ -152,7 +152,6 @@ void BaseEdit::DragEvent(System::Type type)
 			{
 				_tileMap->RemoveObjectFromTile(_movingGhostImage._g->GetTilePosition(), _movingGhostImage._g);
 			}
-
 			_isDragAndDropMode = true;
 		}
 	}
@@ -207,11 +206,25 @@ void BaseEdit::DropEvent()
 			{
 				_tileMap->AddObjectToTile(tempTiles[i], _movingGhostImage._g);
 			}
+		//Remove area of effect for traps when moved
+		static_cast<Trap*>(_movingGhostImage._g)->HideAreaOfEffect();
 		}
 		else
 		{
 			_tileMap->AddObjectToTile(p.x, p.z, _movingGhostImage._g);
+
+		//Remove area of effect for guards and cameras when moved
+		if (_movingGhostImage._g->GetType() == System::GUARD)
+		{
+			static_cast<Unit*>(_movingGhostImage._g)->HideAreaOfEffect();
 		}
+		else if (_movingGhostImage._g->GetType() == System::CAMERA)
+		{
+			static_cast<SecurityCamera*>(_movingGhostImage._g)->HideAreaOfEffect();
+		}
+	}
+	
+
 
 		_movingGhostImage.Reset();
 		_isPlace = false;

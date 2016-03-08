@@ -47,7 +47,7 @@ GameObject* ObjectHandler::Add(System::Blueprint* blueprint, int textureId, cons
 			lootPos.y += 1.2f;
 			loot->SetPosition(lootPos);
 		}
-		object = new Architecture(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, blueprint->_subType, direction);
+		object = new Architecture(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, _particleEventQueue, blueprint->_subType, direction);
 		break;
 	case System::LOOT:
 		lootPos = position;
@@ -55,22 +55,22 @@ GameObject* ObjectHandler::Add(System::Blueprint* blueprint, int textureId, cons
 		{
 			lootPos.y += 1.2f;
 		}
-		object = new Architecture(_idCount, lootPos, rotation, tilepos, type, renderObject, _soundModule, blueprint->_subType, direction);
+		object = new Architecture(_idCount, lootPos, rotation, tilepos, type, renderObject, _soundModule, _particleEventQueue, blueprint->_subType, direction);
 		break;
 	case  System::SPAWN:
-		object = new SpawnPoint(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, blueprint->_subType, direction);
+		object = new SpawnPoint(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, _particleEventQueue, blueprint->_subType, direction);
 		break;
 	case  System::TRAP:
-		object = new Trap(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, _tilemap, blueprint->_subType, direction);
+		object = new Trap(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, _particleEventQueue, _tilemap, blueprint->_subType, direction);
 		break;
 	case  System::CAMERA:
-		object = new SecurityCamera(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, _tilemap, direction);
+		object = new SecurityCamera(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, _particleEventQueue, _tilemap, direction);
 		break;
 	case  System::ENEMY:
-		object = new Enemy(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, _tilemap, blueprint->_subType, direction);
+		object = new Enemy(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, _particleEventQueue, _tilemap, blueprint->_subType, direction);
 		break;
 	case  System::GUARD:
-		object = new Guard(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, _tilemap, blueprint->_subType, direction);
+		object = new Guard(_idCount, position, rotation, tilepos, type, renderObject, _soundModule, _particleEventQueue, _tilemap, blueprint->_subType, direction);
 		break;
 	default:
 		break;
