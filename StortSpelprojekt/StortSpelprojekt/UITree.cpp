@@ -9,7 +9,8 @@ namespace GUI
 	UITree::UITree(const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader) :
 		_info(fontWrapper,
 			settingsReader->GetSettings()->_screenWidth, settingsReader->GetSettings()->_screenHeight,
-			settingsReader->GetSettings()->_windowWidth, settingsReader->GetSettings()->_windowHeight)
+			settingsReader->GetSettings()->_windowWidth, settingsReader->GetSettings()->_windowHeight,
+			  settingsReader->GetSettings()->_screenMode)
 	{
 		_AM = assetManager;
 		ifstream file(filename);
@@ -235,14 +236,24 @@ namespace GUI
 		topLeft.x = pos.x - scale.x;
 		topLeft.y = pos.y*-1.0f - scale.y;
 
-		//Convert coordinates to pixel coordinate system
-		topLeft.x = (topLeft.x + 1.0f) * 0.5f * _info._windowWidth;
-		topLeft.y = (topLeft.y + 1.0f) * 0.5f * _info._windowHeight;
+		int width = _info._windowWidth;
+		int height = _info._windowHeight;
 
-		size.x = scale.x * _info._windowWidth;
-		size.y = scale.y * _info._windowHeight;
+		if (_info._screenMode == System::FULLSCREEN)
+		{
+			width = _info._screenWidth;
+			height = _info._screenHeight;
+		}
+
+		//Convert coordinates to pixel coordinate system
+		topLeft.x = (topLeft.x + 1.0f) * 0.5f * width;
+		topLeft.y = (topLeft.y + 1.0f) * 0.5f * height;
+
+		size.x = scale.x * width;
+		size.y = scale.y * height;
 
 		//Check collision with mouse coord and return the result
+
 		return (
 			(y > topLeft.y && y < topLeft.y + size.y) &&
 			(x > topLeft.x && x < topLeft.x + size.x)

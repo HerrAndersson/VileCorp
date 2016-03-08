@@ -246,11 +246,6 @@ namespace GUI
 		return _parent;
 	}
 
-	DirectX::XMFLOAT2 Node::GetSize() const
-	{
-		return { _scale.x * _info->_windowWidth, _scale.y * _info->_windowHeight };
-	}
-
 	DirectX::XMMATRIX* Node::GetModelMatrix()
 	{
 		return &_modelMatrix;

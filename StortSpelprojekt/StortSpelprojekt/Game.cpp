@@ -40,14 +40,6 @@ Game::Game(HINSTANCE hInstance, int nCmdShow) :
 
 	//Set brightness
 	_ambientLight.SetScale(_settingsReader.GetSettings()->_brightness);
-
-	ResizeResources(settings);//This fixes a bug which offsets mousepicking, do not touch! //Markus
-	_renderModule->SetAntialiasingEnabled(settings->_antialiasing);
-
-	for (int i = 0; i < 10; i++)
-	{
-		//spotlights.push_back(new Renderer::Spotlight)
-	}
 }
 
 Game::~Game()
@@ -70,6 +62,7 @@ Game::~Game()
 void Game::ResizeResources(System::Settings* settings)
 {
 	_renderModule->ResizeResources(settings);
+	_renderModule->SetAntialiasingEnabled(settings->_antialiasing);
 	_window->ResizeWindow(settings);
 	_SM->Resize(settings);
 	_camera->Resize(settings);

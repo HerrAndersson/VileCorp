@@ -6,7 +6,7 @@
 		<_windowWidth>1280</_windowWidth>
 		<_windowHeight>720</_windowHeight>
 		<_shadowMapSize>256</_shadowMapSize>
-		<_borderless>false</_borderless>
+		<_screenMode>0</_screenMode>
 		<_showMouseCursor>true</_showMouseCursor>
 		<_nearClip>0.1</_nearClip>
 		<_farClip>1000</_farClip>

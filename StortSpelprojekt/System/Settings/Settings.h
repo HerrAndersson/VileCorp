@@ -6,6 +6,11 @@
 
 namespace System
 {
+	enum ScreenModes
+	{
+		WINDOWED, BORDERLESS, FULLSCREEN
+	};
+
 	struct SYSTEM_EXPORT Settings
 	{
 	public:
@@ -18,7 +23,7 @@ namespace System
 		float _nearClip;
 		float _farClip;
 		float _fov;
-		bool _borderless;
+		int _screenMode;
 		bool _showMouseCursor;
 		bool _antialiasing;
 		int _brightness;
@@ -35,7 +40,7 @@ namespace System
 				CEREAL_NVP(_windowWidth),
 				CEREAL_NVP(_windowHeight),
 				CEREAL_NVP(_shadowMapSize),
-				CEREAL_NVP(_borderless),
+				CEREAL_NVP(_screenMode),
 				CEREAL_NVP(_showMouseCursor),
 				CEREAL_NVP(_nearClip),
 				CEREAL_NVP(_farClip),

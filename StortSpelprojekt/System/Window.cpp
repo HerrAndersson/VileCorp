@@ -85,23 +85,23 @@ namespace System
 		int systemHeight = GetSystemMetrics(SM_CYSCREEN);
 		int windowWidth = _settings->_windowWidth;
 		int windowHeight = _settings->_windowHeight;
-		bool borderless = _settings->_borderless;
+		int screenMode = _settings->_screenMode;
 
 		LONG style = _defaultStyle;
 		LONG exStyle = _defaultExStyle;
 
-		//If settings is fullscreen, set the window to cover the entire screen and be borderless
-		if (borderless)
-		{
-			style = _defaultStyle & ~(WS_CAPTION | WS_MINIMIZE | WS_MAXIMIZE | WS_SYSMENU | WS_POPUP | WS_BORDER);
-			exStyle = _defaultExStyle & ~(WS_EX_DLGMODALFRAME | WS_EX_CLIENTEDGE | WS_EX_STATICEDGE);
-		}
-		else //This is a window with borders - adjust the window size accordingly
+
+		if(screenMode == System::WINDOWED) //This is a window with borders - adjust the window size accordingly
 		{
 			RECT rect = { 0, 0, windowWidth, windowHeight };
 			AdjustWindowRect(&rect, style, FALSE);
 			windowWidth = rect.right - rect.left;
 			windowHeight = rect.bottom - rect.top;
+		}
+		else //If settings is fullscreen, set the window to cover the entire screen and be borderless
+		{
+			style = _defaultStyle & ~(WS_CAPTION | WS_MINIMIZE | WS_MAXIMIZE | WS_SYSMENU | WS_POPUP | WS_BORDER);
+			exStyle = _defaultExStyle & ~(WS_EX_DLGMODALFRAME | WS_EX_CLIENTEDGE | WS_EX_STATICEDGE);
 		}
 
 		SetWindowLong(_hwnd, GWL_STYLE, style);

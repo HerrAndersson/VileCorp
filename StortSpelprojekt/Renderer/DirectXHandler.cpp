@@ -453,11 +453,8 @@ namespace Renderer
 
 			_swapChain->ResizeTarget(&modeDesc);
 
-			int systemSizeX = GetSystemMetrics(SM_CXSCREEN);
-			int systemSizeY = GetSystemMetrics(SM_CYSCREEN);
-			bool fullscreen = (settings->_windowWidth == systemSizeX && settings->_windowHeight == systemSizeY && settings->_borderless);
-			_swapChain->SetFullscreenState(fullscreen, NULL);
-
+			_swapChain->SetFullscreenState(settings->_screenMode == System::FULLSCREEN, NULL);
+			
 			//Preserve the existing buffer count and format. Automatically choose the width and height to match the client rect for HWNDs.
 			hr = _swapChain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
 			if (FAILED(hr))
