@@ -489,7 +489,7 @@ bool BaseEdit::CheckValidity(AI::Vec2D tile, GameObject* gameObject)
 			{
 				if (type == System::GUARD || type == System::ENEMY)
 				{
-					if (_tileMap->UnitsOnTile(tile) || _tileMap->IsTrapOnTile(tile) || _tileMap->IsTypeOnTile(tile, System::CAMERA) || _tileMap->IsTileNoPlacementZone(tile))
+					if (_tileMap->UnitsOnTile(tile) || _tileMap->IsTrapOnTile(tile) || _tileMap->IsTypeOnTile(tile, System::CAMERA) || _tileMap->IsTileNoPlacementZone(tile) || _tileMap->IsFurnitureOnTile(tile))
 					{
 						valid = false;
 					}
@@ -499,7 +499,7 @@ bool BaseEdit::CheckValidity(AI::Vec2D tile, GameObject* gameObject)
 					AI::Vec2D* tempTiles = static_cast<Trap*>(gameObject)->GetTiles();
 					for (int i = 0; i < static_cast<Trap*>(gameObject)->GetNrOfOccupiedTiles() && valid; i++)
 					{
-						if (!_tileMap->IsPlaceable(tempTiles[i], type) || !_tileMap->IsFloorOnTile(tempTiles[i]) || _tileMap->UnitsOnTile(tempTiles[i]) || _tileMap->IsTileNoPlacementZone(tile))
+						if (!_tileMap->IsPlaceable(tempTiles[i], type) || !_tileMap->IsFloorOnTile(tempTiles[i]) || _tileMap->UnitsOnTile(tempTiles[i]) || _tileMap->IsTileNoPlacementZone(tempTiles[i]) ||_tileMap->IsFurnitureOnTile(tempTiles[i]))
 						{
 							valid = false;
 						}
