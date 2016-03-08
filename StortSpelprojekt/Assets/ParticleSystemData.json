@@ -62,7 +62,12 @@
 	"Particles/icon_health",
 	"Particles/icon_wrench",
 	"Particles/icon_noplacement",
-	"Particles/icon_occupied"
+	"Particles/icon_occupied",
+      	"Particles/icon_loot",
+      	"Particles/icon_entry",
+      	"Particles/aoe_red",
+      	"Particles/aoe_yellow",
+      	"Particles/aoe_green"
     ]
   }
 }
