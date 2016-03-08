@@ -11,7 +11,7 @@ private:
 	std::vector<AI::Vec2D> _patrolRoute;
 	unsigned int _currentPatrolGoal;
 public:
-	Guard(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject* renderObject, System::SoundModule* soundModule, const Tilemap* tileMap, const int GuardType = 0, AI::Vec2D direction = { 1, 0 });
+	Guard(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject* renderObject, System::SoundModule* soundModule, Renderer::ParticleEventQueue* particleEventQueue, const Tilemap* tileMap, const int GuardType = 0, AI::Vec2D direction = { 1, 0 });
 	virtual ~Guard();
 	void EvaluateTile(System::Type objective, AI::Vec2D tile);
 	void EvaluateTile(GameObject* obj);

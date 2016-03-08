@@ -32,7 +32,6 @@ Game::Game(HINSTANCE hInstance, int nCmdShow) :
 	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager, &_data, _settingsReader.GetSettings(), _particleHandler->GetParticleEventQueue(), &_soundModule);
 	_pickingDevice = new PickingDevice(_camera, settings);
 
-	GameObject::_particleEventQueue = _particleHandler->GetParticleEventQueue();
 	_SM = new StateMachine(_controls, _objectHandler, _camera, _pickingDevice, "Assets/gui.json", _assetManager, _fontWrapper, settings, &_settingsReader, &_soundModule, &_ambientLight, _combinedMeshGenerator);
 
 	_SM->Update(_timer.GetFrameTime());
@@ -51,11 +50,13 @@ Game::Game(HINSTANCE hInstance, int nCmdShow) :
 
 Game::~Game()
 {
+	// _SM over _objecthandler, contains pointers to game objects
+	delete _SM;
 	delete _objectHandler;
+
 	delete _window;
 	delete _renderModule;
 	delete _camera;
-	delete _SM;
 	delete _controls;
 	delete _pickingDevice;
 	delete _fontWrapper;
