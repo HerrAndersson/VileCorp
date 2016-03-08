@@ -189,7 +189,6 @@ void Guard::Act(GameObject* obj)
 				if(System::FrameCountdown(_interactionTime, _animation->GetLength(FIXTRAPANIM)))
 				{
 					static_cast<Trap*>(obj)->SetTrapActive(true);
-					//	obj->SetColorOffset({0,0,0});
 					ClearObjective();
 				}
 			}

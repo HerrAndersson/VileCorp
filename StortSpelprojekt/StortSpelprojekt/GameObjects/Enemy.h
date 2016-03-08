@@ -12,6 +12,7 @@ private:
 	int _detectionSkill;			//Chance to detect traps
 	int _disarmSkill;				//Chance to deactivate traps without getting caught by them.
 	Unit* _pursuer;
+	int _checkAllTilesTimer;
 
 	void Flee();
 	bool SafeToAttack(AI::Vec2D dir);

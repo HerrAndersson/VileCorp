@@ -96,7 +96,7 @@ T Heap<T>::removeMin()
 	swap(_tree[0], _tree[--_nrOfElements]);
 	while (2 * pos + 1 < _nrOfElements && (_tree[pos] > _tree[2 * pos + 1] || (_tree[pos] > _tree[2 * pos + 2] && 2 * pos + 2 < _nrOfElements)))
 	{
-		if (_tree[2 * pos + 2] > _tree[2 * pos + 1])
+		if (_tree[2 * pos + 2] > _tree[2 * pos + 1] || 2 * pos + 2 >= _nrOfElements)
 		{
 			swap(_tree[pos], _tree[2 * pos + 1]);
 			pos = 2 * pos + 1;

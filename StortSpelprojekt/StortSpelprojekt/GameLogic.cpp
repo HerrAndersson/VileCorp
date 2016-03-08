@@ -320,8 +320,8 @@ void GameLogic::HandleWinLoseDialog(float deltaTime)
 
 bool GameLogic::CheckGameStatus()
 {
-	if (_objectHandler->GetAllByType(System::LOOT)->size() <= 0 && _objectHandler->GetRemainingToSpawn() <= 0
-		|| _objectHandler->GetAllByType(System::ENEMY)->size() <= 0 && _objectHandler->GetRemainingToSpawn() <= 0)
+	if (_objectHandler->GetAllByType(System::LOOT)->size() <= 0 ||
+		(_objectHandler->GetAllByType(System::ENEMY)->size() <= 0 && _objectHandler->GetRemainingToSpawn() <= 0))
 	{
 		_gameOver = true;
 	}
