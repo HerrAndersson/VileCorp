@@ -31,16 +31,56 @@ private:
 
 	struct RotatedRenderObject
 	{
-		RenderObject* _renderObject;
-		DirectX::XMFLOAT3 _rotation;
-		float epsilon = std::numeric_limits<float>::epsilon();
+		RenderObject* _renderObject = nullptr;
+		DirectX::XMINT3 _rotation = XMINT3(-1,-1,-1);
+		bool _invertUV = false;
+
+		RotatedRenderObject()
+		{
+
+		}
+
+		RotatedRenderObject(RenderObject* renderObject, XMFLOAT3 rotation)
+		{
+			_renderObject = renderObject;
+
+			//Clamp the rotation, and use degrees for simplicity
+			int rotations[] = { (int)XMConvertToDegrees(rotation.x) % 360 , (int)XMConvertToDegrees(rotation.y) % 360, (int)XMConvertToDegrees(rotation.z) % 360 };
+			for (int i = 0; i < 3; i++)
+			{
+				if (rotations[i] < 0)
+				{
+					rotations[i] += 360;
+				}
+				if (rotations[i] < 10 || rotations[i] > 350)
+				{
+					rotations[i] = 0;
+				}
+				else if (rotations[i] < 100 && rotations[i] > 80)
+				{
+					_invertUV = true;
+					rotations[i] = 90;
+				}
+				else if (rotations[i] < 190 && rotations[i] > 170)
+				{
+					rotations[i] = 180;
+				}
+				else if (rotations[i] < 280 && rotations[i] > 260)
+				{
+					_invertUV = true;
+					rotations[i] = 270;
+				}
+			}
+
+			_rotation = XMINT3(rotations[0], rotations[1], rotations[2]);
+		}
 
 		bool operator==(const RotatedRenderObject& other)
 		{
-			if (*_renderObject == *other._renderObject && 
-				fabs(this->_rotation.x - other._rotation.x) < epsilon && 
-				fabs(this->_rotation.y - other._rotation.y) < epsilon && 
-				fabs(this->_rotation.z - other._rotation.z) < epsilon)
+			if (*(_renderObject) == *(other._renderObject) && 
+				this->_rotation.x == other._rotation.x &&
+				this->_rotation.y == other._rotation.y &&
+				this->_rotation.z == other._rotation.z)
 			{
 				return true;
 			}

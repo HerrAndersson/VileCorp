@@ -162,7 +162,6 @@ void CombinedMeshGenerator::CombineAndOptimizeMeshes(Tilemap* tilemap, const Typ
 	int width = tilemap->GetWidth();
 	int height = tilemap->GetHeight();
 
-	RotatedRenderObject prevRenderObject;
 	RotatedRenderObject thisRenderObject;
 
 	std::vector<RotatedRenderObject> renderObjects;
@@ -186,8 +185,7 @@ void CombinedMeshGenerator::CombineAndOptimizeMeshes(Tilemap* tilemap, const Typ
 			GameObject* object = tilemap->GetObjectOnTile(x, y, typeToCombine);
 			if (object)
 			{
-				thisRenderObject._renderObject = object->GetRenderObject();
-				thisRenderObject._rotation = object->GetRotation();
+				thisRenderObject = RotatedRenderObject(object->GetRenderObject(), object->GetRotation());
 
 				bool found = false;
 				for (auto& renderObject : renderObjects)
@@ -201,7 +199,6 @@ void CombinedMeshGenerator::CombineAndOptimizeMeshes(Tilemap* tilemap, const Typ
 
 				if (!found)
 				{
-					prevRenderObject = thisRenderObject;
 					renderObjects.push_back(thisRenderObject);
 					numberPerRenderObject.push_back(0);
 					index++;
@@ -220,6 +217,15 @@ void CombinedMeshGenerator::CombineAndOptimizeMeshes(Tilemap* tilemap, const Typ
 		std::vector<Vertex> singleObjectDataVector;
 		LoadVertexBufferData(&singleObjectDataVector, renderObject._renderObject->_mesh);
 
+		XMMATRIX rotation = XMMatrixRotationRollPitchYaw(0, XMConvertToRadians(renderObject._rotation.y), 0);
+		//Rotate the mesh data according to the renderObject
+		for (auto& vertex : singleObjectDataVector)
+		{
+			XMVECTOR posV = XMLoadFloat3(&vertex._position);
+			posV = XMVector3TransformCoord(posV, rotation);
+			XMStoreFloat3(&vertex._position, posV);
+		}
+
 		for (int x = 0; x < width; x++)
 		{
 			for (int y = 0; y < height; y++)
@@ -227,7 +233,8 @@ void CombinedMeshGenerator::CombineAndOptimizeMeshes(Tilemap* tilemap, const Typ
 				GameObject* object = tilemap->GetObjectOnTile(x, y, typeToCombine);
 				if (object && !_tileIsCombined[x][y])
 				{
-					if (*object->GetRenderObject() == *renderObject._renderObject)
+					RotatedRenderObject temp = RotatedRenderObject(object->GetRenderObject(), object->GetRotation());
+					if (renderObject == temp)
 					{
 						XMFLOAT3 basePos = object->GetPosition();
 						int offsetX = 0;
@@ -245,41 +252,48 @@ void CombinedMeshGenerator::CombineAndOptimizeMeshes(Tilemap* tilemap, const Typ
 						{
 							//Check if the tile holds an object of the type that is being combined
 							GameObject* xObject = tilemap->GetObjectOnTile(x + offsetX, y, typeToCombine);
-							if (xObject && *xObject->GetRenderObject() == *renderObject._renderObject && !_tileIsCombined[x + offsetX][y])
+							if (xObject)
 							{
-								foundX = true;
-								_tileIsCombined[x + offsetX][y] = true;
-
-								//Check Y-direction of this x-position
-								while (!stopY && (y + offsetY) < height)
+								RotatedRenderObject xr = RotatedRenderObject(xObject->GetRenderObject(), xObject->GetRotation());
+								if (xr == renderObject && !_tileIsCombined[x + offsetX][y])
 								{
-									GameObject* yObject = tilemap->GetObjectOnTile(x + offsetX, y + offsetY, typeToCombine);
-									if (yObject && *yObject->GetRenderObject() == *renderObject._renderObject && !_tileIsCombined[x + offsetX][y+offsetY])
-									{
-										pos = yObject->GetPosition();
-										foundY = true;
-									}
+									foundX = true;
+									_tileIsCombined[x + offsetX][y] = true;
 
-									if (!foundY)
+									//Check Y-direction of this x-position
+									while (!stopY && (y + offsetY) < height)
 									{
-										if (pos.z <= maxY)
+										GameObject* yObject = tilemap->GetObjectOnTile(x + offsetX, y + offsetY, typeToCombine);
+										if (yObject)
 										{
-											maxY = y + offsetY - 1;
+											RotatedRenderObject yr = RotatedRenderObject(yObject->GetRenderObject(), yObject->GetRotation());
+											if (yr == renderObject && !_tileIsCombined[x + offsetX][y + offsetY])
+											{
+												pos = yObject->GetPosition();
+												foundY = true;
+											}
 										}
 
-										if (offsetY == 1)
+										if (!foundY)
 										{
-											maxY = y;
+											if (pos.z <= maxY)
+											{
+												maxY = y + offsetY - 1;
+											}
+
+											if (offsetY == 1)
+											{
+												maxY = y;
+											}
+
+											break;
 										}
 
-										break;
+										offsetY++;
+										foundY = false;
 									}
-
-									offsetY++;
-									foundY = false;
 								}
 							}
-
 
 							//If a tile does not hold an object of the type, the max value for x has been found
 							if (!foundX)
@@ -304,34 +318,33 @@ void CombinedMeshGenerator::CombineAndOptimizeMeshes(Tilemap* tilemap, const Typ
 							}
 						}
 
+						float epsilon = std::numeric_limits<float>::epsilon();
 						float scaleX = maxX - basePos.x + 1;
 						float scaleY = maxY - basePos.z + 1;
 
-						XMMATRIX rotation = XMMatrixRotationRollPitchYaw(renderObject._rotation.x, renderObject._rotation.y, renderObject._rotation.z);
-						XMMATRIX rotateUV = XMMatrixIdentity();
-
-						if (renderObject._rotation.x < 0 || renderObject._rotation.y < 0 || renderObject._rotation.z < 0)
+						XMMATRIX scaleUV = XMMatrixScaling(scaleX, scaleY, 1.0f);
+						//If the rotation is either 90 or 270 degrees, scaleX and scaleY should be swapped
+						if (renderObject._invertUV)
 						{
-							rotateUV = XMMatrixRotationRollPitchYaw(XMConvertToRadians(0.0f), XMConvertToRadians(90.0f), 0.0f);
+							scaleUV = XMMatrixScaling(scaleY, scaleX, 1.0f);
 						}
 
-						XMMATRIX scaleTranslation = XMMatrixScaling(scaleX, 1.0f, scaleY);
-						XMMATRIX scaleUV = XMMatrixScaling(scaleX, scaleY, 1.0f);
-
-						XMMATRIX translation = scaleTranslation * XMMatrixTranslation(basePos.x + scaleX / 2.0f - 0.5f, basePos.y, basePos.z + scaleY / 2.0f - 0.5f);
+						XMMATRIX scale = XMMatrixScaling(scaleX, 1.0f, scaleY);
+						XMMATRIX translation = XMMatrixTranslation(basePos.x + (scaleX / 2.0f) - 0.5f, basePos.y, basePos.z + (scaleY / 2.0f) - 0.5f);
 
 						//Translating the mesh data by the object translation
 						for (auto& vertex : singleObjectDataVector)
 						{
 							Vertex vert = vertex;
 
+							//Translate
 							XMVECTOR posV = XMLoadFloat3(&vert._position);
-							//posV = XMVector3TransformCoord(posV, rotation);
+							posV = XMVector3TransformCoord(posV, scale);
 							posV = XMVector3TransformCoord(posV, translation);
 							XMStoreFloat3(&vert._position, posV);
 
+							//Scale UV-coordinates
 							XMVECTOR uvV = XMLoadFloat2(&vert._uv);
-							//uvV = XMVector2TransformCoord(uvV, rotation);
 							uvV = XMVector2TransformCoord(uvV, scaleUV);
 							XMStoreFloat2(&vert._uv, uvV);
 
