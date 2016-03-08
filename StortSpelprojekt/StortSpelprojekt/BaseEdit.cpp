@@ -207,22 +207,22 @@ void BaseEdit::DropEvent()
 				_tileMap->AddObjectToTile(tempTiles[i], _movingGhostImage._g);
 			}
 		//Remove area of effect for traps when moved
-		static_cast<Trap*>(_movingGhostImage._g)->HideAreaOfEffect();
+		_movingGhostImage._g->HideAreaOfEffect();
 		}
 		else
 		{
 			_tileMap->AddObjectToTile(p.x, p.z, _movingGhostImage._g);
 
-		//Remove area of effect for guards and cameras when moved
-		if (_movingGhostImage._g->GetType() == System::GUARD)
-		{
-			static_cast<Unit*>(_movingGhostImage._g)->HideAreaOfEffect();
+			//Remove area of effect for guards and cameras when moved
+			if (_movingGhostImage._g->GetType() == System::GUARD)
+			{
+				_movingGhostImage._g->HideAreaOfEffect();
+			}
+			else if (_movingGhostImage._g->GetType() == System::CAMERA)
+			{
+				_movingGhostImage._g->HideAreaOfEffect();
+			}
 		}
-		else if (_movingGhostImage._g->GetType() == System::CAMERA)
-		{
-			static_cast<SecurityCamera*>(_movingGhostImage._g)->HideAreaOfEffect();
-		}
-	}
 	
 
 
