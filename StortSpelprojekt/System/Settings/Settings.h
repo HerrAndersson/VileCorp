@@ -21,7 +21,7 @@ namespace System
 		bool _borderless;
 		bool _showMouseCursor;
 		bool _antialiasing;
-		unsigned int _brightness;
+		int _brightness;
 	public:
 		Settings();
 		~Settings();

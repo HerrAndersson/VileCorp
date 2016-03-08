@@ -37,7 +37,9 @@ Game::Game(HINSTANCE hInstance, int nCmdShow) :
 
 	_enemiesHasSpawned = false;
 
-	_ambientLight = _renderModule->GetAmbientLight();
+	//Set brightness
+	_ambientLight.SetScale(_settingsReader.GetSettings()->_brightness);
+
 	ResizeResources(settings);//This fixes a bug which offsets mousepicking, do not touch! //Markus
 	_renderModule->SetAntialiasingEnabled(settings->_antialiasing);
 
@@ -156,6 +158,7 @@ bool Game::Update(double deltaTime)
 		_soundModule.SetVolume(settings->_volume / 100.0f, CHMASTER);
 		_settingsReader.SetSettingsChanged(false);
 		_renderModule->SetAntialiasingEnabled(settings->_antialiasing);
+		_ambientLight.SetScale(settings->_brightness);
 	}
 
 	_controls->Update();
@@ -184,7 +187,7 @@ bool Game::Update(double deltaTime)
 
 void Game::Render()
 {
-	_renderModule->SetAmbientLight(_ambientLight);
+	_renderModule->SetAmbientLight(_ambientLight.GetAmbientLight());
 	_renderModule->BeginScene(0.0f, 0.5f, 0.5f, 1.0f, _SM->GetState() == LEVELEDITSTATE);
 	_renderModule->SetDataPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
 

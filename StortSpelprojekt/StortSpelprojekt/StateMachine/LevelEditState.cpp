@@ -1,6 +1,6 @@
 #include "LevelEditState.h"
 
-LevelEditState::LevelEditState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule, DirectX::XMFLOAT3* ambientLight)
+LevelEditState::LevelEditState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule, AmbientLight* ambientLight)
 	: BaseState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settingsReader, soundModule)
 {
 	_ambientLight = ambientLight;
@@ -126,9 +126,7 @@ void LevelEditState::OnStateEnter()
 
 	_noPlacementZoneToggleButton = GUI::ToggleButton(_uiTree.GetNode("NoPlacementButton"));
 
-	_ambientLight->x = AMBIENT_LIGHT_DAY.x;
-	_ambientLight->y = AMBIENT_LIGHT_DAY.y;
-	_ambientLight->z = AMBIENT_LIGHT_DAY.z;
+	_ambientLight->DayTime();
 
 	_uiTree.GetNode("wholelist")->SetHidden(true);
 	_uiTree.GetNode("SettingList")->SetHidden(true);

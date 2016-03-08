@@ -1,6 +1,6 @@
 #include "PlacementState.h"
 
-PlacementState::PlacementState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule, DirectX::XMFLOAT3* ambientLight)
+PlacementState::PlacementState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule, AmbientLight* ambientLight)
 	: BaseState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settingsReader, soundModule)
 {
 	_buttons = _uiTree.GetNode("UnitList")->GetChildren();
@@ -110,9 +110,7 @@ void PlacementState::Update(float deltaTime)
 
 void PlacementState::OnStateEnter()
 {
-	_ambientLight->x = AMBIENT_LIGHT_DAY.x;
-	_ambientLight->y = AMBIENT_LIGHT_DAY.y;
-	_ambientLight->z = AMBIENT_LIGHT_DAY.z;
+	_ambientLight->DayTime();
 
 	//Do only when you don't come from pause state
 	if (GetOldState() != State::PAUSESTATE)

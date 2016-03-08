@@ -12,6 +12,7 @@
 #include <vector>
 #include "stdafx.h"
 #include "../CombinedMeshGenerator.h"
+#include "../AmbientLight.h"
 
 class StateMachine
 {
@@ -34,7 +35,7 @@ public:
 		System::Settings* settings,
 		System::SettingsReader* settingsReader,
 		System::SoundModule* soundModule,
-		DirectX::XMFLOAT3 *ambientLight,
+		AmbientLight* ambientLight,
 		CombinedMeshGenerator* combinedMeshGenerator
 	);
 

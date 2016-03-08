@@ -20,6 +20,7 @@
 #include "ParticleSystem\ParticleUtils.h"
 #include "SettingsReader.h"
 #include "CombinedMeshGenerator.h"
+#include "AmbientLight.h"
 
 class Game
 {
@@ -46,8 +47,6 @@ private:
 	bool						_hasFocus;
 	bool						_enemiesHasSpawned;
 
-	DirectX::XMFLOAT3			_ambientLight;
-
 	//Resizing window, directx resources, camera
 	void ResizeResources(System::Settings* settings);
 
@@ -63,11 +62,7 @@ private:
 
 	void LoadParticleSystemData(ParticleTextures& particleTextures, ParticleModifierOffsets& modifiers);
 
-
-
-
-
-
+	AmbientLight				_ambientLight;
 	std::vector<Renderer::Spotlight*> spotlights;
 
 public:

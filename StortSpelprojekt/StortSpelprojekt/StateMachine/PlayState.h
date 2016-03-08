@@ -2,14 +2,15 @@
 
 #include "BaseState.h"
 #include "../GameLogic.h"
+#include "../AmbientLight.h"
 
 class PlayState : public BaseState
 {
 private:
 	GameLogic* _gameLogic;
-	DirectX::XMFLOAT3* _ambientLight;
+	AmbientLight* _ambientLight;
 public:
-	PlayState(System::Controls * controls, ObjectHandler * objectHandler, System::Camera * camera, PickingDevice * pickingDevice, const std::string & filename, AssetManager * assetManager, FontWrapper * fontWrapper, System::SettingsReader * settingsReader, System::SoundModule * soundModule, DirectX::XMFLOAT3* ambientLight);
+	PlayState(System::Controls * controls, ObjectHandler * objectHandler, System::Camera * camera, PickingDevice * pickingDevice, const std::string & filename, AssetManager * assetManager, FontWrapper * fontWrapper, System::SettingsReader * settingsReader, System::SoundModule * soundModule, AmbientLight* ambientLight);
 	virtual ~PlayState();
 
 	void Update(float deltaTime);

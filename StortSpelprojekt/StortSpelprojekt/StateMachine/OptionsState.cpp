@@ -161,6 +161,9 @@ void OptionsState::Update(float deltaTime)
 
 			//Sound volume
 			settings->_volume = _volume * 10;
+			
+			//brightness
+			settings->_brightness = _brightness;
 
 			//Window options
 			if (_window[_windowOption]._value == 1) //Fullscreen
