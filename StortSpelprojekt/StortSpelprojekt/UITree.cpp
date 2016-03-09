@@ -75,16 +75,16 @@ namespace GUI
 		for (unsigned i = 0; i < object->_thumbnails.size(); i++)
 		{
 			BlueprintNode* newNode = new BlueprintNode(&_info, object, i);
-			int row = (index + createdThumbnails) % 28 / 4;
-			int column = (index + createdThumbnails) % 28 % 4;
+			int row = (index + createdThumbnails) % 28 * 0.25f;
+			int column = (index + createdThumbnails) % 4;  //Used to be % 28 % 4, removed % 28 since it always is the same as % 4
 			int page = (index + createdThumbnails) / 28;
 
 			newNode->SetId(object->_name);
-			newNode->SetPosition(XMFLOAT2(-0.125 + (0.09 * column), 0.42 - (0.13 * row)));
-			newNode->SetScale(XMFLOAT2(0.04, 0.060));
+			newNode->SetPosition(XMFLOAT2(-0.125f + (0.09f * column), 0.42f - (0.13f * row)));
+			newNode->SetScale(XMFLOAT2(0.04f, 0.06f));
 			newNode->SetTexture(_AM->GetTexture(object->_thumbnails[i]));
 			createdThumbnails++;
-			if (page >= list->GetChildren()->size())
+			if (page >= (int)list->GetChildren()->size())
 			{
 				Node* newPage = new Node(&_info);
 				newPage->SetId(list->GetId() + "page" + to_string(page));
@@ -292,7 +292,7 @@ namespace GUI
 	{
 		node->SetHidden(true);
 		std::vector<Node*>* children = node->GetChildren();
-		for (int i = 0; i < children->size(); i++)
+		for (int i = 0; i < (int)children->size(); i++)
 		{
 			HideNodeAndChildren(children->at(i));
 		}

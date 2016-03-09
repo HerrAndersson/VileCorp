@@ -273,12 +273,12 @@ int VisionCone::GetNrOfVisibleTiles() const
 
 void VisionCone::ColorVisibleTiles(const DirectX::XMFLOAT3& color)
 {
-	for (int i = 0; i < _nrOfVisibleTiles; i++)
-	{
-		GameObject* floor = _tileMap->GetObjectOnTile(_visibleTiles[i], System::FLOOR);
-		if (floor != nullptr)
-		{
-			floor->SetColorOffset(color);
-		}
-	}
+	//for (int i = 0; i < _nrOfVisibleTiles; i++)
+	//{
+	//	GameObject* floor = _tileMap->GetObjectOnTile(_visibleTiles[i], System::FLOOR);
+	//	if (floor != nullptr)
+	//	{
+	//		floor->SetColorOffset(color);
+	//	}
+	//}
 }

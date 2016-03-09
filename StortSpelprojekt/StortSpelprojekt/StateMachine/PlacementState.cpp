@@ -1,6 +1,6 @@
 #include "PlacementState.h"
 
-PlacementState::PlacementState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule, DirectX::XMFLOAT3* ambientLight)
+PlacementState::PlacementState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule, AmbientLight* ambientLight)
 	: BaseState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settingsReader, soundModule)
 {
 	_buttons = _uiTree.GetNode("UnitList")->GetChildren();
@@ -110,9 +110,7 @@ void PlacementState::Update(float deltaTime)
 
 void PlacementState::OnStateEnter()
 {
-	_ambientLight->x = AMBIENT_LIGHT_DAY.x;
-	_ambientLight->y = AMBIENT_LIGHT_DAY.y;
-	_ambientLight->z = AMBIENT_LIGHT_DAY.z;
+	_ambientLight->DayTime();
 
 	//Do only when you don't come from pause state
 	if (GetOldState() != State::PAUSESTATE)
@@ -178,15 +176,21 @@ void PlacementState::OnStateEnter()
 	_uiTree.GetNode("SharkCost")->SetText(L"Damage: Very haj\nUses: Infinite\nAtk. Speed: Very slow\nEffect: Big area");
 
 	std::vector<GUI::Node*>* tutorialNodes = _uiTree.GetNode("Tutorial")->GetChildren();
-	for (int i = 0; i < tutorialNodes->size(); i++)
+	for (int i = 0; i < (int)tutorialNodes->size(); i++)
 	{
 		tutorialNodes->at(i)->SetHidden(true);
 	}
 
 	_baseEdit = new BaseEdit(_objectHandler, _controls, _pickingDevice, false);
 
+	//Add icons for noplacement, entries and loot
+	_informationOverlayIDs = std::vector<short>();
+	AddInformationOverlay();
+
+
 	//Play music
 	_soundModule->Play("in_game_1");
+
 }
 
 void PlacementState::OnStateExit()
@@ -194,6 +198,7 @@ void PlacementState::OnStateExit()
 	delete _baseEdit;
 	_baseEdit = nullptr;
 
+	RemoveInformationOverlay();
 	//Pause music
 	_soundModule->Pause("in_game_1");
 }
@@ -283,3 +288,49 @@ void PlacementState::HandleDescriptions()
 	_uiTree.GetNode("CakeDescription")->SetHidden(!_uiTree.IsButtonColliding("CakeTrap", coord._pos.x, coord._pos.y));
 	_uiTree.GetNode("SharkDescription")->SetHidden(!_uiTree.IsButtonColliding("SharkTrap", coord._pos.x, coord._pos.y));
 }
+
+void PlacementState::AddInformationOverlay()
+{
+	for (auto f : *_objectHandler->GetAllByType(System::FLOOR))
+	{
+		if (static_cast<Architecture*>(f)->GetNoPlacementZone())
+		{
+			_informationOverlayIDs.push_back(f->GetID());
+			XMFLOAT3 pos = f->GetPosition();
+
+			pos.y += 0.01f;
+			ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::STATIC_ICON, ParticleSubType::NOPLACEMENT_SUBTYPE, f->GetID(), pos, XMFLOAT3(0, 1, 0), 1.0f, 1, 0.5f, true, false);
+			_objectHandler->GetParticleEventQueue()->Insert(msg);	
+		}
+	}
+
+	for (auto l : *_objectHandler->GetAllByType(System::LOOT))
+	{
+		_informationOverlayIDs.push_back(l->GetID());
+		XMFLOAT3 pos = l->GetPosition();
+
+		pos.y += 4.0f;
+		ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::LOOT_SUBTYPE, l->GetID(), pos, XMFLOAT3(0, 0, 0), 1.0f, 1, 0.5f, true, false);
+		_objectHandler->GetParticleEventQueue()->Insert(msg);
+	}
+
+	for (auto s : *_objectHandler->GetAllByType(System::SPAWN))
+	{
+		_informationOverlayIDs.push_back(s->GetID());
+		XMFLOAT3 pos = s->GetPosition();
+
+		pos.y += 4.0f;
+		ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::SPAWN_SUBTYPE, s->GetID(), pos, XMFLOAT3(0, 0, 0), 1.0f, 1, 0.5f, true, false);
+		_objectHandler->GetParticleEventQueue()->Insert(msg);
+	}
+
+}
+
+void PlacementState::RemoveInformationOverlay()
+{
+	for (auto ID : _informationOverlayIDs)
+	{
+		_objectHandler->GetParticleEventQueue()->Insert(new ParticleUpdateMessage(ID, false));
+	}
+}
+

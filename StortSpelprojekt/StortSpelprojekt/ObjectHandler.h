@@ -23,6 +23,7 @@
 #include "Blueprints.h"
 #include "ParticleSystem\ParticleUtils.h"
 #include "ParticleSystem\ParticleEventQueue.h"
+#include "AmbientLight.h"
 
 /*
 ObjectHandler
@@ -67,6 +68,7 @@ private:
 	map<GameObject*, Renderer::Spotlight*> _spotlights;
 	map<GameObject*, Renderer::Pointlight*> _pointlights;
 	LightCulling* _lightCulling;
+	AmbientLight* _ambientLight;
 
 	//Currently loaded level information
 	Level::LevelHeader _currentLevelHeader;
@@ -85,7 +87,7 @@ private:
 	void SpawnEnemies();
 
 public:
-	ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data, System::Settings* settings, Renderer::ParticleEventQueue* particleReque, System::SoundModule*	soundModule);
+	ObjectHandler(ID3D11Device* device, AssetManager* assetManager, GameObjectInfo* data, System::Settings* settings, Renderer::ParticleEventQueue* particleReque, System::SoundModule*	soundModule, AmbientLight* ambientLight);
 	~ObjectHandler();
 
 	//Add a gameobject
@@ -114,15 +116,13 @@ public:
 
 	Tilemap* GetTileMap() const;
 	void SetTileMap(Tilemap* tilemap);
-	void MinimizeTileMap();
-	void EnlargeTilemap(int offset);
 	Grid* GetBuildingGrid();
 	RenderObject* GetBackgroundObject();
 
 	Level::LevelHeader* GetCurrentLevelHeader();
 	void SetCurrentLevelHeader(const Level::LevelHeader& levelheader);
 	bool LoadLevel(const std::string& levelBinaryFilePath);
-	bool LoadLevel(Level::LevelBinary &levelData);
+	bool LoadLevel(Level::LevelBinary &levelData, bool resizeTileMap);
 
 	void UnloadLevel();
 
@@ -131,6 +131,7 @@ public:
 	//Update gamelogic of all objects
 	void Update(float deltaTime);
 	void UpdateLights();
+	void UpdateLightIntensity();
 
 	vector<System::Blueprint>* GetBlueprints();
 	std::vector<std::vector<System::Blueprint*>>* GetBlueprintsOrderedByType();

@@ -93,6 +93,11 @@ void GameLogic::HandleUnitSelect()
 	if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
 		_pickingDevice->SetFirstBoxPoint(_controls->GetMouseCoord()._pos);
+		_controls->SetClickedCoord(_controls->GetMouseCoord());
+	}
+	else if (_controls->IsFunctionKeyUp("MOUSE:DRAG"))
+	{
+		_controls->SetClickedCoord(_controls->GetMouseCoord());
 	}
 
 	if (_controls->IsFunctionKeyUp("MOUSE:SELECT"))
@@ -269,7 +274,7 @@ void GameLogic::HandleWinLoseDialog(float deltaTime)
 	{
 		_uiTree->GetNode("losescreen")->SetHidden(false);
 		System::MouseCoord coord = _controls->GetMouseCoord();
-		int time = _buttonReady / 1000;
+		int time = (int)(_buttonReady * 0.001f);
 		if (time > 0)
 		{
 			_uiTree->GetNode("losebuttontext")->SetText(L".." + to_wstring(time));
@@ -288,7 +293,7 @@ void GameLogic::HandleWinLoseDialog(float deltaTime)
 	{
 		System::MouseCoord coord = _controls->GetMouseCoord();
 		_uiTree->GetNode("winscreen")->SetHidden(false);
-		int time = _buttonReady / 1000;
+		int time = (int)(_buttonReady * 0.001f);
 		if (time > 0)
 		{
 			_uiTree->GetNode("winbuttontext")->SetText(L".." + to_wstring(time));
@@ -320,8 +325,8 @@ void GameLogic::HandleWinLoseDialog(float deltaTime)
 
 bool GameLogic::CheckGameStatus()
 {
-	if (_objectHandler->GetAllByType(System::LOOT)->size() <= 0 && _objectHandler->GetRemainingToSpawn() <= 0
-		|| _objectHandler->GetAllByType(System::ENEMY)->size() <= 0 && _objectHandler->GetRemainingToSpawn() <= 0)
+	if (_objectHandler->GetAllByType(System::LOOT)->size() <= 0 ||
+		(_objectHandler->GetAllByType(System::ENEMY)->size() <= 0 && _objectHandler->GetRemainingToSpawn() <= 0))
 	{
 		_gameOver = true;
 	}

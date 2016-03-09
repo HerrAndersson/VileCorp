@@ -65,8 +65,8 @@
 		}
 	},
 	"losescreen": {
-		"position": [0.0, 0.2],
-		"scale": [0.6, 0.6],
+		"position": [0.0, 0.1],
+		"scale": [0.35, 0.35],
 		"texture": "../Menues/PlayState GUI/lose4.png",
 
 		"losebutton": {

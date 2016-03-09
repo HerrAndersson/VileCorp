@@ -4,6 +4,7 @@
 #include "CommonUtils.h"
 #include "AIUtil.h"
 #include "Animation.h"
+#include "ParticleSystem\ParticleEventQueue.h"
 #include "../System/SoundModule.h"
 
 /*
@@ -35,8 +36,10 @@ protected:
 	bool _active;
 	RenderObject* _renderObject;
 	Animation* _animation;
+	bool _hasParticleEffect;
 
 	System::SoundModule* _soundModule;
+	Renderer::ParticleEventQueue* _particleEventQueue;
 
 	PickUpState _pickUpState;
 	bool _isTargeted;
@@ -44,7 +47,7 @@ protected:
 
 public:
 	//Type might not be necessary, depending on whether subclasses can correspond to one type or many.
-	GameObject(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject* renderObject, System::SoundModule* soundModule, DirectX::XMFLOAT3 colorOffset = DirectX::XMFLOAT3(0,0,0), int subType = 0, AI::Vec2D direction = { 1, 0 });
+	GameObject(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject* renderObject, System::SoundModule* soundModule, Renderer::ParticleEventQueue* particleEventQueue, DirectX::XMFLOAT3 colorOffset = DirectX::XMFLOAT3(0,0,0), int subType = 0, AI::Vec2D direction = { 1, 0 });
 	virtual ~GameObject();
 
 	unsigned short GetID() const;
@@ -103,5 +106,10 @@ public:
 	bool operator<(const GameObject& other);
 	// Returns 0 if _animation = nullptr
 	int GetAnimLength(int layer);
+
+
+	//Info colors
+	virtual void ShowAreaOfEffect();
+	void HideAreaOfEffect();
 };
 

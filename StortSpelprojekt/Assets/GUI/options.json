@@ -22,7 +22,7 @@
 	},
 	"":
 	{
-		"position" : [0.0, 0.4],
+		"position" : [0.0, 0.5],
 		
 		"" :
 		{
@@ -184,6 +184,41 @@
 				"fontsize" : 25.0
 			}
 		},
+		"" :
+		{
+			"position": [0.0, -1.0],
+			"scale": [1.0, 1.0],
+			"brightness_left" :
+			{
+				"position": [-0.32, 0.0],
+				"scale": [0.07, 0.07],
+				"texture" : "../Menues/General/settings6-arrow2.png"
+			},
+			"brightness_right" :
+			{
+				"position": [0.32, 0.0],
+				"scale": [0.07, 0.07],
+				"texture" : "../Menues/General/settings6-arrow.png"
+			},
+			"":
+			{
+				"scale": [0.25, 0.1],
+				"text" : "Brightness",
+				"centered" : true,
+				"color" : "FF000000"
+			},
+			"brightness_content":
+			{
+				"scale": [0.25, 0.0],
+				"text" : "5",
+				"centered" : true,
+				"color" : "FF888888",
+				"fontsize" : 25.0
+			}
+		}
+	},
+	"":{
+		"position" : [0.0, 0.38],
 		"apply" :
 		{
 			"position": [-0.2, -1.1],

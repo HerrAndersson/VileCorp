@@ -5,15 +5,7 @@ Decides the best direction to run away from a foe.
 */
 void Enemy::Flee()
 {
-	//if (_tileMap->IsFloorOnTile(_tilePosition))
-	//{
-	//	_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,0});
-	//}
 	_tilePosition = _nextTile;
-	//if (_tileMap->IsFloorOnTile(_tilePosition))
-	//{
-	//	_tileMap->GetObjectOnTile(_tilePosition, FLOOR)->SetColorOffset({0,0,4});
-	//}
 	if (_pursuer == nullptr)
 	{
 		_moveState = MoveState::IDLE;
@@ -45,7 +37,8 @@ void Enemy::Flee()
 					tempDist = (float)pow(offset._x + AI::NEIGHBOUR_OFFSETS[i]._x, 2) + (float)pow(offset._y + AI::NEIGHBOUR_OFFSETS[i]._y, 2);
 				}
 
-				if (_tileMap->IsFloorOnTile(_tilePosition + AI::NEIGHBOUR_OFFSETS[i]) && !_tileMap->IsEnemyOnTile(_tilePosition + AI::NEIGHBOUR_OFFSETS[i]) && tempDist > bestDist)
+				if (_tileMap->IsFloorOnTile(_tilePosition + AI::NEIGHBOUR_OFFSETS[i]) && !_tileMap->IsEnemyOnTile(_tilePosition + AI::NEIGHBOUR_OFFSETS[i]) && 
+					!_tileMap->IsFurnitureOnTile(_tilePosition + AI::NEIGHBOUR_OFFSETS[i]) && tempDist > bestDist)
 				{
 					bestDist = tempDist;
 					bestDir = AI::NEIGHBOUR_OFFSETS[i];
@@ -116,13 +109,14 @@ void Enemy::DisarmTrap(Trap * trap)
 	}
 }
 
-Enemy::Enemy(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject * renderObject, System::SoundModule* soundModule, const Tilemap * tileMap, int enemyType, AI::Vec2D direction)
-	: Unit(ID, position, rotation, tilePosition, type, renderObject, soundModule, tileMap, direction)
+Enemy::Enemy(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject * renderObject, System::SoundModule* soundModule, Renderer::ParticleEventQueue* particleEventQueue, const Tilemap * tileMap, int enemyType, AI::Vec2D direction)
+	: Unit(ID, position, rotation, tilePosition, type, renderObject, soundModule, particleEventQueue, tileMap, direction)
 {
 	_subType = enemyType;
 	_visibilityTimer = TIME_TO_HIDE;
 	_pursuer = nullptr;
-	_moveSpeed = 0.025;
+	_checkAllTilesTimer = -1;
+	_moveSpeed = 0.025f;
 	InitializePathFinding();
 	switch (_subType)
 	{
@@ -198,12 +192,12 @@ void Enemy::EvaluateTile(GameObject* obj)
 					else
 					{
 						bool changeRoute = false;
-						for (int i = 0; i < trap->GetNrOfOccupiedTiles(); i++)
+						AI::Vec2D* triggers = trap->GetTriggers();
+						for (int i = 0; i < trap->GetNrOfTriggerTiles(); i++)
 						{
-							AI::Vec2D pos = trap->GetTiles()[i];
-							if (_aStar->GetTileCost(pos) != 15)					//Arbitrary cost. Just make sure the getter and setter use the same number
+							if (_aStar->GetTileCost(triggers[i]) != 15)					//Arbitrary cost. Just make sure the getter and setter use the same number
 							{
-								_aStar->SetTileCost(trap->GetTiles()[i], 15);
+								_aStar->SetTileCost(triggers[i], 15);
 								changeRoute = true;
 							}
 						}
@@ -262,7 +256,7 @@ void Enemy::Act(GameObject* obj)
 			{
 				obj->SetPickUpState(PICKEDUP);
 				Animate(PICKUPOBJECTANIM);
-				if (System::FrameCountdown(_interactionTime, _animation->GetLength(PICKUPOBJECTANIM)))
+				if (System::FrameCountdown(_interactionTime, (int)_animation->GetLength(PICKUPOBJECTANIM)))
 				{
 					obj->SetPickUpState(PICKEDUP);
 					obj->SetTargeted(true);
@@ -286,7 +280,7 @@ void Enemy::Act(GameObject* obj)
 			if (static_cast<Trap*>(obj)->IsTrapActive())
 			{
 				Animate(DISABLETRAPANIM);
-				if (System::FrameCountdown(_interactionTime, _animation->GetLength(DISABLETRAPANIM)))
+				if (System::FrameCountdown(_interactionTime, (int)_animation->GetLength(DISABLETRAPANIM)))
 				{
 					DisarmTrap(static_cast<Trap*>(obj));
 					ClearObjective();
@@ -300,7 +294,7 @@ void Enemy::Act(GameObject* obj)
 		break;
 		case System::GUARD:
 			Animate(FIGHTANIM);
-			if (System::FrameCountdown(_interactionTime, _animation->GetLength(FIGHTANIM)))
+			if (System::FrameCountdown(_interactionTime, (int)_animation->GetLength(FIGHTANIM)))
 			{
 				if (static_cast<Unit*>(obj)->GetHealth() > 0 && InRange(obj->GetTilePosition()))
 				{
@@ -341,11 +335,21 @@ void Enemy::Update(float deltaTime)
 		case MoveState::IDLE:
 		{
 			srand((int)time(NULL));
-			int temp = rand() % 40;
-			if (System::FrameCountdown(_interactionTime, 20 + temp))
+
+			if (_checkAllTilesTimer < 0)
+			{
+				_checkAllTilesTimer = rand() % 40;
+			}
+			else
+			{
+				_checkAllTilesTimer--;
+			}
+			
+			if (System::FrameCountdown(_interactionTime, 20 + _checkAllTilesTimer))
 			{
 				ClearObjective();
 				CheckAllTiles();
+				_checkAllTilesTimer = -1;
 			}
 
 			Animate(IDLEANIM);

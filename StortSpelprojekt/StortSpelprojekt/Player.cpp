@@ -97,7 +97,7 @@ bool Player::AreUnitsSelected()
 vector<Unit*> Player::GetSelectedUnits()
 {
 	vector<Unit*> units;
-	for (int i = 0; i < _selectedUnits.size(); i++)
+	for (int i = 0; i < (int)_selectedUnits.size(); i++)
 	{
 		Unit* unit = (Unit*)_objectHandler->Find(_selectedUnits.at(i));
 		if (unit != nullptr)

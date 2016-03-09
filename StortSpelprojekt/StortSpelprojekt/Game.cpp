@@ -7,7 +7,7 @@ Game::Game(HINSTANCE hInstance, int nCmdShow) :
 	_settingsReader("Assets/settings.xml", "Assets/profile.xml"),
 	_soundModule(_settingsReader.GetSettings(), "Assets/Sounds/", ".ogg")
 {
-	srand(time(NULL));
+	srand((unsigned int)time(NULL));
 	System::Settings* settings = _settingsReader.GetSettings();
 
 	_gameHandle = this;
@@ -29,15 +29,18 @@ Game::Game(HINSTANCE hInstance, int nCmdShow) :
 	LoadParticleSystemData(*particleTextures, modifiers);
 	_particleHandler = new Renderer::ParticleHandler(_renderModule->GetDevice(), _renderModule->GetDeviceContext(), particleTextures, modifiers);
 
-	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager, &_data, _settingsReader.GetSettings(), _particleHandler->GetParticleEventQueue(), &_soundModule);
+	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager, &_data, _settingsReader.GetSettings(), _particleHandler->GetParticleEventQueue(), &_soundModule, &_ambientLight);
 	_pickingDevice = new PickingDevice(_camera, settings);
 
 	_SM = new StateMachine(_controls, _objectHandler, _camera, _pickingDevice, "Assets/gui.json", _assetManager, _fontWrapper, settings, &_settingsReader, &_soundModule, &_ambientLight, _combinedMeshGenerator);
+
 	_SM->Update(_timer.GetFrameTime());
 
 	_enemiesHasSpawned = false;
 
-	_ambientLight = _renderModule->GetAmbientLight();
+	//Set brightness
+	_ambientLight.SetScale(_settingsReader.GetSettings()->_brightness);
+
 	ResizeResources(settings);//This fixes a bug which offsets mousepicking, do not touch! //Markus
 	_renderModule->SetAntialiasingEnabled(settings->_antialiasing);
 
@@ -139,7 +142,7 @@ void Game::LoadParticleSystemData(ParticleTextures& particleTextures, ParticleMo
 	modifiers._lightningRepeatTime = data._lightningRepeatTime;
 }
 
-bool Game::Update(double deltaTime)
+bool Game::Update(float deltaTime)
 {
 	_soundModule.Update(_camera->GetPosition());
 
@@ -156,6 +159,8 @@ bool Game::Update(double deltaTime)
 		_soundModule.SetVolume(settings->_volume / 100.0f, CHMASTER);
 		_settingsReader.SetSettingsChanged(false);
 		_renderModule->SetAntialiasingEnabled(settings->_antialiasing);
+		_ambientLight.SetScale(settings->_brightness);
+		_objectHandler->UpdateLightIntensity();
 	}
 
 	_controls->Update();
@@ -184,7 +189,7 @@ bool Game::Update(double deltaTime)
 
 void Game::Render()
 {
-	_renderModule->SetAmbientLight(_ambientLight);
+	_renderModule->SetAmbientLight(_ambientLight.GetAmbientLight());
 	_renderModule->BeginScene(0.0f, 0.5f, 0.5f, 1.0f, _SM->GetState() == LEVELEDITSTATE);
 	_renderModule->SetDataPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
 
@@ -283,7 +288,12 @@ void Game::Render()
 
 	///////////////////////////////////////////////////////  HUD and other 2D   ////////////////////////////////////////////////////////////
 	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::HUD_STAGE);
-	_renderModule->Render(_SM->GetCurrentStatePointer()->GetUITree()->GetRootNode(), _fontWrapper);
+	_renderModule->Render(_SM->GetCurrentStatePointer()->GetUITree()->GetRootNode(), _fontWrapper, _ambientLight.GetScale());
+
+	if (_SM->GetState() == PLAYSTATE)
+	{
+		_renderModule->RenderSelectionQuad(_controls->GetClickedCoord()._pos.x, _controls->GetClickedCoord()._pos.y, _controls->GetMouseCoord()._pos.x, _controls->GetMouseCoord()._pos.y);
+	}
 
 	_renderModule->EndScene();
 }
@@ -330,7 +340,7 @@ void Game::RenderGameObjects(int forShaderStage, std::vector<std::vector<GameObj
 			GameObject* lastGameObject = nullptr;
 			RenderObject* lastRenderObject = nullptr;
 			int vertexBufferSize = 0;
-			for (int j = 0; j < gameObjectVector.size(); j++)
+			for (uint j = 0; j < gameObjectVector.size(); j++)
 			{
 				GameObject* gameObject = gameObjectVector[j];
 				RenderObject* renderObject = gameObject->GetRenderObject();
@@ -382,7 +392,7 @@ void Game::GenerateShadowMap(Renderer::RenderModule::ShaderStage shaderStage, Re
 		{
 			vertexBufferSize = 0;
 
-			for (int i = 0; i < j.size(); i++)
+			for (uint i = 0; i < j.size(); i++)
 			{
 				GameObject* obj = j.at(i);
 				RenderObject* renderObject = obj->GetRenderObject();
@@ -443,12 +453,11 @@ void Game::RenderParticles()
 				if (type != ParticleType::ELECTRICITY)
 				{
 					int textureCount = PARTICLE_TEXTURE_COUNT;
-					if (type == ParticleType::ICON)
+					if (type == ParticleType::ICON || type == ParticleType::STATIC_ICON)
 					{
-						ParticleSubType subType = emitter->GetSubType();
 						XMFLOAT3 campos = _camera->GetPosition();
 						XMFLOAT3 emitterPosition = emitter->GetPosition();
-						bool isMarker = (subType == ParticleSubType::QUESTIONMARK_SUBTYPE);
+						bool isMarker = (type == ParticleType::STATIC_ICON);
 						if (isMarker)
 						{
 							campos = emitterPosition;
