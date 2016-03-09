@@ -386,7 +386,7 @@ void Game::GenerateShadowMap(Renderer::RenderModule::ShaderStage shaderStage, Re
 	_renderModule->SetShaderStage(shaderStage);
 	_renderModule->SetShadowMapDataPerSpotlight(spotlight->GetViewMatrix(), spotlight->GetProjectionMatrix());
 
-	for (auto j : *inLight)
+	for (auto& j : *inLight)
 	{
 		if (j.size() > 0)
 		{

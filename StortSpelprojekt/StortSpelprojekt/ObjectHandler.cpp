@@ -228,10 +228,10 @@ bool ObjectHandler::Remove(System::Type type, int ID)
 				_spotlights.erase(_gameObjects[type][i]);
 			}
 
-			if (_pointligths.count(_gameObjects[type][i]))
+			if (_pointlights.count(_gameObjects[type][i]))
 			{
-				delete _pointligths[_gameObjects[type][i]];
-				_pointligths.erase(_gameObjects[type][i]);
+				delete _pointlights[_gameObjects[type][i]];
+				_pointlights.erase(_gameObjects[type][i]);
 			}
 
 			delete _gameObjects[type][i];
@@ -747,7 +747,7 @@ void ObjectHandler::UpdateLightIntensity()
 			spot.second->SetIntensity(1.0f + _ambientLight->GetScale()*0.06f);
 		}
 	}
-	for (pair<GameObject*, Renderer::Pointlight*> point : _pointligths)
+	for (pair<GameObject*, Renderer::Pointlight*> point : _pointlights)
 	{
 		if (point.first->GetType() == System::LOOT)
 		{
