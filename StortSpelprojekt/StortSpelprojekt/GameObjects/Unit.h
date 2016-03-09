@@ -84,6 +84,7 @@ public:
 	void SetDirection(const AI::Vec2D& direction);
 	void SetSwitchingTile(const bool switchTile);
 	void SetVisibility(bool visible);
+	void SetPosition(const DirectX::XMFLOAT3& position);
 	void SetTilePosition(AI::Vec2D pos);
 	void SetStatusEffect(StatusEffect effect, int intervalTime = 0, int totalTime = 0);			//set type of effect, duration of effect, and time between each activation
 

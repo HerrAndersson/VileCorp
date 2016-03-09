@@ -126,7 +126,7 @@ void GameLogic::HandleUnitSelect()
 		XMFLOAT3 pos = u->GetPosition();
 		pos.y += 3.0f;
 
-		ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::SELECTED_SUBTYPE, -1, pos, XMFLOAT3(0, 0, 0), 1.0f, 1, 0.25f, true, true);
+		ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::SELECTED_SUBTYPE, -1, pos, XMFLOAT3(0, 0, 0), 0.01f, 1, 0.25f, true, true);
 		_objectHandler->GetParticleEventQueue()->Insert(msg);
 
 		if (u->GetType() == System::GUARD)
@@ -135,7 +135,7 @@ void GameLogic::HandleUnitSelect()
 			{
 				pos = XMFLOAT3(p._x, 0.5, p._y);
 
-				msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::PATROL_SUBTYPE, -1, pos, XMFLOAT3(0, 0, 0), 1.0f, 1, 0.25f, true, true);
+				msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::PATROL_SUBTYPE, -1, pos, XMFLOAT3(0, 0, 0), 0.01f, 1, 0.25f, true, true);
 				_objectHandler->GetParticleEventQueue()->Insert(msg);
 			}
 
