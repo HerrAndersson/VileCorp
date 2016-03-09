@@ -41,12 +41,15 @@ private:
 	int _nrOfLoot;			//Note: This is the amount of loot on the tilemap. Does not count held objects.
 	Tile** _map;
 
-
+private:
+	void Copy(const Tilemap& copy);
 public:
 	Tilemap();
 	Tilemap(AI::Vec2D size);
 	Tilemap(const Tilemap& copy);
 	~Tilemap();
+
+	Tilemap& operator=(const Tilemap& copy);
 
 	bool AddObjectToTile(AI::Vec2D pos, GameObject* obj);
 	bool AddObjectToTile(int x, int z, GameObject* obj);
