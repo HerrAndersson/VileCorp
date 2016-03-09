@@ -121,6 +121,52 @@
           "../Menues/LevelEdit/Walls/wall6"
         ]
       },
+	  {
+        "_mesh": "wallWindowWall-29.bin",
+        "_name": "Wall",
+        "_type": 1,
+        "_subType": 1,
+        "_tooltip": "SampleText",
+        "_textures": [
+          "wall",
+          "wall2",
+          "wall3",
+          "wall4",
+          "wall5",
+          "wall6"
+        ],
+        "_thumbnails": [
+          "../Menues/LevelEdit/Walls/wallHole1",
+          "../Menues/LevelEdit/Walls/wallHole2",
+          "../Menues/LevelEdit/Walls/wallHole3",
+          "../Menues/LevelEdit/Walls/wallHole4",
+          "../Menues/LevelEdit/Walls/wallHole5",
+          "../Menues/LevelEdit/Walls/wallHole6"
+        ]
+      },
+	  {
+        "_mesh": "wallDoorWall-29.bin",
+        "_name": "Wall",
+        "_type": 1,
+        "_subType": 2,
+        "_tooltip": "SampleText",
+        "_textures": [
+          "wall",
+          "wall2",
+          "wall3",
+          "wall4",
+          "wall5",
+          "wall6"
+        ],
+        "_thumbnails": [
+          "../Menues/LevelEdit/Walls/wallDoor1",
+          "../Menues/LevelEdit/Walls/wallDoor2",
+          "../Menues/LevelEdit/Walls/wallDoor3",
+          "../Menues/LevelEdit/Walls/wallDoor4",
+          "../Menues/LevelEdit/Walls/wallDoor5",
+          "../Menues/LevelEdit/Walls/wallDoor6"
+        ]
+      },
       {
         "_mesh": "diamondLoot-28.bin",
         "_name": "Diamond",
@@ -215,6 +261,47 @@
         ],
         "_thumbnails": [
           "../Menues/LevelEdit/Entry/door2Button"
+        ]
+      },
+	  {
+        "_mesh": "window2Spawn-29.bin",
+        "_name": "Window",
+        "_type": 3,
+        "_subType": 3,
+        "_tooltip": "SampleText",
+        "_textures": [
+          "windowdouble1"
+        ],
+        "_thumbnails": [
+          "../Menues/LevelEdit/Entry/windowHole"
+        ]
+      },
+	  {
+        "_mesh": "doorRight-29.bin",
+        "_name": "Window",
+        "_type": 3,
+        "_subType": 4,
+        "_tooltip": "SampleText",
+        "_textures": [
+          "doubledoors",
+          "doubledoorsopen"
+        ],
+        "_thumbnails": [
+          "../Menues/LevelEdit/Entry/doorInWallRight"
+        ]
+      },
+	  {
+        "_mesh": "doorLeft-29.bin",
+        "_name": "Window",
+        "_type": 3,
+        "_subType": 5,
+        "_tooltip": "SampleText",
+        "_textures": [
+          "doubledoors",
+          "doubledoorsopen"
+        ],
+        "_thumbnails": [
+          "../Menues/LevelEdit/Entry/doorInWallLeft"
         ]
       },
       {
