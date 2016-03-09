@@ -33,18 +33,26 @@ OptionsState::OptionsState(System::Controls* controls, ObjectHandler* objectHand
 	_volume = 10;
 	_brightness = 5;
 
+	_applyButtonNode = _uiTree.GetNode("apply");
+	_cancelButtonNode = _uiTree.GetNode("cancel");
+
 	XMFLOAT4 color(0.1f, 0.1f, 0.1f, 1.0f);
 	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("res_left"), color));
 	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("win_left"), color));
 	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("aa_left"), color));
 	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("shadow_left"), color));
 	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("sound_left"), color));
+	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("brightness_left"), color));
 
 	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("res_right"), color));
 	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("win_right"), color));
 	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("aa_right"), color));
 	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("shadow_right"), color));
 	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("sound_right"), color));
+	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("brightness_right"), color));
+
+	_buttonHighlights.push_back(GUI::HighlightNode(_applyButtonNode, color));
+	_buttonHighlights.push_back(GUI::HighlightNode(_cancelButtonNode, color));
 }
 
 OptionsState::~OptionsState()
@@ -72,40 +80,35 @@ void OptionsState::UpdateText(const std::string& contentId, int optionValue, Opt
 	text->SetText(options[optionValue]._text);
 }
 
-bool OptionsState::HandleOptionSwitch(const std::string& leftId, const std::string& rightId, const std::string& contentId, int& optionValue, Options* options, int optionsMin, int optionsMax, bool updateContent)
+void OptionsState::HandleOptionSwitch(const std::string& leftId, const std::string& rightId, const std::string& contentId, int& optionValue, Options* options, int optionsMin, int optionsMax, bool updateContent /*= true*/)
 {
-	System::MouseCoord coord = _controls->GetMouseCoord();
-	bool leftClicked = _uiTree.IsButtonColliding(leftId, coord._pos.x, coord._pos.y);
-	bool rightClicked = _uiTree.IsButtonColliding(rightId, coord._pos.x, coord._pos.y);
-	if (leftClicked)
+	if (!_buttonClicked)
 	{
-		optionValue--;
+		System::MouseCoord coord = _controls->GetMouseCoord();
+		bool leftClicked = _uiTree.IsButtonColliding(leftId, coord);
+		bool rightClicked = _uiTree.IsButtonColliding(rightId, coord);
+		if (leftClicked)
+		{
+			optionValue--;
+		}
+		else if (rightClicked)
+		{
+			optionValue++;
+		}
+		if (optionValue == optionsMin - 1)
+		{
+			optionValue = optionsMax - 1;
+		}
+		else if (optionValue == optionsMax)
+		{
+			optionValue = optionsMin;
+		}
+		if (updateContent && (leftClicked || rightClicked))
+		{
+			UpdateText(contentId, optionValue, options);
+		}
+		_buttonClicked = leftClicked || rightClicked;
 	}
-	else if (rightClicked)
-	{
-		optionValue++;
-	}
-	if (optionValue == optionsMin-1)
-	{
-		optionValue = optionsMax - 1;
-	}
-	else if (optionValue == optionsMax)
-	{
-		optionValue = optionsMin;
-	}
-	if (updateContent && (leftClicked || rightClicked))
-	{
-		UpdateText(contentId, optionValue, options);
-	}
-	if (leftClicked)
-	{
-		_buttonClicked = leftClicked;
-	}
-	else if (rightClicked)
-	{
-		_buttonClicked = rightClicked;
-	}
-	return leftClicked || rightClicked;
 }
 
 void OptionsState::Update(float deltaTime)
@@ -124,75 +127,85 @@ void OptionsState::Update(float deltaTime)
 	}
 	if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
-		_showApplyButton = false;
+		_buttonClicked = false;
 
-		_showApplyButton = _showApplyButton || HandleOptionSwitch("res_left", "res_right", "res_content", _resolutionOption, _resolution, 0, RESOLUTION_MAX);
-		_showApplyButton = _showApplyButton || HandleOptionSwitch("win_left", "win_right", "win_content", _windowOption, _window, 0, WINDOW_MAX);
-		_showApplyButton = _showApplyButton || HandleOptionSwitch("aa_left", "aa_right", "aa_content", _aaOption, _aa, 0, AA_MAX);
-		_showApplyButton = _showApplyButton || HandleOptionSwitch("shadow_left", "shadow_right", "shadow_content", _shadowmapOption, _shadowmap, 0, SHADOWMAP_MAX);
+		HandleOptionSwitch("res_left", "res_right", "res_content", _resolutionOption, _resolution, 0, RESOLUTION_MAX);
+		HandleOptionSwitch("win_left", "win_right", "win_content", _windowOption, _window, 0, WINDOW_MAX);
+		HandleOptionSwitch("aa_left", "aa_right", "aa_content", _aaOption, _aa, 0, AA_MAX);
+		HandleOptionSwitch("shadow_left", "shadow_right", "shadow_content", _shadowmapOption, _shadowmap, 0, SHADOWMAP_MAX);
 
 		//Handle volume option
-		_showApplyButton = _showApplyButton || HandleOptionSwitch("sound_left", "sound_right", "sound_content", _volume, nullptr, 0, 11, false);
+		HandleOptionSwitch("sound_left", "sound_right", "sound_content", _volume, nullptr, 0, 11, false);
 		GUI::Node* text = _uiTree.GetNode("sound_content");
 		text->SetText(std::to_wstring(_volume * 10) + L"%");
 
 		//Handle brightness option
-		_showApplyButton = _showApplyButton || HandleOptionSwitch("brightness_left", "brightness_right", "brightness_content", _brightness, nullptr, 1, 11, false);
+		HandleOptionSwitch("brightness_left", "brightness_right", "brightness_content", _brightness, nullptr, 1, 11, false);
 		GUI::Node* bText = _uiTree.GetNode("brightness_content");
 		bText->SetText(std::to_wstring(_brightness));
 
-		_uiTree.GetNode("apply")->SetHidden(!_buttonClicked);
+		if (_buttonClicked)
+		{
+			_showApplyButton = true;
+			_applyButtonNode->SetHidden(false);
+		}
 
 		//Check it the apply button was pressed and change settings file and update the window resolution if needed
-		if (_uiTree.IsButtonColliding("apply", coord._pos.x, coord._pos.y))
+		if (_showApplyButton && _uiTree.IsButtonColliding(_applyButtonNode, coord._pos.x, coord._pos.y))
 		{
-			System::Settings* settings = _settingsReader->GetSettings();
-
-			//Resolution
-			settings->_screenWidth = _resolution[_resolutionOption]._value;
-			settings->_screenHeight = _resolution[_resolutionOption]._value2;
-
-			//Window size
-			settings->_windowWidth = settings->_screenWidth;
-			settings->_windowHeight = settings->_screenHeight;
-
-			//Shadow map resolution
-			settings->_shadowMapSize = _shadowmap[_shadowmapOption]._value;
-
-			//Sound volume
-			settings->_volume = _volume * 10;
-			
-			//brightness
-			settings->_brightness = _brightness;
-
-			//Window options
-			if (_window[_windowOption]._value == 1) //Fullscreen
-			{
-				settings->_windowWidth = GetSystemMetrics(SM_CXSCREEN);
-				settings->_windowHeight = GetSystemMetrics(SM_CYSCREEN);
-				settings->_borderless = true;
-			}
-			else if (_window[_windowOption]._value == 2) //Borderless window
-			{
-				settings->_borderless = true;
-			}
-			else if (_window[_windowOption]._value == 3) //Windowed
-			{
-				settings->_borderless = false;
-			}
-			settings->_showMouseCursor = true;
-			settings->_antialiasing = _aa[_aaOption]._value;
-
-			_settingsReader->ApplySettings();
-			_uiTree.GetNode("apply")->SetHidden(true);
+			ApplySettings();
 		}
-		if (_uiTree.IsButtonColliding("cancel", coord._pos.x, coord._pos.y))
+		if (_uiTree.IsButtonColliding(_cancelButtonNode, coord._pos.x, coord._pos.y))
 		{
 			_soundModule->Play("page");
-			_uiTree.GetNode("apply")->SetHidden(true);
+			_applyButtonNode->SetHidden(true);
 			ChangeState(State::MENUSTATE);
 		}
 	}
+}
+
+void OptionsState::ApplySettings()
+{
+	System::Settings* settings = _settingsReader->GetSettings();
+
+	//Resolution
+	settings->_screenWidth = _resolution[_resolutionOption]._value;
+	settings->_screenHeight = _resolution[_resolutionOption]._value2;
+
+	//Window size
+	settings->_windowWidth = settings->_screenWidth;
+	settings->_windowHeight = settings->_screenHeight;
+
+	//Shadow map resolution
+	settings->_shadowMapSize = _shadowmap[_shadowmapOption]._value;
+
+	//Sound volume
+	settings->_volume = _volume * 10;
+
+	//brightness
+	settings->_brightness = _brightness;
+
+	//Window options
+	if (_window[_windowOption]._value == 1) //Fullscreen
+	{
+		settings->_windowWidth = GetSystemMetrics(SM_CXSCREEN);
+		settings->_windowHeight = GetSystemMetrics(SM_CYSCREEN);
+		settings->_borderless = true;
+	}
+	else if (_window[_windowOption]._value == 2) //Borderless window
+	{
+		settings->_borderless = true;
+	}
+	else if (_window[_windowOption]._value == 3) //Windowed
+	{
+		settings->_borderless = false;
+	}
+	settings->_showMouseCursor = true;
+	settings->_antialiasing = _aa[_aaOption]._value;
+
+	_settingsReader->ApplySettings();
+	_uiTree.GetNode("apply")->SetHidden(true);
+	_showApplyButton = false;
 }
 
 void OptionsState::OnStateEnter()

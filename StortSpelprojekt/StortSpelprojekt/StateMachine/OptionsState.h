@@ -34,16 +34,22 @@ private:
 
 	bool _showApplyButton;
 	bool _buttonClicked;
+
+	GUI::Node* _applyButtonNode = nullptr;
+	GUI::Node* _cancelButtonNode = nullptr;
+
 private:
 	int ReadSetting(int setting, int setting2, Options* arr, int max);
 	void UpdateText(const std::string& contentId, int optionValue, Options* options);
-	bool HandleOptionSwitch(const std::string& leftId, const std::string& rightId, const std::string& contentId, int& optionValue, Options* options, int optionsMin, int optionsMax, bool updateContent = true);
+	void HandleOptionSwitch(const std::string& leftId, const std::string& rightId, const std::string& contentId, int& optionValue, Options* options, int optionsMin, int optionsMax, bool updateContent = true);
+	void ApplySettings();
 
 public:
 	OptionsState(System::Controls * controls, ObjectHandler * objectHandler, System::Camera * camera, PickingDevice * pickingDevice, const std::string & filename, AssetManager * assetManager, FontWrapper * fontWrapper, System::SettingsReader * settingsReader, System::SoundModule * soundModule);
 	virtual ~OptionsState();
 
 	void Update(float deltaTime);
+
 	void OnStateEnter();
 	void OnStateExit();
 
