@@ -133,6 +133,7 @@ Section "Uninstall"
 	Delete "$INSTDIR\Vile Corp.exe"
 	Delete "$INSTDIR\Uninstall.exe"
 	Delete "$INSTDIR\YSElog.txt"
+	RMDir "$INSTDIR"
 	
 	#Delete shortcuts
 	!insertmacro MUI_STARTMENU_GETFOLDER Application $StartMenuFolder
