@@ -633,6 +633,7 @@ namespace Renderer
 				offset.z = current->GetColorOffset().z + 0.04f * brightness - 0.20f;
 				offset.w = current->GetColorOffset().w;
 				dataPtr->_colorOffset = offset;
+				dataPtr->_hasTexture = 1;
 
 				deviceContext->Unmap(_matrixBufferHUD, 0);
 
