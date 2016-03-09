@@ -46,7 +46,7 @@ Guard::Guard(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 ro
 
 Guard::~Guard()
 {
-
+	_particleEventQueue->Insert(new ParticleUpdateMessage(_ID + INT_MAX, false));
 }
 
 void Guard::EvaluateTile(System::Type objective, AI::Vec2D tile)
@@ -280,12 +280,12 @@ void Guard::ShowPatrolIcons()
 {
 	for (auto p : _patrolRoute)
 	{
-		XMFLOAT3 pos = XMFLOAT3(p._x, 0.5, p._y);
+		XMFLOAT3 pos = XMFLOAT3(p._x, 0.1, p._y);
 
-		unsigned int newID = _tileMap->GetObjectOnTile(p, System::FLOOR)->GetID() + INT_MAX;
+		unsigned int newID = _tileMap->GetObjectOnTile(p, System::FLOOR)->GetID();
 
 
-		ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::PATROL_SUBTYPE, newID, pos, XMFLOAT3(0, 0, 0), 0.01f, 1, 0.25f, true, true);
+		ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::STATIC_ICON, ParticleSubType::PATROL_SUBTYPE, newID, pos, XMFLOAT3(0, 0, 0), 0.01f, 1, 0.25f, true, true);
 		_particleEventQueue->Insert(msg);
 	}
 }
@@ -300,7 +300,7 @@ void Guard::HidePatrolIcons()
 {
 	for (auto p : _patrolRoute)
 	{
-		unsigned int newID = _tileMap->GetObjectOnTile(p, System::FLOOR)->GetID() + INT_MAX;
+		unsigned int newID = _tileMap->GetObjectOnTile(p, System::FLOOR)->GetID();
 		_particleEventQueue->Insert(new ParticleUpdateMessage(newID, false));
 	}
 }

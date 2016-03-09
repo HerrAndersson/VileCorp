@@ -121,6 +121,7 @@ Unit::~Unit()
 	delete _aStar;
 	HideAreaOfEffect();
 	_particleEventQueue->Insert(new ParticleUpdateMessage(_ID, false));
+
 	delete _visionCone;
 }
 
