@@ -253,7 +253,7 @@ void Game::Render()
 
 		_renderModule->SetShadowsEnabled(false);
 		//Render all spotlights with shadow mapping DISABLED
-		for (pair<GameObject*, Renderer::Spotlight*> spot : *spotlights)
+		for (pair<GameObject*, Renderer::Spotlight*> spot : *_objectHandler->GetSpotlights())
 		{
 			if (!spot.second->ShadowsEnabled())
 			{
