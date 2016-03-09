@@ -110,8 +110,9 @@ namespace Renderer
 		numElements = sizeof(lightInputDesc) / sizeof(lightInputDesc[0]);
 
 		_passthroughVS = CreateVertexShader(device, L"Assets/Shaders/PassthroughVS.hlsl", lightInputDesc, numElements);
-		_lightApplySpotlightVolumePS = CreatePixelShader(device, L"Assets/Shaders/LightApplySpotlightVolumePS.hlsl");
-		_lightApplyPointlightVolumePS = CreatePixelShader(device, L"Assets/Shaders/LightApplyPointlightVolumePS.hlsl");
+		_lightVolumeSpotPS = CreatePixelShader(device, L"Assets/Shaders/LightVolumeSpotPS.hlsl");
+		_lightVolumePointPS = CreatePixelShader(device, L"Assets/Shaders/LightVolumePointPS.hlsl");
+		_lightVolumeSpotNoShadowsPS = CreatePixelShader(device, L"Assets/Shaders/LightVolumeSpotNoShadowsPS.hlsl");
 		_fxaaPassPS = CreatePixelShader(device, L"Assets/Shaders/FxaaPS.hlsl");
 		_noFxaaPS = CreatePixelShader(device, L"Assets/Shaders/NoFxaaPS.hlsl");
 		_hudPassVS = CreateVertexShader(device, L"Assets/Shaders/HudVS.hlsl", lightInputDesc, numElements);
@@ -123,7 +124,7 @@ namespace Renderer
 		};
 
 		numElements = sizeof(shadowInputDesc) / sizeof(shadowInputDesc[0]);
-		_shadowMapVS = CreateVertexShader(device, L"Assets/Shaders/ShadowVS.hlsl", shadowInputDesc, numElements);
+		_shadowMapVS = CreateVertexShader(device, L"Assets/Shaders/ShadowStaticVS.hlsl", shadowInputDesc, numElements);
 		_lightApplyLightVolumeVS = CreateVertexShader(device, L"Assets/Shaders/LightApplyLightVolumeVS.hlsl", shadowInputDesc, numElements);
 
 		//Holds position.xyz and texture number in a
@@ -148,7 +149,7 @@ namespace Renderer
 			{ "BONEWEIGHT", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		};
 		numElements = sizeof(animShadowInputDesc) / sizeof(animShadowInputDesc[0]);
-		_animShadowMapVS = CreateVertexShader(device, L"Assets/Shaders/AnimShadowVS.hlsl", animShadowInputDesc, numElements);
+		_animShadowMapVS = CreateVertexShader(device, L"Assets/Shaders/ShadowAnimVS.hlsl", animShadowInputDesc, numElements);
 
 		//Animation pass init
 		D3D11_INPUT_ELEMENT_DESC animInputDesc[] =
@@ -190,13 +191,14 @@ namespace Renderer
 
 		SAFE_RELEASE(_geoPassPS);
 		SAFE_RELEASE(_linestripPS);
-		SAFE_RELEASE(_lightApplySpotlightVolumePS);
+		SAFE_RELEASE(_lightVolumeSpotPS);
 		SAFE_RELEASE(_hudPassPS);
-		SAFE_RELEASE(_lightApplyPointlightVolumePS);
+		SAFE_RELEASE(_lightVolumePointPS);
 		SAFE_RELEASE(_billboardingPS);
 		SAFE_RELEASE(_billboardingGS);
 		SAFE_RELEASE(_fxaaPassPS);
 		SAFE_RELEASE(_noFxaaPS);
+		SAFE_RELEASE(_lightVolumeSpotNoShadowsPS);
 
 		SAFE_RELEASE(_samplerWRAP);
 		SAFE_RELEASE(_samplerPOINT);
@@ -485,14 +487,23 @@ namespace Renderer
 		deviceContext->GSSetShader(nullptr, nullptr, 0);
 	}
 
-	void ShaderHandler::SetSpotlightApplicationShaders(ID3D11DeviceContext* deviceContext)
+	void ShaderHandler::SetSpotlightApplicationShaders(ID3D11DeviceContext* deviceContext, bool shadowsEnabled)
 	{
 		//Set vertex layout
 		deviceContext->IASetInputLayout(_lightApplyLightVolumeVS->_inputLayout);
 
 		//Set shaders
 		deviceContext->VSSetShader(_lightApplyLightVolumeVS->_vertexShader, nullptr, 0);
-		deviceContext->PSSetShader(_lightApplySpotlightVolumePS, nullptr, 0);
+
+		if (shadowsEnabled)
+		{
+			deviceContext->PSSetShader(_lightVolumeSpotPS, nullptr, 0);
+		}
+		else
+		{
+			deviceContext->PSSetShader(_lightVolumeSpotNoShadowsPS, nullptr, 0);
+		}
+
 		deviceContext->GSSetShader(nullptr, nullptr, 0);
 
 		//Set sampler
@@ -507,7 +518,7 @@ namespace Renderer
 
 		//Set shaders
 		deviceContext->VSSetShader(_lightApplyLightVolumeVS->_vertexShader, nullptr, 0);
-		deviceContext->PSSetShader(_lightApplyPointlightVolumePS, nullptr, 0);
+		deviceContext->PSSetShader(_lightVolumePointPS, nullptr, 0);
 		deviceContext->GSSetShader(nullptr, nullptr, 0);
 
 		//Set sampler

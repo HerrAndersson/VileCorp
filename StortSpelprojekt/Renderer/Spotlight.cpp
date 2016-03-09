@@ -19,6 +19,7 @@ namespace Renderer
 		_color = lightdata._color;
 		_bone = lightdata._bone;
 		_active = true;
+		_shadowsEnabled = lightdata._shadowsEnabled;
 
 		XMMATRIX rotationMatrix = XMMatrixRotationRollPitchYaw(XMConvertToRadians(_rotation.x), XMConvertToRadians(_rotation.y), XMConvertToRadians(_rotation.z));
 		_worldMatrix = rotationMatrix * XMMatrixTranslation(_position.x, _position.y, _position.z);
@@ -256,6 +257,16 @@ namespace Renderer
 	void Spotlight::SetActive(bool active)
 	{
 		_active = active;
+	}
+
+	void Spotlight::SetShadowsEnabled(bool enabled)
+	{
+		_shadowsEnabled = enabled;
+	}
+
+	bool Spotlight::ShadowsEnabled() const
+	{
+		return _shadowsEnabled;
 	}
 
 	//Overloading these guarantees 16B alignment of XMMATRIX

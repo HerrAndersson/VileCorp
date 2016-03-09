@@ -130,6 +130,7 @@ GameObject* ObjectHandler::Add(System::Blueprint* blueprint, int textureId, cons
 			d._intensity = 1.0f + _ambientLight->GetScale()*0.06f; //Note! I hardcoded this value also in the UpdateLightIntensity() /Alex
 			d._pos = XMFLOAT3(0, 0, 0);
 			d._range = (float)static_cast<Unit*>(object)->GetVisionRadius();
+			d._shadowsEnabled = true;
 			_spotlights[object] = new Renderer::Spotlight(_device, d, 0.1f, 1000.0f);
 		}
 		if (type == System::CAMERA)
@@ -142,6 +143,7 @@ GameObject* ObjectHandler::Add(System::Blueprint* blueprint, int textureId, cons
 			d._intensity = 1.0f + _ambientLight->GetScale()*0.06f; //Note! I hardcoded this value also in the UpdateLightIntensity() /Alex
 			d._pos = XMFLOAT3(0, 0, 0);
 			d._range = (float)static_cast<SecurityCamera*>(object)->GetVisionRadius();
+			d._shadowsEnabled = false;
 			_spotlights[object] = new Renderer::Spotlight(_device, d, 0.1f, 1000.0f);
 		}
 		if (type == System::LOOT)
@@ -151,7 +153,7 @@ GameObject* ObjectHandler::Add(System::Blueprint* blueprint, int textureId, cons
 			d._range = 6.0f;
 			d._intensity = 0.8f + _ambientLight->GetScale()*0.06f; //Note! I hardcoded this value also in the UpdateLightIntensity() /Alex
 			d._col = XMFLOAT3(0.9f, 0.5f, 0.5f);
-			_pointligths[object] = new Renderer::Pointlight(_device, d._pos, d._range, d._intensity, d._col);
+			_pointlights[object] = new Renderer::Pointlight(_device, d._pos, d._range, d._intensity, d._col);
 		}
 
 		//for(auto i : object->GetRenderObject()->_mesh._spotLights)
@@ -226,10 +228,10 @@ bool ObjectHandler::Remove(System::Type type, int ID)
 				_spotlights.erase(_gameObjects[type][i]);
 			}
 
-			if (_pointligths.count(_gameObjects[type][i]))
+			if (_pointlights.count(_gameObjects[type][i]))
 			{
-				delete _pointligths[_gameObjects[type][i]];
-				_pointligths.erase(_gameObjects[type][i]);
+				delete _pointlights[_gameObjects[type][i]];
+				_pointlights.erase(_gameObjects[type][i]);
 			}
 
 			delete _gameObjects[type][i];
@@ -437,13 +439,13 @@ void ObjectHandler::UnloadLevel()
 		spot.first = nullptr;
 	}
 	_spotlights.clear();
-	for (pair<GameObject*, Renderer::Pointlight*> point : _pointligths)
+	for (pair<GameObject*, Renderer::Pointlight*> point : _pointlights)
 	{
 		SAFE_DELETE(point.second);
 		point.second = nullptr;
 		point.first = nullptr;
 	}
-	_pointligths.clear();
+	_pointlights.clear();
 
 	ReleaseGameObjects();
 	SAFE_DELETE(_tilemap);
@@ -709,7 +711,7 @@ void ObjectHandler::UpdateLights()
 			}
 		}
 	}
-	for (pair<GameObject*, Renderer::Pointlight*> point : _pointligths)
+	for (pair<GameObject*, Renderer::Pointlight*> point : _pointlights)
 	{
 		if (point.first == nullptr)
 		{
@@ -745,7 +747,7 @@ void ObjectHandler::UpdateLightIntensity()
 			spot.second->SetIntensity(1.0f + _ambientLight->GetScale()*0.06f);
 		}
 	}
-	for (pair<GameObject*, Renderer::Pointlight*> point : _pointligths)
+	for (pair<GameObject*, Renderer::Pointlight*> point : _pointlights)
 	{
 		if (point.first->GetType() == System::LOOT)
 		{
@@ -791,7 +793,7 @@ map<GameObject*, Renderer::Spotlight*>* ObjectHandler::GetSpotlights()
 
 map<GameObject*, Renderer::Pointlight*>* ObjectHandler::GetPointlights()
 {
-	return &_pointligths;
+	return &_pointlights;
 }
 
 vector<vector<GameObject*>>* ObjectHandler::GetObjectsInLight(Renderer::Spotlight* spotlight)

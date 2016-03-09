@@ -93,6 +93,11 @@ void GameLogic::HandleUnitSelect()
 	if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
 		_pickingDevice->SetFirstBoxPoint(_controls->GetMouseCoord()._pos);
+		_controls->SetClickedCoord(_controls->GetMouseCoord());
+	}
+	else if (_controls->IsFunctionKeyUp("MOUSE:DRAG"))
+	{
+		_controls->SetClickedCoord(_controls->GetMouseCoord());
 	}
 
 	if (_controls->IsFunctionKeyUp("MOUSE:SELECT"))
@@ -191,6 +196,7 @@ void GameLogic::HandleUnitMove()
 
 				//Change direction
 				units.at(0)->SetDirection(direction);
+				units.at(0)->HideAreaOfEffect();
 
 				//Play sound
 				PlayMoveSound((GuardType)(((Guard*)units.at(0))->GetSubType()));

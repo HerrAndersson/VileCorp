@@ -146,7 +146,6 @@ void Animation::Freeze(bool freeze)
 void Animation::PlayAction(int action, bool freeze, bool lastFrame, bool reset)
 {
 	_frozen = false;
-	_animTime = 0.0f;
 	_currentAction = action;
 	_isFinished = false;
 	if (freeze)

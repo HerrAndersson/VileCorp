@@ -28,6 +28,7 @@ namespace Renderer
 		float				_range;
 		bool				_active;
 		unsigned char		_bone;
+		bool				_shadowsEnabled;
 
 		DirectX::XMFLOAT3	_color;
 
@@ -60,6 +61,9 @@ namespace Renderer
 		unsigned char GetBone();
 		bool IsActive() const;
 		void SetActive(bool active);
+
+		void SetShadowsEnabled(bool enabled);
+		bool ShadowsEnabled() const;
 
 		DirectX::XMFLOAT3 GetColor() const;
 		DirectX::XMFLOAT3 GetPosition() const;
