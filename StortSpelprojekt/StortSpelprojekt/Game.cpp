@@ -231,21 +231,43 @@ void Game::Render()
 		Generate the shadow map for each spotlight, then apply the lighting/shadowing to the render target with additive blending.        */
 
 		_renderModule->SetLightDataPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
-
+		_renderModule->SetShadowsEnabled(true);
 		map<GameObject*, Renderer::Spotlight*>* spotlights = _objectHandler->GetSpotlights();
+
+		//Render all spotlights with shadow mapping ENABLED
 		for (pair<GameObject*, Renderer::Spotlight*> spot : *spotlights)
 		{
-			if (spot.second != nullptr && spot.second->IsActive() && spot.first->IsActive())
+			if (spot.second->ShadowsEnabled())
 			{
-				GenerateShadowMap(Renderer::RenderModule::ShaderStage::SHADOW_GENERATION, spot.second, spot.first->GetID());
-				GenerateShadowMap(Renderer::RenderModule::ShaderStage::ANIM_SHADOW_GENERATION, spot.second, spot.first->GetID());
+				if (spot.second != nullptr && spot.second->IsActive() && spot.first->IsActive())
+				{
+					GenerateShadowMap(Renderer::RenderModule::ShaderStage::SHADOW_GENERATION, spot.second, spot.first->GetID());
+					GenerateShadowMap(Renderer::RenderModule::ShaderStage::ANIM_SHADOW_GENERATION, spot.second, spot.first->GetID());
 
-				_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::LIGHT_APPLICATION_SPOTLIGHT);
-				_renderModule->SetLightDataPerSpotlight(spot.second);
+					_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::LIGHT_APPLICATION_SPOTLIGHT);
+					_renderModule->SetLightDataPerSpotlight(spot.second);
 
-				_renderModule->RenderVertexBuffer(spot.second->GetVolumeBuffer(), spot.second->GetWorldMatrix(), spot.second->GetVertexCount(), spot.second->GetVertexSize());
+					_renderModule->RenderVertexBuffer(spot.second->GetVolumeBuffer(), spot.second->GetWorldMatrix(), spot.second->GetVertexCount(), spot.second->GetVertexSize());
+				}
 			}
 		}
+
+		_renderModule->SetShadowsEnabled(false);
+		//Render all spotlights with shadow mapping DISABLED
+		for (pair<GameObject*, Renderer::Spotlight*> spot : *spotlights)
+		{
+			if (!spot.second->ShadowsEnabled())
+			{
+				if (spot.second != nullptr && spot.second->IsActive() && spot.first->IsActive())
+				{
+					_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::LIGHT_APPLICATION_SPOTLIGHT);
+					_renderModule->SetLightDataPerSpotlight(spot.second);
+
+					_renderModule->RenderVertexBuffer(spot.second->GetVolumeBuffer(), spot.second->GetWorldMatrix(), spot.second->GetVertexCount(), spot.second->GetVertexSize());
+				}
+			}
+		}
+
 		/*------------------------------------------------------  Pointlights  -----------------------------------------------------------*/
 		_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::LIGHT_APPLICATION_POINTLIGHT);
 
@@ -364,7 +386,7 @@ void Game::GenerateShadowMap(Renderer::RenderModule::ShaderStage shaderStage, Re
 	_renderModule->SetShaderStage(shaderStage);
 	_renderModule->SetShadowMapDataPerSpotlight(spotlight->GetViewMatrix(), spotlight->GetProjectionMatrix());
 
-	for (auto j : *inLight)
+	for (auto& j : *inLight)
 	{
 		if (j.size() > 0)
 		{

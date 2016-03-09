@@ -66,7 +66,7 @@ private:
 	ID3D11Device* _device;
 
 	map<GameObject*, Renderer::Spotlight*> _spotlights;
-	map<GameObject*, Renderer::Pointlight*> _pointligths;
+	map<GameObject*, Renderer::Pointlight*> _pointlights;
 	LightCulling* _lightCulling;
 	AmbientLight* _ambientLight;
 
