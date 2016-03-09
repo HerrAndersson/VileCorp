@@ -113,12 +113,15 @@ Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	_status = NO_EFFECT;
 	_statusTimer = 0;
 	_statusInterval = 0;
+
 }
 
 Unit::~Unit()
 {
 	delete _aStar;
 	HideAreaOfEffect();
+	_particleEventQueue->Insert(new ParticleUpdateMessage(_ID, false));
+
 	delete _visionCone;
 }
 
@@ -203,6 +206,13 @@ void Unit::SetVisibility(bool visible)
 	{
 		_heldObject->SetVisibility(visible);
 	}
+}
+
+void Unit::SetPosition(const DirectX::XMFLOAT3& position)
+{
+	_position = position;
+	CalculateMatrix();
+
 }
 
 void Unit::SetTilePosition(AI::Vec2D pos)
@@ -373,6 +383,23 @@ void Unit::Update(float deltaTime)
 	{
 		ActivateStatus();
 	}
+	if (_visible)
+	{
+		XMFLOAT3 pos = _position;
+		pos.x *= 0.5;
+		pos.y = 1.25f;
+		pos.z *= 0.5;
+		_particleEventQueue->Insert(new ParticleUpdateMessage(_ID, true, pos));
+	}
+	else
+	{
+		XMFLOAT3 pos = _position;
+		pos.x *= 0.5;
+		pos.y = -1.25f;
+		pos.z *= 0.5;
+		_particleEventQueue->Insert(new ParticleUpdateMessage(_ID, true, pos));
+	}
+
 
 	//bool result = false;
 	//if (_statusTimer > 0)
@@ -404,6 +431,9 @@ void Unit::Moving()
 			_position.x += AI::SQRT2 * 0.5f * _moveSpeed * _direction._x;
 			_position.z += AI::SQRT2 * 0.5f * _moveSpeed * _direction._y;
 		}
+
+
+
 		CalculateMatrix();
 	}
 }
@@ -518,9 +548,16 @@ void Unit::DeactivateStatus()
 
 void Unit::TakeDamage(int damage)
 {
+	_particleEventQueue->Insert(new ParticleUpdateMessage(_ID, false));
 	if (_health - damage > 0)
 	{
 		_health -= damage;
+		XMFLOAT3 pos = _position;
+		pos.x *= 0.5;
+		pos.y = 1.25f;
+		pos.z *= 0.5;
+		ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::HEALTH_SUBTYPE, _ID, pos, XMFLOAT3(0, 0, 0), 1.0f, 1, _health*0.0025f, true, false);
+		_particleEventQueue->Insert(msg);
 	}
 	else if (_health > 0)
 	{
@@ -530,6 +567,8 @@ void Unit::TakeDamage(int damage)
 		}
 		_health -= damage;
 	}
+
+
 }
 
 void Unit::SetIsAtSpawn(bool isAtSpawn)
@@ -596,7 +635,7 @@ void Unit::ShowAreaOfEffect()
 		AI::Vec2D tile = _visionCone->GetVisibleTiles()[i];
 		XMFLOAT3 pos = XMFLOAT3(tile._x, 0.04f, tile._y);
 
-		msg = new ParticleRequestMessage(ParticleType::STATIC_ICON, ParticleSubType::AOE_YELLOW_SUBTYPE, _ID, pos, XMFLOAT3(0, 1, 0), 1.0f, 1, 0.27f, true, true);
+		msg = new ParticleRequestMessage(ParticleType::STATIC_ICON, ParticleSubType::AOE_YELLOW_SUBTYPE, _ID, pos, XMFLOAT3(0, 1, 0), 1.0f, 1, 0.27f, true, false);
 		_particleEventQueue->Insert(msg);
 	}
 }

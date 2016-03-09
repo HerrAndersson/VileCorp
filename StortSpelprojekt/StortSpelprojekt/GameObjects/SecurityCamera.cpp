@@ -109,7 +109,7 @@ void SecurityCamera::ShowAreaOfEffect()
 		AI::Vec2D tile = _visionCone->GetVisibleTiles()[i];
 		XMFLOAT3 pos = XMFLOAT3(tile._x, 0.04f, tile._y);
 
-		msg = new ParticleRequestMessage(ParticleType::STATIC_ICON, ParticleSubType::AOE_YELLOW_SUBTYPE, _ID, pos, XMFLOAT3(0, 1, 0), 1.0f, 1, 0.27f, true, true);
+		msg = new ParticleRequestMessage(ParticleType::STATIC_ICON, ParticleSubType::AOE_YELLOW_SUBTYPE, _ID, pos, XMFLOAT3(0, 1, 0), 1.0f, 1, 0.27f, true, false);
 		_particleEventQueue->Insert(msg);
 	}
 }

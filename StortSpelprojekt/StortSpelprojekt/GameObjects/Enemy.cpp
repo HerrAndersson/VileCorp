@@ -144,6 +144,13 @@ Enemy::Enemy(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 ro
 	default:
 		break;
 	}
+
+	//Show Unit Lifebar
+	XMFLOAT3 pos = _position;
+	pos.y += 2.5f;
+	ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::HEALTH_SUBTYPE, _ID, pos, XMFLOAT3(0, 0, 0), 1.0f, 1, _health*0.0025f, true, false);
+	_particleEventQueue->Insert(msg);
+
 }
 
 Enemy::~Enemy()
