@@ -280,7 +280,7 @@ void Guard::ShowPatrolIcons()
 {
 	for (auto p : _patrolRoute)
 	{
-		XMFLOAT3 pos = XMFLOAT3(p._x, 0.1, p._y);
+		XMFLOAT3 pos = XMFLOAT3(p._x, 0.1f, p._y);
 
 		unsigned int newID = _tileMap->GetObjectOnTile(p, System::FLOOR)->GetID();
 
