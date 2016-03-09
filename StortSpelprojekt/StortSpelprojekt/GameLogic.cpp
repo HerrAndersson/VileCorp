@@ -196,6 +196,7 @@ void GameLogic::HandleUnitMove()
 
 				//Change direction
 				units.at(0)->SetDirection(direction);
+				units.at(0)->HideAreaOfEffect();
 
 				//Play sound
 				PlayMoveSound((GuardType)(((Guard*)units.at(0))->GetSubType()));
