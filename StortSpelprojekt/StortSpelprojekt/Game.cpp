@@ -232,8 +232,7 @@ void Game::Render()
 
 		_renderModule->SetLightDataPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
 
-		map<GameObject*, Renderer::Spotlight*>* spotlights = _objectHandler->GetSpotlights();
-		for (pair<GameObject*, Renderer::Spotlight*> spot : *spotlights)
+		for (pair<GameObject*, Renderer::Spotlight*> spot : *_objectHandler->GetSpotlights())
 		{
 			if (spot.second != nullptr && spot.second->IsActive() && spot.first->IsActive())
 			{
