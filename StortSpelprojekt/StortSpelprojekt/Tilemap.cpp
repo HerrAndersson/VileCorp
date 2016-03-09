@@ -22,8 +22,8 @@ Tilemap::Tilemap(AI::Vec2D size)
 {
 	if (size._x > 0 && size._y > 0)
 	{
-		_height = size._x;
-		_width = size._y;
+		_height = size._y;
+		_width = size._x;
 		_nrOfLoot = 0;
 		_map = new Tile*[_width];
 		for (int i = 0; i < _width; i++)
@@ -168,16 +168,9 @@ bool Tilemap::RemoveObjectFromTile(AI::Vec2D pos, GameObject * obj)
 	return result;
 }
 
-bool Tilemap::RemoveObjectFromTile(GameObject* obj)
+bool Tilemap::RemoveObjectFromTile(int x, int z, GameObject * obj)
 {
-	if (obj != nullptr)
-	{
-		return RemoveObjectFromTile(obj->GetTilePosition(), obj);
-	}
-	else
-	{
-		return false;
-	}
+	return RemoveObjectFromTile(AI::Vec2D(x, z), obj);
 }
 
 void Tilemap::ClearTile(AI::Vec2D pos)
@@ -526,4 +519,14 @@ bool Tilemap::IsTileEmpty(int x, int z) const
 bool Tilemap::IsTileEmpty(AI::Vec2D pos) const
 {
 	return IsTileEmpty(pos._x, pos._y);
+}
+
+bool Tilemap::IsTileNoPlacementZone(int x, int z) const
+{
+	return IsFloorOnTile(x, z) && static_cast<Architecture*>(_map[x][z]._objectsOnTile[0])->GetNoPlacementZone();
+}
+
+bool Tilemap::IsTileNoPlacementZone(AI::Vec2D pos) const
+{
+	return IsTileNoPlacementZone(pos._x, pos._y);
 }

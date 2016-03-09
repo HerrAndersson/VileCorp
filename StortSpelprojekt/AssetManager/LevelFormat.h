@@ -41,8 +41,10 @@ namespace Level
 
 	struct LevelBinary
 	{
-		int _tileMapSizeX = 0;
-		int _tileMapSizeZ = 0;
+		int _tileMapMaxX = 0;
+		int _tileMapMaxZ = 0;
+		int _tileMapMinX = 0;
+		int _tileMapMinZ = 0;
 		std::vector<std::vector<int>> _gameObjectData = std::vector<std::vector<int>>();
 		std::vector<std::vector<int>> _enemyWavesGUIData = std::vector<std::vector<int>>();
 		std::vector<std::array<int, 2>> _enemyOrderedSpawnVector = std::vector<std::array<int, 2>>();
@@ -52,8 +54,10 @@ namespace Level
 		void serialize(A& a)
 		{
 			a(
-				CEREAL_NVP(_tileMapSizeX),
-				CEREAL_NVP(_tileMapSizeZ),
+				CEREAL_NVP(_tileMapMaxX),
+				CEREAL_NVP(_tileMapMaxZ),
+				CEREAL_NVP(_tileMapMinX),
+				CEREAL_NVP(_tileMapMinZ),
 				CEREAL_NVP(_gameObjectData),
 				CEREAL_NVP(_enemyWavesGUIData),
 				CEREAL_NVP(_enemyOrderedSpawnVector),

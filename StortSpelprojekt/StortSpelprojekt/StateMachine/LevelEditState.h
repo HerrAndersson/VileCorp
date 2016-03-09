@@ -4,6 +4,7 @@
 #include "../BaseEdit.h"
 #include "LevelFormat.h"
 #include "JsonParser.h"
+#include "../AmbientLight.h"
 
 class LevelEditState : public BaseState
 {
@@ -26,7 +27,7 @@ private:
 	GUI::Node* _currentList = nullptr;
 	int _currentPage;
 	std::vector<GUI::Node*>* _objectTabs;
-	DirectX::XMFLOAT3* _ambientLight;
+	AmbientLight* _ambientLight;
 	std::vector<GUI::Node*>* _settingsTabs;
 
 	std::map<int, std::string> _typeLists =
@@ -75,7 +76,7 @@ private:
 	void ShowSelectedSpawnWave();
 
 public:
-	LevelEditState(System::Controls * controls, ObjectHandler * objectHandler, System::Camera * camera, PickingDevice * pickingDevice, const std::string & filename, AssetManager * assetManager, FontWrapper * fontWrapper, System::SettingsReader * settingsReader, System::SoundModule * soundModule, DirectX::XMFLOAT3* ambientLight);
+	LevelEditState(System::Controls * controls, ObjectHandler * objectHandler, System::Camera * camera, PickingDevice * pickingDevice, const std::string & filename, AssetManager * assetManager, FontWrapper * fontWrapper, System::SettingsReader * settingsReader, System::SoundModule * soundModule, AmbientLight* ambientLight);
 	virtual ~LevelEditState();
 
 	void Update(float deltaTime);

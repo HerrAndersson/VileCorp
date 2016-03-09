@@ -42,6 +42,7 @@ namespace Renderer
 		DirectX::XMFLOAT3 GetColor() const;
 		float GetRange() const;
 		float GetIntensity() const;
+		void SetIntensity(float intensity);
 
 		bool IsActive() const;
 		void SetActive(bool active);

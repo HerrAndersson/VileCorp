@@ -1,13 +1,13 @@
 #include "Guard.h"
 
-Guard::Guard(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject * renderObject, System::SoundModule* soundModule, const Tilemap * tileMap, int guardType, AI::Vec2D direction)
-	: Unit(ID, position, rotation, tilePosition, type, renderObject, soundModule, tileMap, direction)
+Guard::Guard(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject * renderObject, System::SoundModule* soundModule, Renderer::ParticleEventQueue* particleEventQueue, const Tilemap * tileMap, int guardType, AI::Vec2D direction)
+	: Unit(ID, position, rotation, tilePosition, type, renderObject, soundModule, particleEventQueue, tileMap, direction)
 {
 	_subType = guardType;
 	_isSelected = false;
 	_currentPatrolGoal = 0;
 	_health = 100;
-	_moveSpeed = 0.03;
+	_moveSpeed = 0.03f;
 	_baseDamage = 30;
 
 	switch (_subType)				//TODO: Repair time, vision radius, etc --Victor
@@ -22,14 +22,14 @@ Guard::Guard(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 ro
 		_baseDamage = 0;
 		_trapInteractionTime = 1;
 		_visionRadius = 7;
-		_moveSpeed = 0.035;
+		_moveSpeed = 0.035f;
 		break;
 	case MARKSMAN:
 		_health = 100;
 		_baseDamage = 50;
 		_trapInteractionTime = 2;
 		_visionRadius = 5;
-		_moveSpeed = 0.025;
+		_moveSpeed = 0.025f;
 		break;
 	default:
 		break;
@@ -186,17 +186,16 @@ void Guard::Act(GameObject* obj)
 			if (!static_cast<Trap*>(obj)->IsTrapActive())
 			{
 				Animate(FIXTRAPANIM);
-				if(System::FrameCountdown(_interactionTime, _animation->GetLength(FIXTRAPANIM)))
+				if(System::FrameCountdown(_interactionTime, (int)_animation->GetLength(FIXTRAPANIM)))
 				{
 					static_cast<Trap*>(obj)->SetTrapActive(true);
-					//	obj->SetColorOffset({0,0,0});
 					ClearObjective();
 				}
 			}
 			break;
 		case  System::ENEMY:											//The guard hits the enemy
 			Animate(FIGHTANIM);
-			if(System::FrameCountdown(_interactionTime, _animation->GetLength(FIGHTANIM)))
+			if(System::FrameCountdown(_interactionTime, (int)_animation->GetLength(FIGHTANIM)))
 			{
 				Unit* enemy = static_cast<Unit*>(obj);
 				enemy->TakeDamage(_baseDamage);

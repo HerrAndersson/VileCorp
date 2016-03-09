@@ -1,6 +1,6 @@
 #include "GameObject.h"
 
-GameObject::GameObject(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation,  AI::Vec2D tilePosition, System::Type type, RenderObject * renderObject, System::SoundModule* soundModule, DirectX::XMFLOAT3 colorOffset, int subType, AI::Vec2D direction)
+GameObject::GameObject(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation,  AI::Vec2D tilePosition, System::Type type, RenderObject * renderObject, System::SoundModule* soundModule, Renderer::ParticleEventQueue* particleEventQueue, DirectX::XMFLOAT3 colorOffset, int subType, AI::Vec2D direction)
 {
 	_ID = ID;
 	_position = position;
@@ -11,13 +11,16 @@ GameObject::GameObject(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::X
 	_type = type;
 	_renderObject = renderObject;
 	_pickUpState = ONTILE;
+	_isTargeted = false;
 	_visible = true;
 	_subType = subType;
+	_hasParticleEffect = false;
 	_active = true;
 	_soundModule = soundModule;
 	_direction = direction;
 	CalculateMatrix();
 	_animation = nullptr;
+	_particleEventQueue = particleEventQueue;
 }
 
 GameObject::~GameObject()
@@ -111,6 +114,16 @@ AI::Vec2D GameObject::GetDirection() const
 	return _direction;
 }
 
+bool GameObject::IsTargeted() const
+{
+	return _isTargeted;
+}
+
+void GameObject::SetTargeted(bool targeted)
+{
+	_isTargeted = targeted;
+}
+
 void GameObject::SetTilePosition(AI::Vec2D pos)
 {
 	_tilePosition = pos;
@@ -181,7 +194,12 @@ RenderObject * GameObject::GetRenderObject() const
 
 Animation * GameObject::GetAnimation() const
 {
-	return _animation;
+	if (_animation != nullptr)
+	{
+		return _animation;
+	}
+	
+	return nullptr;
 }
 
 void GameObject::SetPickUpState(PickUpState state)
@@ -230,10 +248,26 @@ int GameObject::GetAnimLength(int layer)
 {
 	if (_animation != nullptr)
 	{
-		return _animation->GetLength(layer);
+		return (int)_animation->GetLength(layer);
 	}
 	else
 	{
 		return 0;
 	}
+}
+
+void GameObject::ShowAreaOfEffect()
+{
+	HideAreaOfEffect();
+	ParticleRequestMessage* msg;
+
+	XMFLOAT3 pos = this->_position;
+	pos.y += 0.04f;
+	msg = new ParticleRequestMessage(ParticleType::STATIC_ICON, ParticleSubType::AOE_RED_SUBTYPE, _ID, pos, XMFLOAT3(0, 1, 0), 1.0f, 1, 0.27f, true, true);
+	_particleEventQueue->Insert(msg);
+}
+
+void GameObject::HideAreaOfEffect()
+{
+	_particleEventQueue->Insert(new ParticleUpdateMessage(_ID, false));
 }

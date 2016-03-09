@@ -164,7 +164,7 @@ void BaseState::HandleCamMove(float deltaTime)
 	XMFLOAT3 right(0.0f, 0.0f, 0.0f);
 	XMFLOAT3 forward(0.0f, 0.0f, 0.0f);
 	bool isMoving = false;
-	float v = 0.06f + (_camera->GetPosition().y * 0.01);
+	float v = 0.06f + (_camera->GetPosition().y * 0.01f);
 
 	if (_controls->IsFunctionKeyDown("CAMERA:MOVE_CAMERA_UP"))
 	{
@@ -214,7 +214,7 @@ void BaseState::HandleCamMove(float deltaTime)
 
 	if (isMoving)
 	{
-		_camera->Move(XMFLOAT3((forward.x + right.x) * v, (forward.y + right.y) * v, (forward.z + right.z) * v), deltaTime / 10);
+		_camera->Move(XMFLOAT3((forward.x + right.x) * v, (forward.y + right.y) * v, (forward.z + right.z) * v), deltaTime * 0.1f);
 
 		if (_camera->GetMode() == System::LOCKED_CAM)
 		{

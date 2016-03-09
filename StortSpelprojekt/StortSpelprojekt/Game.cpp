@@ -7,7 +7,7 @@ Game::Game(HINSTANCE hInstance, int nCmdShow) :
 	_settingsReader("Assets/settings.xml", "Assets/profile.xml"),
 	_soundModule(_settingsReader.GetSettings(), "Assets/Sounds/", ".ogg")
 {
-	srand(time(NULL));
+	srand((unsigned int)time(NULL));
 	System::Settings* settings = _settingsReader.GetSettings();
 
 	_gameHandle = this;
@@ -29,18 +29,20 @@ Game::Game(HINSTANCE hInstance, int nCmdShow) :
 	LoadParticleSystemData(*particleTextures, modifiers);
 	_particleHandler = new Renderer::ParticleHandler(_renderModule->GetDevice(), _renderModule->GetDeviceContext(), particleTextures, modifiers);
 
-	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager, &_data, _settingsReader.GetSettings(), _particleHandler->GetParticleEventQueue(), &_soundModule);
+	_objectHandler = new ObjectHandler(_renderModule->GetDevice(), _assetManager, &_data, _settingsReader.GetSettings(), _particleHandler->GetParticleEventQueue(), &_soundModule, &_ambientLight);
 	_pickingDevice = new PickingDevice(_camera, settings);
 
 	_SM = new StateMachine(_controls, _objectHandler, _camera, _pickingDevice, "Assets/gui.json", _assetManager, _fontWrapper, settings, &_settingsReader, &_soundModule, &_ambientLight, _combinedMeshGenerator);
+
 	_SM->Update(_timer.GetFrameTime());
 
 	_enemiesHasSpawned = false;
 
-	_ambientLight = _renderModule->GetAmbientLight();
+	//Set brightness
+	_ambientLight.SetScale(_settingsReader.GetSettings()->_brightness);
+
 	ResizeResources(settings);//This fixes a bug which offsets mousepicking, do not touch! //Markus
 	_renderModule->SetAntialiasingEnabled(settings->_antialiasing);
-
 
 	for (int i = 0; i < 10; i++)
 	{
@@ -50,11 +52,13 @@ Game::Game(HINSTANCE hInstance, int nCmdShow) :
 
 Game::~Game()
 {
+	// _SM over _objecthandler, contains pointers to game objects
+	delete _SM;
 	delete _objectHandler;
+
 	delete _window;
 	delete _renderModule;
 	delete _camera;
-	delete _SM;
 	delete _controls;
 	delete _pickingDevice;
 	delete _fontWrapper;
@@ -138,7 +142,7 @@ void Game::LoadParticleSystemData(ParticleTextures& particleTextures, ParticleMo
 	modifiers._lightningRepeatTime = data._lightningRepeatTime;
 }
 
-bool Game::Update(double deltaTime)
+bool Game::Update(float deltaTime)
 {
 	_soundModule.Update(_camera->GetPosition());
 
@@ -155,6 +159,8 @@ bool Game::Update(double deltaTime)
 		_soundModule.SetVolume(settings->_volume / 100.0f, CHMASTER);
 		_settingsReader.SetSettingsChanged(false);
 		_renderModule->SetAntialiasingEnabled(settings->_antialiasing);
+		_ambientLight.SetScale(settings->_brightness);
+		_objectHandler->UpdateLightIntensity();
 	}
 
 	_controls->Update();
@@ -183,7 +189,7 @@ bool Game::Update(double deltaTime)
 
 void Game::Render()
 {
-	_renderModule->SetAmbientLight(_ambientLight);
+	_renderModule->SetAmbientLight(_ambientLight.GetAmbientLight());
 	_renderModule->BeginScene(0.0f, 0.5f, 0.5f, 1.0f, _SM->GetState() == LEVELEDITSTATE);
 	_renderModule->SetDataPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
 
@@ -231,7 +237,8 @@ void Game::Render()
 		{
 			if (spot.second != nullptr && spot.second->IsActive() && spot.first->IsActive())
 			{
-				GenerateShadowMap(spot.second, spot.first->GetID());
+				GenerateShadowMap(Renderer::RenderModule::ShaderStage::SHADOW_GENERATION, spot.second, spot.first->GetID());
+				GenerateShadowMap(Renderer::RenderModule::ShaderStage::ANIM_SHADOW_GENERATION, spot.second, spot.first->GetID());
 
 				_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::LIGHT_APPLICATION_SPOTLIGHT);
 				_renderModule->SetLightDataPerSpotlight(spot.second);
@@ -259,7 +266,7 @@ void Game::Render()
 
 	///////////////////////////////////////////////////////  HUD and other 2D   ////////////////////////////////////////////////////////////
 	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::HUD_STAGE);
-	_renderModule->Render(_SM->GetCurrentStatePointer()->GetUITree()->GetRootNode(), _fontWrapper);
+	_renderModule->Render(_SM->GetCurrentStatePointer()->GetUITree()->GetRootNode(), _fontWrapper, _ambientLight.GetScale());
 
 	if (_SM->GetState() == PLAYSTATE)
 	{
@@ -303,7 +310,7 @@ void Game::RenderGameObjects(int forShaderStage, std::vector<std::vector<GameObj
 		if (gameObjectVector.size() > 0)
 		{
 			//The floors in the gameObjects vector should not be rendered, as these are combined in a single mesh to reduce draw calls
-			if ((_SM->GetState() == PLACEMENTSTATE || _SM->GetState() == PLAYSTATE || _SM->GetState() == TUTORIALSTATE || _SM->GetState() == PAUSESTATE) && (gameObjectVector.at(0)->GetType() == System::FLOOR || gameObjectVector.at(0)->GetType() == System::WALL))
+			if ((_SM->GetState() == PLACEMENTSTATE || _SM->GetState() == PLAYSTATE || _SM->GetState() == TUTORIAL || _SM->GetState() == PAUSESTATE) && (gameObjectVector.at(0)->GetType() == System::FLOOR || gameObjectVector.at(0)->GetType() == System::WALL))
 			{
 				continue;
 			}
@@ -311,7 +318,7 @@ void Game::RenderGameObjects(int forShaderStage, std::vector<std::vector<GameObj
 			GameObject* lastGameObject = nullptr;
 			RenderObject* lastRenderObject = nullptr;
 			int vertexBufferSize = 0;
-			for (int j = 0; j < gameObjectVector.size(); j++)
+			for (uint j = 0; j < gameObjectVector.size(); j++)
 			{
 				GameObject* gameObject = gameObjectVector[j];
 				RenderObject* renderObject = gameObject->GetRenderObject();
@@ -347,52 +354,14 @@ void Game::RenderGameObjects(int forShaderStage, std::vector<std::vector<GameObj
 	}
 }
 
-void Game::GenerateShadowMap(Renderer::Spotlight* spotlight, unsigned short ownerID)
+void Game::GenerateShadowMap(Renderer::RenderModule::ShaderStage shaderStage, Renderer::Spotlight* spotlight, unsigned short ownerID)
 {
-	//Static objects
-	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::SHADOW_GENERATION);
-	_renderModule->SetShadowMapDataPerSpotlight(spotlight->GetViewMatrix(), spotlight->GetProjectionMatrix());
-
 	vector<vector<GameObject*>>* inLight = _objectHandler->GetObjectsInLight(spotlight);
 	GameObject* lastGameObject = nullptr;
 	RenderObject* lastRenderObject = nullptr;
 	int vertexBufferSize = 0;
 
-	for (auto j : *inLight)
-	{
-		if (j.size() > 0)
-		{
-			vertexBufferSize = 0;
-
-			for (int i = 0; i < j.size(); i++)
-			{
-				GameObject* obj = j.at(i);
-				RenderObject* renderObject = obj->GetRenderObject();
-
-				if (!renderObject->_mesh->_isSkinned)
-				{
-					//If the current object and the previous object are different, set the new data
-					unsigned int thisSubType = obj->GetSubType();
-					if (lastGameObject == nullptr || *lastRenderObject != *renderObject || lastGameObject->GetSubType() != obj->GetSubType())
-					{
-						_renderModule->SetShadowMapDataPerObjectType(renderObject);
-						vertexBufferSize = renderObject->_mesh->_vertexBufferSize;
-						lastRenderObject = renderObject;
-						lastGameObject = obj;
-					}
-
-					//Render the visible objects, but skip the owner itself
-					if (obj->IsVisible() && obj->GetID() != ownerID)
-					{
-						_renderModule->RenderShadowMap(obj->GetMatrix(), vertexBufferSize);
-					}
-				}
-			}
-		}
-	}
-
-	//Animated/skinned objects
-	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::ANIM_SHADOW_GENERATION);
+	_renderModule->SetShaderStage(shaderStage);
 	_renderModule->SetShadowMapDataPerSpotlight(spotlight->GetViewMatrix(), spotlight->GetProjectionMatrix());
 
 	for (auto j : *inLight)
@@ -401,13 +370,19 @@ void Game::GenerateShadowMap(Renderer::Spotlight* spotlight, unsigned short owne
 		{
 			vertexBufferSize = 0;
 
-			for (int i = 0; i < j.size(); i++)
+			for (uint i = 0; i < j.size(); i++)
 			{
 				GameObject* obj = j.at(i);
 				RenderObject* renderObject = obj->GetRenderObject();
-				Animation* anim = obj->GetAnimation();
+				Animation* anim;
 
-				if (renderObject->_mesh->_isSkinned && anim)
+				if (shaderStage == Renderer::RenderModule::ShaderStage::ANIM_SHADOW_GENERATION)
+				{
+					anim = obj->GetAnimation();
+				}
+				
+				if ((shaderStage == Renderer::RenderModule::ShaderStage::SHADOW_GENERATION && !renderObject->_mesh->_isSkinned) ||
+					(shaderStage == Renderer::RenderModule::ShaderStage::ANIM_SHADOW_GENERATION && renderObject->_mesh->_isSkinned && anim))
 				{
 					//If the current object and the previous object are different, set the new data
 					unsigned int thisSubType = obj->GetSubType();
@@ -422,7 +397,14 @@ void Game::GenerateShadowMap(Renderer::Spotlight* spotlight, unsigned short owne
 					//Render the visible objects, but skip the owner itself
 					if (obj->IsVisible() && obj->GetID() != ownerID)
 					{
-						_renderModule->RenderShadowMap(obj->GetMatrix(), vertexBufferSize, anim->GetTransforms(), anim->GetBoneCount());
+						if (shaderStage == Renderer::RenderModule::ShaderStage::ANIM_SHADOW_GENERATION)
+						{
+							_renderModule->RenderShadowMap(obj->GetMatrix(), vertexBufferSize, anim->GetTransforms(), anim->GetBoneCount());
+						}
+						else
+						{
+							_renderModule->RenderShadowMap(obj->GetMatrix(), vertexBufferSize);
+						}
 					}
 				}
 			}
@@ -449,12 +431,11 @@ void Game::RenderParticles()
 				if (type != ParticleType::ELECTRICITY)
 				{
 					int textureCount = PARTICLE_TEXTURE_COUNT;
-					if (type == ParticleType::ICON)
+					if (type == ParticleType::ICON || type == ParticleType::STATIC_ICON)
 					{
-						ParticleSubType subType = emitter->GetSubType();
 						XMFLOAT3 campos = _camera->GetPosition();
 						XMFLOAT3 emitterPosition = emitter->GetPosition();
-						bool isMarker = (subType == ParticleSubType::QUESTIONMARK_SUBTYPE);
+						bool isMarker = (type == ParticleType::STATIC_ICON);
 						if (isMarker)
 						{
 							campos = emitterPosition;

@@ -41,7 +41,7 @@ void TutorialState::PlacementGuideCheck(std::string nodeName, System::Type type,
 }
 
 TutorialState::TutorialState(System::Controls * controls, ObjectHandler * objectHandler, System::Camera * camera, PickingDevice * pickingDevice, const std::string & filename, AssetManager * assetManager, FontWrapper * fontWrapper, 
-							System::SettingsReader * settingsReader, System::SoundModule * soundModule, DirectX::XMFLOAT3 * ambientLight)
+							System::SettingsReader * settingsReader, System::SoundModule * soundModule, AmbientLight * ambientLight)
 	:PlacementState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settingsReader, soundModule, ambientLight)
 {
 	_sCameraPlaced = false;

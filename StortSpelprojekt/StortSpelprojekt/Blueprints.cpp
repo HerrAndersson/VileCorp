@@ -24,7 +24,7 @@ Blueprints::Blueprints()
 
 	_blueprintsByType.resize(System::NR_OF_TYPES);
 
-	for (int i = 0; i < _blueprintsByName.size(); i++)
+	for (int i = 0; i < (int)_blueprintsByName.size(); i++)
 	{
 		System::Blueprint* blueprint = &_blueprintsByName[i];
 		int blueprintVectorSize = _blueprintsByType[blueprint->_type].size();
@@ -53,7 +53,7 @@ std::vector<std::vector<System::Blueprint*>>* Blueprints::GetBlueprintsOrderedBy
 
 System::Blueprint* Blueprints::GetBlueprintByName(const std::string& name)
 {
-	for (int i = 0; i < _blueprintsByName.size(); i++)
+	for (int i = 0; i < (int)_blueprintsByName.size(); i++)
 	{
 		if (_blueprintsByName[i]._name == name)
 		{
@@ -65,9 +65,9 @@ System::Blueprint* Blueprints::GetBlueprintByName(const std::string& name)
 
 System::Blueprint* Blueprints::GetBlueprintByType(int type, int subType /*= 0*/)
 {
-	if (type <= _blueprintsByType.size() - 1 && type >= 0)
+	if (type <= (int)_blueprintsByType.size() - 1 && type >= 0)
 	{
-		if (subType <= _blueprintsByType[type].size() - 1 && subType >= 0)
+		if (subType <= (int)_blueprintsByType[type].size() - 1 && subType >= 0)
 		{
 			return _blueprintsByType[type][subType];
 		}

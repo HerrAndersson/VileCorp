@@ -469,7 +469,7 @@
 			"": {
 				"position": [0, 0.15],
 				"scale": [0.28, 0.6],
-				"texture": "../Menues/Pause Menu/pause1-nocup.png"
+				"texture": "../Menues/PlacementStateGUI/pause1-nocup.png"
 			},
 			"": {
 				"position": [0, -0.0],
@@ -491,7 +491,7 @@
 		"controls": {
 			"position": [0.8, 0.15],
 			"scale": [0.2, 0.6],
-			"texture": "../Menues/Pause Menu/pause1-nocup.png",
+			"texture": "../Menues/PlacementStateGUI/pause1-nocup.png",
 			"": {
 				"position": [0, -0.15],
 				"scale": [0.15, 0.6],
@@ -512,7 +512,7 @@
 		"objective": {
 			"position": [0.8, 0.15],
 			"scale": [0.2, 0.6],
-			"texture": "../Menues/Pause Menu/pause1-nocup.png",
+			"texture": "../Menues/PlacementStateGUI/pause1-nocup.png",
 			"": {
 				"position": [0, -0.15],
 				"scale": [0.15, 0.6],
@@ -532,7 +532,7 @@
 			"thief": {
 				"position": [0.0, -0.8],
 				"scale": [0.2, 0.2],
-				"texture": "../Menues/Pause Menu/pause1-nocup.png",
+				"texture": "../Menues/PlacementStateGUI/pause1-nocup.png",
 				"": {
 					"position": [0.0, 0.0],
 					"scale": [0.15, 0.15],
@@ -543,7 +543,7 @@
 		"guardexplained": {
 			"position": [0.8, 0.15],
 			"scale": [0.2, 0.6],
-			"texture": "../Menues/Pause Menu/pause1-nocup.png",
+			"texture": "../Menues/PlacementStateGUI/pause1-nocup.png",
 			"": {
 				"position": [0, -0.15],
 				"scale": [0.15, 0.6],
@@ -564,7 +564,7 @@
 		"guardplace": {
 			"position": [0.8, 0.15],
 			"scale": [0.2, 0.6],
-			"texture": "../Menues/Pause Menu/pause1-nocup.png",
+			"texture": "../Menues/PlacementStateGUI/pause1-nocup.png",
 			"": {
 				"position": [0, -0.15],
 				"scale": [0.15, 0.6],
@@ -577,7 +577,7 @@
 		"anvilexplained": {
 			"position": [0.8, 0.15],
 			"scale": [0.2, 0.6],
-			"texture": "../Menues/Pause Menu/pause1-nocup.png",
+			"texture": "../Menues/PlacementStateGUI/pause1-nocup.png",
 			"": {
 				"position": [0, -0.15],
 				"scale": [0.15, 0.6],
@@ -598,7 +598,7 @@
 		"anvilplace": {
 			"position": [0.8, 0.15],
 			"scale": [0.2, 0.6],
-			"texture": "../Menues/Pause Menu/pause1-nocup.png",
+			"texture": "../Menues/PlacementStateGUI/pause1-nocup.png",
 			"": {
 				"position": [0, -0.15],
 				"scale": [0.15, 0.6],
@@ -611,7 +611,7 @@
 		"teslaexplained": {
 			"position": [0.8, 0.15],
 			"scale": [0.2, 0.6],
-			"texture": "../Menues/Pause Menu/pause1-nocup.png",
+			"texture": "../Menues/PlacementStateGUI/pause1-nocup.png",
 			"": {
 				"position": [0, -0.15],
 				"scale": [0.15, 0.6],
@@ -632,7 +632,7 @@
 		"teslaplace": {
 			"position": [0.8, 0.15],
 			"scale": [0.2, 0.6],
-			"texture": "../Menues/Pause Menu/pause1-nocup.png",
+			"texture": "../Menues/PlacementStateGUI/pause1-nocup.png",
 			"": {
 				"position": [0, -0.15],
 				"scale": [0.15, 0.6],
@@ -645,7 +645,7 @@
 		"securitycameraexplained": {
 			"position": [0.8, 0.15],
 			"scale": [0.2, 0.6],
-			"texture": "../Menues/Pause Menu/pause1-nocup.png",
+			"texture": "../Menues/PlacementStateGUI/pause1-nocup.png",
 			"": {
 				"position": [0, -0.15],
 				"scale": [0.15, 0.6],
@@ -666,7 +666,7 @@
 		"securitycameraplace": {
 			"position": [0.8, 0.15],
 			"scale": [0.2, 0.6],
-			"texture": "../Menues/Pause Menu/pause1-nocup.png",
+			"texture": "../Menues/PlacementStateGUI/pause1-nocup.png",
 			"": {
 				"position": [0, -0.15],
 				"scale": [0.15, 0.6],
@@ -679,7 +679,7 @@
 		"budgetexplained": {
 			"position": [0.8, 0.15],
 			"scale": [0.2, 0.6],
-			"texture": "../Menues/Pause Menu/pause1-nocup.png",
+			"texture": "../Menues/PlacementStateGUI/pause1-nocup.png",
 			"": {
 				"position": [0, -0.15],
 				"scale": [0.15, 0.6],
@@ -700,7 +700,7 @@
 		"playexplained": {
 			"position": [0.8, 0.15],
 			"scale": [0.2, 0.6],
-			"texture": "../Menues/Pause Menu/pause1-nocup.png",
+			"texture": "../Menues/PlacementStateGUI/pause1-nocup.png",
 			"": {
 				"position": [0, -0.15],
 				"scale": [0.15, 0.6],

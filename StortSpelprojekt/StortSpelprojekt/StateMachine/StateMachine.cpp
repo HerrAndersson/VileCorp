@@ -12,7 +12,7 @@ StateMachine::StateMachine
 	System::Settings* settings,
 	System::SettingsReader* settingsReader,
 	System::SoundModule* soundModule,
-	DirectX::XMFLOAT3* ambientLight, 
+	AmbientLight* ambientLight,
 	CombinedMeshGenerator* combinedMeshGenerator
 	)
 {

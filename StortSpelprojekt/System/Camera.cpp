@@ -73,7 +73,7 @@ namespace System
 		Update();
 	}
 
-	void Camera::Move(const DirectX::XMFLOAT3& offset, double velocity)
+	void Camera::Move(const DirectX::XMFLOAT3& offset, float velocity)
 	{
 		_position.x += offset.x * velocity;
 		_position.y += offset.y * velocity;

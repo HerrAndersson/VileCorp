@@ -1,6 +1,7 @@
 #pragma once
 #include "GameObject.h"
 #include "Unit.h"
+#include "ParticleSystem\ParticleEventQueue.h"
 #include <memory>
 
 enum TrapType{ ANVIL, TESLACOIL, SHARK, GUN, SAW, CAKEBOMB, BEAR, FLAMETHROWER, WATER_GUN, SPIN_TRAP};
@@ -33,7 +34,7 @@ private:
 
 	AI::Vec2D* _occupiedTiles;			//Physical area taken up by the trap
 	int _nrOfOccupiedTiles;
-	AI::Vec2D* _triggerTiles;			//Tiles that when walked on by an enemy, will activate the trap. Do not place on tile that is not also included in _occupiedTiles
+	AI::Vec2D* _triggerTiles;			//Tiles that when walked on by an enemy, will activate the trap. Things will get weird if _tilePosition is not a trigger.
 	int _nrOfTriggers;
 	AI::Vec2D* _areaOfEffect;			//Tiles that will be affected by the activated trap
 	int _nrOfAOETiles;
@@ -51,17 +52,23 @@ private:
 					Unit::StatusEffect statusEffect, int statusTimer, int statusInterval, int triggerTimer = 0, int ammunition = 1);							/*Initialize adds any characteristics specific to the subtype*/
 	void SetTiles();
 public:
-	Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject * renderObject, System::SoundModule* soundModule,
+	Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject * renderObject, System::SoundModule* soundModule, Renderer::ParticleEventQueue* particleEventQueue,
 		 const Tilemap* tileMap, int trapType = ANVIL, AI::Vec2D direction = {1,0});
 	virtual ~Trap();
 
 	AI::Vec2D* GetTiles()const;
 	int GetNrOfOccupiedTiles()const;
+	AI::Vec2D* GetTriggers()const;
+	int GetNrOfTriggerTiles()const;
+	AI::Vec2D* GetAOE()const;
+	int GetNrOfAOETiles()const;
 	int GetDetectionDifficulty()const;
 	int GetDisarmDifficulty()const;
 	bool InRange(AI::Vec2D pos) const;
 	bool IsTrapActive() const;
 	void SetTrapActive(bool active);
+
+	void RequestParticleByType(Unit* unit);
 
 	void Activate();
 	void Update(float deltaTime);
@@ -75,7 +82,11 @@ public:
 	AI::Vec2D GetDirection();
 	void SetDirection(const AI::Vec2D& direction);
 	enum Anim { IDLEANIM, ACTIVATEANIM, DISABLEANIM, FIXANIM, NR_OF_ANIM/*Has to be last*/ };
+	
 	void Animate(Anim anim);
+
+	// Overloaded because of damage/special and multiple tile positions
+	void ShowAreaOfEffect();
 
 	//Sound
 	void PlayActivateSound();

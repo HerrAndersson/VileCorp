@@ -10,23 +10,17 @@
 #include "../Player.h"
 #include "CommonUtils.h"
 #include "../System/Settings/Profile.h"
+#include "../AmbientLight.h"
 
 class PlacementState : public BaseState
 {
+private:
+	std::vector<short> _informationOverlayIDs;
 protected:
 	BaseEdit* _baseEdit;
-	
 	int _budget;
-	int _costOfAnvilTrap;
-	int _costOfTeslaCoil;
-	int _costOfCamera;
-	int _costOfGuard;
-	//TODO: Remove all _costOfX --Victor
-
-	DirectX::XMFLOAT3* _ambientLight;
-
+	AmbientLight* _ambientLight;
 	System::Profile* _profile;
-
 	ToPlace _toPlace;
 
 	//GUI::NodeBar _unitBar;
@@ -35,8 +29,11 @@ protected:
 	void EvaluateGoldCost();
 	void HandleDescriptions();
 
+	void AddInformationOverlay();
+	void RemoveInformationOverlay();
+
 public:
-	PlacementState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule, DirectX::XMFLOAT3* ambientLight);
+	PlacementState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule, AmbientLight* ambientLight);
 	virtual ~PlacementState();
 
 	virtual void Update(float deltaTime);
@@ -45,5 +42,7 @@ public:
 
 	void HandleInput();
 	virtual void HandleButtons();
+
+	
 };
 

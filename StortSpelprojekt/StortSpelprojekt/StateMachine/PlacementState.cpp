@@ -1,17 +1,13 @@
 #include "PlacementState.h"
 
-PlacementState::PlacementState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule, DirectX::XMFLOAT3* ambientLight)
+PlacementState::PlacementState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule, AmbientLight* ambientLight)
 	: BaseState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settingsReader, soundModule)
 {
 	_buttons = _uiTree.GetNode("UnitList")->GetChildren();
 	_profile = settingsReader->GetProfile();
 
 	//Money
-	_budget = 0;
-	_costOfAnvilTrap	= 50;
-	_costOfTeslaCoil	= 100;
-	_costOfCamera		= 80;
-	_costOfGuard		= 200;
+	_budget = -1;
 
 	_controls = controls;
 	_objectHandler = objectHandler;
@@ -26,6 +22,63 @@ PlacementState::PlacementState(System::Controls* controls, ObjectHandler* object
 
 void PlacementState::EvaluateGoldCost()
 {
+	int mainType = _toPlace._sB._blueprint->_type;
+	int subType = -1;
+
+	if (mainType == System::Type::GUARD)
+	{
+		subType = _toPlace._sB._blueprint->_subType;
+		switch (subType)
+		{
+		case GuardType::BASICGUARD:
+			_toPlace._goldCost = 200;		//GUARD COST
+			break;
+		case GuardType::ENGINEER:
+			_toPlace._goldCost = 100;		//ENGINEER COST
+			break;
+		}
+	}
+	else if (mainType == System::Type::CAMERA)
+	{
+		_toPlace._goldCost = 20;			//CAMERA COST
+	}
+	else if (mainType == System::Type::TRAP)
+	{
+		subType = _toPlace._sB._blueprint->_subType;
+		switch (_toPlace._sB._blueprint->_subType)
+		{
+		case TrapType::ANVIL:
+			_toPlace._goldCost = 50;		//ANVIL COST
+			break;
+		case TrapType::BEAR:
+			_toPlace._goldCost = 80;		//BEAR COST
+			break;
+		case TrapType::SAW:
+			_toPlace._goldCost = 150;		//SAW COST
+			break;
+		case TrapType::GUN:
+			_toPlace._goldCost = 100;		//MACHIENE GUN COST
+			break;
+		case TrapType::FLAMETHROWER:
+			_toPlace._goldCost = 120;		//FLAMETHROWER COST
+			break;
+		case TrapType::WATER_GUN:
+			_toPlace._goldCost = 80;		//WATER GUN COST
+			break;
+		case TrapType::TESLACOIL:
+			_toPlace._goldCost = 100;		//TESLA COST
+			break;
+		case TrapType::SPIN_TRAP:
+			_toPlace._goldCost = 150;		//SPINTRAP COST
+			break;
+		case TrapType::CAKEBOMB:
+			_toPlace._goldCost = 80;		//SUGARBOMB COST
+			break;
+		case TrapType::SHARK:
+			_toPlace._goldCost = 250;		//SHARK COST
+			break;
+		}
+	}
 }
 
 PlacementState::~PlacementState()
@@ -57,20 +110,21 @@ void PlacementState::Update(float deltaTime)
 
 void PlacementState::OnStateEnter()
 {
-	_ambientLight->x = AMBIENT_LIGHT_DAY.x;
-	_ambientLight->y = AMBIENT_LIGHT_DAY.y;
-	_ambientLight->z = AMBIENT_LIGHT_DAY.z;
+	_ambientLight->DayTime();
 
-	_budget = _objectHandler->GetCurrentLevelHeader()->_budget;
-	
-	//Fix so that budgetvalue won't get read if we go into pause state! We don't want the players to cheat themselves back to their budget money by pressing pause, resume, pause etc.. Enbom
+	//Do only when you don't come from pause state
+	if (GetOldState() != State::PAUSESTATE)
+	{
+		_budget = _objectHandler->GetCurrentLevelHeader()->_budget;
+
+		XMFLOAT3 campos;
+		campos.x = (float)_objectHandler->GetTileMap()->GetWidth() / 2.0f;
+		campos.y = 15.0f;
+		campos.z = (float)_objectHandler->GetTileMap()->GetHeight() / 2.0f - 10.0f;
+		_camera->SetPosition(campos);
+	}
+
 	_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_budget));
-
-	XMFLOAT3 campos;
-	campos.x = (float)_objectHandler->GetTileMap()->GetWidth() / 2.0f;
-	campos.y = 15.0f;
-	campos.z = (float)_objectHandler->GetTileMap()->GetHeight() / 2.0f - 10.0f;
-	_camera->SetPosition(campos);
 
 	_buttonHighlights.clear();
 	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("Play")));
@@ -122,15 +176,21 @@ void PlacementState::OnStateEnter()
 	_uiTree.GetNode("SharkCost")->SetText(L"Damage: Very haj\nUses: Infinite\nAtk. Speed: Very slow\nEffect: Big area");
 
 	std::vector<GUI::Node*>* tutorialNodes = _uiTree.GetNode("Tutorial")->GetChildren();
-	for (int i = 0; i < tutorialNodes->size(); i++)
+	for (int i = 0; i < (int)tutorialNodes->size(); i++)
 	{
 		tutorialNodes->at(i)->SetHidden(true);
 	}
 
 	_baseEdit = new BaseEdit(_objectHandler, _controls, _pickingDevice, false);
 
+	//Add icons for noplacement, entries and loot
+	_informationOverlayIDs = std::vector<short>();
+	AddInformationOverlay();
+
+
 	//Play music
 	_soundModule->Play("in_game_1");
+
 }
 
 void PlacementState::OnStateExit()
@@ -138,6 +198,7 @@ void PlacementState::OnStateExit()
 	delete _baseEdit;
 	_baseEdit = nullptr;
 
+	RemoveInformationOverlay();
 	//Pause music
 	_soundModule->Pause("in_game_1");
 }
@@ -227,3 +288,49 @@ void PlacementState::HandleDescriptions()
 	_uiTree.GetNode("CakeDescription")->SetHidden(!_uiTree.IsButtonColliding("CakeTrap", coord._pos.x, coord._pos.y));
 	_uiTree.GetNode("SharkDescription")->SetHidden(!_uiTree.IsButtonColliding("SharkTrap", coord._pos.x, coord._pos.y));
 }
+
+void PlacementState::AddInformationOverlay()
+{
+	for (auto f : *_objectHandler->GetAllByType(System::FLOOR))
+	{
+		if (static_cast<Architecture*>(f)->GetNoPlacementZone())
+		{
+			_informationOverlayIDs.push_back(f->GetID());
+			XMFLOAT3 pos = f->GetPosition();
+
+			pos.y += 0.01f;
+			ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::STATIC_ICON, ParticleSubType::NOPLACEMENT_SUBTYPE, f->GetID(), pos, XMFLOAT3(0, 1, 0), 1.0f, 1, 0.5f, true, false);
+			_objectHandler->GetParticleEventQueue()->Insert(msg);	
+		}
+	}
+
+	for (auto l : *_objectHandler->GetAllByType(System::LOOT))
+	{
+		_informationOverlayIDs.push_back(l->GetID());
+		XMFLOAT3 pos = l->GetPosition();
+
+		pos.y += 4.0f;
+		ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::LOOT_SUBTYPE, l->GetID(), pos, XMFLOAT3(0, 0, 0), 1.0f, 1, 0.5f, true, false);
+		_objectHandler->GetParticleEventQueue()->Insert(msg);
+	}
+
+	for (auto s : *_objectHandler->GetAllByType(System::SPAWN))
+	{
+		_informationOverlayIDs.push_back(s->GetID());
+		XMFLOAT3 pos = s->GetPosition();
+
+		pos.y += 4.0f;
+		ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::SPAWN_SUBTYPE, s->GetID(), pos, XMFLOAT3(0, 0, 0), 1.0f, 1, 0.5f, true, false);
+		_objectHandler->GetParticleEventQueue()->Insert(msg);
+	}
+
+}
+
+void PlacementState::RemoveInformationOverlay()
+{
+	for (auto ID : _informationOverlayIDs)
+	{
+		_objectHandler->GetParticleEventQueue()->Insert(new ParticleUpdateMessage(ID, false));
+	}
+}
+

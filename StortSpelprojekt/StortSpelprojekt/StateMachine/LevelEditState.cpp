@@ -1,6 +1,6 @@
 #include "LevelEditState.h"
 
-LevelEditState::LevelEditState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule, DirectX::XMFLOAT3* ambientLight)
+LevelEditState::LevelEditState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule, AmbientLight* ambientLight)
 	: BaseState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settingsReader, soundModule)
 {
 	_ambientLight = ambientLight;
@@ -17,13 +17,22 @@ void LevelEditState::Update(float deltaTime)
 	HandleCam(deltaTime);
 	HandleInput();
 	bool clickedOnGUI = HandleButtons();
-	if (_noPlacementZoneToggleButton.GetIsToggled())
+	if (!clickedOnGUI)
 	{
-		//TODO: No placement /Rikhard
-	}
-	else
-	{
-		if (!clickedOnGUI)
+		if (_noPlacementZoneToggleButton.GetIsToggled())
+		{
+			if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
+			{
+				Tilemap* tilemap = _objectHandler->GetTileMap();
+				AI::Vec2D pickedTileCoord = _pickingDevice->PickTile(_controls->GetMouseCoord()._pos);
+				if (tilemap->IsTypeOnTile(pickedTileCoord, System::Type::FLOOR))
+				{
+					Architecture* pickedFloor = static_cast<Architecture*>(tilemap->GetObjectOnTile(pickedTileCoord, System::Type::FLOOR));
+					pickedFloor->SetNoPlacementZone(!pickedFloor->GetNoPlacementZone());
+				}
+			}
+		}
+		else
 		{
 			_baseEdit->Update();
 		}
@@ -40,7 +49,7 @@ void LevelEditState::OnStateEnter()
 	_currentPage = 0;
 
 	_objectHandler->UnloadLevel();
-	_objectHandler->SetTileMap(new Tilemap());
+	_objectHandler->SetTileMap(new Tilemap(AI::Vec2D(110,110)));
 
 	_controls->ResetInputBuffers();
 
@@ -117,9 +126,7 @@ void LevelEditState::OnStateEnter()
 
 	_noPlacementZoneToggleButton = GUI::ToggleButton(_uiTree.GetNode("NoPlacementButton"));
 
-	_ambientLight->x = AMBIENT_LIGHT_DAY.x;
-	_ambientLight->y = AMBIENT_LIGHT_DAY.y;
-	_ambientLight->z = AMBIENT_LIGHT_DAY.z;
+	_ambientLight->DayTime();
 
 	_uiTree.GetNode("wholelist")->SetHidden(true);
 	_uiTree.GetNode("SettingList")->SetHidden(true);
@@ -140,8 +147,6 @@ void LevelEditState::OnStateEnter()
 	AddSpawnWaveAndSelectIt();
 
 	_isNewLevel = true;
-
-	_objectHandler->EnlargeTilemap(50);
 
 	_baseEdit = new BaseEdit(_objectHandler, _controls, _pickingDevice, true);
 
@@ -504,7 +509,7 @@ bool LevelEditState::HandleButtons()
 				}
 				else
 				{
-					for (int i = 0; i < _textBoxesGeneral.size(); i++)
+					for (uint i = 0; i < _textBoxesGeneral.size(); i++)
 					{
 						clickedOnGUI = SelectTextBox(&_textBoxesGeneral[i], coord, clickedOnGUI);
 					}
@@ -633,7 +638,7 @@ bool LevelEditState::HandleButtons()
 	{
 		//Need a means of hiding UnitLockToolTip when not holding over a button
 		_uiTree.GetNode("UnitLockToolTip")->SetHidden(false);
-		for (int i = 0; i < _uiTree.GetNode("UnitLockButtons")->GetChildren()->size(); i++)
+		for (uint i = 0; i < _uiTree.GetNode("UnitLockButtons")->GetChildren()->size(); i++)
 		{
 			if (_uiTree.IsButtonColliding(_uiTree.GetNode("UnitLockButtons")->GetChildren()->at(i)->GetId(), coord._pos.x, coord._pos.y))
 			{
@@ -677,6 +682,9 @@ bool LevelEditState::HandleButtonsForDialogWindows(System::MouseCoord &coord, bo
 			if (_levelHeaderFilenames.size() > 0)
 			{
 				_uiTree.GetNode("ImportMapList")->SetHidden(true);
+				_currentLevelFileName = _levelHeaderFilenames[_loadLevelSelectedIndex];
+				_currentLevelFileName.resize(_currentLevelFileName.size() - 5);
+				_saveLevelNameTextNode->SetText(System::StringToWstring(_currentLevelFileName));
 				LoadLevel(_levelHeaderFilenames[_loadLevelSelectedIndex]);
 			}
 			_dialogWindowLock = false;
@@ -700,7 +708,7 @@ bool LevelEditState::HandleButtonsForDialogWindows(System::MouseCoord &coord, bo
 		else if (_uiTree.IsButtonColliding("LevelDown", coord) && !_uiTree.IsNodeHidden("LevelDown"))
 		{
 			clickedOnGUI = true;
-			if ((_loadLevelSelectedIndex < _levelHeaderFilenames.size()))
+			if (_loadLevelSelectedIndex < (int)_levelHeaderFilenames.size() - 1)
 			{
 				_loadLevelSelectedIndex++;
 				_loadLevelTextNode->SetText(System::StringToWstring(_levelHeaderFilenames[_loadLevelSelectedIndex]));
@@ -744,7 +752,7 @@ void LevelEditState::ResetLevel()
 	_levelHeader = Level::LevelHeader();
 
 	_objectHandler->UnloadLevel();
-	_objectHandler->SetTileMap(new Tilemap(AI::Vec2D(110,110)));
+	_objectHandler->SetTileMap(new Tilemap(AI::Vec2D(110, 110)));
 
 	for (unsigned i = 0; i < _toggleButtons.size(); i++)
 	{
@@ -768,7 +776,7 @@ void LevelEditState::ResetLevel()
 bool LevelEditState::HandleButtonsForSpawn(System::MouseCoord &coord, bool clickedOnGUI)
 {
 	std::vector<GUI::Node*>* notSelectedRadioButtonNodes = _spawnWaveTypeRadioButtons.GetNotSelectedRadioButtonNodes();
-	for (int i = 0; i < notSelectedRadioButtonNodes->size() && !clickedOnGUI; i++)
+	for (uint i = 0; i < notSelectedRadioButtonNodes->size() && !clickedOnGUI; i++)
 	{
 		if (!_uiTree.IsNodeHidden(notSelectedRadioButtonNodes->at(i)) && _uiTree.IsButtonColliding(notSelectedRadioButtonNodes->at(i), coord))
 		{
@@ -807,7 +815,7 @@ bool LevelEditState::HandleButtonsForSpawn(System::MouseCoord &coord, bool click
 		else if (_uiTree.IsButtonColliding("WaveRight", coord._pos.x, coord._pos.y) && _isPressed[4] == true)
 		{
 			clickedOnGUI = true;
-			if (_selectedSpawnWave < _levelBinary._enemyWavesGUIData.size() - 1)
+			if (_selectedSpawnWave < (int)_levelBinary._enemyWavesGUIData.size() - 1)
 			{
 				SaveCurrentSpawnWave();
 				_selectedSpawnWave++;
@@ -816,7 +824,7 @@ bool LevelEditState::HandleButtonsForSpawn(System::MouseCoord &coord, bool click
 		}
 		else
 		{
-			for (int i = 0; i < _textBoxesSpawnSettings.size() && !clickedOnGUI; i++)
+			for (uint i = 0; i < _textBoxesSpawnSettings.size() && !clickedOnGUI; i++)
 			{
 				clickedOnGUI = SelectTextBox(&_textBoxesSpawnSettings[i], coord, clickedOnGUI);
 			}
@@ -902,172 +910,188 @@ void LevelEditState::ShowSelectedSpawnWave()
 
 void LevelEditState::ExportLevel()
 {
-	try
+	SaveCurrentSpawnWave();
+	_baseEdit->RemoveGhostImage();
+
+	_currentLevelFileName = System::WStringToString(_saveLevelNameTextNode->GetText());
+
+	////Fill Level Header:
+
+	//Getting Story Information
+	_levelHeader._storyTitle = System::WStringToString(_uiTree.GetNode("StoryTitleText")->GetText());
+	_levelHeader._storyBody = System::WStringToString(_uiTree.GetNode("StoryText")->GetText());
+
+	//Get Budget Information
+	std::wstringstream wss = std::wstringstream();
+	wss << _uiTree.GetNode("BudgetBoxText")->GetText();
+	wss >> _levelHeader._budget;
+
+	//Survival time 
+	if (_levelHeader._gameMode == Level::GameModes::SURVIVAL)
 	{
-		SaveCurrentSpawnWave();
-		_baseEdit->RemoveGhostImage();
+		int survivalMinutes = 0;
+		int survivalSeconds = 0;
+		wss << _uiTree.GetNode("MinuteText")->GetText();
+		wss >> survivalMinutes;
+		wss << _uiTree.GetNode("SecondBox")->GetText();
+		wss >> survivalSeconds;
 
-		_currentLevelFileName = System::WStringToString(_saveLevelNameTextNode->GetText());
+		_levelHeader._surviveForSeconds = (survivalMinutes * 60) + survivalSeconds;
+	}
 
-		////Fill Level Header:
+	//Get Level Binary file name
+	_levelHeader._levelBinaryFilename = _currentLevelFileName + ".bin";
 
-		//Getting Story Information
-		_levelHeader._storyTitle = System::WStringToString(_uiTree.GetNode("StoryTitleText")->GetText());
-		_levelHeader._storyBody = System::WStringToString(_uiTree.GetNode("StoryText")->GetText());
+	////Fill Level Binary:
+	//Tilemap size
+	Tilemap* tileMap = _objectHandler->GetTileMap();
+	_levelBinary._tileMapMinX = tileMap->GetWidth();
+	_levelBinary._tileMapMinZ = tileMap->GetHeight();
+	_levelBinary._tileMapMaxX = 0;
+	_levelBinary._tileMapMaxZ = 0;
 
-		//Get Budget Information
-		std::wstringstream wss = std::wstringstream();
-		wss << _uiTree.GetNode("BudgetBoxText")->GetText();
-		wss >> _levelHeader._budget;
-
-		//Survival time 
-		if (_levelHeader._gameMode == Level::GameModes::SURVIVAL)
+	//Game objects
+	std::vector<std::vector<GameObject*>>* gameObjects = _objectHandler->GetGameObjects();
+	_levelBinary._gameObjectData.resize(_objectHandler->GetObjectCount());
+	int gameObjectIndex = 0;
+	for (uint i = 0; i < gameObjects->size(); i++)
+	{
+		for (GameObject* gameObject : gameObjects->at(i))
 		{
-			int survivalMinutes = 0;
-			int survivalSeconds = 0;
-			wss << _uiTree.GetNode("MinuteText")->GetText();
-			wss >> survivalMinutes;
-			wss << _uiTree.GetNode("SecondBox")->GetText();
-			wss >> survivalSeconds;
+			std::vector<int>* formattedGameObject = &_levelBinary._gameObjectData[gameObjectIndex];
+			formattedGameObject->resize(6);
 
-			_levelHeader._surviveForSeconds = (survivalMinutes * 60) + survivalSeconds;
-		}
+			//Type
+			int type = formattedGameObject->at(0) = gameObject->GetType();
 
-		//Get Level Binary file name
-		_levelHeader._levelBinaryFilename = _currentLevelFileName + ".bin";
+			//Sub type 
+			int subType = formattedGameObject->at(1) = gameObject->GetSubType();
 
-		////Fill Level Binary:
-		//Tilemap size
-		Tilemap* tileMap = _objectHandler->GetTileMap();
-		_levelBinary._tileMapSizeX = tileMap->GetWidth();
-		_levelBinary._tileMapSizeZ = tileMap->GetHeight();
-
-		//Game objects
-		std::vector<std::vector<GameObject*>>* gameObjects = _objectHandler->GetGameObjects();
-		_levelBinary._gameObjectData.resize(_objectHandler->GetObjectCount());
-		int gameObjectIndex = 0;
-		for (uint i = 0; i < gameObjects->size(); i++)
-		{
-			for (GameObject* gameObject : gameObjects->at(i))
+			//Texture ID
+			System::Blueprint* blueprint = _objectHandler->GetBlueprintByType(type, subType);
+			std::string textureName = gameObject->GetRenderObject()->_diffuseTexture->_name;
+			formattedGameObject->at(2) = 0;
+			bool foundTexture = false;
+			for (uint i = 0; !foundTexture && i < blueprint->_textures.size(); i++)
 			{
-				std::vector<int>* formattedGameObject = &_levelBinary._gameObjectData[gameObjectIndex];
-				formattedGameObject->resize(6);
-
-				//Type
-				int type = formattedGameObject->at(0) = gameObject->GetType();
-
-				//Sub type 
-				int subType = formattedGameObject->at(1) = gameObject->GetSubType();
-
-				//Texture ID
-				System::Blueprint* blueprint = _objectHandler->GetBlueprintByType(type, subType);
-				std::string textureName = gameObject->GetRenderObject()->_diffuseTexture->_name;
-				formattedGameObject->at(2) = 0;
-				bool foundTexture = false;
-				for (int i = 0; !foundTexture && i < blueprint->_textures.size(); i++)
+				if (blueprint->_textures[i] == textureName)
 				{
-					if (blueprint->_textures[i] == textureName)
-					{
-						formattedGameObject->at(2) = i;
-						foundTexture = true;
-					}
+					formattedGameObject->at(2) = i;
+					foundTexture = true;
 				}
-
-				//Position
-				AI::Vec2D position = gameObject->GetTilePosition();
-				formattedGameObject->at(3) = static_cast<int>(position._x);
-				formattedGameObject->at(4) = static_cast<int>(position._y);
-
-				//Rotation
-				float rotYRadians = gameObject->GetRotation().y;
-				int rotYDegrees = static_cast<int>((rotYRadians / DirectX::XM_PI) * 180.0);
-				formattedGameObject->at(5) = rotYDegrees;
-
-				gameObjectIndex++;
 			}
-		}
 
-		//Convert spawn wave data to spawn wave map
+			//Position
+			AI::Vec2D position = gameObject->GetTilePosition();
+			formattedGameObject->at(3) = static_cast<int>(position._x);
+			formattedGameObject->at(4) = static_cast<int>(position._y);
 
-		for (int i = 0; i < _levelBinary._enemyWavesGUIData.size(); i++)
-		{
-			std::vector<int>* spawnWave = &_levelBinary._enemyWavesGUIData[i];
-			int enemyType = spawnWave->at(0);
-			int nrOfEnemies = spawnWave->at(1);
-			int startingTime = spawnWave->at(2);
-			int spawnFrequency = spawnWave->at(3);
-
-			for (int enemyIterator = 0; enemyIterator < nrOfEnemies; enemyIterator++)
+			if (formattedGameObject->at(3) > _levelBinary._tileMapMaxX)
 			{
-				std::array<int, 2> singleSpawn = { startingTime + (spawnFrequency * enemyIterator), enemyType };
-				_levelBinary._enemyOrderedSpawnVector.push_back(singleSpawn);
+				_levelBinary._tileMapMaxX = formattedGameObject->at(3);
 			}
-		}
-
-		std::sort(_levelBinary._enemyOrderedSpawnVector.begin(), _levelBinary._enemyOrderedSpawnVector.end(), [](std::array<int, 2> a, std::array<int, 2> b)
-		{
-			return b[0] > a[0];
-		});
-
-		//Save available units
-		GUI::ToggleButton* currentToggleButton;
-		GUI::Node* currentToggleNode;
-		for (unsigned i = 0; i < _toggleButtons.size(); i++)
-		{
-			currentToggleButton = &_toggleButtons.at(i);
-			if (!currentToggleButton->GetIsToggled())
+			if(formattedGameObject->at(3) < _levelBinary._tileMapMinX)
 			{
-				currentToggleNode = currentToggleButton->GetAttachedGUINode();
-
-				_levelBinary._availableUnits.push_back(currentToggleNode->GetId());
+				_levelBinary._tileMapMinX = formattedGameObject->at(3);
 			}
+			if (formattedGameObject->at(4) > _levelBinary._tileMapMaxZ)
+			{
+				_levelBinary._tileMapMaxZ = formattedGameObject->at(4);
+			}
+			if (formattedGameObject->at(4) < _levelBinary._tileMapMinZ)
+			{
+				_levelBinary._tileMapMinZ = formattedGameObject->at(4);
+			}
+
+			//Rotation
+			float rotYRadians = gameObject->GetRotation().y;
+			int rotYDegrees = static_cast<int>((rotYRadians / DirectX::XM_PI) * 180.0);
+			formattedGameObject->at(5) = rotYDegrees;
+
+			if (type == System::Type::FLOOR)
+			{
+				formattedGameObject->resize(7);
+				formattedGameObject->at(6) = static_cast<Architecture*>(gameObject)->GetNoPlacementZone();
+			}
+
+			gameObjectIndex++;
 		}
-
-		////Write the files
-
-		//Construct a suitable path for the level
-		std::string levelPath;
-#ifdef _DEBUG
-		char userPath[MAX_PATH];
-		SHGetFolderPathA(NULL, CSIDL_PROFILE, NULL, 0, userPath);
-
-		levelPath = userPath;
-		levelPath += "\\Google Drive\\Stort spelprojekt\\" + System::SKIRMISH_FOLDER_PATH;
-#else
-		levelPath = System::SKIRMISH_FOLDER_PATH;
-#endif
-		CreateDirectory(levelPath.c_str(), NULL);
-
-		//Make the individual file paths
-		std::string headerPath, binaryPath;
-		headerPath = binaryPath = levelPath + _currentLevelFileName;
-		headerPath += ".json";
-		binaryPath += ".bin";
-
-		std::ofstream outStream;
-
-		//Write the header
-		outStream.open(headerPath);
-		{
-			cereal::JSONOutputArchive jsonOut(outStream);
-			jsonOut(cereal::make_nvp(_currentLevelFileName.c_str(), _levelHeader));
-		}
-		outStream.close();
-
-		//Write the binary
-		outStream.open(binaryPath, std::ios::binary);
-		{
-			cereal::BinaryOutputArchive binOut(outStream);
-			binOut(_levelBinary);
-		}
-		outStream.close();
 	}
-	catch (...)
+
+	//Convert spawn wave data to spawn wave map
+	_levelBinary._enemyOrderedSpawnVector = std::vector<std::array<int, 2>>();
+	for (uint i = 0; i < _levelBinary._enemyWavesGUIData.size(); i++)
 	{
-		int i = 0;
+		std::vector<int>* spawnWave = &_levelBinary._enemyWavesGUIData[i];
+		int enemyType = spawnWave->at(0);
+		int nrOfEnemies = spawnWave->at(1);
+		int startingTime = spawnWave->at(2);
+		int spawnFrequency = spawnWave->at(3);
+
+		for (int enemyIterator = 0; enemyIterator < nrOfEnemies; enemyIterator++)
+		{
+			std::array<int, 2> singleSpawn = { startingTime + (spawnFrequency * enemyIterator), enemyType };
+			_levelBinary._enemyOrderedSpawnVector.push_back(singleSpawn);
+		}
 	}
 
+	std::sort(_levelBinary._enemyOrderedSpawnVector.begin(), _levelBinary._enemyOrderedSpawnVector.end(), [](std::array<int, 2> a, std::array<int, 2> b)
+	{
+		return b[0] > a[0];
+	});
 
+	//Save available units
+	GUI::ToggleButton* currentToggleButton;
+	GUI::Node* currentToggleNode;
+	for (unsigned i = 0; i < _toggleButtons.size(); i++)
+	{
+		currentToggleButton = &_toggleButtons.at(i);
+		if (!currentToggleButton->GetIsToggled())
+		{
+			currentToggleNode = currentToggleButton->GetAttachedGUINode();
+
+			_levelBinary._availableUnits.push_back(currentToggleNode->GetId());
+		}
+	}
+
+	////Write the files
+
+	//Construct a suitable path for the level
+	std::string levelPath;
+#ifdef _DEBUG
+	char userPath[MAX_PATH];
+	SHGetFolderPathA(NULL, CSIDL_PROFILE, NULL, 0, userPath);
+
+	levelPath = userPath;
+	levelPath += "\\Google Drive\\Stort spelprojekt\\" + System::SKIRMISH_FOLDER_PATH;
+#else
+	levelPath = System::SKIRMISH_FOLDER_PATH;
+#endif
+	CreateDirectory(levelPath.c_str(), NULL);
+
+	//Make the individual file paths
+	std::string headerPath, binaryPath;
+	headerPath = binaryPath = levelPath + _currentLevelFileName;
+	headerPath += ".json";
+	binaryPath += ".bin";
+
+	std::ofstream outStream;
+
+	//Write the header
+	outStream.open(headerPath);
+	{
+		cereal::JSONOutputArchive jsonOut(outStream);
+		jsonOut(cereal::make_nvp(_currentLevelFileName.c_str(), _levelHeader));
+	}
+	outStream.close();
+
+	//Write the binary
+	outStream.open(binaryPath, std::ios::binary);
+	{
+		cereal::BinaryOutputArchive binOut(outStream);
+		binOut(_levelBinary);
+	}
+	outStream.close();
 }
 
 void LevelEditState::LoadLevel(std::string headerFileName)
@@ -1076,6 +1100,7 @@ void LevelEditState::LoadLevel(std::string headerFileName)
 	_levelHeader = Level::LevelHeader();
 
 	_objectHandler->UnloadLevel();
+	_objectHandler->SetTileMap(new Tilemap(AI::Vec2D(110, 110)));
 
 	std::string levelPath;
 #ifdef _DEBUG
@@ -1093,9 +1118,9 @@ void LevelEditState::LoadLevel(std::string headerFileName)
 	bool result = false;
 	HRESULT success = _assetManager->ParseLevelBinary(&_levelBinary, levelPath + _levelHeader._levelBinaryFilename);
 
-	result = _objectHandler->LoadLevel(_levelBinary);
+	result = _objectHandler->LoadLevel(_levelBinary, false);
 	_baseEdit->RefreshTileMap();
-	
+
 	_budgetTextNode->SetText(std::to_wstring(_levelHeader._budget));
 	_storyTitleTextNode->SetText(System::StringToWstring(_levelHeader._storyTitle));
 	_storyTextNode->SetText(System::StringToWstring(_levelHeader._storyBody));

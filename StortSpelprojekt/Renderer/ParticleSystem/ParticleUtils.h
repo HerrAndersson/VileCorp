@@ -9,16 +9,16 @@
 #include "../RenderUtils.h"
 
 //Determines how it moves
-enum ParticleType { SPLASH, SMOKE, ELECTRICITY, FIRE, MUZZLE_FLASH, ICON };
+enum ParticleType { SPLASH, SMOKE, ELECTRICITY, FIRE, MUZZLE_FLASH, ICON, STATIC_ICON };
 
 //Determines how it looks
-enum ParticleSubType { BLOOD_SUBTYPE, WATER_SUBTYPE, SPARK_SUBTYPE, SMOKE_SUBTYPE, FIRE_SUBTYPE, MUZZLE_FLASH_SUBTYPE, EXCLAMATIONMARK_SUBTYPE, QUESTIONMARK_SUBTYPE, SELECTED_SUBTYPE, PATROL_SUBTYPE, HEALTH_SUBTYPE, WRENCH_SUBTYPE, NOPLACEMENT_SUBTYPE, OCCUPIED_SUBTYPE}; //Icons have to be last
-enum ParticleIconType { ICON_EXCLAMATIONMARK, ICON_QUESTIONMARK, ICON_SELECTED, ICON_PATROL, ICON_HEALTH, ICON_WRENCH, ICON_NOPLACEMENT, ICON_OCCUPIED }; //Used for loading and using icon textures
+enum ParticleSubType { BLOOD_SUBTYPE, WATER_SUBTYPE, SPARK_SUBTYPE, SMOKE_SUBTYPE, FIRE_SUBTYPE, MUZZLE_FLASH_SUBTYPE, EXCLAMATIONMARK_SUBTYPE, QUESTIONMARK_SUBTYPE, SELECTED_SUBTYPE, PATROL_SUBTYPE, HEALTH_SUBTYPE, WRENCH_SUBTYPE, NOPLACEMENT_SUBTYPE, OCCUPIED_SUBTYPE, LOOT_SUBTYPE, SPAWN_SUBTYPE, AOE_RED_SUBTYPE, AOE_YELLOW_SUBTYPE, AOE_GREEN_SUBTYPE}; //Icons have to be last
+enum ParticleIconType { ICON_EXCLAMATIONMARK, ICON_QUESTIONMARK, ICON_SELECTED, ICON_PATROL, ICON_HEALTH, ICON_WRENCH, ICON_NOPLACEMENT, ICON_OCCUPIED, ICON_LOOT, ICON_SPAWN, ICON_AOE_RED, ICON_AOE_YELLOW, ICON_AOE_GREEN}; //Used for loading and using icon textures
 
 //Has to be set in the BillboardingPS shader as well. The array there has to be of hard-coded length, 
 //so "dynamic" number of textures is not possible if more than the hard-coded number
 static const int PARTICLE_TEXTURE_COUNT = 4;
-static const int ICON_TEXTURE_COUNT = 8;
+static const int ICON_TEXTURE_COUNT = 13;
 
 struct ParticleMessage
 {
@@ -120,7 +120,6 @@ struct ParticleTextures
 			SAFE_RELEASE(_bloodTextures[i]);
 			SAFE_RELEASE(_waterTextures[i]);
 			SAFE_RELEASE(_smokeTextures[i]);
-			SAFE_RELEASE(_sparkTextures[i]);
 			SAFE_RELEASE(_fireTextures[i]);
 			SAFE_RELEASE(_muzzleFlashTextures[i]);
 		}
