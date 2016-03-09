@@ -232,7 +232,6 @@ void CombinedMeshGenerator::CombineAndOptimizeMeshes(Tilemap* tilemap, const Typ
 						int offsetX = 0;
 						int offsetY = 1;
 						bool stopX = false;
-						bool stopY = false;
 						int maxX = 999999999;
 						int maxY = 999999999;
 						bool foundX = false;
@@ -250,7 +249,7 @@ void CombinedMeshGenerator::CombineAndOptimizeMeshes(Tilemap* tilemap, const Typ
 								_tileIsCombined[x + offsetX][y] = true;
 
 								//Check Y-direction of this x-position
-								while (!stopY && (y + offsetY) < height)
+								while ((y + offsetY) < height)
 								{
 									GameObject* yObject = tilemap->GetObjectOnTile(x + offsetX, y + offsetY, typeToCombine);
 									if (yObject && *yObject->GetRenderObject() == *renderObject && !_tileIsCombined[x + offsetX][y+offsetY])

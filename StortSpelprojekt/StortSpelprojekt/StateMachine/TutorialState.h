@@ -30,7 +30,7 @@ private:
 	GUI::Node* _currentButton;			//The button the tutorial allows you to click
 
 	void ChangeTutorialStages(bool forward = true);
-	void PlacementGuideCheck(std::string nodeName, System::Type type, int subType = 0);
+	void PlacementGuideCheck(const std::string& nodeName, System::Type type, int subType = 0);
 
 public:
 	TutorialState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule, AmbientLight* ambientLight);

@@ -7,7 +7,7 @@ void TutorialState::ChangeTutorialStages(bool forward/* = true*/)
 	_uiTree.GetNode("Tutorial")->GetChildren()->at(_currentStage)->SetHidden(false);
 }
 
-void TutorialState::PlacementGuideCheck(std::string nodeName, System::Type type, int subType /*= 0*/)
+void TutorialState::PlacementGuideCheck(const std::string& nodeName, System::Type type, int subType /*= 0*/)
 {
 	if (_currentButton == nullptr)
 	{

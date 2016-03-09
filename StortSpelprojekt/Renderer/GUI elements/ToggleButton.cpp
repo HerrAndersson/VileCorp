@@ -11,7 +11,9 @@ GUI::ToggleButton::ToggleButton(Node* attachedGUINode, bool isToggled /*= false*
 
 GUI::ToggleButton::ToggleButton()
 {
-
+	_attachedGUINode = nullptr;
+	_isToggled = false;
+	_colorOffset = DirectX::XMFLOAT4(0, 0, 0, 0);
 }
 
 GUI::ToggleButton::~ToggleButton()

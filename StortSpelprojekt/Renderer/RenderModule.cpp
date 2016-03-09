@@ -607,7 +607,7 @@ namespace Renderer
 	{
 		if (!current->GetHidden())
 		{
-			tex = current->GetTexture();
+			Texture* tex = current->GetTexture();
 			if (tex)
 			{
 				D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -627,12 +627,12 @@ namespace Renderer
 
 				MatrixBufferHud* dataPtr = static_cast<MatrixBufferHud*>(mappedResource.pData);
 				dataPtr->_model = XMMatrixTranspose(t);
-				XMFLOAT4 offset;
-				offset.x = current->GetColorOffset().x + 0.04f * brightness - 0.20f;
-				offset.y = current->GetColorOffset().y + 0.04f * brightness - 0.20f;
-				offset.z = current->GetColorOffset().z + 0.04f * brightness - 0.20f;
-				offset.w = current->GetColorOffset().w;
-				dataPtr->_colorOffset = offset;
+
+				float brightnessModifier = brightness * 0.04f - 0.2f;
+				dataPtr->_colorOffset = current->GetColorOffset();
+				dataPtr->_colorOffset.x += brightnessModifier;
+				dataPtr->_colorOffset.y += brightnessModifier;
+				dataPtr->_colorOffset.z += brightnessModifier;
 				dataPtr->_hasTexture = 1;
 
 				deviceContext->Unmap(_matrixBufferHUD, 0);
