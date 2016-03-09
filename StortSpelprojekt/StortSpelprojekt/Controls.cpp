@@ -370,7 +370,7 @@ namespace System
 		return _inputDevice->GetClickedCoord();
 	}
 
-	void Controls::SetClickedCoord(MouseCoord pos)
+	void Controls::SetClickedCoord(const MouseCoord& pos)
 	{
 		_inputDevice->SetClickedCoord(pos);
 	}

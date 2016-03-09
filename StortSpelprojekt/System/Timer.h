@@ -10,8 +10,8 @@ namespace System
 	private:
 
 		INT64 _frequency;
-		float _ticksPerMs;
 		INT64 _startTime;
+		float _ticksPerMs;
 
 		float _tempTime;
 		float _frameTime;   //Time since last frame

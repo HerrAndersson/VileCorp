@@ -31,6 +31,9 @@ namespace System
 		_breakOnEsc = false;
 		_breakOnCarriageReturn = false;
 		_breakOnTab = false;
+		_mouseClicked = { 0 };
+		_characterLimit = 0;
+		_onlyNumbers = false;
 	}
 	InputDevice::~InputDevice()
 	{
@@ -371,7 +374,7 @@ namespace System
 		return _mouseCoord;
 	}
 
-	void InputDevice::SetClickedCoord(MouseCoord pos)
+	void InputDevice::SetClickedCoord(const MouseCoord& pos)
 	{
 		_mouseClicked = pos;
 	}

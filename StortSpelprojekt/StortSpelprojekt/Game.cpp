@@ -232,10 +232,9 @@ void Game::Render()
 
 		_renderModule->SetLightDataPerFrame(_camera->GetViewMatrix(), _camera->GetProjectionMatrix());
 		_renderModule->SetShadowsEnabled(true);
-		map<GameObject*, Renderer::Spotlight*>* spotlights = _objectHandler->GetSpotlights();
+		for (pair<GameObject*, Renderer::Spotlight*> spot : *_objectHandler->GetSpotlights())
 
 		//Render all spotlights with shadow mapping ENABLED
-		for (pair<GameObject*, Renderer::Spotlight*> spot : *spotlights)
 		{
 			if (spot.second->ShadowsEnabled())
 			{

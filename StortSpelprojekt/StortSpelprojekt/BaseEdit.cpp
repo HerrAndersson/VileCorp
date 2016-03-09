@@ -3,13 +3,6 @@
 #include <DirectXMath.h>
 #include <sstream>
 
-// local function
-bool compareFloat3(XMFLOAT3 a, XMFLOAT3 b)
-{
-	return (a.x == b.x && a.z == b.z);
-}
-
-
 // Instancing
 BaseEdit::BaseEdit(ObjectHandler* objectHandler, System::Controls* controls, PickingDevice* pickingDevice, bool extendedMode)
 {
@@ -31,6 +24,7 @@ BaseEdit::BaseEdit(ObjectHandler* objectHandler, System::Controls* controls, Pic
 	_movingGhostImage._g = nullptr;
 	_baseGhostImage._g = nullptr;
 	_tileMap = _objectHandler->GetTileMap();
+	_droppedObject = false;
 }
 
 BaseEdit::~BaseEdit()
@@ -160,24 +154,32 @@ void BaseEdit::DragEvent(System::Type type)
 void BaseEdit::DropEvent()
 {
 	_modeLock = false;
-	_movingGhostImage._g->SetColorOffset(XMFLOAT3(0.0f, 0.0f, 0.0f));
-	XMFLOAT3 p = XMFLOAT3(_movingGhostImage._g->GetPosition());
+	XMFLOAT3 p;
+	if (_movingGhostImage._g)
+	{
+		_movingGhostImage._g->SetColorOffset(XMFLOAT3(0.0f, 0.0f, 0.0f));
+		p = XMFLOAT3(_movingGhostImage._g->GetPosition());
+	}
+	
 
 	if (!_movingGhostImage._placeable)
 	{
 		//Redirect position to old pos
 		p.x = _movingGhostImage._origPos._x;
 		p.z = _movingGhostImage._origPos._y;
-		_movingGhostImage._g->SetTilePosition(AI::Vec2D((int)p.x, (int)p.z));
-		_movingGhostImage._g->SetPosition(p);
-		_movingGhostImage._g->SetRotation(_movingGhostImage._origRot);
-		_movingGhostImage._g->SetDirection(_movingGhostImage._origDir);
+		if (_movingGhostImage._g)
+		{
+			_movingGhostImage._g->SetTilePosition(AI::Vec2D((int)p.x, (int)p.z));
+			_movingGhostImage._g->SetPosition(p);
+			_movingGhostImage._g->SetRotation(_movingGhostImage._origRot);
+			_movingGhostImage._g->SetDirection(_movingGhostImage._origDir);
+		}
 	}
 
 	// Special camera non floating fix
 	if (_movingGhostImage._g->GetType() == System::CAMERA)
 	{
-		if (_movingGhostImage._g->GetDirection()._x != 0 && _movingGhostImage._g->GetDirection()._y != 0)
+		if (_movingGhostImage._g && _movingGhostImage._g->GetDirection()._x != 0 && _movingGhostImage._g->GetDirection()._y != 0)
 		{
 			XMFLOAT3 cameraDiagonal = _movingGhostImage._g->GetPosition();
 			cameraDiagonal.x -= (float)_movingGhostImage._g->GetDirection()._x*0.2f;
@@ -615,7 +617,7 @@ void BaseEdit::RefreshTileMap()
 void BaseEdit::Update()
 {
 	_droppedObject = false;
-	_createdObject = false;
+	_createdObject = nullptr;
 	_deletedObjectBlueprint = nullptr;
 	HandleMouseInput();
 	HandleKeyInput();

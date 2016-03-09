@@ -208,7 +208,5 @@ namespace Renderer
 
 		ID3D11Device* GetDevice() const;
 		ID3D11DeviceContext* GetDeviceContext() const;
-
-		Texture* tex;
 	};
 }

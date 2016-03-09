@@ -66,7 +66,7 @@ namespace System
 		bool IsPressed(int key);
 		bool IsReleased(int key);
 		MouseCoord GetMouseCoord()const;
-		void SetClickedCoord(MouseCoord pos);
+		void SetClickedCoord(const MouseCoord& pos);
 		MouseCoord GetClickedCoord()const;
 
 		void SetCurrentText(const std::wstring& text);

@@ -66,13 +66,6 @@ namespace AI
 			{
 				return (_gCost + _hCost) > (comp._gCost + comp._hCost);
 			}
-			void operator=(const Node& comp)
-			{
-				_position = comp._position;
-				_gCost = comp._gCost;
-				_hCost = comp._hCost;
-				_parent = comp._parent;
-			}
 		};
 		int _pathLength;
 		Vec2D* _path;											//An ordered array moving from goal to start

@@ -45,6 +45,9 @@ OptionsState::OptionsState(System::Controls* controls, ObjectHandler* objectHand
 	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("aa_right"), color));
 	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("shadow_right"), color));
 	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("sound_right"), color));
+
+	_showApplyButton = false;
+	_buttonClicked = false;
 }
 
 OptionsState::~OptionsState()
@@ -97,14 +100,7 @@ bool OptionsState::HandleOptionSwitch(const std::string& leftId, const std::stri
 	{
 		UpdateText(contentId, optionValue, options);
 	}
-	if (leftClicked)
-	{
-		_buttonClicked = leftClicked;
-	}
-	else if (rightClicked)
-	{
-		_buttonClicked = rightClicked;
-	}
+	_buttonClicked = leftClicked || rightClicked;
 	return leftClicked || rightClicked;
 }
 
