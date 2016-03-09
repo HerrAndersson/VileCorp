@@ -8,7 +8,7 @@
 !define MULTIUSER_INSTALLMODE_COMMANDLINE
 !define MULTIUSER_INSTALLMODE_DEFAULT_REGISTRY_KEY "Software\Vile Corp\"
 !define MULTIUSER_INSTALLMODE_DEFAULT_REGISTRY_VALUENAME ""
-!define MULTIUSER_INSTALLMODE_INSTDIR "Vile Corp"
+!define MULTIUSER_INSTALLMODE_INSTDIR ""
 
 #Includes
 !include "MultiUser.nsh"
@@ -51,7 +51,7 @@ Var StartMenuFolder
 !define MUI_FINISHPAGE_RUN_FUNCTION "iconToDesktop"
 
 Function "iconToDesktop"
-	CreateShortCut "$DESKTOP\Vile Corp.lnk" "$INSTDIR\Vile Corp.exe"
+	CreateShortCut "$DESKTOP\Vile Corp.lnk" "$INSTDIR\Vile Corp\Vile Corp.exe"
 FunctionEnd
 
 !insertmacro MUI_PAGE_FINISH
@@ -79,28 +79,28 @@ FunctionEnd
 Section "Vile Corp" VCSection
 
 	#Set the installation directoy
-	SetOutPath $INSTDIR
+	SetOutPath "$INSTDIR\Vile Corp"
 
 	#Unpack the game contents
 	File /r /x *.ini "..\..\Output\Bin\x86\Release\*"
 	
 	#Add the "Programs and Features" post
-	WriteRegStr SHCTX "Software\Vile Corp" "" $INSTDIR
+	WriteRegStr SHCTX "Software\Vile Corp" "" "$INSTDIR\Vile Corp"
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Vile Corp" \
 				"DisplayName" "Vile Corp"
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Vile Corp" \
-				"UninstallString" "$\"$INSTDIR\Uninstall.exe$\""
+				"UninstallString" "$\"$INSTDIR\Vile Corp\Uninstall.exe$\""
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Vile Corp" \
-				"DisplayIcon" "$\"$INSTDIR\Vile Corp.exe$\""
+				"DisplayIcon" "$\"$INSTDIR\Vile Corp\Vile Corp.exe$\""
 
 	#Create the uninstaller .exe
-	WriteUninstaller "$INSTDIR\Uninstall.exe"
+	WriteUninstaller "$INSTDIR\Vile Corp\Uninstall.exe"
 
 	#Create shortcuts
 	!insertmacro MUI_STARTMENU_WRITE_BEGIN Application
 		CreateDirectory "$SMPROGRAMS\$StartMenuFolder"
-		CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Vile Corp.lnk" "$INSTDIR\Vile Corp.exe" "${UserdataFlags}"
-		CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
+		CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Vile Corp.lnk" "$INSTDIR\Vile Corp\Vile Corp.exe" "${UserdataFlags}"
+		CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Uninstall.lnk" "$INSTDIR\Vile Corp\Uninstall.exe"
 	!insertmacro MUI_STARTMENU_WRITE_END
 
 SectionEnd
