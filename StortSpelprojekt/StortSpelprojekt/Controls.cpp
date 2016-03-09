@@ -365,6 +365,16 @@ namespace System
 		return _inputDevice->GetMouseCoord();
 	}
 
+	MouseCoord Controls::GetClickedCoord()
+	{
+		return _inputDevice->GetClickedCoord();
+	}
+
+	void Controls::SetClickedCoord(MouseCoord pos)
+	{
+		_inputDevice->SetClickedCoord(pos);
+	}
+
 	void Controls::SetCurrentText(const std::wstring& text)
 	{
 		_inputDevice->SetCurrentText(text);
