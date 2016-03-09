@@ -236,7 +236,7 @@ namespace Renderer
 		XMFLOAT2 speedRange;
 		float speed = 0.0f;
 		bool hasModifiers = false;
-		float randomTexture = GetRandomOffset(PARTICLE_TEXTURE_COUNT, false);
+		float randomTexture = GetRandomOffset((float)PARTICLE_TEXTURE_COUNT, false);
 
 		//Set modifier values depending on the type
 		switch (_type)

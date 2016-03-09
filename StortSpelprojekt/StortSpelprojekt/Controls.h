@@ -56,6 +56,8 @@ namespace System
 
 		bool CursorLocked();
 		MouseCoord GetMouseCoord();
+		MouseCoord GetClickedCoord();
+		void SetClickedCoord(MouseCoord pos);
 
 		void SetCurrentText(const std::wstring& text);
 		std::wstring GetCurrentText() const;

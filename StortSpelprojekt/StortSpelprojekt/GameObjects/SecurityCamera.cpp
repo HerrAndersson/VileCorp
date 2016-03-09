@@ -28,11 +28,11 @@ SecurityCamera::SecurityCamera(unsigned short ID, DirectX::XMFLOAT3 position, Di
 	: GameObject(ID, position, rotation, tilePosition, type, renderObject, soundModule, particleEventQueue, DirectX::XMFLOAT3(0, 0, 0), 0, direction)
 {
 	_tileMap = tileMap;
-	_direction = {0,-1};
 	_visionRadius = 7;
 	_visionCone = new VisionCone(_visionRadius, _tileMap);
 	_visionCone->FindVisibleTiles(_tilePosition, _direction);
 	_subType = 0;
+	Rotate();
 }
 
 SecurityCamera::~SecurityCamera()
@@ -101,8 +101,8 @@ void SecurityCamera::ShowAreaOfEffect()
 
 	XMFLOAT3 pos = this->_position;
 	pos.y += 0.04f;
-	msg = new ParticleRequestMessage(ParticleType::STATIC_ICON, ParticleSubType::AOE_RED_SUBTYPE, _ID, pos, XMFLOAT3(0, 1, 0), 1.0f, 1, 0.27f, true, true);
-	_particleEventQueue->Insert(msg);
+
+	GameObject::ShowAreaOfEffect();
 
 	for (int i = 0; i < _visionCone->GetNrOfVisibleTiles(); i++)
 	{
@@ -112,9 +112,4 @@ void SecurityCamera::ShowAreaOfEffect()
 		msg = new ParticleRequestMessage(ParticleType::STATIC_ICON, ParticleSubType::AOE_YELLOW_SUBTYPE, _ID, pos, XMFLOAT3(0, 1, 0), 1.0f, 1, 0.27f, true, true);
 		_particleEventQueue->Insert(msg);
 	}
-}
-
-void SecurityCamera::HideAreaOfEffect()
-{
-	_particleEventQueue->Insert(new ParticleUpdateMessage(_ID, false));
 }

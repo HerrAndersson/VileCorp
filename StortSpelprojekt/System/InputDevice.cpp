@@ -250,7 +250,7 @@ namespace System
 		if (_isTextInputMode)
 		{
 			bool overCharacterLimit = false;
-			if (_currentText.size() >= _characterLimit)
+			if ((int)_currentText.size() >= _characterLimit)
 			{
 				overCharacterLimit = true;
 			}
@@ -369,6 +369,16 @@ namespace System
 	MouseCoord InputDevice::GetMouseCoord()const
 	{
 		return _mouseCoord;
+	}
+
+	void InputDevice::SetClickedCoord(MouseCoord pos)
+	{
+		_mouseClicked = pos;
+	}
+
+	MouseCoord InputDevice::GetClickedCoord()const
+	{
+		return _mouseClicked;
 	}
 
 	void InputDevice::SetCurrentText(const std::wstring& text)

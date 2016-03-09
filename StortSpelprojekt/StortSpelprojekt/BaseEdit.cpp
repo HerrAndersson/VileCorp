@@ -168,7 +168,7 @@ void BaseEdit::DropEvent()
 		//Redirect position to old pos
 		p.x = _movingGhostImage._origPos._x;
 		p.z = _movingGhostImage._origPos._y;
-		_movingGhostImage._g->SetTilePosition(AI::Vec2D(p.x, p.z));
+		_movingGhostImage._g->SetTilePosition(AI::Vec2D((int)p.x, (int)p.z));
 		_movingGhostImage._g->SetPosition(p);
 		_movingGhostImage._g->SetRotation(_movingGhostImage._origRot);
 		_movingGhostImage._g->SetDirection(_movingGhostImage._origDir);
@@ -180,8 +180,8 @@ void BaseEdit::DropEvent()
 		if (_movingGhostImage._g->GetDirection()._x != 0 && _movingGhostImage._g->GetDirection()._y != 0)
 		{
 			XMFLOAT3 cameraDiagonal = _movingGhostImage._g->GetPosition();
-			cameraDiagonal.x -= (float)_movingGhostImage._g->GetDirection()._x*0.2;
-			cameraDiagonal.z -= (float)_movingGhostImage._g->GetDirection()._y*0.2;
+			cameraDiagonal.x -= (float)_movingGhostImage._g->GetDirection()._x*0.2f;
+			cameraDiagonal.z -= (float)_movingGhostImage._g->GetDirection()._y*0.2f;
 			_movingGhostImage._g->SetPosition(cameraDiagonal);
 		}
 	}
@@ -206,23 +206,23 @@ void BaseEdit::DropEvent()
 			{
 				_tileMap->AddObjectToTile(tempTiles[i], _movingGhostImage._g);
 			}
-		//Remove area of effect for traps when moved
-		static_cast<Trap*>(_movingGhostImage._g)->HideAreaOfEffect();
+			//Remove area of effect for traps when moved
+			static_cast<Trap*>(_movingGhostImage._g)->HideAreaOfEffect();
 		}
 		else
 		{
-			_tileMap->AddObjectToTile(p.x, p.z, _movingGhostImage._g);
+			_tileMap->AddObjectToTile((int)p.x, (int)p.z, _movingGhostImage._g);
 
-		//Remove area of effect for guards and cameras when moved
-		if (_movingGhostImage._g->GetType() == System::GUARD)
-		{
-			static_cast<Unit*>(_movingGhostImage._g)->HideAreaOfEffect();
+			//Remove area of effect for guards and cameras when moved
+			if (_movingGhostImage._g->GetType() == System::GUARD)
+			{
+				static_cast<Unit*>(_movingGhostImage._g)->HideAreaOfEffect();
+			}
+			else if (_movingGhostImage._g->GetType() == System::CAMERA)
+			{
+				static_cast<SecurityCamera*>(_movingGhostImage._g)->HideAreaOfEffect();
+			}
 		}
-		else if (_movingGhostImage._g->GetType() == System::CAMERA)
-		{
-			static_cast<SecurityCamera*>(_movingGhostImage._g)->HideAreaOfEffect();
-		}
-	}
 	
 
 
@@ -245,7 +245,7 @@ void BaseEdit::DropEvent()
 			}
 			else
 			{
-				_tileMap->AddObjectToTile(p.x, p.z, _createdObject);
+				_tileMap->AddObjectToTile((int)p.x, (int)p.z, _createdObject);
 			}
 		}
 
@@ -294,7 +294,6 @@ void BaseEdit::BoxEvent()
 			}
 
 			// Check tiles
-			GameObject* objectOnTile;
 			if (_isPlace) // Place
 			{
 				for (int x = minX; x <= maxX; x++)
@@ -304,7 +303,7 @@ void BaseEdit::BoxEvent()
 						if (CheckValidity(AI::Vec2D(x, y), _movingGhostImage._g))
 						{
 							// Add to valid place
-							_objectHandler->Add(_sB->_blueprint, _sB->_textureId, XMFLOAT3(x, 0, y), XMFLOAT3(0.0f, 0.0f, 0.0f), true);
+							_objectHandler->Add(_sB->_blueprint, _sB->_textureId, XMFLOAT3((float)x, 0, (float)y), XMFLOAT3(0.0f, 0.0f, 0.0f), true);
 						}
 					}
 				}

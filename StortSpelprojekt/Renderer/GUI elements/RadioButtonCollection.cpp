@@ -29,7 +29,7 @@ void GUI::RadioButtonCollection::SelectRadioButtonNode(GUI::Node* selectedRadioB
 			oldSelectedRadioButtonNode->SwapTexture(_selectedRadioButtonNode);
 		}
 
-		for (int i = 0; i < _notSelectedRadioButtons.size(); i++)
+		for (int i = 0; i < (int)_notSelectedRadioButtons.size(); i++)
 		{
 			if (_notSelectedRadioButtons[i]->GetId() == _selectedRadioButtonNode->GetId())
 			{

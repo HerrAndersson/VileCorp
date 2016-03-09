@@ -509,7 +509,7 @@ bool LevelEditState::HandleButtons()
 				}
 				else
 				{
-					for (int i = 0; i < _textBoxesGeneral.size(); i++)
+					for (uint i = 0; i < _textBoxesGeneral.size(); i++)
 					{
 						clickedOnGUI = SelectTextBox(&_textBoxesGeneral[i], coord, clickedOnGUI);
 					}
@@ -638,7 +638,7 @@ bool LevelEditState::HandleButtons()
 	{
 		//Need a means of hiding UnitLockToolTip when not holding over a button
 		_uiTree.GetNode("UnitLockToolTip")->SetHidden(false);
-		for (int i = 0; i < _uiTree.GetNode("UnitLockButtons")->GetChildren()->size(); i++)
+		for (uint i = 0; i < _uiTree.GetNode("UnitLockButtons")->GetChildren()->size(); i++)
 		{
 			if (_uiTree.IsButtonColliding(_uiTree.GetNode("UnitLockButtons")->GetChildren()->at(i)->GetId(), coord._pos.x, coord._pos.y))
 			{
@@ -708,7 +708,7 @@ bool LevelEditState::HandleButtonsForDialogWindows(System::MouseCoord &coord, bo
 		else if (_uiTree.IsButtonColliding("LevelDown", coord) && !_uiTree.IsNodeHidden("LevelDown"))
 		{
 			clickedOnGUI = true;
-			if (_loadLevelSelectedIndex < _levelHeaderFilenames.size() - 1)
+			if (_loadLevelSelectedIndex < (int)_levelHeaderFilenames.size() - 1)
 			{
 				_loadLevelSelectedIndex++;
 				_loadLevelTextNode->SetText(System::StringToWstring(_levelHeaderFilenames[_loadLevelSelectedIndex]));
@@ -776,7 +776,7 @@ void LevelEditState::ResetLevel()
 bool LevelEditState::HandleButtonsForSpawn(System::MouseCoord &coord, bool clickedOnGUI)
 {
 	std::vector<GUI::Node*>* notSelectedRadioButtonNodes = _spawnWaveTypeRadioButtons.GetNotSelectedRadioButtonNodes();
-	for (int i = 0; i < notSelectedRadioButtonNodes->size() && !clickedOnGUI; i++)
+	for (uint i = 0; i < notSelectedRadioButtonNodes->size() && !clickedOnGUI; i++)
 	{
 		if (!_uiTree.IsNodeHidden(notSelectedRadioButtonNodes->at(i)) && _uiTree.IsButtonColliding(notSelectedRadioButtonNodes->at(i), coord))
 		{
@@ -815,7 +815,7 @@ bool LevelEditState::HandleButtonsForSpawn(System::MouseCoord &coord, bool click
 		else if (_uiTree.IsButtonColliding("WaveRight", coord._pos.x, coord._pos.y) && _isPressed[4] == true)
 		{
 			clickedOnGUI = true;
-			if (_selectedSpawnWave < _levelBinary._enemyWavesGUIData.size() - 1)
+			if (_selectedSpawnWave < (int)_levelBinary._enemyWavesGUIData.size() - 1)
 			{
 				SaveCurrentSpawnWave();
 				_selectedSpawnWave++;
@@ -824,7 +824,7 @@ bool LevelEditState::HandleButtonsForSpawn(System::MouseCoord &coord, bool click
 		}
 		else
 		{
-			for (int i = 0; i < _textBoxesSpawnSettings.size() && !clickedOnGUI; i++)
+			for (uint i = 0; i < _textBoxesSpawnSettings.size() && !clickedOnGUI; i++)
 			{
 				clickedOnGUI = SelectTextBox(&_textBoxesSpawnSettings[i], coord, clickedOnGUI);
 			}
@@ -972,7 +972,7 @@ void LevelEditState::ExportLevel()
 			std::string textureName = gameObject->GetRenderObject()->_diffuseTexture->_name;
 			formattedGameObject->at(2) = 0;
 			bool foundTexture = false;
-			for (int i = 0; !foundTexture && i < blueprint->_textures.size(); i++)
+			for (uint i = 0; !foundTexture && i < blueprint->_textures.size(); i++)
 			{
 				if (blueprint->_textures[i] == textureName)
 				{
@@ -1020,7 +1020,7 @@ void LevelEditState::ExportLevel()
 
 	//Convert spawn wave data to spawn wave map
 	_levelBinary._enemyOrderedSpawnVector = std::vector<std::array<int, 2>>();
-	for (int i = 0; i < _levelBinary._enemyWavesGUIData.size(); i++)
+	for (uint i = 0; i < _levelBinary._enemyWavesGUIData.size(); i++)
 	{
 		std::vector<int>* spawnWave = &_levelBinary._enemyWavesGUIData[i];
 		int enemyType = spawnWave->at(0);

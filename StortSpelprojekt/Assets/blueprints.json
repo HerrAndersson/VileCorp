@@ -51,7 +51,8 @@
           "floor39",
           "floor40",
           "floor41",
-          "floor42"
+          "floor42",
+		  "grass1"
         ],
         "_thumbnails": [
           "floor",
@@ -95,7 +96,8 @@
           "floor39",
           "floor40",
           "floor41",
-          "floor42"
+          "floor42",
+		  "grass1"
         ]
       },
       {
@@ -432,19 +434,6 @@
         ],
         "_thumbnails": [
           "../Menues/PlacementStateGUI/units/confusiontrapButton"
-        ]
-      },
-      {
-        "_mesh": "sawRoofTrap-28.bin",
-        "_name": "Flame Trap",
-        "_type": 4,
-        "_subType": 10,
-        "_tooltip": "SampleText",
-        "_textures": [
-          "GunText"
-        ],
-        "_thumbnails": [
-          "../Menues/PlacementStateGUI/units/roofsawButton"
         ]
       },
       {
@@ -891,6 +880,58 @@
         ],
         "_thumbnails": [
           "../Menues/LevelEdit/Decorations/giraffeButton"
+        ]
+		},
+      {
+        "_mesh": "Rock-29.bin",
+        "_name": "Mounted Head",
+        "_type": 8,
+        "_subType": 28,
+        "_tooltip": "SampleText",
+        "_textures": [
+          "rock"
+        ],
+        "_thumbnails": [
+          "../Menues/LevelEdit/Decorations/RockButton"
+        ]
+		},
+      {
+        "_mesh": "Rock2-29.bin",
+        "_name": "Mounted Head",
+        "_type": 8,
+        "_subType": 29,
+        "_tooltip": "SampleText",
+        "_textures": [
+          "rock2"
+        ],
+        "_thumbnails": [
+          "../Menues/LevelEdit/Decorations/Rock2Button"
+        ]
+		},
+      {
+        "_mesh": "Bush-29.bin",
+        "_name": "Mounted Head",
+        "_type": 8,
+        "_subType": 30,
+        "_tooltip": "SampleText",
+        "_textures": [
+          "Bush"
+        ],
+        "_thumbnails": [
+          "../Menues/LevelEdit/Decorations/BushButton"
+        ]
+		},
+      {
+        "_mesh": "Bush2-29.bin",
+        "_name": "Mounted Head",
+        "_type": 8,
+        "_subType": 31,
+        "_tooltip": "SampleText",
+        "_textures": [
+          "Bush2"
+        ],
+        "_thumbnails": [
+          "../Menues/LevelEdit/Decorations/Bush2Button"
         ]
       }
     ]

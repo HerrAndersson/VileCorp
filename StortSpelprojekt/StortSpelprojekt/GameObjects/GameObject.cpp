@@ -248,7 +248,7 @@ int GameObject::GetAnimLength(int layer)
 {
 	if (_animation != nullptr)
 	{
-		return _animation->GetLength(layer);
+		return (int)_animation->GetLength(layer);
 	}
 	else
 	{
@@ -258,8 +258,16 @@ int GameObject::GetAnimLength(int layer)
 
 void GameObject::ShowAreaOfEffect()
 {
+	HideAreaOfEffect();
+	ParticleRequestMessage* msg;
+
+	XMFLOAT3 pos = this->_position;
+	pos.y += 0.04f;
+	msg = new ParticleRequestMessage(ParticleType::STATIC_ICON, ParticleSubType::AOE_RED_SUBTYPE, _ID, pos, XMFLOAT3(0, 1, 0), 1.0f, 1, 0.27f, true, true);
+	_particleEventQueue->Insert(msg);
 }
 
 void GameObject::HideAreaOfEffect()
 {
+	_particleEventQueue->Insert(new ParticleUpdateMessage(_ID, false));
 }

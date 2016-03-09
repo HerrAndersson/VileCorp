@@ -7,7 +7,7 @@ Game::Game(HINSTANCE hInstance, int nCmdShow) :
 	_settingsReader("Assets/settings.xml", "Assets/profile.xml"),
 	_soundModule(_settingsReader.GetSettings(), "Assets/Sounds/", ".ogg")
 {
-	srand(time(NULL));
+	srand((unsigned int)time(NULL));
 	System::Settings* settings = _settingsReader.GetSettings();
 
 	_gameHandle = this;
@@ -142,7 +142,7 @@ void Game::LoadParticleSystemData(ParticleTextures& particleTextures, ParticleMo
 	modifiers._lightningRepeatTime = data._lightningRepeatTime;
 }
 
-bool Game::Update(double deltaTime)
+bool Game::Update(float deltaTime)
 {
 	_soundModule.Update(_camera->GetPosition());
 
@@ -268,6 +268,11 @@ void Game::Render()
 	_renderModule->SetShaderStage(Renderer::RenderModule::ShaderStage::HUD_STAGE);
 	_renderModule->Render(_SM->GetCurrentStatePointer()->GetUITree()->GetRootNode(), _fontWrapper, _ambientLight.GetScale());
 
+	if (_SM->GetState() == PLAYSTATE)
+	{
+		_renderModule->RenderSelectionQuad(_controls->GetClickedCoord()._pos.x, _controls->GetClickedCoord()._pos.y, _controls->GetMouseCoord()._pos.x, _controls->GetMouseCoord()._pos.y);
+	}
+
 	_renderModule->EndScene();
 }
 
@@ -313,7 +318,7 @@ void Game::RenderGameObjects(int forShaderStage, std::vector<std::vector<GameObj
 			GameObject* lastGameObject = nullptr;
 			RenderObject* lastRenderObject = nullptr;
 			int vertexBufferSize = 0;
-			for (int j = 0; j < gameObjectVector.size(); j++)
+			for (uint j = 0; j < gameObjectVector.size(); j++)
 			{
 				GameObject* gameObject = gameObjectVector[j];
 				RenderObject* renderObject = gameObject->GetRenderObject();
@@ -365,7 +370,7 @@ void Game::GenerateShadowMap(Renderer::RenderModule::ShaderStage shaderStage, Re
 		{
 			vertexBufferSize = 0;
 
-			for (int i = 0; i < j.size(); i++)
+			for (uint i = 0; i < j.size(); i++)
 			{
 				GameObject* obj = j.at(i);
 				RenderObject* renderObject = obj->GetRenderObject();
