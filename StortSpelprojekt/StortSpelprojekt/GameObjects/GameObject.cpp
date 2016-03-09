@@ -25,6 +25,7 @@ GameObject::GameObject(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::X
 
 GameObject::~GameObject()
 {
+
 	if (_animation != nullptr)
 	{
 		delete _animation;

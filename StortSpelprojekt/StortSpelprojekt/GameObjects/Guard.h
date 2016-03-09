@@ -27,4 +27,9 @@ public:
 	//void SetNextTile();			//replacement for move'
 	void Act(GameObject* obj);
 	void SwitchingNode();
+
+	void ShowSelectIcon();
+	void ShowPatrolIcons();
+	void HideSelectIcon();
+	void HidePatrolIcons();
 };

@@ -121,29 +121,27 @@ void GameLogic::HandleUnitSelect()
 	}
 
 	//Update Icon over Selected Guards
-	for (auto u : _player->GetSelectedUnits())
-	{
-		XMFLOAT3 pos = u->GetPosition();
-		pos.y += 3.0f;
+	//for (auto u : _player->GetSelectedUnits())
+	//{
+	//	XMFLOAT3 pos = u->GetPosition();
+	//	pos.y += 3.0f;
 
-		ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::SELECTED_SUBTYPE, -1, pos, XMFLOAT3(0, 0, 0), 0.01f, 1, 0.25f, true, true);
-		_objectHandler->GetParticleEventQueue()->Insert(msg);
+	//	ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::SELECTED_SUBTYPE, -1, pos, XMFLOAT3(0, 0, 0), 0.01f, 1, 0.25f, true, true);
+	//	_objectHandler->GetParticleEventQueue()->Insert(msg);
 
-		if (u->GetType() == System::GUARD)
-		{
-			for (auto p : ((Guard*)u)->GetPatrolRoute())
-			{
-				pos = XMFLOAT3(p._x, 0.5, p._y);
+	//	if (u->GetType() == System::GUARD)
+	//	{
+	//		for (auto p : ((Guard*)u)->GetPatrolRoute())
+	//		{
+	//			pos = XMFLOAT3(p._x, 0.5, p._y);
 
-				msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::PATROL_SUBTYPE, -1, pos, XMFLOAT3(0, 0, 0), 0.01f, 1, 0.25f, true, true);
-				_objectHandler->GetParticleEventQueue()->Insert(msg);
-			}
+	//			msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::PATROL_SUBTYPE, -1, pos, XMFLOAT3(0, 0, 0), 0.01f, 1, 0.25f, true, true);
+	//			_objectHandler->GetParticleEventQueue()->Insert(msg);
+	//		}
 
-		}
+	//	}
 
-
-
-	}
+	//}
 }
 
 void GameLogic::PlaySelectSound(GuardType guardType)

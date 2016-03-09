@@ -120,6 +120,7 @@ Unit::~Unit()
 {
 	delete _aStar;
 	HideAreaOfEffect();
+	_particleEventQueue->Insert(new ParticleUpdateMessage(_ID, false));
 	delete _visionCone;
 }
 
@@ -381,10 +382,23 @@ void Unit::Update(float deltaTime)
 	{
 		ActivateStatus();
 	}
+	if (_visible)
+	{
+		XMFLOAT3 pos = _position;
+		pos.x *= 0.5;
+		pos.y = 1.25f;
+		pos.z *= 0.5;
+		_particleEventQueue->Insert(new ParticleUpdateMessage(_ID, true, pos));
+	}
+	else
+	{
+		XMFLOAT3 pos = _position;
+		pos.x *= 0.5;
+		pos.y = -1.25f;
+		pos.z *= 0.5;
+		_particleEventQueue->Insert(new ParticleUpdateMessage(_ID, true, pos));
+	}
 
-	XMFLOAT3 pos = _position;
-	pos.y += 2.5f;
-	_particleEventQueue->Insert(new ParticleUpdateMessage(_ID, true, pos));
 
 	//bool result = false;
 	//if (_statusTimer > 0)
@@ -538,8 +552,10 @@ void Unit::TakeDamage(int damage)
 	{
 		_health -= damage;
 		XMFLOAT3 pos = _position;
-		pos.y += 2.5f;
-		ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::HEALTH_SUBTYPE, -1, pos, XMFLOAT3(0, 0, 0), 1.0f, 1, _health*0.0025f, true, false);
+		pos.x *= 0.5;
+		pos.y = 1.25f;
+		pos.z *= 0.5;
+		ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::HEALTH_SUBTYPE, _ID, pos, XMFLOAT3(0, 0, 0), 1.0f, 1, _health*0.0025f, true, false);
 		_particleEventQueue->Insert(msg);
 	}
 	else if (_health > 0)
@@ -550,6 +566,8 @@ void Unit::TakeDamage(int damage)
 		}
 		_health -= damage;
 	}
+
+
 }
 
 void Unit::SetIsAtSpawn(bool isAtSpawn)
