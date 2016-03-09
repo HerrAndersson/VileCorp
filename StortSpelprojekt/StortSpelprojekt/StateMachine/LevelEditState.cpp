@@ -150,11 +150,14 @@ void LevelEditState::OnStateEnter()
 
 	_baseEdit = new BaseEdit(_objectHandler, _controls, _pickingDevice, true);
 
+	//Reset camera
 	XMFLOAT3 campos;
 	campos.x = (float)_objectHandler->GetTileMap()->GetWidth() / 2;
 	campos.y = 15;
 	campos.z = (float)_objectHandler->GetTileMap()->GetHeight() / 2 - 10;
 	_camera->SetPosition(campos);
+	XMFLOAT3 camRot = _camera->GetRotation();
+	_camera->SetRotation(XMFLOAT3(camRot.x, 0.0f, camRot.z));
 
 	_listId = -2;
 	_settingsId = -2;

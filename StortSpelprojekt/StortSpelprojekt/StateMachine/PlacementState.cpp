@@ -122,6 +122,8 @@ void PlacementState::OnStateEnter()
 		campos.y = 15.0f;
 		campos.z = (float)_objectHandler->GetTileMap()->GetHeight() / 2.0f - 10.0f;
 		_camera->SetPosition(campos);
+		XMFLOAT3 camRot = _camera->GetRotation();
+		_camera->SetRotation(XMFLOAT3(camRot.x, 0.0f, camRot.z));
 	}
 
 	_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_budget));
