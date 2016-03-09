@@ -59,7 +59,7 @@ void PlayState::OnStateEnter()
 	_ambientLight->NightTime();
 	_gameLogic = new GameLogic(_objectHandler, _camera, _controls, _pickingDevice, &_uiTree, _assetManager, _settingsReader, _soundModule);
 
-	if (GetOldState() != State::PAUSESTATE)
+	if (GetOldState() != State::PAUSESTATE && GetOldState() != State::PLACEMENTSTATE)
 	{
 		XMFLOAT3 campos;
 		campos.x = (float)_objectHandler->GetTileMap()->GetWidth() / 2.0f;
