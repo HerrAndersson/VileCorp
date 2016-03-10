@@ -29,6 +29,19 @@ void LevelEditState::Update(float deltaTime)
 				{
 					Architecture* pickedFloor = static_cast<Architecture*>(tilemap->GetObjectOnTile(pickedTileCoord, System::Type::FLOOR));
 					pickedFloor->SetNoPlacementZone(!pickedFloor->GetNoPlacementZone());
+
+					if (pickedFloor->GetNoPlacementZone())
+					{
+						XMFLOAT3 pos = pickedFloor->GetPosition();
+						pos.y += 0.01f;
+
+						_objectHandler->GetParticleEventQueue()->Insert(new ParticleRequestMessage(ParticleType::STATIC_ICON, ParticleSubType::NOPLACEMENT_SUBTYPE, pickedFloor->GetID(), pos, XMFLOAT3(0, 1, 0), 1.0f, 1, 0.5f, true, false));
+					}
+					else
+					{
+						_objectHandler->GetParticleEventQueue()->Insert(new ParticleUpdateMessage(pickedFloor->GetID(), false));
+					}
+					
 				}
 			}
 		}
@@ -1129,6 +1142,22 @@ void LevelEditState::LoadLevel(std::string headerFileName)
 	HRESULT success = _assetManager->ParseLevelBinary(&_levelBinary, levelPath + _levelHeader._levelBinaryFilename);
 
 	result = _objectHandler->LoadLevel(_levelBinary, false);
+	//Add noplacementzones
+	for (auto f : *_objectHandler->GetAllByType(System::FLOOR))
+	{
+		if (static_cast<Architecture*>(f)->GetNoPlacementZone())
+		{
+			XMFLOAT3 pos = f->GetPosition();
+			pos.y += 0.01f;
+			_objectHandler->GetParticleEventQueue()->Insert(new ParticleRequestMessage(ParticleType::STATIC_ICON, ParticleSubType::NOPLACEMENT_SUBTYPE, f->GetID(), pos, XMFLOAT3(0, 1, 0), 1.0f, 1, 0.5f, true, false));
+		}
+	}
+	
+
+	///////
+
+
+
 	_baseEdit->RefreshTileMap();
 
 	_budgetTextNode->SetText(std::to_wstring(_levelHeader._budget));
