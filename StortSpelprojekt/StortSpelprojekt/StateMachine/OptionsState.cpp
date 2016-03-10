@@ -41,12 +41,17 @@ OptionsState::OptionsState(System::Controls* controls, ObjectHandler* objectHand
 	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("aa_left"), color));
 	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("shadow_left"), color));
 	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("sound_left"), color));
+	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("brightness_left"), color));
 
 	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("res_right"), color));
 	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("win_right"), color));
 	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("aa_right"), color));
 	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("shadow_right"), color));
 	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("sound_right"), color));
+	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("brightness_right"), color));
+	
+	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("cancel"), color));
+	_buttonHighlights.push_back(GUI::HighlightNode(_uiTree.GetNode("apply"), color));
 
 	_showApplyButton = false;
 	_buttonClicked = false;
