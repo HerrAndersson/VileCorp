@@ -489,13 +489,13 @@
         ]
       },
       {
-        "_mesh": "enemy1-29.bin",
+        "_mesh": "engineer-29.bin",
         "_name": "Demolisher",
         "_type": 7,
         "_subType": 1,
         "_tooltip": "SampleText",
         "_textures": [
-          "texturered2"
+          "engineer4"
         ],
         "_thumbnails": [
           "../Menues/LevelEdit/Units/MaleDemolisherButton"
@@ -508,7 +508,7 @@
         "_subType": 2,
         "_tooltip": "SampleText",
         "_textures": [
-          "texturered2"
+          "jacket2red"
         ],
         "_thumbnails": [
           "../Menues/LevelEdit/Units/FemaleAssassinButton"
