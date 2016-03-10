@@ -441,6 +441,8 @@ namespace Renderer
 	{
 		if (_swapChain && settings->_screenHeight > 0 && settings->_screenWidth > 0)
 		{
+			_swapChain->SetFullscreenState(false, NULL);
+
 			HRESULT hr;
 			_deviceContext->OMSetRenderTargets(0, 0, 0);
 			_backBufferRTV->Release();
@@ -452,11 +454,6 @@ namespace Renderer
 			modeDesc.Format = DXGI_FORMAT_UNKNOWN;
 
 			_swapChain->ResizeTarget(&modeDesc);
-
-			int systemSizeX = GetSystemMetrics(SM_CXSCREEN);
-			int systemSizeY = GetSystemMetrics(SM_CYSCREEN);
-			bool fullscreen = (settings->_windowWidth == systemSizeX && settings->_windowHeight == systemSizeY && settings->_borderless);
-			_swapChain->SetFullscreenState(fullscreen, NULL);
 
 			//Preserve the existing buffer count and format. Automatically choose the width and height to match the client rect for HWNDs.
 			hr = _swapChain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
@@ -505,6 +502,8 @@ namespace Renderer
 			}
 
 			InitializeDeferredBuffers(settings->_screenWidth, settings->_screenHeight);
+
+			_swapChain->SetFullscreenState(settings->_screenMode == System::FULLSCREEN, NULL);
 		}
 	}
 
