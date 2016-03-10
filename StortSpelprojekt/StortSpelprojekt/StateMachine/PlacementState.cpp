@@ -188,10 +188,11 @@ void PlacementState::OnStateEnter()
 	_informationOverlayIDs = std::vector<short>();
 	AddInformationOverlay();
 
+	GUI::Node* unitList = _uiTree.GetNode("UnitList");
+	GUI::NodeBar nodeBar = GUI::NodeBar(false, unitList->GetLocalPosition(), 0.2f, unitList->GetChildren());
 
 	//Play music
 	_soundModule->Play("in_game_1");
-
 }
 
 void PlacementState::OnStateExit()
@@ -226,13 +227,6 @@ void PlacementState::HandleInput()
 		_budget += _toPlace._goldCost;
 		_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_budget));
 	}
-	// placement invalid
-	//if (_toPlace._goldCost != -1 && !_objectHandler->Find(_toPlace._sB._blueprint->_type, _toPlace._markerID) && !_baseEdit->IsPlace())
-	//{
-	//	_budget += _toPlace._goldCost;
-	//	_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_budget));
-	//	_toPlace.ResetTemps();
-	//}
 }
 
 void PlacementState::HandleButtons()
