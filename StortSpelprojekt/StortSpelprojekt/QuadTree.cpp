@@ -92,18 +92,19 @@ void QuadTree::GetObjects(std::vector<Vec2>* polygon, std::vector<std::vector<Ga
 			unsigned int size = _tiles.size();
 			for (unsigned int i = 0; i < size; i++)
 			{
-				int x = _tiles.at(i)._x;
-				int y = _tiles.at(i)._y;
+				AI::Vec2D tile = _tiles.at(i);
 
 				//Start on 1 to skip the floor
 				for (unsigned int j = 1; j < System::NR_OF_TYPES; j++)
 				{
-					GameObject* object = tilemap->GetObjectOnTile(x, y, System::Type(j));
+					GameObject* object = tilemap->GetObjectOnTile(tile, System::Type(j));
 					if (object != nullptr)
 					{
 						collectedObjects->at(j).push_back(object);
 					}
 				}
+
+
 			}
 		}
 		else

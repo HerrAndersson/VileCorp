@@ -3,8 +3,11 @@
 #define SYSTEM_EXPORT __declspec(dllexport)
 
 #include <DirectXMath.h>
+#include <cmath>
 
 using namespace DirectX;
+
+const float EPSILON = FLT_EPSILON;
 
 struct Vec2
 {
@@ -59,6 +62,11 @@ struct Vec2
 	Vec2 operator*(const float& rhs)
 	{
 		return Vec2(_x * rhs, _y * rhs);
+	}
+
+	bool operator==(const Vec2& rhs)
+	{
+		return std::abs(_x - rhs._x) < EPSILON && std::abs(_y - rhs._y) < EPSILON;
 	}
 
 	float Dot(Vec2 vector)
