@@ -11,7 +11,7 @@
 GameObject class
 Base interface for specialized GameObjects.
 
-Contains an unique ID for identification, a world position and a enum Type (TODO come up with a good system for types, (string/char*, or maybe new hierchical classes?)
+Contains an unique ID for identification, a world position and a enum Type
 If the object doesn't need a _renderObject, set it to nullptr.
 If the object has a renderObject but is out of sight _visibility will be false.
 */

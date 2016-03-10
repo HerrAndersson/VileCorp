@@ -59,16 +59,22 @@ void PlayState::OnStateEnter()
 	_ambientLight->NightTime();
 	_gameLogic = new GameLogic(_objectHandler, _camera, _controls, _pickingDevice, &_uiTree, _assetManager, _settingsReader, _soundModule);
 
-	if (GetOldState() != State::PAUSESTATE && GetOldState() != State::PLACEMENTSTATE)
+	if (GetOldState() != State::PAUSESTATE)
 	{
-		XMFLOAT3 campos;
-		campos.x = (float)_objectHandler->GetTileMap()->GetWidth() / 2.0f;
-		campos.y = 15.0f;
-		campos.z = (float)_objectHandler->GetTileMap()->GetHeight() / 2.0f - 10.0f;
-		_camera->SetPosition(campos);
-		XMFLOAT3 camRot = _camera->GetRotation();
-		_camera->SetRotation(XMFLOAT3(camRot.x, 0.0f, camRot.z));
+		_nrOfLoot = _objectHandler->GetAllByType(System::LOOT)->size();
+
+		if (GetOldState() != State::PLACEMENTSTATE)
+		{
+			XMFLOAT3 campos;
+			campos.x = (float)_objectHandler->GetTileMap()->GetWidth() / 2.0f;
+			campos.y = 15.0f;
+			campos.z = (float)_objectHandler->GetTileMap()->GetHeight() / 2.0f - 10.0f;
+			_camera->SetPosition(campos);
+			XMFLOAT3 camRot = _camera->GetRotation();
+			_camera->SetRotation(XMFLOAT3(camRot.x, 0.0f, camRot.z));
+		}
 	}
+	_gameLogic->SetNrOfLoot(_nrOfLoot);
 
 	//Play music
 	_soundModule->Play("in_game_2");

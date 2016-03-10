@@ -165,8 +165,6 @@ void CombinedMeshGenerator::CombineAndOptimizeMeshes(Tilemap* tilemap, const Typ
 	RotatedRenderObject thisRenderObject;
 
 	std::vector<RotatedRenderObject> renderObjects;
-	std::vector<int> numberPerRenderObject; //Holds how many objects that share a single render object. The indexes are directly mapped between renderObjects and numberPerRenderObject
-	int index = -1;
 
 	if (_tileIsCombined.size() <= 0)
 	{
@@ -200,10 +198,7 @@ void CombinedMeshGenerator::CombineAndOptimizeMeshes(Tilemap* tilemap, const Typ
 				if (!found)
 				{
 					renderObjects.push_back(thisRenderObject);
-					numberPerRenderObject.push_back(0);
-					index++;
 				}
-				numberPerRenderObject.at(index)++;
 			}
 		}
 	}
@@ -372,12 +367,8 @@ void CombinedMeshGenerator::CombineMeshes(Tilemap* tilemap, const System::Type& 
 	int width = tilemap->GetWidth();
 	int height = tilemap->GetHeight();
 
-	RenderObject* prevRenderObject = nullptr;
-	RenderObject* currentRenderObject = nullptr;
-
-	std::vector<RenderObject*> renderObjects;
-	std::vector<int> numberPerRenderObject; //Holds how many objects that share a single render object. The indexes are directly mapped between renderObjects and numberPerRenderObject
-	int index = -1;
+	RotatedRenderObject thisRenderObject;
+	std::vector<RotatedRenderObject> renderObjects;
 
 	//Scan the tilemap to find how many different versions we should look for, and which these versions are. For example Type == FLOOR, and there are two different floors with different textures.
 	for (int x = 0; x < width; x++)
@@ -385,14 +376,14 @@ void CombinedMeshGenerator::CombineMeshes(Tilemap* tilemap, const System::Type& 
 		for (int y = 0; y < height; y++)
 		{
 			GameObject* object = tilemap->GetObjectOnTile(x, y, typeToCombine);
-			if (object && object->GetType() == typeToCombine)
+			if (object)
 			{
-				RenderObject* thisRenderObject = object->GetRenderObject();
+				thisRenderObject = RotatedRenderObject(object->GetRenderObject(), object->GetRotation());
 
 				bool found = false;
 				for (auto& renderObject : renderObjects)
 				{
-					if (*renderObject == *thisRenderObject)
+					if (renderObject == thisRenderObject)
 					{
 						found = true;
 						break;
@@ -401,12 +392,8 @@ void CombinedMeshGenerator::CombineMeshes(Tilemap* tilemap, const System::Type& 
 
 				if (!found)
 				{
-					prevRenderObject = thisRenderObject;
 					renderObjects.push_back(thisRenderObject);
-					numberPerRenderObject.push_back(0);
-					index++;
 				}
-				numberPerRenderObject.at(index)++;
 			}
 		}
 	}
@@ -417,36 +404,49 @@ void CombinedMeshGenerator::CombineMeshes(Tilemap* tilemap, const System::Type& 
 	{
 		std::vector<Vertex> combinedMeshDataVector;
 		std::vector<Vertex> singleObjectDataVector;
-		LoadVertexBufferData(&singleObjectDataVector, renderObject->_mesh);
+		LoadVertexBufferData(&singleObjectDataVector, renderObject._renderObject->_mesh);
+
+		XMMATRIX rotation = XMMatrixRotationRollPitchYaw(0, XMConvertToRadians(renderObject._rotation.y), 0);
+		//Rotate the mesh data according to the renderObject
+		for (auto& vertex : singleObjectDataVector)
+		{
+			XMVECTOR posV = XMLoadFloat3(&vertex._position);
+			posV = XMVector3TransformCoord(posV, rotation);
+			XMStoreFloat3(&vertex._position, posV);
+		}
 
 		for (int x = 0; x < width; x++)
 		{
 			for (int y = 0; y < height; y++)
 			{
 				GameObject* object = tilemap->GetObjectOnTile(x, y, typeToCombine);
-
-				if (object && object->GetType() == typeToCombine && *object->GetRenderObject() == *renderObject)
+				if (object && object->GetType() == typeToCombine)
 				{
-					XMFLOAT3 pos = object->GetPosition();
-					XMMATRIX translation = XMMatrixTranslation(pos.x, pos.y, pos.z);
+					RotatedRenderObject temp = RotatedRenderObject(object->GetRenderObject(), object->GetRotation());
 
-					//Translating the mesh data by the object translation
-					for (auto& vertex : singleObjectDataVector)
+					if (temp == renderObject)
 					{
-						Vertex vert = vertex;
-						XMVECTOR posV = XMLoadFloat3(&vert._position);
-						posV = XMVector3TransformCoord(posV, translation);
-						XMStoreFloat3(&vert._position, posV);
-						combinedMeshDataVector.push_back(vert);
-					}
+						XMFLOAT3 pos = object->GetPosition();
+						XMMATRIX translation = XMMatrixTranslation(pos.x, pos.y, pos.z);
 
-					combinedCount++;
+						//Translating the mesh data by the object translation
+						for (auto& vertex : singleObjectDataVector)
+						{
+							Vertex vert = vertex;
+							XMVECTOR posV = XMLoadFloat3(&vert._position);
+							posV = XMVector3TransformCoord(posV, translation);
+							XMStoreFloat3(&vert._position, posV);
+							combinedMeshDataVector.push_back(vert);
+						}
 
-					if (countPerCombine != -1 && combinedCount % countPerCombine == 0)
-					{
-						//Create a combination of a given number of meshes
-						CreateCombinedMesh(combinedMeshDataVector, renderObject, _combinedTypes);
-						combinedMeshDataVector.clear();
+						combinedCount++;
+
+						if (countPerCombine != -1 && combinedCount % countPerCombine == 0)
+						{
+							//Create a combination of a given number of meshes
+							CreateCombinedMesh(combinedMeshDataVector, renderObject._renderObject, _combinedTypes);
+							combinedMeshDataVector.clear();
+						}
 					}
 				}
 			}
@@ -456,14 +456,14 @@ void CombinedMeshGenerator::CombineMeshes(Tilemap* tilemap, const System::Type& 
 		//For example, countPerCombine is 4, but there are 10 objects. The last two will be combined here
 		if (countPerCombine != -1 && combinedMeshDataVector.size() > 0)
 		{
-			CreateCombinedMesh(combinedMeshDataVector, renderObject, _combinedTypes);
+			CreateCombinedMesh(combinedMeshDataVector, renderObject._renderObject, _combinedTypes);
 			combinedMeshDataVector.clear();
 		}
 
 		if (countPerCombine == -1)
 		{
 			//Combine all meshes of the give type
-			CreateCombinedMesh(combinedMeshDataVector, renderObject, _combinedTypes);
+			CreateCombinedMesh(combinedMeshDataVector, renderObject._renderObject, _combinedTypes);
 			combinedMeshDataVector.clear();
 		}
 	}

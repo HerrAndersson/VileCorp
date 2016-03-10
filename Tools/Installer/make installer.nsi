@@ -70,6 +70,8 @@ FunctionEnd
 !delfile "..\..\Output\Bin\x86\Release\*.ipdb"
 !delfile "..\..\Output\Bin\x86\Release\*.pdb"
 !delfile "..\..\Output\Bin\x86\Release\*.txt"
+!delfile "..\..\Output\Bin\x86\Release\StortSpelprojekt.exe"
+
 
 #Installer language
 !insertmacro MUI_LANGUAGE "English"
@@ -100,7 +102,7 @@ Section "Vile Corp" VCSection
 	!insertmacro MUI_STARTMENU_WRITE_BEGIN Application
 		CreateDirectory "$SMPROGRAMS\$StartMenuFolder"
 		CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Vile Corp.lnk" "$INSTDIR\Vile Corp\Vile Corp.exe" "${UserdataFlags}"
-		CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Uninstall.lnk" "$INSTDIR\Vile Corp\Uninstall.exe"
+		CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Uninstall.lnk" "$INSTDIR\Vile Corp\Uninstall.exe" "${UserdataFlags}"
 	!insertmacro MUI_STARTMENU_WRITE_END
 
 SectionEnd

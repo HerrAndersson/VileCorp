@@ -279,8 +279,7 @@ void Enemy::Act(GameObject* obj)
 
 			break;
 		case System::SPAWN:
-			TakeDamage(_health);						//TODO: Right now despawn is done by killing the unit. This should be changed to reflect that it's escaping --Victor
-														//^ This will also make the guard_death sound not play if it's an escape -- Sebastian
+			TakeDamage(_health);
 			break;
 		case System::TRAP:
 		{

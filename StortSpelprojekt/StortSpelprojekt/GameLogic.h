@@ -28,8 +28,8 @@ private:
 	float					_buttonReady;
 	bool					_gameOver;
 	System::SoundModule*	_soundModule;
+	int						_nrOfLoot;
 
-	//TODO: add gamemodes /Rikhard
 	int _gameMode;
 	int _surviveForSeconds;
 
@@ -47,6 +47,7 @@ public:
 	~GameLogic();
 	void Update(float deltaTime);
 	bool GoToMenu()const;
+	void SetNrOfLoot(int nrOfLoot);
 };
 
 

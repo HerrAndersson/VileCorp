@@ -21,7 +21,7 @@ GameLogic::GameLogic(ObjectHandler* objectHandler, System::Camera* camera, Syste
 	_uiTree->GetNode("winscreen")->SetHidden(true);
 	_uiTree->GetNode("losescreen")->SetHidden(true);
 	_gameOver = false;
-	_buttonReady = 3999.0f; //TODO: Replace with timer /Rikhard
+	_buttonReady = 3999.0f;
 	_returnToMenu = false;
 
 	Level::LevelHeader* currentLevelHeader = _objectHandler->GetCurrentLevelHeader();
@@ -56,6 +56,11 @@ void GameLogic::Update(float deltaTime)
 bool GameLogic::GoToMenu() const
 {
 	return _returnToMenu;
+}
+
+void GameLogic::SetNrOfLoot(int nrOfLoot)
+{
+	_nrOfLoot = nrOfLoot;
 }
 
 /*
@@ -269,7 +274,7 @@ void GameLogic::ShowSelectedInfo()
 
 void GameLogic::HandleWinLoseDialog(float deltaTime)
 {
-	if (_objectHandler->GetAllByType(System::LOOT)->size() <= 0)				//You lost
+	if (_objectHandler->GetAllByType(System::LOOT)->size() < _nrOfLoot)				//You lost
 	{
 		_uiTree->GetNode("losescreen")->SetHidden(false);
 		System::MouseCoord coord = _controls->GetMouseCoord();
@@ -324,7 +329,7 @@ void GameLogic::HandleWinLoseDialog(float deltaTime)
 
 bool GameLogic::CheckGameStatus()
 {
-	if (_objectHandler->GetAllByType(System::LOOT)->size() <= 0 ||
+	if (_objectHandler->GetAllByType(System::LOOT)->size() < _nrOfLoot ||
 		(_objectHandler->GetAllByType(System::ENEMY)->size() <= 0 && _objectHandler->GetRemainingToSpawn() <= 0))
 	{
 		_gameOver = true;

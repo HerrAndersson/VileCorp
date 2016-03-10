@@ -22,14 +22,16 @@ namespace GUI
 			unsigned int _screenHeight;
 			unsigned int _windowWidth;
 			unsigned int _windowHeight;
+			unsigned int _screenMode;
 
-			NodeInfo(FontWrapper* fontWrapper, unsigned int screenWidth, unsigned int screenHeight, unsigned int windowWidth, unsigned int windowHeight)
+			NodeInfo(FontWrapper* fontWrapper, unsigned int screenWidth, unsigned int screenHeight, unsigned int windowWidth, unsigned int windowHeight, unsigned int screenMode)
 			{
 				_fontWrapper = fontWrapper;
 				_screenWidth = screenWidth;
 				_screenHeight = screenHeight;
 				_windowWidth = windowWidth;
 				_windowHeight = windowHeight;
+				_screenMode = screenMode;
 			}
 		};
 
@@ -103,7 +105,6 @@ namespace GUI
 		bool GetCentered() const;
 		bool GetHidden() const;
 		Node* GetParent() const;
-		DirectX::XMFLOAT2 GetSize() const;
 
 		DirectX::XMMATRIX* Node::GetModelMatrix();
 		std::vector<GUI::Node*>* GetChildren();

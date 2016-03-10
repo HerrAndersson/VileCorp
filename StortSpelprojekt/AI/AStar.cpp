@@ -215,8 +215,6 @@ namespace AI
 
 	/*
 	Runs the actual A* algorithm.
-	TODO: Return the path as a sorted list
-	--Victor
 	*/
 	bool AStar::FindPath()
 	{
