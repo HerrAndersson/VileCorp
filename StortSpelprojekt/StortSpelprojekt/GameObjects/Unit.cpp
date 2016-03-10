@@ -475,7 +475,7 @@ void Unit::SwitchingNode()
 				Rotate();
 				_moveState = MoveState::MOVING;
 			}
-			else			// TODO: else find unblocked path to goal --Victor
+			else
 			{
 				ClearObjective();
 				_moveState = MoveState::IDLE;
@@ -518,9 +518,9 @@ void Unit::ActivateStatus()
 	case StatusEffect::STUNNED:					//No active effect. Instead units are prevented from updating while this is in effect.
 		Animate(IDLEANIM);
 		break;
-	case StatusEffect::SCARED:					//TODO: Either allow pursuer to be a non-unit, or make a specific movement state
+	case StatusEffect::SCARED:					//Not implemented
 		break;
-	case StatusEffect::CONFUSED:				//TODO: Pick random nearby tile when switching node --Victor
+	case StatusEffect::CONFUSED:
 		break;
 	default:
 		break;

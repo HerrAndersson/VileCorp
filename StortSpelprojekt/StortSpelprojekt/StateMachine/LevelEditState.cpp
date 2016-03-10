@@ -372,6 +372,14 @@ bool LevelEditState::HandleButtons()
 				clickedOnGUI = true;
 				//Is only supposed to bring up the Import GUI
 				_uiTree.GetNode("ImportMapList")->SetHidden(false);
+				if (_levelHeaderFilenames.empty())
+				{
+					_uiTree.GetNode("ImportYes")->SetHidden(true);
+				}
+				else
+				{
+					_uiTree.GetNode("ImportYes")->SetHidden(false);
+				}
 				_dialogWindowLock = true;
 			}
 			else if (_uiTree.IsButtonColliding("NewMap", coord._pos.x, coord._pos.y) && !_uiTree.IsNodeHidden("NewMap"))

@@ -12,7 +12,7 @@ Guard::Guard(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 ro
 	_moveSpeed = 0.03f;
 	_baseDamage = 30;
 
-	switch (_subType)				//TODO: Repair time, vision radius, etc --Victor
+	switch (_subType)
 	{
 	case BASICGUARD:
 		_health = 100;
@@ -80,7 +80,7 @@ void Guard::EvaluateTile(GameObject * obj)
 		}
 		tempPriority;
 		if (tempPriority > 0 && obj->GetTilePosition() != _tilePosition && 
-			(_pathLength <= 0 || tempPriority * GetApproxDistance(obj->GetTilePosition()) < _goalPriority * GetApproxDistance(GetGoalTilePosition())))			//TODO Either optimize properly or check path properly --Victor
+			(_pathLength <= 0 || tempPriority * GetApproxDistance(obj->GetTilePosition()) < _goalPriority * GetApproxDistance(GetGoalTilePosition())))
 		{
 			SetGoalTilePosition(obj->GetTilePosition());
 			_goalPriority = tempPriority;

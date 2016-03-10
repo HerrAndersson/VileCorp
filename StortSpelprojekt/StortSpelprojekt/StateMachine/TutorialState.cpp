@@ -24,8 +24,6 @@ void TutorialState::PlacementGuideCheck(const std::string& nodeName, System::Typ
 		_currentButton->SetColorOffset(DirectX::XMFLOAT4(0, 0, 0, 1.0f));
 	}
 
-	//TODO: Add inputhandling to only accept the correct button --Victor / Zache
-
 	if (_baseEdit->IsObjectDropValid() && _baseEdit->GetCreatedObject()->GetType() == type && _baseEdit->GetCreatedObject()->GetSubType() == subType)
 	{
 		_objectPlaced = true;
@@ -112,8 +110,6 @@ void TutorialState::Update(float deltaTime)
 			_uiTree.GetNode("Play")->SetColorOffset(DirectX::XMFLOAT4(0, 0, 0, 1.0f));
 		}
 		
-		//TODO: Add inputhandling to only accept the correct button --Victor / Zache
-
 		if (_uiTree.IsButtonColliding("Play", coord._pos.x, coord._pos.y) && _controls->IsFunctionKeyDown("MOUSE:SELECT"))
 		{
 			_profile->_firstTime = false;

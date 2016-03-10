@@ -216,9 +216,6 @@ AI::Vec2D Trap::ConvertOctant(int octant, AI::Vec2D pos, bool in)
 
 /*
 	Sets any subtype specific stats besides those related to area, which are set in SetTiles().  
-
-	TODO: Add individual reset time.
-	--Victor
 */
 void Trap::Initialize(int damage, int tileSize, int triggerSize, int AOESize, int detectDifficulty, int disarmDifficulty, int repairTime, int disarmTime,
 					  Unit::StatusEffect statusEffect, int statusTimer, int statusInterval, int triggerTimer, int ammunition)
@@ -244,7 +241,7 @@ void Trap::Initialize(int damage, int tileSize, int triggerSize, int AOESize, in
 
 /*
 	Sets the various areas associated with the trap. Used in the constructor as well as when setting a new position.
-	TODO: Move functionality to construct if placement gets reworked to no longer necessitate a position change.
+	Note: Move functionality to construct if placement gets reworked to no longer necessitate a position change.
 	--Victor
 */
 void Trap::SetTiles()
@@ -352,7 +349,7 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 		frozen = false;
 		_resetAnimTime = false;
 		break;
-	case CAKEBOMB:																					//Instant kill on one tile. TODO: Make it seem easier to disarm than it is
+	case CAKEBOMB:																					//Instant kill on one tile.
 		Initialize(999, 1, 1, 1, 90, 60, 280, 140, Unit::StatusEffect::NO_EFFECT, 0, 0);
 		break;
 	case BEAR:																						//Another one tile trap. Easy to disarm to lure enemies into wasting time on it

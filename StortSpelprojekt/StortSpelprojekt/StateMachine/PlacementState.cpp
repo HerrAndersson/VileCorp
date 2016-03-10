@@ -146,7 +146,6 @@ void PlacementState::OnStateEnter()
 	_uiTree.GetNode("CakeDescription")->SetHidden(true);
 	_uiTree.GetNode("SharkDescription")->SetHidden(true);
 
-	//TODO: Move hardcoded costs and description to logical location /Rikhard
 	/*
 	Set text for descriptions
 	*/

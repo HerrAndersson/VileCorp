@@ -30,7 +30,6 @@ private:
 	System::SoundModule*	_soundModule;
 	int						_nrOfLoot;
 
-	//TODO: add gamemodes /Rikhard
 	int _gameMode;
 	int _surviveForSeconds;
 
