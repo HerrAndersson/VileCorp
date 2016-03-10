@@ -168,7 +168,7 @@
 				"color": "FF000000",
 				"fontsize": 18.0
 			},
-			"": {
+			"Grid": {
 				"position": [-0.025, 0.0],
 				"GridMapX": {
 					"position": [0.006, 0.1925],
@@ -199,22 +199,25 @@
 			},
 			"": {
 				"position": [0.0, 0.01],
-				"MapGridText": {
-					"position": [0.0, 0.095],
-					"scale": [0.118, 0.02],
-					"text": "Grid:              On              Off",
-					"color": "FF000000",
-					"fontsize": 18.0
-				},
-				"GridOn": {
-					"position": [-0.05, 0.0925],
-					"scale": [0.025, 0.04],
-					"texture": "../Menues/LevelEdit/GUI/buttonOn"
-				},
-				"GridOff": {
-					"position": [0.032, 0.0925],
-					"scale": [0.025, 0.04],
-					"texture": "../Menues/General/button"
+				"Grid2":
+				{
+					"MapGridText": {
+						"position": [0.0, 0.095],
+						"scale": [0.118, 0.02],
+						"text": "Grid:              On              Off",
+						"color": "FF000000",
+						"fontsize": 18.0
+					},
+					"GridOn": {
+						"position": [-0.05, 0.0925],
+						"scale": [0.025, 0.04],
+						"texture": "../Menues/LevelEdit/GUI/buttonOn"
+					},
+					"GridOff": {
+						"position": [0.032, 0.0925],
+						"scale": [0.025, 0.04],
+						"texture": "../Menues/General/button"
+					}
 				},
 				"BudgetText": {
 					"position": [-0.09, 0.005],
@@ -236,7 +239,7 @@
 					}
 				}
 			},
-			"": {
+			"Gamemode": {
 				"position": [0.0, -0.06],
 				"MapObjectiveText": {
 					"position": [0.0, -0.05],
@@ -437,12 +440,12 @@
 				"SawTrap": {
 					"position": [0.03, -0.195],
 					"scale": [0.032, 0.051],
-					"texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png"
+					"texture": "../Menues/PlacementStateGUI/units/sawButton.png"
 				},
 				"CupCakeTrap": {
 					"position": [-0.1175, -0.195],
 					"scale": [0.032, 0.051],
-					"texture": "../Menues/PlacementStateGUI/units/Gunbutton1"
+					"texture": "../Menues/PlacementStateGUI/units/cupcakeButton"
 				},
 				"BearTrap": {
 					"position": [-0.044, -0.07],
@@ -457,7 +460,7 @@
 				"WaterGunTrap": {
 					"position": [-0.044, -0.195],
 					"scale": [0.032, 0.051],
-					"texture": "../Menues/PlacementStateGUI/units/Gunbutton1.png"
+					"texture": "../Menues/PlacementStateGUI/units/WatergunButton1.png"
 				},
 				"ConfusionTrap": {
 					"position": [0.03, -0.07],
@@ -472,9 +475,9 @@
 		"scale": [0.2, 0.54],
 		"texture": "../Menues/LevelEdit/GUI/leveledit3-settings popup",
 		"ControlsListText": {
-			"position": [0.007, 0.0],
+			"position": [0.014, 0.0],
 			"scale": [0.188, 0.45],
-			"text": "Controls shown here!",
+			"text": "Controls:\n WASD = Move camera\n Q and E = Rotate camera\n LEFT MOUSE BUTTON = Select (If object selected: Place object)\n RIGHT MOUSE BUTTON = Deselect (If object selected: Remove already placed objects)\n R and T = Rotate selected object\n SHIFT + LEFT MOUSE BUTTON = Place many of the selected object\n SHIFT + RIGHT MOUSE BUTTON = Remove many of the selected object\n MOUSE WHEEL = Zoom in and out\n\nImportant notes:\n On the top left are where you select objects to place.\n On bottom left is spawn settings for the when the enemies should spawn and how many.\n On the top right are the load and save buttons.\n To the right are the story section.\n Bottom right are where you lock units and select budget for the level.",
 			"color": "FF000000",
 			"fontsize": 18.0
 		}

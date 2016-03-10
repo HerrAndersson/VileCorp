@@ -141,6 +141,13 @@ void LevelEditState::OnStateEnter()
 	_uiTree.GetNode("ImportMapList")->SetHidden(true);
 	_uiTree.GetNode("ExportMapList")->SetHidden(true);
 
+	//Hide since useless:
+	_uiTree.GetNode("SelectedBox")->SetHidden(true);
+	_uiTree.GetNode("Grid")->SetHidden(true);
+	_uiTree.GetNode("Grid2")->SetHidden(true);
+	_uiTree.GetNode("MapTileText")->SetHidden(true);
+	_uiTree.GetNode("Gamemode")->SetHidden(true);
+
 	_levelHeader = Level::LevelHeader();
 	_levelBinary = Level::LevelBinary();
 	_currentLevelFileName.clear();
