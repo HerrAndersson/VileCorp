@@ -61,9 +61,9 @@ Game::~Game()
 
 void Game::ResizeResources(System::Settings* settings)
 {
+	_window->ResizeWindow(settings);
 	_renderModule->ResizeResources(settings);
 	_renderModule->SetAntialiasingEnabled(settings->_antialiasing);
-	_window->ResizeWindow(settings);
 	_SM->Resize(settings);
 	_camera->Resize(settings);
 }

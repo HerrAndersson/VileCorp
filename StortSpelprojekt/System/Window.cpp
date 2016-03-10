@@ -90,6 +90,8 @@ namespace System
 		LONG style = _defaultStyle;
 		LONG exStyle = _defaultExStyle;
 
+		RECT oldRect = { 0,0,0,0 };
+		GetWindowRect(_hwnd, &oldRect);
 
 		if(screenMode == System::WINDOWED) //This is a window with borders - adjust the window size accordingly
 		{
@@ -107,7 +109,15 @@ namespace System
 		SetWindowLong(_hwnd, GWL_STYLE, style);
 		SetWindowLong(_hwnd, GWL_EXSTYLE, exStyle);
 
-		SetWindowPos(_hwnd, HWND_TOP, 0, 0, windowWidth, windowHeight, SWP_FRAMECHANGED);
+		if (screenMode != System::FULLSCREEN)
+		{
+			SetWindowPos(_hwnd, HWND_TOP, oldRect.left, oldRect.top, windowWidth, windowHeight, SWP_FRAMECHANGED);
+		}
+		else
+		{
+			SetWindowPos(_hwnd, HWND_TOP, 0, 0, windowWidth, windowHeight, SWP_FRAMECHANGED);
+		}
+
 		SetFocus(_hwnd);
 		ShowCursor(_settings->_showMouseCursor);
 		ShowWindow(_hwnd, SW_SHOW);
