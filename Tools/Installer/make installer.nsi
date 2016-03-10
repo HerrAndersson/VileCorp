@@ -70,6 +70,8 @@ FunctionEnd
 !delfile "..\..\Output\Bin\x86\Release\*.ipdb"
 !delfile "..\..\Output\Bin\x86\Release\*.pdb"
 !delfile "..\..\Output\Bin\x86\Release\*.txt"
+!delfile "..\..\Output\Bin\x86\Release\StortSpelprojekt.exe"
+
 
 #Installer language
 !insertmacro MUI_LANGUAGE "English"
