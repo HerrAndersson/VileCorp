@@ -18,7 +18,6 @@ namespace Renderer
 	{
 		delete _requestQueue;
 		_requestQueue = nullptr;
-		_queue.clear();
 
 		for (ParticleMessage* p : _queue)
 		{
