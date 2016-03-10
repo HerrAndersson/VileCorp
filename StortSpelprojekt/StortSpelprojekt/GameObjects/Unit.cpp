@@ -123,6 +123,8 @@ Unit::~Unit()
 	_particleEventQueue->Insert(new ParticleUpdateMessage(_ID, false));
 
 	delete _visionCone;
+	delete[] _allSpawnPoints;
+	delete[] _allLoot;
 }
 
 int Unit::GetPathLength() const
