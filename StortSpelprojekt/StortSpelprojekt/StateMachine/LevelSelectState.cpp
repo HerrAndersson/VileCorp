@@ -40,6 +40,9 @@ LevelSelectState::LevelSelectState(System::Controls* controls, ObjectHandler* ob
 	_isCampaignMode = true;
 	_campaignSelection = 0;
 	_campaignSelectionMax = 0;
+
+	_uiTree.GetNode("GameModeText")->SetHidden(true);
+	_uiTree.GetNode("GameMode")->SetHidden(true);
 }
 
 LevelSelectState::~LevelSelectState()
