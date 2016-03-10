@@ -110,7 +110,7 @@ bool GUI::TextBox::GetOnlyNumbersAllowed()
 	return _allowOnlyNumbers;
 }
 
-void GUI::TextBox::SetOnlyNumbersAllowed(bool &allowOnlyNumbers)
+void GUI::TextBox::SetOnlyNumbersAllowed(bool allowOnlyNumbers)
 {
 	_allowOnlyNumbers = allowOnlyNumbers;
 }
@@ -152,10 +152,5 @@ bool GUI::TextBox::GetAllowMultipleLines() const
 
 bool GUI::TextBox::IsInteger(const std::string & s)
 {
-	if (s.empty() || ((!isdigit(s[0])) && (s[0] != '-') && (s[0] != '+'))) return false;
-
-	char * p;
-	strtol(s.c_str(), &p, 10);
-
-	return (*p == 0);
+	return !s.empty() && s.find_first_not_of("+-0123456789") == std::string::npos;
 }

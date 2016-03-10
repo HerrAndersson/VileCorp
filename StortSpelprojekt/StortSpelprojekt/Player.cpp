@@ -81,11 +81,18 @@ void Player::SelectUnit(Unit* pickedUnit)
 	if (!exists)
 	{
 		_selectedUnits.push_back(pickedUnit->GetID());
+		static_cast<Guard*>(pickedUnit)->ShowSelectIcon();
+		static_cast<Guard*>(pickedUnit)->ShowPatrolIcons();
 	}
 }
 
 void Player::DeselectUnits()
 {
+	for (auto g : GetSelectedUnits())
+	{
+		static_cast<Guard*>(g)->HideSelectIcon();
+		static_cast<Guard*>(g)->HidePatrolIcons();
+	}
 	_selectedUnits.clear();
 }
 
@@ -97,7 +104,7 @@ bool Player::AreUnitsSelected()
 vector<Unit*> Player::GetSelectedUnits()
 {
 	vector<Unit*> units;
-	for (int i = 0; i < _selectedUnits.size(); i++)
+	for (int i = 0; i < (int)_selectedUnits.size(); i++)
 	{
 		Unit* unit = (Unit*)_objectHandler->Find(_selectedUnits.at(i));
 		if (unit != nullptr)
@@ -120,7 +127,9 @@ void Player::MoveUnits(AI::Vec2D movePoint)
 			//If a patrolling unit is told to move it will break its patrolroute
 			if (unit->GetType() == System::GUARD)
 			{
+				static_cast<Guard*>(unit)->HidePatrolIcons();
 				((Guard*)unit)->RemovePatrol();
+				
 			}
 			unit->SetGoalTilePosition(movePoint);
 		}
@@ -138,6 +147,8 @@ void Player::PatrolUnits(AI::Vec2D patrolPoint)
 			if (unit->GetType() == System::GUARD)
 			{
 				((Guard*)unit)->SetPatrolPoint(patrolPoint);
+				static_cast<Guard*>(unit)->HidePatrolIcons();
+				static_cast<Guard*>(unit)->ShowPatrolIcons();
 			}
 		}
 	}

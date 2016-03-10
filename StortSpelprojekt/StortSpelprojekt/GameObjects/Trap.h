@@ -85,8 +85,8 @@ public:
 	
 	void Animate(Anim anim);
 
+	// Overloaded because of damage/special and multiple tile positions
 	void ShowAreaOfEffect();
-	void HideAreaOfEffect();
 
 	//Sound
 	void PlayActivateSound();

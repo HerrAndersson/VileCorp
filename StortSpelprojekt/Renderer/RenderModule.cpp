@@ -10,7 +10,8 @@ namespace Renderer
 		_d3d = new DirectXHandler(hwnd, settings);
 		_settings = settings;
 		_shaderHandler = new ShaderHandler(_d3d->GetDevice());
-		_antialiasingEnabled = 0;
+		_antialiasingEnabled = true;
+		_shadowsEnabled = true;
 
 		InitializeScreenQuadBuffer();
 		InitializeConstantBuffers();
@@ -26,6 +27,7 @@ namespace Renderer
 
 		_screenQuad->Release();
 		_matrixBufferPerObject->Release();
+		_selectionQuad->Release();
 		_matrixBufferPerSkinnedObject->Release();
 		_matrixBufferPerFrame->Release();
 		_matrixBufferHUD->Release();
@@ -55,6 +57,14 @@ namespace Renderer
 		D3D11_SUBRESOURCE_DATA data;
 		data.pSysMem = quad;
 		HRESULT result = _d3d->GetDevice()->CreateBuffer(&bufferDesc, &data, &_screenQuad);
+
+		// Same as _scrrenQuad but will change size and location depending on box selecting units
+		ZeroMemory(&bufferDesc, sizeof(bufferDesc));
+		bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+		bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+		bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+		bufferDesc.ByteWidth = sizeof(ScreenQuadVertex) * 6;
+		result = _d3d->GetDevice()->CreateBuffer(&bufferDesc, &data, &_selectionQuad);
 	}
 
 	void RenderModule::InitializeConstantBuffers()
@@ -495,7 +505,7 @@ namespace Renderer
 
 			int nrOfSRVs = _d3d->SetLightStage();
 
-			_shaderHandler->SetSpotlightApplicationShaders(deviceContext);
+			_shaderHandler->SetSpotlightApplicationShaders(deviceContext, _shadowsEnabled);
 			ID3D11ShaderResourceView* shadowMapSRV = _shadowMap->GetShadowSRV();
 			_d3d->GetDeviceContext()->PSSetShaderResources(nrOfSRVs, 1, &shadowMapSRV);
 
@@ -565,6 +575,11 @@ namespace Renderer
 		_antialiasingEnabled = enabled;
 	}
 
+	void RenderModule::SetShadowsEnabled(bool enabled)
+	{
+		_shadowsEnabled = enabled;
+	}
+
 	void RenderModule::BeginScene(float red, float green, float blue, float alpha, bool clearBackBuffer)
 	{
 		_d3d->SetBlendState(Renderer::DirectXHandler::BlendState::DISABLE);
@@ -618,12 +633,13 @@ namespace Renderer
 
 				MatrixBufferHud* dataPtr = static_cast<MatrixBufferHud*>(mappedResource.pData);
 				dataPtr->_model = XMMatrixTranspose(t);
-				XMFLOAT4 offset;
-				offset.x = current->GetColorOffset().x + 0.04f * brightness - 0.20f;
-				offset.y = current->GetColorOffset().y + 0.04f * brightness - 0.20f;
-				offset.z = current->GetColorOffset().z + 0.04f * brightness - 0.20f;
-				offset.w = current->GetColorOffset().w;
-				dataPtr->_colorOffset = offset;
+
+				float brightnessModifier = brightness * 0.04f - 0.2f;
+				dataPtr->_colorOffset = current->GetColorOffset();
+				dataPtr->_colorOffset.x += brightnessModifier;
+				dataPtr->_colorOffset.y += brightnessModifier;
+				dataPtr->_colorOffset.z += brightnessModifier;
+				dataPtr->_hasTexture = 1;
 
 				deviceContext->Unmap(_matrixBufferHUD, 0);
 
@@ -667,6 +683,63 @@ namespace Renderer
 
 		SetDataPerObject(world, colorOffset);
 		deviceContext->Draw(nrOfPoints, 0);
+	}
+
+	void RenderModule::RenderSelectionQuad(float lastX, float lastY, float currentX, float currentY)
+	{
+		currentX = (2.0f * currentX / _settings->_screenWidth) - 1;
+		currentY = -(2.0f * currentY / _settings->_screenHeight) + 1;
+		lastX = (2.0f * lastX / _settings->_screenWidth) - 1;
+		lastY = -(2.0f * lastY / _settings->_screenHeight) + 1;
+
+		float temp;
+		if (currentX < lastX)
+		{
+			temp = currentX;
+			currentX = lastX;
+			lastX = temp;
+		}
+		if (currentY > lastY)
+		{
+			temp = currentY;
+			currentY = lastY;
+			lastY = temp;
+		}
+
+		ID3D11DeviceContext* deviceContext = _d3d->GetDeviceContext();
+
+		UINT32 vertexSize = sizeof(ScreenQuadVertex);
+		UINT32 offset = 0;
+		D3D11_MAPPED_SUBRESOURCE mappedResource;
+		HRESULT result = deviceContext->Map(_selectionQuad, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+		if (FAILED(result))
+		{
+			throw std::runtime_error("RenderModule::RenderSelectionQuad: Failed to Map _selectionQuad");
+		}
+
+		ScreenQuadVertex quad[] =
+		{ { lastX, lastY, 0.0f,0.0f, 0.0f },{ currentX, currentY, 0.0f,1.0f, 1.0f },{ lastX, currentY, 0.0f,0.0f, 1.0f },
+		{ lastX, lastY, 0.0f,0.0f, 0.0f },{ currentX, lastY, 0.0f,1.0f, 0.0f },{ currentX, currentY, 0.0f,1.0f, 1.0f } };
+
+		memcpy(mappedResource.pData, quad, sizeof(ScreenQuadVertex)*6);
+		deviceContext->Unmap(_selectionQuad, 0);
+
+		result = deviceContext->Map(_matrixBufferHUD, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+		if (FAILED(result))
+		{
+			throw std::runtime_error("RenderModule::SetResourcesPerObject: Failed to Map _matrixBufferHUD");
+		}
+		MatrixBufferHud* dataPtr = static_cast<MatrixBufferHud*>(mappedResource.pData);
+		dataPtr->_model = XMMatrixTranspose(DirectX::XMMatrixIdentity());
+		dataPtr->_colorOffset = DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 0.1f);
+		dataPtr->_hasTexture = 0;
+
+		deviceContext->Unmap(_matrixBufferHUD, 0);
+
+		SetDataPerMesh(_selectionQuad, vertexSize);
+		deviceContext->VSSetConstantBuffers(1, 1, &_matrixBufferHUD);
+
+		deviceContext->Draw(6, 0);
 	}
 
 	void RenderModule::RenderScreenQuad()

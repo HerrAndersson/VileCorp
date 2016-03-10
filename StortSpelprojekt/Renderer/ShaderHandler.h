@@ -42,8 +42,9 @@ namespace Renderer
 		//Pixel shaders
 		ID3D11PixelShader*		_geoPassPS;
 		ID3D11PixelShader*		_linestripPS;
-		ID3D11PixelShader*		_lightApplySpotlightVolumePS;
-		ID3D11PixelShader*		_lightApplyPointlightVolumePS;
+		ID3D11PixelShader*		_lightVolumeSpotPS;
+		ID3D11PixelShader*		_lightVolumePointPS;
+		ID3D11PixelShader*		_lightVolumeSpotNoShadowsPS;
 		ID3D11PixelShader*		_hudPassPS;
 		ID3D11PixelShader*		_fxaaPassPS;
 		ID3D11PixelShader*		_billboardingPS;
@@ -76,7 +77,7 @@ namespace Renderer
 		void SetLinestripShaders(ID3D11DeviceContext* deviceContest);
 		void SetAnimaShadowGenerationShaders(ID3D11DeviceContext* deviceContext);
 		void SetShadowGenerationShaders(ID3D11DeviceContext* deviceContext);
-		void SetSpotlightApplicationShaders(ID3D11DeviceContext* deviceContext);
+		void SetSpotlightApplicationShaders(ID3D11DeviceContext* deviceContext, bool shadowsEnabled = true);
 		void SetPointlightApplicationShaders(ID3D11DeviceContext* deviceContext);
 		void SetHUDPassShaders(ID3D11DeviceContext* deviceContext);
 		void SetFXAAPassShaders(ID3D11DeviceContext* deviceContext, bool enabled);

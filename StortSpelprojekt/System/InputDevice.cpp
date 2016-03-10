@@ -31,6 +31,9 @@ namespace System
 		_breakOnEsc = false;
 		_breakOnCarriageReturn = false;
 		_breakOnTab = false;
+		_mouseClicked = { 0 };
+		_characterLimit = 0;
+		_onlyNumbers = false;
 	}
 	InputDevice::~InputDevice()
 	{
@@ -250,7 +253,7 @@ namespace System
 		if (_isTextInputMode)
 		{
 			bool overCharacterLimit = false;
-			if (_currentText.size() >= _characterLimit)
+			if ((int)_currentText.size() >= _characterLimit)
 			{
 				overCharacterLimit = true;
 			}
@@ -369,6 +372,16 @@ namespace System
 	MouseCoord InputDevice::GetMouseCoord()const
 	{
 		return _mouseCoord;
+	}
+
+	void InputDevice::SetClickedCoord(const MouseCoord& pos)
+	{
+		_mouseClicked = pos;
+	}
+
+	MouseCoord InputDevice::GetClickedCoord()const
+	{
+		return _mouseClicked;
 	}
 
 	void InputDevice::SetCurrentText(const std::wstring& text)

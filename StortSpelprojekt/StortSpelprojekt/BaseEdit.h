@@ -34,8 +34,8 @@ private:
 		void Reset()
 		{
 			_g = nullptr;
-			bool _placeable = true;
-			bool _created = true;
+			_placeable = true;
+			_created = true;
 		}
 	};
 	GhostImage _movingGhostImage;

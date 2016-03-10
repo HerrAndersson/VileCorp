@@ -19,6 +19,7 @@ namespace System
 	private:
 		MouseCoord	_mouseCoord;
 		MouseCoord	_mouseBuffer;
+		MouseCoord	_mouseClicked;
 
 		bool _lockedCursor;
 
@@ -65,6 +66,8 @@ namespace System
 		bool IsPressed(int key);
 		bool IsReleased(int key);
 		MouseCoord GetMouseCoord()const;
+		void SetClickedCoord(const MouseCoord& pos);
+		MouseCoord GetClickedCoord()const;
 
 		void SetCurrentText(const std::wstring& text);
 		std::wstring GetCurrentText() const;

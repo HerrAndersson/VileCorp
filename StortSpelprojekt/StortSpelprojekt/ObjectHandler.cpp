@@ -32,7 +32,7 @@ GameObject* ObjectHandler::Add(System::Blueprint* blueprint, int textureId, cons
 	System::Type type = (System::Type)blueprint->_type;
 	RenderObject* renderObject = _assetManager->GetRenderObject(blueprint->_mesh, blueprint->_textures[textureId]);
 
-	AI::Vec2D tilepos(position.x, position.z);
+	AI::Vec2D tilepos((int)position.x, (int)position.z);
 	XMFLOAT3 lootPos;
 	GameObject* loot;
 
@@ -109,7 +109,6 @@ GameObject* ObjectHandler::Add(System::Blueprint* blueprint, int textureId, cons
 			for (int i = 0; i < trap->GetNrOfOccupiedTiles() && addedObject; i++)
 			{
 				_tilemap->AddObjectToTile(arr[i], object);
-				//	_tilemap->GetObjectOnTile(arr[i], FLOOR)->AddColorOffset({2,0,0});
 			}
 		}
 
@@ -131,6 +130,7 @@ GameObject* ObjectHandler::Add(System::Blueprint* blueprint, int textureId, cons
 			d._intensity = 1.0f + _ambientLight->GetScale()*0.06f; //Note! I hardcoded this value also in the UpdateLightIntensity() /Alex
 			d._pos = XMFLOAT3(0, 0, 0);
 			d._range = (float)static_cast<Unit*>(object)->GetVisionRadius();
+			d._shadowsEnabled = true;
 			_spotlights[object] = new Renderer::Spotlight(_device, d, 0.1f, 1000.0f);
 		}
 		if (type == System::CAMERA)
@@ -143,6 +143,7 @@ GameObject* ObjectHandler::Add(System::Blueprint* blueprint, int textureId, cons
 			d._intensity = 1.0f + _ambientLight->GetScale()*0.06f; //Note! I hardcoded this value also in the UpdateLightIntensity() /Alex
 			d._pos = XMFLOAT3(0, 0, 0);
 			d._range = (float)static_cast<SecurityCamera*>(object)->GetVisionRadius();
+			d._shadowsEnabled = false;
 			_spotlights[object] = new Renderer::Spotlight(_device, d, 0.1f, 1000.0f);
 		}
 		if (type == System::LOOT)
@@ -152,7 +153,7 @@ GameObject* ObjectHandler::Add(System::Blueprint* blueprint, int textureId, cons
 			d._range = 6.0f;
 			d._intensity = 0.8f + _ambientLight->GetScale()*0.06f; //Note! I hardcoded this value also in the UpdateLightIntensity() /Alex
 			d._col = XMFLOAT3(0.9f, 0.5f, 0.5f);
-			_pointligths[object] = new Renderer::Pointlight(_device, d._pos, d._range, d._intensity, d._col);
+			_pointlights[object] = new Renderer::Pointlight(_device, d._pos, d._range, d._intensity, d._col);
 		}
 
 		//for(auto i : object->GetRenderObject()->_mesh._spotLights)
@@ -225,6 +226,12 @@ bool ObjectHandler::Remove(System::Type type, int ID)
 			{
 				delete _spotlights[_gameObjects[type][i]];
 				_spotlights.erase(_gameObjects[type][i]);
+			}
+
+			if (_pointlights.count(_gameObjects[type][i]))
+			{
+				delete _pointlights[_gameObjects[type][i]];
+				_pointlights.erase(_gameObjects[type][i]);
 			}
 
 			delete _gameObjects[type][i];
@@ -347,163 +354,6 @@ void ObjectHandler::SetTileMap(Tilemap * tilemap)
 	_buildingGrid->ChangeGridSize(_tilemap->GetWidth() - 1, _tilemap->GetHeight() - 1, 1);
 }
 
-void ObjectHandler::MinimizeTileMap()
-{
-	if (_tilemap)
-	{
-		int minY = -1, maxY = -1;
-		for (int y = 0; y < _tilemap->GetHeight() && minY == -1; y++)
-		{
-			for (int x = 0; x < _tilemap->GetWidth() && minY == -1; x++)
-			{
-				if (!_tilemap->IsTileEmpty(x, y))
-				{
-					if (y > 0)
-					{
-						minY = y - 1;
-					}
-					else
-					{
-						minY = 0;
-					}
-				}
-			}
-		}
-		if (minY == -1)
-		{
-			minY = 0;
-		}
-		for (int y = _tilemap->GetHeight() - 1; y >= minY && maxY == -1; y--)
-		{
-			for (int x = 0; x < _tilemap->GetWidth() && maxY == -1; x++)
-			{
-				if (!_tilemap->IsTileEmpty(x, y))
-				{
-					maxY = y + 2;
-				}
-			}
-		}
-		if (maxY == -1)
-		{
-			maxY = _tilemap->GetHeight();
-		}
-
-		int minX = -1, maxX = -1;
-		for (int x = 0; x < _tilemap->GetWidth() && minX == -1; x++)
-		{
-			for (int y = minY; y < maxY && minX == -1; y++)
-			{
-				if (!_tilemap->IsTileEmpty(x, y))
-				{
-					if (x > 0)
-					{
-						minX = x - 1;
-					}
-					else
-					{
-						minX = 0;
-					}
-				}
-			}
-		}
-		if (minX == -1)
-		{
-			minX = 0;
-		}
-		for (int x = _tilemap->GetWidth() - 1; x >= minX && maxX == -1; x--)
-		{
-			for (int y = minY; y < maxY && maxX == -1; y++)
-			{
-				if (!_tilemap->IsTileEmpty(x, y))
-				{
-					maxX = x + 2;
-				}
-			}
-		}
-		if (maxX == -1)
-		{
-			maxX = _tilemap->GetWidth();
-		}
-		int newXMax = maxX - minX;
-		int newYMax = maxY - minY;
-
-		Tilemap* minimized = new Tilemap(AI::Vec2D(newXMax, newYMax));
-		for (int x = 0; x < newXMax; x++)
-		{
-			for (int y = 0; y < newYMax; y++)
-			{
-				AI::Vec2D pos;
-				pos._x = x + minX;
-				pos._y = y + minY;
-
-				std::vector<GameObject*> temp = *_tilemap->GetAllObjectsOnTile(pos);
-
-				for (GameObject* g : temp)
-				{
-					if (g)
-					{
-						// Update real pos
-						g->SetPosition(XMFLOAT3(x, g->GetPosition().y, y));
-
-						// Update tile
-						minimized->AddObjectToTile(x, y, g);
-					}
-				}
-			}
-		}
-
-		SAFE_DELETE(_tilemap);
-		_tilemap = minimized;
-
-		_buildingGrid->ChangeGridSize(_tilemap->GetWidth(), _tilemap->GetHeight(), 1);
-	}
-	else
-	{
-		throw std::runtime_error("ObjectHandler::MinimizeTileMap: _tilemap is nullptr");
-	}
-}
-
-void ObjectHandler::EnlargeTilemap(int offset)
-{
-	if (!_tilemap)
-	{
-		_tilemap = new Tilemap();
-	}
-	if (offset > 0)
-	{
-		int o = 2 * offset;
-		Tilemap* large = new Tilemap(AI::Vec2D(_tilemap->GetWidth() + o, _tilemap->GetHeight() + o));
-
-		for (int x = offset; x < _tilemap->GetWidth() + offset; x++)
-		{
-			for (int y = offset; y < _tilemap->GetHeight() + offset; y++)
-			{
-				AI::Vec2D pos;
-				pos._x = x - offset;
-				pos._y = y - offset;
-				std::vector<GameObject*> temp = *_tilemap->GetAllObjectsOnTile(pos);
-
-				for (GameObject* g : temp)
-				{
-					if (g)
-					{
-						// Update real pos
-						g->SetPosition(XMFLOAT3(x, g->GetPosition().y, y));
-
-						// Update tile
-						large->AddObjectToTile(x, y, g);
-					}
-				}
-			}
-		}
-
-		delete _tilemap;
-		_tilemap = large;
-
-		_buildingGrid->ChangeGridSize(large->GetWidth(), large->GetHeight(), 1);
-	}
-}
-
 Grid * ObjectHandler::GetBuildingGrid()
 {
 	return _buildingGrid;
@@ -537,7 +387,7 @@ bool ObjectHandler::LoadLevel(Level::LevelBinary &levelData, bool resizeTileMap)
 		_tilemap = new Tilemap(AI::Vec2D(levelData._tileMapMaxX - levelData._tileMapMinX + 4, levelData._tileMapMaxZ - levelData._tileMapMinZ + 4));
 	}
 
-	for (int i = 0; i < levelData._gameObjectData.size() && result; i++)
+	for (int i = 0; i < (int)levelData._gameObjectData.size() && result; i++)
 	{
 		std::vector<int>* formattedGameObject = &levelData._gameObjectData[i]; //Structure: { type, subType, textureID, posX, posZ, rot }
 		System::Blueprint* blueprint = GetBlueprintByType(formattedGameObject->at(0), formattedGameObject->at(1));
@@ -562,7 +412,7 @@ bool ObjectHandler::LoadLevel(Level::LevelBinary &levelData, bool resizeTileMap)
 		//Set no placement zones on floors
 		if (addedObject != nullptr && formattedGameObject->at(0) == System::Type::FLOOR && formattedGameObject->size() >= 7)
 		{
-			static_cast<Architecture*>(addedObject)->SetNoPlacementZone(formattedGameObject->at(6));
+			static_cast<Architecture*>(addedObject)->SetNoPlacementZone((bool)formattedGameObject->at(6));
 		}
 	}
 
@@ -573,10 +423,10 @@ bool ObjectHandler::LoadLevel(Level::LevelBinary &levelData, bool resizeTileMap)
 	_lightCulling = new LightCulling(_tilemap);
 
 	SAFE_DELETE(_backgroundObject);
-	int sizeX = 90 + _tilemap->GetWidth();
-	int sizeY = 90 + _tilemap->GetHeight();
+	const int sizeX = 90 + _tilemap->GetWidth();
+	const int sizeY = 90 + _tilemap->GetHeight();
 
-	CreateBackgroundObject(sizeX, sizeY, "grass1.png", sizeX / 3, sizeY / 3);
+	CreateBackgroundObject((const float)sizeX, (const float)sizeY, "grass1.png", sizeX / 3, sizeY / 3);
 	return result;
 }
 
@@ -589,13 +439,13 @@ void ObjectHandler::UnloadLevel()
 		spot.first = nullptr;
 	}
 	_spotlights.clear();
-	for (pair<GameObject*, Renderer::Pointlight*> point : _pointligths)
+	for (pair<GameObject*, Renderer::Pointlight*> point : _pointlights)
 	{
 		SAFE_DELETE(point.second);
 		point.second = nullptr;
 		point.first = nullptr;
 	}
-	_pointligths.clear();
+	_pointlights.clear();
 
 	ReleaseGameObjects();
 	SAFE_DELETE(_tilemap);
@@ -631,7 +481,7 @@ void ObjectHandler::Update(float deltaTime)
 				if (heldObject != nullptr && heldObject->GetPickUpState() == HELD)
 				{
 					heldObject->SetPosition(DirectX::XMFLOAT3(unit->GetPosition().x, unit->GetPosition().y + 2.0f, unit->GetPosition().z));
-					heldObject->SetTilePosition(AI::Vec2D(heldObject->GetPosition().x, heldObject->GetPosition().z));
+					heldObject->SetTilePosition(AI::Vec2D((int)heldObject->GetPosition().x, (int)heldObject->GetPosition().z));
 				}
 
 				bool inRangeOfSpawn = false;
@@ -648,15 +498,7 @@ void ObjectHandler::Update(float deltaTime)
 					}
 				}
 
-				//Show Unit Lifebar
-				if (unit->GetHealth() > 0 && unit->IsVisible())
-				{
-					XMFLOAT3 pos = unit->GetPosition();
-					pos.y += 2.5f;
 
-					ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::HEALTH_SUBTYPE, -1, pos, XMFLOAT3(0, 0, 0), 1.0f, 1, unit->GetHealth()*0.0025f, true, true);
-					GetParticleEventQueue()->Insert(msg);
-				}
 
 				if (unit->GetHealth() <= 0 && unit->GetAnimisFinished())
 				{
@@ -765,7 +607,8 @@ void ObjectHandler::Update(float deltaTime)
 						}
 					}
 
-					if (allLootIsCarried && unit->GetHeldObject() == nullptr && static_cast<Enemy*>(unit)->GetMoveState() != Unit::MoveState::FLEEING)
+					if (unit->GetObjective() == nullptr && allLootIsCarried && unit->GetHeldObject() == nullptr && 
+						static_cast<Enemy*>(unit)->GetMoveState() != Unit::MoveState::FLEEING)
 					{
 						static_cast<Enemy*>(unit)->CheckAllTiles();
 					}
@@ -773,7 +616,7 @@ void ObjectHandler::Update(float deltaTime)
 			}
 		}
 	}
-	if (_spawnTimer % 60 == 0)
+	if (_spawnTimer % 60 == 0 && _gameObjects[System::LOOT].size() > 0)
 	{
 		SpawnEnemies();
 	}
@@ -783,7 +626,7 @@ void ObjectHandler::Update(float deltaTime)
 
 void ObjectHandler::SpawnEnemies()
 {
-	if (_enemySpawnVector.size() > 0 && _enemySpawnIndex < _enemySpawnVector.size())
+	if ((int)_enemySpawnVector.size() > 0 && _enemySpawnIndex < (int)_enemySpawnVector.size())
 	{
 		int nextEnemySpawnTime = _enemySpawnVector[_enemySpawnIndex][0];
 
@@ -805,12 +648,15 @@ void ObjectHandler::SpawnEnemies()
 				GameObject* selectedSpawnPoint = _gameObjects[System::Type::SPAWN][currentSpawnPointIndex];
 				if (!_tilemap->IsEnemyOnTile(selectedSpawnPoint->GetTilePosition()))
 				{
-					enemyAdded = Add(nextEnemyBlueprint, 0, selectedSpawnPoint->GetPosition(), selectedSpawnPoint->GetRotation(), true);
+					if (Add(nextEnemyBlueprint, 0, selectedSpawnPoint->GetPosition(), selectedSpawnPoint->GetRotation(), true))
+					{
+						enemyAdded = true;
+					}
 				}
 				else
 				{
 					currentSpawnPointIndex++;
-					if (_gameObjects[System::Type::SPAWN].size() <= currentSpawnPointIndex)
+					if ((int)_gameObjects[System::Type::SPAWN].size() <= currentSpawnPointIndex)
 					{
 						currentSpawnPointIndex = 0;
 					}
@@ -857,7 +703,7 @@ void ObjectHandler::UpdateLights()
 			}
 		}
 	}
-	for (pair<GameObject*, Renderer::Pointlight*> point : _pointligths)
+	for (pair<GameObject*, Renderer::Pointlight*> point : _pointlights)
 	{
 		if (point.first == nullptr)
 		{
@@ -893,7 +739,7 @@ void ObjectHandler::UpdateLightIntensity()
 			spot.second->SetIntensity(1.0f + _ambientLight->GetScale()*0.06f);
 		}
 	}
-	for (pair<GameObject*, Renderer::Pointlight*> point : _pointligths)
+	for (pair<GameObject*, Renderer::Pointlight*> point : _pointlights)
 	{
 		if (point.first->GetType() == System::LOOT)
 		{
@@ -939,7 +785,7 @@ map<GameObject*, Renderer::Spotlight*>* ObjectHandler::GetSpotlights()
 
 map<GameObject*, Renderer::Pointlight*>* ObjectHandler::GetPointlights()
 {
-	return &_pointligths;
+	return &_pointlights;
 }
 
 vector<vector<GameObject*>>* ObjectHandler::GetObjectsInLight(Renderer::Spotlight* spotlight)
@@ -965,11 +811,11 @@ void ObjectHandler::CreateBackgroundObject(const float& sizeX, const float& size
 
 	Vertex quad[] =
 	{ { XMFLOAT3(left, -0.01f, top), normal, XMFLOAT2(0.0f, 0.0f) },
-	{ XMFLOAT3(right, -0.01f, bottom), normal, XMFLOAT2(texRepeatCountX, texRepeatCountY) },
-	{ XMFLOAT3(left, -0.01f, bottom), normal, XMFLOAT2(0.0f, texRepeatCountY) },
+	{ XMFLOAT3(right, -0.01f, bottom), normal, XMFLOAT2((float)texRepeatCountX, (float)texRepeatCountY) },
+	{ XMFLOAT3(left, -0.01f, bottom), normal, XMFLOAT2(0.0f, (float)texRepeatCountY) },
 	{ XMFLOAT3(left, -0.01f, top), normal, XMFLOAT2(0.0f, 0.0f) },
-	{ XMFLOAT3(right, -0.01f, top), normal, XMFLOAT2(texRepeatCountX, 0.0f) },
-	{ XMFLOAT3(right, -0.01f, bottom), normal, XMFLOAT2(texRepeatCountX, texRepeatCountY) } };
+	{ XMFLOAT3(right, -0.01f, top), normal, XMFLOAT2((float)texRepeatCountX, 0.0f) },
+	{ XMFLOAT3(right, -0.01f, bottom), normal, XMFLOAT2((float)texRepeatCountX, (float)texRepeatCountY) } };
 
 	D3D11_BUFFER_DESC bufferDesc;
 	ZeroMemory(&bufferDesc, sizeof(bufferDesc));

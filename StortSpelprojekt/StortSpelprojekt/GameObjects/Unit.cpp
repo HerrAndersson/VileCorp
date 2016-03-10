@@ -32,9 +32,7 @@ void Unit::Rotate()
 		}
 		CalculateMatrix();
 	}
-	//_visionCone->ColorVisibleTiles({0,0,0});
 	_visionCone->FindVisibleTiles(_tilePosition, _direction);
-	//_visionCone->ColorVisibleTiles({0,0,3});
 }
 
 int Unit::GetApproxDistance(AI::Vec2D target) const
@@ -59,6 +57,21 @@ void Unit::SetGoal(AI::Vec2D goal)
 	{
 		_moveState = MoveState::MOVING;
 	}
+}
+
+void Unit::ExpandArray(GameObject** &arr, int &sizeOfArray)
+{
+	int increment = 5;
+	GameObject** temp = new GameObject*[sizeOfArray + increment];
+
+	for (int i = 0; i < sizeOfArray; i++)
+	{
+		temp[i] = arr[i];
+	}
+
+	sizeOfArray += increment;
+	delete[] arr;
+	arr = temp;
 }
 
 void Unit::SetGoal(GameObject * objective)
@@ -100,12 +113,15 @@ Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	_status = NO_EFFECT;
 	_statusTimer = 0;
 	_statusInterval = 0;
+
 }
 
 Unit::~Unit()
 {
 	delete _aStar;
 	HideAreaOfEffect();
+	_particleEventQueue->Insert(new ParticleUpdateMessage(_ID, false));
+
 	delete _visionCone;
 }
 
@@ -192,12 +208,17 @@ void Unit::SetVisibility(bool visible)
 	}
 }
 
+void Unit::SetPosition(const DirectX::XMFLOAT3& position)
+{
+	_position = position;
+	CalculateMatrix();
+
+}
+
 void Unit::SetTilePosition(AI::Vec2D pos)
 {
 	GameObject::SetTilePosition(pos);
-	//_visionCone->ColorVisibleTiles({0,0,0});
 	_visionCone->FindVisibleTiles(_tilePosition, _direction);
-	//_visionCone->ColorVisibleTiles({0,0,3});
 	if (_moveState == MoveState::IDLE)
 	{
 		_nextTile = pos;
@@ -253,27 +274,53 @@ void Unit::CheckVisibleTiles()
 
 void Unit::CheckAllTiles()
 {
-	for (int i = 0; i < _tileMap->GetWidth(); i++)
+	for (int i = 0; i < _nrOfLoot; i++)
 	{
-		for (int j = 0; j < _tileMap->GetHeight(); j++)
-		{
-			//Handle objectives
-			if (_tileMap->IsObjectiveOnTile(AI::Vec2D(i, j)))
-			{
-				_aStar->SetTileCost({ i, j }, 1);
-				EvaluateTile(_tileMap->GetObjectOnTile(AI::Vec2D(i, j), System::LOOT));
-			}
-			else if (_tileMap->IsTypeOnTile(AI::Vec2D(i, j), System::SPAWN))
-			{
-				EvaluateTile(_tileMap->GetObjectOnTile(AI::Vec2D(i, j), System::SPAWN));
-			}
-		}
+		EvaluateTile(_allLoot[i]);
 	}
-	//_aStar->printMap();
+
+	for (int i = 0; i < _nrOfSpawnPoints; i++)
+	{
+		EvaluateTile(_allSpawnPoints[i]);
+	}
+
+	//for (int i = 0; i < _tileMap->GetWidth(); i++)
+	//{
+	//	for (int j = 0; j < _tileMap->GetHeight(); j++)
+	//	{
+	//		//Handle objectives
+	//		if (_tileMap->IsObjectiveOnTile(AI::Vec2D(i, j)))
+	//		{
+	//			_aStar->SetTileCost({ i, j }, 1);
+	//			EvaluateTile(_tileMap->GetObjectOnTile(AI::Vec2D(i, j), System::LOOT));
+	//		}
+	//		else if (_tileMap->IsTypeOnTile(AI::Vec2D(i, j), System::SPAWN))
+	//		{
+	//			EvaluateTile(_tileMap->GetObjectOnTile(AI::Vec2D(i, j), System::SPAWN));
+	//		}
+	//	}
+	//}
+	////_aStar->printMap();
 }
 
 void Unit::InitializePathFinding()
 {
+	int lootCounter = 10/*_tileMap->GetNrOfLoot()*/;
+	_nrOfLoot = 0;
+	_allLoot = new GameObject*[lootCounter];
+	int spawnPointCounter = 10;
+	_nrOfSpawnPoints = 0;
+	_allSpawnPoints = new GameObject*[spawnPointCounter];
+
+	for (int i = 0; i < lootCounter; i++)
+	{
+		_allLoot[i] = nullptr;
+	}
+	for (int i = 0; i < spawnPointCounter; i++)
+	{
+		_allSpawnPoints[i] = nullptr;
+	}
+
 	for (int i = 0; i < _tileMap->GetWidth(); i++)
 	{
 		for (int j = 0; j < _tileMap->GetHeight(); j++)
@@ -285,11 +332,37 @@ void Unit::InitializePathFinding()
 			}
 			else if (_tileMap->IsFurnitureOnTile(AI::Vec2D(i, j)))
 			{
-				_aStar->SetTileCost({i, j}, SHRT_MAX/2);					//Needs to be reachable in case objective is on a furniture tile, but it's still high enough that units almost always avoid it.
+				//Make an exception for enemies trying to reach loot
+				if (_type == System::ENEMY && _tileMap->IsObjectiveOnTile(i,j))			
+				{
+					_aStar->SetTileCost({ i, j }, 20);
+				}
+				else
+				{
+					_aStar->SetTileCost({ i, j }, -1);
+				}
 			}
 			else
 			{
 				_aStar->SetTileCost({i, j}, 1);
+			}
+
+			//Used for Enemy AI for faster scan of objectives
+			if (_tileMap->IsObjectiveOnTile(i, j))
+			{
+				if (_nrOfLoot >= lootCounter)
+				{
+					ExpandArray(_allLoot, lootCounter);
+				}
+				_allLoot[_nrOfLoot++] = _tileMap->GetObjectOnTile({ i, j }, System::LOOT);
+			}
+			else if (_tileMap->IsSpawnOnTile(i, j))
+			{
+				while (_nrOfSpawnPoints >= spawnPointCounter)
+				{
+					ExpandArray(_allSpawnPoints, spawnPointCounter);
+				}
+				_allSpawnPoints[_nrOfSpawnPoints++] = _tileMap->GetObjectOnTile({ i, j }, System::SPAWN);
 			}
 		}
 	}
@@ -310,6 +383,23 @@ void Unit::Update(float deltaTime)
 	{
 		ActivateStatus();
 	}
+	if (_visible)
+	{
+		XMFLOAT3 pos = _position;
+		pos.x *= 0.5;
+		pos.y = 1.25f;
+		pos.z *= 0.5;
+		_particleEventQueue->Insert(new ParticleUpdateMessage(_ID, true, pos));
+	}
+	else
+	{
+		XMFLOAT3 pos = _position;
+		pos.x *= 0.5;
+		pos.y = -1.25f;
+		pos.z *= 0.5;
+		_particleEventQueue->Insert(new ParticleUpdateMessage(_ID, true, pos));
+	}
+
 
 	//bool result = false;
 	//if (_statusTimer > 0)
@@ -341,6 +431,9 @@ void Unit::Moving()
 			_position.x += AI::SQRT2 * 0.5f * _moveSpeed * _direction._x;
 			_position.z += AI::SQRT2 * 0.5f * _moveSpeed * _direction._y;
 		}
+
+
+
 		CalculateMatrix();
 	}
 }
@@ -455,9 +548,16 @@ void Unit::DeactivateStatus()
 
 void Unit::TakeDamage(int damage)
 {
+	_particleEventQueue->Insert(new ParticleUpdateMessage(_ID, false));
 	if (_health - damage > 0)
 	{
 		_health -= damage;
+		XMFLOAT3 pos = _position;
+		pos.x *= 0.5;
+		pos.y = 1.25f;
+		pos.z *= 0.5;
+		ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::HEALTH_SUBTYPE, _ID, pos, XMFLOAT3(0, 0, 0), 1.0f, 1, _health*0.0025f, true, false);
+		_particleEventQueue->Insert(msg);
 	}
 	else if (_health > 0)
 	{
@@ -467,6 +567,8 @@ void Unit::TakeDamage(int damage)
 		}
 		_health -= damage;
 	}
+
+
 }
 
 void Unit::SetIsAtSpawn(bool isAtSpawn)
@@ -525,15 +627,15 @@ void Unit::ShowAreaOfEffect()
 
 	XMFLOAT3 pos = this->_position;
 	pos.y += 0.04f;
-	msg = new ParticleRequestMessage(ParticleType::STATIC_ICON, ParticleSubType::AOE_RED_SUBTYPE, _ID, pos, XMFLOAT3(0, 1, 0), 1.0f, 1, 0.27f, true, true);
-	_particleEventQueue->Insert(msg);
+
+	GameObject::ShowAreaOfEffect();
 
 	for (int i = 0; i < _visionCone->GetNrOfVisibleTiles(); i++)
 	{
 		AI::Vec2D tile = _visionCone->GetVisibleTiles()[i];
 		XMFLOAT3 pos = XMFLOAT3(tile._x, 0.04f, tile._y);
 
-		msg = new ParticleRequestMessage(ParticleType::STATIC_ICON, ParticleSubType::AOE_YELLOW_SUBTYPE, _ID, pos, XMFLOAT3(0, 1, 0), 1.0f, 1, 0.27f, true, true);
+		msg = new ParticleRequestMessage(ParticleType::STATIC_ICON, ParticleSubType::AOE_YELLOW_SUBTYPE, _ID, pos, XMFLOAT3(0, 1, 0), 1.0f, 1, 0.27f, true, false);
 		_particleEventQueue->Insert(msg);
 	}
 }

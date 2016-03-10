@@ -79,10 +79,7 @@ HRESULT Texture::LoadTexture(ID3D11Device* device)
 
 		if (res != S_OK)
 		{
-			string filenameString(_filePath.begin(), _filePath.end());
-			std::string errorMessage = "On Load Texture: " + _name + ",";
-			errorMessage += res;
-			throw std::runtime_error(errorMessage);
+			throw std::runtime_error("On Load Texture: " + _name + " failed");
 		}
 		_loaded = true;
 	}
@@ -402,23 +399,25 @@ Mesh* AssetManager::ScanModel24()
 			mesh->_pointLights.resize(meshHeader._numberPointLights);
 			for (int i = 0; i < meshHeader._numberPointLights; i++)
 			{
-				_infile->read((char*)&mesh->_pointLights[i]._pos, 12);
-				_infile->read((char*)&mesh->_pointLights[i]._col, 12);
-				_infile->read((char*)&mesh->_pointLights[i]._intensity, 4);
-				mesh->_pointLights[i]._bone = 0;
-				mesh->_pointLights[i]._range = 100;
+				auto* pointLight = &mesh->_pointLights[i];
+				_infile->read((char*)&pointLight->_pos, 12);
+				_infile->read((char*)&pointLight->_col, 12);
+				_infile->read((char*)&pointLight->_intensity, 4);
+				pointLight->_bone = 0;
+				pointLight->_range = 100;
 			}
 
 			mesh->_spotLights.resize(meshHeader._numberSpotLights);
 			for (int i = 0; i < meshHeader._numberSpotLights; i++)
 			{
-				_infile->read((char*)&mesh->_spotLights[i]._pos, 12);
-				_infile->read((char*)&mesh->_spotLights[i]._color, 12);
-				_infile->read((char*)&mesh->_spotLights[i]._intensity, 4);
-				_infile->read((char*)&mesh->_spotLights[i]._angle, 4);
-				_infile->read((char*)&mesh->_spotLights[i]._direction, 12);
-				mesh->_spotLights[i]._bone = 0;
-				mesh->_spotLights[i]._range = 100;
+				auto* spotLight = &mesh->_spotLights[i];
+				_infile->read((char*)&spotLight->_pos, 12);
+				_infile->read((char*)&spotLight->_color, 12);
+				_infile->read((char*)&spotLight->_intensity, 4);
+				_infile->read((char*)&spotLight->_angle, 4);
+				_infile->read((char*)&spotLight->_direction, 12);
+				spotLight->_bone = 0;
+				spotLight->_range = 100;
 			}
 			mesh->_vertexBufferSize = meshHeader._numberOfVertices;
 		}
@@ -647,18 +646,19 @@ Skeleton* AssetManager::LoadSkeleton(const std::string& name)
 		skeleton->_actions[a]._bones.resize(header._boneCount);
 		for (uint b = 0; b < skeleton->_actions[a]._bones.size(); b++)
 		{
+			auto& bone = skeleton->_actions[a]._bones[b];
 			_infile->read((char*)&frames, 4);
-			skeleton->_actions[a]._bones[b]._frameCount = frames;
-			skeleton->_actions[a]._bones[b]._frameTime.resize(frames);
-			_infile->read((char*)skeleton->_actions[a]._bones[b]._frameTime.data(), frames * sizeof(int));
-			skeleton->_actions[a]._bones[b]._frames = (Frame*)_aligned_malloc(sizeof(Frame) * frames, 16);
+			bone._frameCount = frames;
+			bone._frameTime.resize(frames);
+			_infile->read((char*)bone._frameTime.data(), frames * sizeof(int));
+			bone._frames = (Frame*)_aligned_malloc(sizeof(Frame) * frames, 16);
 
 			for (int i = 0; i < frames; i++)
 			{
 				_infile->read((char*)&translation, sizeof(XMFLOAT3));
 				_infile->read((char*)&rotation, sizeof(XMFLOAT4));
 				_infile->read((char*)&scale, sizeof(XMFLOAT3));
-				auto& frame = skeleton->_actions[a]._bones[b]._frames[i];
+				auto& frame = bone._frames[i];
 				frame._translation = XMLoadFloat3(&translation);
 				frame._rotation = XMLoadFloat4(&rotation);
 				frame._scale = XMLoadFloat3(&scale);

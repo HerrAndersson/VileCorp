@@ -323,15 +323,12 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	_isVisibleToEnemies = false;
 	_areaOfEffect = nullptr;
 	_occupiedTiles = nullptr;
-	_nrOfOccupiedTiles = 0;
 	_triggerTiles = nullptr;
 	_nrOfTriggers = 0;
 	_subType = trapType;
 	_nrOfAOETiles = 0;
 	int radius = 0;
 	_nrOfOccupiedTiles = 0;
-	_nrOfTriggers = 0;
-	_nrOfAOETiles = 0;
 
 	bool frozen = true;
 	_resetAnimTime = true;
@@ -471,21 +468,19 @@ void Trap::SetTrapActive(bool active)
 	{
 		_currentAmmunition = _maxAmmunition;
 
-		XMFLOAT3 pos = GetPosition();
-		XMFLOAT3 iconPos;
-		iconPos.x = _renderObject->_mesh->_iconPos[0] + pos.x;
-		iconPos.y = _renderObject->_mesh->_iconPos[1] + pos.y;
-		iconPos.z = _renderObject->_mesh->_iconPos[2] + pos.z;
-		_particleEventQueue->Insert(new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::WRENCH_SUBTYPE, GetID(), iconPos, XMFLOAT3(0, 0, 0), 0.0f, 1, 0.25f, true, false));
-		_hasParticleEffect = true;
+		ParticleRequestMessage* msg;
+		XMFLOAT3 pos = _position;
+		pos.y += 2.5f;
+		msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::WRENCH_SUBTYPE, _ID, pos, XMFLOAT3(0, 1, 0), 1.0f, 1, 0.4f, true, false);
+		_particleEventQueue->Insert(msg);
 
-		Animate(FIXANIM);
+		
+		Animate(DISABLEANIM);
 	}
 	else
 	{
-		_particleEventQueue->Insert(new ParticleUpdateMessage(GetID(), false, GetPosition()));
-		_hasParticleEffect = false;
-		Animate(DISABLEANIM);
+		_particleEventQueue->Insert(new ParticleUpdateMessage(_ID, false));
+		Animate(FIXANIM);
 	}
 }
 
@@ -709,7 +704,7 @@ void Trap::Animate(Anim anim)
 			_animation->SetActionAsCycle(IDLEANIM);
 			break;
 		case ACTIVATEANIM:
-			_animation->PlayAction(ACTIVATEANIM, true, true, _resetAnimTime);
+			_animation->PlayAction(ACTIVATEANIM, _resetAnimTime, true, _resetAnimTime);
 			break;
 		case DISABLEANIM:
 			_animation->PlayAction(DISABLEANIM, true, true);
@@ -747,12 +742,6 @@ void Trap::ShowAreaOfEffect()
 		_particleEventQueue->Insert(msg);
 	}
 }
-
-void Trap::HideAreaOfEffect()
-{
-	_particleEventQueue->Insert(new ParticleUpdateMessage(_ID, false));
-}
-
 
 
 //Sound

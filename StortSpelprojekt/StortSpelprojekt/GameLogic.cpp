@@ -93,6 +93,11 @@ void GameLogic::HandleUnitSelect()
 	if (_controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
 		_pickingDevice->SetFirstBoxPoint(_controls->GetMouseCoord()._pos);
+		_controls->SetClickedCoord(_controls->GetMouseCoord());
+	}
+	else if (_controls->IsFunctionKeyUp("MOUSE:DRAG"))
+	{
+		_controls->SetClickedCoord(_controls->GetMouseCoord());
 	}
 
 	if (_controls->IsFunctionKeyUp("MOUSE:SELECT"))
@@ -116,29 +121,27 @@ void GameLogic::HandleUnitSelect()
 	}
 
 	//Update Icon over Selected Guards
-	for (auto u : _player->GetSelectedUnits())
-	{
-		XMFLOAT3 pos = u->GetPosition();
-		pos.y += 3.0f;
+	//for (auto u : _player->GetSelectedUnits())
+	//{
+	//	XMFLOAT3 pos = u->GetPosition();
+	//	pos.y += 3.0f;
 
-		ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::SELECTED_SUBTYPE, -1, pos, XMFLOAT3(0, 0, 0), 1.0f, 1, 0.25f, true, true);
-		_objectHandler->GetParticleEventQueue()->Insert(msg);
+	//	ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::SELECTED_SUBTYPE, -1, pos, XMFLOAT3(0, 0, 0), 0.01f, 1, 0.25f, true, true);
+	//	_objectHandler->GetParticleEventQueue()->Insert(msg);
 
-		if (u->GetType() == System::GUARD)
-		{
-			for (auto p : ((Guard*)u)->GetPatrolRoute())
-			{
-				pos = XMFLOAT3(p._x, 0.5, p._y);
+	//	if (u->GetType() == System::GUARD)
+	//	{
+	//		for (auto p : ((Guard*)u)->GetPatrolRoute())
+	//		{
+	//			pos = XMFLOAT3(p._x, 0.5, p._y);
 
-				msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::PATROL_SUBTYPE, -1, pos, XMFLOAT3(0, 0, 0), 1.0f, 1, 0.25f, true, true);
-				_objectHandler->GetParticleEventQueue()->Insert(msg);
-			}
+	//			msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::PATROL_SUBTYPE, -1, pos, XMFLOAT3(0, 0, 0), 0.01f, 1, 0.25f, true, true);
+	//			_objectHandler->GetParticleEventQueue()->Insert(msg);
+	//		}
 
-		}
+	//	}
 
-
-
-	}
+	//}
 }
 
 void GameLogic::PlaySelectSound(GuardType guardType)
@@ -191,6 +194,7 @@ void GameLogic::HandleUnitMove()
 
 				//Change direction
 				units.at(0)->SetDirection(direction);
+				units.at(0)->HideAreaOfEffect();
 
 				//Play sound
 				PlayMoveSound((GuardType)(((Guard*)units.at(0))->GetSubType()));
@@ -269,7 +273,7 @@ void GameLogic::HandleWinLoseDialog(float deltaTime)
 	{
 		_uiTree->GetNode("losescreen")->SetHidden(false);
 		System::MouseCoord coord = _controls->GetMouseCoord();
-		int time = _buttonReady / 1000;
+		int time = (int)(_buttonReady * 0.001f);
 		if (time > 0)
 		{
 			_uiTree->GetNode("losebuttontext")->SetText(L".." + to_wstring(time));
@@ -288,7 +292,7 @@ void GameLogic::HandleWinLoseDialog(float deltaTime)
 	{
 		System::MouseCoord coord = _controls->GetMouseCoord();
 		_uiTree->GetNode("winscreen")->SetHidden(false);
-		int time = _buttonReady / 1000;
+		int time = (int)(_buttonReady * 0.001f);
 		if (time > 0)
 		{
 			_uiTree->GetNode("winbuttontext")->SetText(L".." + to_wstring(time));
@@ -320,8 +324,8 @@ void GameLogic::HandleWinLoseDialog(float deltaTime)
 
 bool GameLogic::CheckGameStatus()
 {
-	if (_objectHandler->GetAllByType(System::LOOT)->size() <= 0 && _objectHandler->GetRemainingToSpawn() <= 0
-		|| _objectHandler->GetAllByType(System::ENEMY)->size() <= 0 && _objectHandler->GetRemainingToSpawn() <= 0)
+	if (_objectHandler->GetAllByType(System::LOOT)->size() <= 0 ||
+		(_objectHandler->GetAllByType(System::ENEMY)->size() <= 0 && _objectHandler->GetRemainingToSpawn() <= 0))
 	{
 		_gameOver = true;
 	}

@@ -122,6 +122,8 @@ void PlacementState::OnStateEnter()
 		campos.y = 15.0f;
 		campos.z = (float)_objectHandler->GetTileMap()->GetHeight() / 2.0f - 10.0f;
 		_camera->SetPosition(campos);
+		XMFLOAT3 camRot = _camera->GetRotation();
+		_camera->SetRotation(XMFLOAT3(camRot.x, 0.0f, camRot.z));
 	}
 
 	_uiTree.GetNode("BudgetValue")->SetText(to_wstring(_budget));
@@ -176,7 +178,7 @@ void PlacementState::OnStateEnter()
 	_uiTree.GetNode("SharkCost")->SetText(L"Damage: Very haj\nUses: Infinite\nAtk. Speed: Very slow\nEffect: Big area");
 
 	std::vector<GUI::Node*>* tutorialNodes = _uiTree.GetNode("Tutorial")->GetChildren();
-	for (int i = 0; i < tutorialNodes->size(); i++)
+	for (int i = 0; i < (int)tutorialNodes->size(); i++)
 	{
 		tutorialNodes->at(i)->SetHidden(true);
 	}

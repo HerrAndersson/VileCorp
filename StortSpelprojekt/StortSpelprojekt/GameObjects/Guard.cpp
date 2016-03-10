@@ -1,5 +1,7 @@
 #include "Guard.h"
 
+#include <limits>
+
 Guard::Guard(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, AI::Vec2D tilePosition, System::Type type, RenderObject * renderObject, System::SoundModule* soundModule, Renderer::ParticleEventQueue* particleEventQueue, const Tilemap * tileMap, int guardType, AI::Vec2D direction)
 	: Unit(ID, position, rotation, tilePosition, type, renderObject, soundModule, particleEventQueue, tileMap, direction)
 {
@@ -7,7 +9,7 @@ Guard::Guard(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 ro
 	_isSelected = false;
 	_currentPatrolGoal = 0;
 	_health = 100;
-	_moveSpeed = 0.03;
+	_moveSpeed = 0.03f;
 	_baseDamage = 30;
 
 	switch (_subType)				//TODO: Repair time, vision radius, etc --Victor
@@ -22,22 +24,30 @@ Guard::Guard(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 ro
 		_baseDamage = 0;
 		_trapInteractionTime = 1;
 		_visionRadius = 7;
-		_moveSpeed = 0.035;
+		_moveSpeed = 0.035f;
 		break;
 	case MARKSMAN:
 		_health = 100;
 		_baseDamage = 50;
 		_trapInteractionTime = 2;
 		_visionRadius = 5;
-		_moveSpeed = 0.025;
+		_moveSpeed = 0.025f;
 		break;
 	default:
 		break;
 	}
+
+	//Show Unit Lifebar
+	XMFLOAT3 pos = _position;
+	pos.y += 2.5f;
+	ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::HEALTH_SUBTYPE, _ID, pos, XMFLOAT3(0, 0, 0), 1.0f, 1, _health*0.0025f, true, false);
+	_particleEventQueue->Insert(msg);
 }
 
 Guard::~Guard()
-{}
+{
+	_particleEventQueue->Insert(new ParticleUpdateMessage(_ID + INT_MAX, false));
+}
 
 void Guard::EvaluateTile(System::Type objective, AI::Vec2D tile)
 {
@@ -155,6 +165,7 @@ void Guard::Update(float deltaTime)
 			break;
 		case MoveState::MOVING:
 			Moving();
+
 			if (_moveState == MoveState::MOVING)
 			{
 				Animate(WALKANIM);
@@ -170,6 +181,13 @@ void Guard::Update(float deltaTime)
 			break;
 		}
 	}
+	unsigned int newID = _ID + INT_MAX;
+	XMFLOAT3 pos = _position;
+	pos.x *= 0.5;
+	pos.y = 1.5f;
+	pos.z *= 0.5;
+	_particleEventQueue->Insert(new ParticleUpdateMessage(newID, true, pos));
+
 }
 
 void Guard::Act(GameObject* obj)
@@ -186,17 +204,16 @@ void Guard::Act(GameObject* obj)
 			if (!static_cast<Trap*>(obj)->IsTrapActive())
 			{
 				Animate(FIXTRAPANIM);
-				if(System::FrameCountdown(_interactionTime, _animation->GetLength(FIXTRAPANIM)))
+				if(System::FrameCountdown(_interactionTime, (int)_animation->GetLength(FIXTRAPANIM)))
 				{
 					static_cast<Trap*>(obj)->SetTrapActive(true);
-					//	obj->SetColorOffset({0,0,0});
 					ClearObjective();
 				}
 			}
 			break;
 		case  System::ENEMY:											//The guard hits the enemy
 			Animate(FIGHTANIM);
-			if(System::FrameCountdown(_interactionTime, _animation->GetLength(FIGHTANIM)))
+			if(System::FrameCountdown(_interactionTime, (int)_animation->GetLength(FIGHTANIM)))
 			{
 				Unit* enemy = static_cast<Unit*>(obj);
 				enemy->TakeDamage(_baseDamage);
@@ -249,3 +266,43 @@ void Guard::SwitchingNode()
 		_moveState = MoveState::AT_OBJECTIVE;
 	}
 }
+
+void Guard::ShowSelectIcon()
+{
+	unsigned int newID = _ID + INT_MAX;
+	XMFLOAT3 pos = _position;
+	pos.y += 3.0f;
+	ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::SELECTED_SUBTYPE, newID, pos, XMFLOAT3(0, 0, 0), 0.01f, 1, 0.25f, true, false);
+	_particleEventQueue->Insert(msg);
+}
+
+void Guard::ShowPatrolIcons()
+{
+	for (auto p : _patrolRoute)
+	{
+		XMFLOAT3 pos = XMFLOAT3(p._x, 0.1f, p._y);
+
+		unsigned int newID = _tileMap->GetObjectOnTile(p, System::FLOOR)->GetID();
+
+
+		ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::STATIC_ICON, ParticleSubType::PATROL_SUBTYPE, newID, pos, XMFLOAT3(0, 0, 0), 0.01f, 1, 0.25f, true, true);
+		_particleEventQueue->Insert(msg);
+	}
+}
+
+void Guard::HideSelectIcon()
+{
+	unsigned int newID = _ID + INT_MAX;
+	_particleEventQueue->Insert(new ParticleUpdateMessage(newID, false));
+}
+
+void Guard::HidePatrolIcons()
+{
+	for (auto p : _patrolRoute)
+	{
+		unsigned int newID = _tileMap->GetObjectOnTile(p, System::FLOOR)->GetID();
+		_particleEventQueue->Insert(new ParticleUpdateMessage(newID, false));
+	}
+}
+
+

@@ -39,6 +39,17 @@ Tilemap::Tilemap(AI::Vec2D size)
 }
 Tilemap::Tilemap(const Tilemap& copy)
 {
+	Copy(copy);
+}
+
+Tilemap& Tilemap::operator=(const Tilemap& copy)
+{
+	Copy(copy);
+	return *this;
+}
+
+void Tilemap::Copy(const Tilemap& copy)
+{
 	_height = copy._height;
 	_width = copy._width;
 	_map = new Tile*[copy._width];
@@ -54,6 +65,7 @@ Tilemap::Tilemap(const Tilemap& copy)
 		}
 	}
 }
+
 Tilemap::~Tilemap()
 {
 	for (int i = 0; i < _width; i++)

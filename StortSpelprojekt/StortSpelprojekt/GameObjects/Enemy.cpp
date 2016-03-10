@@ -37,7 +37,8 @@ void Enemy::Flee()
 					tempDist = (float)pow(offset._x + AI::NEIGHBOUR_OFFSETS[i]._x, 2) + (float)pow(offset._y + AI::NEIGHBOUR_OFFSETS[i]._y, 2);
 				}
 
-				if (_tileMap->IsFloorOnTile(_tilePosition + AI::NEIGHBOUR_OFFSETS[i]) && !_tileMap->IsEnemyOnTile(_tilePosition + AI::NEIGHBOUR_OFFSETS[i]) && tempDist > bestDist)
+				if (_tileMap->IsFloorOnTile(_tilePosition + AI::NEIGHBOUR_OFFSETS[i]) && !_tileMap->IsEnemyOnTile(_tilePosition + AI::NEIGHBOUR_OFFSETS[i]) && 
+					!_tileMap->IsFurnitureOnTile(_tilePosition + AI::NEIGHBOUR_OFFSETS[i]) && tempDist > bestDist)
 				{
 					bestDist = tempDist;
 					bestDir = AI::NEIGHBOUR_OFFSETS[i];
@@ -114,7 +115,8 @@ Enemy::Enemy(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 ro
 	_subType = enemyType;
 	_visibilityTimer = TIME_TO_HIDE;
 	_pursuer = nullptr;
-	_moveSpeed = 0.025;
+	_checkAllTilesTimer = -1;
+	_moveSpeed = 0.025f;
 	InitializePathFinding();
 	switch (_subType)
 	{
@@ -142,6 +144,13 @@ Enemy::Enemy(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 ro
 	default:
 		break;
 	}
+
+	//Show Unit Lifebar
+	XMFLOAT3 pos = _position;
+	pos.y += 2.5f;
+	ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::HEALTH_SUBTYPE, _ID, pos, XMFLOAT3(0, 0, 0), 1.0f, 1, _health*0.0025f, true, false);
+	_particleEventQueue->Insert(msg);
+
 }
 
 Enemy::~Enemy()
@@ -254,7 +263,7 @@ void Enemy::Act(GameObject* obj)
 			{
 				obj->SetPickUpState(PICKEDUP);
 				Animate(PICKUPOBJECTANIM);
-				if (System::FrameCountdown(_interactionTime, _animation->GetLength(PICKUPOBJECTANIM)))
+				if (System::FrameCountdown(_interactionTime, (int)_animation->GetLength(PICKUPOBJECTANIM)))
 				{
 					obj->SetPickUpState(PICKEDUP);
 					obj->SetTargeted(true);
@@ -278,7 +287,7 @@ void Enemy::Act(GameObject* obj)
 			if (static_cast<Trap*>(obj)->IsTrapActive())
 			{
 				Animate(DISABLETRAPANIM);
-				if (System::FrameCountdown(_interactionTime, _animation->GetLength(DISABLETRAPANIM)))
+				if (System::FrameCountdown(_interactionTime, (int)_animation->GetLength(DISABLETRAPANIM)))
 				{
 					DisarmTrap(static_cast<Trap*>(obj));
 					ClearObjective();
@@ -292,7 +301,7 @@ void Enemy::Act(GameObject* obj)
 		break;
 		case System::GUARD:
 			Animate(FIGHTANIM);
-			if (System::FrameCountdown(_interactionTime, _animation->GetLength(FIGHTANIM)))
+			if (System::FrameCountdown(_interactionTime, (int)_animation->GetLength(FIGHTANIM)))
 			{
 				if (static_cast<Unit*>(obj)->GetHealth() > 0 && InRange(obj->GetTilePosition()))
 				{
@@ -333,11 +342,21 @@ void Enemy::Update(float deltaTime)
 		case MoveState::IDLE:
 		{
 			srand((int)time(NULL));
-			int temp = rand() % 40;
-			if (System::FrameCountdown(_interactionTime, 20 + temp))
+
+			if (_checkAllTilesTimer < 0)
+			{
+				_checkAllTilesTimer = rand() % 40;
+			}
+			else
+			{
+				_checkAllTilesTimer--;
+			}
+			
+			if (System::FrameCountdown(_interactionTime, 20 + _checkAllTilesTimer))
 			{
 				ClearObjective();
 				CheckAllTiles();
+				_checkAllTilesTimer = -1;
 			}
 
 			Animate(IDLEANIM);

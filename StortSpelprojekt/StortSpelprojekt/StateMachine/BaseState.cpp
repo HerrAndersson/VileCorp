@@ -164,7 +164,7 @@ void BaseState::HandleCamMove(float deltaTime)
 	XMFLOAT3 right(0.0f, 0.0f, 0.0f);
 	XMFLOAT3 forward(0.0f, 0.0f, 0.0f);
 	bool isMoving = false;
-	float v = 0.06f + (_camera->GetPosition().y * 0.01);
+	float v = 0.06f + (_camera->GetPosition().y * 0.01f);
 
 	if (_controls->IsFunctionKeyDown("CAMERA:MOVE_CAMERA_UP"))
 	{
@@ -214,10 +214,21 @@ void BaseState::HandleCamMove(float deltaTime)
 
 	if (isMoving)
 	{
-		_camera->Move(XMFLOAT3((forward.x + right.x) * v, (forward.y + right.y) * v, (forward.z + right.z) * v), deltaTime / 10);
+		_camera->Move(XMFLOAT3((forward.x + right.x) * v, (forward.y + right.y) * v, (forward.z + right.z) * v), deltaTime * 0.1f);
 
 		if (_camera->GetMode() == System::LOCKED_CAM)
 		{
+			//Calculate distance to plane
+			Vec3 p0 = Vec3(XMFLOAT3(1.0f, 0.0f, 0.0f));
+			Vec3 p1 = Vec3(XMFLOAT3(0.0f, 0.0f, 1.0f));
+			Vec3 n = Vec3(XMFLOAT3(0.0f, 1.0f, 0.0f));
+			Vec3 camPos = Vec3(_camera->GetPosition());
+			Vec3 camDir = Vec3(_camera->GetForwardVector());
+			float distance = (((p0 - camPos).Dot(n)) / (camDir.Dot(n)));
+
+			//Move camera to plane
+			_camera->Move(camDir.convertToXMFLOAT(), distance);
+
 			XMFLOAT3 campos = _camera->GetPosition();
 			//Checks if out of bounds
 			_camera->SetPosition(XMFLOAT3(
@@ -225,10 +236,15 @@ void BaseState::HandleCamMove(float deltaTime)
 				campos.y,
 				max(campos.z, LIMIT_LOWER)));
 
+			campos = _camera->GetPosition();
+
 			_camera->SetPosition(XMFLOAT3(
 				min(campos.x, LIMIT_RIGHT),
 				campos.y,
 				min(campos.z, LIMIT_UPPER)));
+
+			//Move camera back
+			_camera->Move((camDir * -1).convertToXMFLOAT(), distance);
 		}
 	}
 }

@@ -66,7 +66,7 @@ private:
 	ID3D11Device* _device;
 
 	map<GameObject*, Renderer::Spotlight*> _spotlights;
-	map<GameObject*, Renderer::Pointlight*> _pointligths;
+	map<GameObject*, Renderer::Pointlight*> _pointlights;
 	LightCulling* _lightCulling;
 	AmbientLight* _ambientLight;
 
@@ -116,8 +116,6 @@ public:
 
 	Tilemap* GetTileMap() const;
 	void SetTileMap(Tilemap* tilemap);
-	void MinimizeTileMap();
-	void EnlargeTilemap(int offset);
 	Grid* GetBuildingGrid();
 	RenderObject* GetBackgroundObject();
 
