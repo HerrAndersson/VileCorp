@@ -451,8 +451,8 @@ namespace Renderer
 						case ICON:
 						case STATIC_ICON:
 						{
-							p.DecreaseTimeLeft((float)deltaTime);
 							p.SetPosition(_position);
+							p.DecreaseTimeLeft((float)deltaTime);
 							break;
 						}
 						default:

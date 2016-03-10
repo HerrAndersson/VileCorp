@@ -488,9 +488,9 @@ void Trap::RequestParticleByType(Unit* unit)
 {
 	XMFLOAT3 pos = GetPosition();
 	XMFLOAT3 particlePos;
-	particlePos.x = _renderObject->_mesh->_particleSpawnerPos[0] + pos.x;
-	particlePos.y = _renderObject->_mesh->_particleSpawnerPos[1] + pos.y;
-	particlePos.z = _renderObject->_mesh->_particleSpawnerPos[2] + pos.z;
+	particlePos.x = (_renderObject->_mesh->_particleSpawnerPos[0] + pos.x);
+	particlePos.y = (_renderObject->_mesh->_particleSpawnerPos[1] + pos.y);
+	particlePos.z = (_renderObject->_mesh->_particleSpawnerPos[2] + pos.z);
 
 	switch (GetSubType())
 	{
@@ -513,7 +513,12 @@ void Trap::RequestParticleByType(Unit* unit)
 	{
 		AI::Vec2D objectDir = GetDirection();
 		XMFLOAT3 dir(objectDir._x, 0, objectDir._y);
-		_particleEventQueue->Insert(new ParticleRequestMessage(ParticleType::MUZZLE_FLASH, ParticleSubType::MUZZLE_FLASH_SUBTYPE, -1, particlePos, dir, 200.0f, 100.0f, 0.1f, true));
+
+		pos.x += dir.x;
+		pos.y = 1.0f;
+		pos.z += dir.z;
+
+		_particleEventQueue->Insert(new ParticleRequestMessage(ParticleType::SPLASH, ParticleSubType::FIRE_SUBTYPE, -1, pos, dir, 50.0f, 10.0f, 0.3f, true));
 		break;
 	}
 	case SAW:
@@ -528,7 +533,7 @@ void Trap::RequestParticleByType(Unit* unit)
 	}
 	case BEAR:
 	{
-		_particleEventQueue->Insert(new ParticleRequestMessage(ParticleType::SPLASH, ParticleSubType::BLOOD_SUBTYPE, -1, particlePos, XMFLOAT3(0, 1, 0), 300.0f, 20, 0.1f, true));
+		_particleEventQueue->Insert(new ParticleRequestMessage(ParticleType::SPLASH, ParticleSubType::BLOOD_SUBTYPE, -1, particlePos, XMFLOAT3(0, 1, 0), 300.0f, 20, 0.4f, true));
 		break;
 	}
 	case FLAMETHROWER:
