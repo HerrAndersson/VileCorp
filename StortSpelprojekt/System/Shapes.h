@@ -494,11 +494,64 @@ static const bool Collision(std::vector<Vec2>* polygon1, std::vector<Vec2>* poly
 {
 	bool collision = true;
 
+	//Vec2* axes = new Vec2[polygon1->size() + polygon2->size()];
+	//int nrOfAxes=0;
+
+	//unsigned int size = polygon1->size();
+	//for (unsigned int i = 0; i < size; i++)
+	//{
+	//	Vec2 vec = (polygon1->at((i+1)%size) - polygon1->at(i));
+	//	vec = Vec2(-vec._y, vec._x).Normalize();
+
+	//	bool found = false;
+	//	for (int j = 0; j < nrOfAxes && !found; j++)
+	//	{
+	//		if (vec == axes[j] || vec*-1.0f == axes[j])
+	//		{
+	//			found = true;
+	//		}
+	//	}
+	//	if (!found)
+	//	{
+	//		axes[nrOfAxes++] = vec;
+	//	}
+	//}
+	//size = polygon2->size();
+	//for (unsigned int i = 0; i < size; i++)
+	//{
+	//	Vec2 vec = (polygon2->at((i + 1) % size) - polygon2->at(i));
+	//	vec = Vec2(-vec._y, vec._x).Normalize();
+
+	//	bool found = false;
+	//	for (int j = 0; j < nrOfAxes && !found; j++)
+	//	{
+	//		if (vec == axes[j] || vec*-1.0f == axes[j])
+	//		{
+	//			found = true;
+	//		}
+	//	}
+	//	if (!found)
+	//	{
+	//		axes[nrOfAxes++] = vec;
+	//	}
+	//}
+
+
+	//for (unsigned int i = 0; i < nrOfAxes && collision; i++)
+	//{
+	//	if (!SATVectorCheck(axes[i], polygon1, polygon2))
+	//	{
+	//		collision = false;
+	//	}
+	//}
+	////////////////////////////////
+
 	unsigned int size = polygon1->size();
 	for (unsigned int i = 1; i < size && collision; i++)
 	{
 		Vec2 vec = (polygon1->at(i) - polygon1->at(i - 1)).Normalize();
 		vec = Vec2(-vec._y, vec._x);
+
 
 		if (!SATVectorCheck(vec, polygon1, polygon2))
 		{
