@@ -23,7 +23,7 @@ PlayState::PlayState(System::Controls* controls, ObjectHandler* objectHandler, S
 	//Traps
 	_soundModule->AddSound("anvil_activate", 1.0f, 1.0f, false, false);
 	_soundModule->AddSound("tesla_activate", 0.8f, 1.0f, false, false);
-	_soundModule->AddSound("mg_activate", 1.0f, 1.0f, false, false);
+	_soundModule->AddSound("mg_activate", 0.6f, 1.0f, false, false);
 	_soundModule->AddSound("saw_activate", 1.0f, 1.0f, false, false);
 	_soundModule->AddSound("bomb_activate", 1.0f, 1.0f, false, false);
 	_soundModule->AddSound("bear_activate", 0.8f, 1.0f, false, false);
