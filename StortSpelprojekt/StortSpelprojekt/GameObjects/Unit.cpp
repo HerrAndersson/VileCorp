@@ -113,6 +113,8 @@ Unit::Unit(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 	_status = NO_EFFECT;
 	_statusTimer = 0;
 	_statusInterval = 0;
+	_allLoot = nullptr;
+	_allSpawnPoints = nullptr;
 
 }
 
