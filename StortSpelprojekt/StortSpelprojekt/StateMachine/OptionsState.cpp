@@ -171,15 +171,15 @@ void OptionsState::Update(float deltaTime)
 			{
 				settings->_windowWidth = GetSystemMetrics(SM_CXSCREEN);
 				settings->_windowHeight = GetSystemMetrics(SM_CYSCREEN);
-				settings->_borderless = true;
+				settings->_screenMode = System::FULLSCREEN;
 			}
 			else if (_window[_windowOption]._value == 2) //Borderless window
 			{
-				settings->_borderless = true;
+				settings->_screenMode = System::BORDERLESS;
 			}
 			else if (_window[_windowOption]._value == 3) //Windowed
 			{
-				settings->_borderless = false;
+				settings->_screenMode = System::WINDOWED;
 			}
 			settings->_showMouseCursor = true;
 			settings->_antialiasing = _aa[_aaOption]._value;
@@ -208,16 +208,12 @@ void OptionsState::OnStateEnter()
 	UpdateText("res_content", _resolutionOption, _resolution);
 
 	//Fullscreen
-	if (_resolution[_resolutionOption]._value == systemSizeX &&
-		_resolution[_resolutionOption]._value2 == systemSizeY &&
-		settings->_windowWidth == systemSizeX &&
-		settings->_windowHeight == systemSizeY &&
-		settings->_borderless)
+	if (settings->_screenMode == System::FULLSCREEN)
 	{
 		_windowOption = 0;
 	}
 	//Borderless window
-	else if(settings->_borderless)
+	else if(settings->_screenMode == System::BORDERLESS)
 	{
 		_windowOption = 1;
 	}

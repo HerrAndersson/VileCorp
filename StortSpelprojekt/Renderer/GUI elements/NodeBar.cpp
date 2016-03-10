@@ -26,7 +26,6 @@ void GUI::NodeBar::OrganizeNodes()
 		for each (Node* node in _attachedGUINodes)
 		{
 			node->SetPosition(iteratedPosition);
-			//DirectX::XMFLOAT2 nodeSize = node->GetSize();
 			if (_verticalOrientation)
 			{
 				iteratedPosition.y += _nodeOffset;
