@@ -2,38 +2,77 @@
 
 
 
-GUI::NodeBar::NodeBar(bool verticalOrientation, DirectX::XMFLOAT2 position, float nodeOffset, std::vector<Node*>* attachedGUINodes)
+GUI::NodeBar::NodeBar(bool verticalOrientation, float nodeOffset, std::vector<Node*>* buttons, std::vector<std::string>* availableUnits, GUI::Node* unitList)
 {
 	_verticalOrientation = verticalOrientation;
-	_position = position;
 	_nodeOffset = nodeOffset;
-	_attachedGUINodes = attachedGUINodes;
+	_buttons = buttons;
+	_availableUnits = availableUnits;
+	_unitList = unitList;
 }
 
 GUI::NodeBar::~NodeBar()
 {
 }
 
-std::vector<GUI::Node*>* GUI::NodeBar::GetAttachedGUINodes()
+std::vector<GUI::Node*>* GUI::NodeBar::GetButtons()
 {
-	return _attachedGUINodes;
+	return _buttons;
 }
 
-void GUI::NodeBar::OrganizeNodes()
+void GUI::NodeBar::OrganizeButtons()
 {
-	if (!_attachedGUINodes->empty())
+	if (_availableUnits != nullptr && _unitList != nullptr && _buttons != nullptr)
 	{
-		DirectX::XMFLOAT2 iteratedPosition = _position;
-		for each (Node* node in *_attachedGUINodes)
+		AddButtons();
+
+		if (!_buttons->empty())
 		{
-			node->SetPosition(iteratedPosition);
-			if (_verticalOrientation)
+			PositionButtons();
+		}
+	}
+}
+
+void GUI::NodeBar::PositionButtons()
+{
+	int maxNrOfButtons = _unitList->GetChildren()->size();
+	int padding = 1;
+	float spaceForSingleButton = 2.0f / (maxNrOfButtons + padding);
+	float buttonNodesOffset = spaceForSingleButton * (_availableUnits->size() * 0.5f);
+	DirectX::XMFLOAT2 iteratedPosition = {-buttonNodesOffset, 0};
+	for each (Node* node in *_buttons)
+	{
+		node->SetPosition(iteratedPosition);
+		if (_verticalOrientation)
+		{
+			iteratedPosition.y += spaceForSingleButton;
+		}
+		else
+		{
+			iteratedPosition.x += spaceForSingleButton;
+		}
+	}
+}
+
+void GUI::NodeBar::AddButtons()
+{
+	_buttons->clear();
+	for (GUI::Node* button : *_unitList->GetChildren())
+	{
+		if (button->GetId() == "Camera")
+		{
+			_buttons->push_back(button);
+		}
+		else
+		{
+			button->SetHidden(true);
+			for (std::string availableUnitName : *_availableUnits)
 			{
-				iteratedPosition.y += _nodeOffset;
-			}
-			else
-			{
-				iteratedPosition.x += _nodeOffset;
+				if (button->GetId() == availableUnitName)
+				{
+					_buttons->push_back(button);
+					button->SetHidden(false);
+				}
 			}
 		}
 	}

@@ -40,11 +40,11 @@ void MenuState::Update(float deltaTime)
 			_soundModule->Play("page");
 
 			Level::LevelHeader tutorialHeader;
-			System::loadJSON(&tutorialHeader, System::SKIRMISH_FOLDER_PATH + "tutorial1.json");
+			System::loadJSON(&tutorialHeader, System::CAMPAIGN_FOLDER_PATH + "Tutorial/tutorial.json");
 			_objectHandler->SetCurrentLevelHeader(tutorialHeader);
 
-			std::string levelBinaryPath = System::SKIRMISH_FOLDER_PATH;
-			levelBinaryPath += "tutorial1.bin";
+			std::string levelBinaryPath = System::CAMPAIGN_FOLDER_PATH;
+			levelBinaryPath += "Tutorial/tutorial.bin";
 			_objectHandler->LoadLevel(levelBinaryPath);
 
 			//Combining objects into bigger meshes used for rendering to reduce draw calls

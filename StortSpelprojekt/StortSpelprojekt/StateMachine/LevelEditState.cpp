@@ -1072,6 +1072,7 @@ void LevelEditState::ExportLevel()
 	});
 
 	//Save available units
+	_levelBinary._availableUnits = std::vector<std::string>();
 	GUI::ToggleButton* currentToggleButton;
 	GUI::Node* currentToggleNode;
 	for (unsigned i = 0; i < _toggleButtons.size(); i++)

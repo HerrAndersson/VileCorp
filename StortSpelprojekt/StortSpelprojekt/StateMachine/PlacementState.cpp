@@ -3,7 +3,6 @@
 PlacementState::PlacementState(System::Controls* controls, ObjectHandler* objectHandler, System::Camera* camera, PickingDevice* pickingDevice, const std::string& filename, AssetManager* assetManager, FontWrapper* fontWrapper, System::SettingsReader* settingsReader, System::SoundModule* soundModule, AmbientLight* ambientLight)
 	: BaseState(controls, objectHandler, camera, pickingDevice, filename, assetManager, fontWrapper, settingsReader, soundModule)
 {
-	_buttons = _uiTree.GetNode("UnitList")->GetChildren();
 	_profile = settingsReader->GetProfile();
 
 	//Money
@@ -188,8 +187,11 @@ void PlacementState::OnStateEnter()
 	_informationOverlayIDs = std::vector<short>();
 	AddInformationOverlay();
 
+	//Organize the available unit buttons
+	_buttons = std::vector<GUI::Node*>();
 	GUI::Node* unitList = _uiTree.GetNode("UnitList");
-	GUI::NodeBar nodeBar = GUI::NodeBar(false, unitList->GetLocalPosition(), 0.2f, unitList->GetChildren());
+	GUI::NodeBar nodeBar = GUI::NodeBar(false, 0.12f, &_buttons, _objectHandler->GetCurrentAvailableUnits(), unitList);
+	nodeBar.OrganizeButtons();
 
 	//Play music
 	_soundModule->Play("in_game_1");
@@ -244,12 +246,11 @@ void PlacementState::HandleButtons()
 	if(_controls->IsFunctionKeyDown("MOUSE:SELECT"))
 	{
 		std::vector<GUI::Node*>* units = _uiTree.GetNode("UnitList")->GetChildren();
-		for (unsigned y = 0; y < units->size(); y++)
+		for (unsigned y = 0; y < _buttons.size(); y++)
 		{
-			GUI::Node* currentButton = units->at(y);
-			if (_uiTree.IsButtonColliding(currentButton, coord._pos.x, coord._pos.y))
+			if (_uiTree.IsButtonColliding(_buttons[y], coord._pos.x, coord._pos.y))
 			{
-				GUI::BlueprintNode* currentBlueprintButton = static_cast<GUI::BlueprintNode*>(currentButton);
+				GUI::BlueprintNode* currentBlueprintButton = static_cast<GUI::BlueprintNode*>(_buttons[y]);
 				_toPlace._sB._blueprint = _objectHandler->GetBlueprintByType(currentBlueprintButton->GetType(), currentBlueprintButton->GetSubType());
 				_toPlace._sB._textureId = currentBlueprintButton->GetTextureId();
 				create = true;

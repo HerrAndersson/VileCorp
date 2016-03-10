@@ -24,7 +24,7 @@ protected:
 	ToPlace _toPlace;
 
 	//GUI::NodeBar _unitBar;
-	std::vector<GUI::Node*>* _buttons;
+	std::vector<GUI::Node*> _buttons;
 
 	void EvaluateGoldCost();
 	void HandleDescriptions();
