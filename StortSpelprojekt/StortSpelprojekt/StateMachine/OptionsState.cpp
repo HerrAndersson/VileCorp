@@ -208,11 +208,7 @@ void OptionsState::OnStateEnter()
 	UpdateText("res_content", _resolutionOption, _resolution);
 
 	//Fullscreen
-	if (_resolution[_resolutionOption]._value == systemSizeX &&
-		_resolution[_resolutionOption]._value2 == systemSizeY &&
-		settings->_windowWidth == systemSizeX &&
-		settings->_windowHeight == systemSizeY &&
-		settings->_screenMode == System::FULLSCREEN)
+	if (settings->_screenMode == System::FULLSCREEN)
 	{
 		_windowOption = 0;
 	}
