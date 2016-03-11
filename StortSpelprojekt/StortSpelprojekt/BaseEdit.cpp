@@ -214,12 +214,6 @@ void BaseEdit::DropEvent()
 				static_cast<SecurityCamera*>(_movingGhostImage._g)->HideAreaOfEffect();
 			}
 		}
-	
-
-
-		_movingGhostImage.Reset();
-		_isPlace = false;
-		_isDragAndDropMode = false;
 	}
 	else
 	{
@@ -263,6 +257,13 @@ void BaseEdit::DropEvent()
 			}
 
 		}
+	}
+	//Resetting ghost image here to not mess with camera offset
+	if (_isDragAndDropMode)
+	{
+		_movingGhostImage.Reset();
+		_isPlace = false;
+		_isDragAndDropMode = false;
 	}
 }
 
