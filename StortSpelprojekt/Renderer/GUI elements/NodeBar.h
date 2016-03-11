@@ -10,8 +10,6 @@ namespace GUI
 		std::vector<Node*>* _buttons;
 		std::vector<std::string>* _availableUnits;
 		GUI::Node* _unitList;
-		bool _verticalOrientation;
-		DirectX::XMFLOAT2 _position;
 
 		void AddButtons();
 		void PositionButtons();
