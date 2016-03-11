@@ -489,6 +489,8 @@ void Trap::RequestParticleByType(Unit* unit)
 	}
 	case TESLACOIL:
 	{
+
+		particlePos = XMFLOAT3(_position.x, 2.0f, _position.z);
 		_particleEventQueue->Insert(new ParticleRequestMessage(ParticleType::ELECTRICITY, ParticleSubType::SPARK_SUBTYPE, -1, particlePos, XMFLOAT3(0, 0, 0), 1000.0f, 20, 0.3f, true, true, unit->GetPosition()));
 		break;
 	}
@@ -506,7 +508,7 @@ void Trap::RequestParticleByType(Unit* unit)
 		pos.y = 1.0f;
 		pos.z += dir.z;
 
-		_particleEventQueue->Insert(new ParticleRequestMessage(ParticleType::SPLASH, ParticleSubType::FIRE_SUBTYPE, -1, pos, dir, 50.0f, 10.0f, 0.3f, true));
+		_particleEventQueue->Insert(new ParticleRequestMessage(ParticleType::SPLASH, ParticleSubType::FIRE_SUBTYPE, -1, pos, dir, 50.0f, 10, 0.3f, true));
 		break;
 	}
 	case SAW:
