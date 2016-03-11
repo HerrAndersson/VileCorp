@@ -310,7 +310,7 @@ bool Tilemap::IsPlaceable(int x, int z, System::Type type) const
 		{
 			placeable = !_map[x][z]._objectsOnTile[0];
 		}
-		else if (type == System::LOOT)					//Special case, because loot can be on furniture
+		else if (type == System::LOOT ||type == System::CAMERA)					//Special case, because loot and cameras can be on furniture
 		{
 			placeable = IsFloorOnTile(x, z) && !_map[x][z]._objectsOnTile[1] && !_map[x][z]._objectsOnTile[2] && !_map[x][z]._objectsOnTile[3] &&
 				 !_map[x][z]._objectsOnTile[5] && !IsTileNoPlacementZone(x, z);
