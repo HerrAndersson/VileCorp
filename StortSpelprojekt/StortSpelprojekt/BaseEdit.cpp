@@ -529,64 +529,6 @@ bool BaseEdit::CheckValidity(AI::Vec2D tile, GameObject* gameObject)
 			valid = false;
 		}
 	}
-
-	//if (objectOnTile == nullptr && _tileMap->IsPlaceable(tile, type))
-	//{
-	//	if (type == System::WALL && !_tileMap->IsTileEmpty(tile))
-	//	{
-	//		valid = false;
-	//	}
-	//	else
-	//	{
-	//		if (_tileMap->IsFloorOnTile(tile))
-	//		{
-	//			if (type == System::GUARD || type == System::ENEMY)
-	//			{
-	//				if (_tileMap->UnitsOnTile(tile) || _tileMap->IsTrapOnTile(tile) || _tileMap->IsTypeOnTile(tile, System::CAMERA) || _tileMap->IsTileNoPlacementZone(tile) || _tileMap->IsFurnitureOnTile(tile))
-	//				{
-	//					valid = false;
-	//				}
-	//			}
-	//			else if (type == System::TRAP)
-	//			{
-	//				AI::Vec2D* tempTiles = static_cast<Trap*>(gameObject)->GetTiles();
-	//				for (int i = 0; i < static_cast<Trap*>(gameObject)->GetNrOfOccupiedTiles() && valid; i++)
-	//				{
-	//					if (!_tileMap->IsPlaceable(tempTiles[i], type) || !_tileMap->IsFloorOnTile(tempTiles[i]) || _tileMap->UnitsOnTile(tempTiles[i]) || _tileMap->IsTileNoPlacementZone(tempTiles[i]) ||_tileMap->IsFurnitureOnTile(tempTiles[i]))
-	//					{
-	//						valid = false;
-	//					}
-	//				}
-	//				
-	//			}
-				//else if (type == System::CAMERA || type == System::SPAWN)
-				//{
-				//	if (!_tileMap->IsWallOnTile(tile - _movingGhostImage._g->GetDirection()))
-				//	{
-				//		valid = false;
-				//	}
-
-				//	if (_tileMap->UnitsOnTile(tile) || _tileMap->IsTrapOnTile(tile))
-				//	{
-				//		valid = false;
-				//	}
-				//}
-	//		}
-	//		else
-	//		{
-	//			if (type != System::FLOOR && type != System::WALL)
-	//			{
-	//				valid = false;
-	//			}
-	//		}
-	//	}
-	//}
-	//else
-	//{
-	//	// If outside tilemap
-	//	valid = false;
-	//}
-
 	return valid;
 }
 
