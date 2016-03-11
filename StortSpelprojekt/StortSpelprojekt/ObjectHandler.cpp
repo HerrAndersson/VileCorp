@@ -620,7 +620,7 @@ void ObjectHandler::Update(float deltaTime)
 			}
 		}
 	}
-	if (_spawnTimer % 60 == 0 && _gameObjects[System::LOOT].size() > 0)
+	if (_spawnTimer % 60 == 0 && _tilemap->GetNrOfLoot() > 0)
 	{
 		SpawnEnemies();
 	}
