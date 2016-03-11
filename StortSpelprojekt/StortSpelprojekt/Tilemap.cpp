@@ -303,50 +303,26 @@ bool Tilemap::IsValid(int x, int z) const
 
 bool Tilemap::IsPlaceable(int x, int z, System::Type type) const
 {
-	bool placable = false;
-	if (IsValid(x, z))
+	bool placeable = false;
+	if (IsValid(x, z) && !IsWallOnTile(x, z))
 	{
-		if (!IsWallOnTile(x, z))
+		if (type == System::FLOOR || type == System::WALL)
 		{
-			GameObject* result = nullptr;
-			switch (type)
-			{
-			case  System::FLOOR:
-			case  System::WALL:
-				result = _map[x][z]._objectsOnTile[0];
-				break;
-			case  System::ENEMY:
-				result = _map[x][z]._objectsOnTile[1];
-				break;
-			case  System::GUARD:
-				result = _map[x][z]._objectsOnTile[2];
-				break;
-			case  System::SPAWN:
-			case  System::TRAP:
-			case  System::CAMERA:
-				result = _map[x][z]._objectsOnTile[3];
-				break;
-			case  System::FURNITURE:
-				result = _map[x][z]._objectsOnTile[4];
-				break;
-			case  System::LOOT:
-				result = _map[x][z]._objectsOnTile[5];
-				break;
-			default:
-				break;
-			}
-			if (result == nullptr)
-			{
-				placable = true;
-			}
-			if (_map[x][z]._lock)
-			{
-				placable = false;
-			}
+			placeable = !_map[x][z]._objectsOnTile[0];
+		}
+		else if (type == System::LOOT ||type == System::CAMERA)					//Special case, because loot and cameras can be on furniture
+		{
+			placeable = IsFloorOnTile(x, z) && !_map[x][z]._objectsOnTile[1] && !_map[x][z]._objectsOnTile[2] && !_map[x][z]._objectsOnTile[3] &&
+				 !_map[x][z]._objectsOnTile[5] && !IsTileNoPlacementZone(x, z);
+		}
+		else
+		{
+			placeable = IsFloorOnTile(x, z) && !_map[x][z]._objectsOnTile[1] && !_map[x][z]._objectsOnTile[2] && !_map[x][z]._objectsOnTile[3] && 
+						!_map[x][z]._objectsOnTile[4] && !_map[x][z]._objectsOnTile[5] && !IsTileNoPlacementZone(x, z);
 		}
 	}
 
-	return placable;
+	return placeable;
 }
 
 bool Tilemap::IsPlaceable(AI::Vec2D pos, System::Type type) const
