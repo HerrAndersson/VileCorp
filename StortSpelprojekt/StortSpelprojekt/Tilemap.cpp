@@ -77,7 +77,7 @@ Tilemap::~Tilemap()
 }
 
 bool Tilemap::AddObjectToTile(AI::Vec2D pos, GameObject * obj)
-{
+ {
 	bool result = false;
 	if (IsValid(pos) && obj != nullptr)
 	{

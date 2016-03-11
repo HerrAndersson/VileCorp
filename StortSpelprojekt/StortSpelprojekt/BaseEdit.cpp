@@ -176,17 +176,6 @@ void BaseEdit::DropEvent()
 		}
 	}
 
-	// Special camera non floating fix
-	if (_movingGhostImage._g->GetType() == System::CAMERA)
-	{
-		if (_movingGhostImage._g && _movingGhostImage._g->GetDirection()._x != 0 && _movingGhostImage._g->GetDirection()._y != 0)
-		{
-			XMFLOAT3 cameraDiagonal = _movingGhostImage._g->GetPosition();
-			cameraDiagonal.x -= (float)_movingGhostImage._g->GetDirection()._x*0.2f;
-			cameraDiagonal.z -= (float)_movingGhostImage._g->GetDirection()._y*0.2f;
-			_movingGhostImage._g->SetPosition(cameraDiagonal);
-		}
-	}
 
 	if (_movingGhostImage._g != nullptr && _isPlace)
 	{
@@ -237,7 +226,8 @@ void BaseEdit::DropEvent()
 		if (_droppedObject)
 		{
 			_createdObject = _objectHandler->Add(_sB->_blueprint, _sB->_textureId, _movingGhostImage._g->GetPosition(), _movingGhostImage._g->GetRotation(), true, _movingGhostImage._g->GetDirection());
-			if (_createdObject->GetType() == System::TRAP)
+
+			if (_createdObject!= nullptr && _createdObject->GetType() == System::TRAP)
 			{
 				AI::Vec2D* tempTiles = static_cast<Trap*>(_createdObject)->GetTiles();
 				for (int i = 0; i < static_cast<Trap*>(_createdObject)->GetNrOfOccupiedTiles(); i++)
@@ -256,6 +246,22 @@ void BaseEdit::DropEvent()
 		{
 			_isPlace = false;
 			_isDragAndDropMode = false;
+		}
+	}
+	// Special camera non floating fix
+	if (_movingGhostImage._g->GetType() == System::CAMERA)
+	{
+		if (_movingGhostImage._g && _movingGhostImage._g->GetDirection()._x != 0 && _movingGhostImage._g->GetDirection()._y != 0)
+		{
+			XMFLOAT3 cameraDiagonal = _movingGhostImage._g->GetPosition();
+			cameraDiagonal.x -= (float)_movingGhostImage._g->GetDirection()._x*0.2f;
+			cameraDiagonal.z -= (float)_movingGhostImage._g->GetDirection()._y*0.2f;
+			_movingGhostImage._g->SetPosition(cameraDiagonal);
+			if (_createdObject != nullptr)
+			{
+				_createdObject->SetPosition(cameraDiagonal);
+			}
+
 		}
 	}
 }
