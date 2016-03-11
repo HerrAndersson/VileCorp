@@ -263,11 +263,11 @@ void Enemy::Act(GameObject* obj)
 			{
 				obj->SetPickUpState(PICKEDUP);
 				Animate(PICKUPOBJECTANIM);
+				obj->SetTargeted(true);
+				_heldObject = obj;
+
 				if (System::FrameCountdown(_interactionTime, (int)_animation->GetLength(PICKUPOBJECTANIM)))
 				{
-					obj->SetPickUpState(PICKEDUP);
-					obj->SetTargeted(true);
-					_heldObject = obj;
 					obj->SetVisibility(_visible);
 					ClearObjective();
 				}
