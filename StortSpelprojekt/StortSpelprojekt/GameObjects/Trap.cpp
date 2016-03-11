@@ -380,15 +380,6 @@ Trap::Trap(unsigned short ID, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rota
 
 Trap::~Trap()
 {
-	for (int i = 0; i < _nrOfAOETiles; i++)
-	{
-		GameObject* floorTile = _tileMap->GetObjectOnTile(_areaOfEffect[i], System::FLOOR);
-	}
-	for (int i = 0; i < _nrOfOccupiedTiles; i++)
-	{
-		GameObject* floorTile = _tileMap->GetObjectOnTile(_occupiedTiles[i], System::FLOOR);
-	}
-
 	delete[] _areaOfEffect;
 	_areaOfEffect = nullptr;
 	delete[] _occupiedTiles;
