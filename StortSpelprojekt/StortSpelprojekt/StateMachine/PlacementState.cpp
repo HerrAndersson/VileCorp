@@ -190,7 +190,7 @@ void PlacementState::OnStateEnter()
 	//Organize the available unit buttons
 	_buttons = std::vector<GUI::Node*>();
 	GUI::Node* unitList = _uiTree.GetNode("UnitList");
-	GUI::NodeBar nodeBar = GUI::NodeBar(false, 0.12f, &_buttons, _objectHandler->GetCurrentAvailableUnits(), unitList);
+	GUI::NodeBar nodeBar = GUI::NodeBar(&_buttons, _objectHandler->GetCurrentAvailableUnits(), unitList);
 	nodeBar.OrganizeButtons();
 
 	//Play music
