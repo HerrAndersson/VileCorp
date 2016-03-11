@@ -2,10 +2,8 @@
 
 
 
-GUI::NodeBar::NodeBar(bool verticalOrientation, float nodeOffset, std::vector<Node*>* buttons, std::vector<std::string>* availableUnits, GUI::Node* unitList)
+GUI::NodeBar::NodeBar(std::vector<Node*>* buttons, std::vector<std::string>* availableUnits, GUI::Node* unitList)
 {
-	_verticalOrientation = verticalOrientation;
-	_nodeOffset = nodeOffset;
 	_buttons = buttons;
 	_availableUnits = availableUnits;
 	_unitList = unitList;

@@ -12,13 +12,12 @@ namespace GUI
 		GUI::Node* _unitList;
 		bool _verticalOrientation;
 		DirectX::XMFLOAT2 _position;
-		float _nodeOffset;
 
 		void AddButtons();
 		void PositionButtons();
 
 	public:
-		NodeBar(bool verticalOrientation = false, float nodeOffset = 0.1f, std::vector<Node*>* attachedGUINodes = nullptr, std::vector<std::string>* availableUnits = nullptr, GUI::Node* unitList = nullptr);
+		NodeBar(std::vector<Node*>* attachedGUINodes = nullptr, std::vector<std::string>* availableUnits = nullptr, GUI::Node* unitList = nullptr);
 		~NodeBar();
 		std::vector<GUI::Node*>* GetButtons();
 		void OrganizeButtons();
