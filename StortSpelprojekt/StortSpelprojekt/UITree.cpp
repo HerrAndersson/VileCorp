@@ -243,12 +243,6 @@ namespace GUI
 		int width = _info._windowWidth;
 		int height = _info._windowHeight;
 
-		if (_info._screenMode == System::FULLSCREEN)
-		{
-			width = _info._screenWidth;
-			height = _info._screenHeight;
-		}
-
 		//Convert coordinates to pixel coordinate system
 		topLeft.x = (topLeft.x + 1.0f) * 0.5f * width;
 		topLeft.y = (topLeft.y + 1.0f) * 0.5f * height;

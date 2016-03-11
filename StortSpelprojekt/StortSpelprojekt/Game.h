@@ -45,6 +45,7 @@ private:
 	CombinedMeshGenerator*		_combinedMeshGenerator;
 
 	bool						_hasFocus;
+	bool						_justGotFocus;
 	bool						_enemiesHasSpawned;
 
 	//Resizing window, directx resources, camera

@@ -111,7 +111,14 @@ namespace System
 
 		if (screenMode != System::FULLSCREEN)
 		{
-			SetWindowPos(_hwnd, HWND_TOP, oldRect.left, oldRect.top, windowWidth, windowHeight, SWP_FRAMECHANGED);
+			if (oldRect.left + windowWidth > GetSystemMetrics(SM_CXSCREEN) || oldRect.top + windowHeight > GetSystemMetrics(SM_CYSCREEN))
+			{
+				SetWindowPos(_hwnd, HWND_TOP, 0, 0, windowWidth, windowHeight, SWP_FRAMECHANGED);
+			}
+			else
+			{
+				SetWindowPos(_hwnd, HWND_TOP, oldRect.left, oldRect.top, windowWidth, windowHeight, SWP_FRAMECHANGED);
+			}
 		}
 		else
 		{

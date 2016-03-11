@@ -11,6 +11,7 @@ Game::Game(HINSTANCE hInstance, int nCmdShow) :
 	System::Settings* settings = _settingsReader.GetSettings();
 
 	_gameHandle = this;
+	_justGotFocus = false;
 	_window = new System::Window("Vile Corp.", hInstance, settings, WndProc);
 	_timer = System::Timer();
 	_renderModule = new Renderer::RenderModule(_window->GetHWND(), settings);
@@ -528,6 +529,12 @@ int Game::Run()
 			{
 				if (_hasFocus)
 				{
+					if (_justGotFocus)
+					{
+						ResizeResources(_settingsReader.GetSettings());
+						_justGotFocus = false;
+					}
+
 					run = Update(_timer.GetFrameTime());
 
 					if (run)
@@ -585,6 +592,7 @@ LRESULT CALLBACK Game::WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM l
 	case WM_SETFOCUS:
 	{
 		_gameHandle->_hasFocus = true;
+		_gameHandle->_justGotFocus = true;
 		break;
 	}
 	case WM_KILLFOCUS:
