@@ -62,6 +62,22 @@
 				"color": "FF000000",
 				"fontsize": 35.0
 			}
+		},
+		"":
+		{
+			"position": [0.0, 0.13],
+			"scale": [0.3, 0.15],
+			"color": "FF000000",
+			"text": "Congratulations!",
+			"fontsize": 44.5
+		},
+		"":
+		{
+			"position": [0.0, 0.1],
+			"scale": [0.3, 0.08],
+			"color": "FF000000",
+			"text": "You protected the valuables from being stolen. Well done!\n\n Rewards and thanks are coming your way!",
+			"fontsize": 25.0
 		}
 	},
 	"losescreen": {
@@ -80,6 +96,22 @@
 				"color": "FF000000",
 				"fontsize": 35.0
 			}
+		},
+		"":
+		{
+			"position": [0.0, 0.13],
+			"scale": [0.3, 0.15],
+			"color": "FF000000",
+			"text": "Oh dear!",
+			"fontsize": 44.5
+		},
+		"":
+		{
+			"position": [0.0, 0.1],
+			"scale": [0.3, 0.08],
+			"color": "FF000000",
+			"text": "It seems in this standoff between your adversary and you, You...\n\nYeah, you pretty much failed.\nPerhaps another attempt could work out better?",
+			"fontsize": 25.0
 		}
 	}
 }

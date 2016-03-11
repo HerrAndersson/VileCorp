@@ -575,6 +575,10 @@ void ObjectHandler::Update(float deltaTime)
 							_soundModule->Play("guard_death");
 						}
 					}
+					else if (static_cast<Enemy*>(unit)->GetIsAtSpawn())
+					{
+						_enemySpawnVector.push_back(std::array<int, 2>{_enemySpawnVector.back()[0] + 1, (int)unit->GetSubType()});
+					}
 
 					//Remove object
 					Remove(g);
@@ -616,7 +620,7 @@ void ObjectHandler::Update(float deltaTime)
 			}
 		}
 	}
-	if (_spawnTimer % 60 == 0 && _gameObjects[System::LOOT].size() > 0)
+	if (_spawnTimer % 60 == 0 && _tilemap->GetNrOfLoot() > 0)
 	{
 		SpawnEnemies();
 	}
