@@ -41,14 +41,7 @@ void GUI::NodeBar::PositionButtons()
 	for each (Node* node in *_buttons)
 	{
 		node->SetPosition(iteratedPosition);
-		if (_verticalOrientation)
-		{
-			iteratedPosition.y += spaceForSingleButton;
-		}
-		else
-		{
-			iteratedPosition.x += spaceForSingleButton;
-		}
+		iteratedPosition.x += spaceForSingleButton;
 	}
 }
 
