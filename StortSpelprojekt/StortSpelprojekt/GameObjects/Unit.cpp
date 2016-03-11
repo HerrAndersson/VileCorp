@@ -563,16 +563,20 @@ void Unit::TakeDamage(int damage)
 		ParticleRequestMessage* msg = new ParticleRequestMessage(ParticleType::ICON, ParticleSubType::HEALTH_SUBTYPE, _ID, pos, XMFLOAT3(0, 0, 0), 1.0f, 1, _health*0.0025f, true, false);
 		_particleEventQueue->Insert(msg);
 	}
-	else if (_health > 0)
+	else if (_health - damage <= 0)
 	{
 		if (!_isAtSpawn)
 		{
 			Animate(DEATHANIM);
 		}
+
+		if (_heldObject != nullptr)
+		{
+			_heldObject->SetPickUpState(DROPPING);
+		}
+
 		_health -= damage;
 	}
-
-
 }
 
 void Unit::SetIsAtSpawn(bool isAtSpawn)
