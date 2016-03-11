@@ -580,19 +580,6 @@
         ]
       },
       {
-        "_mesh": "generatorDecoration-28.bin",
-        "_name": "Generator",
-        "_type": 8,
-        "_subType": 5,
-        "_tooltip": "SampleText",
-        "_textures": [
-          "generator"
-        ],
-        "_thumbnails": [
-          "generator"
-        ]
-      },
-      {
         "_mesh": "frontDeskDecoration-28.bin",
         "_name": "Front Desk",
         "_type": 8,
