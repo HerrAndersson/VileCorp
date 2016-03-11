@@ -51,6 +51,7 @@ void BaseState::HandleCamMode()
 	/*
 	Toggle free camera mode
 	*/
+#ifdef _DEBUG
 	if (_controls->IsFunctionKeyDown("DEBUG:ENABLE_FREECAM"))
 	{
 		if (_camera->GetMode() == System::LOCKED_CAM)
@@ -62,9 +63,10 @@ void BaseState::HandleCamMode()
 		{
 			_controls->ToggleCursorLock();
 			_camera->SetMode(System::LOCKED_CAM);
-			_camera->SetRotation(DirectX::XMFLOAT3(70, 0, 0));
+			_camera->SetRotation(DirectX::XMFLOAT3(60, 0, 0));
 		}
 	}
+#endif 
 }
 
 void BaseState::HandleCamZoom()

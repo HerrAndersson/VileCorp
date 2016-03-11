@@ -219,7 +219,7 @@ void Game::Render()
 	}
 
 	////////////////////////////////////////////////////////////  Light pass  //////////////////////////////////////////////////////////////
-	if (_SM->GetState() == PLAYSTATE || _SM->GetState() == PLACEMENTSTATE)
+	if (_SM->GetState() == PLAYSTATE)
 	{
 		/*------------------------------------------------------  Spotlights  --------------------------------------------------------------
 		Generate the shadow map for each spotlight, then apply the lighting/shadowing to the render target with additive blending.        */

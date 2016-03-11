@@ -687,10 +687,20 @@ namespace Renderer
 
 	void RenderModule::RenderSelectionQuad(float lastX, float lastY, float currentX, float currentY)
 	{
-		currentX = (2.0f * currentX / _settings->_screenWidth) - 1;
-		currentY = -(2.0f * currentY / _settings->_screenHeight) + 1;
-		lastX = (2.0f * lastX / _settings->_screenWidth) - 1;
-		lastY = -(2.0f * lastY / _settings->_screenHeight) + 1;
+		if (_settings->_screenMode != System::FULLSCREEN)
+		{
+			currentX = (2.0f * currentX / _settings->_screenWidth) - 1;
+			currentY = -(2.0f * currentY / _settings->_screenHeight) + 1;
+			lastX = (2.0f * lastX / _settings->_screenWidth) - 1;
+			lastY = -(2.0f * lastY / _settings->_screenHeight) + 1;
+		}
+		else 
+		{
+			currentX = (2.0f * currentX / _settings->_windowWidth) - 1;
+			currentY = -(2.0f * currentY / _settings->_windowHeight) + 1;
+			lastX = (2.0f * lastX / _settings->_windowWidth) - 1;
+			lastY = -(2.0f * lastY / _settings->_windowHeight) + 1;
+		}
 
 		float temp;
 		if (currentX < lastX)
