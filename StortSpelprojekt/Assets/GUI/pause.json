@@ -13,7 +13,7 @@
 			"paused":
 			{
 				"position" : [-0.038, 0.35],
-				"scale": [0.0, 0.0],
+				"scale": [0.1, 0.0],
 				"text": "PAUSED",
 				"color": "FF000000",
 				"fontsize" : 72.0,

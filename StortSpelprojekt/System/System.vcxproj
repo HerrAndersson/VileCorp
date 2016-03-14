@@ -114,6 +114,8 @@ robocopy "$(SolutionDir)Assets" "$(OutDir)Assets" *.json *.xml /E /XA:H /W:0 /R:
 
 robocopy "$(SolutionDir)include\yse\dll" "$(OutDir)" /E /XA:H /W:0 /R:0
 
+robocopy "$(SolutionDir)redist" "$(OutDir)" /E /XA:H /W:0 /R:0
+
 if errorlevel 1 exit 0 else exit %errorlevel%</Command>
     </CustomBuildStep>
     <CustomBuildStep>
@@ -180,6 +182,8 @@ robocopy "$(SolutionDir)Renderer\Shaders" "$(OutDir)Assets\Shaders" *.hlsl /E /X
 robocopy "$(SolutionDir)Assets" "$(OutDir)Assets" *.json *.xml /E /XA:H /W:0 /R:0
 
 robocopy "$(SolutionDir)include\yse\dll" "$(OutDir)" /E /XA:H /W:0 /R:0
+
+robocopy "$(SolutionDir)redist" "$(OutDir)" /E /XA:H /W:0 /R:0
 
 if errorlevel 1 exit 0 else exit %errorlevel%</Command>
     </CustomBuildStep>

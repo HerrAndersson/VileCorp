@@ -2,6 +2,7 @@
 
 #include "Settings/settings.h"
 #include "Settings/Profile.h"
+#include "CommonUtils.h"
 
 #define SYSTEM_EXPORT __declspec(dllexport)
 

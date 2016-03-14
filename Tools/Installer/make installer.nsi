@@ -21,6 +21,7 @@ BrandingText " "
 Var StartMenuFolder
 !define UserdataDir VileCorp1.0
 !define UserdataFlags "--config-dir ${UserdataDir}"  
+Var DirectXSetupError
 
 
 #Installer pages----------------------------------------------------
@@ -31,7 +32,7 @@ Var StartMenuFolder
 !insertmacro MUI_PAGE_WELCOME
 
 #Component selection page
-;!insertmacro MUI_PAGE_COMPONENTS
+!insertmacro MUI_PAGE_COMPONENTS
 
 #Chose install directory page
 !insertmacro MUI_PAGE_DIRECTORY
@@ -80,6 +81,8 @@ FunctionEnd
 #Code for the installer .exe------------------------------------------
 Section "Vile Corp" VCSection
 
+	SectionIn RO
+
 	#Set the installation directoy
 	SetOutPath "$INSTDIR\Vile Corp"
 
@@ -115,10 +118,32 @@ Function .onInit
 FunctionEnd
 
 
+Section "VCRedist Install" SEC_VCREDIST
+ 
+# SectionIn RO
+ 
+ DetailPrint "Running VCRedist Setup..."
+ ExecWait '"$EXEDIR\redist\vc_redist.x86.exe" /install /passive /norestart'
+ DetailPrint "Finished VCRedist Setup"
+ 
+SectionEnd
+
+
+Section "DirectX Install" SEC_DIRECTX
+ 
+ #SectionIn RO
+ 
+ DetailPrint "Running DirectX Setup..."
+ ExecWait '"$EXEDIR\redist\DirectX\DXSETUP.exe" /silent' $DirectXSetupError
+ DetailPrint "Finished DirectX Setup"
+ 
+SectionEnd
+
+
 #Descriptions to installer sections (Needed for the MUI_PAGE_COMPONENTS)
-;!insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
-;!insertmacro MUI_DESCRIPTION_TEXT ${VCSection} "Vile Corp executable and data."
-;!insertmacro MUI_FUNCTION_DESCRIPTION_END
+!insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
+!insertmacro MUI_DESCRIPTION_TEXT ${VCSection} "Vile Corp executable and data."
+!insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 
 #Code for the uninstaller .exe----------------------------------------
@@ -126,6 +151,8 @@ Section "Uninstall"
 
 	#Delete files and directories
 	RMDir /r "$INSTDIR\Assets\*"
+	Delete "$INSTDIR\d3dcompiler_47.dll"
+	Delete "$INSTDIR\d3dcsx_47.dll"
 	Delete "$INSTDIR\AI.dll"
 	Delete "$INSTDIR\AssetManager.dll"
 	Delete "$INSTDIR\FW1FontWrapper.dll"

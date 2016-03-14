@@ -10,10 +10,16 @@ namespace System
 		_settingsHasChanged(false),
 		_profile()
 	{
-		_settingsFileName = new std::string(settingsFileName);
-		LoadXML(*_settingsFileName, _settings);
 
+#ifndef _DEBUG
+		std::string profilePath = System::GetMyDocsPath() + "\\Vile Corp\\";
+		_settingsFileName = new std::string(profilePath + "settings.xml");
+		_profileFileName = new std::string(profilePath + "profile.xml");
+#else
+		_settingsFileName = new std::string(settingsFileName);
 		_profileFileName = new std::string(profileFileName);
+#endif
+		LoadXML(*_settingsFileName, _settings);
 		LoadXML(*_profileFileName, _profile);
 	}
 

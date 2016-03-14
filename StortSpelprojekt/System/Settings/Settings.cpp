@@ -3,12 +3,12 @@ namespace System
 {
 	Settings::Settings()
 	{
-		_screenWidth = 1920;
-		_screenHeight = 1080;
+		_screenWidth = 1600;
+		_screenHeight = 900;
 		_windowWidth = 1920;
 		_windowHeight = 1080;
 		_shadowMapSize = 256;
-		_screenMode = 0;
+		_screenMode = 2;
 		_showMouseCursor = true;
 		_nearClip = 0.1f;
 		_farClip = 1000.0f;
